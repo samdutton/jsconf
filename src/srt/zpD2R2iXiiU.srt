@@ -1,0 +1,3829 @@
+1
+00:00:13,970 --> 00:00:16,650
+
+so you all see this big link on here
+
+2
+00:00:16,650 --> 00:00:17,910
+hopefully you can see it in the back of
+
+3
+00:00:17,910 --> 00:00:19,800
+the room this is just a gotomeeting that
+
+4
+00:00:19,800 --> 00:00:22,430
+will show you guys the code and the
+
+5
+00:00:22,430 --> 00:00:24,180
+slides and stuff that I will be going
+
+6
+00:00:24,180 --> 00:00:25,590
+through this is so you all can hopefully
+
+7
+00:00:25,590 --> 00:00:27,210
+see it because I'm going to be in them
+
+8
+00:00:27,210 --> 00:00:30,180
+for about 25 minutes of this and it
+
+9
+00:00:30,180 --> 00:00:31,230
+might be a little bit on the small side
+
+10
+00:00:31,230 --> 00:00:32,579
+so if you're having trouble seeing the
+
+11
+00:00:32,579 --> 00:00:34,620
+screens feel free to hop into this its
+
+12
+00:00:34,620 --> 00:00:38,370
+tiny URL com / you to dash can dash
+
+13
+00:00:38,370 --> 00:00:40,050
+believe it's gotomeeting just put it in
+
+14
+00:00:40,050 --> 00:00:42,030
+your name and it will pop up go to
+
+15
+00:00:42,030 --> 00:00:43,800
+meeting some of your web developers and
+
+16
+00:00:43,800 --> 00:00:44,640
+saying I don't want to install
+
+17
+00:00:44,640 --> 00:00:46,590
+gotomeeting that's okay I understand
+
+18
+00:00:46,590 --> 00:00:48,390
+that just if you don't mind straining
+
+19
+00:00:48,390 --> 00:00:50,820
+your eyes so thanks for coming out to my
+
+20
+00:00:50,820 --> 00:00:54,330
+talk where I hope that with this one
+
+21
+00:00:54,330 --> 00:00:56,730
+weird way to rewrite closures I can
+
+22
+00:00:56,730 --> 00:00:59,190
+restore your faith in native JavaScript
+
+23
+00:00:59,190 --> 00:01:02,310
+closures the rest of this time don't
+
+24
+00:01:02,310 --> 00:01:03,960
+believe anything I say that is my only
+
+25
+00:01:03,960 --> 00:01:06,270
+caveat so with that before we get into
+
+26
+00:01:06,270 --> 00:01:07,290
+the mind blowing business I'll tell you
+
+27
+00:01:07,290 --> 00:01:09,150
+just a quick little bit about myself I'm
+
+28
+00:01:09,150 --> 00:01:10,979
+Jonathan Martin I work at the big nerd
+
+29
+00:01:10,979 --> 00:01:13,920
+ranch up in Atlanta Georgia and I work
+
+30
+00:01:13,920 --> 00:01:15,990
+as a backing in front end developer and
+
+31
+00:01:15,990 --> 00:01:17,640
+also as an instructor if you happen to
+
+32
+00:01:17,640 --> 00:01:19,470
+be up near the Atlanta campus we'd love
+
+33
+00:01:19,470 --> 00:01:21,030
+to have you we probably have some swag
+
+34
+00:01:21,030 --> 00:01:23,820
+at the end of this talk Todd in myself
+
+35
+00:01:23,820 --> 00:01:26,220
+who also works at big nerd ranch at the
+
+36
+00:01:26,220 --> 00:01:27,930
+front table we will be out at one of the
+
+37
+00:01:27,930 --> 00:01:29,700
+booths or tables out there if you're
+
+38
+00:01:29,700 --> 00:01:31,409
+interested in getting any koozies or
+
+39
+00:01:31,409 --> 00:01:33,630
+nerdy glasses any of that stuff we have
+
+40
+00:01:33,630 --> 00:01:36,450
+it all so everyone nowadays when they
+
+41
+00:01:36,450 --> 00:01:37,800
+talk about JavaScript they talk about
+
+42
+00:01:37,800 --> 00:01:39,810
+scopes and closures as being the big
+
+43
+00:01:39,810 --> 00:01:41,580
+thing that make JavaScript so powerful
+
+44
+00:01:41,580 --> 00:01:43,409
+but really for years people have
+
+45
+00:01:43,409 --> 00:01:45,090
+survived without this memory intensive
+
+46
+00:01:45,090 --> 00:01:46,940
+complication on the JavaScript runtime
+
+47
+00:01:46,940 --> 00:01:49,500
+anytime you need to avoid variable name
+
+48
+00:01:49,500 --> 00:01:52,110
+shadowing or global or any kind of
+
+49
+00:01:52,110 --> 00:01:54,060
+variable name collisions all you needed
+
+50
+00:01:54,060 --> 00:01:55,860
+to do was use unique global variable
+
+51
+00:01:55,860 --> 00:01:58,260
+names maybe you prefix your variable
+
+52
+00:01:58,260 --> 00:02:00,930
+names with some unknown unheard-of
+
+53
+00:02:00,930 --> 00:02:02,640
+function name there's all kinds of
+
+54
+00:02:02,640 --> 00:02:04,860
+techniques people used so the example I
+
+55
+00:02:04,860 --> 00:02:07,830
+give first of all his Fortran Fortran
+
+56
+00:02:07,830 --> 00:02:10,229
+introduced in 1957 that was back when a
+
+57
+00:02:10,229 --> 00:02:12,060
+corrupted computer program probably
+
+58
+00:02:12,060 --> 00:02:14,159
+meant you got mustard or something on
+
+59
+00:02:14,159 --> 00:02:16,260
+your punch card Oh nowadays we don't
+
+60
+00:02:16,260 --> 00:02:17,849
+have that excuse for corrupted program
+
+61
+00:02:17,849 --> 00:02:20,700
+but considering that we still to this
+
+62
+00:02:20,700 --> 00:02:22,530
+day rely on all these super optimized
+
+63
+00:02:22,530 --> 00:02:25,000
+mouth algorithms that are written in
+
+64
+00:02:25,000 --> 00:02:26,500
+Tran I'd say they did pretty well
+
+65
+00:02:26,500 --> 00:02:28,840
+without any sort of local variables or
+
+66
+00:02:28,840 --> 00:02:32,710
+closures then x86 assembly 1978 in my
+
+67
+00:02:32,710 --> 00:02:34,270
+opinion one of the first real languages
+
+68
+00:02:34,270 --> 00:02:35,860
+because you could write hello world and
+
+69
+00:02:35,860 --> 00:02:37,360
+other insignificant things like
+
+70
+00:02:37,360 --> 00:02:39,460
+operating systems in it they did all
+
+71
+00:02:39,460 --> 00:02:41,830
+this just fine without any concept of
+
+72
+00:02:41,830 --> 00:02:43,810
+closures or local variables all that's
+
+73
+00:02:43,810 --> 00:02:45,610
+just kind of modern propaganda that gets
+
+74
+00:02:45,610 --> 00:02:48,760
+thrown at us all day even ruby ruby was
+
+75
+00:02:48,760 --> 00:02:50,920
+introduced in 1995 and we all know it
+
+76
+00:02:50,920 --> 00:02:52,390
+really just came as a last ditch effort
+
+77
+00:02:52,390 --> 00:02:54,580
+to save object-oriented programming in
+
+78
+00:02:54,580 --> 00:02:56,350
+the wake of the closure craze well
+
+79
+00:02:56,350 --> 00:02:58,060
+thanks to Ruby object-oriented
+
+80
+00:02:58,060 --> 00:02:59,830
+programming apparently lives on and
+
+81
+00:02:59,830 --> 00:03:01,959
+people still right things with classes
+
+82
+00:03:01,959 --> 00:03:04,360
+instead of closures which is totally the
+
+83
+00:03:04,360 --> 00:03:06,820
+way to do it nowadays but apparently
+
+84
+00:03:06,820 --> 00:03:09,280
+that's frowned upon by Twitter so to the
+
+85
+00:03:09,280 --> 00:03:10,900
+point you don't actually need closures
+
+86
+00:03:10,900 --> 00:03:12,280
+or local variables or any of that
+
+87
+00:03:12,280 --> 00:03:15,730
+nonsense however closures 10 because
+
+88
+00:03:15,730 --> 00:03:17,230
+they were attacked on at the last minute
+
+89
+00:03:17,230 --> 00:03:18,970
+into JavaScript they're slower than a
+
+90
+00:03:18,970 --> 00:03:21,160
+java GUI so we spend most of our time
+
+91
+00:03:21,160 --> 00:03:23,680
+waiting for closures to execute we have
+
+92
+00:03:23,680 --> 00:03:25,239
+the sink called function overhead
+
+93
+00:03:25,239 --> 00:03:26,709
+because it's got to initialize all these
+
+94
+00:03:26,709 --> 00:03:28,870
+variables on a stack all this nonsense
+
+95
+00:03:28,870 --> 00:03:31,060
+attached the functions when really it
+
+96
+00:03:31,060 --> 00:03:32,290
+would be so much faster if we could do
+
+97
+00:03:32,290 --> 00:03:33,940
+this all on the heat all at runtime
+
+98
+00:03:33,940 --> 00:03:38,140
+dynamically so typically when we want to
+
+99
+00:03:38,140 --> 00:03:39,850
+improve these sorts of things we rewrite
+
+100
+00:03:39,850 --> 00:03:42,130
+them so reacts virtual Dom comes to mind
+
+101
+00:03:42,130 --> 00:03:43,989
+it completely rewrote the DOM and
+
+102
+00:03:43,989 --> 00:03:45,730
+completely replaces it so you don't need
+
+103
+00:03:45,730 --> 00:03:47,769
+the Dom anymore and it makes everything
+
+104
+00:03:47,769 --> 00:03:50,860
+so much faster well what if we did the
+
+105
+00:03:50,860 --> 00:03:52,930
+same thing with closures because who
+
+106
+00:03:52,930 --> 00:03:57,489
+here has used the closure who here has
+
+107
+00:03:57,489 --> 00:04:01,420
+used local variables so you guys are
+
+108
+00:04:01,420 --> 00:04:02,709
+probably plaguing ninety-nine point nine
+
+109
+00:04:02,709 --> 00:04:04,660
+percent of your code with this memory
+
+110
+00:04:04,660 --> 00:04:06,280
+intensive complication on the runtime
+
+111
+00:04:06,280 --> 00:04:08,290
+engine it's all nonsense back in the day
+
+112
+00:04:08,290 --> 00:04:09,760
+we just use global variables which
+
+113
+00:04:09,760 --> 00:04:12,610
+really just registers registers are
+
+114
+00:04:12,610 --> 00:04:13,870
+about as fast as you can get it's only
+
+115
+00:04:13,870 --> 00:04:15,790
+one or two machine instructions away so
+
+116
+00:04:15,790 --> 00:04:17,410
+to address the underlying performance
+
+117
+00:04:17,410 --> 00:04:19,600
+problems in JavaScript we just need to
+
+118
+00:04:19,600 --> 00:04:22,600
+replace it entirely ourselves and we're
+
+119
+00:04:22,600 --> 00:04:24,130
+going to rewrite it all by yourself and
+
+120
+00:04:24,130 --> 00:04:25,690
+by the way this will also give us a
+
+121
+00:04:25,690 --> 00:04:27,610
+chance to completely redo the syntax
+
+122
+00:04:27,610 --> 00:04:29,890
+because I mean really who remembers the
+
+123
+00:04:29,890 --> 00:04:32,350
+VAR keyword every time without days
+
+124
+00:04:32,350 --> 00:04:34,690
+hence not-so-subtle products so in the
+
+125
+00:04:34,690 --> 00:04:37,270
+spirit of IE compatibility modes we are
+
+126
+00:04:37,270 --> 00:04:38,560
+going to develop our own
+
+127
+00:04:38,560 --> 00:04:40,000
+we fill for those clouds your closure
+
+128
+00:04:40,000 --> 00:04:42,700
+bounds developer friends of ours who are
+
+129
+00:04:42,700 --> 00:04:44,169
+still stuck in all this pure function
+
+130
+00:04:44,169 --> 00:04:46,419
+and Y Combinator propaganda who knows
+
+131
+00:04:46,419 --> 00:04:47,770
+where it came from and we're going to
+
+132
+00:04:47,770 --> 00:04:50,200
+bring them back to the simplicity of
+
+133
+00:04:50,200 --> 00:04:53,020
+global variables and registers all in
+
+134
+00:04:53,020 --> 00:04:55,180
+JavaScript now before we go on this
+
+135
+00:04:55,180 --> 00:04:56,770
+little journey we do have some rules we
+
+136
+00:04:56,770 --> 00:04:58,120
+have to follow otherwise it would just
+
+137
+00:04:58,120 --> 00:05:00,550
+be a free-for-all so any code that is
+
+138
+00:05:00,550 --> 00:05:02,650
+going to be using this polyfill has to
+
+139
+00:05:02,650 --> 00:05:04,990
+do five things first off it is not
+
+140
+00:05:04,990 --> 00:05:07,240
+allowed to use any native local
+
+141
+00:05:07,240 --> 00:05:09,310
+variables it is not allowed to use
+
+142
+00:05:09,310 --> 00:05:11,260
+native local variable assignment or
+
+143
+00:05:11,260 --> 00:05:14,860
+create functions with parameters or any
+
+144
+00:05:14,860 --> 00:05:16,720
+sort arguments now those of you who are
+
+145
+00:05:16,720 --> 00:05:18,729
+used to doing parameters it's really
+
+146
+00:05:18,729 --> 00:05:20,650
+just local variables after all inside
+
+147
+00:05:20,650 --> 00:05:22,150
+the function that get bound to some
+
+148
+00:05:22,150 --> 00:05:24,550
+value so that's the local variable in
+
+149
+00:05:24,550 --> 00:05:26,110
+and of itself will still have slow
+
+150
+00:05:26,110 --> 00:05:28,150
+functions so we're going to nuke all of
+
+151
+00:05:28,150 --> 00:05:30,729
+that you can't do any of that in your
+
+152
+00:05:30,729 --> 00:05:33,100
+coat however the implementation as we
+
+153
+00:05:33,100 --> 00:05:35,610
+will see is allowed to use some of those
+
+154
+00:05:35,610 --> 00:05:38,410
+second you may not attach any data
+
+155
+00:05:38,410 --> 00:05:41,229
+directly to a function object know sort
+
+156
+00:05:41,229 --> 00:05:43,630
+of memoization no cache objects none of
+
+157
+00:05:43,630 --> 00:05:46,690
+that functions are going to be a music
+
+158
+00:05:46,690 --> 00:05:49,150
+or the terminology we'll see as a music
+
+159
+00:05:49,150 --> 00:05:51,700
+function body we are allowed to do a few
+
+160
+00:05:51,700 --> 00:05:54,190
+things we are allowed to access that one
+
+161
+00:05:54,190 --> 00:05:57,490
+weird global variable and then we can
+
+162
+00:05:57,490 --> 00:05:59,350
+use a music function bodies just to wrap
+
+163
+00:05:59,350 --> 00:06:01,360
+around buckets of code again these
+
+164
+00:06:01,360 --> 00:06:02,919
+buckets of code are not allowed to use
+
+165
+00:06:02,919 --> 00:06:04,510
+local variables of any sort or
+
+166
+00:06:04,510 --> 00:06:06,490
+parameters so I call them in music
+
+167
+00:06:06,490 --> 00:06:07,810
+because they don't remember anything
+
+168
+00:06:07,810 --> 00:06:09,520
+about their scoping rules which are
+
+169
+00:06:09,520 --> 00:06:10,900
+built into JavaScript they're not
+
+170
+00:06:10,900 --> 00:06:13,000
+allowed to do any of that so they will
+
+171
+00:06:13,000 --> 00:06:15,070
+be a music just buckets of statements
+
+172
+00:06:15,070 --> 00:06:17,410
+and then finally just to make things a
+
+173
+00:06:17,410 --> 00:06:19,090
+little bit shorter for demo you are
+
+174
+00:06:19,090 --> 00:06:21,010
+allowed to use shortcut local variables
+
+175
+00:06:21,010 --> 00:06:22,840
+that will give you access to a few
+
+176
+00:06:22,840 --> 00:06:24,820
+functions as we will see later on
+
+177
+00:06:24,820 --> 00:06:26,650
+because they could just be expanded to
+
+178
+00:06:26,650 --> 00:06:28,330
+the full global variable name some of
+
+179
+00:06:28,330 --> 00:06:29,770
+you may remember this convention if you
+
+180
+00:06:29,770 --> 00:06:31,780
+watch programming with nothing you
+
+181
+00:06:31,780 --> 00:06:32,889
+mentioned at the beginning of the talk
+
+182
+00:06:32,889 --> 00:06:35,020
+so that takes a similar convention where
+
+183
+00:06:35,020 --> 00:06:37,389
+you can use constants just to simplify
+
+184
+00:06:37,389 --> 00:06:39,010
+the code but at the end it can all be
+
+185
+00:06:39,010 --> 00:06:41,289
+collapsed and not even use any sort of
+
+186
+00:06:41,289 --> 00:06:43,479
+local variable names so we're going to
+
+187
+00:06:43,479 --> 00:06:45,520
+do all that so with these rules we're
+
+188
+00:06:45,520 --> 00:06:46,810
+going to make substitutions like this
+
+189
+00:06:46,810 --> 00:06:49,000
+the first line you see is VAR local
+
+190
+00:06:49,000 --> 00:06:51,130
+equals some value this is going to be
+
+191
+00:06:51,130 --> 00:06:52,360
+replaced with
+
+192
+00:06:52,360 --> 00:06:55,060
+mysterious function called s as for set
+
+193
+00:06:55,060 --> 00:06:56,710
+it will take in the name of a local
+
+194
+00:06:56,710 --> 00:06:58,689
+variable to which we want to assign and
+
+195
+00:06:58,689 --> 00:07:02,229
+then that value so s will exactly
+
+196
+00:07:02,229 --> 00:07:03,879
+replace the variable assignment we're
+
+197
+00:07:03,879 --> 00:07:05,800
+used to anytime we want to do a lookup
+
+198
+00:07:05,800 --> 00:07:09,009
+we call g which is 4g forget which takes
+
+199
+00:07:09,009 --> 00:07:10,330
+in the name of the local variable and
+
+200
+00:07:10,330 --> 00:07:12,250
+just returns the value in the current
+
+201
+00:07:12,250 --> 00:07:14,139
+scope exactly the same as variable look
+
+202
+00:07:14,139 --> 00:07:16,120
+up and anytime we have a function
+
+203
+00:07:16,120 --> 00:07:18,340
+expression assigned to a variable we
+
+204
+00:07:18,340 --> 00:07:19,870
+will replace all of that with a call to
+
+205
+00:07:19,870 --> 00:07:22,389
+F F takes in the name of the local
+
+206
+00:07:22,389 --> 00:07:24,009
+variable to which we would be assigning
+
+207
+00:07:24,009 --> 00:07:26,169
+this function the list of parameters as
+
+208
+00:07:26,169 --> 00:07:28,240
+an array and then that amnesic function
+
+209
+00:07:28,240 --> 00:07:30,400
+body notice that the function body has
+
+210
+00:07:30,400 --> 00:07:32,529
+no parameters it's not allowed to do
+
+211
+00:07:32,529 --> 00:07:34,689
+this we're just using functions as a way
+
+212
+00:07:34,689 --> 00:07:38,919
+to wrap around a bunch of code so with
+
+213
+00:07:38,919 --> 00:07:39,969
+this in mind we're going to take an
+
+214
+00:07:39,969 --> 00:07:41,800
+example that looks like this this is a
+
+215
+00:07:41,800 --> 00:07:44,110
+canonical example of how closures work
+
+216
+00:07:44,110 --> 00:07:46,360
+in JavaScript in this case we have an
+
+217
+00:07:46,360 --> 00:07:47,740
+outer function which when invoked
+
+218
+00:07:47,740 --> 00:07:49,509
+returns an inner function which when
+
+219
+00:07:49,509 --> 00:07:52,539
+invoked prints out the values of x y and
+
+220
+00:07:52,539 --> 00:07:55,270
+z now the prudent among you will notice
+
+221
+00:07:55,270 --> 00:07:58,120
+that the inner function shadows the x
+
+222
+00:07:58,120 --> 00:08:00,190
+variable of the outer one so if you were
+
+223
+00:08:00,190 --> 00:08:01,930
+to evaluate what that bottom statement
+
+224
+00:08:01,930 --> 00:08:04,120
+would run it would execute outer passing
+
+225
+00:08:04,120 --> 00:08:06,490
+in 1 and 2 and inner passing in three
+
+226
+00:08:06,490 --> 00:08:08,169
+and four and you should get an output of
+
+227
+00:08:08,169 --> 00:08:11,050
+3 comma 2 comma 4 because it prints out
+
+228
+00:08:11,050 --> 00:08:14,229
+X and X is shadowed so the second time
+
+229
+00:08:14,229 --> 00:08:17,289
+we pass in the value of x into the inner
+
+230
+00:08:17,289 --> 00:08:18,940
+function that's going to be what gets
+
+231
+00:08:18,940 --> 00:08:21,189
+printed so remember the output of this
+
+232
+00:08:21,189 --> 00:08:24,639
+should be 3 comma 2 comma 4 and with our
+
+233
+00:08:24,639 --> 00:08:25,990
+little transformation we saw in the last
+
+234
+00:08:25,990 --> 00:08:27,580
+slide we're going to make this look so
+
+235
+00:08:27,580 --> 00:08:29,080
+much better we're going to replace it
+
+236
+00:08:29,080 --> 00:08:32,740
+with this will call our f function or g
+
+237
+00:08:32,740 --> 00:08:35,589
+function in our s function so notice in
+
+238
+00:08:35,589 --> 00:08:37,149
+here there is no reference to native
+
+239
+00:08:37,149 --> 00:08:38,919
+local variables or functions with
+
+240
+00:08:38,919 --> 00:08:41,409
+parameters all we have are those three
+
+241
+00:08:41,409 --> 00:08:43,690
+setter getter and function helpers so
+
+242
+00:08:43,690 --> 00:08:45,519
+bear this in mind as we start developing
+
+243
+00:08:45,519 --> 00:08:48,220
+it because the next step is to in 70
+
+244
+00:08:48,220 --> 00:08:49,690
+lines of code we're going to
+
+245
+00:08:49,690 --> 00:08:51,550
+re-implement this and all will be
+
+246
+00:08:51,550 --> 00:08:55,240
+exposing our that s f and g functions so
+
+247
+00:08:55,240 --> 00:08:56,260
+at this point i'm going to move to
+
+248
+00:08:56,260 --> 00:08:58,060
+something very risky we're going to live
+
+249
+00:08:58,060 --> 00:09:03,519
+code this in them
+
+250
+00:09:03,529 --> 00:09:05,939
+first difficulty we will face is getting
+
+251
+00:09:05,939 --> 00:09:16,290
+this large enough to see I need another
+
+252
+00:09:16,290 --> 00:09:18,809
+screen so if you guys can't read this
+
+253
+00:09:18,809 --> 00:09:21,240
+especially as you get back a few rows go
+
+254
+00:09:21,240 --> 00:09:22,889
+ahead and go a launch up that
+
+255
+00:09:22,889 --> 00:09:24,839
+gotomeeting I know it's a plug-in who
+
+256
+00:09:24,839 --> 00:09:27,029
+wants a plug-in but WebRTC won't work on
+
+257
+00:09:27,029 --> 00:09:29,309
+these firewalls unfortunately so you
+
+258
+00:09:29,309 --> 00:09:31,410
+should be able to follow along then so
+
+259
+00:09:31,410 --> 00:09:32,819
+I'm going to be taking a test driven
+
+260
+00:09:32,819 --> 00:09:34,860
+approach to doing all this which means
+
+261
+00:09:34,860 --> 00:09:36,629
+I've cheated before hand I've written
+
+262
+00:09:36,629 --> 00:09:38,730
+out all these specs which describe this
+
+263
+00:09:38,730 --> 00:09:40,529
+behavior that I want out of this i'm
+
+264
+00:09:40,529 --> 00:09:43,410
+using mocha and chai okay i have not yet
+
+265
+00:09:43,410 --> 00:09:44,370
+been instructed on the proper
+
+266
+00:09:44,370 --> 00:09:46,649
+pronunciation so first off we're going
+
+267
+00:09:46,649 --> 00:09:48,360
+to look at how a scope should work for a
+
+268
+00:09:48,360 --> 00:09:50,339
+global context so whenever you think
+
+269
+00:09:50,339 --> 00:09:51,990
+about scopes we're thinking about local
+
+270
+00:09:51,990 --> 00:09:54,540
+variables back in the days of x86 and
+
+271
+00:09:54,540 --> 00:09:56,610
+fortran all you had was the global scope
+
+272
+00:09:56,610 --> 00:09:58,199
+variables that can be accessed from
+
+273
+00:09:58,199 --> 00:10:00,480
+anywhere in your program so it's very
+
+274
+00:10:00,480 --> 00:10:02,249
+easy to describe these so let me walk
+
+275
+00:10:02,249 --> 00:10:04,199
+you through it first off we have a
+
+276
+00:10:04,199 --> 00:10:05,550
+little bit of setup functionality for
+
+277
+00:10:05,550 --> 00:10:08,490
+every test we create a scope object this
+
+278
+00:10:08,490 --> 00:10:10,230
+scope object is going to be responsible
+
+279
+00:10:10,230 --> 00:10:11,850
+for keeping track of local variables
+
+280
+00:10:11,850 --> 00:10:14,220
+that have been created along with the
+
+281
+00:10:14,220 --> 00:10:17,100
+values that are set to now again here
+
+282
+00:10:17,100 --> 00:10:19,259
+are our shortcut functions which is just
+
+283
+00:10:19,259 --> 00:10:21,870
+mapping s to the set function on scope
+
+284
+00:10:21,870 --> 00:10:24,480
+and G to the get function on scope these
+
+285
+00:10:24,480 --> 00:10:26,069
+are just shortcuts so we're not
+
+286
+00:10:26,069 --> 00:10:27,720
+violating that rule we're taking
+
+287
+00:10:27,720 --> 00:10:30,209
+advantage of rule 5 then our first test
+
+288
+00:10:30,209 --> 00:10:33,540
+which instance it's that a scope which
+
+289
+00:10:33,540 --> 00:10:35,490
+works like a global context should be
+
+290
+00:10:35,490 --> 00:10:38,100
+able to set a variable in this case the
+
+291
+00:10:38,100 --> 00:10:40,439
+variable X to 1 and then with we go to
+
+292
+00:10:40,439 --> 00:10:42,120
+look it up with the G function it should
+
+293
+00:10:42,120 --> 00:10:44,040
+return that same value and if we try to
+
+294
+00:10:44,040 --> 00:10:45,990
+look up a variable that did not exist we
+
+295
+00:10:45,990 --> 00:10:48,480
+should get undefined back so in fact if
+
+296
+00:10:48,480 --> 00:10:50,879
+we run this spec we should see that it
+
+297
+00:10:50,879 --> 00:10:52,740
+fails well first off it says that scope
+
+298
+00:10:52,740 --> 00:10:54,749
+isn't even defined so first thing we
+
+299
+00:10:54,749 --> 00:10:57,120
+need to do we need to go to find this so
+
+300
+00:10:57,120 --> 00:10:59,069
+let's go over to this other file and I'm
+
+301
+00:10:59,069 --> 00:11:00,360
+just going to use the revealing module
+
+302
+00:11:00,360 --> 00:11:02,939
+pattern to keep things clean so I'm
+
+303
+00:11:02,939 --> 00:11:06,569
+going to create a scoping object and the
+
+304
+00:11:06,569 --> 00:11:08,819
+scope object it's going to expose it so
+
+305
+00:11:08,819 --> 00:11:09,600
+well
+
+306
+00:11:09,600 --> 00:11:11,190
+it's going to expose a constructor
+
+307
+00:11:11,190 --> 00:11:13,380
+called scope and this constructor isn't
+
+308
+00:11:13,380 --> 00:11:14,670
+really going to do anything it's only
+
+309
+00:11:14,670 --> 00:11:17,040
+going to create one instance variable
+
+310
+00:11:17,040 --> 00:11:18,540
+which is going to be underscored dick
+
+311
+00:11:18,540 --> 00:11:21,600
+dick for dictionary so this dictionary
+
+312
+00:11:21,600 --> 00:11:24,089
+is going to map from all local variable
+
+313
+00:11:24,089 --> 00:11:26,310
+names we know about to their values in
+
+314
+00:11:26,310 --> 00:11:28,709
+this particular scope this represents
+
+315
+00:11:28,709 --> 00:11:31,829
+just one scope so we've got that set up
+
+316
+00:11:31,829 --> 00:11:33,569
+let's run the specs now and see what
+
+317
+00:11:33,569 --> 00:11:37,139
+happens now we moved a little bit
+
+318
+00:11:37,139 --> 00:11:38,639
+further cannot read property bind of
+
+319
+00:11:38,639 --> 00:11:40,139
+undefined it's because we don't yet have
+
+320
+00:11:40,139 --> 00:11:42,839
+those get and set functions so let's
+
+321
+00:11:42,839 --> 00:11:44,459
+just go ahead and write those those are
+
+322
+00:11:44,459 --> 00:11:46,980
+pretty easy to write so get as you will
+
+323
+00:11:46,980 --> 00:11:48,480
+recall takes in the name of the local
+
+324
+00:11:48,480 --> 00:11:50,100
+variable we want to look up and returns
+
+325
+00:11:50,100 --> 00:11:52,829
+it so this is a simple property lookup
+
+326
+00:11:52,829 --> 00:11:54,899
+will look up in the dictionary the value
+
+327
+00:11:54,899 --> 00:11:57,420
+by the name of key and set is going to
+
+328
+00:11:57,420 --> 00:12:00,329
+be almost exactly the same set is going
+
+329
+00:12:00,329 --> 00:12:02,420
+to take an icky as well as a value and
+
+330
+00:12:02,420 --> 00:12:04,470
+then instead of returning it it's going
+
+331
+00:12:04,470 --> 00:12:07,829
+to set it to it nothing too unusual here
+
+332
+00:12:07,829 --> 00:12:10,259
+if we run this spec and I keep going to
+
+333
+00:12:10,259 --> 00:12:12,630
+the wrong window if I run it we now see
+
+334
+00:12:12,630 --> 00:12:15,089
+that our first spec which is a scope
+
+335
+00:12:15,089 --> 00:12:16,800
+that works as a global context should
+
+336
+00:12:16,800 --> 00:12:19,170
+work so awesome we have our first spec
+
+337
+00:12:19,170 --> 00:12:20,639
+passing and we have the concept of
+
+338
+00:12:20,639 --> 00:12:22,170
+global context which is not really
+
+339
+00:12:22,170 --> 00:12:24,300
+groundbreaking we've had that since x86
+
+340
+00:12:24,300 --> 00:12:26,250
+Fortran name any other language we had
+
+341
+00:12:26,250 --> 00:12:29,040
+this with registers so let's go a little
+
+342
+00:12:29,040 --> 00:12:30,810
+bit further we'll go to our next set of
+
+343
+00:12:30,810 --> 00:12:35,790
+specs so that was for global context now
+
+344
+00:12:35,790 --> 00:12:36,990
+we're going to enable this for what I
+
+345
+00:12:36,990 --> 00:12:39,029
+call a context so some of you may have
+
+346
+00:12:39,029 --> 00:12:40,949
+done some graphics programming before in
+
+347
+00:12:40,949 --> 00:12:42,600
+graphics programming whenever you want
+
+348
+00:12:42,600 --> 00:12:45,029
+to paint something you typically push on
+
+349
+00:12:45,029 --> 00:12:46,949
+a context you change the stroke maybe
+
+350
+00:12:46,949 --> 00:12:48,750
+the width the color a few other
+
+351
+00:12:48,750 --> 00:12:51,000
+properties and then you do some work and
+
+352
+00:12:51,000 --> 00:12:52,800
+then when you're done doing that work
+
+353
+00:12:52,800 --> 00:12:55,230
+you pop the context you do this so that
+
+354
+00:12:55,230 --> 00:12:56,910
+way the parent function that called you
+
+355
+00:12:56,910 --> 00:12:59,009
+doesn't get into any side effects
+
+356
+00:12:59,009 --> 00:13:00,720
+because of all the work that you wanted
+
+357
+00:13:00,720 --> 00:13:02,639
+to do in your own little function so
+
+358
+00:13:02,639 --> 00:13:04,500
+push and pop very often in graphics
+
+359
+00:13:04,500 --> 00:13:05,759
+programming would be called at the
+
+360
+00:13:05,759 --> 00:13:07,589
+boundaries of a function well in
+
+361
+00:13:07,589 --> 00:13:09,449
+JavaScript our functions do exactly that
+
+362
+00:13:09,449 --> 00:13:12,509
+functions act as boundaries between
+
+363
+00:13:12,509 --> 00:13:15,029
+different scopes so before we get to
+
+364
+00:13:15,029 --> 00:13:16,079
+that point we're just going to go ahead
+
+365
+00:13:16,079 --> 00:13:18,209
+and create push and pop functions so
+
+366
+00:13:18,209 --> 00:13:20,420
+notice we have two new aliases here and
+
+367
+00:13:20,420 --> 00:13:23,370
+let's go over and implement those
+
+368
+00:13:23,370 --> 00:13:25,980
+so hopefully now that we've enabled
+
+369
+00:13:25,980 --> 00:13:27,360
+these we should see that we have some
+
+370
+00:13:27,360 --> 00:13:30,000
+failing specs so it says scope for
+
+371
+00:13:30,000 --> 00:13:32,010
+context first off it says it cannot read
+
+372
+00:13:32,010 --> 00:13:33,960
+property bind this means that we haven't
+
+373
+00:13:33,960 --> 00:13:35,460
+defined those push and pop methods at
+
+374
+00:13:35,460 --> 00:13:39,029
+all yet so let's fix this will define a
+
+375
+00:13:39,029 --> 00:13:40,410
+push we're not even going to fill out
+
+376
+00:13:40,410 --> 00:13:42,300
+its implementation yet like all good
+
+377
+00:13:42,300 --> 00:13:43,710
+test German developers we want to make
+
+378
+00:13:43,710 --> 00:13:45,660
+sure our tests fail first and take it
+
+379
+00:13:45,660 --> 00:13:48,180
+one step at a time so now that we've got
+
+380
+00:13:48,180 --> 00:13:51,029
+push and pop we should see that some of
+
+381
+00:13:51,029 --> 00:13:52,200
+these tests look a little bit more
+
+382
+00:13:52,200 --> 00:13:54,300
+detailed now because now our setup law
+
+383
+00:13:54,300 --> 00:13:58,770
+can actually run and we have 12 tests
+
+384
+00:13:58,770 --> 00:14:01,830
+passing the first test is that the scope
+
+385
+00:14:01,830 --> 00:14:03,480
+should inherit variables from outer
+
+386
+00:14:03,480 --> 00:14:06,300
+contact sees well obviously at this
+
+387
+00:14:06,300 --> 00:14:07,620
+point we've only done global contact
+
+388
+00:14:07,620 --> 00:14:09,060
+sees so if you were to create a new
+
+389
+00:14:09,060 --> 00:14:12,240
+scope by doing a push that pushes and no
+
+390
+00:14:12,240 --> 00:14:14,040
+op so we're still in the global context
+
+391
+00:14:14,040 --> 00:14:15,570
+so of course we inherit variables from
+
+392
+00:14:15,570 --> 00:14:18,120
+outer contact seas and the last one is a
+
+393
+00:14:18,120 --> 00:14:19,620
+little bit more related to something
+
+394
+00:14:19,620 --> 00:14:21,630
+later on but will want to make sure that
+
+395
+00:14:21,630 --> 00:14:23,940
+one passes as well the first and third
+
+396
+00:14:23,940 --> 00:14:25,740
+tests are failing though it says that it
+
+397
+00:14:25,740 --> 00:14:27,450
+should be able to isolate variables from
+
+398
+00:14:27,450 --> 00:14:29,550
+outer context which means that whenever
+
+399
+00:14:29,550 --> 00:14:32,790
+we supposedly push a new context we're
+
+400
+00:14:32,790 --> 00:14:35,070
+leaking data into the external
+
+401
+00:14:35,070 --> 00:14:36,930
+environment because this at this point
+
+402
+00:14:36,930 --> 00:14:38,580
+we're only dealing with global contacts
+
+403
+00:14:38,580 --> 00:14:39,990
+sees we haven't implemented local
+
+404
+00:14:39,990 --> 00:14:41,730
+contacts ease and then the final one
+
+405
+00:14:41,730 --> 00:14:43,830
+variable shadowing this says that if we
+
+406
+00:14:43,830 --> 00:14:45,839
+have two variables of the same name that
+
+407
+00:14:45,839 --> 00:14:48,750
+if we set the variable by the same name
+
+408
+00:14:48,750 --> 00:14:50,730
+in the interscope it should not override
+
+409
+00:14:50,730 --> 00:14:52,980
+that when we go back to the outer scope
+
+410
+00:14:52,980 --> 00:14:56,640
+this is the isolation part so both of
+
+411
+00:14:56,640 --> 00:14:59,160
+these tests fail so let's go back and
+
+412
+00:14:59,160 --> 00:15:01,920
+actually make these sort of pass we're
+
+413
+00:15:01,920 --> 00:15:03,839
+going to set this dictionary which again
+
+414
+00:15:03,839 --> 00:15:05,520
+is a map from all the local variables in
+
+415
+00:15:05,520 --> 00:15:07,380
+the scope to its value and set it to a
+
+416
+00:15:07,380 --> 00:15:09,690
+brand new object and I'm going to cheat
+
+417
+00:15:09,690 --> 00:15:11,490
+here any time we go to pop of context
+
+418
+00:15:11,490 --> 00:15:12,930
+we'll just set it to a brand new object
+
+419
+00:15:12,930 --> 00:15:16,560
+as well let's see what happens now so we
+
+420
+00:15:16,560 --> 00:15:18,420
+have our first spec passing variables
+
+421
+00:15:18,420 --> 00:15:20,700
+are now isolated but we broke everything
+
+422
+00:15:20,700 --> 00:15:23,339
+else so we've taken a step backwards so
+
+423
+00:15:23,339 --> 00:15:24,810
+at this point we actually have to get
+
+424
+00:15:24,810 --> 00:15:27,209
+into the meat of this whole talk which
+
+425
+00:15:27,209 --> 00:15:28,860
+is going to be how are we going to make
+
+426
+00:15:28,860 --> 00:15:32,130
+scopes that can inherit variables from
+
+427
+00:15:32,130 --> 00:15:34,110
+other scopes because this is essentially
+
+428
+00:15:34,110 --> 00:15:36,300
+what happens enclosures a closure gets a
+
+429
+00:15:36,300 --> 00:15:37,260
+scope and that's go
+
+430
+00:15:37,260 --> 00:15:39,420
+has default values from the external
+
+431
+00:15:39,420 --> 00:15:41,610
+environment but if we go to override it
+
+432
+00:15:41,610 --> 00:15:44,100
+then we don't override the parents value
+
+433
+00:15:44,100 --> 00:15:45,660
+we actually create a new variable in
+
+434
+00:15:45,660 --> 00:15:48,810
+that scope so I use the word inheritance
+
+435
+00:15:48,810 --> 00:15:50,910
+on purpose that should trigger a certain
+
+436
+00:15:50,910 --> 00:15:52,440
+JavaScript concept in our minds and
+
+437
+00:15:52,440 --> 00:15:53,880
+here's where we get to the buzzword
+
+438
+00:15:53,880 --> 00:15:57,060
+prototypes what we want to do is we want
+
+439
+00:15:57,060 --> 00:15:59,730
+to create an object which inherits all
+
+440
+00:15:59,730 --> 00:16:01,770
+the default values from the parent scope
+
+441
+00:16:01,770 --> 00:16:04,140
+or the parent context at this point but
+
+442
+00:16:04,140 --> 00:16:05,220
+be able to override those without
+
+443
+00:16:05,220 --> 00:16:07,380
+influencing the parent the best way to
+
+444
+00:16:07,380 --> 00:16:09,540
+do this is we're going to use Douglas
+
+445
+00:16:09,540 --> 00:16:10,860
+Crockford method of prototypical
+
+446
+00:16:10,860 --> 00:16:13,650
+inheritance so whenever we go to push on
+
+447
+00:16:13,650 --> 00:16:15,330
+a new context instead of setting it to a
+
+448
+00:16:15,330 --> 00:16:17,010
+new object we are going to call a
+
+449
+00:16:17,010 --> 00:16:18,660
+mysterious method we will define called
+
+450
+00:16:18,660 --> 00:16:21,450
+fork dicked this fork dick method will
+
+451
+00:16:21,450 --> 00:16:23,430
+take the current dictionary of local
+
+452
+00:16:23,430 --> 00:16:25,650
+variables and create an object which
+
+453
+00:16:25,650 --> 00:16:27,420
+inherits from it through the prototype
+
+454
+00:16:27,420 --> 00:16:29,400
+chain which means at any time we try to
+
+455
+00:16:29,400 --> 00:16:32,130
+do a lookup for a variable of a name
+
+456
+00:16:32,130 --> 00:16:33,810
+that was in a parent context we'll get
+
+457
+00:16:33,810 --> 00:16:36,630
+it but if we try to set it then we'll
+
+458
+00:16:36,630 --> 00:16:38,760
+get a completely new variable without
+
+459
+00:16:38,760 --> 00:16:42,540
+changing the parent so now that we're
+
+460
+00:16:42,540 --> 00:16:44,310
+calling for dick we should also probably
+
+461
+00:16:44,310 --> 00:16:45,870
+do something about pop because right now
+
+462
+00:16:45,870 --> 00:16:47,760
+pop is just creating a new object the
+
+463
+00:16:47,760 --> 00:16:49,440
+way we'll get around this is we'll take
+
+464
+00:16:49,440 --> 00:16:51,060
+a look at the current dictionary and
+
+465
+00:16:51,060 --> 00:16:53,520
+then we'll keep track later on with add
+
+466
+00:16:53,520 --> 00:16:55,890
+underscore parent will see exactly what
+
+467
+00:16:55,890 --> 00:16:57,660
+that means but dunder parent is going to
+
+468
+00:16:57,660 --> 00:17:00,720
+remember the object that will existed
+
+469
+00:17:00,720 --> 00:17:03,510
+before we pushed so let's go implement
+
+470
+00:17:03,510 --> 00:17:05,640
+that method will do it as a private
+
+471
+00:17:05,640 --> 00:17:07,410
+looking method so we'll do underscore
+
+472
+00:17:07,410 --> 00:17:09,900
+for dick it'll take in no arguments and
+
+473
+00:17:09,900 --> 00:17:11,880
+at this point a lot of you may gloss
+
+474
+00:17:11,880 --> 00:17:14,520
+over or some of you may be like oh I
+
+475
+00:17:14,520 --> 00:17:16,050
+know this pattern it's Douglas Crockford
+
+476
+00:17:16,050 --> 00:17:18,000
+method of prototypical inheritance with
+
+477
+00:17:18,000 --> 00:17:20,280
+a little bit of salt thrown in so we're
+
+478
+00:17:20,280 --> 00:17:21,480
+going to create a local variable here
+
+479
+00:17:21,480 --> 00:17:22,800
+and just assign it to the current
+
+480
+00:17:22,800 --> 00:17:24,930
+dictionary of local variables and then
+
+481
+00:17:24,930 --> 00:17:26,820
+we're going to start doing the pattern
+
+482
+00:17:26,820 --> 00:17:29,250
+which is we create a donor constructor
+
+483
+00:17:29,250 --> 00:17:31,200
+function we're just using this for the
+
+484
+00:17:31,200 --> 00:17:33,270
+prototypal chain this function will
+
+485
+00:17:33,270 --> 00:17:35,310
+never actually be invoked and then we're
+
+486
+00:17:35,310 --> 00:17:37,020
+going to set the prototype property on
+
+487
+00:17:37,020 --> 00:17:39,210
+this function to do this we'll use an
+
+488
+00:17:39,210 --> 00:17:41,430
+es5 feature which is object or creates
+
+489
+00:17:41,430 --> 00:17:43,380
+this does kind of another level of
+
+490
+00:17:43,380 --> 00:17:45,120
+inheritance but you could cut this all
+
+491
+00:17:45,120 --> 00:17:47,550
+as well it's just this saves me a little
+
+492
+00:17:47,550 --> 00:17:49,740
+bit of time so let's call object i'll
+
+493
+00:17:49,740 --> 00:17:50,580
+create dick
+
+494
+00:17:50,580 --> 00:17:52,350
+we'll set the functions prototype to
+
+495
+00:17:52,350 --> 00:17:55,559
+that now we need to set a few methods on
+
+496
+00:17:55,559 --> 00:17:57,390
+the prototype let's set the constructor
+
+497
+00:17:57,390 --> 00:17:58,799
+just because we're going to be nice
+
+498
+00:17:58,799 --> 00:18:04,679
+let's see instructor equals F and then f
+
+499
+00:18:04,679 --> 00:18:06,630
+dot prototype we need a way to keep
+
+500
+00:18:06,630 --> 00:18:08,460
+track of what the previous dictionary or
+
+501
+00:18:08,460 --> 00:18:10,679
+the previous scope was so we're going to
+
+502
+00:18:10,679 --> 00:18:13,019
+set that Dunder parent variable to
+
+503
+00:18:13,019 --> 00:18:15,450
+dicked that way later on when we go to
+
+504
+00:18:15,450 --> 00:18:17,070
+pop we can go back to the previous
+
+505
+00:18:17,070 --> 00:18:20,309
+context and then to finish off Douglas
+
+506
+00:18:20,309 --> 00:18:21,600
+Crawford's pattern we just need to
+
+507
+00:18:21,600 --> 00:18:23,700
+return a function created by that
+
+508
+00:18:23,700 --> 00:18:26,519
+constructor so that was quite a lot
+
+509
+00:18:26,519 --> 00:18:27,720
+happening let's see if this actually
+
+510
+00:18:27,720 --> 00:18:31,590
+works which is why we have specs yes so
+
+511
+00:18:31,590 --> 00:18:33,630
+now we have our scope object and it
+
+512
+00:18:33,630 --> 00:18:35,490
+works like local contact sees kind of
+
+513
+00:18:35,490 --> 00:18:37,470
+like in the graphics idea a push and pop
+
+514
+00:18:37,470 --> 00:18:40,500
+now nowhere in your JavaScript code do
+
+515
+00:18:40,500 --> 00:18:42,539
+you see calls to push and pop you see
+
+516
+00:18:42,539 --> 00:18:44,970
+functions being created so now we're
+
+517
+00:18:44,970 --> 00:18:47,010
+going to actually implement that f
+
+518
+00:18:47,010 --> 00:18:48,690
+function we saw in the slides earlier
+
+519
+00:18:48,690 --> 00:18:50,789
+which will create a function expression
+
+520
+00:18:50,789 --> 00:18:52,860
+and assign it to a local variable so
+
+521
+00:18:52,860 --> 00:18:55,409
+let's go to our next set of specs will
+
+522
+00:18:55,409 --> 00:18:57,960
+disable those for now and we'll go down
+
+523
+00:18:57,960 --> 00:19:01,019
+to the next set just down here will call
+
+524
+00:19:01,019 --> 00:19:02,880
+these wolf call scopes that act like
+
+525
+00:19:02,880 --> 00:19:05,760
+this nested if ease so nested-if is if
+
+526
+00:19:05,760 --> 00:19:07,080
+you think about it our whole lot like
+
+527
+00:19:07,080 --> 00:19:09,059
+calling push and pop whenever you enter
+
+528
+00:19:09,059 --> 00:19:11,309
+a function you immediately get a new
+
+529
+00:19:11,309 --> 00:19:13,139
+scope which inherits from its previous
+
+530
+00:19:13,139 --> 00:19:15,149
+scope and as soon as you finish
+
+531
+00:19:15,149 --> 00:19:16,889
+executing that function and pop up the
+
+532
+00:19:16,889 --> 00:19:19,620
+stack then you get the previous scope
+
+533
+00:19:19,620 --> 00:19:22,080
+and that's like calling pop so in this
+
+534
+00:19:22,080 --> 00:19:23,669
+case we just want to use nicer syntax
+
+535
+00:19:23,669 --> 00:19:25,230
+notice that we found rid of push and pop
+
+536
+00:19:25,230 --> 00:19:28,529
+and we just have s G and F F is going to
+
+537
+00:19:28,529 --> 00:19:30,210
+be a new helper will write called funk
+
+538
+00:19:30,210 --> 00:19:32,220
+and then we have a bunch of specs
+
+539
+00:19:32,220 --> 00:19:33,929
+describing how this should work let's
+
+540
+00:19:33,929 --> 00:19:35,279
+see if this even works to begin with
+
+541
+00:19:35,279 --> 00:19:37,529
+well not at all it says cannot read
+
+542
+00:19:37,529 --> 00:19:39,090
+property bind we haven't even written
+
+543
+00:19:39,090 --> 00:19:41,490
+the funk helper so let's go give this a
+
+544
+00:19:41,490 --> 00:19:47,519
+try so recall that the funk helper or F
+
+545
+00:19:47,519 --> 00:19:50,340
+for the shorthand is supposed to take in
+
+546
+00:19:50,340 --> 00:19:51,750
+the name of the local variable to which
+
+547
+00:19:51,750 --> 00:19:53,340
+we want to assign this new function
+
+548
+00:19:53,340 --> 00:19:55,260
+expression it takes in a list of the
+
+549
+00:19:55,260 --> 00:19:56,880
+parameters by name that normally we
+
+550
+00:19:56,880 --> 00:19:58,260
+would put in the function and then in
+
+551
+00:19:58,260 --> 00:20:00,029
+between the parentheses and then it
+
+552
+00:20:00,029 --> 00:20:01,830
+takes that amnesic function body i'm
+
+553
+00:20:01,830 --> 00:20:03,570
+going to call it body here just so it's
+
+554
+00:20:03,570 --> 00:20:04,470
+obvious
+
+555
+00:20:04,470 --> 00:20:06,299
+that it doesn't have any memory of
+
+556
+00:20:06,299 --> 00:20:08,640
+anything else we're basically just using
+
+557
+00:20:08,640 --> 00:20:11,159
+functions as a way to get some code into
+
+558
+00:20:11,159 --> 00:20:12,450
+this environment but it doesn't remember
+
+559
+00:20:12,450 --> 00:20:14,250
+anything about its environment or where
+
+560
+00:20:14,250 --> 00:20:16,590
+it was created as it pertains to the
+
+561
+00:20:16,590 --> 00:20:19,409
+native scoping mechanism so in here only
+
+562
+00:20:19,409 --> 00:20:21,539
+to do a few things first off I know I'm
+
+563
+00:20:21,539 --> 00:20:22,770
+going to need to save the value of this
+
+564
+00:20:22,770 --> 00:20:24,419
+because we're going to call some methods
+
+565
+00:20:24,419 --> 00:20:27,720
+and then what I want to do is I want to
+
+566
+00:20:27,720 --> 00:20:29,610
+expose this function that's being
+
+567
+00:20:29,610 --> 00:20:32,039
+created as a local variable so I'm
+
+568
+00:20:32,039 --> 00:20:34,500
+calling this set and I'll set it to the
+
+569
+00:20:34,500 --> 00:20:36,990
+name that was passed in and then I'm
+
+570
+00:20:36,990 --> 00:20:38,940
+going to pass it in the function that I
+
+571
+00:20:38,940 --> 00:20:41,220
+want to set this local variable to now I
+
+572
+00:20:41,220 --> 00:20:43,409
+can't just pass in body if I pass in
+
+573
+00:20:43,409 --> 00:20:45,780
+body at this point body doesn't even
+
+574
+00:20:45,780 --> 00:20:47,400
+Remember Who its parameters are it
+
+575
+00:20:47,400 --> 00:20:48,539
+doesn't remember anything about its
+
+576
+00:20:48,539 --> 00:20:50,220
+scope what I really need to be able to
+
+577
+00:20:50,220 --> 00:20:51,809
+do is do a little bit of setup
+
+578
+00:20:51,809 --> 00:20:53,880
+functionality first in a wrapper
+
+579
+00:20:53,880 --> 00:20:55,799
+function and have that wrapper function
+
+580
+00:20:55,799 --> 00:20:58,590
+then call our amnesic function body so
+
+581
+00:20:58,590 --> 00:21:00,150
+will do exactly that will create a
+
+582
+00:21:00,150 --> 00:21:02,490
+function wrapper and in here we're going
+
+583
+00:21:02,490 --> 00:21:04,289
+to need to do a few things first off we
+
+584
+00:21:04,289 --> 00:21:06,210
+know we'll need to invoke body because
+
+585
+00:21:06,210 --> 00:21:07,830
+otherwise our code would never get run
+
+586
+00:21:07,830 --> 00:21:09,840
+but then we also need to deal with the
+
+587
+00:21:09,840 --> 00:21:11,940
+contacts sees we need to call push to
+
+588
+00:21:11,940 --> 00:21:14,580
+get a new workspace and then just below
+
+589
+00:21:14,580 --> 00:21:17,070
+it we need to do a pop now for this to
+
+590
+00:21:17,070 --> 00:21:18,630
+be really useful we need return values
+
+591
+00:21:18,630 --> 00:21:20,220
+so we're going to save off whatever the
+
+592
+00:21:20,220 --> 00:21:22,679
+body returned and at the very end return
+
+593
+00:21:22,679 --> 00:21:25,620
+that result this is pretty much it
+
+594
+00:21:25,620 --> 00:21:27,299
+there's one last thing we haven't done
+
+595
+00:21:27,299 --> 00:21:29,429
+though which is params notice we're not
+
+596
+00:21:29,429 --> 00:21:31,890
+using it anywhere params gives us that
+
+597
+00:21:31,890 --> 00:21:34,770
+list of local variables which get passed
+
+598
+00:21:34,770 --> 00:21:37,440
+into a function that's essentially
+
+599
+00:21:37,440 --> 00:21:38,490
+function parameters are just a
+
+600
+00:21:38,490 --> 00:21:41,400
+convenience on top of it well we want
+
+601
+00:21:41,400 --> 00:21:43,200
+that convenience so what we'd like to do
+
+602
+00:21:43,200 --> 00:21:45,090
+is after we've gotten a brand new
+
+603
+00:21:45,090 --> 00:21:47,400
+context we want to go over every
+
+604
+00:21:47,400 --> 00:21:49,530
+parameter and look in the JavaScript
+
+605
+00:21:49,530 --> 00:21:51,270
+arguments object that was passed into
+
+606
+00:21:51,270 --> 00:21:53,970
+this function rapper oops let's go back
+
+607
+00:21:53,970 --> 00:21:56,309
+where we were we want to set every
+
+608
+00:21:56,309 --> 00:21:58,080
+single local variable in this new scope
+
+609
+00:21:58,080 --> 00:21:59,820
+to all the values that were passing as
+
+610
+00:21:59,820 --> 00:22:01,380
+parameters that's going to be a lot of
+
+611
+00:22:01,380 --> 00:22:02,700
+code to type here though so I'm going to
+
+612
+00:22:02,700 --> 00:22:04,289
+create a little funk a little helper
+
+613
+00:22:04,289 --> 00:22:05,909
+this helper will take in an array of
+
+614
+00:22:05,909 --> 00:22:07,830
+params and a corresponding array of
+
+615
+00:22:07,830 --> 00:22:09,780
+parameter values which is going to be
+
+616
+00:22:09,780 --> 00:22:11,490
+arguments and I'm going to use the
+
+617
+00:22:11,490 --> 00:22:13,080
+arguments object here that JavaScript
+
+618
+00:22:13,080 --> 00:22:15,419
+provides to every function very
+
+619
+00:22:15,419 --> 00:22:17,220
+performant I assure you let's go a
+
+620
+00:22:17,220 --> 00:22:18,179
+little bit further
+
+621
+00:22:18,179 --> 00:22:20,940
+and let's go implement this arts helper
+
+622
+00:22:20,940 --> 00:22:24,330
+so we'll do proto scope args and it
+
+623
+00:22:24,330 --> 00:22:25,919
+takes in the names of local variables
+
+624
+00:22:25,919 --> 00:22:28,740
+along with their values and this is just
+
+625
+00:22:28,740 --> 00:22:30,539
+essentially a mass assignment operation
+
+626
+00:22:30,539 --> 00:22:32,039
+so we're just going to for loop over all
+
+627
+00:22:32,039 --> 00:22:35,730
+the names and then we're going to call
+
+628
+00:22:35,730 --> 00:22:37,350
+this thought set for every single one of
+
+629
+00:22:37,350 --> 00:22:41,720
+them so I'll names I and then values I
+
+630
+00:22:41,720 --> 00:22:44,070
+that was a lot of typing let's see if
+
+631
+00:22:44,070 --> 00:22:48,720
+any of this works it passes so now we
+
+632
+00:22:48,720 --> 00:22:51,149
+have our closure implementation working
+
+633
+00:22:51,149 --> 00:22:55,139
+whenever we build nested-if ease but we
+
+634
+00:22:55,139 --> 00:22:57,029
+have one last class and this is probably
+
+635
+00:22:57,029 --> 00:22:58,440
+the hardest class to deal with because
+
+636
+00:22:58,440 --> 00:22:59,879
+it will completely change our code and
+
+637
+00:22:59,879 --> 00:23:03,090
+break all of our assumptions so let's go
+
+638
+00:23:03,090 --> 00:23:06,679
+down here to the bottom to the last set
+
+639
+00:23:06,679 --> 00:23:08,700
+now if you look in here we've got the
+
+640
+00:23:08,700 --> 00:23:10,289
+same SF and G but you'll notice that
+
+641
+00:23:10,289 --> 00:23:13,169
+example that I wrote earlier which is
+
+642
+00:23:13,169 --> 00:23:15,360
+we're doing in outer function which
+
+643
+00:23:15,360 --> 00:23:16,529
+returns an inner function which returns
+
+644
+00:23:16,529 --> 00:23:19,320
+the values of x y and z and then we
+
+645
+00:23:19,320 --> 00:23:22,289
+invoke that function outside of its
+
+646
+00:23:22,289 --> 00:23:24,029
+definition contacts this is where
+
+647
+00:23:24,029 --> 00:23:26,309
+JavaScript's idea of closures becomes
+
+648
+00:23:26,309 --> 00:23:28,529
+very powerful is a closure remembers its
+
+649
+00:23:28,529 --> 00:23:30,960
+definition time scope not at execution
+
+650
+00:23:30,960 --> 00:23:36,299
+scope so let's see if this runs it says
+
+651
+00:23:36,299 --> 00:23:38,580
+it fails it says that it expected to get
+
+652
+00:23:38,580 --> 00:23:41,909
+3 comma 2 comma 4 but instead it got
+
+653
+00:23:41,909 --> 00:23:45,210
+three undefined for so this means that
+
+654
+00:23:45,210 --> 00:23:48,029
+somewhere we were accessing a scope we
+
+655
+00:23:48,029 --> 00:23:49,860
+didn't expect at least if we were
+
+656
+00:23:49,860 --> 00:23:51,389
+thinking this as regular JavaScript in
+
+657
+00:23:51,389 --> 00:23:54,240
+fact we made this error earlier if we go
+
+658
+00:23:54,240 --> 00:23:57,360
+back to funk look at where this dot push
+
+659
+00:23:57,360 --> 00:23:59,580
+is being called we're calling it inside
+
+660
+00:23:59,580 --> 00:24:01,409
+the function wrapper which means that
+
+661
+00:24:01,409 --> 00:24:03,960
+we're calling this stop push at the same
+
+662
+00:24:03,960 --> 00:24:07,169
+time we invoke this body not at the time
+
+663
+00:24:07,169 --> 00:24:09,389
+we define this function well recall that
+
+664
+00:24:09,389 --> 00:24:11,190
+this stop push is going to look at the
+
+665
+00:24:11,190 --> 00:24:14,909
+current scope and pork off of it so this
+
+666
+00:24:14,909 --> 00:24:16,980
+means that we're not actually keeping
+
+667
+00:24:16,980 --> 00:24:19,259
+track of the scope from when this
+
+668
+00:24:19,259 --> 00:24:20,970
+function was defined we're actually
+
+669
+00:24:20,970 --> 00:24:22,919
+looking at the scope and forking off of
+
+670
+00:24:22,919 --> 00:24:24,539
+it at the time the function is invoked
+
+671
+00:24:24,539 --> 00:24:26,519
+this is not at all how javascript
+
+672
+00:24:26,519 --> 00:24:28,980
+closures work in javascript it's based
+
+673
+00:24:28,980 --> 00:24:31,190
+on where you define the function
+
+674
+00:24:31,190 --> 00:24:34,250
+not where it's executed so to fix this
+
+675
+00:24:34,250 --> 00:24:36,590
+we kind of the this stop push statement
+
+676
+00:24:36,590 --> 00:24:38,540
+up a level we need to move it to the
+
+677
+00:24:38,540 --> 00:24:40,250
+time that we call our helper to define
+
+678
+00:24:40,250 --> 00:24:41,960
+this function but that's not quite it
+
+679
+00:24:41,960 --> 00:24:43,340
+either because as soon as we call this
+
+680
+00:24:43,340 --> 00:24:45,800
+not push it will change scope and we
+
+681
+00:24:45,800 --> 00:24:47,480
+don't want to change scope until we
+
+682
+00:24:47,480 --> 00:24:49,370
+actually execute the code so what we
+
+683
+00:24:49,370 --> 00:24:51,260
+really need is a way to keep track of
+
+684
+00:24:51,260 --> 00:24:53,810
+what the current scope is at the time
+
+685
+00:24:53,810 --> 00:24:56,480
+we're defining this function pre fork it
+
+686
+00:24:56,480 --> 00:24:58,850
+and then let that rest for a while you
+
+687
+00:24:58,850 --> 00:25:00,200
+need to save it off somewhere so that
+
+688
+00:25:00,200 --> 00:25:01,910
+way when this function does it get
+
+689
+00:25:01,910 --> 00:25:04,520
+executed it can resurrect that scope by
+
+690
+00:25:04,520 --> 00:25:08,300
+doing a scope push well let's just a
+
+691
+00:25:08,300 --> 00:25:10,400
+pseudocode this for a little bit will do
+
+692
+00:25:10,400 --> 00:25:13,130
+this and we'll suppose that we have some
+
+693
+00:25:13,130 --> 00:25:14,720
+way to get the scope for the current
+
+694
+00:25:14,720 --> 00:25:19,400
+closure and assuming that we get that
+
+695
+00:25:19,400 --> 00:25:21,200
+scope back which is going to be a scope
+
+696
+00:25:21,200 --> 00:25:23,150
+object will do fork which is just going
+
+697
+00:25:23,150 --> 00:25:25,550
+to be an inheritance now does anyone
+
+698
+00:25:25,550 --> 00:25:26,990
+start to feel a little bit uncomfortable
+
+699
+00:25:26,990 --> 00:25:29,900
+we're at 50 lines of code we don't have
+
+700
+00:25:29,900 --> 00:25:32,120
+this actually working yet and we have a
+
+701
+00:25:32,120 --> 00:25:33,650
+lot of functionality in this one scope
+
+702
+00:25:33,650 --> 00:25:36,200
+class or revealing module pattern if you
+
+703
+00:25:36,200 --> 00:25:38,690
+prefer this makes me uncomfortable we
+
+704
+00:25:38,690 --> 00:25:40,040
+have the idea of a scope which is
+
+705
+00:25:40,040 --> 00:25:42,680
+supposed to represent just one scope but
+
+706
+00:25:42,680 --> 00:25:43,940
+somehow we're supposed to keep track of
+
+707
+00:25:43,940 --> 00:25:45,740
+all the Scopes in memory so we can
+
+708
+00:25:45,740 --> 00:25:47,420
+assign it to functions that sounds more
+
+709
+00:25:47,420 --> 00:25:50,390
+like we need another class maybe so in
+
+710
+00:25:50,390 --> 00:25:53,170
+fact let's do that back in our tests I
+
+711
+00:25:53,170 --> 00:25:56,060
+preemptively did this we're going to
+
+712
+00:25:56,060 --> 00:25:58,250
+create a closure registry this closure
+
+713
+00:25:58,250 --> 00:26:00,110
+registry is going to keep track of all
+
+714
+00:26:00,110 --> 00:26:01,970
+the scope objects we create any time we
+
+715
+00:26:01,970 --> 00:26:04,520
+do a function it will collaborate with
+
+716
+00:26:04,520 --> 00:26:07,190
+all these different objects so at the
+
+717
+00:26:07,190 --> 00:26:10,100
+very top of our current file we're going
+
+718
+00:26:10,100 --> 00:26:11,870
+to create a closure regístrate will use
+
+719
+00:26:11,870 --> 00:26:16,370
+the same revealing model pattern so we
+
+720
+00:26:16,370 --> 00:26:18,520
+need to return the closure registry and
+
+721
+00:26:18,520 --> 00:26:21,400
+then we need to create our constructor
+
+722
+00:26:21,400 --> 00:26:23,510
+now this constructor won't take in
+
+723
+00:26:23,510 --> 00:26:25,430
+anything right now but it does need to
+
+724
+00:26:25,430 --> 00:26:28,340
+keep a registry this registry is going
+
+725
+00:26:28,340 --> 00:26:30,950
+to be essentially the entire environment
+
+726
+00:26:30,950 --> 00:26:33,110
+of our JavaScript runtime it's going to
+
+727
+00:26:33,110 --> 00:26:35,270
+map from all of the current functions
+
+728
+00:26:35,270 --> 00:26:36,650
+that have been created to their
+
+729
+00:26:36,650 --> 00:26:38,720
+corresponding scope some of you are
+
+730
+00:26:38,720 --> 00:26:39,800
+already thinking how are we going to do
+
+731
+00:26:39,800 --> 00:26:41,510
+that you can't use a function as a key
+
+732
+00:26:41,510 --> 00:26:44,270
+into a variable bear with me so we'll
+
+733
+00:26:44,270 --> 00:26:45,030
+set this up
+
+734
+00:26:45,030 --> 00:26:46,560
+and we'll need a way to keep track of
+
+735
+00:26:46,560 --> 00:26:48,800
+what closure is currently executing
+
+736
+00:26:48,800 --> 00:26:52,680
+we'll see just why in a moment so now we
+
+737
+00:26:52,680 --> 00:26:54,360
+can start moving some functionality
+
+738
+00:26:54,360 --> 00:26:57,090
+around push pop and funk really don't
+
+739
+00:26:57,090 --> 00:26:58,710
+belong here they really belong in a
+
+740
+00:26:58,710 --> 00:27:00,240
+closure registry because they all deal
+
+741
+00:27:00,240 --> 00:27:04,410
+with creating new scopes so let's put
+
+742
+00:27:04,410 --> 00:27:06,780
+that up here we don't really know how
+
+743
+00:27:06,780 --> 00:27:08,160
+push and pop are going to work in this
+
+744
+00:27:08,160 --> 00:27:11,400
+new context yet but we do know how the
+
+745
+00:27:11,400 --> 00:27:13,170
+function helper is going to work we'll
+
+746
+00:27:13,170 --> 00:27:14,580
+just change this out so its closure
+
+747
+00:27:14,580 --> 00:27:17,820
+registry and what we would like to do is
+
+748
+00:27:17,820 --> 00:27:20,040
+to implement this scope for current
+
+749
+00:27:20,040 --> 00:27:22,530
+closure method and then when we call
+
+750
+00:27:22,530 --> 00:27:24,780
+push instead of letting it fork off a
+
+751
+00:27:24,780 --> 00:27:27,210
+new scope at runtime we're going to pass
+
+752
+00:27:27,210 --> 00:27:29,190
+it in now some of you may be thinking
+
+753
+00:27:29,190 --> 00:27:31,200
+he's cheating he's using local variables
+
+754
+00:27:31,200 --> 00:27:33,120
+yes you can use local variables in the
+
+755
+00:27:33,120 --> 00:27:35,010
+implementation just not in your
+
+756
+00:27:35,010 --> 00:27:37,320
+consuming code that would be quite a bit
+
+757
+00:27:37,320 --> 00:27:39,360
+more difficult admittedly if not
+
+758
+00:27:39,360 --> 00:27:41,730
+impossible i have yet to explore that so
+
+759
+00:27:41,730 --> 00:27:44,040
+when we call this stop push will push in
+
+760
+00:27:44,040 --> 00:27:45,740
+that scope that we calculated at
+
+761
+00:27:45,740 --> 00:27:47,760
+definition time when we call the f
+
+762
+00:27:47,760 --> 00:27:51,240
+helper so we've got quite a few things
+
+763
+00:27:51,240 --> 00:27:52,770
+we don't really know about we don't know
+
+764
+00:27:52,770 --> 00:27:54,840
+how we're going to implement this scope
+
+765
+00:27:54,840 --> 00:27:58,050
+for a current closure we don't really
+
+766
+00:27:58,050 --> 00:28:00,150
+know how that's going to work yet and we
+
+767
+00:28:00,150 --> 00:28:01,560
+don't know how push and pop are going to
+
+768
+00:28:01,560 --> 00:28:04,650
+work so now is where we get a chance to
+
+769
+00:28:04,650 --> 00:28:07,050
+make a fun little observation whenever
+
+770
+00:28:07,050 --> 00:28:08,760
+our javascript is executing there's only
+
+771
+00:28:08,760 --> 00:28:11,490
+one scope active at any given time this
+
+772
+00:28:11,490 --> 00:28:13,230
+is a single threaded language so
+
+773
+00:28:13,230 --> 00:28:15,480
+whenever we enter a function we are
+
+774
+00:28:15,480 --> 00:28:19,020
+using the scope for that function seems
+
+775
+00:28:19,020 --> 00:28:21,090
+pretty simple so that means that
+
+776
+00:28:21,090 --> 00:28:24,330
+whenever we start a new function we push
+
+777
+00:28:24,330 --> 00:28:26,400
+on the active scope kind of like
+
+778
+00:28:26,400 --> 00:28:27,960
+contacts ease and as soon as that
+
+779
+00:28:27,960 --> 00:28:30,630
+function finishes we pop it off what do
+
+780
+00:28:30,630 --> 00:28:33,150
+we pop off back to whatever the previous
+
+781
+00:28:33,150 --> 00:28:34,830
+function was that called this function
+
+782
+00:28:34,830 --> 00:28:36,630
+we can guarantee this because we no
+
+783
+00:28:36,630 --> 00:28:38,400
+longer let people arbitrarily call push
+
+784
+00:28:38,400 --> 00:28:40,620
+and pop we always ensure that every
+
+785
+00:28:40,620 --> 00:28:42,240
+function calls push at the beginning and
+
+786
+00:28:42,240 --> 00:28:44,700
+pop at the end that means that we
+
+787
+00:28:44,700 --> 00:28:46,460
+actually don't need to keep track of
+
+788
+00:28:46,460 --> 00:28:48,750
+every function we've ever created and
+
+789
+00:28:48,750 --> 00:28:51,120
+map it to a scope we really just need a
+
+790
+00:28:51,120 --> 00:28:53,520
+stack of scopes so I'm going to turn
+
+791
+00:28:53,520 --> 00:28:55,830
+registry into an object or excuse me
+
+792
+00:28:55,830 --> 00:28:58,470
+into an array and this array is going
+
+793
+00:28:58,470 --> 00:29:00,240
+to keep track of what the current scope
+
+794
+00:29:00,240 --> 00:29:03,480
+is and all previous scopes at execution
+
+795
+00:29:03,480 --> 00:29:06,780
+time so that actually makes some of this
+
+796
+00:29:06,780 --> 00:29:09,480
+code a lot easier for example we know
+
+797
+00:29:09,480 --> 00:29:12,630
+that with a stack the current item is
+
+798
+00:29:12,630 --> 00:29:14,940
+going to be the last item so we'll just
+
+799
+00:29:14,940 --> 00:29:17,640
+index into whatever the current scope is
+
+800
+00:29:17,640 --> 00:29:19,799
+we'll look at the last item on top and
+
+801
+00:29:19,799 --> 00:29:22,230
+return it so now we have scope for
+
+802
+00:29:22,230 --> 00:29:24,720
+current closure defined now maybe we can
+
+803
+00:29:24,720 --> 00:29:26,880
+go right these push and pop methods
+
+804
+00:29:26,880 --> 00:29:29,340
+because push and pop will need to push a
+
+805
+00:29:29,340 --> 00:29:33,120
+brand new scope at execution time so
+
+806
+00:29:33,120 --> 00:29:35,850
+nowadays push is going to be taking in
+
+807
+00:29:35,850 --> 00:29:38,159
+the exact scope so we actually don't
+
+808
+00:29:38,159 --> 00:29:39,600
+need all this complicated fort dick
+
+809
+00:29:39,600 --> 00:29:42,059
+logic that's all going to be below and
+
+810
+00:29:42,059 --> 00:29:44,460
+we don't really need pop you know
+
+811
+00:29:44,460 --> 00:29:46,559
+someone might recognize these method
+
+812
+00:29:46,559 --> 00:29:48,390
+names and notice that I kind of saved us
+
+813
+00:29:48,390 --> 00:29:50,370
+a step push and pop these are methods on
+
+814
+00:29:50,370 --> 00:29:52,080
+a standard JavaScript array and they do
+
+815
+00:29:52,080 --> 00:29:54,059
+exactly the same thing as what we've
+
+816
+00:29:54,059 --> 00:29:56,190
+written here except that push pit takes
+
+817
+00:29:56,190 --> 00:29:59,640
+in an item to push so we could write all
+
+818
+00:29:59,640 --> 00:30:00,840
+these out in to be a lot of boilerplate
+
+819
+00:30:00,840 --> 00:30:02,909
+code but we can actually save ourselves
+
+820
+00:30:02,909 --> 00:30:04,950
+a few steps I've written a little helper
+
+821
+00:30:04,950 --> 00:30:06,450
+you can go check out the repo which i'll
+
+822
+00:30:06,450 --> 00:30:08,760
+post up later which is called delegate
+
+823
+00:30:08,760 --> 00:30:11,190
+it takes in a list of functions that
+
+824
+00:30:11,190 --> 00:30:12,750
+we'd like to create on the closure
+
+825
+00:30:12,750 --> 00:30:15,809
+registry prototype so that excuse me not
+
+826
+00:30:15,809 --> 00:30:22,470
+get set push and pop and then it takes
+
+827
+00:30:22,470 --> 00:30:24,780
+in a few other arguments it lets us say
+
+828
+00:30:24,780 --> 00:30:27,299
+we're to create these functions so i'm
+
+829
+00:30:27,299 --> 00:30:29,940
+going to say on the closure registry
+
+830
+00:30:29,940 --> 00:30:32,039
+prototype so it's just going to add
+
+831
+00:30:32,039 --> 00:30:34,679
+these and then I want it to delegate any
+
+832
+00:30:34,679 --> 00:30:37,049
+calls to those straight on to whatever
+
+833
+00:30:37,049 --> 00:30:38,820
+the current closure excuse me to
+
+834
+00:30:38,820 --> 00:30:40,890
+whatever the current scope is so call
+
+835
+00:30:40,890 --> 00:30:44,370
+this dot scope for current closure and
+
+836
+00:30:44,370 --> 00:30:46,710
+return that so again delegate is
+
+837
+00:30:46,710 --> 00:30:48,299
+basically just creating push and pop
+
+838
+00:30:48,299 --> 00:30:50,159
+methods for us on the closure registry
+
+839
+00:30:50,159 --> 00:30:51,900
+prototype but it just delegates to
+
+840
+00:30:51,900 --> 00:30:53,940
+whatever the current scope is which is
+
+841
+00:30:53,940 --> 00:30:56,520
+what is on top of the registry now
+
+842
+00:30:56,520 --> 00:30:57,720
+there's one other thing we haven't done
+
+843
+00:30:57,720 --> 00:30:59,400
+here we're still in our funk
+
+844
+00:30:59,400 --> 00:31:01,500
+implementation we're calling set and
+
+845
+00:31:01,500 --> 00:31:04,620
+args we're calling it on this which is
+
+846
+00:31:04,620 --> 00:31:06,419
+the closure registry it doesn't actually
+
+847
+00:31:06,419 --> 00:31:08,309
+have access to these methods yet they're
+
+848
+00:31:08,309 --> 00:31:10,470
+back on the scope well instead of
+
+849
+00:31:10,470 --> 00:31:11,970
+copying those over
+
+850
+00:31:11,970 --> 00:31:13,350
+be running an implementation here i'm
+
+851
+00:31:13,350 --> 00:31:14,760
+going to make use of my little delegate
+
+852
+00:31:14,760 --> 00:31:17,220
+helper again i'm going to delegate any
+
+853
+00:31:17,220 --> 00:31:23,100
+calls to get set and args straight on to
+
+854
+00:31:23,100 --> 00:31:27,840
+the registry and that should work so now
+
+855
+00:31:27,840 --> 00:31:29,850
+whenever someone in close your registry
+
+856
+00:31:29,850 --> 00:31:31,950
+tries to call get set or args it'll just
+
+857
+00:31:31,950 --> 00:31:33,570
+Selig eight straight on to whatever the
+
+858
+00:31:33,570 --> 00:31:38,040
+current closure is so this looks really
+
+859
+00:31:38,040 --> 00:31:41,540
+really close let's see if it runs now
+
+860
+00:31:41,540 --> 00:31:43,890
+cannot read property fork of undefined
+
+861
+00:31:43,890 --> 00:31:45,900
+well we had one other thing we forgot to
+
+862
+00:31:45,900 --> 00:31:47,970
+do so this means that scope for current
+
+863
+00:31:47,970 --> 00:31:49,680
+closure is at some point returning
+
+864
+00:31:49,680 --> 00:31:51,510
+undefined when we invoke it we don't
+
+865
+00:31:51,510 --> 00:31:53,100
+want that that's going to be problematic
+
+866
+00:31:53,100 --> 00:31:55,620
+that's because we start out our idea of
+
+867
+00:31:55,620 --> 00:31:58,440
+scopes and closures without a global
+
+868
+00:31:58,440 --> 00:32:00,960
+scope notice that the registry stack
+
+869
+00:32:00,960 --> 00:32:02,970
+step starts out empty what we need to
+
+870
+00:32:02,970 --> 00:32:05,190
+fix that all we need to do then is a day
+
+871
+00:32:05,190 --> 00:32:07,050
+starting condition which is going to be
+
+872
+00:32:07,050 --> 00:32:09,420
+to create a brand new scope and this is
+
+873
+00:32:09,420 --> 00:32:11,940
+going to be our global scope just to
+
+874
+00:32:11,940 --> 00:32:13,950
+start things off so we have a place to
+
+875
+00:32:13,950 --> 00:32:15,450
+attach all these function bodies later
+
+876
+00:32:15,450 --> 00:32:17,700
+on so we look really close to being done
+
+877
+00:32:17,700 --> 00:32:20,070
+but well we kind of reference this fork
+
+878
+00:32:20,070 --> 00:32:21,540
+function without defining it somehow I
+
+879
+00:32:21,540 --> 00:32:23,460
+think that's going to be problematic so
+
+880
+00:32:23,460 --> 00:32:24,930
+let's go on a little bit further and
+
+881
+00:32:24,930 --> 00:32:27,510
+just write this last method scope for
+
+882
+00:32:27,510 --> 00:32:29,670
+takes in no arguments and all it will do
+
+883
+00:32:29,670 --> 00:32:31,290
+is it's going to create a brand new
+
+884
+00:32:31,290 --> 00:32:33,180
+scope object so it is a constructor
+
+885
+00:32:33,180 --> 00:32:37,950
+absorbs and initialize it to a
+
+886
+00:32:37,950 --> 00:32:40,560
+dictionary using fork dicked so this
+
+887
+00:32:40,560 --> 00:32:42,840
+just returns a brand new scope object
+
+888
+00:32:42,840 --> 00:32:45,210
+whose dictionary of local variables
+
+889
+00:32:45,210 --> 00:32:48,840
+inherits from this current scope but of
+
+890
+00:32:48,840 --> 00:32:50,370
+course our scope instructor doesn't take
+
+891
+00:32:50,370 --> 00:32:52,770
+in a default dictionary so we'll have to
+
+892
+00:32:52,770 --> 00:32:53,970
+do something like this so it can be
+
+893
+00:32:53,970 --> 00:32:56,160
+taken in that was a lot of code let's
+
+894
+00:32:56,160 --> 00:33:03,000
+see if it works nope not quite yet let's
+
+895
+00:33:03,000 --> 00:33:06,030
+see what we did wrong this dot
+
+896
+00:33:06,030 --> 00:33:12,930
+underscore registry dot length thank you
+
+897
+00:33:12,940 --> 00:33:14,900
+alright let's see what's going on now
+
+898
+00:33:14,900 --> 00:33:17,330
+cannot read property apply of undefined
+
+899
+00:33:17,330 --> 00:33:21,020
+let's see where our other issue is no
+
+900
+00:33:21,020 --> 00:33:24,260
+changes there do this Scott registry
+
+901
+00:33:24,260 --> 00:33:27,920
+that looks correct let's go for current
+
+902
+00:33:27,920 --> 00:33:31,640
+closure that looks fine when in doubt
+
+903
+00:33:31,640 --> 00:33:44,180
+check get
+
+904
+00:33:44,190 --> 00:33:47,190
+there's the issue
+
+905
+00:33:47,200 --> 00:33:55,840
+I swap these up a little bit
+
+906
+00:33:55,850 --> 00:33:59,480
+it runs so in let's see how many lines
+
+907
+00:33:59,480 --> 00:34:04,400
+of code this was 68 lines of code so in
+
+908
+00:34:04,400 --> 00:34:07,460
+less than 70 in 68 lines of code and you
+
+909
+00:34:07,460 --> 00:34:09,590
+can actually trim this down to 67 we
+
+910
+00:34:09,590 --> 00:34:11,090
+have our own implementation of local
+
+911
+00:34:11,090 --> 00:34:13,700
+variables enclosures in JavaScript so
+
+912
+00:34:13,700 --> 00:34:15,980
+you too can do this now some of you may
+
+913
+00:34:15,980 --> 00:34:18,230
+be asking can I actually use this where
+
+914
+00:34:18,230 --> 00:34:19,639
+would I go to use this and how can I
+
+915
+00:34:19,639 --> 00:34:21,679
+mass convert all my code over to use
+
+916
+00:34:21,679 --> 00:34:23,179
+this much more performant version of
+
+917
+00:34:23,179 --> 00:34:25,159
+closures well there's a transpiler for
+
+918
+00:34:25,159 --> 00:34:27,800
+it go to github github.com / nibbler
+
+919
+00:34:27,800 --> 00:34:30,980
+that's six continents / closures and you
+
+920
+00:34:30,980 --> 00:34:33,470
+can go try this particular demo online
+
+921
+00:34:33,470 --> 00:34:35,330
+where you drop in any code that use
+
+922
+00:34:35,330 --> 00:34:37,220
+variable assignments and lookups or
+
+923
+00:34:37,220 --> 00:34:38,750
+function assignments and we'll convert
+
+924
+00:34:38,750 --> 00:34:41,090
+it over to the appropriate code which
+
+925
+00:34:41,090 --> 00:34:43,850
+uses f SN g yes this is a transpiler it
+
+926
+00:34:43,850 --> 00:34:46,340
+is not doing regular expression math
+
+927
+00:34:46,340 --> 00:34:48,500
+substitutions so this should generate
+
+928
+00:34:48,500 --> 00:34:50,690
+usable code if you don't hit any of the
+
+929
+00:34:50,690 --> 00:34:52,460
+edge conditions that i explicitly mark
+
+930
+00:34:52,460 --> 00:34:55,070
+out so your next question may be should
+
+931
+00:34:55,070 --> 00:34:57,380
+i actually use this well javascript and
+
+932
+00:34:57,380 --> 00:34:58,910
+java script is a great way to get
+
+933
+00:34:58,910 --> 00:35:00,380
+brownie points with your next employer
+
+934
+00:35:00,380 --> 00:35:01,700
+so next time you're thinking about
+
+935
+00:35:01,700 --> 00:35:03,560
+writing some uninteresting legacy code
+
+936
+00:35:03,560 --> 00:35:05,630
+at your next job just so you can flee
+
+937
+00:35:05,630 --> 00:35:07,820
+from it later on drop in your own
+
+938
+00:35:07,820 --> 00:35:09,530
+implementation of closures and you'll
+
+939
+00:35:09,530 --> 00:35:13,250
+have guaranteed job security and then
+
+940
+00:35:13,250 --> 00:35:14,780
+your final question may really be is
+
+941
+00:35:14,780 --> 00:35:16,160
+this the future of performance
+
+942
+00:35:16,160 --> 00:35:18,380
+JavaScript and this is the first step
+
+943
+00:35:18,380 --> 00:35:19,730
+the next step is going to be to
+
+944
+00:35:19,730 --> 00:35:21,980
+re-implement prototypes with closures at
+
+945
+00:35:21,980 --> 00:35:24,200
+which point we'll get an even faster
+
+946
+00:35:24,200 --> 00:35:27,350
+tick in our benchmarks and the idea is
+
+947
+00:35:27,350 --> 00:35:30,560
+to use eval scripts to get this working
+
+948
+00:35:30,560 --> 00:35:33,250
+and I think the other one was to
+
+949
+00:35:33,250 --> 00:35:35,570
+completely drop out prototypes and we're
+
+950
+00:35:35,570 --> 00:35:36,740
+going to do that which is plain old
+
+951
+00:35:36,740 --> 00:35:38,270
+closures which are evaluating a script
+
+952
+00:35:38,270 --> 00:35:40,250
+so totally we're just going to swap out
+
+953
+00:35:40,250 --> 00:35:41,750
+these two concepts because prototypes
+
+954
+00:35:41,750 --> 00:35:43,220
+are faster closures and closures are
+
+955
+00:35:43,220 --> 00:35:45,530
+faster at prototypes so with that I
+
+956
+00:35:45,530 --> 00:35:47,359
+think you have all you need to make your
+
+957
+00:35:47,359 --> 00:36:17,890
+code much more performant thanks guys
+

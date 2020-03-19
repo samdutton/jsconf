@@ -1,0 +1,797 @@
+1
+00:00:00,979 --> 00:00:05,490
+
+sunscreen I so I'm Ferrin a director of
+
+2
+00:00:05,490 --> 00:00:07,649
+engineering and moving world's black
+
+3
+00:00:07,649 --> 00:00:09,950
+matrix everywhere so on the internet
+
+4
+00:00:09,950 --> 00:00:12,360
+this is where the slides are it's only
+
+5
+00:00:12,360 --> 00:00:13,710
+place on my slides I should have put it
+
+6
+00:00:13,710 --> 00:00:17,940
+in the back so just a little brief
+
+7
+00:00:17,940 --> 00:00:19,859
+overview I'm going to be discussing
+
+8
+00:00:19,859 --> 00:00:23,430
+server inject and register server
+
+9
+00:00:23,430 --> 00:00:26,130
+methods and the happy framework I hope
+
+10
+00:00:26,130 --> 00:00:27,390
+by the end of the framework you'll know
+
+11
+00:00:27,390 --> 00:00:32,399
+when and how to use both of them so the
+
+12
+00:00:32,399 --> 00:00:35,010
+inspiration of this talk came from you
+
+13
+00:00:35,010 --> 00:00:36,600
+know discovering issues while i was
+
+14
+00:00:36,600 --> 00:00:39,329
+developing our product for the public
+
+15
+00:00:39,329 --> 00:00:43,469
+launch too long damn right we used a
+
+16
+00:00:43,469 --> 00:00:46,530
+server inject as a stopgap so we made a
+
+17
+00:00:46,530 --> 00:00:49,500
+mistake essentially we found bugs before
+
+18
+00:00:49,500 --> 00:00:53,340
+we went live I kind of the backstory is
+
+19
+00:00:53,340 --> 00:00:55,710
+is that you know I wrote a lot of the
+
+20
+00:00:55,710 --> 00:01:00,629
+API a co-worker was going to work on the
+
+21
+00:01:00,629 --> 00:01:03,449
+front-end app but then we had some
+
+22
+00:01:03,449 --> 00:01:05,250
+designer issues and he had to jump on
+
+23
+00:01:05,250 --> 00:01:08,010
+that so you know I think what it was is
+
+24
+00:01:08,010 --> 00:01:09,570
+you know I was going through the
+
+25
+00:01:09,570 --> 00:01:11,820
+documentation of happy and I was like
+
+26
+00:01:11,820 --> 00:01:14,790
+what can I do to you know do this front
+
+27
+00:01:14,790 --> 00:01:17,040
+and stuff and I saw seven inject was
+
+28
+00:01:17,040 --> 00:01:19,170
+like I could do it with that i wish i
+
+29
+00:01:19,170 --> 00:01:20,939
+would have gone down a little bit first
+
+30
+00:01:20,939 --> 00:01:22,710
+but if i didn't do that i'm going to be
+
+31
+00:01:22,710 --> 00:01:27,330
+here talking about it today so so server
+
+32
+00:01:27,330 --> 00:01:30,540
+inject it uses the shot module for
+
+33
+00:01:30,540 --> 00:01:32,220
+performing injections without actually
+
+34
+00:01:32,220 --> 00:01:36,840
+making any network connections so it
+
+35
+00:01:36,840 --> 00:01:41,310
+takes two arguments options call back so
+
+36
+00:01:41,310 --> 00:01:45,090
+options you can either send it a string
+
+37
+00:01:45,090 --> 00:01:48,659
+or not object some of the properties of
+
+38
+00:01:48,659 --> 00:01:51,119
+the objects are method URL headers
+
+39
+00:01:51,119 --> 00:01:53,640
+payload credentials simulate I wrote a
+
+40
+00:01:53,640 --> 00:01:55,170
+bunch of stuff up there I'm going to be
+
+41
+00:01:55,170 --> 00:01:58,560
+talking about like elsewhere
+
+42
+00:01:58,560 --> 00:02:04,360
+then there's a callback which gets one
+
+43
+00:02:04,360 --> 00:02:07,240
+function which is an object and uses
+
+44
+00:02:07,240 --> 00:02:09,989
+status code headers payload wrap a load
+
+45
+00:02:09,989 --> 00:02:13,480
+just a raw object and then the results
+
+46
+00:02:13,480 --> 00:02:16,989
+and I'll talk a little bit about that
+
+47
+00:02:16,989 --> 00:02:20,650
+later so when and why you should use
+
+48
+00:02:20,650 --> 00:02:24,280
+server inject great use case testing
+
+49
+00:02:24,280 --> 00:02:27,160
+here I have some code that kind of just
+
+50
+00:02:27,160 --> 00:02:30,700
+goes over here you can kind of see like
+
+51
+00:02:30,700 --> 00:02:33,220
+you you a we're calling the URL to me
+
+52
+00:02:33,220 --> 00:02:36,610
+and we're looking at the status code see
+
+53
+00:02:36,610 --> 00:02:39,880
+if it's 200 ok and then we're also
+
+54
+00:02:39,880 --> 00:02:42,819
+looking at the available property set on
+
+55
+00:02:42,819 --> 00:02:44,650
+it and we want to make sure it's set to
+
+56
+00:02:44,650 --> 00:02:51,370
+know and it's basically that so I feel
+
+57
+00:02:51,370 --> 00:02:52,630
+like I'm talking really really loud
+
+58
+00:02:52,630 --> 00:02:55,720
+because of things in my bag do things
+
+59
+00:02:55,720 --> 00:03:02,470
+that server sorry so also it's useful
+
+60
+00:03:02,470 --> 00:03:04,390
+when you're doing things in your routing
+
+61
+00:03:04,390 --> 00:03:07,750
+that is very complex and you can't
+
+62
+00:03:07,750 --> 00:03:10,600
+really abstract it into a method also
+
+63
+00:03:10,600 --> 00:03:13,000
+you by using server inject you avoid
+
+64
+00:03:13,000 --> 00:03:17,290
+network stack and potentially you can
+
+65
+00:03:17,290 --> 00:03:19,959
+also isolate networking issues that way
+
+66
+00:03:19,959 --> 00:03:22,239
+the credential object is really
+
+67
+00:03:22,239 --> 00:03:24,100
+interesting too because you can bypass
+
+68
+00:03:24,100 --> 00:03:26,140
+you know authenticated strategies using
+
+69
+00:03:26,140 --> 00:03:32,620
+it so when you shouldn't use it anytime
+
+70
+00:03:32,620 --> 00:03:37,329
+you're not testing I'd oh so I as we
+
+71
+00:03:37,329 --> 00:03:39,910
+found out and all right some of the
+
+72
+00:03:39,910 --> 00:03:43,870
+issues we found res results not always
+
+73
+00:03:43,870 --> 00:03:46,480
+available and I actually found this
+
+74
+00:03:46,480 --> 00:03:48,910
+issue when i was using seek lies and i
+
+75
+00:03:48,910 --> 00:03:52,750
+don't remember the details of why so I
+
+76
+00:03:52,750 --> 00:03:55,180
+had to use res that payload which kind
+
+77
+00:03:55,180 --> 00:03:57,400
+of sucked because i had to parse it so i
+
+78
+00:03:57,400 --> 00:04:00,120
+can look at the data and then I had to
+
+79
+00:04:00,120 --> 00:04:03,040
+reinter to the client and that's a lot
+
+80
+00:04:03,040 --> 00:04:06,970
+of waste you know memory was also I kind
+
+81
+00:04:06,970 --> 00:04:08,290
+of kind of thought that there's a little
+
+82
+00:04:08,290 --> 00:04:10,740
+bit of an implicit assumption that
+
+83
+00:04:10,740 --> 00:04:15,990
+whatever you're injecting on you're
+
+84
+00:04:15,990 --> 00:04:18,180
+assuming that it's correct and if it's
+
+85
+00:04:18,180 --> 00:04:20,220
+not like because you're using server
+
+86
+00:04:20,220 --> 00:04:22,950
+inject and that's not correct there's so
+
+87
+00:04:22,950 --> 00:04:25,740
+much overhead and that can cause you
+
+88
+00:04:25,740 --> 00:04:30,240
+know some debugging issues so yeah as a
+
+89
+00:04:30,240 --> 00:04:32,700
+result you know once I figured this out
+
+90
+00:04:32,700 --> 00:04:35,610
+once I I saw some of the issues another
+
+91
+00:04:35,610 --> 00:04:40,680
+issue we had was because the the the way
+
+92
+00:04:40,680 --> 00:04:45,690
+it encoded on res dot payload that so
+
+93
+00:04:45,690 --> 00:04:50,010
+happy is utf-8 when I translate over the
+
+94
+00:04:50,010 --> 00:04:53,250
+wire its ASCII and awesome because of
+
+95
+00:04:53,250 --> 00:04:58,400
+that level in the discussion or whatever
+
+96
+00:04:58,400 --> 00:05:01,830
+it we would see like encoding issues on
+
+97
+00:05:01,830 --> 00:05:04,170
+our site and so then that's when we were
+
+98
+00:05:04,170 --> 00:05:06,000
+like how we got a code refactor we need
+
+99
+00:05:06,000 --> 00:05:08,700
+to use server methods so registered
+
+100
+00:05:08,700 --> 00:05:10,860
+methods they're awesome because you can
+
+101
+00:05:10,860 --> 00:05:12,930
+use them to you know share common
+
+102
+00:05:12,930 --> 00:05:14,850
+functions by attaching them to your
+
+103
+00:05:14,850 --> 00:05:18,390
+server object this means you don't have
+
+104
+00:05:18,390 --> 00:05:20,850
+to require common add modules all over
+
+105
+00:05:20,850 --> 00:05:24,030
+in your plugins you know so makes your
+
+106
+00:05:24,030 --> 00:05:26,190
+code more dry you can also cash your
+
+107
+00:05:26,190 --> 00:05:27,810
+methods which is really awesome with the
+
+108
+00:05:27,810 --> 00:05:29,880
+happiest native caching and you can
+
+109
+00:05:29,880 --> 00:05:33,290
+change this context within your methods
+
+110
+00:05:33,290 --> 00:05:36,240
+so you need it of course give your
+
+111
+00:05:36,240 --> 00:05:38,370
+method a name and you'll be able to
+
+112
+00:05:38,370 --> 00:05:40,920
+excess it later through server methods
+
+113
+00:05:40,920 --> 00:05:45,270
+name or if you're in kind of a handler
+
+114
+00:05:45,270 --> 00:05:48,300
+you'd have to do I think request server
+
+115
+00:05:48,300 --> 00:05:53,190
+methods name so a neat feature I thought
+
+116
+00:05:53,190 --> 00:05:57,150
+was that you can register names such as
+
+117
+00:05:57,150 --> 00:05:59,520
+user dot get and I'll register it as a
+
+118
+00:05:59,520 --> 00:06:01,710
+nested object and I think this is a
+
+119
+00:06:01,710 --> 00:06:03,690
+great way to actually kind of create
+
+120
+00:06:03,690 --> 00:06:06,780
+like a kind of method namespace you know
+
+121
+00:06:06,780 --> 00:06:10,730
+like here you see that I binded it to
+
+122
+00:06:10,730 --> 00:06:14,700
+our happiest equalised user model and
+
+123
+00:06:14,700 --> 00:06:18,120
+then use the sequel eyes finding count
+
+124
+00:06:18,120 --> 00:06:22,770
+all function
+
+125
+00:06:22,780 --> 00:06:25,729
+so you also have to give it a function
+
+126
+00:06:25,729 --> 00:06:28,430
+and it takes this format it's an
+
+127
+00:06:28,430 --> 00:06:30,590
+arbitrary amount of arguments with your
+
+128
+00:06:30,590 --> 00:06:32,659
+next call back and then the next is
+
+129
+00:06:32,659 --> 00:06:34,759
+pretty standard you know error first
+
+130
+00:06:34,759 --> 00:06:37,340
+your result and then optional TTL for
+
+131
+00:06:37,340 --> 00:06:38,569
+when you want your cash to expire on
+
+132
+00:06:38,569 --> 00:06:44,210
+that object you also can give it some
+
+133
+00:06:44,210 --> 00:06:46,789
+objects objects are buying cash call
+
+134
+00:06:46,789 --> 00:06:50,870
+back generic key cash is the normal as
+
+135
+00:06:50,870 --> 00:06:52,940
+river cash so that's pretty
+
+136
+00:06:52,940 --> 00:06:54,710
+straightforward call back i haven't used
+
+137
+00:06:54,710 --> 00:06:57,740
+this but apparently you can make your
+
+138
+00:06:57,740 --> 00:06:59,300
+function method survey method
+
+139
+00:06:59,300 --> 00:07:01,520
+synchronous and then you're out your
+
+140
+00:07:01,520 --> 00:07:03,050
+call bak actually takes a little bit of
+
+141
+00:07:03,050 --> 00:07:06,050
+a different form and then there's the
+
+142
+00:07:06,050 --> 00:07:09,530
+generate key for when your methods don't
+
+143
+00:07:09,530 --> 00:07:11,659
+actually return you know a string or
+
+144
+00:07:11,659 --> 00:07:14,060
+bullying or a number or JSON object so
+
+145
+00:07:14,060 --> 00:07:15,830
+then you figure out a way to do that and
+
+146
+00:07:15,830 --> 00:07:19,029
+then you could actually utilize the cash
+
+147
+00:07:19,029 --> 00:07:22,430
+so how do we do that how do we actually
+
+148
+00:07:22,430 --> 00:07:25,610
+make a server method there's two two
+
+149
+00:07:25,610 --> 00:07:27,949
+main ways as a separate parameter so you
+
+150
+00:07:27,949 --> 00:07:30,620
+define your function and then you
+
+151
+00:07:30,620 --> 00:07:34,490
+register it that way surfer method foo
+
+152
+00:07:34,490 --> 00:07:37,699
+foo go okay and then you could do it as
+
+153
+00:07:37,699 --> 00:07:40,250
+an object which I prefer this method
+
+154
+00:07:40,250 --> 00:07:43,699
+better because it see the tree just an
+
+155
+00:07:43,699 --> 00:07:47,569
+object name method and options then of
+
+156
+00:07:47,569 --> 00:07:49,639
+course you could do it again as an array
+
+157
+00:07:49,639 --> 00:07:55,430
+of objects so why should you use server
+
+158
+00:07:55,430 --> 00:07:58,580
+methods you know if you want to use dry
+
+159
+00:07:58,580 --> 00:08:00,740
+again you avoid having to require all
+
+160
+00:08:00,740 --> 00:08:02,180
+the common modules everywhere in your
+
+161
+00:08:02,180 --> 00:08:06,319
+code and just use it on the server
+
+162
+00:08:06,319 --> 00:08:09,110
+object so and then if you also want to
+
+163
+00:08:09,110 --> 00:08:11,629
+cash here your items it's a little bit
+
+164
+00:08:11,629 --> 00:08:13,759
+more difficult and doesn't really work
+
+165
+00:08:13,759 --> 00:08:16,150
+on sir inject
+
+166
+00:08:16,150 --> 00:08:19,240
+now when it should be used if it doesn't
+
+167
+00:08:19,240 --> 00:08:21,460
+fit your use case which means complexity
+
+168
+00:08:21,460 --> 00:08:24,070
+or if you only perform the operation
+
+169
+00:08:24,070 --> 00:08:25,570
+once because there's a slight over had
+
+170
+00:08:25,570 --> 00:08:29,860
+to just call the server methods so just
+
+171
+00:08:29,860 --> 00:08:34,620
+before I close I did a little bit of
+
+172
+00:08:34,620 --> 00:08:38,200
+code here like I really wanted to kind
+
+173
+00:08:38,200 --> 00:08:40,870
+of get into like like what we're looking
+
+174
+00:08:40,870 --> 00:08:42,250
+at but I couldn't really figure out like
+
+175
+00:08:42,250 --> 00:08:44,460
+how to get the actual like memory stack
+
+176
+00:08:44,460 --> 00:08:48,010
+but I could get the latency so this is
+
+177
+00:08:48,010 --> 00:08:52,390
+what I did with the Linux AV tool and as
+
+178
+00:08:52,390 --> 00:08:54,790
+you can see like just this coin get
+
+179
+00:08:54,790 --> 00:08:59,080
+users directly you know takes about gift
+
+180
+00:08:59,080 --> 00:09:02,050
+gives you about 4.33 requests per second
+
+181
+00:09:02,050 --> 00:09:06,100
+when you do with the wrapper which I
+
+182
+00:09:06,100 --> 00:09:09,070
+have directly from this code right here
+
+183
+00:09:09,070 --> 00:09:13,570
+you know just wrapping that code and its
+
+184
+00:09:13,570 --> 00:09:17,410
+way much slower it's terrible and then
+
+185
+00:09:17,410 --> 00:09:20,680
+if you do via method you can see that
+
+186
+00:09:20,680 --> 00:09:23,880
+it's a little bit less performant than
+
+187
+00:09:23,880 --> 00:09:26,650
+calling it directly and then when you
+
+188
+00:09:26,650 --> 00:09:29,200
+actually use the cash it's just insane
+
+189
+00:09:29,200 --> 00:09:30,880
+ninety-eight percent of the requests are
+
+190
+00:09:30,880 --> 00:09:35,620
+under 50 minute 150 milliseconds so use
+
+191
+00:09:35,620 --> 00:09:40,920
+the cash whenever you can oops nevermind
+
+192
+00:09:40,920 --> 00:09:44,590
+okay so in summary you serve in jax for
+
+193
+00:09:44,590 --> 00:09:46,650
+your tests in a happy frame work
+
+194
+00:09:46,650 --> 00:09:50,560
+elsewhere only if and only if your logic
+
+195
+00:09:50,560 --> 00:09:52,240
+is too complex to be abstracted it is
+
+196
+00:09:52,240 --> 00:09:54,460
+serving method use server methods if you
+
+197
+00:09:54,460 --> 00:09:56,550
+need to use the same pieces of code and
+
+198
+00:09:56,550 --> 00:09:59,890
+multiple locations and bonus points if
+
+199
+00:09:59,890 --> 00:10:02,790
+you speed up your responses with caching
+

@@ -1,0 +1,2541 @@
+1
+00:00:13,190 --> 00:00:17,940
+
+hi I'm Felipe I'm a lead developer at
+
+2
+00:00:17,940 --> 00:00:19,710
+Spotify I'm based in Stockholm Sweden
+
+3
+00:00:19,710 --> 00:00:23,700
+and I work in the team responsible for
+
+4
+00:00:23,700 --> 00:00:25,400
+the infrastructure of our desktop
+
+5
+00:00:25,400 --> 00:00:28,169
+application and today I'm going to talk
+
+6
+00:00:28,169 --> 00:00:30,270
+about how we've been using javascript in
+
+7
+00:00:30,270 --> 00:00:32,279
+our client and I'll be sharing some of
+
+8
+00:00:32,279 --> 00:00:35,280
+our architectural details and a bit of
+
+9
+00:00:35,280 --> 00:00:37,140
+the of the stories of the thing that we
+
+10
+00:00:37,140 --> 00:00:38,790
+tried and worked for us things that we
+
+11
+00:00:38,790 --> 00:00:40,050
+tried and didn't work for us
+
+12
+00:00:40,050 --> 00:00:44,850
+and what we learned from them so I've
+
+13
+00:00:44,850 --> 00:00:45,960
+been chatting with some people here at
+
+14
+00:00:45,960 --> 00:00:47,160
+the conference and I realize a lot of
+
+15
+00:00:47,160 --> 00:00:49,410
+people don't know that Spotify for
+
+16
+00:00:49,410 --> 00:00:51,239
+desktop is based on that technologies
+
+17
+00:00:51,239 --> 00:00:56,340
+but it is and right now we do have a lot
+
+18
+00:00:56,340 --> 00:00:59,039
+of native code but the whole UI is
+
+19
+00:00:59,039 --> 00:01:02,879
+web-based so the the goal of this talks
+
+20
+00:01:02,879 --> 00:01:05,370
+to present the story of how I got there
+
+21
+00:01:05,370 --> 00:01:09,500
+and everything we learn in this process
+
+22
+00:01:09,500 --> 00:01:12,630
+but before getting into where we are
+
+23
+00:01:12,630 --> 00:01:14,549
+today I'd like to go back to the
+
+24
+00:01:14,549 --> 00:01:16,380
+beginning of the Spotify history and
+
+25
+00:01:16,380 --> 00:01:18,600
+describe the journey until now like the
+
+26
+00:01:18,600 --> 00:01:20,130
+devolution of the dis oft where how it
+
+27
+00:01:20,130 --> 00:01:23,130
+started and how it is right now so it
+
+28
+00:01:23,130 --> 00:01:24,600
+all started like 10 years ago this is
+
+29
+00:01:24,600 --> 00:01:27,420
+the first sketch of the idea in 2006 two
+
+30
+00:01:27,420 --> 00:01:30,390
+guys in Sweden had this idea that we
+
+31
+00:01:30,390 --> 00:01:31,560
+needed to change the music market
+
+32
+00:01:31,560 --> 00:01:34,079
+because piracy was taking over we needed
+
+33
+00:01:34,079 --> 00:01:36,180
+something that would allow people to
+
+34
+00:01:36,180 --> 00:01:38,329
+consume music that would be just
+
+35
+00:01:38,329 --> 00:01:41,130
+convenient that they could use all the
+
+36
+00:01:41,130 --> 00:01:42,600
+music they could listen to all the music
+
+37
+00:01:42,600 --> 00:01:45,240
+in the world and there to just look like
+
+38
+00:01:45,240 --> 00:01:48,509
+they were using their own library and it
+
+39
+00:01:48,509 --> 00:01:50,189
+should be an alternative to piracy it
+
+40
+00:01:50,189 --> 00:01:51,960
+should be convenient safe to use and
+
+41
+00:01:51,960 --> 00:01:55,289
+free and fair to the artists so they get
+
+42
+00:01:55,289 --> 00:02:02,369
+paid by by their music and however that
+
+43
+00:02:02,369 --> 00:02:05,310
+idea came in 2006 but what if I was just
+
+44
+00:02:05,310 --> 00:02:08,070
+really released to user 2008 and the
+
+45
+00:02:08,070 --> 00:02:09,300
+reason for that was not just the
+
+46
+00:02:09,300 --> 00:02:11,490
+technological challenges but mostly the
+
+47
+00:02:11,490 --> 00:02:13,470
+business challenges around that because
+
+48
+00:02:13,470 --> 00:02:15,600
+what was disrupt in a market and it's a
+
+49
+00:02:15,600 --> 00:02:17,700
+really traditional and big market where
+
+50
+00:02:17,700 --> 00:02:19,470
+they have really conservative ideas of
+
+51
+00:02:19,470 --> 00:02:22,690
+how things should work so it was a long
+
+52
+00:02:22,690 --> 00:02:25,360
+journey of negotiations and contracts
+
+53
+00:02:25,360 --> 00:02:27,730
+with record labels and trying to get the
+
+54
+00:02:27,730 --> 00:02:31,060
+idea that this model should work and
+
+55
+00:02:31,060 --> 00:02:33,840
+then this was 2008 more or less and
+
+56
+00:02:33,840 --> 00:02:38,050
+around 2011 but if I had already grew a
+
+57
+00:02:38,050 --> 00:02:41,410
+lot it it was mostly in Europe had just
+
+58
+00:02:41,410 --> 00:02:45,250
+opened in the US and then there was a
+
+59
+00:02:45,250 --> 00:02:47,410
+need both from Spotify and from other
+
+60
+00:02:47,410 --> 00:02:50,260
+developers to build the community so
+
+61
+00:02:50,260 --> 00:02:52,030
+Spotify really is a platform where
+
+62
+00:02:52,030 --> 00:02:53,830
+third-party developers could write their
+
+63
+00:02:53,830 --> 00:02:58,780
+apps and run them inside fortify so you
+
+64
+00:02:58,780 --> 00:03:00,790
+could have things such as last.fm for
+
+65
+00:03:00,790 --> 00:03:02,230
+example you could use their
+
+66
+00:03:02,230 --> 00:03:03,610
+recommendations inside this part if a
+
+67
+00:03:03,610 --> 00:03:05,440
+client I think like that this platform
+
+68
+00:03:05,440 --> 00:03:07,510
+is no longer available but it is very
+
+69
+00:03:07,510 --> 00:03:08,770
+important to the story I'm gonna wanna
+
+70
+00:03:08,770 --> 00:03:11,290
+tell today we change the approach to
+
+71
+00:03:11,290 --> 00:03:13,660
+have third-party developers that for
+
+72
+00:03:13,660 --> 00:03:15,550
+another model that works better for them
+
+73
+00:03:15,550 --> 00:03:18,250
+and for us that's exposing SDKs that
+
+74
+00:03:18,250 --> 00:03:20,260
+they can use in their absence of having
+
+75
+00:03:20,260 --> 00:03:23,550
+their code running sorry all right and
+
+76
+00:03:23,550 --> 00:03:26,709
+in order to make that that platform work
+
+77
+00:03:26,709 --> 00:03:28,450
+and has something that other developers
+
+78
+00:03:28,450 --> 00:03:30,820
+could work with we started having web
+
+79
+00:03:30,820 --> 00:03:33,730
+build inside the client and for that we
+
+80
+00:03:33,730 --> 00:03:37,570
+use Seth Seth stands for chromium
+
+81
+00:03:37,570 --> 00:03:40,900
+embedded framework and it's not a
+
+82
+00:03:40,900 --> 00:03:43,570
+spoiler as electron or node WebKit but
+
+83
+00:03:43,570 --> 00:03:47,140
+it's older than Windows and what it does
+
+84
+00:03:47,140 --> 00:03:49,570
+is basically the same but it requires a
+
+85
+00:03:49,570 --> 00:03:54,970
+bit more of C++ code to integrate and
+
+86
+00:03:54,970 --> 00:03:57,910
+then it allows us to embed some web
+
+87
+00:03:57,910 --> 00:04:01,570
+build inside the client and it is an
+
+88
+00:04:01,570 --> 00:04:04,840
+open source project that is used mostly
+
+89
+00:04:04,840 --> 00:04:07,840
+by Spotify but also for steam they gave
+
+90
+00:04:07,840 --> 00:04:10,600
+me a platform and there's some projects
+
+91
+00:04:10,600 --> 00:04:12,730
+made by Adobe and of course some smaller
+
+92
+00:04:12,730 --> 00:04:18,359
+projects as well so at the time we had
+
+93
+00:04:18,359 --> 00:04:21,640
+this describe that was mostly C++ but we
+
+94
+00:04:21,640 --> 00:04:24,580
+had this web bills that were just a
+
+95
+00:04:24,580 --> 00:04:28,440
+regular web pages and in those web pages
+
+96
+00:04:28,440 --> 00:04:31,900
+everything was sent both so from the
+
+97
+00:04:31,900 --> 00:04:34,330
+developer perspective they day on the
+
+98
+00:04:34,330 --> 00:04:35,260
+whole document
+
+99
+00:04:35,260 --> 00:04:37,960
+don was belong to to their app they had
+
+100
+00:04:37,960 --> 00:04:40,060
+the global scope for JavaScript and they
+
+101
+00:04:40,060 --> 00:04:41,890
+could use a JavaScript API to talk to
+
+102
+00:04:41,890 --> 00:04:43,690
+this modify functionality such as
+
+103
+00:04:43,690 --> 00:04:46,120
+playback control or fetching the user
+
+104
+00:04:46,120 --> 00:04:47,590
+playlist anything like that there was an
+
+105
+00:04:47,590 --> 00:04:49,270
+API that they could use for that and
+
+106
+00:04:49,270 --> 00:04:52,330
+then we started dogfooding this platform
+
+107
+00:04:52,330 --> 00:04:54,850
+internally and changing over our
+
+108
+00:04:54,850 --> 00:04:57,130
+internal reveals in the client to use
+
+109
+00:04:57,130 --> 00:04:59,530
+this apps platform and that's how I'm
+
+110
+00:04:59,530 --> 00:05:01,210
+gonna call those deals from now on their
+
+111
+00:05:01,210 --> 00:05:03,670
+apps so for example they are this video
+
+112
+00:05:03,670 --> 00:05:05,170
+in the clients now in a have just like a
+
+113
+00:05:05,170 --> 00:05:07,870
+third-party app that is what HTML
+
+114
+00:05:07,870 --> 00:05:13,200
+Javascript and CSS and use the same API
+
+115
+00:05:13,210 --> 00:05:17,230
+two years later 2011 2013 it's what if I
+
+116
+00:05:17,230 --> 00:05:20,580
+went to it for its first big UI change
+
+117
+00:05:20,580 --> 00:05:23,050
+Spotify went black it was great and
+
+118
+00:05:23,050 --> 00:05:27,010
+black and then replacing all the C++ UI
+
+119
+00:05:27,010 --> 00:05:30,850
+components was painful mostly because we
+
+120
+00:05:30,850 --> 00:05:33,790
+use some custom C++ libraries built
+
+121
+00:05:33,790 --> 00:05:38,130
+in-house and that's usually not fun and
+
+122
+00:05:38,130 --> 00:05:41,590
+also at this time the first laptops with
+
+123
+00:05:41,590 --> 00:05:43,630
+high DPI screens or the retina screens
+
+124
+00:05:43,630 --> 00:05:45,430
+as they're called starting popping up in
+
+125
+00:05:45,430 --> 00:05:48,010
+the market and you could start seeing
+
+126
+00:05:48,010 --> 00:05:49,240
+differences when you open the client in
+
+127
+00:05:49,240 --> 00:05:51,760
+a retina screen that there were bills
+
+128
+00:05:51,760 --> 00:05:54,340
+had support for that out of the box but
+
+129
+00:05:54,340 --> 00:05:57,280
+our our C++ UI components didn't so it
+
+130
+00:05:57,280 --> 00:05:59,950
+could see some blurry text 2012 C++ view
+
+131
+00:05:59,950 --> 00:06:02,800
+and a really nice that rendered tax it
+
+132
+00:06:02,800 --> 00:06:06,250
+was a web view so it was a bit
+
+133
+00:06:06,250 --> 00:06:08,710
+complicated and what we kept this this
+
+134
+00:06:08,710 --> 00:06:12,610
+hybrid approach at this time and then
+
+135
+00:06:12,610 --> 00:06:13,930
+one year later there was another
+
+136
+00:06:13,930 --> 00:06:16,420
+iteration of the client well we still
+
+137
+00:06:16,420 --> 00:06:18,580
+had a very similar UI but we had a
+
+138
+00:06:18,580 --> 00:06:21,400
+really big difference in terms of of the
+
+139
+00:06:21,400 --> 00:06:26,020
+stack we went full web so all the UI
+
+140
+00:06:26,020 --> 00:06:28,330
+code that was before in C++ was removed
+
+141
+00:06:28,330 --> 00:06:33,280
+and replaced by by HTML and JavaScript
+
+142
+00:06:33,280 --> 00:06:36,520
+and things that were done as regular C++
+
+143
+00:06:36,520 --> 00:06:39,910
+method calls became api's exposed to the
+
+144
+00:06:39,910 --> 00:06:41,380
+JavaScript layer that could be called
+
+145
+00:06:41,380 --> 00:06:45,790
+from there so now we have this client
+
+146
+00:06:45,790 --> 00:06:48,610
+that's fully fully web-based
+
+147
+00:06:48,610 --> 00:06:51,159
+and for us developers there was a big
+
+148
+00:06:51,159 --> 00:06:53,199
+advantage of that because it's of course
+
+149
+00:06:53,199 --> 00:06:55,599
+much faster and easier to develop on it
+
+150
+00:06:55,599 --> 00:06:58,330
+and we gained some things for free by by
+
+151
+00:06:58,330 --> 00:07:00,969
+using this deck such as the the retina
+
+152
+00:07:00,969 --> 00:07:03,669
+support as I said before but also it's
+
+153
+00:07:03,669 --> 00:07:05,800
+better for accessibility because you can
+
+154
+00:07:05,800 --> 00:07:07,090
+integrate better screen readers for
+
+155
+00:07:07,090 --> 00:07:12,159
+users with visual impairment and other
+
+156
+00:07:12,159 --> 00:07:16,030
+accessibility issues but then to get
+
+157
+00:07:16,030 --> 00:07:17,949
+them into a big dilemma that I think
+
+158
+00:07:17,949 --> 00:07:19,960
+most developers in this room and outside
+
+159
+00:07:19,960 --> 00:07:22,629
+this room have been through so you have
+
+160
+00:07:22,629 --> 00:07:25,750
+this big codebase that works and it
+
+161
+00:07:25,750 --> 00:07:27,430
+attends your needs but it's really hard
+
+162
+00:07:27,430 --> 00:07:30,069
+to work with should we actually rewrite
+
+163
+00:07:30,069 --> 00:07:32,560
+that code it's usually an anti-pattern
+
+164
+00:07:32,560 --> 00:07:34,689
+you were replacing something that work
+
+165
+00:07:34,689 --> 00:07:37,449
+works and in risks too it can introduce
+
+166
+00:07:37,449 --> 00:07:41,139
+new bugs and all of that and then also
+
+167
+00:07:41,139 --> 00:07:44,529
+in this case we had gonna replace this
+
+168
+00:07:44,529 --> 00:07:47,710
+new this big chunk of code but there is
+
+169
+00:07:47,710 --> 00:07:52,210
+no really any visible visual any visible
+
+170
+00:07:52,210 --> 00:07:53,949
+gain for the users at least short term
+
+171
+00:07:53,949 --> 00:07:57,550
+so it's kind of questionable if it's
+
+172
+00:07:57,550 --> 00:08:00,490
+actually worth it and then like the old
+
+173
+00:08:00,490 --> 00:08:02,529
+code we had the C++ code that had been
+
+174
+00:08:02,529 --> 00:08:04,839
+around for several years it said has
+
+175
+00:08:04,839 --> 00:08:06,669
+been tested a lot we knew that it worked
+
+176
+00:08:06,669 --> 00:08:09,339
+well if we just replace it before a new
+
+177
+00:08:09,339 --> 00:08:11,050
+code base could be introducing a lot of
+
+178
+00:08:11,050 --> 00:08:13,599
+new bugs and it was of course the
+
+179
+00:08:13,599 --> 00:08:16,120
+opportunity cost so it will be right not
+
+180
+00:08:16,120 --> 00:08:17,949
+cold and then you were missing the
+
+181
+00:08:17,949 --> 00:08:19,449
+opportunity to build new new features
+
+182
+00:08:19,449 --> 00:08:21,189
+and you can also block the development
+
+183
+00:08:21,189 --> 00:08:22,419
+of new features because we're rewriting
+
+184
+00:08:22,419 --> 00:08:24,580
+a toad code so there are several
+
+185
+00:08:24,580 --> 00:08:27,870
+arguments not to rewrite code that works
+
+186
+00:08:27,870 --> 00:08:30,789
+so and when when you discuss in the team
+
+187
+00:08:30,789 --> 00:08:32,349
+about rewrites
+
+188
+00:08:32,349 --> 00:08:33,760
+those discussions can be really
+
+189
+00:08:33,760 --> 00:08:36,370
+emotionally charged because people got
+
+190
+00:08:36,370 --> 00:08:38,169
+can get attached to their the code they
+
+191
+00:08:38,169 --> 00:08:42,779
+wrote and some people can also have a
+
+192
+00:08:42,779 --> 00:08:44,709
+can kind of hate
+
+193
+00:08:44,709 --> 00:08:46,180
+code that they didn't work because they
+
+194
+00:08:46,180 --> 00:08:49,540
+don't understand because writing code is
+
+195
+00:08:49,540 --> 00:08:51,190
+easy but reading code is hard and then
+
+196
+00:08:51,190 --> 00:08:52,360
+sometimes when you got someone else's
+
+197
+00:08:52,360 --> 00:08:54,640
+code you can just throw it away and
+
+198
+00:08:54,640 --> 00:08:56,920
+build it yourself but you have to be
+
+199
+00:08:56,920 --> 00:08:58,240
+pragmatic when I think about these
+
+200
+00:08:58,240 --> 00:09:01,510
+things and then we try to apply a bit of
+
+201
+00:09:01,510 --> 00:09:04,180
+Janene thinking on that and I when I say
+
+202
+00:09:04,180 --> 00:09:06,640
+engineer thinking I mean that engineers
+
+203
+00:09:06,640 --> 00:09:08,710
+should analyze trade-offs they should
+
+204
+00:09:08,710 --> 00:09:11,890
+look for optimizations and it should
+
+205
+00:09:11,890 --> 00:09:14,440
+look for improving the efficiency of the
+
+206
+00:09:14,440 --> 00:09:15,940
+product and processes they're working on
+
+207
+00:09:15,940 --> 00:09:18,190
+so how how could it do that in a way
+
+208
+00:09:18,190 --> 00:09:21,280
+that we would be pragmatic about the
+
+209
+00:09:21,280 --> 00:09:23,650
+trade-offs and try to optimize the cost
+
+210
+00:09:23,650 --> 00:09:26,170
+and benefits gonna take all of it so we
+
+211
+00:09:26,170 --> 00:09:28,720
+thought that we would be if you take
+
+212
+00:09:28,720 --> 00:09:31,210
+this path and rewrite this C++ code in
+
+213
+00:09:31,210 --> 00:09:33,730
+JavaScript we will be adding value by
+
+214
+00:09:33,730 --> 00:09:35,740
+allowing us to iterate faster in the
+
+215
+00:09:35,740 --> 00:09:38,710
+future and experiment with things in the
+
+216
+00:09:38,710 --> 00:09:40,210
+UI that because you have a much more
+
+217
+00:09:40,210 --> 00:09:43,810
+easier code to work with and then as a
+
+218
+00:09:43,810 --> 00:09:45,670
+as a data driven company it's really
+
+219
+00:09:45,670 --> 00:09:47,320
+important for us to do a/b testing and
+
+220
+00:09:47,320 --> 00:09:49,300
+then it's nice if you have a code base
+
+221
+00:09:49,300 --> 00:09:50,410
+that allows you to do that easily
+
+222
+00:09:50,410 --> 00:09:53,470
+because you can iterate much faster and
+
+223
+00:09:53,470 --> 00:09:54,940
+on the downside you had a really high
+
+224
+00:09:54,940 --> 00:09:57,010
+implementation cost because I have to
+
+225
+00:09:57,010 --> 00:09:59,560
+rewrite this whole code base but we we
+
+226
+00:09:59,560 --> 00:10:01,540
+thought that it pay off over time
+
+227
+00:10:01,540 --> 00:10:03,100
+because the maintenance cost will be
+
+228
+00:10:03,100 --> 00:10:06,010
+much slower much much lower so we went
+
+229
+00:10:06,010 --> 00:10:07,840
+ahead and thought that yeah let's do
+
+230
+00:10:07,840 --> 00:10:11,500
+this and what I'm going to talk about is
+
+231
+00:10:11,500 --> 00:10:13,450
+a bit of the architecture how we
+
+232
+00:10:13,450 --> 00:10:15,940
+structured our our layers and our
+
+233
+00:10:15,940 --> 00:10:17,350
+architecture in order to achieve this
+
+234
+00:10:17,350 --> 00:10:21,940
+this go so I'm gonna describe it
+
+235
+00:10:21,940 --> 00:10:25,030
+architecture but I'm not starting from
+
+236
+00:10:25,030 --> 00:10:29,170
+the lowest layer so under everything
+
+237
+00:10:29,170 --> 00:10:30,520
+there is what we call the client core
+
+238
+00:10:30,520 --> 00:10:32,740
+and clients core is a hybrid that's
+
+239
+00:10:32,740 --> 00:10:34,960
+habit Spotify that's the c++ library
+
+240
+00:10:34,960 --> 00:10:38,080
+lets shared among all the main platforms
+
+241
+00:10:38,080 --> 00:10:40,090
+so it's the same code base for Android
+
+242
+00:10:40,090 --> 00:10:42,670
+iOS and that's top and what this library
+
+243
+00:10:42,670 --> 00:10:45,220
+does is basically them the lower level
+
+244
+00:10:45,220 --> 00:10:46,420
+things like it's just much before the
+
+245
+00:10:46,420 --> 00:10:48,370
+streaming the code in playback audio
+
+246
+00:10:48,370 --> 00:10:50,650
+drivers talk to the back and offline
+
+247
+00:10:50,650 --> 00:10:52,060
+syncing and all those things that are
+
+248
+00:10:52,060 --> 00:10:53,860
+common between those platforms in a more
+
+249
+00:10:53,860 --> 00:10:57,670
+integrated in a lower level and above
+
+250
+00:10:57,670 --> 00:11:00,190
+that so and then also like this client
+
+251
+00:11:00,190 --> 00:11:02,830
+core is as it's used by several
+
+252
+00:11:02,830 --> 00:11:05,560
+platforms the ownership is also shared
+
+253
+00:11:05,560 --> 00:11:07,690
+by those teams so the infrastructure
+
+254
+00:11:07,690 --> 00:11:10,420
+teams of those those platforms work
+
+255
+00:11:10,420 --> 00:11:12,140
+together in this library
+
+256
+00:11:12,140 --> 00:11:15,510
+above that had the client desktop layer
+
+257
+00:11:15,510 --> 00:11:20,160
+what that what that is is basically the
+
+258
+00:11:20,160 --> 00:11:21,480
+integration with operating systems with
+
+259
+00:11:21,480 --> 00:11:23,610
+Windows and Mac and Linux limited Linux
+
+260
+00:11:23,610 --> 00:11:26,900
+is kind of not officially supported and
+
+261
+00:11:26,900 --> 00:11:29,280
+what it does also is to glue together
+
+262
+00:11:29,280 --> 00:11:32,760
+the core and expose things to the web
+
+263
+00:11:32,760 --> 00:11:36,680
+layer that's safe there is above it so
+
+264
+00:11:36,680 --> 00:11:39,360
+that's what the client desktop does and
+
+265
+00:11:39,360 --> 00:11:41,550
+if you were yesterday in that really
+
+266
+00:11:41,550 --> 00:11:43,920
+nice talk about electron she talked
+
+267
+00:11:43,920 --> 00:11:47,130
+about two processes the main process and
+
+268
+00:11:47,130 --> 00:11:48,810
+the rendering process here is pretty
+
+269
+00:11:48,810 --> 00:11:51,030
+much the same the two layers the bottom
+
+270
+00:11:51,030 --> 00:11:52,560
+are the main process so we don't have
+
+271
+00:11:52,560 --> 00:11:53,880
+any JavaScript running the main process
+
+272
+00:11:53,880 --> 00:11:57,230
+but the render process are the rest
+
+273
+00:11:57,230 --> 00:11:59,730
+so we have like the chromium embedded
+
+274
+00:11:59,730 --> 00:12:02,250
+framework that basically just renders
+
+275
+00:12:02,250 --> 00:12:06,810
+the our web views and the client desktop
+
+276
+00:12:06,810 --> 00:12:09,240
+exposed some API through chromium added
+
+277
+00:12:09,240 --> 00:12:12,330
+framework so we can talk to the core and
+
+278
+00:12:12,330 --> 00:12:13,770
+then we have two two layers of
+
+279
+00:12:13,770 --> 00:12:16,620
+JavaScript where JS container is more
+
+280
+00:12:16,620 --> 00:12:18,930
+like a logic layer where we manage like
+
+281
+00:12:18,930 --> 00:12:21,330
+navigation and playback state and things
+
+282
+00:12:21,330 --> 00:12:23,700
+like that for more the container of the
+
+283
+00:12:23,700 --> 00:12:26,190
+UI of the of the of the UI and the
+
+284
+00:12:26,190 --> 00:12:28,560
+little boxes in the top are the actual
+
+285
+00:12:28,560 --> 00:12:30,570
+videos the actual what we call the apps
+
+286
+00:12:30,570 --> 00:12:33,930
+that are owned by different teams so for
+
+287
+00:12:33,930 --> 00:12:36,450
+example have the Browse view or the the
+
+288
+00:12:36,450 --> 00:12:38,220
+search playlist the artists they're all
+
+289
+00:12:38,220 --> 00:12:40,920
+like their own little boxes that belong
+
+290
+00:12:40,920 --> 00:12:44,460
+to different teams so if you want a more
+
+291
+00:12:44,460 --> 00:12:48,150
+visual understand that of these
+
+292
+00:12:48,150 --> 00:12:49,980
+JavaScript layers more or less like this
+
+293
+00:12:49,980 --> 00:12:54,800
+our visualize and then we kept the same
+
+294
+00:12:54,800 --> 00:12:56,880
+architecture for the apps as we did for
+
+295
+00:12:56,880 --> 00:12:58,860
+the third-party developers a few years
+
+296
+00:12:58,860 --> 00:12:59,370
+back
+
+297
+00:12:59,370 --> 00:13:02,580
+and so the container is the main Chrome
+
+298
+00:13:02,580 --> 00:13:04,860
+and the application it manages out that
+
+299
+00:13:04,860 --> 00:13:07,860
+the apps inside it and that's our
+
+300
+00:13:07,860 --> 00:13:10,260
+sandbox as I said before so they they
+
+301
+00:13:10,260 --> 00:13:12,030
+only document they own the global scope
+
+302
+00:13:12,030 --> 00:13:14,370
+and the way to do that was to use
+
+303
+00:13:14,370 --> 00:13:15,300
+iframes
+
+304
+00:13:15,300 --> 00:13:17,310
+and then some people might be a bit
+
+305
+00:13:17,310 --> 00:13:19,740
+surprised like come on it's 2016 you're
+
+306
+00:13:19,740 --> 00:13:22,830
+still using iframes and of course it's
+
+307
+00:13:22,830 --> 00:13:25,770
+not idea what life is a trade-off
+
+308
+00:13:25,770 --> 00:13:27,930
+right and then here's iframes was a
+
+309
+00:13:27,930 --> 00:13:29,570
+really pragmatic decision at the time
+
+310
+00:13:29,570 --> 00:13:32,970
+because iframes are relative abstraction
+
+311
+00:13:32,970 --> 00:13:36,630
+for sandboxing on the web so we could
+
+312
+00:13:36,630 --> 00:13:39,330
+guarantee for some level of guarantee
+
+313
+00:13:39,330 --> 00:13:41,400
+that things are running there before
+
+314
+00:13:41,400 --> 00:13:43,920
+their own environment that really leak
+
+315
+00:13:43,920 --> 00:13:47,760
+things to other to other things and it's
+
+316
+00:13:47,760 --> 00:13:51,810
+not our negative because imagine that it
+
+317
+00:13:51,810 --> 00:13:55,110
+Spotify is not really like most web
+
+318
+00:13:55,110 --> 00:13:56,520
+applications that people run on the
+
+319
+00:13:56,520 --> 00:13:58,320
+browser and they close once in a while
+
+320
+00:13:58,320 --> 00:13:59,820
+or like after a few hours or something
+
+321
+00:13:59,820 --> 00:14:01,620
+something that people can leave the
+
+322
+00:14:01,620 --> 00:14:03,000
+client open in the background for weeks
+
+323
+00:14:03,000 --> 00:14:06,150
+and then newer leaks can be a big a big
+
+324
+00:14:06,150 --> 00:14:09,960
+thing there in the client side and with
+
+325
+00:14:09,960 --> 00:14:10,710
+iframes
+
+326
+00:14:10,710 --> 00:14:13,830
+we can even though the iframe itself has
+
+327
+00:14:13,830 --> 00:14:17,100
+a higher memory footprint we can just
+
+328
+00:14:17,100 --> 00:14:18,420
+kill iframes and then release that
+
+329
+00:14:18,420 --> 00:14:20,940
+memory much much more easier so the the
+
+330
+00:14:20,940 --> 00:14:22,350
+feature developer got to work inside
+
+331
+00:14:22,350 --> 00:14:24,300
+that iframe they don't need to care too
+
+332
+00:14:24,300 --> 00:14:26,250
+much about that the video that they
+
+333
+00:14:26,250 --> 00:14:27,660
+should care but not too much because the
+
+334
+00:14:27,660 --> 00:14:29,730
+container can kind of manage okay this
+
+335
+00:14:29,730 --> 00:14:31,710
+iframe has been idle yes let's just kill
+
+336
+00:14:31,710 --> 00:14:33,030
+it to release the memory anything like
+
+337
+00:14:33,030 --> 00:14:33,450
+that
+
+338
+00:14:33,450 --> 00:14:36,960
+and keeping iframes when we did this
+
+339
+00:14:36,960 --> 00:14:40,530
+rewrite reduce the risk of the rewrite
+
+340
+00:14:40,530 --> 00:14:43,410
+because the rewrites didn't affect the
+
+341
+00:14:43,410 --> 00:14:46,440
+apps themselves so it like the people
+
+342
+00:14:46,440 --> 00:14:47,970
+who are working in the artist view
+
+343
+00:14:47,970 --> 00:14:50,040
+weren't affect at all by the process
+
+344
+00:14:50,040 --> 00:14:51,210
+that we meant by replacing
+
+345
+00:14:51,210 --> 00:14:53,130
+infrastructure because they still kept
+
+346
+00:14:53,130 --> 00:14:55,170
+their sandbox environment so it's
+
+347
+00:14:55,170 --> 00:14:57,060
+something that we used to reduce reduce
+
+348
+00:14:57,060 --> 00:14:59,250
+risk and it's migration period and you
+
+349
+00:14:59,250 --> 00:15:04,530
+can iterate on it afterwards so based on
+
+350
+00:15:04,530 --> 00:15:07,320
+what I said so far of the having these
+
+351
+00:15:07,320 --> 00:15:09,480
+two layers of JavaScript a lot of custom
+
+352
+00:15:09,480 --> 00:15:12,510
+custom libraries and tools how do we
+
+353
+00:15:12,510 --> 00:15:15,000
+actually organize our code and then this
+
+354
+00:15:15,000 --> 00:15:18,930
+is something that we did and seems
+
+355
+00:15:18,930 --> 00:15:23,340
+really standard so we had the autos app
+
+356
+00:15:23,340 --> 00:15:25,980
+so had one repository per app
+
+357
+00:15:25,980 --> 00:15:27,330
+plane his browser I think their own
+
+358
+00:15:27,330 --> 00:15:29,670
+repository had one repository per
+
+359
+00:15:29,670 --> 00:15:31,440
+library so we had some libraries
+
+360
+00:15:31,440 --> 00:15:32,190
+internally
+
+361
+00:15:32,190 --> 00:15:37,710
+such as our UI library that has CSS and
+
+362
+00:15:37,710 --> 00:15:38,720
+how buttons look
+
+363
+00:15:38,720 --> 00:15:39,829
+I can templates and things like that
+
+364
+00:15:39,829 --> 00:15:42,139
+have another library that does the
+
+365
+00:15:42,139 --> 00:15:43,759
+Parsee no Spotify internal you are
+
+366
+00:15:43,759 --> 00:15:46,009
+either things like that and we had we
+
+367
+00:15:46,009 --> 00:15:47,629
+had an instance of an internal in game
+
+368
+00:15:47,629 --> 00:15:50,149
+registry to distribute this libraries so
+
+369
+00:15:50,149 --> 00:15:52,310
+it seems pretty standard but no didn't
+
+370
+00:15:52,310 --> 00:15:53,060
+work for us
+
+371
+00:15:53,060 --> 00:15:56,389
+which is also can be surprising for some
+
+372
+00:15:56,389 --> 00:16:02,089
+people and why didn't it work it's like
+
+373
+00:16:02,089 --> 00:16:04,100
+everything had their their little things
+
+374
+00:16:04,100 --> 00:16:04,939
+they're organized
+
+375
+00:16:04,939 --> 00:16:06,980
+everything seems really encapsulated but
+
+376
+00:16:06,980 --> 00:16:10,310
+why didn't it work it was really hard to
+
+377
+00:16:10,310 --> 00:16:12,709
+coordinate horizontal changes and when I
+
+378
+00:16:12,709 --> 00:16:14,389
+mean horizontal changes like a change
+
+379
+00:16:14,389 --> 00:16:16,430
+that affects affect many views so
+
+380
+00:16:16,430 --> 00:16:19,129
+suppose you were working in the generic
+
+381
+00:16:19,129 --> 00:16:22,430
+UI library for Spotify and then you want
+
+382
+00:16:22,430 --> 00:16:24,829
+to change the shade of green
+
+383
+00:16:24,829 --> 00:16:27,139
+that that's a display or the behavior of
+
+384
+00:16:27,139 --> 00:16:29,750
+the play button that is everywhere in
+
+385
+00:16:29,750 --> 00:16:34,370
+the client so you had to make the change
+
+386
+00:16:34,370 --> 00:16:37,550
+in a library and make sure all the apps
+
+387
+00:16:37,550 --> 00:16:39,829
+have new builds that fetch on your
+
+388
+00:16:39,829 --> 00:16:41,660
+change and so it involved a lot of
+
+389
+00:16:41,660 --> 00:16:43,399
+communication and syncing between teams
+
+390
+00:16:43,399 --> 00:16:46,670
+and especially stressful before releases
+
+391
+00:16:46,670 --> 00:16:50,300
+it's a bit hard to coordinate and that
+
+392
+00:16:50,300 --> 00:16:52,490
+could also cause some cascade effect on
+
+393
+00:16:52,490 --> 00:16:54,829
+library updates so imagine you are
+
+394
+00:16:54,829 --> 00:16:56,660
+changing a really basic library that
+
+395
+00:16:56,660 --> 00:16:58,040
+there is another library depends on it
+
+396
+00:16:58,040 --> 00:16:59,569
+and another library and an app that
+
+397
+00:16:59,569 --> 00:17:01,399
+depends on it to make sure that all the
+
+398
+00:17:01,399 --> 00:17:02,750
+versions were bumped and dependencies
+
+399
+00:17:02,750 --> 00:17:04,669
+are not I think they're active so the
+
+400
+00:17:04,669 --> 00:17:06,470
+the communication overhead was really
+
+401
+00:17:06,470 --> 00:17:11,419
+really high with this model it also
+
+402
+00:17:11,419 --> 00:17:12,549
+complicated continuous integration
+
+403
+00:17:12,549 --> 00:17:16,010
+that's the billeting standardization it
+
+404
+00:17:16,010 --> 00:17:17,419
+complicated continues integration
+
+405
+00:17:17,419 --> 00:17:20,030
+because the builds need the bit
+
+406
+00:17:20,030 --> 00:17:21,770
+pipelines needs to be changed somehow
+
+407
+00:17:21,770 --> 00:17:23,720
+so we wanted to make sure that if I
+
+408
+00:17:23,720 --> 00:17:27,439
+change something and after it builds I
+
+409
+00:17:27,439 --> 00:17:28,580
+want to also build the things that
+
+410
+00:17:28,580 --> 00:17:29,720
+depend on it because I have to keep
+
+411
+00:17:29,720 --> 00:17:31,880
+consistency my product even though some
+
+412
+00:17:31,880 --> 00:17:34,909
+semver is is a good idea it might might
+
+413
+00:17:34,909 --> 00:17:38,030
+have something that we need to to force
+
+414
+00:17:38,030 --> 00:17:40,190
+glaber's to be updated so we need to
+
+415
+00:17:40,190 --> 00:17:42,409
+trigger new builds of things that depend
+
+416
+00:17:42,409 --> 00:17:45,830
+on my library so we if you actually need
+
+417
+00:17:45,830 --> 00:17:47,390
+it to work I will need to create a
+
+418
+00:17:47,390 --> 00:17:49,669
+really complex graph of dependencies in
+
+419
+00:17:49,669 --> 00:17:50,870
+the bill wipe lines
+
+420
+00:17:50,870 --> 00:17:52,100
+it's not something that you wanna do
+
+421
+00:17:52,100 --> 00:17:55,760
+and for Standardization it's also hard
+
+422
+00:17:55,760 --> 00:17:59,390
+because evacuating silos so different
+
+423
+00:17:59,390 --> 00:18:00,830
+teams will build things in different
+
+424
+00:18:00,830 --> 00:18:05,120
+ways and use different tools and that's
+
+425
+00:18:05,120 --> 00:18:08,900
+a bit it goes a bit with autonomy that
+
+426
+00:18:08,900 --> 00:18:10,370
+autonomy is usually good but you need
+
+427
+00:18:10,370 --> 00:18:13,430
+some alignment and then it these
+
+428
+00:18:13,430 --> 00:18:16,400
+architecture it makes a language more
+
+429
+00:18:16,400 --> 00:18:20,060
+difficult so little how it looked like
+
+430
+00:18:20,060 --> 00:18:22,310
+so suppose like you have like the
+
+431
+00:18:22,310 --> 00:18:24,890
+playlist step the radio app they depend
+
+432
+00:18:24,890 --> 00:18:27,230
+on the same libraries but they depend on
+
+433
+00:18:27,230 --> 00:18:29,380
+separate versions because they are in
+
+434
+00:18:29,380 --> 00:18:32,950
+repositories their separate modules so
+
+435
+00:18:32,950 --> 00:18:36,040
+you have those things and then average
+
+436
+00:18:36,040 --> 00:18:38,570
+every every app had their own build
+
+437
+00:18:38,570 --> 00:18:41,240
+pipeline so when you build you generate
+
+438
+00:18:41,240 --> 00:18:42,470
+the artifacts and you could for example
+
+439
+00:18:42,470 --> 00:18:45,410
+have playlists with a different style
+
+440
+00:18:45,410 --> 00:18:47,960
+for the tracklist then in radio for
+
+441
+00:18:47,960 --> 00:18:50,300
+example or a different sheet of green in
+
+442
+00:18:50,300 --> 00:18:51,440
+the same release and that's not
+
+443
+00:18:51,440 --> 00:18:54,760
+something we want to have so we started
+
+444
+00:18:54,760 --> 00:18:59,150
+investigating into it how could we avoid
+
+445
+00:18:59,150 --> 00:19:02,750
+this kind of problem so we checked out
+
+446
+00:19:02,750 --> 00:19:04,730
+how other other companies were have been
+
+447
+00:19:04,730 --> 00:19:07,910
+doing how to merge repositories and
+
+448
+00:19:07,910 --> 00:19:10,670
+things like that so how could you
+
+449
+00:19:10,670 --> 00:19:12,770
+mitigate those problems so basically
+
+450
+00:19:12,770 --> 00:19:14,720
+what I did is we jumped into the mono
+
+451
+00:19:14,720 --> 00:19:18,860
+repo we had a most of our repositories
+
+452
+00:19:18,860 --> 00:19:21,710
+in a single one and it automatically
+
+453
+00:19:21,710 --> 00:19:23,450
+addressed a lot of the issues that we
+
+454
+00:19:23,450 --> 00:19:28,010
+had before it simplified a lot the
+
+455
+00:19:28,010 --> 00:19:29,390
+continuous integration because we just
+
+456
+00:19:29,390 --> 00:19:31,640
+have one build pipeline you change the
+
+457
+00:19:31,640 --> 00:19:33,200
+repository you build everything and it's
+
+458
+00:19:33,200 --> 00:19:36,740
+fine it's always like it always works as
+
+459
+00:19:36,740 --> 00:19:39,230
+it should be and it's easier to test the
+
+460
+00:19:39,230 --> 00:19:41,720
+impact of your changes so if you're
+
+461
+00:19:41,720 --> 00:19:43,070
+making changes in the library you can
+
+462
+00:19:43,070 --> 00:19:45,740
+just grab and see what it's been used
+
+463
+00:19:45,740 --> 00:19:47,840
+and just fix it there and because of
+
+464
+00:19:47,840 --> 00:19:49,340
+that you don't need to care about
+
+465
+00:19:49,340 --> 00:19:51,740
+backwards compatibility which makes the
+
+466
+00:19:51,740 --> 00:19:52,640
+code much simpler
+
+467
+00:19:52,640 --> 00:19:54,440
+you don't need to keep old code there
+
+468
+00:19:54,440 --> 00:19:56,480
+just make a change change whatever it's
+
+469
+00:19:56,480 --> 00:19:59,000
+being used it's fine and you can do that
+
+470
+00:19:59,000 --> 00:20:01,820
+in an atomic way so it can make a change
+
+471
+00:20:01,820 --> 00:20:04,130
+in a library and the code that depends
+
+472
+00:20:04,130 --> 00:20:04,809
+on it in a thing
+
+473
+00:20:04,809 --> 00:20:07,509
+commit which makes it much easier to to
+
+474
+00:20:07,509 --> 00:20:10,139
+go back and forth and roll back and
+
+475
+00:20:10,139 --> 00:20:13,450
+everything so it is much easier for
+
+476
+00:20:13,450 --> 00:20:16,629
+refactoring the code and it promotes
+
+477
+00:20:16,629 --> 00:20:18,850
+some consistency in its narration across
+
+478
+00:20:18,850 --> 00:20:20,980
+the board because the articles in a
+
+479
+00:20:20,980 --> 00:20:23,249
+single place
+
+480
+00:20:23,249 --> 00:20:26,379
+so now we had like this single posit Ori
+
+481
+00:20:26,379 --> 00:20:28,360
+the single build pipeline and we could
+
+482
+00:20:28,360 --> 00:20:29,710
+have consistency that dependencies
+
+483
+00:20:29,710 --> 00:20:31,149
+because they're all searching the same
+
+484
+00:20:31,149 --> 00:20:37,149
+dependencies so yeah now things are much
+
+485
+00:20:37,149 --> 00:20:39,759
+simpler than before I'll have the other
+
+486
+00:20:39,759 --> 00:20:41,710
+code in the same place they are
+
+487
+00:20:41,710 --> 00:20:43,600
+affecting the same dependencies but
+
+488
+00:20:43,600 --> 00:20:45,549
+there is still a lot of entropy and the
+
+489
+00:20:45,549 --> 00:20:48,159
+reason for that is we had many teams
+
+490
+00:20:48,159 --> 00:20:51,129
+working in this layer of repositories
+
+491
+00:20:51,129 --> 00:20:53,019
+they're kind of siloed in their own
+
+492
+00:20:53,019 --> 00:20:56,169
+world so in order to escape our
+
+493
+00:20:56,169 --> 00:20:58,210
+development and our teams we gave them
+
+494
+00:20:58,210 --> 00:21:00,909
+an autonomy to to pick their tools to
+
+495
+00:21:00,909 --> 00:21:03,340
+pick their technologies and then we
+
+496
+00:21:03,340 --> 00:21:04,869
+start putting things together with so
+
+497
+00:21:04,869 --> 00:21:07,240
+many things are different so some teams
+
+498
+00:21:07,240 --> 00:21:10,480
+used to write unit testing framework a
+
+499
+00:21:10,480 --> 00:21:13,299
+the another teams framework B and we're
+
+500
+00:21:13,299 --> 00:21:14,559
+cite like putting everything together in
+
+501
+00:21:14,559 --> 00:21:17,470
+the same field pipeline come on we need
+
+502
+00:21:17,470 --> 00:21:19,210
+to we need to fix this we need to find a
+
+503
+00:21:19,210 --> 00:21:23,169
+way to standardize our practices so we
+
+504
+00:21:23,169 --> 00:21:25,840
+came up with the idea of the Golden Path
+
+505
+00:21:25,840 --> 00:21:29,169
+and the Golden Path what it is is a set
+
+506
+00:21:29,169 --> 00:21:31,179
+of recommendation recommended practices
+
+507
+00:21:31,179 --> 00:21:33,639
+tools and libraries that are fully
+
+508
+00:21:33,639 --> 00:21:35,679
+supporting it that recommended things
+
+509
+00:21:35,679 --> 00:21:37,690
+that people should use it doesn't mean
+
+510
+00:21:37,690 --> 00:21:40,179
+that they are forced to use but if they
+
+511
+00:21:40,179 --> 00:21:41,860
+do they get all the support from the
+
+512
+00:21:41,860 --> 00:21:43,629
+infrastructure team all the tooling they
+
+513
+00:21:43,629 --> 00:21:45,249
+just they can just focus on building
+
+514
+00:21:45,249 --> 00:21:47,320
+their feature did not need to focus on
+
+515
+00:21:47,320 --> 00:21:49,899
+spending time in tooling tooling is
+
+516
+00:21:49,899 --> 00:21:51,639
+there just use it and build your feature
+
+517
+00:21:51,639 --> 00:21:53,649
+of course you can still go crazy and
+
+518
+00:21:53,649 --> 00:21:55,840
+doing other things but it's not
+
+519
+00:21:55,840 --> 00:21:59,169
+something that would really like so the
+
+520
+00:21:59,169 --> 00:22:01,179
+way we came up the way we started
+
+521
+00:22:01,179 --> 00:22:04,210
+working in a Golden Path I was to put
+
+522
+00:22:04,210 --> 00:22:06,399
+together put together a standardization
+
+523
+00:22:06,399 --> 00:22:08,710
+work group and the way we did this we
+
+524
+00:22:08,710 --> 00:22:10,299
+got like one representative from each
+
+525
+00:22:10,299 --> 00:22:14,230
+team and the this world would get
+
+526
+00:22:14,230 --> 00:22:17,049
+together and analyze different things
+
+527
+00:22:17,049 --> 00:22:17,770
+that
+
+528
+00:22:17,770 --> 00:22:21,460
+so let's check all the testing libraries
+
+529
+00:22:21,460 --> 00:22:24,580
+that we are using so to make we're using
+
+530
+00:22:24,580 --> 00:22:26,620
+for example look at the unit testing
+
+531
+00:22:26,620 --> 00:22:28,270
+like and some some apps are you can
+
+532
+00:22:28,270 --> 00:22:31,390
+expect some I apply using assert some
+
+533
+00:22:31,390 --> 00:22:35,470
+apps are using whatever and then so how
+
+534
+00:22:35,470 --> 00:22:37,450
+can we turn it back on something so you
+
+535
+00:22:37,450 --> 00:22:39,670
+can go into our test and understand how
+
+536
+00:22:39,670 --> 00:22:41,920
+they work and things like that so this
+
+537
+00:22:41,920 --> 00:22:43,929
+what this workgroup goal was to actually
+
+538
+00:22:43,929 --> 00:22:46,000
+do this kind of analysis and come up
+
+539
+00:22:46,000 --> 00:22:47,410
+with solutions and proposals for that
+
+540
+00:22:47,410 --> 00:22:50,740
+and when I started analyzing and
+
+541
+00:22:50,740 --> 00:22:54,100
+building this golden path documentation
+
+542
+00:22:54,100 --> 00:22:56,370
+we start seeing some de facto standards
+
+543
+00:22:56,370 --> 00:22:58,990
+that were easy to standardize on because
+
+544
+00:22:58,990 --> 00:23:00,370
+that's what most people are already
+
+545
+00:23:00,370 --> 00:23:04,150
+using so we just went ahead okay 80% of
+
+546
+00:23:04,150 --> 00:23:05,920
+our code base already does it this way
+
+547
+00:23:05,920 --> 00:23:09,190
+so let's just do it for the rest and so
+
+548
+00:23:09,190 --> 00:23:10,630
+if that would be taking the path of
+
+549
+00:23:10,630 --> 00:23:12,100
+least resistance and so it would be
+
+550
+00:23:12,100 --> 00:23:14,740
+easier to to make every one line in the
+
+551
+00:23:14,740 --> 00:23:19,690
+same thing and we try to make those
+
+552
+00:23:19,690 --> 00:23:22,420
+decisions based on actual data so we
+
+553
+00:23:22,420 --> 00:23:24,610
+don't really want to go for wishful
+
+554
+00:23:24,610 --> 00:23:26,830
+thinking we actually want so much more
+
+555
+00:23:26,830 --> 00:23:29,110
+experimentation around some some
+
+556
+00:23:29,110 --> 00:23:30,580
+technique or some - and then see okay
+
+557
+00:23:30,580 --> 00:23:32,440
+that works for that team maybe we should
+
+558
+00:23:32,440 --> 00:23:36,870
+actually adopt in other teams as well so
+
+559
+00:23:36,870 --> 00:23:38,980
+there were some lessons we learned in
+
+560
+00:23:38,980 --> 00:23:41,290
+this process so I'm going to just recap
+
+561
+00:23:41,290 --> 00:23:44,679
+I think that III said before and think
+
+562
+00:23:44,679 --> 00:23:47,230
+that we learn when we go to this stage
+
+563
+00:23:47,230 --> 00:23:48,940
+that's that stage where right now you're
+
+564
+00:23:48,940 --> 00:23:52,420
+aligning teams in in same practices so
+
+565
+00:23:52,420 --> 00:23:54,040
+we can move forward they maybe rethink
+
+566
+00:23:54,040 --> 00:23:56,200
+the iframes thing because once the code
+
+567
+00:23:56,200 --> 00:23:58,000
+is more standard it's easier to remove
+
+568
+00:23:58,000 --> 00:23:59,320
+those kind of sandboxing at the inner
+
+569
+00:23:59,320 --> 00:24:02,590
+gates so what the first thing that that
+
+570
+00:24:02,590 --> 00:24:05,530
+is very important is to what in your
+
+571
+00:24:05,530 --> 00:24:07,210
+projects always always try to evolve
+
+572
+00:24:07,210 --> 00:24:09,580
+things incrementally and what that means
+
+573
+00:24:09,580 --> 00:24:10,780
+is that don't try to solve all the
+
+574
+00:24:10,780 --> 00:24:15,040
+problems at once try to fail fast and
+
+575
+00:24:15,040 --> 00:24:18,640
+validate your hypothesis and don't ya
+
+576
+00:24:18,640 --> 00:24:20,500
+try to release as fast as possible so
+
+577
+00:24:20,500 --> 00:24:22,630
+you can see that the impact that they
+
+578
+00:24:22,630 --> 00:24:26,800
+were creating and also like many
+
+579
+00:24:26,800 --> 00:24:28,179
+companies have done an infra ting
+
+580
+00:24:28,179 --> 00:24:29,580
+marketing my work
+
+581
+00:24:29,580 --> 00:24:33,150
+and in some companies in for teams are
+
+582
+00:24:33,150 --> 00:24:35,730
+usually kind of dictators that okay we
+
+583
+00:24:35,730 --> 00:24:37,440
+built this thing everyone should use it
+
+584
+00:24:37,440 --> 00:24:41,670
+this way and for us having more empathy
+
+585
+00:24:41,670 --> 00:24:43,320
+as we saw yesterday and more connections
+
+586
+00:24:43,320 --> 00:24:45,750
+with the other developers make things
+
+587
+00:24:45,750 --> 00:24:47,280
+work much better have a much better
+
+588
+00:24:47,280 --> 00:24:49,920
+relationship with feature teams and we
+
+589
+00:24:49,920 --> 00:24:51,270
+can get things with much higher quality
+
+590
+00:24:51,270 --> 00:24:53,460
+so having an infra team let's pour in
+
+591
+00:24:53,460 --> 00:24:55,230
+touch with other developers and
+
+592
+00:24:55,230 --> 00:24:57,090
+listening to them and having other
+
+593
+00:24:57,090 --> 00:24:58,680
+developers participating and the
+
+594
+00:24:58,680 --> 00:25:00,270
+decisions have really improved us I
+
+595
+00:25:00,270 --> 00:25:03,480
+proved the our flow to get things
+
+596
+00:25:03,480 --> 00:25:07,050
+working and when we merge repositories
+
+597
+00:25:07,050 --> 00:25:09,840
+we noticed that the way we structure our
+
+598
+00:25:09,840 --> 00:25:13,910
+repositories shouldn't dictate your your
+
+599
+00:25:13,910 --> 00:25:15,690
+architecture so that's why for us
+
+600
+00:25:15,690 --> 00:25:18,090
+merging them was a good idea because it
+
+601
+00:25:18,090 --> 00:25:20,490
+gave us a lot of flexibility on how we
+
+602
+00:25:20,490 --> 00:25:22,320
+want things to change in the future
+
+603
+00:25:22,320 --> 00:25:26,490
+and last but not least like consistency
+
+604
+00:25:26,490 --> 00:25:28,110
+is really important in a codebase
+
+605
+00:25:28,110 --> 00:25:30,060
+specially in a big project it's more
+
+606
+00:25:30,060 --> 00:25:31,470
+important to have one single way of
+
+607
+00:25:31,470 --> 00:25:33,480
+doing things then and then doing like
+
+608
+00:25:33,480 --> 00:25:34,500
+the coolest thing ever
+
+609
+00:25:34,500 --> 00:25:36,390
+because when you have a consistent way
+
+610
+00:25:36,390 --> 00:25:38,010
+of doing things people are more
+
+611
+00:25:38,010 --> 00:25:39,540
+productive people can understand better
+
+612
+00:25:39,540 --> 00:25:40,800
+the code you can navigate through the
+
+613
+00:25:40,800 --> 00:25:42,240
+code and see okay this is how you do it
+
+614
+00:25:42,240 --> 00:25:45,870
+and there's how it's been done but if
+
+615
+00:25:45,870 --> 00:25:47,640
+you're just focusing on trying like this
+
+616
+00:25:47,640 --> 00:25:49,260
+new thing and make it the coolest
+
+617
+00:25:49,260 --> 00:25:50,640
+possible and then everything is
+
+618
+00:25:50,640 --> 00:25:51,780
+different different parts of the code
+
+619
+00:25:51,780 --> 00:25:54,000
+base it really makes it hard for people
+
+620
+00:25:54,000 --> 00:25:56,700
+to understand their code and to first if
+
+621
+00:25:56,700 --> 00:25:58,320
+I know got a new hire in a company's
+
+622
+00:25:58,320 --> 00:26:00,210
+growing you need to have oh okay this is
+
+623
+00:26:00,210 --> 00:26:01,800
+how you do things and then this person
+
+624
+00:26:01,800 --> 00:26:02,940
+is gonna be able to spin much faster
+
+625
+00:26:02,940 --> 00:26:05,670
+than you have like such a heterogeneous
+
+626
+00:26:05,670 --> 00:26:10,620
+code base and yeah I couldn't miss the
+
+627
+00:26:10,620 --> 00:26:11,850
+opportunity with so many good people
+
+628
+00:26:11,850 --> 00:26:14,880
+here say that we are high so with me to
+
+629
+00:26:14,880 --> 00:26:16,440
+a lot of challenges have a lot of
+
+630
+00:26:16,440 --> 00:26:18,570
+challenges ahead so I recommend this
+
+631
+00:26:18,570 --> 00:26:21,840
+take a look at our jobs page and the the
+
+632
+00:26:21,840 --> 00:26:23,700
+job ads there are usually a pretty vague
+
+633
+00:26:23,700 --> 00:26:25,320
+and open but if you need more detail you
+
+634
+00:26:25,320 --> 00:26:27,360
+can just grab me and I can can give you
+
+635
+00:26:27,360 --> 00:26:32,380
+more more details and that's it for me
+

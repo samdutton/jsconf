@@ -1,0 +1,1493 @@
+1
+00:00:13,950 --> 00:00:17,859
+
+so hi I'm John David Dalton I was
+
+2
+00:00:17,859 --> 00:00:19,689
+formerly the Pro Performance Program
+
+3
+00:00:19,689 --> 00:00:23,320
+Manager at chakra i'm also a javascript
+
+4
+00:00:23,320 --> 00:00:26,140
+library author i developed lodash right
+
+5
+00:00:26,140 --> 00:00:28,810
+now i am in the developer sorry the web
+
+6
+00:00:28,810 --> 00:00:31,269
+frameworks ecosystem team on your ms
+
+7
+00:00:31,269 --> 00:00:32,769
+edge so you'll be seeing me do a lot
+
+8
+00:00:32,769 --> 00:00:34,540
+more open source work doing poor
+
+9
+00:00:34,540 --> 00:00:36,309
+requests on your various projects and
+
+10
+00:00:36,309 --> 00:00:38,260
+things like that but today's talk is on
+
+11
+00:00:38,260 --> 00:00:41,559
+built-ins written in JavaScript so let's
+
+12
+00:00:41,559 --> 00:00:49,570
+get into it so I entitled the talk
+
+13
+00:00:49,570 --> 00:00:52,840
+drawing hands because it's JavaScript
+
+14
+00:00:52,840 --> 00:00:54,489
+built-ins written in the language itself
+
+15
+00:00:54,489 --> 00:00:57,340
+under the hood so you can't observe that
+
+16
+00:00:57,340 --> 00:00:59,469
+it's written in JavaScript but it
+
+17
+00:00:59,469 --> 00:01:01,480
+actually is and so this allows you to
+
+18
+00:01:01,480 --> 00:01:02,980
+power and so that's this drawing here
+
+19
+00:01:02,980 --> 00:01:06,729
+was the lithograph graph was done by MC
+
+20
+00:01:06,729 --> 00:01:09,580
+Escher and self-hosting I'll be saying
+
+21
+00:01:09,580 --> 00:01:11,530
+this a lot this is when parts or whole
+
+22
+00:01:11,530 --> 00:01:12,880
+of a language written in the language
+
+23
+00:01:12,880 --> 00:01:20,140
+itself but what is this ray this says
+
+24
+00:01:20,140 --> 00:01:23,709
+bang go on this baby wipes did you leave
+
+25
+00:01:23,709 --> 00:01:28,050
+this here from your first talk what yeah
+
+26
+00:01:28,050 --> 00:01:33,940
+krill says hey by the way yeah all right
+
+27
+00:01:33,940 --> 00:01:37,509
+now that that's done that was my most
+
+28
+00:01:37,509 --> 00:01:43,170
+important bit all right all right so
+
+29
+00:01:43,170 --> 00:01:46,840
+yeah yeah you must be here for this all
+
+30
+00:01:46,840 --> 00:01:48,610
+right so first I'm going to go into the
+
+31
+00:01:48,610 --> 00:01:51,429
+good the bad and the ugly of built-ins
+
+32
+00:01:51,429 --> 00:01:53,770
+written in JavaScript so first let's
+
+33
+00:01:53,770 --> 00:01:56,709
+talk about the good things so ease of
+
+34
+00:01:56,709 --> 00:01:58,869
+development because they are built ins
+
+35
+00:01:58,869 --> 00:01:59,950
+and they're written in javascript in
+
+36
+00:01:59,950 --> 00:02:01,599
+these these engines are open source you
+
+37
+00:02:01,599 --> 00:02:03,340
+can view them you can see them you can
+
+38
+00:02:03,340 --> 00:02:04,690
+examine their code we're going to look
+
+39
+00:02:04,690 --> 00:02:06,099
+at their code in just a little bit and
+
+40
+00:02:06,099 --> 00:02:08,679
+kind of see how they're made so it
+
+41
+00:02:08,679 --> 00:02:10,509
+allows you to contribute back to the
+
+42
+00:02:10,509 --> 00:02:13,770
+project see more contributions naturally
+
+43
+00:02:13,770 --> 00:02:17,849
+performance the good thing is is is it's
+
+44
+00:02:17,849 --> 00:02:22,060
+widely used to allow the built-ins to
+
+45
+00:02:22,060 --> 00:02:23,680
+leverage the same optimizations that
+
+46
+00:02:23,680 --> 00:02:25,630
+your normal JavaScript gets celeb
+
+47
+00:02:25,630 --> 00:02:28,630
+from the jit so you get in lining for
+
+48
+00:02:28,630 --> 00:02:29,740
+free you don't have to do any extra
+
+49
+00:02:29,740 --> 00:02:32,470
+extra work there and so there gives you
+
+50
+00:02:32,470 --> 00:02:34,540
+some superior performance so some
+
+51
+00:02:34,540 --> 00:02:37,750
+engines like Firefox and Chrome I'm
+
+52
+00:02:37,750 --> 00:02:39,130
+sorry browsers like Firefox and Chrome
+
+53
+00:02:39,130 --> 00:02:41,980
+will will use JavaScript to implement
+
+54
+00:02:41,980 --> 00:02:44,980
+array for each filter map every in all
+
+55
+00:02:44,980 --> 00:02:46,390
+of those because they get the inlining
+
+56
+00:02:46,390 --> 00:02:53,020
+benefits so experimental API so this is
+
+57
+00:02:53,020 --> 00:02:54,880
+something i'll be digging into a little
+
+58
+00:02:54,880 --> 00:02:57,880
+bit later in my job to is is anytime
+
+59
+00:02:57,880 --> 00:03:00,940
+there is an experimental API like a
+
+60
+00:03:00,940 --> 00:03:03,960
+proposed api from the w3c you can use
+
+61
+00:03:03,960 --> 00:03:06,250
+javascript to implement that quickly and
+
+62
+00:03:06,250 --> 00:03:08,050
+get that into an experimental build and
+
+63
+00:03:08,050 --> 00:03:10,330
+testable and so debs can try it out and
+
+64
+00:03:10,330 --> 00:03:17,740
+use it so examples what do I mean when I
+
+65
+00:03:17,740 --> 00:03:22,030
+say examples are JavaScript methods
+
+66
+00:03:22,030 --> 00:03:25,570
+built-in in the language let's see do I
+
+67
+00:03:25,570 --> 00:03:28,480
+have any examples here no i don't but i
+
+68
+00:03:28,480 --> 00:03:32,670
+can go over here and I've got them so
+
+69
+00:03:32,670 --> 00:03:36,340
+here's an example of a built-in written
+
+70
+00:03:36,340 --> 00:03:39,730
+for Mozilla spider monkey and this is
+
+71
+00:03:39,730 --> 00:03:41,470
+I'll zoom in here and zoom around so you
+
+72
+00:03:41,470 --> 00:03:44,140
+all can see a little bit better here we
+
+73
+00:03:44,140 --> 00:03:47,320
+go so here's array index up array index
+
+74
+00:03:47,320 --> 00:03:49,270
+up is pretty straightforward it's
+
+75
+00:03:49,270 --> 00:03:51,280
+basically you give it so you have an
+
+76
+00:03:51,280 --> 00:03:53,290
+array and you're looking for a needle in
+
+77
+00:03:53,290 --> 00:03:55,000
+a haystack you're looking for the index
+
+78
+00:03:55,000 --> 00:03:57,520
+of a given element and it does strict
+
+79
+00:03:57,520 --> 00:04:00,130
+equality comparisons and so this if
+
+80
+00:04:00,130 --> 00:04:01,360
+you're if you're familiar with shims
+
+81
+00:04:01,360 --> 00:04:05,700
+this looks really close to a shim right
+
+82
+00:04:05,700 --> 00:04:08,620
+you can see down here it's doing a
+
+83
+00:04:08,620 --> 00:04:10,690
+little extra check though it says hey if
+
+84
+00:04:10,690 --> 00:04:13,120
+this array is packed so there's a
+
+85
+00:04:13,120 --> 00:04:14,950
+there's a concept in arrays and the
+
+86
+00:04:14,950 --> 00:04:17,859
+older es5 yes three methods had to be
+
+87
+00:04:17,859 --> 00:04:21,430
+aware of this is sparse arrays sparse
+
+88
+00:04:21,430 --> 00:04:23,710
+arrays are these things that I don't
+
+89
+00:04:23,710 --> 00:04:25,810
+deal with I treat them as all dense but
+
+90
+00:04:25,810 --> 00:04:27,070
+they have performance impacts and so
+
+91
+00:04:27,070 --> 00:04:28,750
+that's why this JavaScript function is
+
+92
+00:04:28,750 --> 00:04:30,940
+forking its behavior based on that so
+
+93
+00:04:30,940 --> 00:04:36,010
+this is calling into a helper that is I
+
+94
+00:04:36,010 --> 00:04:39,430
+believe C++ code that allows them to
+
+95
+00:04:39,430 --> 00:04:41,680
+to Detective if an array is packed or
+
+96
+00:04:41,680 --> 00:04:44,470
+not so basically dense or sparse and
+
+97
+00:04:44,470 --> 00:04:46,720
+then it goes here so now we've seen that
+
+98
+00:04:46,720 --> 00:04:49,240
+that looks pretty straight forward let's
+
+99
+00:04:49,240 --> 00:04:52,600
+look at let's see we don't need to see
+
+100
+00:04:52,600 --> 00:04:54,940
+the the is pack this is the check right
+
+101
+00:04:54,940 --> 00:04:58,570
+here to see if a value is packed and I'm
+
+102
+00:04:58,570 --> 00:05:01,810
+not a C++ dev so I really don't know a
+
+103
+00:05:01,810 --> 00:05:04,000
+ton of what's going on there but you can
+
+104
+00:05:04,000 --> 00:05:05,920
+see that you can you can a mix
+
+105
+00:05:05,920 --> 00:05:08,320
+javascript and and native methods
+
+106
+00:05:08,320 --> 00:05:10,060
+together to create your built-in
+
+107
+00:05:10,060 --> 00:05:12,840
+implementation and that's really cool
+
+108
+00:05:12,840 --> 00:05:18,810
+here is the eights version of index of
+
+109
+00:05:18,810 --> 00:05:21,880
+so we can zoom in here you can see it's
+
+110
+00:05:21,880 --> 00:05:23,320
+doing the same kind of juggling it's
+
+111
+00:05:23,320 --> 00:05:26,740
+doing a length checks it's doing the
+
+112
+00:05:26,740 --> 00:05:29,200
+same use like the use sparse variant
+
+113
+00:05:29,200 --> 00:05:31,300
+check and there it's having to make an
+
+114
+00:05:31,300 --> 00:05:34,000
+inference about the array so it's having
+
+115
+00:05:34,000 --> 00:05:35,710
+to guess if the array is likely to be
+
+116
+00:05:35,710 --> 00:05:38,620
+sparse and then go down this path else
+
+117
+00:05:38,620 --> 00:05:40,900
+go down another path so you notice that
+
+118
+00:05:40,900 --> 00:05:46,480
+here they may not have as much insight
+
+119
+00:05:46,480 --> 00:05:49,810
+into the engine or into the into what's
+
+120
+00:05:49,810 --> 00:05:51,340
+going on with the values that's being
+
+121
+00:05:51,340 --> 00:05:52,890
+passed because it's just JavaScript
+
+122
+00:05:52,890 --> 00:05:57,610
+right so that may be an issue with
+
+123
+00:05:57,610 --> 00:05:58,960
+implementing it in JavaScript now you
+
+124
+00:05:58,960 --> 00:06:01,270
+can see here the low dash implementation
+
+125
+00:06:01,270 --> 00:06:05,290
+of this method and what i'm doing here
+
+126
+00:06:05,290 --> 00:06:09,490
+is detecting if a value i do a little
+
+127
+00:06:09,490 --> 00:06:11,020
+bit of argument juggling here i detect
+
+128
+00:06:11,020 --> 00:06:13,540
+if you're passing true to be able to do
+
+129
+00:06:13,540 --> 00:06:16,770
+a binary search or if you're passing
+
+130
+00:06:16,770 --> 00:06:19,960
+just a note and index to do something
+
+131
+00:06:19,960 --> 00:06:23,950
+like a from index and from there i also
+
+132
+00:06:23,950 --> 00:06:28,240
+match i throw more functionality into
+
+133
+00:06:28,240 --> 00:06:29,500
+this and i'll get into this a little bit
+
+134
+00:06:29,500 --> 00:06:33,640
+with with features but with javascript
+
+135
+00:06:33,640 --> 00:06:35,350
+implementations of your built-ins and if
+
+136
+00:06:35,350 --> 00:06:37,900
+you're leveraging javascript i've found
+
+137
+00:06:37,900 --> 00:06:40,140
+a way in lodash to have better than
+
+138
+00:06:40,140 --> 00:06:42,930
+built in performance implementing a
+
+139
+00:06:42,930 --> 00:06:45,370
+simpler subset of the built-in
+
+140
+00:06:45,370 --> 00:06:47,590
+functionality but what I'm able to do on
+
+141
+00:06:47,590 --> 00:06:48,970
+top of that then is go back and add
+
+142
+00:06:48,970 --> 00:06:51,430
+features and still be on par or better
+
+143
+00:06:51,430 --> 00:06:52,090
+than bill
+
+144
+00:06:52,090 --> 00:06:55,330
+so in this case I'm also doing a check
+
+145
+00:06:55,330 --> 00:06:57,820
+for na n so normally index sub doesn't
+
+146
+00:06:57,820 --> 00:06:59,919
+support in again if you if you try to
+
+147
+00:06:59,919 --> 00:07:01,540
+look for na n it's always going to
+
+148
+00:07:01,540 --> 00:07:03,580
+return negative one but in this case
+
+149
+00:07:03,580 --> 00:07:05,350
+I've added support for that because es6
+
+150
+00:07:05,350 --> 00:07:07,479
+is starting to be able to match in a in
+
+151
+00:07:07,479 --> 00:07:09,960
+value so like if you have a set or a map
+
+152
+00:07:09,960 --> 00:07:12,100
+so i wanted that to be consistent
+
+153
+00:07:12,100 --> 00:07:16,090
+throughout so you can see here a real
+
+154
+00:07:16,090 --> 00:07:18,130
+basic implementation did you see the the
+
+155
+00:07:18,130 --> 00:07:20,229
+the previous implementations were very
+
+156
+00:07:20,229 --> 00:07:22,360
+complex they had all those forking for
+
+157
+00:07:22,360 --> 00:07:24,400
+different cases and conditions but you
+
+158
+00:07:24,400 --> 00:07:26,110
+can see here the vanilla JavaScript
+
+159
+00:07:26,110 --> 00:07:28,300
+version is basically a for loop doing
+
+160
+00:07:28,300 --> 00:07:31,270
+the strict equality check and you notice
+
+161
+00:07:31,270 --> 00:07:33,220
+that if it's na n I hand off to another
+
+162
+00:07:33,220 --> 00:07:34,479
+helper function because that's not the
+
+163
+00:07:34,479 --> 00:07:36,970
+common case so these kinds of principles
+
+164
+00:07:36,970 --> 00:07:39,250
+can also be applied to your array
+
+165
+00:07:39,250 --> 00:07:43,389
+built-ins in the browser so we'll look
+
+166
+00:07:43,389 --> 00:07:45,760
+at that the next example I want to show
+
+167
+00:07:45,760 --> 00:07:49,060
+and discuss is int'l so the
+
+168
+00:07:49,060 --> 00:07:52,570
+internationalization API and that's this
+
+169
+00:07:52,570 --> 00:07:55,810
+spec hear that i'll zoom in on because
+
+170
+00:07:55,810 --> 00:07:57,220
+everyone likes reading technical
+
+171
+00:07:57,220 --> 00:08:00,729
+specifications huh talks about the Intel
+
+172
+00:08:00,729 --> 00:08:06,190
+object so in an IE and in ms edge we
+
+173
+00:08:06,190 --> 00:08:08,380
+implement the Intel internationalization
+
+174
+00:08:08,380 --> 00:08:10,960
+API in JavaScript and so there's pros
+
+175
+00:08:10,960 --> 00:08:15,150
+and cons to that so we got in on the
+
+176
+00:08:15,150 --> 00:08:17,919
+self-hosting game as well so let's go
+
+177
+00:08:17,919 --> 00:08:22,660
+back to here alright so the good here
+
+178
+00:08:22,660 --> 00:08:24,820
+the good was we were able to write it in
+
+179
+00:08:24,820 --> 00:08:26,289
+JavaScript it was able to simplify the
+
+180
+00:08:26,289 --> 00:08:28,479
+arguments handling of the arguments it
+
+181
+00:08:28,479 --> 00:08:31,090
+was able to be understood in red so like
+
+182
+00:08:31,090 --> 00:08:33,760
+I'm not a C++ dev but I know JavaScript
+
+183
+00:08:33,760 --> 00:08:35,200
+so I can look at that and help out and
+
+184
+00:08:35,200 --> 00:08:37,089
+say like hey this or that other people
+
+185
+00:08:37,089 --> 00:08:38,529
+JavaScript dad's that we have could
+
+186
+00:08:38,529 --> 00:08:40,300
+could do that at the company so it was
+
+187
+00:08:40,300 --> 00:08:43,360
+it was it was good simplified reading
+
+188
+00:08:43,360 --> 00:08:46,420
+and understanding integrating with C++
+
+189
+00:08:46,420 --> 00:08:48,700
+with simpler than we thought about that
+
+190
+00:08:48,700 --> 00:08:51,850
+allowed us to spin this up rapidly and
+
+191
+00:08:51,850 --> 00:08:55,720
+get the get that implemented but with
+
+192
+00:08:55,720 --> 00:08:59,080
+the good comes the bad all of that
+
+193
+00:08:59,080 --> 00:09:00,910
+JavaScript you know you can coerce
+
+194
+00:09:00,910 --> 00:09:02,860
+values you've got value of you've got
+
+195
+00:09:02,860 --> 00:09:04,660
+prototypical inheritance
+
+196
+00:09:04,660 --> 00:09:06,550
+all these ways that you can manipulate
+
+197
+00:09:06,550 --> 00:09:09,610
+the language to cause side effects and
+
+198
+00:09:09,610 --> 00:09:11,379
+your built-ins shouldn't have side
+
+199
+00:09:11,379 --> 00:09:13,149
+effects right they should just be
+
+200
+00:09:13,149 --> 00:09:15,160
+isolated you shouldn't be able to to
+
+201
+00:09:15,160 --> 00:09:16,899
+mess with the surrounding language and
+
+202
+00:09:16,899 --> 00:09:19,569
+affect their behavior so all of that had
+
+203
+00:09:19,569 --> 00:09:21,910
+to be had to be guarded against and so
+
+204
+00:09:21,910 --> 00:09:25,750
+that was tricky to do you have to create
+
+205
+00:09:25,750 --> 00:09:27,970
+and hold references 22 normally
+
+206
+00:09:27,970 --> 00:09:30,370
+functions you take for granted and you
+
+207
+00:09:30,370 --> 00:09:32,170
+have to find ways to guard against
+
+208
+00:09:32,170 --> 00:09:34,540
+people changing things on the object a
+
+209
+00:09:34,540 --> 00:09:37,930
+prototype or other other methods that
+
+210
+00:09:37,930 --> 00:09:40,779
+would cause your functionality to have
+
+211
+00:09:40,779 --> 00:09:42,879
+side effects there's also heavier
+
+212
+00:09:42,879 --> 00:09:44,889
+boilerplate because of all of that
+
+213
+00:09:44,889 --> 00:09:47,439
+spinning up the development of that that
+
+214
+00:09:47,439 --> 00:09:50,410
+single implementation took longer of
+
+215
+00:09:50,410 --> 00:09:52,329
+well took more boilerplate to get that
+
+216
+00:09:52,329 --> 00:09:54,120
+that ready now hopefully future
+
+217
+00:09:54,120 --> 00:09:55,810
+implementations will already have that
+
+218
+00:09:55,810 --> 00:09:59,529
+boilerplate in place and then the ugly
+
+219
+00:09:59,529 --> 00:10:01,540
+so I already mentioned preventing
+
+220
+00:10:01,540 --> 00:10:03,490
+tainting of internal JS objects but then
+
+221
+00:10:03,490 --> 00:10:07,360
+you have to be able to test that and try
+
+222
+00:10:07,360 --> 00:10:09,579
+to to ensure that you're guarding
+
+223
+00:10:09,579 --> 00:10:11,199
+against that so it not only complicates
+
+224
+00:10:11,199 --> 00:10:13,660
+the guards so the implementing all the
+
+225
+00:10:13,660 --> 00:10:15,189
+guards around it but also the testing of
+
+226
+00:10:15,189 --> 00:10:18,399
+those two and then also ensuring that
+
+227
+00:10:18,399 --> 00:10:19,930
+you have the correct stack behavior so
+
+228
+00:10:19,930 --> 00:10:21,459
+if you're debugging and you want to walk
+
+229
+00:10:21,459 --> 00:10:22,959
+the stack you don't want to go into the
+
+230
+00:10:22,959 --> 00:10:24,819
+internals of the built-in you want that
+
+231
+00:10:24,819 --> 00:10:27,310
+to be obscured and hidden away I
+
+232
+00:10:27,310 --> 00:10:30,069
+remember there was versions of v8 that
+
+233
+00:10:30,069 --> 00:10:33,009
+had their built-ins written in
+
+234
+00:10:33,009 --> 00:10:34,810
+JavaScript and you could to string them
+
+235
+00:10:34,810 --> 00:10:37,569
+and view their source and I was trying
+
+236
+00:10:37,569 --> 00:10:38,800
+to find the version of that because I
+
+237
+00:10:38,800 --> 00:10:40,060
+always thought that was so cool but
+
+238
+00:10:40,060 --> 00:10:42,519
+apparently it leaked things that aren't
+
+239
+00:10:42,519 --> 00:10:46,480
+supposed to be leaked but awesome and
+
+240
+00:10:46,480 --> 00:10:48,519
+this would be another one to you don't
+
+241
+00:10:48,519 --> 00:10:50,620
+want to walk your stack and then via gig
+
+242
+00:10:50,620 --> 00:10:53,019
+into the internals of the built-in so
+
+243
+00:10:53,019 --> 00:10:57,699
+there's that the bad and the ugly now
+
+244
+00:10:57,699 --> 00:11:01,120
+moving on to other things before I said
+
+245
+00:11:01,120 --> 00:11:02,589
+hey it's great for performance you get
+
+246
+00:11:02,589 --> 00:11:05,889
+in lining but you also and i ended up
+
+247
+00:11:05,889 --> 00:11:08,740
+this earlier you also don't have all of
+
+248
+00:11:08,740 --> 00:11:13,300
+the tools in optimizations and and data
+
+249
+00:11:13,300 --> 00:11:16,269
+available that the the the the engine
+
+250
+00:11:16,269 --> 00:11:17,600
+would behind the scenes
+
+251
+00:11:17,600 --> 00:11:21,440
+so that's why the v8 implementation was
+
+252
+00:11:21,440 --> 00:11:23,209
+having to make a guess if something was
+
+253
+00:11:23,209 --> 00:11:26,529
+a sparser rang right they didn't know
+
+254
+00:11:26,529 --> 00:11:28,670
+right out the gate that something was
+
+255
+00:11:28,670 --> 00:11:32,470
+and so that can cause overhead and so
+
+256
+00:11:32,470 --> 00:11:40,519
+i'll show you this going back in 2012 i
+
+257
+00:11:40,519 --> 00:11:43,610
+had a conference talk and it was called
+
+258
+00:11:43,610 --> 00:11:46,639
+the hidden costs of JavaScript natives
+
+259
+00:11:46,639 --> 00:11:48,079
+and that's where I went through and
+
+260
+00:11:48,079 --> 00:11:51,230
+showed every built-in and how they were
+
+261
+00:11:51,230 --> 00:11:54,410
+horribly slow compared to vanilla
+
+262
+00:11:54,410 --> 00:11:56,630
+JavaScript alternatives so that was in
+
+263
+00:11:56,630 --> 00:12:03,800
+2012 and one of those links was or let's
+
+264
+00:12:03,800 --> 00:12:09,290
+see index of and I showed the
+
+265
+00:12:09,290 --> 00:12:12,589
+performance of native versus the vanilla
+
+266
+00:12:12,589 --> 00:12:19,490
+so let me go to let's see this one and
+
+267
+00:12:19,490 --> 00:12:28,460
+let's see where we're at
+
+268
+00:12:28,470 --> 00:12:37,590
+live live demo oh yeah and we're moving
+
+269
+00:12:37,590 --> 00:12:43,950
+on from this the the benchmark would
+
+270
+00:12:43,950 --> 00:12:46,290
+show that we're still behind so even
+
+271
+00:12:46,290 --> 00:12:48,450
+with implementing these methods in
+
+272
+00:12:48,450 --> 00:12:51,000
+JavaScript they're still not as fast as
+
+273
+00:12:51,000 --> 00:12:53,850
+simplified alternatives so performance
+
+274
+00:12:53,850 --> 00:12:58,440
+isn't guaranteed hmm oh sorry that well
+
+275
+00:12:58,440 --> 00:12:59,550
+this this slide here isn't really
+
+276
+00:12:59,550 --> 00:13:10,870
+important I'll go back to the other one
+
+277
+00:13:10,880 --> 00:13:15,180
+so no silver bullet on performance but
+
+278
+00:13:15,180 --> 00:13:18,150
+I've noticed that in those cases where
+
+279
+00:13:18,150 --> 00:13:22,080
+you come out of the gate without the the
+
+280
+00:13:22,080 --> 00:13:27,360
+performance here's one object at a sign
+
+281
+00:13:27,360 --> 00:13:29,130
+I was very psyched as a library author
+
+282
+00:13:29,130 --> 00:13:33,720
+to use this method and as soon as it
+
+283
+00:13:33,720 --> 00:13:35,130
+appeared in windows 10 I tried it out
+
+284
+00:13:35,130 --> 00:13:37,530
+yay we were sixty percent faster than
+
+285
+00:13:37,530 --> 00:13:39,810
+vanilla JavaScript alternatives so I was
+
+286
+00:13:39,810 --> 00:13:42,740
+going to use it in lodash but then I
+
+287
+00:13:42,740 --> 00:13:46,170
+looked at the other browsers and Firefox
+
+288
+00:13:46,170 --> 00:13:47,940
+nightly hey they removed their try-catch
+
+289
+00:13:47,940 --> 00:13:50,670
+logic and object out a sign is on par
+
+290
+00:13:50,670 --> 00:13:53,280
+with javascript alternatives okay so
+
+291
+00:13:53,280 --> 00:13:57,090
+it's on par or better that's great but
+
+292
+00:13:57,090 --> 00:14:01,710
+v8 its sixty-two percent slower than
+
+293
+00:14:01,710 --> 00:14:04,260
+JavaScript alternatives so it puts me in
+
+294
+00:14:04,260 --> 00:14:06,960
+a tricky spot of having to make tough
+
+295
+00:14:06,960 --> 00:14:08,730
+choices about whether I want to go
+
+296
+00:14:08,730 --> 00:14:10,710
+through all the hoops to fork my code to
+
+297
+00:14:10,710 --> 00:14:13,290
+use this built-in when it's not as
+
+298
+00:14:13,290 --> 00:14:14,610
+performance especially in a scenario
+
+299
+00:14:14,610 --> 00:14:19,670
+that's like a node specific scenario so
+
+300
+00:14:19,670 --> 00:14:22,620
+the lesson there is that these methods
+
+301
+00:14:22,620 --> 00:14:25,110
+are all written in JavaScript and their
+
+302
+00:14:25,110 --> 00:14:27,900
+self hosted except for chakras and
+
+303
+00:14:27,900 --> 00:14:31,980
+chakras was the one that was the fastest
+
+304
+00:14:31,980 --> 00:14:35,070
+so in that case we took the lump for
+
+305
+00:14:35,070 --> 00:14:36,750
+implementation ease of implementation
+
+306
+00:14:36,750 --> 00:14:39,150
+yes it was harder to implement right
+
+307
+00:14:39,150 --> 00:14:41,350
+then let's say writing JavaScript
+
+308
+00:14:41,350 --> 00:14:43,810
+the end result was a faster method out
+
+309
+00:14:43,810 --> 00:14:45,100
+of the box and we still have room to
+
+310
+00:14:45,100 --> 00:14:47,200
+optimize like this was normally when you
+
+311
+00:14:47,200 --> 00:14:49,240
+when you create these methods its
+
+312
+00:14:49,240 --> 00:14:51,160
+implement first get all your unit tests
+
+313
+00:14:51,160 --> 00:14:53,290
+passing push it out and then go back in
+
+314
+00:14:53,290 --> 00:14:56,140
+optimize right so this is this is our
+
+315
+00:14:56,140 --> 00:14:57,580
+this is our right out of the gate
+
+316
+00:14:57,580 --> 00:14:59,800
+performance and so if we want we can go
+
+317
+00:14:59,800 --> 00:15:02,050
+back and iterate over that and improve
+
+318
+00:15:02,050 --> 00:15:03,850
+that right now we're already giving
+
+319
+00:15:03,850 --> 00:15:05,680
+developers what they want which is an
+
+320
+00:15:05,680 --> 00:15:07,990
+API that's fast enough but they don't
+
+321
+00:15:07,990 --> 00:15:09,730
+have to sit there and pull in another
+
+322
+00:15:09,730 --> 00:15:14,370
+library dependency which brings me to
+
+323
+00:15:14,370 --> 00:15:16,360
+developers shouldn't be forced to use a
+
+324
+00:15:16,360 --> 00:15:17,920
+library to have faster built-in
+
+325
+00:15:17,920 --> 00:15:19,420
+equivalents I shouldn't have to write
+
+326
+00:15:19,420 --> 00:15:22,270
+lodash to have faster built-in
+
+327
+00:15:22,270 --> 00:15:24,400
+performance for these common utility
+
+328
+00:15:24,400 --> 00:15:27,640
+libraries so I've been pushing at chakra
+
+329
+00:15:27,640 --> 00:15:31,150
+to to optimize our built-ins and so
+
+330
+00:15:31,150 --> 00:15:32,830
+that's what that's what we've done we
+
+331
+00:15:32,830 --> 00:15:33,910
+came out with the blog post where we
+
+332
+00:15:33,910 --> 00:15:35,640
+talked about specifically array index of
+
+333
+00:15:35,640 --> 00:15:39,820
+that wasn't a random method picked they
+
+334
+00:15:39,820 --> 00:15:42,160
+crawled the top sites found the most
+
+335
+00:15:42,160 --> 00:15:44,920
+used JavaScript methods and then put
+
+336
+00:15:44,920 --> 00:15:46,660
+them on a priority list for optimization
+
+337
+00:15:46,660 --> 00:15:49,000
+and array index of was that was one of
+
+338
+00:15:49,000 --> 00:15:53,590
+the highest es five methods used so i
+
+339
+00:15:53,590 --> 00:15:56,500
+would say expect more of that i want to
+
+340
+00:15:56,500 --> 00:15:58,510
+to challenge the other browsers to to
+
+341
+00:15:58,510 --> 00:15:59,950
+get involved in this and optimize your
+
+342
+00:15:59,950 --> 00:16:02,980
+built-ins because we're creating a
+
+343
+00:16:02,980 --> 00:16:06,830
+situation where we spend so much time
+
+344
+00:16:06,840 --> 00:16:09,340
+creating these methods specifying these
+
+345
+00:16:09,340 --> 00:16:10,990
+methods testing these methods
+
+346
+00:16:10,990 --> 00:16:12,940
+implementing these methods in the
+
+347
+00:16:12,940 --> 00:16:15,130
+browser and then having such poor
+
+348
+00:16:15,130 --> 00:16:17,050
+performance that developers aren't using
+
+349
+00:16:17,050 --> 00:16:19,300
+them so who are we making right we
+
+350
+00:16:19,300 --> 00:16:20,470
+should we should be delighting
+
+351
+00:16:20,470 --> 00:16:22,900
+developers with things like optimizing
+
+352
+00:16:22,900 --> 00:16:24,610
+the built-ins and optimizing the usage
+
+353
+00:16:24,610 --> 00:16:28,480
+pass those paths from es5 to es6 so for
+
+354
+00:16:28,480 --> 00:16:31,300
+example your spread operator should be
+
+355
+00:16:31,300 --> 00:16:32,770
+fast and the alternative that should
+
+356
+00:16:32,770 --> 00:16:34,330
+also be optimized so you're not getting
+
+357
+00:16:34,330 --> 00:16:37,450
+a penalty for switching to a new syntax
+
+358
+00:16:37,450 --> 00:16:39,460
+they should make sure that the up the
+
+359
+00:16:39,460 --> 00:16:41,080
+the paths the fast pads from one
+
+360
+00:16:41,080 --> 00:16:43,150
+translate to the other so that's what
+
+361
+00:16:43,150 --> 00:16:44,770
+you'll start seeing a focus on is is
+
+362
+00:16:44,770 --> 00:16:51,140
+more built in performance
+
+363
+00:16:51,150 --> 00:16:53,650
+I'm going to hit the next slide and I
+
+364
+00:16:53,650 --> 00:16:55,660
+don't know what it's going to take me so
+
+365
+00:16:55,660 --> 00:16:58,990
+here we go all right whoo optimizing the
+
+366
+00:16:58,990 --> 00:17:00,040
+built-ins which I've already talked
+
+367
+00:17:00,040 --> 00:17:08,230
+about nice one more all right that's the
+
+368
+00:17:08,230 --> 00:17:14,380
+end one so I knew it was close if you
+
+369
+00:17:14,380 --> 00:17:15,670
+want to talk to me in the hallway I'll
+
+370
+00:17:15,670 --> 00:17:19,329
+talk to you about the other issues and
+
+371
+00:17:19,329 --> 00:17:22,120
+in tweaks with with this other work
+
+372
+00:17:22,120 --> 00:17:23,380
+we're doing with optimizing our
+
+373
+00:17:23,380 --> 00:17:36,650
+built-ins and that's it cool thank you
+

@@ -1,0 +1,2985 @@
+1
+00:00:18,850 --> 00:00:21,050
+
+I'm gonna talk about optimizing for
+
+2
+00:00:21,050 --> 00:00:22,640
+developer delight I am NOT going to talk
+
+3
+00:00:22,640 --> 00:00:23,960
+about there's no right answer because
+
+4
+00:00:23,960 --> 00:00:25,970
+Pete and Andrew kinda already did that
+
+5
+00:00:25,970 --> 00:00:29,750
+justice earlier today and I just worked
+
+6
+00:00:29,750 --> 00:00:31,369
+on that talk for a month and it wasn't
+
+7
+00:00:31,369 --> 00:00:32,920
+going anywhere so I wrote this instead
+
+8
+00:00:32,920 --> 00:00:36,260
+these days i work at bazaarvoice i'm a
+
+9
+00:00:36,260 --> 00:00:37,640
+senior software engineer at bazaarvoice
+
+10
+00:00:37,640 --> 00:00:40,190
+where alex is working for another little
+
+11
+00:00:40,190 --> 00:00:43,370
+bit so i said the whole currently thing
+
+12
+00:00:43,370 --> 00:00:46,010
+and i work on the client-side framework
+
+13
+00:00:46,010 --> 00:00:49,100
+that powers the ratings and reviews and
+
+14
+00:00:49,100 --> 00:00:51,650
+lots of other applications of our core
+
+15
+00:00:51,650 --> 00:00:53,680
+application is a ratings and reviews
+
+16
+00:00:53,680 --> 00:00:56,239
+third-party javascript widget so if you
+
+17
+00:00:56,239 --> 00:01:00,110
+are big retailer then and you want to
+
+18
+00:01:00,110 --> 00:01:03,350
+have reviews on your site then you might
+
+19
+00:01:03,350 --> 00:01:05,059
+use the Bazaarvoice ratings and reviews
+
+20
+00:01:05,059 --> 00:01:07,460
+product in order to get reviews on your
+
+21
+00:01:07,460 --> 00:01:08,780
+site without you having to write all
+
+22
+00:01:08,780 --> 00:01:11,720
+that code yourself and i'm working on
+
+23
+00:01:11,720 --> 00:01:14,180
+the framework that underlies the new
+
+24
+00:01:14,180 --> 00:01:18,229
+version of this system of the software
+
+25
+00:01:18,229 --> 00:01:20,810
+and there's a huge motivation to get our
+
+26
+00:01:20,810 --> 00:01:23,420
+customers switched over to this new
+
+27
+00:01:23,420 --> 00:01:26,659
+version the legacy version long story
+
+28
+00:01:26,659 --> 00:01:28,670
+short kind of requires a lot more effort
+
+29
+00:01:28,670 --> 00:01:32,450
+on our part I could talk about that and
+
+30
+00:01:32,450 --> 00:01:35,689
+the 4000 XML tag options that you can
+
+31
+00:01:35,689 --> 00:01:38,180
+set in the old version but it won't of
+
+32
+00:01:38,180 --> 00:01:39,710
+its didja law or effort that goes into
+
+33
+00:01:39,710 --> 00:01:42,560
+configuring the old legacy version of
+
+34
+00:01:42,560 --> 00:01:44,539
+the software and the new version of the
+
+35
+00:01:44,539 --> 00:01:47,240
+software is configurable by the client
+
+36
+00:01:47,240 --> 00:01:49,429
+rather than by us and so long story
+
+37
+00:01:49,429 --> 00:01:52,219
+short we want clients on it because that
+
+38
+00:01:52,219 --> 00:01:54,560
+means less work for the same amount of
+
+39
+00:01:54,560 --> 00:01:56,899
+money that's pretty cool so of course
+
+40
+00:01:56,899 --> 00:01:58,429
+customers don't want to switch to the
+
+41
+00:01:58,429 --> 00:02:00,799
+new version of the software until the
+
+42
+00:02:00,799 --> 00:02:02,869
+new version has all the same features as
+
+43
+00:02:02,869 --> 00:02:05,240
+the old version has and you know word
+
+44
+00:02:05,240 --> 00:02:06,740
+we're negotiating on some of that but
+
+45
+00:02:06,740 --> 00:02:08,119
+they're still our features that we need
+
+46
+00:02:08,119 --> 00:02:11,060
+to build out because they existed in the
+
+47
+00:02:11,060 --> 00:02:12,950
+old software they were important to
+
+48
+00:02:12,950 --> 00:02:15,230
+clients in the old software and before
+
+49
+00:02:15,230 --> 00:02:16,160
+they're willing to sign on the dotted
+
+50
+00:02:16,160 --> 00:02:18,319
+line to switch over the new version they
+
+51
+00:02:18,319 --> 00:02:20,210
+need those features there and said
+
+52
+00:02:20,210 --> 00:02:25,180
+bottom line the easier I can make it for
+
+53
+00:02:25,180 --> 00:02:28,370
+developers to create new features on top
+
+54
+00:02:28,370 --> 00:02:31,010
+of this framework in the new system the
+
+55
+00:02:31,010 --> 00:02:31,940
+easier I can make it
+
+56
+00:02:31,940 --> 00:02:33,800
+them to do that the more money we make
+
+57
+00:02:33,800 --> 00:02:36,200
+faster so that's kind of the point of
+
+58
+00:02:36,200 --> 00:02:38,060
+this talk today and to give you a sense
+
+59
+00:02:38,060 --> 00:02:40,130
+of scale of the framework and the
+
+60
+00:02:40,130 --> 00:02:42,710
+application we're talking about kind of
+
+61
+00:02:42,710 --> 00:02:45,320
+about twenty five thousand lines of code
+
+62
+00:02:45,320 --> 00:02:47,600
+for the core application and framework
+
+63
+00:02:47,600 --> 00:02:51,260
+another 10,000 or so lines of tests unit
+
+64
+00:02:51,260 --> 00:02:53,240
+tests and functional tests and if you
+
+65
+00:02:53,240 --> 00:02:54,740
+throw in all the vendor libraries and
+
+66
+00:02:54,740 --> 00:02:56,750
+templates and tooling the development
+
+67
+00:02:56,750 --> 00:02:59,150
+server and all these other pieces then
+
+68
+00:02:59,150 --> 00:03:00,560
+you get up to about ninety thousand
+
+69
+00:03:00,560 --> 00:03:03,350
+lines of code so this isn't enormous
+
+70
+00:03:03,350 --> 00:03:07,730
+like this is not gmail but it's big it's
+
+71
+00:03:07,730 --> 00:03:09,560
+probably the biggest application that
+
+72
+00:03:09,560 --> 00:03:11,900
+I've had the opportunity to work on so
+
+73
+00:03:11,900 --> 00:03:13,700
+it's big enough and there are some
+
+74
+00:03:13,700 --> 00:03:17,540
+issues that arise when you have a piece
+
+75
+00:03:17,540 --> 00:03:19,970
+of software that's this big being worked
+
+76
+00:03:19,970 --> 00:03:22,640
+on this by this many developers and
+
+77
+00:03:22,640 --> 00:03:24,830
+being worked on by developers of
+
+78
+00:03:24,830 --> 00:03:26,630
+different JavaScript skill levels
+
+79
+00:03:26,630 --> 00:03:28,160
+everyone is our voice is really smart
+
+80
+00:03:28,160 --> 00:03:30,290
+but some of them came from Java some of
+
+81
+00:03:30,290 --> 00:03:32,270
+them came from Python some of them came
+
+82
+00:03:32,270 --> 00:03:34,040
+from who knows where I like to make fun
+
+83
+00:03:34,040 --> 00:03:35,330
+of the job of people but they're still
+
+84
+00:03:35,330 --> 00:03:38,959
+nice to me so I appreciate that and and
+
+85
+00:03:38,959 --> 00:03:40,550
+so a whole bunch of different people a
+
+86
+00:03:40,550 --> 00:03:41,420
+whole bunch of different JavaScript
+
+87
+00:03:41,420 --> 00:03:43,850
+skill levels and of course also doing
+
+88
+00:03:43,850 --> 00:03:45,560
+this all under the pressure of deadlines
+
+89
+00:03:45,560 --> 00:03:48,620
+and we had a particularly large deadline
+
+90
+00:03:48,620 --> 00:03:49,940
+before I started working there in
+
+91
+00:03:49,940 --> 00:03:52,220
+November and I sort of come here in
+
+92
+00:03:52,220 --> 00:03:53,660
+February the deadline was in November
+
+93
+00:03:53,660 --> 00:03:56,709
+and a whole lot of stuff happened that
+
+94
+00:03:56,709 --> 00:03:58,940
+some people may not be particularly
+
+95
+00:03:58,940 --> 00:04:01,010
+proud of in hindsight but we've all been
+
+96
+00:04:01,010 --> 00:04:02,780
+there too so I want to make clear that
+
+97
+00:04:02,780 --> 00:04:04,640
+none of this talk is like oh those dumb
+
+98
+00:04:04,640 --> 00:04:06,590
+people are our voice I had to go fix all
+
+99
+00:04:06,590 --> 00:04:09,470
+their no um they wrote good code
+
+100
+00:04:09,470 --> 00:04:10,760
+but they did a lot they did a lot of
+
+101
+00:04:10,760 --> 00:04:13,570
+this under pressure and so decent site
+
+102
+00:04:13,570 --> 00:04:16,220
+decent-sized code bases with lots of
+
+103
+00:04:16,220 --> 00:04:18,019
+developers working on them are
+
+104
+00:04:18,019 --> 00:04:20,030
+definitely interesting creatures because
+
+105
+00:04:20,030 --> 00:04:21,440
+even if you have a whole bunch of really
+
+106
+00:04:21,440 --> 00:04:23,900
+smart people working on them you still
+
+107
+00:04:23,900 --> 00:04:26,240
+can end up with people making decisions
+
+108
+00:04:26,240 --> 00:04:28,880
+that are in the interest of the feature
+
+109
+00:04:28,880 --> 00:04:31,310
+that they're working on today and not
+
+110
+00:04:31,310 --> 00:04:35,180
+making decisions based on the interests
+
+111
+00:04:35,180 --> 00:04:36,890
+of the code base as a whole or the
+
+112
+00:04:36,890 --> 00:04:38,060
+developer who's going to be working on
+
+113
+00:04:38,060 --> 00:04:40,520
+another feature tomorrow or next week or
+
+114
+00:04:40,520 --> 00:04:43,490
+next month and so even really smart
+
+115
+00:04:43,490 --> 00:04:44,520
+people can may
+
+116
+00:04:44,520 --> 00:04:48,960
+decisions that are good in the narrow
+
+117
+00:04:48,960 --> 00:04:51,690
+case but cause problems down the road
+
+118
+00:04:51,690 --> 00:04:53,970
+for other people and so what I want to
+
+119
+00:04:53,970 --> 00:04:55,409
+talk about today is this idea of
+
+120
+00:04:55,409 --> 00:04:57,300
+developer delight which is probably
+
+121
+00:04:57,300 --> 00:04:59,550
+overstating it a little bit I don't know
+
+122
+00:04:59,550 --> 00:05:01,470
+that anyways like yay I get to work with
+
+123
+00:05:01,470 --> 00:05:04,110
+this code I am I'm pretty excited about
+
+124
+00:05:04,110 --> 00:05:05,400
+working with this code but I might be
+
+125
+00:05:05,400 --> 00:05:08,669
+weird so developer delight developer
+
+126
+00:05:08,669 --> 00:05:10,830
+happiness there are lots of things that
+
+127
+00:05:10,830 --> 00:05:15,870
+make us happy money is one and time off
+
+128
+00:05:15,870 --> 00:05:17,130
+and you know there's lots of things that
+
+129
+00:05:17,130 --> 00:05:18,300
+are out of my control that make
+
+130
+00:05:18,300 --> 00:05:20,460
+developers happy but the things that are
+
+131
+00:05:20,460 --> 00:05:23,520
+in my control in this code base and in
+
+132
+00:05:23,520 --> 00:05:26,039
+this job number one getting a clear path
+
+133
+00:05:26,039 --> 00:05:28,319
+for getting people up to speed that was
+
+134
+00:05:28,319 --> 00:05:29,759
+one of the first things that I focused
+
+135
+00:05:29,759 --> 00:05:31,919
+on when i started at bazaarvoice was i
+
+136
+00:05:31,919 --> 00:05:34,229
+don't know where to start how do i make
+
+137
+00:05:34,229 --> 00:05:36,509
+this easier for the next person how do i
+
+138
+00:05:36,509 --> 00:05:38,569
+make it so that Alex doesn't that the
+
+139
+00:05:38,569 --> 00:05:41,219
+onboarding process isn't alex sitting in
+
+140
+00:05:41,219 --> 00:05:42,810
+our room with me for three hours
+
+141
+00:05:42,810 --> 00:05:44,460
+explaining everything that i need to
+
+142
+00:05:44,460 --> 00:05:46,409
+know how do we make the onboarding
+
+143
+00:05:46,409 --> 00:05:49,370
+process for this framework more more
+
+144
+00:05:49,370 --> 00:05:53,639
+automated more more self-serve kind of
+
+145
+00:05:53,639 --> 00:05:55,199
+thing number two how do we make sure
+
+146
+00:05:55,199 --> 00:05:58,740
+that we don't need all senior software
+
+147
+00:05:58,740 --> 00:06:01,050
+engineers working on developing features
+
+148
+00:06:01,050 --> 00:06:03,090
+because you there's probably a lot of
+
+149
+00:06:03,090 --> 00:06:04,800
+senior senior software engineers in this
+
+150
+00:06:04,800 --> 00:06:06,990
+room you know how many recruiting emails
+
+151
+00:06:06,990 --> 00:06:08,759
+you're getting there aren't enough of us
+
+152
+00:06:08,759 --> 00:06:11,130
+we can't that can't be our answer is Oh
+
+153
+00:06:11,130 --> 00:06:13,080
+we'll just find isn't matter we're
+
+154
+00:06:13,080 --> 00:06:15,889
+willing to pay we can't find them and
+
+155
+00:06:15,889 --> 00:06:17,969
+number three we want to make sure there
+
+156
+00:06:17,969 --> 00:06:20,099
+is few surprises as possible we want the
+
+157
+00:06:20,099 --> 00:06:22,620
+it just works we don't want there to be
+
+158
+00:06:22,620 --> 00:06:25,409
+any well I tried this nut didn't work
+
+159
+00:06:25,409 --> 00:06:27,599
+and then I put this variable here and or
+
+160
+00:06:27,599 --> 00:06:28,949
+I put this argument here and then
+
+161
+00:06:28,949 --> 00:06:30,240
+suddenly it worked so i'm just going to
+
+162
+00:06:30,240 --> 00:06:32,430
+commit that move on wait a lot of that
+
+163
+00:06:32,430 --> 00:06:33,990
+and we're trying to get away from that
+
+164
+00:06:33,990 --> 00:06:36,029
+we want to isolate complexity so you
+
+165
+00:06:36,029 --> 00:06:38,190
+don't have to understand the crazy
+
+166
+00:06:38,190 --> 00:06:40,199
+mechanisms that we use in order to do
+
+167
+00:06:40,199 --> 00:06:43,169
+our event binding which is a whole other
+
+168
+00:06:43,169 --> 00:06:45,240
+talk that andrew de pont could give
+
+169
+00:06:45,240 --> 00:06:46,409
+because he wrote all that for us
+
+170
+00:06:46,409 --> 00:06:48,240
+recently we don't want to have you
+
+171
+00:06:48,240 --> 00:06:49,529
+wouldn't want developers to have to
+
+172
+00:06:49,529 --> 00:06:51,240
+understand the complex purchase the
+
+173
+00:06:51,240 --> 00:06:52,919
+framework we want to make it really easy
+
+174
+00:06:52,919 --> 00:06:56,070
+so they can develop features we want the
+
+175
+00:06:56,070 --> 00:06:57,480
+development process to be
+
+176
+00:06:57,480 --> 00:06:59,730
+is seamless and for them to have the
+
+177
+00:06:59,730 --> 00:07:01,140
+information that they need they don't we
+
+178
+00:07:01,140 --> 00:07:02,250
+don't want them to have to go digging
+
+179
+00:07:02,250 --> 00:07:04,650
+for it and finally nothing should be
+
+180
+00:07:04,650 --> 00:07:07,560
+more difficult than it should be you
+
+181
+00:07:07,560 --> 00:07:10,440
+know we can't make everything easy but
+
+182
+00:07:10,440 --> 00:07:12,360
+we can make it so that nothing is harder
+
+183
+00:07:12,360 --> 00:07:15,150
+than it needs to be and so those are
+
+184
+00:07:15,150 --> 00:07:18,210
+kind of the goals that I set out for
+
+185
+00:07:18,210 --> 00:07:19,920
+myself when I joined in February my job
+
+186
+00:07:19,920 --> 00:07:22,110
+like I said or maybe I didn't save my
+
+187
+00:07:22,110 --> 00:07:23,730
+job when I joined was not to develop
+
+188
+00:07:23,730 --> 00:07:26,220
+features not to fix bugs but was to
+
+189
+00:07:26,220 --> 00:07:28,710
+focus on making this a better experience
+
+190
+00:07:28,710 --> 00:07:30,210
+for people and that's what I want to
+
+191
+00:07:30,210 --> 00:07:31,500
+talk about today is kind of what I've
+
+192
+00:07:31,500 --> 00:07:34,020
+done and things that I think are
+
+193
+00:07:34,020 --> 00:07:36,030
+generally applicable not just to our
+
+194
+00:07:36,030 --> 00:07:37,770
+code base that we're working on but to
+
+195
+00:07:37,770 --> 00:07:40,890
+any large project that has a number of
+
+196
+00:07:40,890 --> 00:07:42,510
+developers of different skill levels
+
+197
+00:07:42,510 --> 00:07:45,030
+working on it and deadlines like the
+
+198
+00:07:45,030 --> 00:07:46,290
+deadline part kind of goes without
+
+199
+00:07:46,290 --> 00:07:48,150
+saying there's always pressure there's
+
+200
+00:07:48,150 --> 00:07:50,430
+always deadlines so that's why I want to
+
+201
+00:07:50,430 --> 00:07:51,600
+talk about some of the things that I'm
+
+202
+00:07:51,600 --> 00:07:54,450
+going to talk about are so simple that
+
+203
+00:07:54,450 --> 00:07:56,550
+you might not think to do them because
+
+204
+00:07:56,550 --> 00:07:58,350
+they're so easy and some of them are a
+
+205
+00:07:58,350 --> 00:08:00,750
+little bit more complex so i just gotta
+
+206
+00:08:00,750 --> 00:08:03,450
+you know 22 minutes left so let's dive
+
+207
+00:08:03,450 --> 00:08:08,580
+in and one of the simplest things that
+
+208
+00:08:08,580 --> 00:08:12,300
+we did was to add assertions to the
+
+209
+00:08:12,300 --> 00:08:17,280
+framework so simply to say i expect this
+
+210
+00:08:17,280 --> 00:08:19,830
+thing to be true at this moment and so
+
+211
+00:08:19,830 --> 00:08:21,240
+how many of you have been you know
+
+212
+00:08:21,240 --> 00:08:24,420
+working on a feature in a project you've
+
+213
+00:08:24,420 --> 00:08:26,550
+seen something like this right like
+
+214
+00:08:26,550 --> 00:08:27,960
+anyone who doesn't put up their hand is
+
+215
+00:08:27,960 --> 00:08:29,190
+just lazy because it's the end of the
+
+216
+00:08:29,190 --> 00:08:34,169
+day so you've all seen this and this is
+
+217
+00:08:34,169 --> 00:08:36,000
+not a useful error of course there's a
+
+218
+00:08:36,000 --> 00:08:37,380
+lot you can go dig up the line number
+
+219
+00:08:37,380 --> 00:08:39,330
+and see what happened but maybe this
+
+220
+00:08:39,330 --> 00:08:40,500
+happened is the result of some
+
+221
+00:08:40,500 --> 00:08:43,290
+asynchronous operation and so you really
+
+222
+00:08:43,290 --> 00:08:45,360
+have to go trace back where things went
+
+223
+00:08:45,360 --> 00:08:48,180
+wrong we added just these really simple
+
+224
+00:08:48,180 --> 00:08:50,850
+assertions to our code base to say I
+
+225
+00:08:50,850 --> 00:08:53,520
+expect that right now that config is an
+
+226
+00:08:53,520 --> 00:08:55,500
+object I expect that it has a property
+
+227
+00:08:55,500 --> 00:08:58,380
+of subject ID and if these two things
+
+228
+00:08:58,380 --> 00:09:02,640
+are wrong blow up please make noise now
+
+229
+00:09:02,640 --> 00:09:05,370
+rather than 400 milliseconds from now
+
+230
+00:09:05,370 --> 00:09:07,020
+when the Ajax requests that gets fired
+
+231
+00:09:07,020 --> 00:09:09,510
+three lines later finally responds and
+
+232
+00:09:09,510 --> 00:09:10,570
+so just
+
+233
+00:09:10,570 --> 00:09:12,700
+adding these was really simple it's just
+
+234
+00:09:12,700 --> 00:09:15,450
+you know we have this bv reporter a
+
+235
+00:09:15,450 --> 00:09:18,340
+beauty reporter object that has this
+
+236
+00:09:18,340 --> 00:09:20,410
+assert method on you can bring your own
+
+237
+00:09:20,410 --> 00:09:21,940
+assertion you can write your own really
+
+238
+00:09:21,940 --> 00:09:24,550
+simple assertion function you can bring
+
+239
+00:09:24,550 --> 00:09:26,620
+chai or any other assertion library cut
+
+240
+00:09:26,620 --> 00:09:28,570
+it doesn't matter this is this is kind
+
+241
+00:09:28,570 --> 00:09:30,520
+of the simplest and dumbest thing that
+
+242
+00:09:30,520 --> 00:09:32,620
+you can possibly do but the nice thing
+
+243
+00:09:32,620 --> 00:09:35,170
+about this is that with these assertions
+
+244
+00:09:35,170 --> 00:09:37,600
+you figure out and some of them are
+
+245
+00:09:37,600 --> 00:09:39,040
+actually a lot more do they explain in
+
+246
+00:09:39,040 --> 00:09:41,680
+much more detail what went wrong and
+
+247
+00:09:41,680 --> 00:09:43,840
+even very easily zero in on where you
+
+248
+00:09:43,840 --> 00:09:46,210
+have screwed up of course these are all
+
+249
+00:09:46,210 --> 00:09:48,820
+know ops in production so in production
+
+250
+00:09:48,820 --> 00:09:52,030
+we just catch our errors and fail
+
+251
+00:09:52,030 --> 00:09:54,370
+silently as far as the user is concerned
+
+252
+00:09:54,370 --> 00:09:58,900
+or even gracefully if if we're good next
+
+253
+00:09:58,900 --> 00:10:02,710
+thing is to I'm pressing the back button
+
+254
+00:10:02,710 --> 00:10:06,520
+there we go the next thing and which is
+
+255
+00:10:06,520 --> 00:10:08,740
+also really deceptively simple is to
+
+256
+00:10:08,740 --> 00:10:11,320
+tell people what's going on you know we
+
+257
+00:10:11,320 --> 00:10:14,290
+have this 25 thousand lines of code the
+
+258
+00:10:14,290 --> 00:10:16,000
+the framework is smaller than that but
+
+259
+00:10:16,000 --> 00:10:17,710
+does a whole lot of crazy things like I
+
+260
+00:10:17,710 --> 00:10:19,720
+was saying as far as event delegation as
+
+261
+00:10:19,720 --> 00:10:21,670
+far as how it sets up the views and
+
+262
+00:10:21,670 --> 00:10:24,070
+everything so just telling people what's
+
+263
+00:10:24,070 --> 00:10:26,920
+going on is a huge win when I showed up
+
+264
+00:10:26,920 --> 00:10:29,680
+this is what I saw in the console when
+
+265
+00:10:29,680 --> 00:10:32,770
+you pressed refresh essentially nothing
+
+266
+00:10:32,770 --> 00:10:34,300
+it doesn't matter what that says it's
+
+267
+00:10:34,300 --> 00:10:36,040
+just like hey I thought this is a font
+
+268
+00:10:36,040 --> 00:10:38,530
+and it's a font but I'm going to be
+
+269
+00:10:38,530 --> 00:10:41,380
+grumpy about it and so this is what I
+
+270
+00:10:41,380 --> 00:10:42,670
+saw this is what you would see in the
+
+271
+00:10:42,670 --> 00:10:45,400
+console when I showed up and if you
+
+272
+00:10:45,400 --> 00:10:46,870
+wanted to understand what was going on
+
+273
+00:10:46,870 --> 00:10:48,520
+especially as a new person working on
+
+274
+00:10:48,520 --> 00:10:50,980
+this framework it was up to you to put
+
+275
+00:10:50,980 --> 00:10:53,200
+in console.log statements all throughout
+
+276
+00:10:53,200 --> 00:10:54,430
+the code and then to make sure of course
+
+277
+00:10:54,430 --> 00:10:56,080
+that you deleted them all before you
+
+278
+00:10:56,080 --> 00:10:57,700
+commit hit or else Aaron for sander
+
+279
+00:10:57,700 --> 00:11:00,850
+would fix it on his branch and and it
+
+280
+00:11:00,850 --> 00:11:02,560
+was really cute branch it's like he has
+
+281
+00:11:02,560 --> 00:11:06,340
+kenny powers and he has um lynchburg is
+
+282
+00:11:06,340 --> 00:11:09,400
+his other his other branch for fixing
+
+283
+00:11:09,400 --> 00:11:11,620
+things to make you feel guilty so if you
+
+284
+00:11:11,620 --> 00:11:13,720
+if you if you want to find out what was
+
+285
+00:11:13,720 --> 00:11:16,900
+going on then it was up to you to put
+
+286
+00:11:16,900 --> 00:11:18,910
+those logs in to take them out and then
+
+287
+00:11:18,910 --> 00:11:20,520
+the next developer who came around with
+
+288
+00:11:20,520 --> 00:11:21,840
+we gonna put it in exactly those same
+
+289
+00:11:21,840 --> 00:11:24,540
+hugs to figure out was going on and then
+
+290
+00:11:24,540 --> 00:11:26,100
+have to take them out and it's
+
+291
+00:11:26,100 --> 00:11:27,750
+especially hard to understand what's
+
+292
+00:11:27,750 --> 00:11:28,800
+going on when you're dealing with an
+
+293
+00:11:28,800 --> 00:11:30,360
+asynchronous system where things are
+
+294
+00:11:30,360 --> 00:11:33,780
+happening later and you know there isn't
+
+295
+00:11:33,780 --> 00:11:36,440
+just a clear procedural chain of events
+
+296
+00:11:36,440 --> 00:11:39,420
+so we added lifecycle logging and
+
+297
+00:11:39,420 --> 00:11:41,010
+especially probably the most exciting
+
+298
+00:11:41,010 --> 00:11:43,020
+thing is these groups that we added
+
+299
+00:11:43,020 --> 00:11:46,350
+chrome devtools has console group and
+
+300
+00:11:46,350 --> 00:11:48,990
+console group end I other devtools may
+
+301
+00:11:48,990 --> 00:11:51,420
+have it as well we wrote this so that if
+
+302
+00:11:51,420 --> 00:11:53,010
+it doesn't find console group and
+
+303
+00:11:53,010 --> 00:11:54,420
+console group end then I'll just fall
+
+304
+00:11:54,420 --> 00:11:56,820
+back to normal console.log but what this
+
+305
+00:11:56,820 --> 00:12:00,090
+gives us is a nested view of everything
+
+306
+00:12:00,090 --> 00:12:01,710
+that's happening and so when we're
+
+307
+00:12:01,710 --> 00:12:04,290
+building this really complex view
+
+308
+00:12:04,290 --> 00:12:07,710
+hierarchy we can see exactly how that
+
+309
+00:12:07,710 --> 00:12:09,210
+happens and we're build it and you
+
+310
+00:12:09,210 --> 00:12:11,640
+anything that happens kind of in groups
+
+311
+00:12:11,640 --> 00:12:14,250
+we can see when that starts and when
+
+312
+00:12:14,250 --> 00:12:17,670
+that ends and so now when you are trying
+
+313
+00:12:17,670 --> 00:12:18,960
+to figure out where something's going
+
+314
+00:12:18,960 --> 00:12:21,710
+wrong you can put in one console log and
+
+315
+00:12:21,710 --> 00:12:24,660
+you can see exactly where that's
+
+316
+00:12:24,660 --> 00:12:26,450
+happening in the whole chain of events
+
+317
+00:12:26,450 --> 00:12:29,010
+and we also set up different log levels
+
+318
+00:12:29,010 --> 00:12:30,840
+so that if you don't want to see this
+
+319
+00:12:30,840 --> 00:12:32,390
+much detail this is actually an
+
+320
+00:12:32,390 --> 00:12:35,850
+abnormally high level of detail if you
+
+321
+00:12:35,850 --> 00:12:37,050
+don't want to see this much detail you
+
+322
+00:12:37,050 --> 00:12:39,540
+don't have to and so in a more normal
+
+323
+00:12:39,540 --> 00:12:41,910
+log level you would see more basic and
+
+324
+00:12:41,910 --> 00:12:44,730
+important information and again this is
+
+325
+00:12:44,730 --> 00:12:46,710
+really great for newcomers because when
+
+326
+00:12:46,710 --> 00:12:48,210
+they press when they get that server
+
+327
+00:12:48,210 --> 00:12:49,800
+running for the first time and see the
+
+328
+00:12:49,800 --> 00:12:51,240
+application running for the first time
+
+329
+00:12:51,240 --> 00:12:55,500
+they can see exactly what's happening be
+
+330
+00:12:55,500 --> 00:12:57,090
+like huh let me go look at that code
+
+331
+00:12:57,090 --> 00:12:59,310
+that does that it's also great for
+
+332
+00:12:59,310 --> 00:13:01,950
+debugging because as someone who knows
+
+333
+00:13:01,950 --> 00:13:04,080
+the framework you kind of learn what you
+
+334
+00:13:04,080 --> 00:13:06,540
+learn what this flow looks like you put
+
+335
+00:13:06,540 --> 00:13:08,160
+in your log message and you immediately
+
+336
+00:13:08,160 --> 00:13:12,750
+know where or something broke liga Tory
+
+337
+00:13:12,750 --> 00:13:17,630
+sniffle this one's a bit more complex
+
+338
+00:13:17,630 --> 00:13:22,110
+it's kind of a hard concept to explain
+
+339
+00:13:22,110 --> 00:13:24,330
+its kind of the more you do this the
+
+340
+00:13:24,330 --> 00:13:26,720
+more you know what this means that
+
+341
+00:13:26,720 --> 00:13:29,220
+eliminating temptation again you've got
+
+342
+00:13:29,220 --> 00:13:31,680
+lots of different developers possibly of
+
+343
+00:13:31,680 --> 00:13:34,140
+different skill levels working against a
+
+344
+00:13:34,140 --> 00:13:36,420
+deadline you want to eliminate
+
+345
+00:13:36,420 --> 00:13:38,430
+opportunities for them to make bad
+
+346
+00:13:38,430 --> 00:13:41,730
+decisions now in our case there are
+
+347
+00:13:41,730 --> 00:13:42,870
+probably lots of different kinds of
+
+348
+00:13:42,870 --> 00:13:44,430
+temptations but in our case our
+
+349
+00:13:44,430 --> 00:13:48,360
+particular temptation was a global it
+
+350
+00:13:48,360 --> 00:13:50,370
+was this you know we use AMD so there
+
+351
+00:13:50,370 --> 00:13:52,709
+aren't really any Global's well there
+
+352
+00:13:52,709 --> 00:13:54,870
+are but that's a whole thing there
+
+353
+00:13:54,870 --> 00:13:56,190
+aren't really any Global's but we had
+
+354
+00:13:56,190 --> 00:14:00,060
+this thing called env capital to make
+
+355
+00:14:00,060 --> 00:14:01,380
+you know that it was really important
+
+356
+00:14:01,380 --> 00:14:05,010
+and it was a dependency in just about
+
+357
+00:14:05,010 --> 00:14:08,430
+every single file in the entire code
+
+358
+00:14:08,430 --> 00:14:10,320
+base some files didn't actually use it
+
+359
+00:14:10,320 --> 00:14:11,940
+we actually we have scaffolding a
+
+360
+00:14:11,940 --> 00:14:13,589
+scaffolding tool like when you need a
+
+361
+00:14:13,589 --> 00:14:14,610
+new feature when you want to make a new
+
+362
+00:14:14,610 --> 00:14:16,560
+feature you see me a new feature and it
+
+363
+00:14:16,560 --> 00:14:18,029
+would automatically just be like you're
+
+364
+00:14:18,029 --> 00:14:19,709
+probably going to need env so I'm just
+
+365
+00:14:19,709 --> 00:14:22,260
+going to put it there for you it turns
+
+366
+00:14:22,260 --> 00:14:23,700
+out that this is really a bad idea
+
+367
+00:14:23,700 --> 00:14:27,959
+because if you give this global to
+
+368
+00:14:27,959 --> 00:14:30,779
+people they will find all kinds of ways
+
+369
+00:14:30,779 --> 00:14:34,529
+to take advantage of it in a really bad
+
+370
+00:14:34,529 --> 00:14:36,420
+way and so the next thing you know the
+
+371
+00:14:36,420 --> 00:14:38,279
+solution become this is this global kind
+
+372
+00:14:38,279 --> 00:14:39,690
+of becomes the solution for everything
+
+373
+00:14:39,690 --> 00:14:44,399
+so it was a global event bus for us okay
+
+374
+00:14:44,399 --> 00:14:46,380
+it was an error aggregator so whenever
+
+375
+00:14:46,380 --> 00:14:47,640
+there was an error we would fire another
+
+376
+00:14:47,640 --> 00:14:49,529
+event and that did something else we'd
+
+377
+00:14:49,529 --> 00:14:52,290
+send the error along to it was also how
+
+378
+00:14:52,290 --> 00:14:53,880
+we pass through analytics stuff that was
+
+379
+00:14:53,880 --> 00:14:57,270
+going on yeah cool um anything that we
+
+380
+00:14:57,270 --> 00:14:58,350
+couldn't figure out a better place to
+
+381
+00:14:58,350 --> 00:15:00,720
+put it and be seems like a good place
+
+382
+00:15:00,720 --> 00:15:03,899
+for it it was also this magical third
+
+383
+00:15:03,899 --> 00:15:07,890
+argument to on trigger set and get and I
+
+384
+00:15:07,890 --> 00:15:10,500
+I don't know that there's any what I can
+
+385
+00:15:10,500 --> 00:15:12,899
+tell you now what that did but when I
+
+386
+00:15:12,899 --> 00:15:14,430
+showed up I don't know if there's anyone
+
+387
+00:15:14,430 --> 00:15:16,860
+who could like any single person who
+
+388
+00:15:16,860 --> 00:15:19,560
+could tell you exactly what that did of
+
+389
+00:15:19,560 --> 00:15:20,579
+course there were no test for it either
+
+390
+00:15:20,579 --> 00:15:23,970
+so so we one of the things that I did I
+
+391
+00:15:23,970 --> 00:15:26,279
+saw this envy is just like the scourge
+
+392
+00:15:26,279 --> 00:15:29,390
+on the code base and I spent months
+
+393
+00:15:29,390 --> 00:15:31,220
+I finally got rid of almost all of the
+
+394
+00:15:31,220 --> 00:15:35,210
+env s just last week I spent months the
+
+395
+00:15:35,210 --> 00:15:37,760
+last few months trying to eliminate this
+
+396
+00:15:37,760 --> 00:15:39,740
+from the code base and so maybe you
+
+397
+00:15:39,740 --> 00:15:42,380
+implement things via a global but that
+
+398
+00:15:42,380 --> 00:15:43,580
+doesn't mean you need to expose the
+
+399
+00:15:43,580 --> 00:15:47,750
+global to every single every single
+
+400
+00:15:47,750 --> 00:15:50,360
+module every single piece of code so now
+
+401
+00:15:50,360 --> 00:15:52,610
+instead of saying envy trigger show
+
+402
+00:15:52,610 --> 00:15:55,070
+loading we have a loading overlay object
+
+403
+00:15:55,070 --> 00:15:58,550
+that we say hey show yourself now and it
+
+404
+00:15:58,550 --> 00:16:01,430
+may be implemented through envy trigger
+
+405
+00:16:01,430 --> 00:16:03,050
+show loading maybe it doesn't I don't
+
+406
+00:16:03,050 --> 00:16:05,660
+remember doesn't matter to that
+
+407
+00:16:05,660 --> 00:16:08,810
+temptation of env isn't there anymore we
+
+408
+00:16:08,810 --> 00:16:12,170
+create a BD tracker object that has an
+
+409
+00:16:12,170 --> 00:16:14,030
+error method and a conversion method a
+
+410
+00:16:14,030 --> 00:16:15,320
+bunch of other things so any time that
+
+411
+00:16:15,320 --> 00:16:16,940
+we want to track that something has
+
+412
+00:16:16,940 --> 00:16:19,910
+happened we now do that in the code
+
+413
+00:16:19,910 --> 00:16:23,660
+through BB tracker we eliminated the
+
+414
+00:16:23,660 --> 00:16:26,090
+magical envy arc which is a whole long
+
+415
+00:16:26,090 --> 00:16:29,390
+story basically it was a weird pub
+
+416
+00:16:29,390 --> 00:16:31,730
+subsystem and so we said hey let's make
+
+417
+00:16:31,730 --> 00:16:33,710
+methods called publish and subscribe and
+
+418
+00:16:33,710 --> 00:16:36,680
+they achieve that same thing but hide
+
+419
+00:16:36,680 --> 00:16:37,880
+the fact that they're doing it they're
+
+420
+00:16:37,880 --> 00:16:40,280
+not doing it through env anymore but
+
+421
+00:16:40,280 --> 00:16:41,900
+even when they were doing it through env
+
+422
+00:16:41,900 --> 00:16:43,910
+they hid that inside of the methods so
+
+423
+00:16:43,910 --> 00:16:46,220
+that developers weren't kind of having
+
+424
+00:16:46,220 --> 00:16:49,430
+to figure out what this magical env as
+
+425
+00:16:49,430 --> 00:16:52,190
+the last argument meant or what it did
+
+426
+00:16:52,190 --> 00:16:54,110
+we gave them a method that was what it
+
+427
+00:16:54,110 --> 00:17:00,080
+did and you one isolated that complexity
+
+428
+00:17:00,080 --> 00:17:02,900
+and to eliminate that temptation of oh
+
+429
+00:17:02,900 --> 00:17:06,160
+and these here let me just use it
+
+430
+00:17:06,160 --> 00:17:11,000
+another thing that we did was to another
+
+431
+00:17:11,000 --> 00:17:13,430
+kind of rule that I'm trying to enforce
+
+432
+00:17:13,430 --> 00:17:15,500
+on the code base is this idea of having
+
+433
+00:17:15,500 --> 00:17:19,220
+code for every concept and so if there's
+
+434
+00:17:19,220 --> 00:17:22,820
+a concept that you talked about that you
+
+435
+00:17:22,820 --> 00:17:24,829
+use when you describe how your
+
+436
+00:17:24,829 --> 00:17:27,050
+application works to another developer
+
+437
+00:17:27,050 --> 00:17:29,810
+they ought to be able to go in the code
+
+438
+00:17:29,810 --> 00:17:34,490
+and see the code for that concept and so
+
+439
+00:17:34,490 --> 00:17:36,470
+we saw this just a second ago with BB
+
+440
+00:17:36,470 --> 00:17:38,090
+tracker where we have this concept of
+
+441
+00:17:38,090 --> 00:17:40,040
+tracking when a user does something and
+
+442
+00:17:40,040 --> 00:17:41,000
+tracking when there's an
+
+443
+00:17:41,000 --> 00:17:43,370
+her and so before there was no one place
+
+444
+00:17:43,370 --> 00:17:44,660
+where they could go and see all the
+
+445
+00:17:44,660 --> 00:17:46,130
+different things that we could track and
+
+446
+00:17:46,130 --> 00:17:47,480
+how we track them and what the signature
+
+447
+00:17:47,480 --> 00:17:49,520
+was to do it and all that now we have
+
+448
+00:17:49,520 --> 00:17:52,340
+this BB tracker object which is where a
+
+449
+00:17:52,340 --> 00:17:54,380
+developer can go and learn about this
+
+450
+00:17:54,380 --> 00:17:56,540
+and now there are tests so we know that
+
+451
+00:17:56,540 --> 00:17:59,360
+it works and so having a code for this
+
+452
+00:17:59,360 --> 00:18:02,210
+concept of tracking makes it easier to
+
+453
+00:18:02,210 --> 00:18:04,100
+understand and makes it so you don't
+
+454
+00:18:04,100 --> 00:18:05,690
+need to know so much about how it works
+
+455
+00:18:05,690 --> 00:18:09,620
+under the hood in our application we use
+
+456
+00:18:09,620 --> 00:18:11,810
+these configurable components so this is
+
+457
+00:18:11,810 --> 00:18:14,510
+an example of a portion of a component
+
+458
+00:18:14,510 --> 00:18:17,840
+configuration for a review content list
+
+459
+00:18:17,840 --> 00:18:22,670
+and in when I showed up we had we were
+
+460
+00:18:22,670 --> 00:18:27,170
+passing around these raw objects so when
+
+461
+00:18:27,170 --> 00:18:30,740
+we needed to you know initialize a view
+
+462
+00:18:30,740 --> 00:18:34,820
+for a component we had this in it object
+
+463
+00:18:34,820 --> 00:18:37,970
+that had an annuity vez raw component
+
+464
+00:18:37,970 --> 00:18:41,060
+object and use that to initialize the
+
+465
+00:18:41,060 --> 00:18:42,740
+view of course we stored all these are
+
+466
+00:18:42,740 --> 00:18:47,330
+all component objects on env shocker and
+
+467
+00:18:47,330 --> 00:18:50,840
+and so we when I should have not want to
+
+468
+00:18:50,840 --> 00:18:53,030
+know like what is a component like what
+
+469
+00:18:53,030 --> 00:18:54,890
+does that mean how do we use them how do
+
+470
+00:18:54,890 --> 00:18:57,620
+they is this a component or is this like
+
+471
+00:18:57,620 --> 00:18:59,690
+part of a component I don't understand I
+
+472
+00:18:59,690 --> 00:19:03,170
+was really really confused and we were
+
+473
+00:19:03,170 --> 00:19:05,300
+using this term all the time to talk
+
+474
+00:19:05,300 --> 00:19:07,310
+about how our application worked you
+
+475
+00:19:07,310 --> 00:19:08,390
+know the Alex would say we have
+
+476
+00:19:08,390 --> 00:19:09,800
+components and they have features that
+
+477
+00:19:09,800 --> 00:19:12,140
+but I couldn't go into the code and see
+
+478
+00:19:12,140 --> 00:19:13,790
+what the heck of component was I just
+
+479
+00:19:13,790 --> 00:19:15,760
+saw these objects being passed around
+
+480
+00:19:15,760 --> 00:19:18,740
+and then and at but they there was no
+
+481
+00:19:18,740 --> 00:19:22,760
+thing that was a component and so a huge
+
+482
+00:19:22,760 --> 00:19:24,080
+part of the time that I've spent is
+
+483
+00:19:24,080 --> 00:19:26,360
+actually making this component be a
+
+484
+00:19:26,360 --> 00:19:29,960
+thing be a documented thing be a tested
+
+485
+00:19:29,960 --> 00:19:31,940
+thing so that now when you're a new
+
+486
+00:19:31,940 --> 00:19:33,470
+developer you can go see when we're
+
+487
+00:19:33,470 --> 00:19:34,940
+talking about components you can go see
+
+488
+00:19:34,940 --> 00:19:38,900
+the code that is making that whole
+
+489
+00:19:38,900 --> 00:19:41,120
+system that is the underpinning of our
+
+490
+00:19:41,120 --> 00:19:43,040
+framework we can see the code that's
+
+491
+00:19:43,040 --> 00:19:45,950
+making that work and so now we iterate
+
+492
+00:19:45,950 --> 00:19:48,350
+over the array of component objects and
+
+493
+00:19:48,350 --> 00:19:51,260
+we make a new component and then we tell
+
+494
+00:19:51,260 --> 00:19:53,290
+the component to an it it's
+
+495
+00:19:53,290 --> 00:19:55,510
+you rather than having this view
+
+496
+00:19:55,510 --> 00:19:57,850
+function that might be totally separated
+
+497
+00:19:57,850 --> 00:19:59,110
+from something else that we do with
+
+498
+00:19:59,110 --> 00:20:00,700
+components now everything that we do
+
+499
+00:20:00,700 --> 00:20:04,360
+with components is a method on the
+
+500
+00:20:04,360 --> 00:20:11,540
+component class dirty words sorry
+
+501
+00:20:11,550 --> 00:20:14,320
+another thing that we've done that I
+
+502
+00:20:14,320 --> 00:20:17,050
+can't emphasize enough is to automate
+
+503
+00:20:17,050 --> 00:20:19,660
+everything no matter what this XKCD
+
+504
+00:20:19,660 --> 00:20:21,670
+comic says automate everything
+
+505
+00:20:21,670 --> 00:20:23,260
+especially when you're working with a
+
+506
+00:20:23,260 --> 00:20:26,350
+large team large code base with a bunch
+
+507
+00:20:26,350 --> 00:20:30,930
+of developers of different skills we are
+
+508
+00:20:30,930 --> 00:20:32,860
+most of the people in this room are
+
+509
+00:20:32,860 --> 00:20:34,180
+probably really good troubleshooters
+
+510
+00:20:34,180 --> 00:20:35,830
+you're probably really good at figuring
+
+511
+00:20:35,830 --> 00:20:37,360
+it when something doesn't work on the
+
+512
+00:20:37,360 --> 00:20:39,670
+command line you might be pretty good at
+
+513
+00:20:39,670 --> 00:20:43,180
+figuring out why that is people of all
+
+514
+00:20:43,180 --> 00:20:45,400
+different skills will have strengths in
+
+515
+00:20:45,400 --> 00:20:48,160
+some areas not in others and so the more
+
+516
+00:20:48,160 --> 00:20:51,220
+you can automate these wrote tasks the
+
+517
+00:20:51,220 --> 00:20:53,320
+better off you'll be so one thing that
+
+518
+00:20:53,320 --> 00:20:55,870
+we have is this internal tool I can't
+
+519
+00:20:55,870 --> 00:20:58,810
+emphasize enough make one of these make
+
+520
+00:20:58,810 --> 00:21:01,630
+an internal tool that you throw in a
+
+521
+00:21:01,630 --> 00:21:04,210
+client name and it pulls up the whatever
+
+522
+00:21:04,210 --> 00:21:05,440
+information you might need about a
+
+523
+00:21:05,440 --> 00:21:07,270
+client their configuration a demo a
+
+524
+00:21:07,270 --> 00:21:10,240
+preview of their site a preview of their
+
+525
+00:21:10,240 --> 00:21:13,090
+site using development code whatever so
+
+526
+00:21:13,090 --> 00:21:14,140
+we have this tool and the great thing
+
+527
+00:21:14,140 --> 00:21:15,820
+about having this tool that automates
+
+528
+00:21:15,820 --> 00:21:18,280
+these tasks that otherwise they would be
+
+529
+00:21:18,280 --> 00:21:21,370
+going into the new admin tool clicking
+
+530
+00:21:21,370 --> 00:21:23,410
+on this including the old process for
+
+531
+00:21:23,410 --> 00:21:25,000
+doing some of the things on this page
+
+532
+00:21:25,000 --> 00:21:27,640
+was like a lot of clicking and now
+
+533
+00:21:27,640 --> 00:21:29,020
+there's not so much clicking you just
+
+534
+00:21:29,020 --> 00:21:30,790
+type something in boom you have we need
+
+535
+00:21:30,790 --> 00:21:33,280
+on the page very developer focused
+
+536
+00:21:33,280 --> 00:21:36,550
+rather than end user focused or customer
+
+537
+00:21:36,550 --> 00:21:38,920
+focused or non technical person focused
+
+538
+00:21:38,920 --> 00:21:40,600
+like this is a developer focus tool is a
+
+539
+00:21:40,600 --> 00:21:42,130
+tool focused on making it easier for
+
+540
+00:21:42,130 --> 00:21:45,010
+developers to do their job and the great
+
+541
+00:21:45,010 --> 00:21:46,480
+thing is that once you have a tool like
+
+542
+00:21:46,480 --> 00:21:49,030
+this you won't think twice about adding
+
+543
+00:21:49,030 --> 00:21:50,770
+more things to it so once you go through
+
+544
+00:21:50,770 --> 00:21:53,110
+that hard work of setting up this is the
+
+545
+00:21:53,110 --> 00:21:55,240
+first funk piece of functionality and a
+
+546
+00:21:55,240 --> 00:21:57,100
+tool like this then you won't think
+
+547
+00:21:57,100 --> 00:22:00,040
+twice about now you have this place
+
+548
+00:22:00,040 --> 00:22:02,170
+where I want to have performance graphs
+
+549
+00:22:02,170 --> 00:22:04,450
+of different instances Oh we'll put that
+
+550
+00:22:04,450 --> 00:22:05,330
+in what we
+
+551
+00:22:05,330 --> 00:22:09,680
+FBI Firebird inspector I want to have I
+
+552
+00:22:09,680 --> 00:22:12,920
+want to see how many errors there are on
+
+553
+00:22:12,920 --> 00:22:14,570
+clients or I want to see how many page
+
+554
+00:22:14,570 --> 00:22:15,680
+views are on clients well let's throw
+
+555
+00:22:15,680 --> 00:22:17,120
+that in Firebird inspector will throw
+
+556
+00:22:17,120 --> 00:22:19,790
+that data in there we weren't happy with
+
+557
+00:22:19,790 --> 00:22:21,740
+just that though so we've used grunt to
+
+558
+00:22:21,740 --> 00:22:23,270
+automate a lot of this on the command
+
+559
+00:22:23,270 --> 00:22:24,980
+line in addition so now you can just say
+
+560
+00:22:24,980 --> 00:22:27,650
+hey give me a preview URL for this
+
+561
+00:22:27,650 --> 00:22:29,840
+client in the QA environment and it'll
+
+562
+00:22:29,840 --> 00:22:32,210
+spit out how you can get to all of that
+
+563
+00:22:32,210 --> 00:22:35,090
+data so grunt is amazing for this sort
+
+564
+00:22:35,090 --> 00:22:37,760
+of automation we also have tasks for
+
+565
+00:22:37,760 --> 00:22:40,040
+scaffolding a new feature like I said so
+
+566
+00:22:40,040 --> 00:22:41,420
+just like in rails land where you say
+
+567
+00:22:41,420 --> 00:22:43,730
+rails G and it generates you all the
+
+568
+00:22:43,730 --> 00:22:45,860
+code you need for a new feature you can
+
+569
+00:22:45,860 --> 00:22:48,860
+say grunt feature and then the feature
+
+570
+00:22:48,860 --> 00:22:52,100
+name and it will generate code to get a
+
+571
+00:22:52,100 --> 00:22:54,260
+basic working feature into the system
+
+572
+00:22:54,260 --> 00:22:57,140
+for you we of course odd mate running
+
+573
+00:22:57,140 --> 00:22:59,630
+our tests and we automate getting there
+
+574
+00:22:59,630 --> 00:23:01,940
+getting our environment back to a happy
+
+575
+00:23:01,940 --> 00:23:03,620
+place because sometimes you'll get your
+
+576
+00:23:03,620 --> 00:23:05,930
+environment into a sad place and you
+
+577
+00:23:05,930 --> 00:23:07,580
+need to kind of blow away all of your
+
+578
+00:23:07,580 --> 00:23:09,980
+config files and all these things were
+
+579
+00:23:09,980 --> 00:23:11,420
+things that you know the some of them
+
+580
+00:23:11,420 --> 00:23:12,800
+existed when I showed up some of them
+
+581
+00:23:12,800 --> 00:23:14,240
+we've added since I showed up it's it's
+
+582
+00:23:14,240 --> 00:23:16,400
+all just a matter with the automation
+
+583
+00:23:16,400 --> 00:23:17,750
+especially it's all just a matter of
+
+584
+00:23:17,750 --> 00:23:19,790
+listening to the people around you and
+
+585
+00:23:19,790 --> 00:23:22,310
+what is hard for them and either giving
+
+586
+00:23:22,310 --> 00:23:25,490
+them a gentle not a gentle nudge to fit
+
+587
+00:23:25,490 --> 00:23:27,650
+to automate whatever they just struggled
+
+588
+00:23:27,650 --> 00:23:30,530
+through or doing it yourself if you're
+
+589
+00:23:30,530 --> 00:23:33,020
+lucky enough to be in a role like mine
+
+590
+00:23:33,020 --> 00:23:37,940
+where that's my job to do that you
+
+591
+00:23:37,940 --> 00:23:40,250
+already probably know you should be
+
+592
+00:23:40,250 --> 00:23:41,870
+documenting everything right I don't I
+
+593
+00:23:41,870 --> 00:23:43,340
+don't actually agree that you should
+
+594
+00:23:43,340 --> 00:23:45,770
+necessarily document everything I think
+
+595
+00:23:45,770 --> 00:23:49,760
+that well written codes it's modularized
+
+596
+00:23:49,760 --> 00:23:52,610
+and small methods that do one thing and
+
+597
+00:23:52,610 --> 00:23:56,630
+do one thing well you know doing all of
+
+598
+00:23:56,630 --> 00:23:59,690
+that will alleviate a lot of the need
+
+599
+00:23:59,690 --> 00:24:02,870
+for say API documentation developers
+
+600
+00:24:02,870 --> 00:24:04,640
+should be able to go read code to figure
+
+601
+00:24:04,640 --> 00:24:06,530
+out how code works but there are some
+
+602
+00:24:06,530 --> 00:24:08,510
+things that even the best code can't
+
+603
+00:24:08,510 --> 00:24:12,940
+tell you and so document is a kind of
+
+604
+00:24:12,940 --> 00:24:16,280
+rationale behind your tool the high
+
+605
+00:24:16,280 --> 00:24:17,530
+level of this is how
+
+606
+00:24:17,530 --> 00:24:19,360
+it works this is the problem we're
+
+607
+00:24:19,360 --> 00:24:21,880
+trying to solve and this is at a very
+
+608
+00:24:21,880 --> 00:24:23,850
+high level this is how we solved it
+
+609
+00:24:23,850 --> 00:24:26,020
+document how to do things how do I make
+
+610
+00:24:26,020 --> 00:24:28,150
+a new feature you know that the code
+
+611
+00:24:28,150 --> 00:24:30,070
+can't tell you you can go look at other
+
+612
+00:24:30,070 --> 00:24:32,410
+features but often figure out how do I
+
+613
+00:24:32,410 --> 00:24:34,780
+get started is really hard so document
+
+614
+00:24:34,780 --> 00:24:36,730
+how to do things document how to fix
+
+615
+00:24:36,730 --> 00:24:39,820
+things document where to find things in
+
+616
+00:24:39,820 --> 00:24:42,250
+your code base and if you can't say what
+
+617
+00:24:42,250 --> 00:24:44,530
+a directory is for you're doing it wrong
+
+618
+00:24:44,530 --> 00:24:47,890
+make the directory do less document the
+
+619
+00:24:47,890 --> 00:24:49,000
+things you wish you didn't have to
+
+620
+00:24:49,000 --> 00:24:52,870
+document like how to use get in your
+
+621
+00:24:52,870 --> 00:24:55,060
+suit like how you are using get on this
+
+622
+00:24:55,060 --> 00:24:56,590
+project how whether you do future
+
+623
+00:24:56,590 --> 00:24:58,330
+branches in your own repo or whatever
+
+624
+00:24:58,330 --> 00:25:00,550
+document things like that that maybe
+
+625
+00:25:00,550 --> 00:25:02,140
+when you were a small team you all just
+
+626
+00:25:02,140 --> 00:25:04,180
+agreed on with a handshake but now as
+
+627
+00:25:04,180 --> 00:25:05,740
+your team is growing you need to share
+
+628
+00:25:05,740 --> 00:25:09,700
+this out treat your code if you have
+
+629
+00:25:09,700 --> 00:25:12,220
+more than a tiny handful of developers
+
+630
+00:25:12,220 --> 00:25:14,290
+working on a project like this treat
+
+631
+00:25:14,290 --> 00:25:15,610
+your code like an open source project
+
+632
+00:25:15,610 --> 00:25:18,220
+have a change log every week that says
+
+633
+00:25:18,220 --> 00:25:20,320
+not these are the new features we made
+
+634
+00:25:20,320 --> 00:25:23,050
+like the new customer facing features we
+
+635
+00:25:23,050 --> 00:25:25,090
+made but hey I changed how this method
+
+636
+00:25:25,090 --> 00:25:26,380
+works and you're going to want to know
+
+637
+00:25:26,380 --> 00:25:29,050
+about that and so have a change on treat
+
+638
+00:25:29,050 --> 00:25:30,340
+your project like an open source project
+
+639
+00:25:30,340 --> 00:25:34,720
+so that other developers can know what's
+
+640
+00:25:34,720 --> 00:25:36,850
+going on just like hopefully they know
+
+641
+00:25:36,850 --> 00:25:38,920
+what's going on in a in a well
+
+642
+00:25:38,920 --> 00:25:40,840
+maintained open source project in
+
+643
+00:25:40,840 --> 00:25:43,060
+finally put it all in the repo at least
+
+644
+00:25:43,060 --> 00:25:45,340
+to start you know don't put it on your
+
+645
+00:25:45,340 --> 00:25:47,290
+company wiki that's not where your
+
+646
+00:25:47,290 --> 00:25:50,230
+developers are working every day I think
+
+647
+00:25:50,230 --> 00:25:53,080
+that a company wiki is just not a great
+
+648
+00:25:53,080 --> 00:25:55,900
+place if its documentation about the
+
+649
+00:25:55,900 --> 00:25:58,180
+code it belongs as close to the code as
+
+650
+00:25:58,180 --> 00:26:04,120
+possible lastly measuring things this
+
+651
+00:26:04,120 --> 00:26:07,780
+was this is something that's important I
+
+652
+00:26:07,780 --> 00:26:09,700
+have no idea what the answer is because
+
+653
+00:26:09,700 --> 00:26:12,400
+how do you measure developer happiness
+
+654
+00:26:12,400 --> 00:26:14,440
+like you can measure attrition but
+
+655
+00:26:14,440 --> 00:26:17,440
+that's kind of a terrible way to find
+
+656
+00:26:17,440 --> 00:26:20,050
+out that you didn't do a good job it's
+
+657
+00:26:20,050 --> 00:26:21,850
+really hard to quantify the speed of
+
+658
+00:26:21,850 --> 00:26:23,710
+feature delivery you can't really you
+
+659
+00:26:23,710 --> 00:26:25,420
+know the feature a is not equivalent to
+
+660
+00:26:25,420 --> 00:26:27,010
+feature be you can't say Oh feature a
+
+661
+00:26:27,010 --> 00:26:29,620
+took two weeks and now it only takes one
+
+662
+00:26:29,620 --> 00:26:31,180
+but it's a different feature it does it
+
+663
+00:26:31,180 --> 00:26:33,220
+you can't make a good comparison a
+
+664
+00:26:33,220 --> 00:26:36,040
+couple of things you can do is make sure
+
+665
+00:26:36,040 --> 00:26:38,080
+that these changes that you're making
+
+666
+00:26:38,080 --> 00:26:43,240
+aren't making things worse so we keep an
+
+667
+00:26:43,240 --> 00:26:45,610
+eye on these cyclomatic complexity of
+
+668
+00:26:45,610 --> 00:26:47,559
+our code and some other complexity
+
+669
+00:26:47,559 --> 00:26:49,240
+metrics to make sure that we're not
+
+670
+00:26:49,240 --> 00:26:51,820
+doing anything terrible in this
+
+671
+00:26:51,820 --> 00:26:54,610
+refactoring that our overall complexity
+
+672
+00:26:54,610 --> 00:26:56,440
+is either staying the same or going down
+
+673
+00:26:56,440 --> 00:26:58,330
+and also the complex that this is a
+
+674
+00:26:58,330 --> 00:27:00,940
+grunt grunt plugin called complexity
+
+675
+00:27:00,940 --> 00:27:03,850
+report and it's a great way to also kind
+
+676
+00:27:03,850 --> 00:27:06,040
+of identify oh maybe I should spend some
+
+677
+00:27:06,040 --> 00:27:09,990
+time looking at that file because it is
+
+678
+00:27:09,990 --> 00:27:12,700
+reporting that it is less maintainable
+
+679
+00:27:12,700 --> 00:27:16,059
+or more complex than other files in the
+
+680
+00:27:16,059 --> 00:27:19,000
+in the code base you can also make sure
+
+681
+00:27:19,000 --> 00:27:21,690
+that you aren't making a performance on
+
+682
+00:27:21,690 --> 00:27:24,370
+improvements so that's another thing
+
+683
+00:27:24,370 --> 00:27:25,900
+that we're doing is keeping an eye I
+
+684
+00:27:25,900 --> 00:27:28,000
+have no idea what this little jag is at
+
+685
+00:27:28,000 --> 00:27:29,050
+the beginning I kinda need to figure
+
+686
+00:27:29,050 --> 00:27:31,840
+that out because that's bad but it's
+
+687
+00:27:31,840 --> 00:27:33,280
+going back down so that's good so you
+
+688
+00:27:33,280 --> 00:27:36,250
+can you can keep an eye on how your how
+
+689
+00:27:36,250 --> 00:27:37,480
+these changes are affecting the
+
+690
+00:27:37,480 --> 00:27:39,490
+performance of your code but probably
+
+691
+00:27:39,490 --> 00:27:42,580
+the best measurement I have of whether
+
+692
+00:27:42,580 --> 00:27:44,980
+this is working and whether I'm doing my
+
+693
+00:27:44,980 --> 00:27:46,750
+job is just listening to the people
+
+694
+00:27:46,750 --> 00:27:50,559
+around me and listening to what they're
+
+695
+00:27:50,559 --> 00:27:52,270
+saying and I'm getting a lot of good
+
+696
+00:27:52,270 --> 00:27:54,400
+feedback about like I wish I had this
+
+697
+00:27:54,400 --> 00:27:57,820
+you mean I can just do this or you know
+
+698
+00:27:57,820 --> 00:28:00,040
+those sorts of things hearing success
+
+699
+00:28:00,040 --> 00:28:02,470
+stories that's that's not a very
+
+700
+00:28:02,470 --> 00:28:04,000
+objective measurement but it's a nice
+
+701
+00:28:04,000 --> 00:28:07,480
+one and I think so much of this is just
+
+702
+00:28:07,480 --> 00:28:10,330
+about listening to people listening to
+
+703
+00:28:10,330 --> 00:28:11,920
+people when they say nice things and
+
+704
+00:28:11,920 --> 00:28:13,179
+listening to what they're complaining
+
+705
+00:28:13,179 --> 00:28:15,610
+about and going and fixing it and I
+
+706
+00:28:15,610 --> 00:28:17,740
+think that even maybe you aren't lucky
+
+707
+00:28:17,740 --> 00:28:19,270
+enough to have someone who's dedicated
+
+708
+00:28:19,270 --> 00:28:23,710
+role is this on your team but I'll tell
+
+709
+00:28:23,710 --> 00:28:25,630
+you what if you nominate yourself to be
+
+710
+00:28:25,630 --> 00:28:27,300
+that person and just start doing it
+
+711
+00:28:27,300 --> 00:28:29,230
+you're going to have a new and better
+
+712
+00:28:29,230 --> 00:28:32,110
+job really soon either the company
+
+713
+00:28:32,110 --> 00:28:33,520
+you're at or somewhere else who's going
+
+714
+00:28:33,520 --> 00:28:36,730
+to appreciate this sort of this sort of
+
+715
+00:28:36,730 --> 00:28:38,020
+thinking about how to make things better
+
+716
+00:28:38,020 --> 00:28:40,960
+and not just doing your job so are we
+
+717
+00:28:40,960 --> 00:28:42,160
+there yet is it
+
+718
+00:28:42,160 --> 00:28:44,650
+done that would be nice cuz I'm about to
+
+719
+00:28:44,650 --> 00:28:48,130
+disappear for parental leave but I think
+
+720
+00:28:48,130 --> 00:28:50,670
+that this requires constant vigilance
+
+721
+00:28:50,670 --> 00:28:53,170
+you can't there's no time when you're
+
+722
+00:28:53,170 --> 00:28:55,030
+done there's a time when maybe you
+
+723
+00:28:55,030 --> 00:28:56,530
+aren't spending as much time on these
+
+724
+00:28:56,530 --> 00:28:58,930
+sorts of things but there's no time when
+
+725
+00:28:58,930 --> 00:29:01,270
+you're done ensuring that developers can
+
+726
+00:29:01,270 --> 00:29:04,780
+work with your framework and so that
+
+727
+00:29:04,780 --> 00:29:07,330
+means doing code reviews reading every
+
+728
+00:29:07,330 --> 00:29:08,860
+single pull requests and just knowing
+
+729
+00:29:08,860 --> 00:29:10,960
+what's going on doing the changelog so
+
+730
+00:29:10,960 --> 00:29:12,430
+that you kind of have a sense of the
+
+731
+00:29:12,430 --> 00:29:15,280
+churn that's going on eavesdropping on
+
+732
+00:29:15,280 --> 00:29:17,020
+planning conversations that maybe you
+
+733
+00:29:17,020 --> 00:29:19,150
+weren't involved in or maybe you don't
+
+734
+00:29:19,150 --> 00:29:21,130
+strictly need to be involved in but
+
+735
+00:29:21,130 --> 00:29:22,570
+listening to what's coming down the
+
+736
+00:29:22,570 --> 00:29:24,100
+pipeline so you can get involved in
+
+737
+00:29:24,100 --> 00:29:26,230
+conversations about how you can solve
+
+738
+00:29:26,230 --> 00:29:29,260
+those problems or write those features
+
+739
+00:29:29,260 --> 00:29:30,580
+so that you aren't creating more
+
+740
+00:29:30,580 --> 00:29:35,470
+problems down the road yeah that's me
+
+741
+00:29:35,470 --> 00:29:38,020
+this is a this is the team I've been
+
+742
+00:29:38,020 --> 00:29:40,090
+working with for the last the last three
+
+743
+00:29:40,090 --> 00:29:42,940
+months they're amazing and we're hiring
+
+744
+00:29:42,940 --> 00:29:44,920
+of course because everyone this room is
+
+745
+00:29:44,920 --> 00:29:48,370
+but come find me on Twitter on the
+
+746
+00:29:48,370 --> 00:30:05,490
+internet and yeah thank you very much
+

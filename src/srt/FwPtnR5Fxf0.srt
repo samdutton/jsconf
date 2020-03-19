@@ -1,0 +1,1713 @@
+1
+00:00:07,519 --> 00:00:10,740
+
+I'm going to talk a bit about the way
+
+2
+00:00:10,740 --> 00:00:13,950
+browsers implement and optimize the
+
+3
+00:00:13,950 --> 00:00:15,900
+documents object in the layout thing and
+
+4
+00:00:15,900 --> 00:00:19,410
+drawing their off as multi mentioned my
+
+5
+00:00:19,410 --> 00:00:22,140
+name is Madhava Baker I work for Mozilla
+
+6
+00:00:22,140 --> 00:00:24,869
+but not on any of this stuff it's
+
+7
+00:00:24,869 --> 00:00:26,340
+actually I expect there will be several
+
+8
+00:00:26,340 --> 00:00:27,869
+people in the room who know more about
+
+9
+00:00:27,869 --> 00:00:30,449
+this than I do they're free to correct
+
+10
+00:00:30,449 --> 00:00:32,730
+me at any time you might know me from
+
+11
+00:00:32,730 --> 00:00:36,239
+one of these things the book and the
+
+12
+00:00:36,239 --> 00:00:38,879
+software code mirror which is an editor
+
+13
+00:00:38,879 --> 00:00:41,910
+the difference the code editor that runs
+
+14
+00:00:41,910 --> 00:00:45,180
+inside the browser I like to start by
+
+15
+00:00:45,180 --> 00:00:47,910
+making a claim that the dome is actually
+
+16
+00:00:47,910 --> 00:00:50,460
+a great platform then we can be very
+
+17
+00:00:50,460 --> 00:00:53,370
+glad to have that probably half of you
+
+18
+00:00:53,370 --> 00:00:55,739
+have already moved on to know jazz and
+
+19
+00:00:55,739 --> 00:00:57,449
+are doing early server-side work or
+
+20
+00:00:57,449 --> 00:01:05,970
+something um but the general grumbling
+
+21
+00:01:05,970 --> 00:01:07,979
+that's often happening about the browser
+
+22
+00:01:07,979 --> 00:01:12,930
+platform is partially justified but we
+
+23
+00:01:12,930 --> 00:01:15,420
+have a very very nice and powerful
+
+24
+00:01:15,420 --> 00:01:17,659
+platform in the brochure and you
+
+25
+00:01:17,659 --> 00:01:20,310
+decoratively define and create your
+
+26
+00:01:20,310 --> 00:01:23,520
+documents then you have a full view of
+
+27
+00:01:23,520 --> 00:01:25,560
+these documents that you can from your
+
+28
+00:01:25,560 --> 00:01:30,090
+scripts manipulate and inspect and all
+
+29
+00:01:30,090 --> 00:01:32,790
+that is is by now heavily optimized so
+
+30
+00:01:32,790 --> 00:01:36,290
+that it's actually amazing how fast
+
+31
+00:01:36,290 --> 00:01:39,860
+things are being handled by the browser
+
+32
+00:01:39,860 --> 00:01:43,380
+so say you have a document big complex
+
+33
+00:01:43,380 --> 00:01:45,540
+document like almost every single
+
+34
+00:01:45,540 --> 00:01:48,829
+website that we're looking at nowadays
+
+35
+00:01:48,829 --> 00:01:51,119
+the first thing of course is the browser
+
+36
+00:01:51,119 --> 00:01:53,460
+parses the HTML that comes in applies
+
+37
+00:01:53,460 --> 00:01:55,110
+the styles that come back to applying
+
+38
+00:01:55,110 --> 00:01:57,899
+styles later but let's think about how
+
+39
+00:01:57,899 --> 00:02:02,360
+the drawing happens it's a tree stays
+
+40
+00:02:02,360 --> 00:02:05,640
+process I guess this is smaller than I
+
+41
+00:02:05,640 --> 00:02:10,539
+intended right um
+
+42
+00:02:10,549 --> 00:02:13,739
+first the browser builds up which
+
+43
+00:02:13,739 --> 00:02:16,500
+usually called a render tree or a layout
+
+44
+00:02:16,500 --> 00:02:20,670
+tree the instead of the document
+
+45
+00:02:20,670 --> 00:02:24,659
+hierarchy notes are organized by spatial
+
+46
+00:02:24,659 --> 00:02:28,349
+relations so it resembles the Dom very
+
+47
+00:02:28,349 --> 00:02:30,319
+much but if you have for example
+
+48
+00:02:30,319 --> 00:02:33,659
+absolutely positioned elements it is
+
+49
+00:02:33,659 --> 00:02:36,269
+moved up to the actual parents that
+
+50
+00:02:36,269 --> 00:02:38,280
+determines its position which is the
+
+51
+00:02:38,280 --> 00:02:40,439
+first parent that's absolutely a
+
+52
+00:02:40,439 --> 00:02:44,760
+relatively position if you have a fixed
+
+53
+00:02:44,760 --> 00:02:46,349
+position stuff its most all the way to
+
+54
+00:02:46,349 --> 00:02:50,190
+the top of the document because the
+
+55
+00:02:50,190 --> 00:02:53,519
+position of these elements is not does
+
+56
+00:02:53,519 --> 00:02:55,019
+not depend on the position of other
+
+57
+00:02:55,019 --> 00:02:58,170
+elements display none stuff is removed
+
+58
+00:02:58,170 --> 00:02:59,639
+from this tree all together in most
+
+59
+00:02:59,639 --> 00:03:02,549
+browsers so you get a tree that
+
+60
+00:03:02,549 --> 00:03:05,489
+corresponds very closely to the actual
+
+61
+00:03:05,489 --> 00:03:07,440
+rectangles that are appearing on the
+
+62
+00:03:07,440 --> 00:03:11,329
+screen and their dependencies in
+
+63
+00:03:11,329 --> 00:03:15,690
+positioning and sizing the next thing is
+
+64
+00:03:15,690 --> 00:03:20,489
+the layout in this tree this layout tree
+
+65
+00:03:20,489 --> 00:03:23,010
+is walked in a way that signs every
+
+66
+00:03:23,010 --> 00:03:26,760
+single visible note a size and a
+
+67
+00:03:26,760 --> 00:03:29,780
+position so a rectangle somewhere in the
+
+68
+00:03:29,780 --> 00:03:33,030
+coordinates page of the document if you
+
+69
+00:03:33,030 --> 00:03:34,680
+have inline elements they might end up
+
+70
+00:03:34,680 --> 00:03:36,629
+with multiple rectangles if they get
+
+71
+00:03:36,629 --> 00:03:39,750
+line broken each line gets its own
+
+72
+00:03:39,750 --> 00:03:48,599
+rectangle this layout in is mostly a top
+
+73
+00:03:48,599 --> 00:03:52,709
+down process and now it gets a width
+
+74
+00:03:52,709 --> 00:03:55,409
+that it's allowed to take it lays out
+
+75
+00:03:55,409 --> 00:03:58,919
+its descendants so in line stuff gets
+
+76
+00:03:58,919 --> 00:04:01,230
+line broken gets put next to each other
+
+77
+00:04:01,230 --> 00:04:02,970
+until you reach the end of the line then
+
+78
+00:04:02,970 --> 00:04:05,549
+it moves on to the next line block
+
+79
+00:04:05,549 --> 00:04:07,709
+elements gets just put under each other
+
+80
+00:04:07,709 --> 00:04:10,680
+an output of this process for each note
+
+81
+00:04:10,680 --> 00:04:13,470
+is a half which is then used to lay out
+
+82
+00:04:13,470 --> 00:04:15,500
+its siblings and
+
+83
+00:04:15,500 --> 00:04:21,930
+anything further down the tree so I said
+
+84
+00:04:21,930 --> 00:04:24,060
+mostly top down some things complicate
+
+85
+00:04:24,060 --> 00:04:27,900
+this tables mostly need multiple bosses
+
+86
+00:04:27,900 --> 00:04:32,960
+because table cells are adjusted too
+
+87
+00:04:32,960 --> 00:04:36,150
+well the size of the tables the width of
+
+88
+00:04:36,150 --> 00:04:38,190
+a table cell depends on its siblings so
+
+89
+00:04:38,190 --> 00:04:40,979
+they'll have to be laid out once to find
+
+90
+00:04:40,979 --> 00:04:43,139
+their maximum hey through maximum width
+
+91
+00:04:43,139 --> 00:04:45,270
+the width that I want then the actual
+
+92
+00:04:45,270 --> 00:04:47,940
+width is deidre mind especially if you
+
+93
+00:04:47,940 --> 00:04:50,040
+have deeply nested tables it can result
+
+94
+00:04:50,040 --> 00:04:53,100
+in a lot of going up and down the layout
+
+95
+00:04:53,100 --> 00:04:56,910
+tree in order to fix an actual layout
+
+96
+00:04:56,910 --> 00:04:59,669
+for each table cell which is one of the
+
+97
+00:04:59,669 --> 00:05:04,680
+reasons people hate tables I guess final
+
+98
+00:05:04,680 --> 00:05:07,620
+step is drawing this whole tree which is
+
+99
+00:05:07,620 --> 00:05:10,200
+basically organizing it in the index
+
+100
+00:05:10,200 --> 00:05:14,190
+order running over it and bleeding
+
+101
+00:05:14,190 --> 00:05:15,900
+everything to the screen i'll come back
+
+102
+00:05:15,900 --> 00:05:20,060
+to optimizations of that process later
+
+103
+00:05:20,060 --> 00:05:25,410
+and layout entry once is actually not
+
+104
+00:05:25,410 --> 00:05:28,650
+that hard the thing is that we have come
+
+105
+00:05:28,650 --> 00:05:31,400
+to expect to be able to change this tree
+
+106
+00:05:31,400 --> 00:05:34,110
+constantly and have it consistently
+
+107
+00:05:34,110 --> 00:05:38,130
+relay out in a performance fast way it
+
+108
+00:05:38,130 --> 00:05:39,930
+already starts during building of the
+
+109
+00:05:39,930 --> 00:05:42,840
+document when something is loading slow
+
+110
+00:05:42,840 --> 00:05:44,610
+it will often be rendered before it's
+
+111
+00:05:44,610 --> 00:05:46,979
+fully parsed the browser sparse
+
+112
+00:05:46,979 --> 00:05:48,870
+documents incrementally building up this
+
+113
+00:05:48,870 --> 00:05:51,180
+tree as they are running through the
+
+114
+00:05:51,180 --> 00:05:56,039
+HTML text for quick loading pages this
+
+115
+00:05:56,039 --> 00:05:58,110
+happens once and then you get a layout
+
+116
+00:05:58,110 --> 00:06:00,750
+in a draw for slow loading pages only
+
+117
+00:06:00,750 --> 00:06:04,020
+how the page will be loaded and then you
+
+118
+00:06:04,020 --> 00:06:05,789
+already want to draw something to the
+
+119
+00:06:05,789 --> 00:06:08,760
+screen so you get this partial Dom tree
+
+120
+00:06:08,760 --> 00:06:10,620
+is laid out and then later on the
+
+121
+00:06:10,620 --> 00:06:12,510
+parsing process continues adding notes
+
+122
+00:06:12,510 --> 00:06:15,300
+at some point real layouts it throws it
+
+123
+00:06:15,300 --> 00:06:17,520
+again maybe continues until it has parse
+
+124
+00:06:17,520 --> 00:06:21,090
+the whole document there's also things
+
+125
+00:06:21,090 --> 00:06:25,110
+like for example the hover pseudo class
+
+126
+00:06:25,110 --> 00:06:26,220
+when you're moving your mouse through
+
+127
+00:06:26,220 --> 00:06:29,970
+the documents at any point styling can
+
+128
+00:06:29,970 --> 00:06:35,380
+changed which can if you write specific
+
+129
+00:06:35,390 --> 00:06:38,310
+CSS rules can change the actual size of
+
+130
+00:06:38,310 --> 00:06:41,480
+elements can cause real layouts of
+
+131
+00:06:41,480 --> 00:06:44,370
+arbitrary parts of the document and of
+
+132
+00:06:44,370 --> 00:06:48,440
+course Crips tends to change the DOM and
+
+133
+00:06:48,440 --> 00:06:51,180
+expect that it will be immediately
+
+134
+00:06:51,180 --> 00:06:54,120
+reedus played in the correct way so if
+
+135
+00:06:54,120 --> 00:06:56,400
+we have a small demonstration document I
+
+136
+00:06:56,400 --> 00:07:00,570
+can demonstrate layout dependencies
+
+137
+00:07:00,570 --> 00:07:03,810
+between nodes if I were to add a little
+
+138
+00:07:03,810 --> 00:07:08,680
+inline notes somewhere in this document
+
+139
+00:07:08,690 --> 00:07:11,190
+well one thing is clear this paragraph
+
+140
+00:07:11,190 --> 00:07:13,410
+that I'm changing has to be line broken
+
+141
+00:07:13,410 --> 00:07:18,210
+again it might drop down another line
+
+142
+00:07:18,210 --> 00:07:20,760
+and thereby change it hate causing the
+
+143
+00:07:20,760 --> 00:07:24,600
+next paragraph to be shifted down but
+
+144
+00:07:24,600 --> 00:07:26,670
+for example the title and the sidebar
+
+145
+00:07:26,670 --> 00:07:29,280
+and the paragraph above it are never
+
+146
+00:07:29,280 --> 00:07:32,300
+affected by a reflow of this paragraph
+
+147
+00:07:32,300 --> 00:07:34,680
+so the browser should optimize this and
+
+148
+00:07:34,680 --> 00:07:37,260
+don't actually even touch these these
+
+149
+00:07:37,260 --> 00:07:42,150
+notes during this reflow also this
+
+150
+00:07:42,150 --> 00:07:45,630
+paragraph down here it might move down
+
+151
+00:07:45,630 --> 00:07:48,810
+but this never has to be realigned
+
+152
+00:07:48,810 --> 00:07:51,510
+broken its width chain it width doesn't
+
+153
+00:07:51,510 --> 00:07:54,690
+change so it's a very fast process it's
+
+154
+00:07:54,690 --> 00:07:57,660
+just moves down a bit if it doesn't
+
+155
+00:07:57,660 --> 00:07:59,430
+actually happen here but if this would
+
+156
+00:07:59,430 --> 00:08:01,860
+cause this paragraph to get a different
+
+157
+00:08:01,860 --> 00:08:05,970
+head if there were more things below say
+
+158
+00:08:05,970 --> 00:08:08,100
+a further then those would also depend
+
+159
+00:08:08,100 --> 00:08:14,190
+on on the size of of this paragraph even
+
+160
+00:08:14,190 --> 00:08:15,840
+though they are not siblings of your
+
+161
+00:08:15,840 --> 00:08:19,320
+children of this paragraph so it's a
+
+162
+00:08:19,320 --> 00:08:22,590
+kind of in order dependency everything
+
+163
+00:08:22,590 --> 00:08:24,750
+that comes after it goes out in an
+
+164
+00:08:24,750 --> 00:08:28,110
+inorder work of the layout tree might be
+
+165
+00:08:28,110 --> 00:08:31,760
+affected by a size change of this
+
+166
+00:08:31,760 --> 00:08:37,550
+specific node
+
+167
+00:08:37,560 --> 00:08:41,380
+so what that means is that manipulating
+
+168
+00:08:41,380 --> 00:08:42,940
+things that are positioned absolutely
+
+169
+00:08:42,940 --> 00:08:45,820
+which is out of the tree is typically
+
+170
+00:08:45,820 --> 00:08:48,160
+crazy fast because there are no
+
+171
+00:08:48,160 --> 00:08:50,170
+dependencies on other parts and there
+
+172
+00:08:50,170 --> 00:08:52,480
+are no other parts that depends on
+
+173
+00:08:52,480 --> 00:08:55,960
+absolutely positioned knows similarly
+
+174
+00:08:55,960 --> 00:09:01,540
+changing things like a color or CSS
+
+175
+00:09:01,540 --> 00:09:05,320
+transform or visibility hidden didn't
+
+176
+00:09:05,320 --> 00:09:08,080
+cause any real layout it causes a redraw
+
+177
+00:09:08,080 --> 00:09:10,570
+of this node but the rest of the
+
+178
+00:09:10,570 --> 00:09:13,330
+documents doesn't change position or
+
+179
+00:09:13,330 --> 00:09:16,690
+size depending on this node so that's
+
+180
+00:09:16,690 --> 00:09:19,920
+sufficient on the other hand changing
+
+181
+00:09:19,920 --> 00:09:23,080
+adding or removing things especially in
+
+182
+00:09:23,080 --> 00:09:26,050
+big documents in the flow of the
+
+183
+00:09:26,050 --> 00:09:33,260
+document can be arbitrarily expensive
+
+184
+00:09:33,270 --> 00:09:36,700
+one thing that's a very important part
+
+185
+00:09:36,700 --> 00:09:38,850
+of how brush optimize this is that they
+
+186
+00:09:38,850 --> 00:09:43,270
+reflow a document lazily they try they
+
+187
+00:09:43,270 --> 00:09:45,010
+don't immediately when a script touches
+
+188
+00:09:45,010 --> 00:09:45,970
+something they don't immediately
+
+189
+00:09:45,970 --> 00:09:48,940
+recompute a layout but they mark all the
+
+190
+00:09:48,940 --> 00:09:50,890
+notes that might potentially be affected
+
+191
+00:09:50,890 --> 00:09:53,500
+by the change as dirty and then when the
+
+192
+00:09:53,500 --> 00:09:55,720
+script finishes in the optimal cases
+
+193
+00:09:55,720 --> 00:09:57,250
+only when the strip's finishes do they
+
+194
+00:09:57,250 --> 00:10:01,440
+relay out every single dirty note
+
+195
+00:10:01,440 --> 00:10:04,000
+usually if the script makes a bunch of
+
+196
+00:10:04,000 --> 00:10:05,920
+changes there's a huge amount of overlap
+
+197
+00:10:05,920 --> 00:10:08,050
+in the layout work that has to be
+
+198
+00:10:08,050 --> 00:10:10,870
+repeated so if you only do it once
+
+199
+00:10:10,870 --> 00:10:14,950
+you're saving yourself ninety-nine
+
+200
+00:10:14,950 --> 00:10:18,220
+percent of the work one interesting case
+
+201
+00:10:18,220 --> 00:10:20,770
+here is that scripts can read layout
+
+202
+00:10:20,770 --> 00:10:22,120
+information for example through
+
+203
+00:10:22,120 --> 00:10:24,910
+properties like offset top or computed
+
+204
+00:10:24,910 --> 00:10:28,330
+style that with if you're doing getting
+
+205
+00:10:28,330 --> 00:10:30,250
+your script you're forcing a layout if
+
+206
+00:10:30,250 --> 00:10:33,310
+the note that you're reading is dirty so
+
+207
+00:10:33,310 --> 00:10:36,970
+the worst case is a loop that's changing
+
+208
+00:10:36,970 --> 00:10:38,720
+the DOM and then reading
+
+209
+00:10:38,720 --> 00:10:40,550
+layout information from the dome again
+
+210
+00:10:40,550 --> 00:10:42,949
+it will be forcing a layout on every
+
+211
+00:10:42,949 --> 00:10:46,819
+iteration and you can make huge huge
+
+212
+00:10:46,819 --> 00:10:49,730
+time savings by somehow rewriting your
+
+213
+00:10:49,730 --> 00:10:52,759
+code to not do this to minimize layout
+
+214
+00:10:52,759 --> 00:10:55,939
+round trips for assembling code mirror
+
+215
+00:10:55,939 --> 00:10:58,699
+at some point this editor there was code
+
+216
+00:10:58,699 --> 00:11:02,209
+that was building a line number bar on
+
+217
+00:11:02,209 --> 00:11:04,850
+the side by I wanted to ensure that
+
+218
+00:11:04,850 --> 00:11:07,279
+there were enough line numbers to cover
+
+219
+00:11:07,279 --> 00:11:10,250
+the actual health of the contents so it
+
+220
+00:11:10,250 --> 00:11:12,889
+was adding an out checking the health of
+
+221
+00:11:12,889 --> 00:11:16,459
+the line number bar if it was high
+
+222
+00:11:16,459 --> 00:11:18,050
+enough it stopped if not it added the
+
+223
+00:11:18,050 --> 00:11:20,029
+next note this could take for a few
+
+224
+00:11:20,029 --> 00:11:23,480
+thousand lines seconds of freezing the
+
+225
+00:11:23,480 --> 00:11:27,410
+browser completely by rewriting it to be
+
+226
+00:11:27,410 --> 00:11:30,100
+a little more clever like checking
+
+227
+00:11:30,100 --> 00:11:32,600
+computing the amount of notes it needed
+
+228
+00:11:32,600 --> 00:11:35,269
+in advance and just adding them without
+
+229
+00:11:35,269 --> 00:11:37,670
+reading it it took three milliseconds I
+
+230
+00:11:37,670 --> 00:11:40,850
+think so you can really get order of
+
+231
+00:11:40,850 --> 00:11:45,290
+magnitude increases by by being careful
+
+232
+00:11:45,290 --> 00:11:46,879
+about it even if it means building up
+
+233
+00:11:46,879 --> 00:11:49,189
+big data structures to catch some data
+
+234
+00:11:49,189 --> 00:11:51,290
+that you don't want to read during your
+
+235
+00:11:51,290 --> 00:11:57,170
+dom manipulation a very important aspect
+
+236
+00:11:57,170 --> 00:12:00,769
+of drawing is of drawing a dom is making
+
+237
+00:12:00,769 --> 00:12:04,129
+as much use of the hardware of the video
+
+238
+00:12:04,129 --> 00:12:08,420
+hardware as possible because in almost
+
+239
+00:12:08,420 --> 00:12:11,089
+every current machine drawing things to
+
+240
+00:12:11,089 --> 00:12:13,189
+video hardware is much much faster than
+
+241
+00:12:13,189 --> 00:12:16,939
+drawing in software this comes starts
+
+242
+00:12:16,939 --> 00:12:18,230
+with simple things like if you're
+
+243
+00:12:18,230 --> 00:12:19,459
+drawing something with a blue background
+
+244
+00:12:19,459 --> 00:12:22,040
+you using the video hardware tube little
+
+245
+00:12:22,040 --> 00:12:24,170
+blue rectangle instead of letting all
+
+246
+00:12:24,170 --> 00:12:29,209
+the bits yourself but it gets much more
+
+247
+00:12:29,209 --> 00:12:30,920
+advanced for example at Mozilla is
+
+248
+00:12:30,920 --> 00:12:32,509
+currently moving towards I think other
+
+249
+00:12:32,509 --> 00:12:34,100
+browsers are doing similar things but I
+
+250
+00:12:34,100 --> 00:12:37,309
+don't know the details is a system that
+
+251
+00:12:37,309 --> 00:12:40,040
+detects it divides the rendering tree in
+
+252
+00:12:40,040 --> 00:12:42,670
+two layers wear layers are things that
+
+253
+00:12:42,670 --> 00:12:45,290
+have a fixed relative position to each
+
+254
+00:12:45,290 --> 00:12:50,740
+other in regard to scrolling and to
+
+255
+00:12:50,740 --> 00:12:56,899
+animation so that for example in a very
+
+256
+00:12:56,899 --> 00:12:59,360
+simple document everything has a fixed
+
+257
+00:12:59,360 --> 00:13:01,550
+position compared to each other if there
+
+258
+00:13:01,550 --> 00:13:03,589
+are no fixed background your fixed
+
+259
+00:13:03,589 --> 00:13:07,370
+elements no internal scrolling diffs
+
+260
+00:13:07,370 --> 00:13:10,339
+then the whole document is basically one
+
+261
+00:13:10,339 --> 00:13:13,220
+picture that doesn't move accepts for
+
+262
+00:13:13,220 --> 00:13:16,880
+script changes or style changes so you
+
+263
+00:13:16,880 --> 00:13:18,410
+can render this to an off-screen buffer
+
+264
+00:13:18,410 --> 00:13:21,440
+and then just let the video hardware
+
+265
+00:13:21,440 --> 00:13:23,720
+blitz as you're scrolling blitz this
+
+266
+00:13:23,720 --> 00:13:26,630
+buffer at different different positions
+
+267
+00:13:26,630 --> 00:13:30,290
+and this is probably the fastest way to
+
+268
+00:13:30,290 --> 00:13:32,510
+do scrolling because there are no round
+
+269
+00:13:32,510 --> 00:13:36,079
+trips to actual Dom elements happening
+
+270
+00:13:36,079 --> 00:13:37,850
+you don't need to walk your tree and
+
+271
+00:13:37,850 --> 00:13:39,589
+draw the elements individually you just
+
+272
+00:13:39,589 --> 00:13:43,209
+build up this buffer once and I'm bladed
+
+273
+00:13:43,209 --> 00:13:45,889
+this even works for more complicated
+
+274
+00:13:45,889 --> 00:13:47,630
+things so you have a fixed background
+
+275
+00:13:47,630 --> 00:13:50,149
+you're scrolling transparent notes over
+
+276
+00:13:50,149 --> 00:13:54,079
+that if you create a layer I'm not sure
+
+277
+00:13:54,079 --> 00:13:56,990
+if Mozilla does this at the moment if
+
+278
+00:13:56,990 --> 00:13:59,600
+firefox is at the moment but it's
+
+279
+00:13:59,600 --> 00:14:03,140
+something that they're hoping to do you
+
+280
+00:14:03,140 --> 00:14:04,430
+can create a layer that's partially
+
+281
+00:14:04,430 --> 00:14:08,120
+transparent with an alpha channel and
+
+282
+00:14:08,120 --> 00:14:10,100
+just bleed that over your background
+
+283
+00:14:10,100 --> 00:14:13,160
+during scrolling which is still a much
+
+284
+00:14:13,160 --> 00:14:17,149
+much more much much faster than building
+
+285
+00:14:17,149 --> 00:14:20,149
+up your tree note by note as you doing
+
+286
+00:14:20,149 --> 00:14:25,820
+your your scroll another thing is of
+
+287
+00:14:25,820 --> 00:14:27,890
+course 3d transforms see as a 3d
+
+288
+00:14:27,890 --> 00:14:30,220
+transforms are pretty much defined as
+
+289
+00:14:30,220 --> 00:14:33,890
+video card operations so you draw your
+
+290
+00:14:33,890 --> 00:14:36,290
+buffer and then once and then you let
+
+291
+00:14:36,290 --> 00:14:39,110
+the video card handle the
+
+292
+00:14:39,110 --> 00:14:41,870
+transformations which is why they are
+
+293
+00:14:41,870 --> 00:14:45,649
+often faster than 2d transforms even
+
+294
+00:14:45,649 --> 00:14:50,480
+though they do almost the same thing one
+
+295
+00:14:50,480 --> 00:14:52,550
+thing i glossed over before is that
+
+296
+00:14:52,550 --> 00:14:56,010
+before you can do any layout or
+
+297
+00:14:56,010 --> 00:14:58,500
+is that you need to resolve all the
+
+298
+00:14:58,500 --> 00:15:00,960
+styles for every note there's actually
+
+299
+00:15:00,960 --> 00:15:05,340
+non-trivial because there are usually a
+
+300
+00:15:05,340 --> 00:15:07,440
+lot of styles and a lot of notes and
+
+301
+00:15:07,440 --> 00:15:10,980
+matching a style style rule against an
+
+302
+00:15:10,980 --> 00:15:13,380
+actual Dom node is not a trivial
+
+303
+00:15:13,380 --> 00:15:17,280
+president might require walking up the
+
+304
+00:15:17,280 --> 00:15:19,710
+Dom tree to ancestors it might even
+
+305
+00:15:19,710 --> 00:15:21,570
+require backtracking if you have long
+
+306
+00:15:21,570 --> 00:15:27,210
+chains of ancestor rules the naive
+
+307
+00:15:27,210 --> 00:15:31,950
+algorithm would be have complexity to
+
+308
+00:15:31,950 --> 00:15:33,570
+the number of notes times the number of
+
+309
+00:15:33,570 --> 00:15:36,870
+rules so if we look at some nodes and
+
+310
+00:15:36,870 --> 00:15:40,440
+rule counts of some popular size you're
+
+311
+00:15:40,440 --> 00:15:43,710
+saying that if you do an algorithm like
+
+312
+00:15:43,710 --> 00:15:46,260
+that for example Twitter would require
+
+313
+00:15:46,260 --> 00:15:50,730
+10 million rule matches um which is
+
+314
+00:15:50,730 --> 00:15:52,770
+doable I guess 10 million isn't that
+
+315
+00:15:52,770 --> 00:15:55,230
+much but which would definitely be a
+
+316
+00:15:55,230 --> 00:15:59,760
+waste of resources so there's actually a
+
+317
+00:15:59,760 --> 00:16:02,130
+pretty simple trick to to greatly reduce
+
+318
+00:16:02,130 --> 00:16:04,110
+the amount of raw matches that have to
+
+319
+00:16:04,110 --> 00:16:07,230
+be done I think most browsers do it I
+
+320
+00:16:07,230 --> 00:16:09,690
+know WebKit and Firefox do it like that
+
+321
+00:16:09,690 --> 00:16:12,630
+I expect most do something similar it
+
+322
+00:16:12,630 --> 00:16:18,750
+involves buckets say you have you index
+
+323
+00:16:18,750 --> 00:16:21,930
+all your rules after you're loading your
+
+324
+00:16:21,930 --> 00:16:26,730
+your style sheet by the rightmost
+
+325
+00:16:26,730 --> 00:16:32,190
+selector of the rule each rule ends up
+
+326
+00:16:32,190 --> 00:16:34,980
+in one and only one of four buckets if
+
+327
+00:16:34,980 --> 00:16:37,980
+the right mode selector has a has an ID
+
+328
+00:16:37,980 --> 00:16:40,470
+then it ends up in the first buckets
+
+329
+00:16:40,470 --> 00:16:43,890
+indexed by ID it was a class its index
+
+330
+00:16:43,890 --> 00:16:46,890
+black claws into the second bucket if it
+
+331
+00:16:46,890 --> 00:16:49,020
+doesn't have closer ID it's indexed by
+
+332
+00:16:49,020 --> 00:16:51,390
+tag name in the third bucket if it has
+
+333
+00:16:51,390 --> 00:16:53,760
+neither of this tree then served in the
+
+334
+00:16:53,760 --> 00:16:55,520
+last bucket which is actually a list
+
+335
+00:16:55,520 --> 00:16:59,750
+another hash table now if you need to
+
+336
+00:16:59,750 --> 00:17:03,870
+find all applicable rules for a specific
+
+337
+00:17:03,870 --> 00:17:06,720
+note if first you check whether it has
+
+338
+00:17:06,720 --> 00:17:08,169
+an ID if it does you look and
+
+339
+00:17:08,169 --> 00:17:10,449
+I did bucket for each of his classes you
+
+340
+00:17:10,449 --> 00:17:14,079
+look in the class bucket you then always
+
+341
+00:17:14,079 --> 00:17:17,100
+look in the node name buckets for
+
+342
+00:17:17,100 --> 00:17:19,899
+fetching all the rules that apply to
+
+343
+00:17:19,899 --> 00:17:22,149
+this node name and you always have to
+
+344
+00:17:22,149 --> 00:17:24,189
+walk over all the notes in the last
+
+345
+00:17:24,189 --> 00:17:26,409
+bucket because they can't be
+
+346
+00:17:26,409 --> 00:17:30,129
+meaningfully indexed this cuts down the
+
+347
+00:17:30,129 --> 00:17:32,019
+amount of rules that you have to look at
+
+348
+00:17:32,019 --> 00:17:38,259
+by several orders of magnitude so then
+
+349
+00:17:38,259 --> 00:17:39,850
+you have to once you've found all
+
+350
+00:17:39,850 --> 00:17:41,529
+applicable rules you have to sort them
+
+351
+00:17:41,529 --> 00:17:45,429
+by by relevance by specific specificity
+
+352
+00:17:45,429 --> 00:17:49,210
+CSS defines that a scoring scheme for
+
+353
+00:17:49,210 --> 00:17:53,580
+rules we're more specific rules take
+
+354
+00:17:53,580 --> 00:17:55,749
+precedence over other ones so there's
+
+355
+00:17:55,749 --> 00:17:57,669
+always some sorting involved is multiple
+
+356
+00:17:57,669 --> 00:18:01,809
+rules match in general you want to
+
+357
+00:18:01,809 --> 00:18:03,700
+minimize the amount of rules that end up
+
+358
+00:18:03,700 --> 00:18:09,129
+in this rest buckets so well did I guess
+
+359
+00:18:09,129 --> 00:18:11,259
+only pathological style sheets have a
+
+360
+00:18:11,259 --> 00:18:14,769
+lot of these because you don't typically
+
+361
+00:18:14,769 --> 00:18:16,749
+define something for all hover elements
+
+362
+00:18:16,749 --> 00:18:20,289
+or only by attribute selector but I
+
+363
+00:18:20,289 --> 00:18:22,720
+guess you could do that and yeah that's
+
+364
+00:18:22,720 --> 00:18:26,980
+something to to be wary of also helps a
+
+365
+00:18:26,980 --> 00:18:29,049
+lot to use for example the parent
+
+366
+00:18:29,049 --> 00:18:31,149
+selector the greater than sign instead
+
+367
+00:18:31,149 --> 00:18:33,279
+of simply the ancestor selector and
+
+368
+00:18:33,279 --> 00:18:35,919
+social selector requires a walk all the
+
+369
+00:18:35,919 --> 00:18:38,710
+way to the top of the Dom tree to
+
+370
+00:18:38,710 --> 00:18:40,570
+determine whether something matches the
+
+371
+00:18:40,570 --> 00:18:42,639
+ancestor select the apparent selector
+
+372
+00:18:42,639 --> 00:18:51,159
+only requires a single step but yeah on
+
+373
+00:18:51,159 --> 00:18:54,609
+the whole my experience is that is
+
+374
+00:18:54,609 --> 00:18:57,730
+actually pretty rare to write something
+
+375
+00:18:57,730 --> 00:19:00,850
+that has a serious problem with style
+
+376
+00:19:00,850 --> 00:19:05,169
+matching on a modern browser that was
+
+377
+00:19:05,169 --> 00:19:08,950
+all I'd like to answer questions or
+
+378
+00:19:08,950 --> 00:19:13,059
+receive Corrections or feedback if
+
+379
+00:19:13,059 --> 00:19:24,849
+anyone has something
+
+380
+00:19:24,859 --> 00:19:29,879
+work test alone you said that you were
+
+381
+00:19:29,879 --> 00:19:32,309
+saying that 2d transforms are slower
+
+382
+00:19:32,309 --> 00:19:34,919
+than 3d transforms okay I'm wondering
+
+383
+00:19:34,919 --> 00:19:36,779
+why because until he transforms our
+
+384
+00:19:36,779 --> 00:19:39,979
+layers the same as 3d transforms but
+
+385
+00:19:39,979 --> 00:19:42,330
+those layers depend on a renderer
+
+386
+00:19:42,330 --> 00:19:45,899
+implementation right sorry yes these
+
+387
+00:19:45,899 --> 00:19:48,899
+transforms and how does that apply for
+
+388
+00:19:48,899 --> 00:19:50,909
+example on Android and the old androids
+
+389
+00:19:50,909 --> 00:19:52,889
+you have an amateur implementation at
+
+390
+00:19:52,889 --> 00:19:54,299
+left on top is the same as using
+
+391
+00:19:54,299 --> 00:19:56,909
+transforms because translate and
+
+392
+00:19:56,909 --> 00:19:58,950
+translate 3d I only met to those
+
+393
+00:19:58,950 --> 00:20:01,109
+functions on the render implementation
+
+394
+00:20:01,109 --> 00:20:03,299
+and I was wondering why you said that
+
+395
+00:20:03,299 --> 00:20:05,459
+you transfer eyes overall are faster
+
+396
+00:20:05,459 --> 00:20:07,469
+than everything you guys at fact I've
+
+397
+00:20:07,469 --> 00:20:08,609
+been wondering the saying I've been
+
+398
+00:20:08,609 --> 00:20:09,869
+trying to get an answer to that last
+
+399
+00:20:09,869 --> 00:20:11,879
+night because I figured this question
+
+400
+00:20:11,879 --> 00:20:15,059
+would come up and I didn't get a
+
+401
+00:20:15,059 --> 00:20:17,669
+satisfactory answer if someone here
+
+402
+00:20:17,669 --> 00:20:19,739
+knows I'd love to hear it my current
+
+403
+00:20:19,739 --> 00:20:23,249
+interpretation is that it 2d transform
+
+404
+00:20:23,249 --> 00:20:25,829
+requires the actual like polygons the
+
+405
+00:20:25,829 --> 00:20:28,950
+actual parts of the individual elements
+
+406
+00:20:28,950 --> 00:20:32,399
+to be drawn in the transforms way being
+
+407
+00:20:32,399 --> 00:20:36,659
+more precise than drawing them in the
+
+408
+00:20:36,659 --> 00:20:38,579
+untransformed ynn letting the hardware
+
+409
+00:20:38,579 --> 00:20:40,469
+treat that as a texture that it
+
+410
+00:20:40,469 --> 00:20:42,959
+transforms but I'm not sure whether this
+
+411
+00:20:42,959 --> 00:20:48,629
+is correct ok sorry does ok well I got
+
+412
+00:20:48,629 --> 00:20:50,820
+the answer but I was only asking for
+
+413
+00:20:50,820 --> 00:20:53,849
+well I wanted to clear up and 3d
+
+414
+00:20:53,849 --> 00:20:56,459
+transforms a lot faster on the overall
+
+415
+00:20:56,459 --> 00:20:58,829
+and they are faster on different
+
+416
+00:20:58,829 --> 00:21:01,049
+implementations on a GPU layer right and
+
+417
+00:21:01,049 --> 00:21:03,179
+it depends on how to render itself and
+
+418
+00:21:03,179 --> 00:21:04,049
+that is running in the background
+
+419
+00:21:04,049 --> 00:21:06,389
+process the render tree is scared of
+
+420
+00:21:06,389 --> 00:21:08,609
+course if you don't have 3d hardware and
+
+421
+00:21:08,609 --> 00:21:10,619
+for example you can use some left top
+
+422
+00:21:10,619 --> 00:21:12,359
+and Z index which is the pre bleh out
+
+423
+00:21:12,359 --> 00:21:14,339
+property and its overall faster than
+
+424
+00:21:14,339 --> 00:21:16,409
+using 2d transforms or 3d transforms
+
+425
+00:21:16,409 --> 00:21:18,749
+because her they are only the same
+
+426
+00:21:18,749 --> 00:21:19,960
+function but maps
+
+427
+00:21:19,960 --> 00:21:23,200
+yeah okay if only wanted to create up
+
+428
+00:21:23,200 --> 00:21:33,970
+okay hey thanks anyone else guess not
+

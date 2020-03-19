@@ -1,0 +1,2634 @@
+1
+00:00:15,650 --> 00:00:19,080
+
+yeah it's going to be exciting it's also
+
+2
+00:00:19,080 --> 00:00:25,910
+going to be a lot of material and yeah
+
+3
+00:00:25,910 --> 00:00:29,610
+imagine you're building Gmail and you
+
+4
+00:00:29,610 --> 00:00:31,470
+know we both work on Google+ so this is
+
+5
+00:00:31,470 --> 00:00:34,410
+as much as a mind game for us than it is
+
+6
+00:00:34,410 --> 00:00:37,350
+for everybody here except this guy who's
+
+7
+00:00:37,350 --> 00:00:40,530
+actually working on Gmail and so most of
+
+8
+00:00:40,530 --> 00:00:42,930
+you guys probably know Gmail it looks
+
+9
+00:00:42,930 --> 00:00:46,980
+somehow like you know this it's fake
+
+10
+00:00:46,980 --> 00:00:48,600
+right so there's megabytes of JavaScript
+
+11
+00:00:48,600 --> 00:00:51,269
+and you would think that you probably
+
+12
+00:00:51,269 --> 00:00:52,949
+don't eat all of it right away
+
+13
+00:00:52,949 --> 00:00:55,379
+right so initially you might draw
+
+14
+00:00:55,379 --> 00:00:56,970
+something and then you know the user
+
+15
+00:00:56,970 --> 00:00:58,170
+does something need a little more code
+
+16
+00:00:58,170 --> 00:01:01,229
+so it you know that's that's kind of how
+
+17
+00:01:01,229 --> 00:01:03,659
+it looks and you know we can probably
+
+18
+00:01:03,659 --> 00:01:04,769
+agree on that
+
+19
+00:01:04,769 --> 00:01:06,659
+downloading lots of JavaScript is you
+
+20
+00:01:06,659 --> 00:01:08,580
+know it can be really slow and that
+
+21
+00:01:08,580 --> 00:01:10,290
+compilation of JavaScript is also
+
+22
+00:01:10,290 --> 00:01:14,159
+something that may be slow so to follow
+
+23
+00:01:14,159 --> 00:01:17,460
+along this is our example app you know
+
+24
+00:01:17,460 --> 00:01:19,200
+it's Gmail it has an inbox and has a
+
+25
+00:01:19,200 --> 00:01:22,050
+compose you and kind of our assumption
+
+26
+00:01:22,050 --> 00:01:24,450
+is that not everybody always composed
+
+27
+00:01:24,450 --> 00:01:26,430
+emails so it's kind of wasteful to load
+
+28
+00:01:26,430 --> 00:01:27,930
+all the code you need to compose emails
+
+29
+00:01:27,930 --> 00:01:31,530
+right and then we make this completely
+
+30
+00:01:31,530 --> 00:01:35,100
+arbitrary made-up dependency tree that
+
+31
+00:01:35,100 --> 00:01:36,840
+has you know this thing that we call
+
+32
+00:01:36,840 --> 00:01:39,330
+inbox app at the top and then it's like
+
+33
+00:01:39,330 --> 00:01:41,250
+an inbox model and an inbox view and the
+
+34
+00:01:41,250 --> 00:01:43,050
+inbox model depends on the Ajax thing
+
+35
+00:01:43,050 --> 00:01:45,420
+and the thread Porter and the URL module
+
+36
+00:01:45,420 --> 00:01:47,760
+is a dependency of the Ajax module can
+
+37
+00:01:47,760 --> 00:01:49,680
+you see that yeah and then it's like the
+
+38
+00:01:49,680 --> 00:01:51,510
+template renderer and the text Kade and
+
+39
+00:01:51,510 --> 00:01:54,330
+it's yeah doesn't really matter it's all
+
+40
+00:01:54,330 --> 00:01:56,250
+just things we made up it's a dependency
+
+41
+00:01:56,250 --> 00:01:57,900
+tree you know you have modules to kind
+
+42
+00:01:57,900 --> 00:02:01,560
+of need other stuff and when you act the
+
+43
+00:02:01,560 --> 00:02:04,920
+compose app you get you know these two
+
+44
+00:02:04,920 --> 00:02:06,810
+other things like the email sender and
+
+45
+00:02:06,810 --> 00:02:08,759
+the compose view and the compost view
+
+46
+00:02:08,759 --> 00:02:10,229
+also depends on the same thing the
+
+47
+00:02:10,229 --> 00:02:12,030
+template renderer and the text get thing
+
+48
+00:02:12,030 --> 00:02:14,220
+and the email sender needs Ajax so
+
+49
+00:02:14,220 --> 00:02:15,780
+there's you know there's some overlap
+
+50
+00:02:15,780 --> 00:02:17,250
+and the dependencies between those two
+
+51
+00:02:17,250 --> 00:02:20,940
+apps so and we talk about JavaScript
+
+52
+00:02:20,940 --> 00:02:23,430
+loading so let's imagine we're building
+
+53
+00:02:23,430 --> 00:02:24,810
+our app with require.js
+
+54
+00:02:24,810 --> 00:02:27,209
+now requirejs is two ways to load
+
+55
+00:02:27,209 --> 00:02:29,130
+JavaScript that's the HR
+
+56
+00:02:29,130 --> 00:02:30,720
+kind of built in and this is the first
+
+57
+00:02:30,720 --> 00:02:32,310
+one that you would used in development
+
+58
+00:02:32,310 --> 00:02:34,650
+and it's recursive downloading so you
+
+59
+00:02:34,650 --> 00:02:36,750
+say you know your abscess I want the
+
+60
+00:02:36,750 --> 00:02:38,850
+inbox app so it figures you know there's
+
+61
+00:02:38,850 --> 00:02:40,950
+these two things that I know I need
+
+62
+00:02:40,950 --> 00:02:42,510
+because they're like defined to be my
+
+63
+00:02:42,510 --> 00:02:46,140
+dependencies it downloads them then they
+
+64
+00:02:46,140 --> 00:02:48,540
+go and say yeah I actually do need a
+
+65
+00:02:48,540 --> 00:02:50,670
+couple more modules and download them
+
+66
+00:02:50,670 --> 00:02:53,100
+and then a Jake says yeah I also need
+
+67
+00:02:53,100 --> 00:02:54,840
+the URL module and there's another step
+
+68
+00:02:54,840 --> 00:02:57,390
+so loading JavaScript like this is
+
+69
+00:02:57,390 --> 00:03:00,750
+really really bad its overall hhb
+
+70
+00:03:00,750 --> 00:03:02,280
+requests and there's a four step
+
+71
+00:03:02,280 --> 00:03:03,720
+waterfall so assuming you have like a
+
+72
+00:03:03,720 --> 00:03:05,580
+round-trip time of like 100 milliseconds
+
+73
+00:03:05,580 --> 00:03:07,710
+it takes 400 seconds just to do these
+
+74
+00:03:07,710 --> 00:03:12,110
+like trivial module loading which is bad
+
+75
+00:03:12,110 --> 00:03:14,610
+let's look at the incremental load so
+
+76
+00:03:14,610 --> 00:03:17,070
+now let's say like we want to load the
+
+77
+00:03:17,070 --> 00:03:19,140
+compost app and that's actually really
+
+78
+00:03:19,140 --> 00:03:21,990
+easy in with AMD say like you load it
+
+79
+00:03:21,990 --> 00:03:24,450
+and then it figures out okay then email
+
+80
+00:03:24,450 --> 00:03:26,070
+sender and the compose for you and then
+
+81
+00:03:26,070 --> 00:03:27,690
+you have all this other dependencies but
+
+82
+00:03:27,690 --> 00:03:28,710
+they're already there so it doesn't
+
+83
+00:03:28,710 --> 00:03:29,580
+download them anymore
+
+84
+00:03:29,580 --> 00:03:30,720
+so it's a little bit better in the
+
+85
+00:03:30,720 --> 00:03:32,310
+incremental load so it's three HTTP
+
+86
+00:03:32,310 --> 00:03:34,830
+requests and still two-step waterfall
+
+87
+00:03:34,830 --> 00:03:38,130
+really really bad so what can you do
+
+88
+00:03:38,130 --> 00:03:41,970
+require.js has this you know thing where
+
+89
+00:03:41,970 --> 00:03:43,770
+I say you compile it all into one big
+
+90
+00:03:43,770 --> 00:03:46,380
+file you know you have your entry module
+
+91
+00:03:46,380 --> 00:03:47,610
+and they figured out all dependencies
+
+92
+00:03:47,610 --> 00:03:49,500
+makes it one thing right and you deliver
+
+93
+00:03:49,500 --> 00:03:51,390
+that in production and that's actually a
+
+94
+00:03:51,390 --> 00:03:53,490
+very very very good way to deliver
+
+95
+00:03:53,490 --> 00:03:55,200
+JavaScript that's totally what you want
+
+96
+00:03:55,200 --> 00:03:57,570
+to do it's super super efficient for
+
+97
+00:03:57,570 --> 00:04:00,540
+small to medium and we don't really know
+
+98
+00:04:00,540 --> 00:04:03,480
+where the cutoff is apps so but it
+
+99
+00:04:03,480 --> 00:04:05,220
+doesn't scale there's some point where
+
+100
+00:04:05,220 --> 00:04:08,430
+you know and it certainly reached if you
+
+101
+00:04:08,430 --> 00:04:11,760
+are at a megabyte where you do not want
+
+102
+00:04:11,760 --> 00:04:13,110
+to do this anymore because it's just too
+
+103
+00:04:13,110 --> 00:04:16,980
+big right and so we figured like how can
+
+104
+00:04:16,980 --> 00:04:18,870
+we fix this yeah so we're talking about
+
+105
+00:04:18,870 --> 00:04:21,030
+JavaScript serving and the Gmail team
+
+106
+00:04:21,030 --> 00:04:22,100
+actually came up with the initial
+
+107
+00:04:22,100 --> 00:04:24,420
+implementation of a solution to this
+
+108
+00:04:24,420 --> 00:04:26,220
+which is basically to teach the server a
+
+109
+00:04:26,220 --> 00:04:27,690
+couple of things about how to serve
+
+110
+00:04:27,690 --> 00:04:30,420
+javascript the themes here are first of
+
+111
+00:04:30,420 --> 00:04:32,040
+all teach the server the dependency tree
+
+112
+00:04:32,040 --> 00:04:33,780
+the server can know it the client does
+
+113
+00:04:33,780 --> 00:04:35,250
+not need to figure it out and by
+
+114
+00:04:35,250 --> 00:04:36,540
+teaching the server the dependency tree
+
+115
+00:04:36,540 --> 00:04:38,010
+we can get rid of the recursive sort of
+
+116
+00:04:38,010 --> 00:04:40,260
+downloading from a client perspective we
+
+117
+00:04:40,260 --> 00:04:41,580
+want it to be as simple as possible just
+
+118
+00:04:41,580 --> 00:04:42,900
+ask for what you need
+
+119
+00:04:42,900 --> 00:04:45,270
+actly when you need it and then we pair
+
+120
+00:04:45,270 --> 00:04:46,860
+this with closure compiler for
+
+121
+00:04:46,860 --> 00:04:48,210
+minification and various other benefits
+
+122
+00:04:48,210 --> 00:04:51,360
+that I will go on to talk about so the
+
+123
+00:04:51,360 --> 00:04:52,680
+initial request ends up looking
+
+124
+00:04:52,680 --> 00:04:54,449
+something like this which is kind of
+
+125
+00:04:54,449 --> 00:04:56,009
+like the one big file that melted was
+
+126
+00:04:56,009 --> 00:04:58,710
+talking about which is to say you asked
+
+127
+00:04:58,710 --> 00:05:01,199
+for inbox app and then the URL jebaited
+
+128
+00:05:01,199 --> 00:05:03,240
+just directs the server give me all the
+
+129
+00:05:03,240 --> 00:05:05,610
+dependencies that inbox app also has the
+
+130
+00:05:05,610 --> 00:05:07,380
+server resolves this concatenates theme
+
+131
+00:05:07,380 --> 00:05:10,169
+spits it out out of the socket browser
+
+132
+00:05:10,169 --> 00:05:11,880
+loads it up well and good
+
+133
+00:05:11,880 --> 00:05:15,570
+so for incremental loading our initial
+
+134
+00:05:15,570 --> 00:05:17,310
+implementation was basically just to
+
+135
+00:05:17,310 --> 00:05:20,970
+have that initial boot payload the
+
+136
+00:05:20,970 --> 00:05:23,430
+server emitted the module graph to the
+
+137
+00:05:23,430 --> 00:05:25,560
+client and says hey look in addition to
+
+138
+00:05:25,560 --> 00:05:27,930
+inbox app and all of its contents here's
+
+139
+00:05:27,930 --> 00:05:29,039
+the module graph for the entire
+
+140
+00:05:29,039 --> 00:05:30,300
+application the module graph is a lot
+
+141
+00:05:30,300 --> 00:05:33,410
+smaller than the code of course and so
+
+142
+00:05:33,410 --> 00:05:36,870
+the client is able to construct a URL
+
+143
+00:05:36,870 --> 00:05:38,910
+for the incremental load for compose app
+
+144
+00:05:38,910 --> 00:05:40,590
+by simply just traversing the module
+
+145
+00:05:40,590 --> 00:05:42,060
+graph and asking for the individual
+
+146
+00:05:42,060 --> 00:05:44,669
+library modules without other
+
+147
+00:05:44,669 --> 00:05:46,590
+dependencies so that's our first cut now
+
+148
+00:05:46,590 --> 00:05:48,780
+the client calculates it all of our
+
+149
+00:05:48,780 --> 00:05:53,039
+requests are still 1 HP 1hp or requests
+
+150
+00:05:53,039 --> 00:05:54,630
+and things are still are fairly
+
+151
+00:05:54,630 --> 00:05:56,460
+efficient but there's downsides in
+
+152
+00:05:56,460 --> 00:05:58,620
+particular the client needs to download
+
+153
+00:05:58,620 --> 00:06:00,300
+the whole dependency tree that can get a
+
+154
+00:06:00,300 --> 00:06:02,130
+little bit large more importantly the
+
+155
+00:06:02,130 --> 00:06:04,050
+client code required for incremental
+
+156
+00:06:04,050 --> 00:06:06,060
+loading needs to be able to parse it
+
+157
+00:06:06,060 --> 00:06:07,500
+keep track of all various data
+
+158
+00:06:07,500 --> 00:06:09,449
+structures the client ends up getting a
+
+159
+00:06:09,449 --> 00:06:13,080
+lot more complicated so we came up with
+
+160
+00:06:13,080 --> 00:06:14,699
+this idea actually John did but I talked
+
+161
+00:06:14,699 --> 00:06:17,820
+about it- loading which is super crazy
+
+162
+00:06:17,820 --> 00:06:19,680
+easy and awesome
+
+163
+00:06:19,680 --> 00:06:21,870
+so the first request is the exact same
+
+164
+00:06:21,870 --> 00:06:24,000
+with the other module you say you know I
+
+165
+00:06:24,000 --> 00:06:25,650
+want inbox app and the server goes and
+
+166
+00:06:25,650 --> 00:06:27,150
+fetched all the dependencies give it to
+
+167
+00:06:27,150 --> 00:06:30,659
+you and on the incremental load the
+
+168
+00:06:30,659 --> 00:06:32,970
+super-crazy inside comes you tell the
+
+169
+00:06:32,970 --> 00:06:36,240
+server I want compose app but I already
+
+170
+00:06:36,240 --> 00:06:38,010
+have inbox app and then the server is
+
+171
+00:06:38,010 --> 00:06:39,870
+really smart and can tell you know
+
+172
+00:06:39,870 --> 00:06:41,699
+figures are dependencies of those two
+
+173
+00:06:41,699 --> 00:06:43,680
+things subtract them that's why we call
+
+174
+00:06:43,680 --> 00:06:45,720
+it negative loading and only gives you
+
+175
+00:06:45,720 --> 00:06:48,449
+the Delta that you really need so let's
+
+176
+00:06:48,449 --> 00:06:51,270
+look at a couple example URLs we
+
+177
+00:06:51,270 --> 00:06:53,490
+invented this you know slash a slash and
+
+178
+00:06:53,490 --> 00:06:55,560
+then plus inbox apps that's the first
+
+179
+00:06:55,560 --> 00:06:56,319
+request
+
+180
+00:06:56,319 --> 00:06:58,839
+on the second request say we want to
+
+181
+00:06:58,839 --> 00:07:01,330
+allow composer we say compose app -
+
+182
+00:07:01,330 --> 00:07:04,749
+inbox app and the third request where we
+
+183
+00:07:04,749 --> 00:07:06,999
+invented cent app we say okay we want
+
+184
+00:07:06,999 --> 00:07:09,129
+cent app we already have inbox app and
+
+185
+00:07:09,129 --> 00:07:13,809
+compose app so the nice thing is that
+
+186
+00:07:13,809 --> 00:07:16,419
+this makes this client super super
+
+187
+00:07:16,419 --> 00:07:19,719
+stupid simple so constructing like a URL
+
+188
+00:07:19,719 --> 00:07:21,819
+just says you know whatever module you
+
+189
+00:07:21,819 --> 00:07:24,369
+want and then you join all the requested
+
+190
+00:07:24,369 --> 00:07:26,289
+module you have and immediately push the
+
+191
+00:07:26,289 --> 00:07:27,999
+module you request it onto the requested
+
+192
+00:07:27,999 --> 00:07:30,039
+thing and the next request just you know
+
+193
+00:07:30,039 --> 00:07:31,509
+keeps on adding goes so that's that
+
+194
+00:07:31,509 --> 00:07:32,919
+that's that's your JavaScript loader
+
+195
+00:07:32,919 --> 00:07:34,469
+it's the one is like two lines of code
+
+196
+00:07:34,469 --> 00:07:38,499
+which is I think super awesome but
+
+197
+00:07:38,499 --> 00:07:39,639
+there's one problem that there's no
+
+198
+00:07:39,639 --> 00:07:41,889
+there's a conserved concurrency thing
+
+199
+00:07:41,889 --> 00:07:44,379
+right and so each one of these requests
+
+200
+00:07:44,379 --> 00:07:46,419
+needs to execute right after the other
+
+201
+00:07:46,419 --> 00:07:48,129
+so if you're adding adding them
+
+202
+00:07:48,129 --> 00:07:50,050
+dynamically to the Dom browser can
+
+203
+00:07:50,050 --> 00:07:51,039
+download them in any particular order
+
+204
+00:07:51,039 --> 00:07:52,930
+execute them in whatever order shows up
+
+205
+00:07:52,930 --> 00:07:56,139
+obviously that not only is suboptimal in
+
+206
+00:07:56,139 --> 00:07:57,279
+terms of performance you'd like to be
+
+207
+00:07:57,279 --> 00:07:58,599
+able to download as much as you can at
+
+208
+00:07:58,599 --> 00:07:59,949
+the same time in cases where it makes
+
+209
+00:07:59,949 --> 00:08:01,569
+sense it also adds complexity to the
+
+210
+00:08:01,569 --> 00:08:02,889
+loader and that you need to detect
+
+211
+00:08:02,889 --> 00:08:04,689
+somehow and there's various mechanisms
+
+212
+00:08:04,689 --> 00:08:07,779
+to do this when each one of the FEM each
+
+213
+00:08:07,779 --> 00:08:09,370
+one of these payloads has completed so
+
+214
+00:08:09,370 --> 00:08:10,830
+that it can kick off the next request
+
+215
+00:08:10,830 --> 00:08:14,319
+thereby serializing them together so we
+
+216
+00:08:14,319 --> 00:08:15,759
+try we wanted to do a little bit better
+
+217
+00:08:15,759 --> 00:08:17,620
+and so we introduced something called
+
+218
+00:08:17,620 --> 00:08:20,649
+callback loading it's my name I take
+
+219
+00:08:20,649 --> 00:08:23,019
+responsibility for it if you have if you
+
+220
+00:08:23,019 --> 00:08:24,849
+know anybody who's good at marketing and
+
+221
+00:08:24,849 --> 00:08:26,469
+has a better name for it please tell me
+
+222
+00:08:26,469 --> 00:08:29,649
+because it's not the most fantastic name
+
+223
+00:08:29,649 --> 00:08:31,029
+but basically you can think of it as
+
+224
+00:08:31,029 --> 00:08:34,630
+Jason p4 for JavaScript code so the
+
+225
+00:08:34,630 --> 00:08:36,250
+loader is responsible for setting up a
+
+226
+00:08:36,250 --> 00:08:39,159
+loading function that is that wraps the
+
+227
+00:08:39,159 --> 00:08:42,279
+JavaScript that comes in now in the
+
+228
+00:08:42,279 --> 00:08:43,389
+naive implementation you can basically
+
+229
+00:08:43,389 --> 00:08:45,880
+just stringify all your j s eval it in
+
+230
+00:08:45,880 --> 00:08:48,519
+in the loader and the loader callback
+
+231
+00:08:48,519 --> 00:08:50,139
+needs to just be smart enough to know I
+
+232
+00:08:50,139 --> 00:08:52,360
+cannot execute until everything that was
+
+233
+00:08:52,360 --> 00:08:53,980
+supposed to have executed before me is
+
+234
+00:08:53,980 --> 00:08:56,589
+complete so here's an example of some of
+
+235
+00:08:56,589 --> 00:08:58,209
+a couple of the URLs sort of translated
+
+236
+00:08:58,209 --> 00:09:00,699
+a little bit of the incremental loads so
+
+237
+00:09:00,699 --> 00:09:03,009
+we want to compose app - the inbox app
+
+238
+00:09:03,009 --> 00:09:04,839
+and we and basically just say hey look
+
+239
+00:09:04,839 --> 00:09:07,510
+server I've set up a callback called
+
+240
+00:09:07,510 --> 00:09:08,740
+load underbar one you could also
+
+241
+00:09:08,740 --> 00:09:10,089
+namespace it too
+
+242
+00:09:10,089 --> 00:09:12,819
+pollute that global namespace less that
+
+243
+00:09:12,819 --> 00:09:14,529
+is responsible for actually executing
+
+244
+00:09:14,529 --> 00:09:16,149
+the code that comes back from the server
+
+245
+00:09:16,149 --> 00:09:18,610
+likewise loading send app a little bit
+
+246
+00:09:18,610 --> 00:09:22,389
+later I'm indicating to subtract inbox
+
+247
+00:09:22,389 --> 00:09:24,189
+app and compose app load to function is
+
+248
+00:09:24,189 --> 00:09:26,110
+responsible for doing this so what does
+
+249
+00:09:26,110 --> 00:09:28,660
+the code look like this is not the
+
+250
+00:09:28,660 --> 00:09:30,699
+actual code I wrote this basically just
+
+251
+00:09:30,699 --> 00:09:32,379
+to demonstrate that it can be written
+
+252
+00:09:32,379 --> 00:09:34,240
+tersely I'll describe kind of what it
+
+253
+00:09:34,240 --> 00:09:37,389
+does and you can implant it much more
+
+254
+00:09:37,389 --> 00:09:39,309
+clearly but the idea is that the loader
+
+255
+00:09:39,309 --> 00:09:41,589
+sets up the load underbar some index
+
+256
+00:09:41,589 --> 00:09:45,670
+method which in turn sets up any exact
+
+257
+00:09:45,670 --> 00:09:47,079
+method that is responsible for executing
+
+258
+00:09:47,079 --> 00:09:49,600
+the jeaious that it that it picked up if
+
+259
+00:09:49,600 --> 00:09:54,339
+a payload comes in out of order then
+
+260
+00:09:54,339 --> 00:09:56,079
+what it for instance if payload one
+
+261
+00:09:56,079 --> 00:09:58,269
+comes in after payload zero it just says
+
+262
+00:09:58,269 --> 00:09:59,319
+hey look I'm not ready yet
+
+263
+00:09:59,319 --> 00:10:00,970
+payload zero is not complete yet or to
+
+264
+00:10:00,970 --> 00:10:02,800
+you know before one but when one comes
+
+265
+00:10:02,800 --> 00:10:05,170
+in later it executes its own payload
+
+266
+00:10:05,170 --> 00:10:06,790
+saying hey I'm ready I'm ready now all
+
+267
+00:10:06,790 --> 00:10:08,920
+of my dependencies are executed and I'm
+
+268
+00:10:08,920 --> 00:10:10,120
+going to keep forward executing
+
+269
+00:10:10,120 --> 00:10:11,470
+everything else that's already been set
+
+270
+00:10:11,470 --> 00:10:15,939
+up and the executor deletes itself after
+
+271
+00:10:15,939 --> 00:10:17,259
+executing to make sure that you don't
+
+272
+00:10:17,259 --> 00:10:20,110
+dual execute so the example I just kind
+
+273
+00:10:20,110 --> 00:10:21,759
+of walk through is like this load 1
+
+274
+00:10:21,759 --> 00:10:24,279
+followed by load zero you define the
+
+275
+00:10:24,279 --> 00:10:26,740
+load 1 in the function R 0 then 1 and
+
+276
+00:10:26,740 --> 00:10:29,410
+then the last loaded bit says well 1 is
+
+277
+00:10:29,410 --> 00:10:30,550
+the last one that's kind of like
+
+278
+00:10:30,550 --> 00:10:33,160
+outstanding load 1 shows up and says hey
+
+279
+00:10:33,160 --> 00:10:36,550
+look zero hasn't executed yet I'm just
+
+280
+00:10:36,550 --> 00:10:38,980
+going to kind of put a placeholder there
+
+281
+00:10:38,980 --> 00:10:41,050
+saying that you know call this function
+
+282
+00:10:41,050 --> 00:10:43,449
+whenever you want to execute you see
+
+283
+00:10:43,449 --> 00:10:45,490
+where this is going load zero comes in
+
+284
+00:10:45,490 --> 00:10:47,920
+gets the code says alright I'm ready
+
+285
+00:10:47,920 --> 00:10:50,499
+it executes itself and it executes load
+
+286
+00:10:50,499 --> 00:10:55,269
+one thereby achieving concurrency so the
+
+287
+00:10:55,269 --> 00:10:56,769
+one one issue with this and the native
+
+288
+00:10:56,769 --> 00:10:59,319
+implementation is that we get code as in
+
+289
+00:10:59,319 --> 00:11:02,379
+a string representation via eval that's
+
+290
+00:11:02,379 --> 00:11:04,899
+not a huge problem there's very you know
+
+291
+00:11:04,899 --> 00:11:07,480
+that there's pros and cons to this but
+
+292
+00:11:07,480 --> 00:11:08,980
+among some of the issues that we ran
+
+293
+00:11:08,980 --> 00:11:11,019
+into particularly in the Google+ world
+
+294
+00:11:11,019 --> 00:11:12,610
+is that we really wanted to make sure
+
+295
+00:11:12,610 --> 00:11:14,259
+not to pollute the global namespace so
+
+296
+00:11:14,259 --> 00:11:15,970
+we tried to kill two birds with one
+
+297
+00:11:15,970 --> 00:11:18,279
+stone avoiding eval all at the same time
+
+298
+00:11:18,279 --> 00:11:20,439
+not polluting global name space with a
+
+299
+00:11:20,439 --> 00:11:22,629
+closure compiler passed that multi wrote
+
+300
+00:11:22,629 --> 00:11:24,120
+called reefs cope global symbol
+
+301
+00:11:24,120 --> 00:11:27,130
+yeah the way this works is it's actually
+
+302
+00:11:27,130 --> 00:11:29,380
+super simple so imagine you have a
+
+303
+00:11:29,380 --> 00:11:32,730
+global symbol like var x equals zero and
+
+304
+00:11:32,730 --> 00:11:35,260
+what we do is we find all those global
+
+305
+00:11:35,260 --> 00:11:37,750
+symbols and then we put them in a
+
+306
+00:11:37,750 --> 00:11:39,790
+namespace in this case it's called NS in
+
+307
+00:11:39,790 --> 00:11:41,110
+our real implementation we call it
+
+308
+00:11:41,110 --> 00:11:42,430
+underscore because underscores are
+
+309
+00:11:42,430 --> 00:11:44,650
+awesome and then it finds all the
+
+310
+00:11:44,650 --> 00:11:47,440
+references to this symbol and and always
+
+311
+00:11:47,440 --> 00:11:52,990
+says n I start X and s dot plot and what
+
+312
+00:11:52,990 --> 00:11:55,930
+this allows you is to wrap your response
+
+313
+00:11:55,930 --> 00:12:01,120
+in a closure and you inject the
+
+314
+00:12:01,120 --> 00:12:03,670
+namespace NS from into this closure and
+
+315
+00:12:03,670 --> 00:12:05,740
+the nice thing about this is you can do
+
+316
+00:12:05,740 --> 00:12:07,330
+incremental loads so you get more
+
+317
+00:12:07,330 --> 00:12:09,070
+JavaScript and if you wrapped up in
+
+318
+00:12:09,070 --> 00:12:10,990
+closures it's not visible anymore so it
+
+319
+00:12:10,990 --> 00:12:12,370
+doesn't work if you have if you're in an
+
+320
+00:12:12,370 --> 00:12:14,200
+incremental loading scenario but with
+
+321
+00:12:14,200 --> 00:12:18,520
+this basically you get the same like you
+
+322
+00:12:18,520 --> 00:12:20,500
+get the this thing we call a synthetic
+
+323
+00:12:20,500 --> 00:12:22,990
+namespace that's accessible to all the
+
+324
+00:12:22,990 --> 00:12:24,720
+payloads that are being loaded
+
+325
+00:12:24,720 --> 00:12:28,300
+individually and only if you if you say
+
+326
+00:12:28,300 --> 00:12:31,450
+window dot something explicitly it goes
+
+327
+00:12:31,450 --> 00:12:33,880
+into the actual global scope you know
+
+328
+00:12:33,880 --> 00:12:35,530
+we're working on the plus one team and
+
+329
+00:12:35,530 --> 00:12:37,600
+we never ever want to put stuff in like
+
+330
+00:12:37,600 --> 00:12:40,090
+namespaces of people if they embed plus
+
+331
+00:12:40,090 --> 00:12:41,500
+one so this is like super important for
+
+332
+00:12:41,500 --> 00:12:43,840
+us it might not be super important for
+
+333
+00:12:43,840 --> 00:12:49,690
+everybody yeah and the benefits are that
+
+334
+00:12:49,690 --> 00:12:52,690
+you get super hyper guaranteed you know
+
+335
+00:12:52,690 --> 00:12:53,950
+execution order but you can load
+
+336
+00:12:53,950 --> 00:12:55,720
+everything apparel and you know it's
+
+337
+00:12:55,720 --> 00:12:57,270
+only executed when you need it and
+
+338
+00:12:57,270 --> 00:13:00,300
+there's no change of any symbol
+
+339
+00:13:00,300 --> 00:13:05,610
+conflicts whatsoever we just decide
+
+340
+00:13:05,610 --> 00:13:08,140
+don't have to like dwell too much in
+
+341
+00:13:08,140 --> 00:13:11,890
+this way we then realized if we put var
+
+342
+00:13:11,890 --> 00:13:13,870
+window equals this at the beginning and
+
+343
+00:13:13,870 --> 00:13:16,300
+then go and find all the external
+
+344
+00:13:16,300 --> 00:13:18,250
+symbols from the environment and prefix
+
+345
+00:13:18,250 --> 00:13:20,770
+them with window dot that's an identity
+
+346
+00:13:20,770 --> 00:13:22,240
+transformation so the program still
+
+347
+00:13:22,240 --> 00:13:23,830
+works everybody with me
+
+348
+00:13:23,830 --> 00:13:27,820
+so what's awesome is you can now go and
+
+349
+00:13:27,820 --> 00:13:30,850
+apply this to be a different iframe and
+
+350
+00:13:30,850 --> 00:13:33,670
+we use this to essentially take this
+
+351
+00:13:33,670 --> 00:13:35,530
+code that's being rewritten and apply to
+
+352
+00:13:35,530 --> 00:13:37,810
+different iframes so you can
+
+353
+00:13:37,810 --> 00:13:39,160
+if you happen to have more than one
+
+354
+00:13:39,160 --> 00:13:42,220
+iframe and because your Remi and you
+
+355
+00:13:42,220 --> 00:13:44,590
+know you don't want to like compile or
+
+356
+00:13:44,590 --> 00:13:45,760
+like code more than once you can do
+
+357
+00:13:45,760 --> 00:13:47,410
+ding-ding-ding and apply to all them
+
+358
+00:13:47,410 --> 00:13:52,600
+kind of cool potential problems oh do
+
+359
+00:13:52,600 --> 00:13:53,920
+you want to know it I'll take it I'll
+
+360
+00:13:53,920 --> 00:13:56,290
+take this one and so what a couple of
+
+361
+00:13:56,290 --> 00:13:57,670
+the potential problems with this
+
+362
+00:13:57,670 --> 00:13:58,930
+approach just to kind of walk through
+
+363
+00:13:58,930 --> 00:14:01,870
+some of the implications is for one if
+
+364
+00:14:01,870 --> 00:14:02,950
+you have an independent incremental
+
+365
+00:14:02,950 --> 00:14:04,210
+requests the client doesn't know
+
+366
+00:14:04,210 --> 00:14:05,920
+anything about this and the default
+
+367
+00:14:05,920 --> 00:14:07,720
+loader basically just says all right
+
+368
+00:14:07,720 --> 00:14:10,000
+well one one needs to load before to
+
+369
+00:14:10,000 --> 00:14:13,839
+vice versa so but if you load solo one +
+
+370
+00:14:13,839 --> 00:14:16,000
+solo2 in this toy dependency graph here
+
+371
+00:14:16,000 --> 00:14:17,950
+in theory they could actually they get
+
+372
+00:14:17,950 --> 00:14:20,620
+it execute at the same time so how could
+
+373
+00:14:20,620 --> 00:14:21,940
+we ameliorate this we haven't actually
+
+374
+00:14:21,940 --> 00:14:23,290
+implemented this but just kind of what I
+
+375
+00:14:23,290 --> 00:14:24,670
+wanted to walk through it basically the
+
+376
+00:14:24,670 --> 00:14:27,400
+server could inject the dependencies
+
+377
+00:14:27,400 --> 00:14:30,460
+that it used among among what it what
+
+378
+00:14:30,460 --> 00:14:32,500
+the request indicated to subtract what
+
+379
+00:14:32,500 --> 00:14:35,080
+it was already requested the client is
+
+380
+00:14:35,080 --> 00:14:36,220
+smart enough to know what already is
+
+381
+00:14:36,220 --> 00:14:38,800
+loaded so if there's no overlap based
+
+382
+00:14:38,800 --> 00:14:41,680
+execute the payload right away another
+
+383
+00:14:41,680 --> 00:14:43,750
+potential problem is wasteful increment
+
+384
+00:14:43,750 --> 00:14:46,450
+incremental requests if you have as here
+
+385
+00:14:46,450 --> 00:14:48,700
+top depends on middle depends on bottom
+
+386
+00:14:48,700 --> 00:14:50,170
+you start with a request for top and
+
+387
+00:14:50,170 --> 00:14:53,080
+then you say now I want middle one way
+
+388
+00:14:53,080 --> 00:14:54,610
+to implement this naively is just doing
+
+389
+00:14:54,610 --> 00:14:56,560
+a simple check if some symbol you know
+
+390
+00:14:56,560 --> 00:14:59,830
+in middle whatever but you don't want to
+
+391
+00:14:59,830 --> 00:15:00,940
+pepper your code with that too much so
+
+392
+00:15:00,940 --> 00:15:02,620
+basically you just do load middle and
+
+393
+00:15:02,620 --> 00:15:04,480
+then start using it what that would do
+
+394
+00:15:04,480 --> 00:15:06,940
+in the naive implementation is say well
+
+395
+00:15:06,940 --> 00:15:09,010
+load middle - top which basically just
+
+396
+00:15:09,010 --> 00:15:13,120
+emits a zero pay zero byte request that
+
+397
+00:15:13,120 --> 00:15:15,010
+executes the payload it still works but
+
+398
+00:15:15,010 --> 00:15:16,750
+there's no particular point to it a
+
+399
+00:15:16,750 --> 00:15:18,820
+similar optimization could be used for
+
+400
+00:15:18,820 --> 00:15:20,920
+this basically just to omit the true the
+
+401
+00:15:20,920 --> 00:15:23,680
+tree of dependency is for any given
+
+402
+00:15:23,680 --> 00:15:25,480
+request that comes in and we're kind of
+
+403
+00:15:25,480 --> 00:15:26,770
+look looking at some of these
+
+404
+00:15:26,770 --> 00:15:29,440
+optimizations right now so the question
+
+405
+00:15:29,440 --> 00:15:34,060
+is how can you guys build this so what
+
+406
+00:15:34,060 --> 00:15:35,200
+you basically need is this data
+
+407
+00:15:35,200 --> 00:15:36,760
+structure that represents your
+
+408
+00:15:36,760 --> 00:15:38,880
+dependency tree and your server needs it
+
+409
+00:15:38,880 --> 00:15:42,250
+so from this you built this kind of flat
+
+410
+00:15:42,250 --> 00:15:44,260
+dependency graph for you basically for
+
+411
+00:15:44,260 --> 00:15:45,700
+like inbox app you have this list of
+
+412
+00:15:45,700 --> 00:15:47,680
+things you need and for your you know
+
+413
+00:15:47,680 --> 00:15:50,200
+and and and so on and and then
+
+414
+00:15:50,200 --> 00:15:52,060
+you have this you know you basically
+
+415
+00:15:52,060 --> 00:15:54,610
+need all your modules in one file and
+
+416
+00:15:54,610 --> 00:15:57,460
+have that in memory and you just go you
+
+417
+00:15:57,460 --> 00:15:59,380
+know what does the Pennsy tree say and
+
+418
+00:15:59,380 --> 00:16:00,460
+then you have your server emit those
+
+419
+00:16:00,460 --> 00:16:04,180
+ding-ding-ding one by one so this is
+
+420
+00:16:04,180 --> 00:16:05,860
+basically what what serving looks like
+
+421
+00:16:05,860 --> 00:16:08,980
+so you know let's say you want the
+
+422
+00:16:08,980 --> 00:16:10,570
+requested module so you get their
+
+423
+00:16:10,570 --> 00:16:13,510
+requested modules then you have you know
+
+424
+00:16:13,510 --> 00:16:15,490
+what's already loaded that's the - part
+
+425
+00:16:15,490 --> 00:16:18,220
+you get them and in order to find the
+
+426
+00:16:18,220 --> 00:16:20,890
+ones you want to serve you calculate the
+
+427
+00:16:20,890 --> 00:16:24,360
+intersection between those two lists and
+
+428
+00:16:24,360 --> 00:16:27,010
+you know recruit remove that from the
+
+429
+00:16:27,010 --> 00:16:29,800
+thing from the new list and then you
+
+430
+00:16:29,800 --> 00:16:32,140
+search them that's all so that's you
+
+431
+00:16:32,140 --> 00:16:33,460
+know also on the server side quite a
+
+432
+00:16:33,460 --> 00:16:36,640
+quite a simple implementation one thing
+
+433
+00:16:36,640 --> 00:16:38,380
+so we are using closure compiler which
+
+434
+00:16:38,380 --> 00:16:40,660
+is you know one of the more popular
+
+435
+00:16:40,660 --> 00:16:44,860
+minifiers and closure compiler has one
+
+436
+00:16:44,860 --> 00:16:46,030
+little-known feature is that it's
+
+437
+00:16:46,030 --> 00:16:48,580
+actually you know first-class support
+
+438
+00:16:48,580 --> 00:16:52,510
+for modules and so normal magnifier is
+
+439
+00:16:52,510 --> 00:16:54,340
+you put like n like a lot of JavaScript
+
+440
+00:16:54,340 --> 00:16:56,440
+files in and you get one file out close
+
+441
+00:16:56,440 --> 00:16:59,470
+to compile like heading minify lots of
+
+442
+00:16:59,470 --> 00:17:00,970
+files and then give you the files back
+
+443
+00:17:00,970 --> 00:17:03,280
+but they're consistently minified so it
+
+444
+00:17:03,280 --> 00:17:05,260
+renamed my like a global function to a
+
+445
+00:17:05,260 --> 00:17:06,820
+and then they've made it like they named
+
+446
+00:17:06,820 --> 00:17:08,770
+a and all of them so but you still have
+
+447
+00:17:08,770 --> 00:17:10,209
+the files and that's important for the
+
+448
+00:17:10,209 --> 00:17:11,560
+serving model because then you can come
+
+449
+00:17:11,560 --> 00:17:13,990
+you can defer the actual concatenation
+
+450
+00:17:13,990 --> 00:17:15,640
+to runtime which is you know basically
+
+451
+00:17:15,640 --> 00:17:18,730
+what we not want and yeah so it's
+
+452
+00:17:18,730 --> 00:17:20,290
+uncouples minification from
+
+453
+00:17:20,290 --> 00:17:22,000
+concatenation which when you think about
+
+454
+00:17:22,000 --> 00:17:24,250
+it it's kind of a neat way and just
+
+455
+00:17:24,250 --> 00:17:25,690
+because you know nobody used to do this
+
+456
+00:17:25,690 --> 00:17:28,030
+I think nobody had the idea to go with
+
+457
+00:17:28,030 --> 00:17:32,080
+this and so one thing you know I did in
+
+458
+00:17:32,080 --> 00:17:33,760
+my free time it's not super robust but
+
+459
+00:17:33,760 --> 00:17:34,210
+it works
+
+460
+00:17:34,210 --> 00:17:37,750
+it's a edit both support for common J's
+
+461
+00:17:37,750 --> 00:17:39,820
+modules and for AMD modules to closure
+
+462
+00:17:39,820 --> 00:17:42,310
+compiler so it can go and say you know
+
+463
+00:17:42,310 --> 00:17:45,460
+this is my module and then it finds all
+
+464
+00:17:45,460 --> 00:17:47,620
+the dependencies builds the module graph
+
+465
+00:17:47,620 --> 00:17:49,690
+and like does all this computation and
+
+466
+00:17:49,690 --> 00:17:53,290
+if you're interested it does it in a way
+
+467
+00:17:53,290 --> 00:17:55,540
+that it's trying to be super efficient
+
+468
+00:17:55,540 --> 00:17:57,400
+and it actually looks similar to the
+
+469
+00:17:57,400 --> 00:18:00,210
+generated code that you saw this morning
+
+470
+00:18:00,210 --> 00:18:03,070
+from the folks from typescript how they
+
+471
+00:18:03,070 --> 00:18:03,879
+represent module
+
+472
+00:18:03,879 --> 00:18:05,739
+so essentially every time you do a
+
+473
+00:18:05,739 --> 00:18:08,169
+require it actually just stupidly
+
+474
+00:18:08,169 --> 00:18:09,819
+replaces it with a name of the variable
+
+475
+00:18:09,819 --> 00:18:11,919
+and it guesses the name of the variable
+
+476
+00:18:11,919 --> 00:18:14,589
+from the module name and then when you
+
+477
+00:18:14,589 --> 00:18:17,559
+actually define the module exports equal
+
+478
+00:18:17,559 --> 00:18:20,409
+becomes an assignment to that variable
+
+479
+00:18:20,409 --> 00:18:23,109
+name so exports gets also replaced with
+
+480
+00:18:23,109 --> 00:18:24,609
+a variable name and then you can just
+
+481
+00:18:24,609 --> 00:18:27,219
+cognate it the program it works without
+
+482
+00:18:27,219 --> 00:18:30,699
+any like so the whole notion of modules
+
+483
+00:18:30,699 --> 00:18:33,179
+goes away which is kind of freaky but
+
+484
+00:18:33,179 --> 00:18:35,440
+kind of works and I think it's worth
+
+485
+00:18:35,440 --> 00:18:38,109
+noting actually that our hope anyway
+
+486
+00:18:38,109 --> 00:18:39,519
+with this is to set up a protocol
+
+487
+00:18:39,519 --> 00:18:42,069
+whereby nej s can be served in this way
+
+488
+00:18:42,069 --> 00:18:44,109
+so long as you can define some notion of
+
+489
+00:18:44,109 --> 00:18:46,389
+a named library all the compiler passes
+
+490
+00:18:46,389 --> 00:18:48,339
+work on arbitrary J s and whatnot but we
+
+491
+00:18:48,339 --> 00:18:49,869
+do want it to be as flexible as possible
+
+492
+00:18:49,869 --> 00:18:54,029
+with and is sort of convenient and
+
+493
+00:18:54,029 --> 00:18:55,809
+understandable as possible to people who
+
+494
+00:18:55,809 --> 00:18:57,849
+already are using require J's common J's
+
+495
+00:18:57,849 --> 00:19:02,019
+and so on so what's the current study so
+
+496
+00:19:02,019 --> 00:19:04,269
+we use this as Google we're from the
+
+497
+00:19:04,269 --> 00:19:07,179
+social widget team what means like +1
+
+498
+00:19:07,179 --> 00:19:11,109
+and some more and so we use this the the
+
+499
+00:19:11,109 --> 00:19:14,169
+G+ you know proper side they still use
+
+500
+00:19:14,169 --> 00:19:15,940
+this other version that we talked about
+
+501
+00:19:15,940 --> 00:19:17,649
+that where the client side does the
+
+502
+00:19:17,649 --> 00:19:19,509
+calculation so you get still 1hb
+
+503
+00:19:19,509 --> 00:19:21,669
+requests but more complicated and we
+
+504
+00:19:21,669 --> 00:19:23,199
+hope to roll out a lot some more
+
+505
+00:19:23,199 --> 00:19:25,569
+properties soon actually so our current
+
+506
+00:19:25,569 --> 00:19:27,659
+server side implementation is in in Java
+
+507
+00:19:27,659 --> 00:19:29,799
+we're currently reporting to see bus
+
+508
+00:19:29,799 --> 00:19:33,309
+dressed to save some electricity but you
+
+509
+00:19:33,309 --> 00:19:35,799
+know both not our favorite programming
+
+510
+00:19:35,799 --> 00:19:39,429
+language so this slide essentially def
+
+511
+00:19:39,429 --> 00:19:41,199
+bank I was hoping for
+
+512
+00:19:41,199 --> 00:19:44,229
+thunderstorms but there is a github.com
+
+513
+00:19:44,229 --> 00:19:47,859
+slash Google slash module server which
+
+514
+00:19:47,859 --> 00:19:50,409
+is an open source implementation of all
+
+515
+00:19:50,409 --> 00:19:51,879
+everything we talked about today
+
+516
+00:19:51,879 --> 00:19:55,929
+very very written in node.js so you can
+
+517
+00:19:55,929 --> 00:19:59,499
+use it in your own project it's you know
+
+518
+00:19:59,499 --> 00:20:01,779
+super duper alpha untested because we
+
+519
+00:20:01,779 --> 00:20:04,209
+kind of wrote it not for ourselves but
+
+520
+00:20:04,209 --> 00:20:07,690
+you you guys sorry feel free to make it
+
+521
+00:20:07,690 --> 00:20:09,519
+actually using all the other projects
+
+522
+00:20:09,519 --> 00:20:12,579
+yeah so it's you know it's not that it's
+
+523
+00:20:12,579 --> 00:20:14,679
+not battle tested so it has unit tests
+
+524
+00:20:14,679 --> 00:20:17,120
+basically that's what it says it was
+
+525
+00:20:17,120 --> 00:20:18,740
+but it's designed to be fast you still
+
+526
+00:20:18,740 --> 00:20:21,580
+get this like only mem copy runtime
+
+527
+00:20:21,580 --> 00:20:25,250
+there's full source map support so while
+
+528
+00:20:25,250 --> 00:20:27,680
+you have the single file serving you in
+
+529
+00:20:27,680 --> 00:20:29,510
+the like in your dev tools it all looks
+
+530
+00:20:29,510 --> 00:20:32,480
+awesome it includes a client lower lip
+
+531
+00:20:32,480 --> 00:20:34,550
+which is actually based on lap GS
+
+532
+00:20:34,550 --> 00:20:37,100
+because there was two you know a lap
+
+533
+00:20:37,100 --> 00:20:39,110
+Jace's get if I JavaScript loader
+
+534
+00:20:39,110 --> 00:20:40,940
+because I was like you know I didn't
+
+535
+00:20:40,940 --> 00:20:42,170
+want to write a JavaScript loader this
+
+536
+00:20:42,170 --> 00:20:43,670
+is a module loader so it's a module
+
+537
+00:20:43,670 --> 00:20:45,530
+lower later layered on a JavaScript
+
+538
+00:20:45,530 --> 00:20:48,260
+loader and it also reps closure compiler
+
+539
+00:20:48,260 --> 00:20:49,700
+so it's super easy to use because
+
+540
+00:20:49,700 --> 00:20:51,140
+closure compiler can be kind of like
+
+541
+00:20:51,140 --> 00:20:53,330
+weird with all those command line
+
+542
+00:20:53,330 --> 00:21:04,710
+parameters yeah let's let's take a look
+
+543
+00:21:04,720 --> 00:21:08,149
+github so i'm meltus doing this I will
+
+544
+00:21:08,149 --> 00:21:09,500
+admit that some of the potential
+
+545
+00:21:09,500 --> 00:21:11,240
+downsides and enhancements and whatnot
+
+546
+00:21:11,240 --> 00:21:13,429
+we put in this deck under the hope that
+
+547
+00:21:13,429 --> 00:21:15,440
+somebody here is possibly interested in
+
+548
+00:21:15,440 --> 00:21:18,799
+say helping to implement it with us so
+
+549
+00:21:18,799 --> 00:21:21,049
+feel free to contact us if anybody is
+
+550
+00:21:21,049 --> 00:21:22,340
+interested in contributing to the
+
+551
+00:21:22,340 --> 00:21:24,350
+project I love - I'm just super pumped
+
+552
+00:21:24,350 --> 00:21:26,029
+about using this in production Google -
+
+553
+00:21:26,029 --> 00:21:28,700
+maybe not I don't know I think I would
+
+554
+00:21:28,700 --> 00:21:35,270
+so yeah this is the the project there's
+
+555
+00:21:35,270 --> 00:21:37,399
+basically so there's this file called
+
+556
+00:21:37,399 --> 00:21:40,070
+demo server j/s so because I know like
+
+557
+00:21:40,070 --> 00:21:41,450
+people are using like Express or they
+
+558
+00:21:41,450 --> 00:21:42,710
+hate Express or they using something
+
+559
+00:21:42,710 --> 00:21:46,010
+else you know this is something you need
+
+560
+00:21:46,010 --> 00:21:47,630
+to integrate into your serving stacks so
+
+561
+00:21:47,630 --> 00:21:49,760
+this demo server is a no dependency
+
+562
+00:21:49,760 --> 00:21:52,250
+thing written a note that source stuff
+
+563
+00:21:52,250 --> 00:21:53,840
+but it you know might not be suitable
+
+564
+00:21:53,840 --> 00:21:56,240
+for whatever middle-way you're using so
+
+565
+00:21:56,240 --> 00:21:58,220
+you you write your you know maybe
+
+566
+00:21:58,220 --> 00:22:00,020
+somebody writes an Express integration
+
+567
+00:22:00,020 --> 00:22:03,409
+that reps this module server j/s and the
+
+568
+00:22:03,409 --> 00:22:07,700
+module graph thing yeah let's let's uh
+
+569
+00:22:07,700 --> 00:22:09,950
+you know I don't have the best demo in
+
+570
+00:22:09,950 --> 00:22:17,059
+the world this is the demo you can load
+
+571
+00:22:17,059 --> 00:22:21,590
+more code well as you can see you know
+
+572
+00:22:21,590 --> 00:22:26,360
+these are the there's like the ugly URLs
+
+573
+00:22:26,360 --> 00:22:29,299
+for the incremental loads but you know
+
+574
+00:22:29,299 --> 00:22:33,020
+because with source Maps you
+
+575
+00:22:33,020 --> 00:22:36,020
+you know they actual I think we can do
+
+576
+00:22:36,020 --> 00:22:39,670
+this much better
+
+577
+00:22:39,680 --> 00:22:41,570
+you know these are the actual you know
+
+578
+00:22:41,570 --> 00:22:44,810
+standard common J's modules and so it
+
+579
+00:22:44,810 --> 00:22:46,550
+should even be nice in developing but
+
+580
+00:22:46,550 --> 00:22:48,790
+you can also like just use AMD
+
+581
+00:22:48,790 --> 00:22:51,230
+require.js and development and then you
+
+582
+00:22:51,230 --> 00:22:53,930
+know when when you go to oh you know
+
+583
+00:22:53,930 --> 00:22:55,580
+ I wrote a megabyte of JavaScript
+
+584
+00:22:55,580 --> 00:22:58,190
+I wrote a megabyte of JavaScript
+eventually you port to this for
+
+585
+00:22:58,190 --> 00:23:03,470
+production and I think that's it thank
+
+586
+00:23:03,470 --> 00:23:15,080
+you we did want to mention that you know
+
+587
+00:23:15,080 --> 00:23:17,360
+this was kinda lot of input will be at
+
+588
+00:23:17,360 --> 00:23:19,670
+the google boost in the next break but
+
+589
+00:23:19,670 --> 00:23:27,560
+now we are open for questions so closure
+
+590
+00:23:27,560 --> 00:23:30,170
+already provides module loader along
+
+591
+00:23:30,170 --> 00:23:31,640
+with the modules ation in the
+
+592
+00:23:31,640 --> 00:23:34,910
+compilation as as you stressed it so is
+
+593
+00:23:34,910 --> 00:23:37,250
+the advantage here that you can change
+
+594
+00:23:37,250 --> 00:23:39,710
+the which dependencies you pull in at
+
+595
+00:23:39,710 --> 00:23:41,120
+run time rather than statically
+
+596
+00:23:41,120 --> 00:23:44,750
+beforehand so I mean dependency and that
+
+597
+00:23:44,750 --> 00:23:48,440
+was static but at runtime you say you
+
+598
+00:23:48,440 --> 00:23:49,490
+know
+
+599
+00:23:49,490 --> 00:23:51,950
+so you basically say this is my whole
+
+600
+00:23:51,950 --> 00:23:55,010
+app universe but you start with a subset
+
+601
+00:23:55,010 --> 00:23:57,080
+and then at runtime you say now I load
+
+602
+00:23:57,080 --> 00:23:59,980
+this other subset of my application and
+
+603
+00:23:59,980 --> 00:24:02,180
+you know that's the incremental thing
+
+604
+00:24:02,180 --> 00:24:05,090
+also so the closure library which is
+
+605
+00:24:05,090 --> 00:24:06,110
+nothing to do with the closure compiler
+
+606
+00:24:06,110 --> 00:24:08,990
+has some kind of a module loader in it
+
+607
+00:24:08,990 --> 00:24:10,610
+but it's not meant to be used outside
+
+608
+00:24:10,610 --> 00:24:14,420
+development except when you compile into
+
+609
+00:24:14,420 --> 00:24:15,950
+one big file which is awesome you know
+
+610
+00:24:15,950 --> 00:24:17,540
+but this was kind of a point that you
+
+611
+00:24:17,540 --> 00:24:18,590
+don't have to and we've been working
+
+612
+00:24:18,590 --> 00:24:20,390
+with them to possibly integrate some of
+
+613
+00:24:20,390 --> 00:24:21,800
+these techniques into that lawyer as
+
+614
+00:24:21,800 --> 00:24:31,040
+well okay
+
+615
+00:24:31,050 --> 00:24:33,930
+Hey expect you to have some long
+
+616
+00:24:33,930 --> 00:24:36,390
+expiration time on the for caching on
+
+617
+00:24:36,390 --> 00:24:38,670
+those goods so how do you change the URL
+
+618
+00:24:38,670 --> 00:24:40,380
+when you release or patch out new
+
+619
+00:24:40,380 --> 00:24:42,270
+versions so there's a couple of
+
+620
+00:24:42,270 --> 00:24:43,620
+different scheme schemes for doing that
+
+621
+00:24:43,620 --> 00:24:46,260
+the way that we happen to have implanted
+
+622
+00:24:46,260 --> 00:24:48,450
+it within Plus is basically we send
+
+623
+00:24:48,450 --> 00:24:50,250
+along a URL template with every request
+
+624
+00:24:50,250 --> 00:24:52,680
+in that template basically has encoded
+
+625
+00:24:52,680 --> 00:24:55,320
+within it the version which is basically
+
+626
+00:24:55,320 --> 00:24:58,590
+just a hash of all the content of the
+
+627
+00:24:58,590 --> 00:25:02,880
+entire set of code so it's a template
+
+628
+00:25:02,880 --> 00:25:05,430
+because you the modules that you want to
+
+629
+00:25:05,430 --> 00:25:07,800
+load are what's template template it in
+
+630
+00:25:07,800 --> 00:25:10,410
+so from there but basically we just push
+
+631
+00:25:10,410 --> 00:25:18,220
+a new template and you get a new code
+
+632
+00:25:18,230 --> 00:25:21,890
+one more
+
+633
+00:25:21,900 --> 00:25:25,020
+one more question separate topic how
+
+634
+00:25:25,020 --> 00:25:27,750
+much does how much size impact does the
+
+635
+00:25:27,750 --> 00:25:31,080
+global name spacing add so we when we
+
+636
+00:25:31,080 --> 00:25:31,919
+took a look at this
+
+637
+00:25:31,919 --> 00:25:36,480
+we noticed so it's roughly 2 or maybe 3
+
+638
+00:25:36,480 --> 00:25:41,130
+bytes per property access like on we use
+
+639
+00:25:41,130 --> 00:25:42,659
+underbar it can be an S dot or something
+
+640
+00:25:42,659 --> 00:25:44,850
+of that nature so our increase was
+
+641
+00:25:44,850 --> 00:25:46,260
+something on the order of like 3 to 4
+
+642
+00:25:46,260 --> 00:25:47,850
+percent but at G zips to essentially
+
+643
+00:25:47,850 --> 00:25:50,610
+zero because the the underbar dot is
+
+644
+00:25:50,610 --> 00:25:52,470
+repeated so many times and the same is
+
+645
+00:25:52,470 --> 00:25:54,029
+true actually for the window dot prefix
+
+646
+00:25:54,029 --> 00:25:56,100
+you just get window dot everywhere so
+
+647
+00:25:56,100 --> 00:26:00,130
+gzip stole most nothing
+
+648
+00:26:00,140 --> 00:26:03,510
+okay that's but also tanika's there is a
+
+649
+00:26:03,510 --> 00:26:06,809
+performance problem if any v8 people are
+
+650
+00:26:06,809 --> 00:26:08,309
+listening maybe they can fix it because
+
+651
+00:26:08,309 --> 00:26:09,690
+we add like all these properties on this
+
+652
+00:26:09,690 --> 00:26:12,570
+one thing we always said so we don't
+
+653
+00:26:12,570 --> 00:26:14,520
+currently use this and if you know you
+
+654
+00:26:14,520 --> 00:26:16,230
+don't need it and so where were you
+
+655
+00:26:16,230 --> 00:26:17,880
+performance critical we don't need it we
+
+656
+00:26:17,880 --> 00:26:21,929
+don't use it but you could think about
+
+657
+00:26:21,929 --> 00:26:23,970
+using erase instead and that'll be super
+
+658
+00:26:23,970 --> 00:26:29,490
+fast too but a bit bigger okay all right
+

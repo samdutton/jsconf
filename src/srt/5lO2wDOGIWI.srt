@@ -1,0 +1,2473 @@
+1
+00:00:11,110 --> 00:00:13,750
+
+okay everybody hear me okay great uh
+
+2
+00:00:13,750 --> 00:00:14,440
+yeah
+
+3
+00:00:14,440 --> 00:00:17,050
+very first thing you can get all the
+
+4
+00:00:17,050 --> 00:00:18,700
+slides for this right now on Seth Samuel
+
+5
+00:00:18,700 --> 00:00:21,220
+github IO if you want to follow along if
+
+6
+00:00:21,220 --> 00:00:22,990
+you can't see if you have accessibility
+
+7
+00:00:22,990 --> 00:00:25,990
+issues the there's a couple demos that
+
+8
+00:00:25,990 --> 00:00:28,119
+won't work quite right on mobile but if
+
+9
+00:00:28,119 --> 00:00:29,410
+you runs that any other problems please
+
+10
+00:00:29,410 --> 00:00:30,730
+let me know after so I can improve it
+
+11
+00:00:30,730 --> 00:00:32,710
+moving forward all right
+
+12
+00:00:32,710 --> 00:00:35,440
+my name is Seth Samuel new york portland
+
+13
+00:00:35,440 --> 00:00:37,000
+various other places portland back to
+
+14
+00:00:37,000 --> 00:00:38,559
+new york i can never move again without
+
+15
+00:00:38,559 --> 00:00:40,629
+ruining the symmetry of my life and just
+
+16
+00:00:40,629 --> 00:00:42,670
+driving myself crazy i am here to talk
+
+17
+00:00:42,670 --> 00:00:44,170
+about arbitrary computation on the GPU
+
+18
+00:00:44,170 --> 00:00:46,030
+with WebGL which is a really convoluted
+
+19
+00:00:46,030 --> 00:00:47,559
+way of saying we're gonna take WebGL
+
+20
+00:00:47,559 --> 00:00:49,930
+which does cool graphics stuff and we're
+
+21
+00:00:49,930 --> 00:00:52,750
+gonna make it do weird stuff for fun and
+
+22
+00:00:52,750 --> 00:00:55,269
+not so much profit but fun and it is
+
+23
+00:00:55,269 --> 00:00:57,010
+heart WebGL because I was testing
+
+24
+00:00:57,010 --> 00:00:59,890
+Unicode and emoji and all of that and I
+
+25
+00:00:59,890 --> 00:01:01,299
+finally got it working and I do heart
+
+26
+00:01:01,299 --> 00:01:02,440
+WebGL so it stayed that way
+
+27
+00:01:02,440 --> 00:01:04,479
+I'm south of Samuel on Twitter and said
+
+28
+00:01:04,479 --> 00:01:07,060
+Samuel on github one last piece of
+
+29
+00:01:07,060 --> 00:01:08,920
+boilerplate this is a talk that goes
+
+30
+00:01:08,920 --> 00:01:10,930
+pretty far into the weeds if you don't
+
+31
+00:01:10,930 --> 00:01:12,430
+know the idiom it means I'm gonna talk
+
+32
+00:01:12,430 --> 00:01:14,619
+about a lot of things really fast and
+
+33
+00:01:14,619 --> 00:01:16,270
+most of them are pretty far outside the
+
+34
+00:01:16,270 --> 00:01:18,790
+normal developer life if I lose you I'm
+
+35
+00:01:18,790 --> 00:01:20,950
+sorry it's totally my fault please come
+
+36
+00:01:20,950 --> 00:01:22,750
+up afterwards ask me questions on
+
+37
+00:01:22,750 --> 00:01:25,000
+Twitter and real life hopefully everyone
+
+38
+00:01:25,000 --> 00:01:26,200
+can still get something out of this talk
+
+39
+00:01:26,200 --> 00:01:28,690
+even though it is pretty weedy all right
+
+40
+00:01:28,690 --> 00:01:31,720
+what's WebGL WebGL is a JavaScript API
+
+41
+00:01:31,720 --> 00:01:34,300
+that lets us as web developers talk to
+
+42
+00:01:34,300 --> 00:01:36,130
+the graphics card using an API that's
+
+43
+00:01:36,130 --> 00:01:38,440
+very much like OpenGL what that means is
+
+44
+00:01:38,440 --> 00:01:41,800
+we can run graphics in about the closest
+
+45
+00:01:41,800 --> 00:01:43,990
+way to the metal that you'll ever get as
+
+46
+00:01:43,990 --> 00:01:45,730
+a web developer web assembly maybe down
+
+47
+00:01:45,730 --> 00:01:47,409
+the line will get you just as close but
+
+48
+00:01:47,409 --> 00:01:50,710
+right now WebGL is the best way to run
+
+49
+00:01:50,710 --> 00:01:54,159
+things really fast so what this looks
+
+50
+00:01:54,159 --> 00:01:56,140
+like is there's a nice little browser
+
+51
+00:01:56,140 --> 00:01:58,540
+sandbox we write JavaScript the
+
+52
+00:01:58,540 --> 00:02:01,479
+JavaScript gets piped to WebGL WebGL
+
+53
+00:02:01,479 --> 00:02:03,340
+talks off to the operating system and
+
+54
+00:02:03,340 --> 00:02:05,229
+the graphics card and then the graphics
+
+55
+00:02:05,229 --> 00:02:07,780
+card draws your graphics back onto an
+
+56
+00:02:07,780 --> 00:02:09,549
+HTML canvas which you can then talk to
+
+57
+00:02:09,549 --> 00:02:12,370
+you like any other HTML canvas one thing
+
+58
+00:02:12,370 --> 00:02:14,049
+to note all these arrows here are
+
+59
+00:02:14,049 --> 00:02:16,629
+one-way except for the canvas arrow
+
+60
+00:02:16,629 --> 00:02:18,330
+which we'll get to why that's important
+
+61
+00:02:18,330 --> 00:02:21,880
+so the basic structure of OpenGL is
+
+62
+00:02:21,880 --> 00:02:24,100
+something called shaders it's one of
+
+63
+00:02:24,100 --> 00:02:25,030
+many question
+
+64
+00:02:25,030 --> 00:02:27,069
+Cley Church Isis made inside of WebGL
+
+65
+00:02:27,069 --> 00:02:28,480
+but we're just gonna go with it we
+
+66
+00:02:28,480 --> 00:02:30,610
+inherited it from OpenGL who probably
+
+67
+00:02:30,610 --> 00:02:32,830
+made the decision while drunk it's
+
+68
+00:02:32,830 --> 00:02:35,050
+basically a functional pipeline you put
+
+69
+00:02:35,050 --> 00:02:37,240
+in data that data goes through a vertex
+
+70
+00:02:37,240 --> 00:02:39,220
+shader the vertex shader takes your data
+
+71
+00:02:39,220 --> 00:02:41,950
+and maps it to 3d points in space so
+
+72
+00:02:41,950 --> 00:02:43,150
+typically your data is going to look
+
+73
+00:02:43,150 --> 00:02:45,489
+something like a series of coordinates
+
+74
+00:02:45,489 --> 00:02:47,530
+that look a lot like 3d coordinates but
+
+75
+00:02:47,530 --> 00:02:49,390
+it doesn't have to it can be anything
+
+76
+00:02:49,390 --> 00:02:51,400
+you want to pipe in the vertex shader
+
+77
+00:02:51,400 --> 00:02:52,900
+hands that information off to the
+
+78
+00:02:52,900 --> 00:02:54,850
+fragment shader the fragment shader is
+
+79
+00:02:54,850 --> 00:02:56,680
+the only one here that sort of makes
+
+80
+00:02:56,680 --> 00:02:57,790
+sense with the word shader because it
+
+81
+00:02:57,790 --> 00:03:00,550
+shades color onto a fragment of your
+
+82
+00:03:00,550 --> 00:03:05,400
+graphics and then graphics happens so
+
+83
+00:03:05,400 --> 00:03:09,340
+here's a very simple snippet of what's
+
+84
+00:03:09,340 --> 00:03:12,220
+called GLSL the JIT the OpenGL shader
+
+85
+00:03:12,220 --> 00:03:13,840
+language which we use in WebGL as well
+
+86
+00:03:13,840 --> 00:03:16,870
+and because this is a weird descendant
+
+87
+00:03:16,870 --> 00:03:18,850
+of C JavaScript is a weird descendant of
+
+88
+00:03:18,850 --> 00:03:20,680
+C as well but this one's a weirder
+
+89
+00:03:20,680 --> 00:03:23,530
+descendant of C the way you actually say
+
+90
+00:03:23,530 --> 00:03:27,430
+what color your your pixel is going to
+
+91
+00:03:27,430 --> 00:03:29,560
+be is you set a global variable called
+
+92
+00:03:29,560 --> 00:03:31,900
+GL frag color equal to a vet for which
+
+93
+00:03:31,900 --> 00:03:33,720
+is just a fancy way of saying in RGB a
+
+94
+00:03:33,720 --> 00:03:36,700
+tuple so we're going to get past this V
+
+95
+00:03:36,700 --> 00:03:39,070
+cord thing which is the vertex shader
+
+96
+00:03:39,070 --> 00:03:41,890
+telling us where we are in space and
+
+97
+00:03:41,890 --> 00:03:44,650
+we're going to set the red to be s which
+
+98
+00:03:44,650 --> 00:03:46,989
+is the same as X and T which is the same
+
+99
+00:03:46,989 --> 00:03:49,660
+as Y because again nomenclature and
+
+100
+00:03:49,660 --> 00:03:51,370
+we're just gonna leave blue out and make
+
+101
+00:03:51,370 --> 00:03:54,250
+it fully not transparent so this is
+
+102
+00:03:54,250 --> 00:03:55,900
+actually WebGL this is all the demos in
+
+103
+00:03:55,900 --> 00:03:57,040
+here alive if you want to go see the
+
+104
+00:03:57,040 --> 00:03:59,140
+source go check out github and now we've
+
+105
+00:03:59,140 --> 00:04:00,820
+got our gradient so you can see in the
+
+106
+00:04:00,820 --> 00:04:02,859
+upper left where we're at zero zero it's
+
+107
+00:04:02,859 --> 00:04:04,810
+all black on the lower right red plus
+
+108
+00:04:04,810 --> 00:04:05,049
+green
+
+109
+00:04:05,049 --> 00:04:06,430
+equals yellow as we all learned in
+
+110
+00:04:06,430 --> 00:04:08,799
+kindergarten and in the top right red
+
+111
+00:04:08,799 --> 00:04:10,959
+bottom left green and what's really cool
+
+112
+00:04:10,959 --> 00:04:13,239
+here is all of this is happening at once
+
+113
+00:04:13,239 --> 00:04:15,820
+so it's not like WebGL is stepping
+
+114
+00:04:15,820 --> 00:04:17,919
+through every single piece of this
+
+115
+00:04:17,919 --> 00:04:20,200
+gradient and calculating it order the
+
+116
+00:04:20,200 --> 00:04:21,489
+graphics card is actually actually
+
+117
+00:04:21,489 --> 00:04:23,800
+calculating all of these colors at the
+
+118
+00:04:23,800 --> 00:04:28,150
+same time so we can use this to do some
+
+119
+00:04:28,150 --> 00:04:29,860
+really cool things so the edge finder
+
+120
+00:04:29,860 --> 00:04:31,479
+for those who don't know an edge finder
+
+121
+00:04:31,479 --> 00:04:33,070
+is exactly what it sounds like if you
+
+122
+00:04:33,070 --> 00:04:34,750
+have some image and you want to find
+
+123
+00:04:34,750 --> 00:04:37,120
+edges inside of it that is sort of what
+
+124
+00:04:37,120 --> 00:04:38,620
+we would think of as the outline
+
+125
+00:04:38,620 --> 00:04:41,800
+of objects what you can do is basically
+
+126
+00:04:41,800 --> 00:04:43,900
+you pass in a texture that's what we
+
+127
+00:04:43,900 --> 00:04:47,530
+call images and then you use a sampler
+
+128
+00:04:47,530 --> 00:04:49,090
+to get a pixel from it and so we're
+
+129
+00:04:49,090 --> 00:04:50,110
+gonna do the same thing where we're
+
+130
+00:04:50,110 --> 00:04:51,760
+gonna look at a pixel we're gonna look a
+
+131
+00:04:51,760 --> 00:04:53,710
+little bit to the left with that minus
+
+132
+00:04:53,710 --> 00:04:56,500
+0.005 and then we're gonna have some
+
+133
+00:04:56,500 --> 00:04:58,510
+threshold that tells us whether or not
+
+134
+00:04:58,510 --> 00:04:59,590
+this is an edge and if it's an edge
+
+135
+00:04:59,590 --> 00:05:01,240
+we're going to paint bright pink if
+
+136
+00:05:01,240 --> 00:05:03,070
+we're if it's not we're just gonna paint
+
+137
+00:05:03,070 --> 00:05:05,410
+black so here is a small child
+
+138
+00:05:05,410 --> 00:05:06,970
+attempting to eat an entire block of
+
+139
+00:05:06,970 --> 00:05:09,610
+cheese this is not my small child but if
+
+140
+00:05:09,610 --> 00:05:11,169
+I did have a small child she would also
+
+141
+00:05:11,169 --> 00:05:12,729
+probably try to eat an entire block of
+
+142
+00:05:12,729 --> 00:05:16,180
+cheese cuz cheese is delicious and here
+
+143
+00:05:16,180 --> 00:05:17,620
+we have her in edge format so you can
+
+144
+00:05:17,620 --> 00:05:20,350
+see I have this nice little slider here
+
+145
+00:05:20,350 --> 00:05:22,210
+that threshold that we saw earlier
+
+146
+00:05:22,210 --> 00:05:24,430
+I can decrease the threshold which means
+
+147
+00:05:24,430 --> 00:05:26,320
+basically everything looks like an edge
+
+148
+00:05:26,320 --> 00:05:28,810
+or I can make it really high which means
+
+149
+00:05:28,810 --> 00:05:31,060
+nothing looks like an edge and I can
+
+150
+00:05:31,060 --> 00:05:32,680
+sort of go through here and this is all
+
+151
+00:05:32,680 --> 00:05:35,560
+happening at liquid smooth 60 frames per
+
+152
+00:05:35,560 --> 00:05:37,600
+second and depending on the size of your
+
+153
+00:05:37,600 --> 00:05:39,580
+image that's not the case if you're
+
+154
+00:05:39,580 --> 00:05:40,930
+doing this in JavaScript you can do this
+
+155
+00:05:40,930 --> 00:05:43,150
+in JavaScript to some extent but you're
+
+156
+00:05:43,150 --> 00:05:44,349
+probably not going to be able to do
+
+157
+00:05:44,349 --> 00:05:46,090
+large images and be able to do all this
+
+158
+00:05:46,090 --> 00:05:47,740
+for exactly the same reason as before
+
+159
+00:05:47,740 --> 00:05:49,539
+which is that every single one of these
+
+160
+00:05:49,539 --> 00:05:51,550
+pixels is being considered at the same
+
+161
+00:05:51,550 --> 00:05:57,460
+time and last it's not a WebGL talk
+
+162
+00:05:57,460 --> 00:05:59,380
+without a particles demo particles are
+
+163
+00:05:59,380 --> 00:06:01,479
+cool here we're using GL position
+
+164
+00:06:01,479 --> 00:06:03,340
+instead of GL frag color which is the
+
+165
+00:06:03,340 --> 00:06:05,440
+equivalent version for the vertex shader
+
+166
+00:06:05,440 --> 00:06:08,050
+which basically says take some data and
+
+167
+00:06:08,050 --> 00:06:10,060
+swirl it around you see a sign you see a
+
+168
+00:06:10,060 --> 00:06:11,260
+cosign you know you're talking about
+
+169
+00:06:11,260 --> 00:06:15,280
+something swirly hey so we got one pixel
+
+170
+00:06:15,280 --> 00:06:17,500
+is that even visible no not really
+
+171
+00:06:17,500 --> 00:06:19,180
+okay well that's some more I can see it
+
+172
+00:06:19,180 --> 00:06:23,349
+on my screen there we go some of them
+
+173
+00:06:23,349 --> 00:06:24,910
+are showing up now we're up to sixth and
+
+174
+00:06:24,910 --> 00:06:26,680
+this is gonna take forever and I have to
+
+175
+00:06:26,680 --> 00:06:28,960
+finish on time they said there we go 200
+
+176
+00:06:28,960 --> 00:06:35,710
+more more more more there we go there's
+
+177
+00:06:35,710 --> 00:06:37,900
+a hundred thousand this is about word so
+
+178
+00:06:37,900 --> 00:06:39,099
+I'm still going at about 60 frames per
+
+179
+00:06:39,099 --> 00:06:41,500
+second here on my little MacBook Air
+
+180
+00:06:41,500 --> 00:06:43,539
+that is slowly trying to rise from the
+
+181
+00:06:43,539 --> 00:06:46,570
+podium on my power book at work I was
+
+182
+00:06:46,570 --> 00:06:47,530
+trying this out I could get over a
+
+183
+00:06:47,530 --> 00:06:49,960
+million pixels going before it started
+
+184
+00:06:49,960 --> 00:06:52,390
+to even budge yeah that's
+
+185
+00:06:52,390 --> 00:06:55,660
+pretty pretty bad but still better than
+
+186
+00:06:55,660 --> 00:06:56,830
+if you tried to do a million pixels in
+
+187
+00:06:56,830 --> 00:06:59,380
+JavaScript so why is it so powerful you
+
+188
+00:06:59,380 --> 00:07:00,250
+probably guess because I've said it like
+
+189
+00:07:00,250 --> 00:07:03,220
+five times because WebGL lets us pass
+
+190
+00:07:03,220 --> 00:07:05,530
+data off to the graphics card it can do
+
+191
+00:07:05,530 --> 00:07:08,170
+all of this math at once so you have two
+
+192
+00:07:08,170 --> 00:07:09,370
+main engine inside your computer you
+
+193
+00:07:09,370 --> 00:07:12,130
+have a CPU which is your something
+
+194
+00:07:12,130 --> 00:07:14,260
+processing unit I'm gonna say central
+
+195
+00:07:14,260 --> 00:07:15,790
+but I think I'm wrong someone tweeted me
+
+196
+00:07:15,790 --> 00:07:17,320
+that I'm completely wrong about that I
+
+197
+00:07:17,320 --> 00:07:21,640
+am oh yes I'd like being right which is
+
+198
+00:07:21,640 --> 00:07:24,580
+a general purpose tool it can do lots of
+
+199
+00:07:24,580 --> 00:07:25,870
+things and it can do them pretty well
+
+200
+00:07:25,870 --> 00:07:28,750
+but not as well as a specialized tool
+
+201
+00:07:28,750 --> 00:07:30,910
+your GPU your graphics processing unit
+
+202
+00:07:30,910 --> 00:07:33,310
+is a specialized tool what it does is
+
+203
+00:07:33,310 --> 00:07:35,800
+takes lots of small operation and does
+
+204
+00:07:35,800 --> 00:07:37,960
+them in parallel this tweet was
+
+205
+00:07:37,960 --> 00:07:40,000
+remarkably fortuitously time it came out
+
+206
+00:07:40,000 --> 00:07:41,200
+just like a week before when I was
+
+207
+00:07:41,200 --> 00:07:43,690
+getting the slides ready suppose you
+
+208
+00:07:43,690 --> 00:07:44,890
+wanted to do thousands of
+
+209
+00:07:44,890 --> 00:07:46,510
+kindergarteners math homework at the
+
+210
+00:07:46,510 --> 00:07:48,910
+same time on the GPU and that's exactly
+
+211
+00:07:48,910 --> 00:07:50,590
+what we want to do is lots of little
+
+212
+00:07:50,590 --> 00:07:53,700
+simple math operations but all at once
+
+213
+00:07:53,700 --> 00:07:57,700
+so someone noticed wait a second we
+
+214
+00:07:57,700 --> 00:07:59,110
+could do something beyond graphics here
+
+215
+00:07:59,110 --> 00:08:01,000
+it happens that graphics can generally
+
+216
+00:08:01,000 --> 00:08:02,740
+be represented as lots of parallel small
+
+217
+00:08:02,740 --> 00:08:04,120
+math operations but there's other things
+
+218
+00:08:04,120 --> 00:08:06,700
+that are lots of small math operations
+
+219
+00:08:06,700 --> 00:08:08,200
+all at once there's lots of things we do
+
+220
+00:08:08,200 --> 00:08:11,050
+in in research in math in you know all
+
+221
+00:08:11,050 --> 00:08:13,270
+sorts of regions where that's useful so
+
+222
+00:08:13,270 --> 00:08:15,820
+this sort of construct of the data
+
+223
+00:08:15,820 --> 00:08:17,650
+pipelines that's meant to draw graphics
+
+224
+00:08:17,650 --> 00:08:20,470
+is not ideal if you just want to get
+
+225
+00:08:20,470 --> 00:08:22,480
+down to the actual math and so they came
+
+226
+00:08:22,480 --> 00:08:24,430
+up with OpenCL as a complement to OpenGL
+
+227
+00:08:24,430 --> 00:08:29,260
+and so if OpenGL lets the WebGL lets us
+
+228
+00:08:29,260 --> 00:08:31,450
+do OpenGL on the web what lets us do
+
+229
+00:08:31,450 --> 00:08:34,570
+OpenCL on the web it's web CL and it's
+
+230
+00:08:34,570 --> 00:08:36,580
+coming soon it's never it's never coming
+
+231
+00:08:36,580 --> 00:08:39,190
+we're it's been coming soon for a very
+
+232
+00:08:39,190 --> 00:08:40,630
+long time and it doesn't seem like it's
+
+233
+00:08:40,630 --> 00:08:42,160
+ever gonna get here because the the
+
+234
+00:08:42,160 --> 00:08:43,960
+specs and the standards for the other
+
+235
+00:08:43,960 --> 00:08:45,640
+side of things have evolved past where
+
+236
+00:08:45,640 --> 00:08:48,190
+it is there's compute shaders which is
+
+237
+00:08:48,190 --> 00:08:49,960
+an even more ridiculous stretching of
+
+238
+00:08:49,960 --> 00:08:51,850
+the shaders nomenclature it's also
+
+239
+00:08:51,850 --> 00:08:54,010
+coming soon for a while there it was
+
+240
+00:08:54,010 --> 00:08:55,120
+kind of looking like it might actually
+
+241
+00:08:55,120 --> 00:08:57,490
+come soon and now it's looking like it's
+
+242
+00:08:57,490 --> 00:08:58,600
+probably gonna be replaced by something
+
+243
+00:08:58,600 --> 00:09:00,730
+else also but we might get to continue
+
+244
+00:09:00,730 --> 00:09:04,120
+traders so we're developers we like
+
+245
+00:09:04,120 --> 00:09:05,710
+building things if they don't give us
+
+246
+00:09:05,710 --> 00:09:06,370
+the tools we
+
+247
+00:09:06,370 --> 00:09:08,380
+them ourselves so how could we do this
+
+248
+00:09:08,380 --> 00:09:10,510
+well we can get data in right let's
+
+249
+00:09:10,510 --> 00:09:12,520
+really good at that already we can do
+
+250
+00:09:12,520 --> 00:09:15,040
+the math but we have to get it out so is
+
+251
+00:09:15,040 --> 00:09:18,430
+there a way there is a way and it's
+
+252
+00:09:18,430 --> 00:09:21,100
+pixels in fact it's the only way but
+
+253
+00:09:21,100 --> 00:09:22,810
+thankfully that two-way arrow with the
+
+254
+00:09:22,810 --> 00:09:25,210
+canvas means that we can pull data out
+
+255
+00:09:25,210 --> 00:09:28,660
+of it in a basically serialized pixel
+
+256
+00:09:28,660 --> 00:09:30,040
+format which is just numbers and that's
+
+257
+00:09:30,040 --> 00:09:32,529
+all we need for math there are a few
+
+258
+00:09:32,529 --> 00:09:34,960
+implementation challenges there's lots
+
+259
+00:09:34,960 --> 00:09:36,760
+of little niggly things as far as
+
+260
+00:09:36,760 --> 00:09:38,860
+getting all this to work smoothly but
+
+261
+00:09:38,860 --> 00:09:41,470
+there is one that is not work around a
+
+262
+00:09:41,470 --> 00:09:43,810
+bowl and that's serialization it takes
+
+263
+00:09:43,810 --> 00:09:46,900
+time and effort to get data into the
+
+264
+00:09:46,900 --> 00:09:49,330
+WebGL framework and it takes even more
+
+265
+00:09:49,330 --> 00:09:51,040
+to get it out of the canvas in fact it's
+
+266
+00:09:51,040 --> 00:09:53,110
+incredibly slow to pull pixels from a
+
+267
+00:09:53,110 --> 00:09:54,940
+canvas nan anyway you'd probably notice
+
+268
+00:09:54,940 --> 00:09:56,500
+in normal web operations but if you're
+
+269
+00:09:56,500 --> 00:09:58,360
+trying to lots and lots of pixels in and
+
+270
+00:09:58,360 --> 00:10:02,230
+pixels out it adds up really fast and so
+
+271
+00:10:02,230 --> 00:10:03,880
+we come to an example that actually
+
+272
+00:10:03,880 --> 00:10:04,600
+works
+
+273
+00:10:04,600 --> 00:10:07,690
+matrix multiplication for those who
+
+274
+00:10:07,690 --> 00:10:10,150
+don't know or who have not taken when
+
+275
+00:10:10,150 --> 00:10:11,770
+your algebra since many years ago like
+
+276
+00:10:11,770 --> 00:10:13,240
+me and had to go pull out the definition
+
+277
+00:10:13,240 --> 00:10:15,360
+of matrix multiplication for this demo
+
+278
+00:10:15,360 --> 00:10:18,790
+this is matrix multiplication so it's
+
+279
+00:10:18,790 --> 00:10:20,620
+just a fancy way of saying a matrix is
+
+280
+00:10:20,620 --> 00:10:22,600
+just a table of data multiplication is
+
+281
+00:10:22,600 --> 00:10:24,370
+exactly like it is with normal numbers
+
+282
+00:10:24,370 --> 00:10:26,050
+but we're gonna define it on two
+
+283
+00:10:26,050 --> 00:10:28,660
+different tables of numbers these column
+
+284
+00:10:28,660 --> 00:10:30,670
+and row highlights are not done with
+
+285
+00:10:30,670 --> 00:10:32,860
+that horrible CSS hack but I am gonna go
+
+286
+00:10:32,860 --> 00:10:34,240
+back and edit them so that they are in
+
+287
+00:10:34,240 --> 00:10:36,339
+the future cuz that was cool and weird
+
+288
+00:10:36,339 --> 00:10:38,950
+so yeah good you can see so that
+
+289
+00:10:38,950 --> 00:10:41,170
+highlight the top left cell is going to
+
+290
+00:10:41,170 --> 00:10:43,120
+be the sum of the product of the first
+
+291
+00:10:43,120 --> 00:10:45,730
+row of the left and the first column on
+
+292
+00:10:45,730 --> 00:10:48,490
+the right so if this example will be one
+
+293
+00:10:48,490 --> 00:10:51,160
+times nine plus two times four
+
+294
+00:10:51,160 --> 00:10:52,660
+the only way I've ever had this
+
+295
+00:10:52,660 --> 00:10:53,950
+explained to me that makes sense is you
+
+296
+00:10:53,950 --> 00:10:55,420
+take the left one you rotate it and then
+
+297
+00:10:55,420 --> 00:10:57,100
+you slide it through if you are not a
+
+298
+00:10:57,100 --> 00:10:59,200
+spatial learner that is absolutely no
+
+299
+00:10:59,200 --> 00:11:01,600
+use to do and I'm sorry there are a lot
+
+300
+00:11:01,600 --> 00:11:04,060
+of resources on the web to try and
+
+301
+00:11:04,060 --> 00:11:05,140
+explain it in different ways and
+
+302
+00:11:05,140 --> 00:11:06,850
+hopefully one of them will make sense
+
+303
+00:11:06,850 --> 00:11:09,370
+for you there so you can see that bottom
+
+304
+00:11:09,370 --> 00:11:11,080
+left notice the bottom row and so on and
+
+305
+00:11:11,080 --> 00:11:12,760
+so on basically we're just doing a lot
+
+306
+00:11:12,760 --> 00:11:16,630
+of kindergartners math all right
+
+307
+00:11:16,630 --> 00:11:18,670
+and you can see that we're basically in
+
+308
+00:11:18,670 --> 00:11:21,850
+a pass in the two input matrices as
+
+309
+00:11:21,850 --> 00:11:24,610
+images because of reasons and we're
+
+310
+00:11:24,610 --> 00:11:26,380
+going to iterate through for each
+
+311
+00:11:26,380 --> 00:11:28,570
+product cell we're gonna iterate through
+
+312
+00:11:28,570 --> 00:11:30,250
+the row of 1 and the column of the other
+
+313
+00:11:30,250 --> 00:11:32,440
+do a bunch of math and output it as a
+
+314
+00:11:32,440 --> 00:11:34,810
+color it turns out a color is nothing
+
+315
+00:11:34,810 --> 00:11:36,520
+more than four bytes and you can fit two
+
+316
+00:11:36,520 --> 00:11:40,230
+decent number of numbers into four bytes
+
+317
+00:11:40,230 --> 00:11:44,620
+all right so it's demo time all right so
+
+318
+00:11:44,620 --> 00:11:47,620
+here's our 2x2 again so this should be 1
+
+319
+00:11:47,620 --> 00:11:54,920
+times 5 plus 5 times 5 which is 30 yeah
+
+320
+00:11:54,930 --> 00:11:58,540
+yeah it's 30 good I succeeded in
+
+321
+00:11:58,540 --> 00:12:00,460
+kindergartners math homework so you can
+
+322
+00:12:00,460 --> 00:12:02,620
+see that that's but one times zero plus
+
+323
+00:12:02,620 --> 00:12:04,120
+five times eight that's 40 it's so on
+
+324
+00:12:04,120 --> 00:12:05,650
+its own all right so that's 2 by 2 and
+
+325
+00:12:05,650 --> 00:12:09,700
+now let's do it on the GPU and it's the
+
+326
+00:12:09,700 --> 00:12:11,740
+same which is good it's really bad when
+
+327
+00:12:11,740 --> 00:12:12,670
+you're trying to make a new
+
+328
+00:12:12,670 --> 00:12:14,050
+implementation and it doesn't agree with
+
+329
+00:12:14,050 --> 00:12:15,880
+the one that you know is right so it's
+
+330
+00:12:15,880 --> 00:12:18,070
+correct but it's really slow right we
+
+331
+00:12:18,070 --> 00:12:20,440
+got point 4 milliseconds on the Left 28
+
+332
+00:12:20,440 --> 00:12:22,690
+on the right that's a lot more that's
+
+333
+00:12:22,690 --> 00:12:25,660
+like 60 times slower which is really bad
+
+334
+00:12:25,660 --> 00:12:30,140
+so let's try this with the 3 by 3
+
+335
+00:12:30,150 --> 00:12:32,590
+all right that's still really fast on
+
+336
+00:12:32,590 --> 00:12:36,100
+the CPU not so fast on the GPU and all
+
+337
+00:12:36,100 --> 00:12:38,350
+right let's let's try bigger let's go up
+
+338
+00:12:38,350 --> 00:12:42,820
+to 64 I'm showing a 3 by 3 slice here
+
+339
+00:12:42,820 --> 00:12:44,470
+because I don't want to show 64 by 64
+
+340
+00:12:44,470 --> 00:12:46,810
+columns and rows on the slide 4 times
+
+341
+00:12:46,810 --> 00:12:48,850
+cuz no one could read anything just
+
+342
+00:12:48,850 --> 00:12:49,810
+gonna have to trust me that's they're
+
+343
+00:12:49,810 --> 00:12:56,020
+all here at 4 to 6 all right what sort
+
+344
+00:12:56,020 --> 00:12:57,820
+of actually we're faster now in the GPU
+
+345
+00:12:57,820 --> 00:12:59,590
+by a little bit there's a lot of noise
+
+346
+00:12:59,590 --> 00:13:01,480
+down at this side so I'm never sure if
+
+347
+00:13:01,480 --> 00:13:02,680
+this one's gonna come out this way uh
+
+348
+00:13:02,680 --> 00:13:05,110
+all right let's just go all the way so
+
+349
+00:13:05,110 --> 00:13:07,720
+this is a 1024 by 2024 matrix we were
+
+350
+00:13:07,720 --> 00:13:09,280
+gonna be multiplying so that's a million
+
+351
+00:13:09,280 --> 00:13:11,710
+elements in each matrix that's a lot of
+
+352
+00:13:11,710 --> 00:13:16,990
+math alright and now we sit around for
+
+353
+00:13:16,990 --> 00:13:18,460
+about three minutes but I will keep
+
+354
+00:13:18,460 --> 00:13:19,780
+talking to you because otherwise would
+
+355
+00:13:19,780 --> 00:13:22,300
+be really boring so this is where I just
+
+356
+00:13:22,300 --> 00:13:24,130
+talked about random things today let's
+
+357
+00:13:24,130 --> 00:13:25,540
+talk about so a little spinner in the
+
+358
+00:13:25,540 --> 00:13:28,120
+middle is just a little div it's got you
+
+359
+00:13:28,120 --> 00:13:28,660
+know
+
+360
+00:13:28,660 --> 00:13:30,280
+width and height its position absolutely
+
+361
+00:13:30,280 --> 00:13:32,140
+and there's a CSS transform as you
+
+362
+00:13:32,140 --> 00:13:33,670
+probably heard today if you didn't
+
+363
+00:13:33,670 --> 00:13:35,890
+already know is CSS transference happen
+
+364
+00:13:35,890 --> 00:13:38,350
+on the GPU which is great right now I'm
+
+365
+00:13:38,350 --> 00:13:39,880
+not gonna open dev tools because I don't
+
+366
+00:13:39,880 --> 00:13:41,680
+want to risk hosing this and having to
+
+367
+00:13:41,680 --> 00:13:42,780
+do this all over again
+
+368
+00:13:42,780 --> 00:13:45,540
+we're just hammering the CPU the
+
+369
+00:13:45,540 --> 00:13:47,740
+JavaScript implementation of this
+
+370
+00:13:47,740 --> 00:13:49,840
+multiplication is just iterating through
+
+371
+00:13:49,840 --> 00:13:52,810
+math and math and math and math and the
+
+372
+00:13:52,810 --> 00:13:54,160
+whole thing here is basically
+
+373
+00:13:54,160 --> 00:13:56,650
+unresponsive but that spinner is still
+
+374
+00:13:56,650 --> 00:13:59,470
+spinning and you'd think oh that's cool
+
+375
+00:13:59,470 --> 00:14:00,760
+it's because it's Hardware accelerate
+
+376
+00:14:00,760 --> 00:14:02,290
+it's on the GPU and it's really great
+
+377
+00:14:02,290 --> 00:14:05,770
+and that's true except to actually get
+
+378
+00:14:05,770 --> 00:14:07,960
+this spinner going you have to do work
+
+379
+00:14:07,960 --> 00:14:11,200
+on the CPU so if I started tried to
+
+380
+00:14:11,200 --> 00:14:13,810
+start calculating the CPU version of the
+
+381
+00:14:13,810 --> 00:14:16,030
+matrix multiplication and start that
+
+382
+00:14:16,030 --> 00:14:18,160
+spinning at exactly the same time it
+
+383
+00:14:18,160 --> 00:14:20,950
+wouldn't work because the CPU will get
+
+384
+00:14:20,950 --> 00:14:22,690
+locked up before the browser has a
+
+385
+00:14:22,690 --> 00:14:24,610
+chance to add the class to the spinner
+
+386
+00:14:24,610 --> 00:14:27,400
+which enables it renders it and ships it
+
+387
+00:14:27,400 --> 00:14:30,220
+off to the GPU to spin so that was a fun
+
+388
+00:14:30,220 --> 00:14:32,170
+little lesson here another interesting
+
+389
+00:14:32,170 --> 00:14:33,670
+lesson is that whatever is doing that
+
+390
+00:14:33,670 --> 00:14:35,830
+spinning whatever timer that's doing all
+
+391
+00:14:35,830 --> 00:14:37,720
+of that is not on the main thread
+
+392
+00:14:37,720 --> 00:14:39,370
+because it's still spinning right now so
+
+393
+00:14:39,370 --> 00:14:41,110
+even though the rendering is being done
+
+394
+00:14:41,110 --> 00:14:43,630
+on the GPU something has to tell the GPU
+
+395
+00:14:43,630 --> 00:14:45,580
+ok now it's time to tick that there's no
+
+396
+00:14:45,580 --> 00:14:49,120
+time built into most GPU framework so
+
+397
+00:14:49,120 --> 00:14:51,310
+something is firing off saying keep
+
+398
+00:14:51,310 --> 00:14:52,690
+spinning that and it's not doing it on
+
+399
+00:14:52,690 --> 00:14:54,580
+the main thread and that's cool if
+
+400
+00:14:54,580 --> 00:14:57,520
+you're really big nerd like me uh let's
+
+401
+00:14:57,520 --> 00:14:59,380
+see I forgot to start my timer I'm just
+
+402
+00:14:59,380 --> 00:15:00,430
+gonna have to keep talking about
+
+403
+00:15:00,430 --> 00:15:03,310
+anything what else do we have to talk
+
+404
+00:15:03,310 --> 00:15:12,790
+about here I hope it hasn't actually
+
+405
+00:15:12,790 --> 00:15:14,800
+popped up the little warning usually it
+
+406
+00:15:14,800 --> 00:15:16,720
+does my computer's to be feeling very
+
+407
+00:15:16,720 --> 00:15:18,160
+kind to me today or it's not doing any
+
+408
+00:15:18,160 --> 00:15:19,450
+work at all and I'm just gonna sit here
+
+409
+00:15:19,450 --> 00:15:21,550
+making things up until I run out of time
+
+410
+00:15:21,550 --> 00:15:22,960
+and they like take the cane to pull me
+
+411
+00:15:22,960 --> 00:15:24,760
+off the stage usually it pops up the
+
+412
+00:15:24,760 --> 00:15:27,310
+little you're the thread on tab whatever
+
+413
+00:15:27,310 --> 00:15:28,510
+this tab is called has become
+
+414
+00:15:28,510 --> 00:15:30,340
+unresponsive do you want to interrupt it
+
+415
+00:15:30,340 --> 00:15:33,790
+and it turns out if you don't click that
+
+416
+00:15:33,790 --> 00:15:34,960
+thing it's still doing work on the
+
+417
+00:15:34,960 --> 00:15:37,180
+background so that little pop-up thing
+
+418
+00:15:37,180 --> 00:15:38,680
+is really just a courtesy chance to get
+
+419
+00:15:38,680 --> 00:15:40,420
+you to kill it it doesn't it isn't no
+
+420
+00:15:40,420 --> 00:15:42,310
+way stopping the completely
+
+421
+00:15:42,310 --> 00:15:43,840
+out of control JavaScript execution
+
+422
+00:15:43,840 --> 00:15:46,180
+which is going on right now which is
+
+423
+00:15:46,180 --> 00:15:50,110
+kind of cool and still really hope this
+
+424
+00:15:50,110 --> 00:15:51,420
+works
+
+425
+00:15:51,420 --> 00:16:01,000
+I'll just keep waiting it's probably
+
+426
+00:16:01,000 --> 00:16:09,880
+working see last time I did this I
+
+427
+00:16:09,880 --> 00:16:12,520
+talked too long and actually to stop
+
+428
+00:16:12,520 --> 00:16:14,320
+talking about random things well when
+
+429
+00:16:14,320 --> 00:16:15,730
+that the answer came up this time of
+
+430
+00:16:15,730 --> 00:16:17,529
+course I completely ran out of things to
+
+431
+00:16:17,529 --> 00:16:19,570
+talk about way too early you have to you
+
+432
+00:16:19,570 --> 00:16:22,690
+know prepare material next time let's do
+
+433
+00:16:22,690 --> 00:16:27,700
+that oh yeah what about the what is the
+
+434
+00:16:27,700 --> 00:16:32,170
+local sports team here in Iceland other
+
+435
+00:16:32,170 --> 00:16:33,640
+fun things that learned about while
+
+436
+00:16:33,640 --> 00:16:34,990
+working on this project oh here's
+
+437
+00:16:34,990 --> 00:16:36,910
+another fun thing the way this is
+
+438
+00:16:36,910 --> 00:16:37,890
+working
+
+439
+00:16:37,890 --> 00:16:40,510
+it's just hung for a second the way this
+
+440
+00:16:40,510 --> 00:16:43,779
+is working is basically GPU shader code
+
+441
+00:16:43,779 --> 00:16:46,660
+gets all compiled and shipped off to the
+
+442
+00:16:46,660 --> 00:16:51,370
+WebGL oh yeah all right whoo okay 200
+
+443
+00:16:51,370 --> 00:16:53,500
+and we're into the range of benchmarking
+
+444
+00:16:53,500 --> 00:16:55,360
+here where milliseconds it's kind of a
+
+445
+00:16:55,360 --> 00:16:58,270
+goofy thing to be measuring this in but
+
+446
+00:16:58,270 --> 00:17:00,880
+that is 200 let's it's three and a half
+
+447
+00:17:00,880 --> 00:17:02,770
+minutes that's a really really long time
+
+448
+00:17:02,770 --> 00:17:04,839
+as a benchmark that's that's the sort of
+
+449
+00:17:04,839 --> 00:17:05,890
+thing where it's like why are you in
+
+450
+00:17:05,890 --> 00:17:07,449
+benchmarking this this is silly all
+
+451
+00:17:07,449 --> 00:17:10,000
+right let's do the GPU I guess I guess
+
+452
+00:17:10,000 --> 00:17:12,480
+you get another story ready just in case
+
+453
+00:17:12,480 --> 00:17:17,110
+nope we're fine so that's faster that's
+
+454
+00:17:17,110 --> 00:17:19,449
+about well that the GPU is a little slow
+
+455
+00:17:19,449 --> 00:17:20,650
+today which makes its math earlier
+
+456
+00:17:20,650 --> 00:17:23,050
+easier so that's about 200 something
+
+457
+00:17:23,050 --> 00:17:25,679
+times faster that's that's better
+
+458
+00:17:25,679 --> 00:17:31,060
+that's that's way better all right cool
+
+459
+00:17:31,060 --> 00:17:34,300
+so why well all right this is big no
+
+460
+00:17:34,300 --> 00:17:35,620
+notation and I promise that's the last
+
+461
+00:17:35,620 --> 00:17:37,710
+really Matthew thing in the talk
+
+462
+00:17:37,710 --> 00:17:40,720
+basically to calculate an N by n matrix
+
+463
+00:17:40,720 --> 00:17:43,720
+that's a million times a million and
+
+464
+00:17:43,720 --> 00:17:46,929
+then for every one of those output cells
+
+465
+00:17:46,929 --> 00:17:48,400
+you have to go through a row in a column
+
+466
+00:17:48,400 --> 00:17:50,590
+so that's n cubed if n is the width of
+
+467
+00:17:50,590 --> 00:17:53,560
+the matrix because we can do every
+
+468
+00:17:53,560 --> 00:17:56,140
+single output cell at once on the GPU
+
+469
+00:17:56,140 --> 00:17:59,080
+we can be finished in n the earlier edge
+
+470
+00:17:59,080 --> 00:18:01,750
+finder is N squared if you do it because
+
+471
+00:18:01,750 --> 00:18:03,370
+you have to step through every pixel and
+
+472
+00:18:03,370 --> 00:18:05,890
+it's constant time on the GPU which is
+
+473
+00:18:05,890 --> 00:18:07,720
+constant time it's awesome
+
+474
+00:18:07,720 --> 00:18:09,970
+alright so for those who don't have like
+
+475
+00:18:09,970 --> 00:18:11,290
+a visceral understanding what those
+
+476
+00:18:11,290 --> 00:18:13,390
+those numbers mean and you got the
+
+477
+00:18:13,390 --> 00:18:15,400
+bottom line and squared is the purple
+
+478
+00:18:15,400 --> 00:18:18,549
+one a constant is a constant and n cubed
+
+479
+00:18:18,549 --> 00:18:19,960
+is the biggest so this is N equals zero
+
+480
+00:18:19,960 --> 00:18:21,460
+to five so this is like those first two
+
+481
+00:18:21,460 --> 00:18:24,070
+examples we did here there and already n
+
+482
+00:18:24,070 --> 00:18:28,510
+cubed is just running away from zero to
+
+483
+00:18:28,510 --> 00:18:31,419
+ten around a hundred we can't even see N
+
+484
+00:18:31,419 --> 00:18:33,309
+anymore and N squared is looking pretty
+
+485
+00:18:33,309 --> 00:18:37,210
+n ish and yeah 1024 which we just did
+
+486
+00:18:37,210 --> 00:18:39,460
+you can't even see so the lower lines
+
+487
+00:18:39,460 --> 00:18:41,500
+there because n cube just gets so big so
+
+488
+00:18:41,500 --> 00:18:43,210
+fast so that's why we get so much gain
+
+489
+00:18:43,210 --> 00:18:44,790
+from doing all these things in parallel
+
+490
+00:18:44,790 --> 00:18:46,870
+all right this is awesome we've got a
+
+491
+00:18:46,870 --> 00:18:49,330
+working proof of concept we've shown 200
+
+492
+00:18:49,330 --> 00:18:52,179
+X speed gains this is amazing let's go
+
+493
+00:18:52,179 --> 00:18:54,370
+do really cool stuff with this alright
+
+494
+00:18:54,370 --> 00:18:56,080
+we can do hash collision are you a white
+
+495
+00:18:56,080 --> 00:18:57,190
+hat hacker you can make sure your
+
+496
+00:18:57,190 --> 00:18:58,780
+passwords are secure you a black hat
+
+497
+00:18:58,780 --> 00:19:00,160
+hacker you can crack people's hat
+
+498
+00:19:00,160 --> 00:19:02,980
+passwords we can do Bitcoin mine
+
+499
+00:19:02,980 --> 00:19:05,350
+basically all Bitcoin mining happens on
+
+500
+00:19:05,350 --> 00:19:07,510
+the GPU in fact the original thought
+
+501
+00:19:07,510 --> 00:19:09,220
+process that went into this talk was
+
+502
+00:19:09,220 --> 00:19:10,510
+gonna be cool to have a distributed
+
+503
+00:19:10,510 --> 00:19:12,130
+website where people could pay their way
+
+504
+00:19:12,130 --> 00:19:13,929
+not through micro transactions or
+
+505
+00:19:13,929 --> 00:19:15,640
+anything like that but just by crunching
+
+506
+00:19:15,640 --> 00:19:18,010
+bitcoins for the site owner it's a nice
+
+507
+00:19:18,010 --> 00:19:19,840
+little background payment system and
+
+508
+00:19:19,840 --> 00:19:21,640
+they wouldn't have to install anything
+
+509
+00:19:21,640 --> 00:19:23,380
+just drop a script and would run but you
+
+510
+00:19:23,380 --> 00:19:24,640
+want to be able to do it on the GPU
+
+511
+00:19:24,640 --> 00:19:26,890
+because that's how you do a Bitcoin
+
+512
+00:19:26,890 --> 00:19:29,440
+mining media encoding a lot of media
+
+513
+00:19:29,440 --> 00:19:31,510
+encoding you can do really fast if you
+
+514
+00:19:31,510 --> 00:19:33,190
+can paralyze it break it up into chunks
+
+515
+00:19:33,190 --> 00:19:36,580
+and then you encode it machine learning
+
+516
+00:19:36,580 --> 00:19:38,290
+is basically again just a lot of
+
+517
+00:19:38,290 --> 00:19:40,750
+kindergarteners doing math which you
+
+518
+00:19:40,750 --> 00:19:43,690
+know in all senses of the words signal
+
+519
+00:19:43,690 --> 00:19:44,890
+analysis and process this is a little
+
+520
+00:19:44,890 --> 00:19:46,390
+cheating because audio is really just
+
+521
+00:19:46,390 --> 00:19:47,740
+the same as video it's all just media
+
+522
+00:19:47,740 --> 00:19:49,270
+but it's kind of different cuz it's
+
+523
+00:19:49,270 --> 00:19:52,030
+sound alright protein folding you might
+
+524
+00:19:52,030 --> 00:19:53,410
+notice some of these are sounding really
+
+525
+00:19:53,410 --> 00:19:54,880
+familiar they sound a lot like things
+
+526
+00:19:54,880 --> 00:19:56,140
+you can download screen savers for
+
+527
+00:19:56,140 --> 00:19:58,299
+because these are highly chunk able
+
+528
+00:19:58,299 --> 00:20:00,520
+parallelizable tasks that benefit a lot
+
+529
+00:20:00,520 --> 00:20:01,750
+from running on the graphics card
+
+530
+00:20:01,750 --> 00:20:04,630
+alright actual application this this is
+
+531
+00:20:04,630 --> 00:20:06,550
+the big payoff nope can't do hash
+
+532
+00:20:06,550 --> 00:20:08,800
+collision can't do Bitcoin mining can't
+
+533
+00:20:08,800 --> 00:20:09,789
+do media encoding
+
+534
+00:20:09,789 --> 00:20:11,320
+you might be able to machine-learning
+
+535
+00:20:11,320 --> 00:20:13,090
+signal analysis and protein folding I'm
+
+536
+00:20:13,090 --> 00:20:15,039
+intrigued by possibly getting these to
+
+537
+00:20:15,039 --> 00:20:16,809
+work but the first three big obvious
+
+538
+00:20:16,809 --> 00:20:20,440
+things you could do here no all right
+
+539
+00:20:20,440 --> 00:20:23,229
+why this is not my cat if I had I do
+
+540
+00:20:23,229 --> 00:20:25,090
+have a cat she would get into this
+
+541
+00:20:25,090 --> 00:20:26,799
+trouble if I had blinds which I don't so
+
+542
+00:20:26,799 --> 00:20:28,299
+the only thing saving this room being my
+
+543
+00:20:28,299 --> 00:20:29,739
+cat is I don't actually have blinds like
+
+544
+00:20:29,739 --> 00:20:30,070
+that
+
+545
+00:20:30,070 --> 00:20:31,960
+all right this is the big one there are
+
+546
+00:20:31,960 --> 00:20:34,539
+no bit operations in the current version
+
+547
+00:20:34,539 --> 00:20:36,279
+of the shader language server it's
+
+548
+00:20:36,279 --> 00:20:38,859
+supplied by WebGL you need bit
+
+549
+00:20:38,859 --> 00:20:40,869
+operations for basically anything you
+
+550
+00:20:40,869 --> 00:20:43,149
+want to do with a fancy algorithm very
+
+551
+00:20:43,149 --> 00:20:45,759
+very smart people have spent the last 40
+
+552
+00:20:45,759 --> 00:20:48,039
+or 50 years coming up with really good
+
+553
+00:20:48,039 --> 00:20:50,109
+ways to do things with bits because all
+
+554
+00:20:50,109 --> 00:20:52,059
+our computers run on bits so if you
+
+555
+00:20:52,059 --> 00:20:53,649
+design your algorithm using bit
+
+556
+00:20:53,649 --> 00:20:55,119
+operations you can usually optimize them
+
+557
+00:20:55,119 --> 00:20:57,279
+really well and we don't have any of
+
+558
+00:20:57,279 --> 00:20:58,570
+those that's why we can't do hashes we
+
+559
+00:20:58,570 --> 00:20:59,590
+can't do Bitcoin mining which is
+
+560
+00:20:59,590 --> 00:21:01,690
+basically just hashes can't do any of
+
+561
+00:21:01,690 --> 00:21:04,479
+the other fun stuff boo unresponsive
+
+562
+00:21:04,479 --> 00:21:07,239
+window so if you paid really close
+
+563
+00:21:07,239 --> 00:21:08,519
+attention you might have seen the
+
+564
+00:21:08,519 --> 00:21:11,080
+spinner actually freezes a little bit
+
+565
+00:21:11,080 --> 00:21:14,229
+during the WebGL version and the reason
+
+566
+00:21:14,229 --> 00:21:15,789
+is because if you're hammering your
+
+567
+00:21:15,789 --> 00:21:17,679
+graphics card having it do nothing but
+
+568
+00:21:17,679 --> 00:21:19,599
+kindergartener math then it can't do
+
+569
+00:21:19,599 --> 00:21:21,549
+anything else like draw your window as
+
+570
+00:21:21,549 --> 00:21:23,529
+it changes it's it's the the normal
+
+571
+00:21:23,529 --> 00:21:24,940
+problem we have as JavaScript developers
+
+572
+00:21:24,940 --> 00:21:26,889
+is Oh get it onto the GPU so that it's
+
+573
+00:21:26,889 --> 00:21:28,929
+not hogging up the main thread here we
+
+574
+00:21:28,929 --> 00:21:30,789
+put too much stuff on the GPU and you've
+
+575
+00:21:30,789 --> 00:21:33,909
+lost everything again and oh it's level
+
+576
+00:21:33,909 --> 00:21:35,619
+time as this is a fun little landmine it
+
+577
+00:21:35,619 --> 00:21:37,539
+turns out different operating systems
+
+578
+00:21:37,539 --> 00:21:39,489
+have different thresholds at which they
+
+579
+00:21:39,489 --> 00:21:41,769
+will say no your shaders been running
+
+580
+00:21:41,769 --> 00:21:44,950
+too long it's time for you to just stop
+
+581
+00:21:44,950 --> 00:21:47,109
+and there's no error there's no
+
+582
+00:21:47,109 --> 00:21:49,509
+guaranteed return state sometimes it'll
+
+583
+00:21:49,509 --> 00:21:51,070
+give you something sometimes it'll just
+
+584
+00:21:51,070 --> 00:21:53,139
+return a blank pixel and you just hit
+
+585
+00:21:53,139 --> 00:21:56,200
+these completely without any warning and
+
+586
+00:21:56,200 --> 00:21:57,309
+it's terrible when you're trying to
+
+587
+00:21:57,309 --> 00:21:58,859
+figure out why your code doesn't work
+
+588
+00:21:58,859 --> 00:22:00,639
+all right what do we need to make it
+
+589
+00:22:00,639 --> 00:22:02,710
+work this is a big one it's super easy
+
+590
+00:22:02,710 --> 00:22:05,349
+we're probably not going to get it but I
+
+591
+00:22:05,349 --> 00:22:07,479
+can still hope in newer versions of the
+
+592
+00:22:07,479 --> 00:22:09,580
+shader language in OpenGL have bit
+
+593
+00:22:09,580 --> 00:22:10,809
+operations a bunch of other cool stuff
+
+594
+00:22:10,809 --> 00:22:13,149
+and if they just implemented them in
+
+595
+00:22:13,149 --> 00:22:15,129
+WebGL we'd have all of that but there's
+
+596
+00:22:15,129 --> 00:22:16,539
+a new graphic standard coming out
+
+597
+00:22:16,539 --> 00:22:18,070
+there's a few new graphic standard
+
+598
+00:22:18,070 --> 00:22:19,929
+coming out one is Vulcan there's also
+
+599
+00:22:19,929 --> 00:22:22,149
+apples metal and there's always been
+
+600
+00:22:22,149 --> 00:22:23,440
+Microsoft's direct3d
+
+601
+00:22:23,440 --> 00:22:25,330
+and it seems more likely that we'll get
+
+602
+00:22:25,330 --> 00:22:27,190
+a web version of one of those than a
+
+603
+00:22:27,190 --> 00:22:30,900
+increase in web GL but I can always hope
+
+604
+00:22:30,900 --> 00:22:33,790
+canvas WebGL in the web worker Mozilla I
+
+605
+00:22:33,790 --> 00:22:35,470
+believe has this implemented last time I
+
+606
+00:22:35,470 --> 00:22:36,850
+checked they were announcing it and I
+
+607
+00:22:36,850 --> 00:22:38,710
+believe it works now so this is great
+
+608
+00:22:38,710 --> 00:22:40,510
+this means that you can take all of this
+
+609
+00:22:40,510 --> 00:22:42,820
+work and the serialization and all of
+
+610
+00:22:42,820 --> 00:22:44,140
+that which does hog up the main thread
+
+611
+00:22:44,140 --> 00:22:45,640
+you can push it off in a web worker and
+
+612
+00:22:45,640 --> 00:22:48,460
+it will get all of that off for you all
+
+613
+00:22:48,460 --> 00:22:51,040
+right let me sum up WebGL is awesome
+
+614
+00:22:51,040 --> 00:22:53,920
+graphics are fun we can do really crazy
+
+615
+00:22:53,920 --> 00:22:56,560
+things if we want to try and push it
+
+616
+00:22:56,560 --> 00:22:58,510
+really far and with a little bit of help
+
+617
+00:22:58,510 --> 00:22:59,650
+we could actually make this into
+
+618
+00:22:59,650 --> 00:23:03,740
+practical applications that's it thanks
+

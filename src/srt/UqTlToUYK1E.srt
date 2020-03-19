@@ -1,0 +1,2433 @@
+1
+00:00:10,650 --> 00:00:21,500
+
+you
+
+2
+00:00:21,510 --> 00:00:25,220
+
+
+3
+00:00:25,230 --> 00:00:28,050
+so good morning I hope everyone's had
+
+4
+00:00:28,050 --> 00:00:29,340
+their coffee we've got a lot to cover
+
+5
+00:00:29,340 --> 00:00:31,620
+here I'm glad we got started pretty
+
+6
+00:00:31,620 --> 00:00:35,130
+quickly so we should be good so I
+
+7
+00:00:35,130 --> 00:00:36,720
+realized that the term static
+
+8
+00:00:36,720 --> 00:00:38,790
+metaprogramming probably requires a
+
+9
+00:00:38,790 --> 00:00:42,840
+little bit of explanation so how many
+
+10
+00:00:42,840 --> 00:00:47,100
+people know what metaprogramming is so a
+
+11
+00:00:47,100 --> 00:00:48,930
+pretty good chunk of you so
+
+12
+00:00:48,930 --> 00:00:50,670
+metaprogramming is basically writing
+
+13
+00:00:50,670 --> 00:00:53,190
+programs that manipulate either
+
+14
+00:00:53,190 --> 00:00:56,220
+themselves or other programs as data and
+
+15
+00:00:56,220 --> 00:00:58,050
+usually when we talk about meta
+
+16
+00:00:58,050 --> 00:00:59,490
+programming we're talking about things
+
+17
+00:00:59,490 --> 00:01:02,250
+like you know hooking getters and
+
+18
+00:01:02,250 --> 00:01:05,479
+setters and customizing method dispatch
+
+19
+00:01:05,479 --> 00:01:07,979
+languages like Ruby and small talk
+
+20
+00:01:07,979 --> 00:01:10,110
+really allow you to kind of reach into
+
+21
+00:01:10,110 --> 00:01:12,619
+the runtime and do some funky things
+
+22
+00:01:12,619 --> 00:01:14,759
+what I want to talk about today is not
+
+23
+00:01:14,759 --> 00:01:16,979
+this kind of meta programming but rather
+
+24
+00:01:16,979 --> 00:01:20,970
+programs that manipulate code so that's
+
+25
+00:01:20,970 --> 00:01:22,320
+kind of a different type of meta
+
+26
+00:01:22,320 --> 00:01:24,509
+programming which some people call
+
+27
+00:01:24,509 --> 00:01:30,300
+static meta programming so a thing that
+
+28
+00:01:30,300 --> 00:01:32,880
+manipulates code a compiler is actually
+
+29
+00:01:32,880 --> 00:01:36,030
+a really good example of that right a
+
+30
+00:01:36,030 --> 00:01:37,979
+compiler is a thing that takes code in
+
+31
+00:01:37,979 --> 00:01:42,179
+and outputs code now normally a compiler
+
+32
+00:01:42,179 --> 00:01:44,369
+is something that takes in some sort of
+
+33
+00:01:44,369 --> 00:01:46,470
+high-level code and outputs something
+
+34
+00:01:46,470 --> 00:01:49,259
+lower-level so a C++ compiler you know
+
+35
+00:01:49,259 --> 00:01:52,050
+spits out machine code and a Java
+
+36
+00:01:52,050 --> 00:01:55,709
+compiler spits out Java byte code but
+
+37
+00:01:55,709 --> 00:01:57,179
+you know you can also compile to another
+
+38
+00:01:57,179 --> 00:01:59,580
+high-level language probably a lot of
+
+39
+00:01:59,580 --> 00:02:01,229
+you familiar with CoffeeScript right
+
+40
+00:02:01,229 --> 00:02:03,509
+which just compiles to JavaScript and
+
+41
+00:02:03,509 --> 00:02:05,130
+there's a ton of other languages that do
+
+42
+00:02:05,130 --> 00:02:07,649
+this people sometimes call these
+
+43
+00:02:07,649 --> 00:02:10,259
+transpilers it's basically just a
+
+44
+00:02:10,259 --> 00:02:15,000
+compiler it's the same thing so compiler
+
+45
+00:02:15,000 --> 00:02:18,470
+basically consists of two main parts the
+
+46
+00:02:18,470 --> 00:02:21,870
+first thing is the parser so the parser
+
+47
+00:02:21,870 --> 00:02:24,870
+takes source code and it creates some
+
+48
+00:02:24,870 --> 00:02:27,090
+sort of structured representation of
+
+49
+00:02:27,090 --> 00:02:29,250
+that source code usually we call this a
+
+50
+00:02:29,250 --> 00:02:34,020
+parse tree or an abstract syntax tree
+
+51
+00:02:34,020 --> 00:02:36,060
+and the second main part of a compiler
+
+52
+00:02:36,060 --> 00:02:38,430
+is a code generator so the code
+
+53
+00:02:38,430 --> 00:02:41,820
+generator takes a parse tree you know
+
+54
+00:02:41,820 --> 00:02:43,710
+does some analysis on it walks over it
+
+55
+00:02:43,710 --> 00:02:47,460
+and spits out the object code and of
+
+56
+00:02:47,460 --> 00:02:49,820
+course this is this is a pretty big
+
+57
+00:02:49,820 --> 00:02:52,560
+simplification in particular there's
+
+58
+00:02:52,560 --> 00:02:54,750
+usually a lot of stuff that happens in
+
+59
+00:02:54,750 --> 00:02:56,610
+that middle step there of analysis and
+
+60
+00:02:56,610 --> 00:03:00,780
+optimization those things but like I
+
+61
+00:03:00,780 --> 00:03:03,780
+said you know we don't we we don't
+
+62
+00:03:03,780 --> 00:03:05,340
+always have to compile from a high level
+
+63
+00:03:05,340 --> 00:03:07,740
+language to a low level language we can
+
+64
+00:03:07,740 --> 00:03:10,830
+compile you know to another high level
+
+65
+00:03:10,830 --> 00:03:12,780
+language or we can compile to the same
+
+66
+00:03:12,780 --> 00:03:14,850
+language that we started with and this
+
+67
+00:03:14,850 --> 00:03:18,660
+is what I want to talk about next so I'm
+
+68
+00:03:18,660 --> 00:03:20,480
+going to show you some examples of using
+
+69
+00:03:20,480 --> 00:03:22,380
+JavaScript compiler called
+
+70
+00:03:22,380 --> 00:03:26,280
+s prema prema is a nice simple fast
+
+71
+00:03:26,280 --> 00:03:29,010
+compiler for JavaScript but it's also
+
+72
+00:03:29,010 --> 00:03:30,690
+written in JavaScript which is kind of
+
+73
+00:03:30,690 --> 00:03:31,110
+cool
+
+74
+00:03:31,110 --> 00:03:33,780
+so you can you can dive in and check out
+
+75
+00:03:33,780 --> 00:03:35,100
+the source and understand what it's
+
+76
+00:03:35,100 --> 00:03:39,990
+doing and Esprit m'a also has two
+
+77
+00:03:39,990 --> 00:03:42,060
+related modules
+
+78
+00:03:42,060 --> 00:03:45,570
+yes Traverse and es Co Jen so so es
+
+79
+00:03:45,570 --> 00:03:48,090
+Traverse is a module for traversing the
+
+80
+00:03:48,090 --> 00:03:49,560
+parse trees that are generated by us
+
+81
+00:03:49,560 --> 00:03:52,020
+prima and es Co gen is for doing code
+
+82
+00:03:52,020 --> 00:03:53,700
+generation from the parse trees and
+
+83
+00:03:53,700 --> 00:03:55,380
+we're gonna use both of these in the
+
+84
+00:03:55,380 --> 00:03:59,790
+examples that I'm going to show you so
+
+85
+00:03:59,790 --> 00:04:01,200
+this is a really really simple example
+
+86
+00:04:01,200 --> 00:04:03,810
+of what you can do with this prima has a
+
+87
+00:04:03,810 --> 00:04:06,450
+nice simple API right we require a
+
+88
+00:04:06,450 --> 00:04:08,720
+Suprema or include the source tag and
+
+89
+00:04:08,720 --> 00:04:12,240
+just call the parse function so this is
+
+90
+00:04:12,240 --> 00:04:14,370
+a very very simple JavaScript program
+
+91
+00:04:14,370 --> 00:04:15,750
+here write a single function that
+
+92
+00:04:15,750 --> 00:04:21,049
+returns a value Esprit MA is going to
+
+93
+00:04:21,049 --> 00:04:24,090
+emit a parse tree that looks something
+
+94
+00:04:24,090 --> 00:04:25,350
+like this this is a bit of a
+
+95
+00:04:25,350 --> 00:04:28,260
+simplification but at the top level we
+
+96
+00:04:28,260 --> 00:04:30,960
+have a program the program consists of
+
+97
+00:04:30,960 --> 00:04:33,240
+one thing a function declaration the
+
+98
+00:04:33,240 --> 00:04:34,790
+function declaration has an identifier
+
+99
+00:04:34,790 --> 00:04:37,500
+the name of the function and it has a
+
+100
+00:04:37,500 --> 00:04:39,660
+body the body has one thing which is a
+
+101
+00:04:39,660 --> 00:04:42,900
+return statement and it returns 42 so
+
+102
+00:04:42,900 --> 00:04:45,270
+this is sort of a simplified version if
+
+103
+00:04:45,270 --> 00:04:47,639
+you want to see it in its full glory
+
+104
+00:04:47,639 --> 00:04:48,990
+I'm not sure if that's big enough to
+
+105
+00:04:48,990 --> 00:04:51,990
+read but you get the picture it's you
+
+106
+00:04:51,990 --> 00:04:53,430
+know there's a lot of detail there to
+
+107
+00:04:53,430 --> 00:04:57,689
+the parse tree so on its own this is a
+
+108
+00:04:57,689 --> 00:04:59,490
+little bit boring right okay so we parse
+
+109
+00:04:59,490 --> 00:05:01,080
+JavaScript and we get a parse tree who
+
+110
+00:05:01,080 --> 00:05:04,979
+cares but it turns out that if we if we
+
+111
+00:05:04,979 --> 00:05:06,659
+actually do stuff to this parse tree we
+
+112
+00:05:06,659 --> 00:05:08,669
+can we can analyze it and do a lot of
+
+113
+00:05:08,669 --> 00:05:11,430
+useful and really interesting things and
+
+114
+00:05:11,430 --> 00:05:13,590
+I'm going to show a basic example here
+
+115
+00:05:13,590 --> 00:05:16,860
+which is to do a style checker so this
+
+116
+00:05:16,860 --> 00:05:18,300
+is sort of an example of how something
+
+117
+00:05:18,300 --> 00:05:23,069
+like jslint works and so as Brian
+
+118
+00:05:23,069 --> 00:05:24,539
+mentioned I work on the chrome team at
+
+119
+00:05:24,539 --> 00:05:26,759
+Google and on the chromium project we
+
+120
+00:05:26,759 --> 00:05:29,789
+have style guides and we have a C++
+
+121
+00:05:29,789 --> 00:05:31,590
+style guide and a JavaScript style guide
+
+122
+00:05:31,590 --> 00:05:34,889
+and they're not quite the same variables
+
+123
+00:05:34,889 --> 00:05:36,599
+in C++ have underscores and in
+
+124
+00:05:36,599 --> 00:05:39,120
+JavaScript we use camel case so I find
+
+125
+00:05:39,120 --> 00:05:40,289
+myself getting mixed up sometimes
+
+126
+00:05:40,289 --> 00:05:42,360
+between these style guides and you know
+
+127
+00:05:42,360 --> 00:05:44,039
+really wastes a lot of time in code
+
+128
+00:05:44,039 --> 00:05:46,080
+review when you realize that you used
+
+129
+00:05:46,080 --> 00:05:47,189
+underscores when you should have used
+
+130
+00:05:47,189 --> 00:05:47,999
+camel case
+
+131
+00:05:47,999 --> 00:05:50,789
+so I wrote a style checker that can that
+
+132
+00:05:50,789 --> 00:05:52,560
+I can run is a pre-commit hook to
+
+133
+00:05:52,560 --> 00:05:53,969
+prevent me from making these mistakes
+
+134
+00:05:53,969 --> 00:05:57,120
+and I'll show you just how easy it is to
+
+135
+00:05:57,120 --> 00:06:00,389
+do this with a spray map so that's
+
+136
+00:06:00,389 --> 00:06:01,919
+basically the code right there it's
+
+137
+00:06:01,919 --> 00:06:04,979
+about 15 lines of code and it's really
+
+138
+00:06:04,979 --> 00:06:07,919
+pretty simple so the first thing we do
+
+139
+00:06:07,919 --> 00:06:11,219
+is just call the Esprit ml parse
+
+140
+00:06:11,219 --> 00:06:14,550
+function to to parse the parse the code
+
+141
+00:06:14,550 --> 00:06:18,439
+and get back an abstract syntax tree and
+
+142
+00:06:18,439 --> 00:06:21,930
+then we use the es Traverse module to
+
+143
+00:06:21,930 --> 00:06:25,680
+walk over the syntax tree now yes
+
+144
+00:06:25,680 --> 00:06:27,270
+traverse can basically does a
+
+145
+00:06:27,270 --> 00:06:30,000
+depth-first traversal of a parse tree
+
+146
+00:06:30,000 --> 00:06:33,270
+and you can visit each node either on
+
+147
+00:06:33,270 --> 00:06:35,490
+the way down before you visit its sub
+
+148
+00:06:35,490 --> 00:06:38,129
+trees or on the way up and and in this
+
+149
+00:06:38,129 --> 00:06:39,569
+case we're doing it on the way down it's
+
+150
+00:06:39,569 --> 00:06:42,000
+not really relevant but that's just the
+
+151
+00:06:42,000 --> 00:06:46,110
+meaning of the enter why we're using
+
+152
+00:06:46,110 --> 00:06:49,050
+enter there so this function that we
+
+153
+00:06:49,050 --> 00:06:50,189
+have here is going to be called for
+
+154
+00:06:50,189 --> 00:06:51,779
+every node and we're just looking for
+
+155
+00:06:51,779 --> 00:06:54,360
+nodes that are variable declarations and
+
+156
+00:06:54,360 --> 00:06:55,560
+when we find that node we're going to
+
+157
+00:06:55,560 --> 00:06:57,839
+call the check variable names function
+
+158
+00:06:57,839 --> 00:07:01,949
+and again this is pretty simple
+
+159
+00:07:01,949 --> 00:07:04,409
+so a variable declaration can have more
+
+160
+00:07:04,409 --> 00:07:06,179
+than one variable that it declares right
+
+161
+00:07:06,179 --> 00:07:07,229
+so we're going to iterate through each
+
+162
+00:07:07,229 --> 00:07:09,239
+of those and we're just gonna call a
+
+163
+00:07:09,239 --> 00:07:11,729
+function for every single one and I'm
+
+164
+00:07:11,729 --> 00:07:13,559
+basically just looking to see if the
+
+165
+00:07:13,559 --> 00:07:15,239
+name of the variable has an underscore
+
+166
+00:07:15,239 --> 00:07:17,669
+in it and if it does that's an error
+
+167
+00:07:17,669 --> 00:07:19,830
+that I want to report so I'm just gonna
+
+168
+00:07:19,830 --> 00:07:22,649
+push this errors object to an array and
+
+169
+00:07:22,649 --> 00:07:24,539
+at the end of the script I report all
+
+170
+00:07:24,539 --> 00:07:28,319
+the errors that were found so that's it
+
+171
+00:07:28,319 --> 00:07:32,459
+really really simple and short now have
+
+172
+00:07:32,459 --> 00:07:34,229
+some sample code here that I want to
+
+173
+00:07:34,229 --> 00:07:35,969
+test against and if I run these scripts
+
+174
+00:07:35,969 --> 00:07:39,149
+on that codes lo and behold it detects
+
+175
+00:07:39,149 --> 00:07:42,419
+the errors and and and spits me out a
+
+176
+00:07:42,419 --> 00:07:47,309
+warning so this is just a really simple
+
+177
+00:07:47,309 --> 00:07:49,379
+example of the kind of style checks you
+
+178
+00:07:49,379 --> 00:07:52,919
+can do as I said you know this is
+
+179
+00:07:52,919 --> 00:07:56,189
+basically the way jslint works and so if
+
+180
+00:07:56,189 --> 00:07:58,589
+you have a style guide in your project
+
+181
+00:07:58,589 --> 00:08:00,119
+you know you could imagine writing a
+
+182
+00:08:00,119 --> 00:08:01,829
+style checker that will check every
+
+183
+00:08:01,829 --> 00:08:03,719
+single aspect of your style guide and
+
+184
+00:08:03,719 --> 00:08:07,669
+it's really not that complicated to do
+
+185
+00:08:07,669 --> 00:08:11,909
+so this is an example of analyzing the
+
+186
+00:08:11,909 --> 00:08:14,069
+parse tree right so we read in the code
+
+187
+00:08:14,069 --> 00:08:16,199
+we analyze the parse tree but we left
+
+188
+00:08:16,199 --> 00:08:19,319
+the original code intact so the next
+
+189
+00:08:19,319 --> 00:08:21,029
+thing I want to do is something a little
+
+190
+00:08:21,029 --> 00:08:22,800
+bit more interesting which is to
+
+191
+00:08:22,800 --> 00:08:26,360
+actually rewrite the source code and
+
+192
+00:08:26,360 --> 00:08:29,849
+what I'm going to do is I find so I find
+
+193
+00:08:29,849 --> 00:08:31,499
+often when I'm developing I'm trying to
+
+194
+00:08:31,499 --> 00:08:33,389
+understand the flow of my code and how
+
+195
+00:08:33,389 --> 00:08:34,860
+it flows between functions and
+
+196
+00:08:34,860 --> 00:08:36,719
+especially if I have a lot of callbacks
+
+197
+00:08:36,719 --> 00:08:39,329
+and we can get really complicated and I
+
+198
+00:08:39,329 --> 00:08:40,949
+like to insert logging statements and
+
+199
+00:08:40,949 --> 00:08:43,560
+probably a lot of people do this but
+
+200
+00:08:43,560 --> 00:08:45,569
+sometimes it's super annoying to have to
+
+201
+00:08:45,569 --> 00:08:47,339
+go and insert logging statements in like
+
+202
+00:08:47,339 --> 00:08:50,610
+10 or 15 different places so I wrote
+
+203
+00:08:50,610 --> 00:08:53,459
+this little script that basically adds
+
+204
+00:08:53,459 --> 00:08:55,769
+logging to every single function in a
+
+205
+00:08:55,769 --> 00:08:59,670
+particular source file and again it's
+
+206
+00:08:59,670 --> 00:09:03,470
+actually surprisingly simple to do this
+
+207
+00:09:03,470 --> 00:09:06,209
+so again we we first take the source
+
+208
+00:09:06,209 --> 00:09:07,680
+code and we parse it into an abstract
+
+209
+00:09:07,680 --> 00:09:11,309
+syntax tree then we're going to walk
+
+210
+00:09:11,309 --> 00:09:13,529
+over that tree and look for particular
+
+211
+00:09:13,529 --> 00:09:15,480
+nodes so this time we're look
+
+212
+00:09:15,480 --> 00:09:17,839
+for function declaration nodes and
+
+213
+00:09:17,839 --> 00:09:20,699
+function expressions and when we find
+
+214
+00:09:20,699 --> 00:09:22,410
+one we just call this this function add
+
+215
+00:09:22,410 --> 00:09:26,670
+before code so this function is a little
+
+216
+00:09:26,670 --> 00:09:28,500
+bit more complex than we had before you
+
+217
+00:09:28,500 --> 00:09:31,500
+know we're not just reporting errors so
+
+218
+00:09:31,500 --> 00:09:32,790
+first we figure out the name of the
+
+219
+00:09:32,790 --> 00:09:35,760
+function and then what I do in the
+
+220
+00:09:35,760 --> 00:09:39,470
+second line here is to build up a string
+
+221
+00:09:39,470 --> 00:09:41,850
+that contains the code that I want to
+
+222
+00:09:41,850 --> 00:09:43,079
+insert at the beginning of every
+
+223
+00:09:43,079 --> 00:09:44,760
+function so it's just a console dot log
+
+224
+00:09:44,760 --> 00:09:47,339
+statement with the name of the function
+
+225
+00:09:47,339 --> 00:09:48,600
+but you could do some more sophisticated
+
+226
+00:09:48,600 --> 00:09:51,990
+stuff here with you know printing the
+
+227
+00:09:51,990 --> 00:09:55,130
+values of the arguments to the function
+
+228
+00:09:55,130 --> 00:09:59,190
+now the next line is is interesting I'm
+
+229
+00:09:59,190 --> 00:10:00,570
+actually going to take this string that
+
+230
+00:10:00,570 --> 00:10:02,940
+I built up and use this prima to parse
+
+231
+00:10:02,940 --> 00:10:04,949
+it and so I'm going to have a little
+
+232
+00:10:04,949 --> 00:10:07,399
+parse tree a very very tiny parse tree
+
+233
+00:10:07,399 --> 00:10:10,410
+that I'm going to use an insert into the
+
+234
+00:10:10,410 --> 00:10:15,139
+original parse tree so to get an idea of
+
+235
+00:10:15,139 --> 00:10:18,660
+what what we're doing here the original
+
+236
+00:10:18,660 --> 00:10:22,319
+parse tree is something like this and we
+
+237
+00:10:22,319 --> 00:10:24,810
+have a function declaration its body is
+
+238
+00:10:24,810 --> 00:10:27,389
+a block statement and that has a body
+
+239
+00:10:27,389 --> 00:10:29,130
+which is an array of statements and
+
+240
+00:10:29,130 --> 00:10:30,449
+those statements represent basically
+
+241
+00:10:30,449 --> 00:10:35,190
+every single line in the function so my
+
+242
+00:10:35,190 --> 00:10:37,199
+mini parse tree that I created from that
+
+243
+00:10:37,199 --> 00:10:38,790
+string that I built up is actually just
+
+244
+00:10:38,790 --> 00:10:40,920
+a single statement object and I'm going
+
+245
+00:10:40,920 --> 00:10:43,709
+to take that and I'm going to add it to
+
+246
+00:10:43,709 --> 00:10:46,319
+the array at the beginning of the array
+
+247
+00:10:46,319 --> 00:10:49,050
+that represents the body of the original
+
+248
+00:10:49,050 --> 00:10:50,430
+function so I've modified the original
+
+249
+00:10:50,430 --> 00:10:55,199
+parse tree here and then the next step
+
+250
+00:10:55,199 --> 00:10:57,060
+to actually do something useful now that
+
+251
+00:10:57,060 --> 00:10:59,699
+I've modified the parse tree is to Amit
+
+252
+00:10:59,699 --> 00:11:04,079
+Amit code so using the es cogent module
+
+253
+00:11:04,079 --> 00:11:07,230
+I actually generate new source code from
+
+254
+00:11:07,230 --> 00:11:08,970
+the original from the modified parse
+
+255
+00:11:08,970 --> 00:11:11,550
+tree so I took in the original code
+
+256
+00:11:11,550 --> 00:11:13,350
+modified the parse tree and I'm spitting
+
+257
+00:11:13,350 --> 00:11:15,660
+out some new JavaScript and then I can
+
+258
+00:11:15,660 --> 00:11:17,399
+you know run that JavaScript and it's
+
+259
+00:11:17,399 --> 00:11:23,519
+gonna log all the function enters so
+
+260
+00:11:23,519 --> 00:11:25,589
+just a simple example to show you what
+
+261
+00:11:25,589 --> 00:11:28,019
+this is doing here right here's a simple
+
+262
+00:11:28,019 --> 00:11:29,279
+simple snippet
+
+263
+00:11:29,279 --> 00:11:34,199
+that contains two functions and if I run
+
+264
+00:11:34,199 --> 00:11:37,350
+my little script on this it spits out
+
+265
+00:11:37,350 --> 00:11:39,259
+two new code that looks almost the same
+
+266
+00:11:39,259 --> 00:11:41,249
+except for the fact that it's got these
+
+267
+00:11:41,249 --> 00:11:42,870
+console dot log statements at the
+
+268
+00:11:42,870 --> 00:11:45,060
+beginning of each function and this is
+
+269
+00:11:45,060 --> 00:11:46,860
+done completely automatically right so I
+
+270
+00:11:46,860 --> 00:11:50,309
+could I could do this across a thousand
+
+271
+00:11:50,309 --> 00:11:55,170
+source files if I wanted so this kind of
+
+272
+00:11:55,170 --> 00:11:56,759
+stuff is really really powerful I think
+
+273
+00:11:56,759 --> 00:11:59,999
+for doing the kinds of things that maybe
+
+274
+00:11:59,999 --> 00:12:02,639
+you know Java people will do with with
+
+275
+00:12:02,639 --> 00:12:05,790
+Eclipse refactoring tools I've shown
+
+276
+00:12:05,790 --> 00:12:07,980
+just a couple examples here but really
+
+277
+00:12:07,980 --> 00:12:09,930
+there's kind of no limit to what you can
+
+278
+00:12:09,930 --> 00:12:12,749
+do when you're manipulating these parse
+
+279
+00:12:12,749 --> 00:12:16,220
+trees but these are all examples of
+
+280
+00:12:16,220 --> 00:12:19,199
+basically compiling from JavaScript to
+
+281
+00:12:19,199 --> 00:12:22,319
+JavaScript so I want to get into
+
+282
+00:12:22,319 --> 00:12:24,480
+something a little different which is
+
+283
+00:12:24,480 --> 00:12:26,069
+what if our source language is not
+
+284
+00:12:26,069 --> 00:12:29,220
+JavaScript maybe some of you you know
+
+285
+00:12:29,220 --> 00:12:31,559
+I've always dreamed of creating your own
+
+286
+00:12:31,559 --> 00:12:32,100
+language
+
+287
+00:12:32,100 --> 00:12:34,379
+something like CoffeeScript maybe that
+
+288
+00:12:34,379 --> 00:12:36,629
+compiles to JavaScript right it's a
+
+289
+00:12:36,629 --> 00:12:39,300
+really really simple and powerful way to
+
+290
+00:12:39,300 --> 00:12:41,399
+create a new language and to play with
+
+291
+00:12:41,399 --> 00:12:45,959
+language concepts and for that I'm going
+
+292
+00:12:45,959 --> 00:12:47,939
+to show you how you can use parser
+
+293
+00:12:47,939 --> 00:12:52,350
+generators so parser generators a
+
+294
+00:12:52,350 --> 00:12:54,809
+personal generator is basically a thing
+
+295
+00:12:54,809 --> 00:12:57,600
+that takes a language grammar as input
+
+296
+00:12:57,600 --> 00:12:59,339
+so language grammar is just you know a
+
+297
+00:12:59,339 --> 00:13:03,329
+formal description of a language and it
+
+298
+00:13:03,329 --> 00:13:06,899
+spits out a parser that will parse that
+
+299
+00:13:06,899 --> 00:13:11,040
+language and you've probably heard of
+
+300
+00:13:11,040 --> 00:13:14,429
+some of the more famous percé or
+
+301
+00:13:14,429 --> 00:13:18,089
+generators yak bison or JavaScript
+
+302
+00:13:18,089 --> 00:13:22,259
+there's Dyson but today I'm going to
+
+303
+00:13:22,259 --> 00:13:25,259
+show you an example of something called
+
+304
+00:13:25,259 --> 00:13:27,839
+peg das which is a which is a slightly
+
+305
+00:13:27,839 --> 00:13:30,240
+different kind of parser generator that
+
+306
+00:13:30,240 --> 00:13:32,550
+uses parsing expression grammars trying
+
+307
+00:13:32,550 --> 00:13:37,649
+to explain very briefly so let's talk
+
+308
+00:13:37,649 --> 00:13:39,959
+about these grammars it's basically you
+
+309
+00:13:39,959 --> 00:13:41,040
+know if you're going to write a new
+
+310
+00:13:41,040 --> 00:13:41,980
+language you
+
+311
+00:13:41,980 --> 00:13:43,660
+need to know how to deal with formal
+
+312
+00:13:43,660 --> 00:13:47,680
+grammars so how many people are familiar
+
+313
+00:13:47,680 --> 00:13:50,200
+with this kind of syntax for
+
+314
+00:13:50,200 --> 00:13:52,740
+context-free grammars
+
+315
+00:13:52,740 --> 00:13:56,080
+okay so quite a few of you this is
+
+316
+00:13:56,080 --> 00:13:58,450
+basically a meta language it's a
+
+317
+00:13:58,450 --> 00:14:01,840
+language for describing languages and if
+
+318
+00:14:01,840 --> 00:14:03,160
+you're designing your own language or
+
+319
+00:14:03,160 --> 00:14:04,810
+you're even looking at other languages
+
+320
+00:14:04,810 --> 00:14:06,280
+this is the kind of thing that you'll
+
+321
+00:14:06,280 --> 00:14:09,940
+see quite a bit what I have here is an
+
+322
+00:14:09,940 --> 00:14:12,430
+example of recognizing an arithmetic
+
+323
+00:14:12,430 --> 00:14:15,790
+language so basically just sort of math
+
+324
+00:14:15,790 --> 00:14:20,050
+expressions you can have numbers you can
+
+325
+00:14:20,050 --> 00:14:22,710
+have plus or minus operators
+
+326
+00:14:22,710 --> 00:14:28,680
+multiplication division and brackets and
+
+327
+00:14:28,680 --> 00:14:30,550
+you'll see if you're familiar with
+
+328
+00:14:30,550 --> 00:14:33,400
+regular expressions you'll see that some
+
+329
+00:14:33,400 --> 00:14:35,350
+of the similar syntax is used in
+
+330
+00:14:35,350 --> 00:14:39,070
+context-free grammars now me maybe
+
+331
+00:14:39,070 --> 00:14:40,660
+you've seen these in slightly different
+
+332
+00:14:40,660 --> 00:14:43,780
+forms there's Backus noir form and EB n
+
+333
+00:14:43,780 --> 00:14:46,420
+F they're slightly different but they're
+
+334
+00:14:46,420 --> 00:14:48,580
+really just different representations of
+
+335
+00:14:48,580 --> 00:14:50,440
+the same thing so this is the form that
+
+336
+00:14:50,440 --> 00:14:54,730
+I'm going to use today but first I want
+
+337
+00:14:54,730 --> 00:14:58,030
+to talk about one particular thing this
+
+338
+00:14:58,030 --> 00:14:59,830
+little this what we call the choice
+
+339
+00:14:59,830 --> 00:15:02,230
+operator so this is basically works like
+
+340
+00:15:02,230 --> 00:15:04,930
+a logical or in most programming
+
+341
+00:15:04,930 --> 00:15:08,710
+languages except the one difference is
+
+342
+00:15:08,710 --> 00:15:11,470
+that in context-free grammars it's
+
+343
+00:15:11,470 --> 00:15:14,860
+actually unordered so it's not like a
+
+344
+00:15:14,860 --> 00:15:16,900
+short-circuiting operator like you have
+
+345
+00:15:16,900 --> 00:15:19,300
+in programming languages and this is
+
+346
+00:15:19,300 --> 00:15:21,520
+because context-free grammars come from
+
+347
+00:15:21,520 --> 00:15:24,160
+linguistics actually you know they
+
+348
+00:15:24,160 --> 00:15:25,390
+weren't computer scientists who
+
+349
+00:15:25,390 --> 00:15:27,160
+originally came up with these things an
+
+350
+00:15:27,160 --> 00:15:30,520
+implementing unordered choice it can be
+
+351
+00:15:30,520 --> 00:15:31,870
+a bit of a pain and sometimes you have
+
+352
+00:15:31,870 --> 00:15:35,560
+language ambiguities and so there's a
+
+353
+00:15:35,560 --> 00:15:37,330
+slightly different variation called
+
+354
+00:15:37,330 --> 00:15:39,250
+parsing expression grammars and that's
+
+355
+00:15:39,250 --> 00:15:41,620
+what we're going to use today and pegs
+
+356
+00:15:41,620 --> 00:15:44,860
+use ordered choice so it's it's just
+
+357
+00:15:44,860 --> 00:15:46,450
+like the logical operator in a
+
+358
+00:15:46,450 --> 00:15:48,490
+programming language so if the if the
+
+359
+00:15:48,490 --> 00:15:51,490
+first option is used then we don't even
+
+360
+00:15:51,490 --> 00:15:54,270
+bother looking at the second option and
+
+361
+00:15:54,270 --> 00:15:55,900
+to indicate
+
+362
+00:15:55,900 --> 00:15:57,790
+that the operator is ordered choice they
+
+363
+00:15:57,790 --> 00:16:00,070
+usually use a slash instead of the
+
+364
+00:16:00,070 --> 00:16:03,310
+vertical bar but it's it's a minor minor
+
+365
+00:16:03,310 --> 00:16:08,980
+syntax difference so let's take a look
+
+366
+00:16:08,980 --> 00:16:11,200
+at what it looks like to use peg KS to
+
+367
+00:16:11,200 --> 00:16:13,690
+parse this arithmetic language that we
+
+368
+00:16:13,690 --> 00:16:17,020
+have so you can just take the string and
+
+369
+00:16:17,020 --> 00:16:21,820
+call the build parser function and it
+
+370
+00:16:21,820 --> 00:16:23,980
+will return you an object which is a
+
+371
+00:16:23,980 --> 00:16:26,260
+parser and then I can use this parser
+
+372
+00:16:26,260 --> 00:16:28,300
+just like I use the Esprit my parser to
+
+373
+00:16:28,300 --> 00:16:34,510
+parse jsr to parse my new language and
+
+374
+00:16:34,510 --> 00:16:37,060
+if i if i try and test out this code so
+
+375
+00:16:37,060 --> 00:16:40,390
+try and parse one plus ten actually get
+
+376
+00:16:40,390 --> 00:16:42,670
+an error and this is something that if
+
+377
+00:16:42,670 --> 00:16:44,530
+you use parsing expression grammars a
+
+378
+00:16:44,530 --> 00:16:46,360
+lot of people are going to run into this
+
+379
+00:16:46,360 --> 00:16:49,060
+the first time they try something and
+
+380
+00:16:49,060 --> 00:16:51,940
+it's an error about left recursion and i
+
+381
+00:16:51,940 --> 00:16:53,560
+think it's worth explaining why this
+
+382
+00:16:53,560 --> 00:16:56,110
+happens because so many people run into
+
+383
+00:16:56,110 --> 00:17:01,930
+it it's actually very simple so a lot of
+
+384
+00:17:01,930 --> 00:17:04,570
+parsing expression grammars are tools to
+
+385
+00:17:04,570 --> 00:17:06,130
+deal with parsing expression grammars
+
+386
+00:17:06,130 --> 00:17:08,100
+use what's called a recursive descent
+
+387
+00:17:08,100 --> 00:17:12,250
+parser and a recursive descent parser
+
+388
+00:17:12,250 --> 00:17:15,120
+basically treats each one of these rules
+
+389
+00:17:15,120 --> 00:17:17,860
+so the things along the left-hand side
+
+390
+00:17:17,860 --> 00:17:21,910
+here also called non terminals a treat
+
+391
+00:17:21,910 --> 00:17:25,330
+shows just as functions so basically the
+
+392
+00:17:25,330 --> 00:17:27,790
+the two things in blue they're these are
+
+393
+00:17:27,790 --> 00:17:32,050
+just function calls effectively and you
+
+394
+00:17:32,050 --> 00:17:34,030
+know if you've ever written recursive
+
+395
+00:17:34,030 --> 00:17:35,860
+function that calls itself as the first
+
+396
+00:17:35,860 --> 00:17:37,660
+line of that function then you probably
+
+397
+00:17:37,660 --> 00:17:39,580
+understand why this is not going to work
+
+398
+00:17:39,580 --> 00:17:41,620
+right it's it's it's simply just
+
+399
+00:17:41,620 --> 00:17:43,240
+infinite recursion it keeps trying to
+
+400
+00:17:43,240 --> 00:17:47,650
+satisfy the expression by by itself so
+
+401
+00:17:47,650 --> 00:17:49,450
+that's why you can't use left recursion
+
+402
+00:17:49,450 --> 00:17:54,370
+in a recursive descent parser but it's
+
+403
+00:17:54,370 --> 00:17:56,200
+actually quite simple to fix and a lot
+
+404
+00:17:56,200 --> 00:17:58,480
+of people tear their hair out about how
+
+405
+00:17:58,480 --> 00:18:01,180
+to deal with left recursion but but the
+
+406
+00:18:01,180 --> 00:18:03,400
+real simple fix is that you just use
+
+407
+00:18:03,400 --> 00:18:05,650
+iteration instead of recursion all right
+
+408
+00:18:05,650 --> 00:18:07,150
+and this is something that that a lot of
+
+409
+00:18:07,150 --> 00:18:08,920
+people know from programming that you
+
+410
+00:18:08,920 --> 00:18:11,050
+rewrite almost any recursive algorithm
+
+411
+00:18:11,050 --> 00:18:14,290
+as being an iterative algorithm but a
+
+412
+00:18:14,290 --> 00:18:15,700
+lot of people kind of forget this when
+
+413
+00:18:15,700 --> 00:18:17,350
+it deals with when that when it comes to
+
+414
+00:18:17,350 --> 00:18:21,520
+language grammars so to use iteration in
+
+415
+00:18:21,520 --> 00:18:25,000
+in this in this grammar we just have to
+
+416
+00:18:25,000 --> 00:18:28,000
+use the star operator and this is just
+
+417
+00:18:28,000 --> 00:18:30,220
+like a regular expression so star means
+
+418
+00:18:30,220 --> 00:18:34,840
+you can have zero or more repetitions of
+
+419
+00:18:34,840 --> 00:18:38,410
+whatever's inside the brackets there so
+
+420
+00:18:38,410 --> 00:18:39,880
+now that we've fixed our grammar let's
+
+421
+00:18:39,880 --> 00:18:43,840
+try parsing the new grammar and yeah it
+
+422
+00:18:43,840 --> 00:18:48,040
+parses and everything all is good except
+
+423
+00:18:48,040 --> 00:18:50,020
+you may notice that it's this this parse
+
+424
+00:18:50,020 --> 00:18:52,000
+tree that it generates here is kind of
+
+425
+00:18:52,000 --> 00:18:55,450
+weird it's it's like just a bunch of
+
+426
+00:18:55,450 --> 00:18:58,390
+nested arrays and it's not like that
+
+427
+00:18:58,390 --> 00:19:00,070
+nice parse tree that we saw from a
+
+428
+00:19:00,070 --> 00:19:02,320
+suprema that had all this great
+
+429
+00:19:02,320 --> 00:19:05,530
+information you may also notice that the
+
+430
+00:19:05,530 --> 00:19:09,580
+number 10 up here got parsed as like
+
+431
+00:19:09,580 --> 00:19:12,310
+separate digits so this is kind of weird
+
+432
+00:19:12,310 --> 00:19:15,130
+right I it's a little bit hard to work
+
+433
+00:19:15,130 --> 00:19:18,010
+with if if you have to visit like look
+
+434
+00:19:18,010 --> 00:19:21,280
+at each number individually so let's
+
+435
+00:19:21,280 --> 00:19:23,320
+look at how we can fix that we can fix
+
+436
+00:19:23,320 --> 00:19:25,060
+this using something called semantic
+
+437
+00:19:25,060 --> 00:19:29,530
+actions so peg dot j s basically allows
+
+438
+00:19:29,530 --> 00:19:32,350
+you to embed little snippets of
+
+439
+00:19:32,350 --> 00:19:36,220
+JavaScript code inside any of your rules
+
+440
+00:19:36,220 --> 00:19:39,910
+and you can use these to customize how
+
+441
+00:19:39,910 --> 00:19:42,550
+it builds the parse tree so we're gonna
+
+442
+00:19:42,550 --> 00:19:45,820
+edit our number or number rule down here
+
+443
+00:19:45,820 --> 00:19:47,440
+and we're gonna add this identifier
+
+444
+00:19:47,440 --> 00:19:49,540
+digits so we we have a name with which
+
+445
+00:19:49,540 --> 00:19:51,430
+to refer to the things that got captured
+
+446
+00:19:51,430 --> 00:19:54,190
+and then we just add a little snippet of
+
+447
+00:19:54,190 --> 00:19:56,920
+JavaScript code to join those digits
+
+448
+00:19:56,920 --> 00:19:59,500
+together into a single string and that's
+
+449
+00:19:59,500 --> 00:20:00,820
+going to make it much easier to work
+
+450
+00:20:00,820 --> 00:20:03,940
+with and when I run the parser again I
+
+451
+00:20:03,940 --> 00:20:06,490
+see that it looks much nicer I've got
+
+452
+00:20:06,490 --> 00:20:10,270
+you know the number 10 there rather than
+
+453
+00:20:10,270 --> 00:20:15,820
+the individual digits another thing that
+
+454
+00:20:15,820 --> 00:20:18,400
+can be useful in when you're working
+
+455
+00:20:18,400 --> 00:20:22,150
+with peg KS is to insert as
+
+456
+00:20:22,150 --> 00:20:24,040
+snippet of code at the top of your
+
+457
+00:20:24,040 --> 00:20:26,590
+function some of your semantic actions
+
+458
+00:20:26,590 --> 00:20:29,920
+may require you know helper functions or
+
+459
+00:20:29,920 --> 00:20:32,520
+whatever so what you can do is actually
+
+460
+00:20:32,520 --> 00:20:35,620
+just put brackets at the top of your
+
+461
+00:20:35,620 --> 00:20:39,490
+grammar and insert whatever JavaScript
+
+462
+00:20:39,490 --> 00:20:42,130
+code you want so maybe instead of just
+
+463
+00:20:42,130 --> 00:20:44,590
+returning a string to represent my
+
+464
+00:20:44,590 --> 00:20:46,750
+numbers maybe I want to actually build
+
+465
+00:20:46,750 --> 00:20:50,920
+up a real parse tree right so I can
+
+466
+00:20:50,920 --> 00:20:53,650
+introduce a constructor function here
+
+467
+00:20:53,650 --> 00:20:57,220
+that will create a node and then in my
+
+468
+00:20:57,220 --> 00:20:59,980
+semantic action I can use that
+
+469
+00:20:59,980 --> 00:21:03,370
+constructor to to create my nodes in the
+
+470
+00:21:03,370 --> 00:21:07,780
+parse tree so that's really all there is
+
+471
+00:21:07,780 --> 00:21:13,330
+to parsing a simple language MPEG KS but
+
+472
+00:21:13,330 --> 00:21:15,640
+you know this language doesn't really do
+
+473
+00:21:15,640 --> 00:21:18,160
+anything right it's just we parsed some
+
+474
+00:21:18,160 --> 00:21:21,010
+numbers and operators but how do we do
+
+475
+00:21:21,010 --> 00:21:25,720
+something useful with it so I promised
+
+476
+00:21:25,720 --> 00:21:29,080
+in my Brian just held up the 5-minute
+
+477
+00:21:29,080 --> 00:21:31,120
+five minute sign for me and I promised
+
+478
+00:21:31,120 --> 00:21:33,280
+that I could teach you how to create
+
+479
+00:21:33,280 --> 00:21:34,780
+your own language that compiles to
+
+480
+00:21:34,780 --> 00:21:36,910
+JavaScript in five minutes so it's
+
+481
+00:21:36,910 --> 00:21:40,970
+perfect timing and I think I can do it
+
+482
+00:21:40,980 --> 00:21:43,300
+so let's start with the the arithmetic
+
+483
+00:21:43,300 --> 00:21:46,630
+remember that we had before we're gonna
+
+484
+00:21:46,630 --> 00:21:48,820
+throw away all this stuff that we don't
+
+485
+00:21:48,820 --> 00:21:50,560
+need because that arithmetic grammar
+
+486
+00:21:50,560 --> 00:21:52,690
+works still part of our grammar I'm just
+
+487
+00:21:52,690 --> 00:21:55,210
+gonna hide it right now at the top level
+
+488
+00:21:55,210 --> 00:21:57,520
+we have an expression so I want to
+
+489
+00:21:57,520 --> 00:22:00,850
+introduce a new top level rule here from
+
+490
+00:22:00,850 --> 00:22:05,770
+my new language and that rule is for
+
+491
+00:22:05,770 --> 00:22:07,720
+variable declarations and I've just used
+
+492
+00:22:07,720 --> 00:22:10,420
+deckle here for shorts and what I want
+
+493
+00:22:10,420 --> 00:22:13,180
+to do is have variable declarations that
+
+494
+00:22:13,180 --> 00:22:15,100
+are in the style of small talk I don't
+
+495
+00:22:15,100 --> 00:22:16,600
+know if anyone's familiar with small
+
+496
+00:22:16,600 --> 00:22:19,390
+talk but rather than saying var x equals
+
+497
+00:22:19,390 --> 00:22:23,640
+whatever small talk uses colon equals
+
+498
+00:22:23,640 --> 00:22:26,800
+four he actually uses it for assignment
+
+499
+00:22:26,800 --> 00:22:28,030
+but in this case I'm going to use it for
+
+500
+00:22:28,030 --> 00:22:32,470
+variable Declaration and assignment so
+
+501
+00:22:32,470 --> 00:22:34,720
+declaration consists of an identifier
+
+502
+00:22:34,720 --> 00:22:35,970
+colon equals and then
+
+503
+00:22:35,970 --> 00:22:38,790
+expression so let's define identifier an
+
+504
+00:22:38,790 --> 00:22:41,070
+identifier is just like JavaScript it
+
+505
+00:22:41,070 --> 00:22:43,140
+can be any sequence of digits letters or
+
+506
+00:22:43,140 --> 00:22:47,730
+underscore digit the number zero to nine
+
+507
+00:22:47,730 --> 00:22:51,270
+letters are a to Z in lowercase and
+
+508
+00:22:51,270 --> 00:22:53,520
+capital and notice I said Zed so I
+
+509
+00:22:53,520 --> 00:22:57,720
+really am Canadian and we're going to
+
+510
+00:22:57,720 --> 00:22:59,490
+throw in a new top-level rule here
+
+511
+00:22:59,490 --> 00:23:01,260
+because we want to have multiple
+
+512
+00:23:01,260 --> 00:23:03,600
+expressions in this language right our
+
+513
+00:23:03,600 --> 00:23:05,070
+will grammar only handle one expression
+
+514
+00:23:05,070 --> 00:23:07,830
+and so a program in this case can
+
+515
+00:23:07,830 --> 00:23:09,840
+consist of well it can consist of
+
+516
+00:23:09,840 --> 00:23:12,270
+nothing actually or it can be one or
+
+517
+00:23:12,270 --> 00:23:14,550
+more expressions that are separated by a
+
+518
+00:23:14,550 --> 00:23:18,900
+period so small talk uses a period kind
+
+519
+00:23:18,900 --> 00:23:20,850
+of like Java Script uses the semicolon
+
+520
+00:23:20,850 --> 00:23:22,740
+right and and I'm a big small talk fan
+
+521
+00:23:22,740 --> 00:23:26,630
+so I'm going to use that in my language
+
+522
+00:23:26,630 --> 00:23:29,220
+so let's take a look at what this looks
+
+523
+00:23:29,220 --> 00:23:30,990
+like now when we try and parse a little
+
+524
+00:23:30,990 --> 00:23:33,330
+snippet of code with it so I'm just
+
+525
+00:23:33,330 --> 00:23:34,710
+going to parse something simple you know
+
+526
+00:23:34,710 --> 00:23:39,150
+x equals 2 plus 5 and y equals 3 and it
+
+527
+00:23:39,150 --> 00:23:42,000
+works which is which is cool again we
+
+528
+00:23:42,000 --> 00:23:43,890
+have this really nasty looking parse
+
+529
+00:23:43,890 --> 00:23:45,750
+tree that it's kind of hard to do
+
+530
+00:23:45,750 --> 00:23:48,270
+anything useful with so we can use
+
+531
+00:23:48,270 --> 00:23:52,290
+semantic actions to fix that now when
+
+532
+00:23:52,290 --> 00:23:53,460
+you're trying to write a language that
+
+533
+00:23:53,460 --> 00:23:55,050
+compiles to JavaScript there's kind of
+
+534
+00:23:55,050 --> 00:23:57,360
+two approaches you can take if you're
+
+535
+00:23:57,360 --> 00:23:58,920
+really making a full-fledged language
+
+536
+00:23:58,920 --> 00:24:00,300
+what you probably want to do is actually
+
+537
+00:24:00,300 --> 00:24:02,670
+build up a parse tree and then have a
+
+538
+00:24:02,670 --> 00:24:04,290
+separate code generation phase where you
+
+539
+00:24:04,290 --> 00:24:06,630
+walk over the parse tree and generate
+
+540
+00:24:06,630 --> 00:24:10,260
+the code but I'm going to kind of cheat
+
+541
+00:24:10,260 --> 00:24:13,110
+here and because my language really kind
+
+542
+00:24:13,110 --> 00:24:14,640
+of maps to the same semantics as
+
+543
+00:24:14,640 --> 00:24:17,790
+JavaScript I'm just gonna build up
+
+544
+00:24:17,790 --> 00:24:19,650
+JavaScript strings and then at the end
+
+545
+00:24:19,650 --> 00:24:21,300
+concatenate them all together and I'm
+
+546
+00:24:21,300 --> 00:24:24,000
+going to have my program so that's what
+
+547
+00:24:24,000 --> 00:24:25,590
+I'm doing for the variable declarations
+
+548
+00:24:25,590 --> 00:24:26,940
+here I'm basically just building up a
+
+549
+00:24:26,940 --> 00:24:29,880
+string that begins with var inserts the
+
+550
+00:24:29,880 --> 00:24:32,550
+the variable name puts the equal sign
+
+551
+00:24:32,550 --> 00:24:35,690
+and the expression and a semicolon and
+
+552
+00:24:35,690 --> 00:24:40,020
+when I parse my little example looks
+
+553
+00:24:40,020 --> 00:24:41,790
+much better right so so you can see I've
+
+554
+00:24:41,790 --> 00:24:44,220
+actually got like you know something is
+
+555
+00:24:44,220 --> 00:24:45,510
+starting to look like a like a
+
+556
+00:24:45,510 --> 00:24:47,520
+JavaScript variable declaration there I
+
+557
+00:24:47,520 --> 00:24:49,950
+just need to clean up a few other things
+
+558
+00:24:49,950 --> 00:24:53,130
+and just like before we can use semantic
+
+559
+00:24:53,130 --> 00:24:55,320
+actions to clean up the parse tree so
+
+560
+00:24:55,320 --> 00:24:57,120
+I'm going to concatenate everything
+
+561
+00:24:57,120 --> 00:25:00,770
+together in an expression and flatten it
+
+562
+00:25:00,770 --> 00:25:03,930
+and it's getting better so now now I
+
+563
+00:25:03,930 --> 00:25:08,220
+actually have a full basically valid
+
+564
+00:25:08,220 --> 00:25:12,630
+variable declaration there and I'll do
+
+565
+00:25:12,630 --> 00:25:14,840
+the same for the per at the program rule
+
+566
+00:25:14,840 --> 00:25:18,650
+to basically clean up the rest of it and
+
+567
+00:25:18,650 --> 00:25:22,200
+bam I actually you know there we've
+
+568
+00:25:22,200 --> 00:25:24,660
+actually compiled a language which is
+
+569
+00:25:24,660 --> 00:25:27,080
+not JavaScript although it resembles it
+
+570
+00:25:27,080 --> 00:25:36,930
+into valid JavaScript
+
+571
+00:25:36,940 --> 00:25:40,190
+so this is not quite a Turing complete
+
+572
+00:25:40,190 --> 00:25:41,690
+language so maybe I've cheated a little
+
+573
+00:25:41,690 --> 00:25:44,270
+bit here but you can imagine it's it's
+
+574
+00:25:44,270 --> 00:25:45,500
+really not that hard
+
+575
+00:25:45,500 --> 00:25:48,649
+so you add in things like if statements
+
+576
+00:25:48,649 --> 00:25:50,690
+and loops so if any of you have thought
+
+577
+00:25:50,690 --> 00:25:52,250
+like you know I really want to design my
+
+578
+00:25:52,250 --> 00:25:53,510
+own language but I wouldn't know where
+
+579
+00:25:53,510 --> 00:25:55,520
+to begin I encourage you to go home you
+
+580
+00:25:55,520 --> 00:25:56,690
+can sit down and write something like
+
+581
+00:25:56,690 --> 00:26:02,659
+this a full language easily in a day so
+
+582
+00:26:02,659 --> 00:26:07,760
+I hope I've you know encouraged you to C
+
+583
+00:26:07,760 --> 00:26:09,409
+compilers is not being just this tool
+
+584
+00:26:09,409 --> 00:26:12,770
+that that kind of you you use but never
+
+585
+00:26:12,770 --> 00:26:13,970
+look at but but they're actually
+
+586
+00:26:13,970 --> 00:26:16,340
+something useful you can use to do
+
+587
+00:26:16,340 --> 00:26:18,799
+things you know both in JavaScript or if
+
+588
+00:26:18,799 --> 00:26:20,960
+you're looking for you know if you've
+
+589
+00:26:20,960 --> 00:26:22,460
+always wanted to design your own
+
+590
+00:26:22,460 --> 00:26:24,590
+language and I see people sometimes
+
+591
+00:26:24,590 --> 00:26:28,880
+using you know grep and and regular
+
+592
+00:26:28,880 --> 00:26:31,399
+expressions to do things and I just want
+
+593
+00:26:31,399 --> 00:26:34,340
+to like you know tell them like don't do
+
+594
+00:26:34,340 --> 00:26:36,710
+it it's so it's so error-prone it's
+
+595
+00:26:36,710 --> 00:26:40,100
+really not that hard to write a simple
+
+596
+00:26:40,100 --> 00:26:43,669
+parser for simple languages so if you
+
+597
+00:26:43,669 --> 00:26:45,200
+like more information I encourage you
+
+598
+00:26:45,200 --> 00:26:48,950
+guys to go check out on prima and pegged
+
+599
+00:26:48,950 --> 00:26:52,340
+ojs packages is still pretty early on
+
+600
+00:26:52,340 --> 00:26:54,350
+and I and I think you know they love
+
+601
+00:26:54,350 --> 00:26:56,409
+contributors and people reporting bugs
+
+602
+00:26:56,409 --> 00:26:59,480
+and if you'd like to see more details on
+
+603
+00:26:59,480 --> 00:27:01,970
+the code that I showed it's up on github
+
+604
+00:27:01,970 --> 00:27:04,370
+you can check it out there and there's
+
+605
+00:27:04,370 --> 00:27:07,880
+also a URL for my slides so thanks oh
+
+606
+00:27:07,880 --> 00:27:09,470
+and I should add if you have any
+
+607
+00:27:09,470 --> 00:27:10,820
+questions please come see me after the
+
+608
+00:27:10,820 --> 00:27:24,090
+talk thank
+

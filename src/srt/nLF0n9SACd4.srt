@@ -1,0 +1,2721 @@
+1
+00:00:02,060 --> 00:00:06,029
+
+all right hi my name is Dan and I work
+
+2
+00:00:06,029 --> 00:00:10,740
+at Facebook on the react team and in
+
+3
+00:00:10,740 --> 00:00:12,150
+this talk I want to talk about the
+
+4
+00:00:12,150 --> 00:00:14,340
+future of react and originally when I
+
+5
+00:00:14,340 --> 00:00:16,410
+planned this talk I thought that I would
+
+6
+00:00:16,410 --> 00:00:19,080
+talk about react 16o release and then
+
+7
+00:00:19,080 --> 00:00:21,750
+the upcoming react 16 free release which
+
+8
+00:00:21,750 --> 00:00:24,150
+finally fixes the contacts API and then
+
+9
+00:00:24,150 --> 00:00:26,310
+talk a little bit at the end about the
+
+10
+00:00:26,310 --> 00:00:28,529
+future of react but I was playing with
+
+11
+00:00:28,529 --> 00:00:30,449
+some features that my teammates have
+
+12
+00:00:30,449 --> 00:00:33,390
+been building like future features some
+
+13
+00:00:33,390 --> 00:00:34,920
+of them we've talked before some of them
+
+14
+00:00:34,920 --> 00:00:37,620
+we've never even talked before and I
+
+15
+00:00:37,620 --> 00:00:39,000
+realized that I actually want to
+
+16
+00:00:39,000 --> 00:00:40,800
+dedicate my whole talk to these new
+
+17
+00:00:40,800 --> 00:00:43,110
+features that aren't available yet but I
+
+18
+00:00:43,110 --> 00:00:45,719
+find them pretty fascinating and I hope
+
+19
+00:00:45,719 --> 00:00:50,640
+you like them too so disclaimer I'm
+
+20
+00:00:50,640 --> 00:00:52,649
+going to show the demos this is a very
+
+21
+00:00:52,649 --> 00:00:56,370
+kind of demo oriented talk the things
+
+22
+00:00:56,370 --> 00:00:57,629
+that I'm showing are not production
+
+23
+00:00:57,629 --> 00:01:00,420
+already yet the exact api's will change
+
+24
+00:01:00,420 --> 00:01:04,229
+don't fixate on them too much but I want
+
+25
+00:01:04,229 --> 00:01:06,390
+to emphasize that this this is a real
+
+26
+00:01:06,390 --> 00:01:08,130
+builds of react so there's enough fake
+
+27
+00:01:08,130 --> 00:01:11,640
+journals these are using actual actual
+
+28
+00:01:11,640 --> 00:01:15,420
+react code and I want to start with a
+
+29
+00:01:15,420 --> 00:01:18,630
+question and the question is as library
+
+30
+00:01:18,630 --> 00:01:22,070
+developers we need to think about our
+
+31
+00:01:22,070 --> 00:01:24,720
+immediate users the developers who are
+
+32
+00:01:24,720 --> 00:01:27,030
+building apps and also the users of our
+
+33
+00:01:27,030 --> 00:01:29,280
+users that is the actual people parties
+
+34
+00:01:29,280 --> 00:01:33,299
+in those apps and so at Facebook our
+
+35
+00:01:33,299 --> 00:01:35,430
+scale is pretty global so we need to
+
+36
+00:01:35,430 --> 00:01:37,439
+consider all kinds of connections and
+
+37
+00:01:37,439 --> 00:01:41,040
+all kinds of devices such as you know
+
+38
+00:01:41,040 --> 00:01:43,920
+high powered CPUs like on a laptop or
+
+39
+00:01:43,920 --> 00:01:46,619
+low powered CPU such as on the mobile
+
+40
+00:01:46,619 --> 00:01:48,869
+device and either fast or slow
+
+41
+00:01:48,869 --> 00:01:51,570
+connections and we need to think about
+
+42
+00:01:51,570 --> 00:01:54,450
+how can we as library developers empower
+
+43
+00:01:54,450 --> 00:01:57,930
+the application developers to give the
+
+44
+00:01:57,930 --> 00:02:00,840
+best user experience regardless of the
+
+45
+00:02:00,840 --> 00:02:03,030
+device or the network and is there
+
+46
+00:02:03,030 --> 00:02:04,829
+anything that we are can do better to
+
+47
+00:02:04,829 --> 00:02:10,279
+enable them
+
+48
+00:02:10,289 --> 00:02:12,870
+so when we think about those issues we
+
+49
+00:02:12,870 --> 00:02:14,939
+tend to group them into two different
+
+50
+00:02:14,939 --> 00:02:18,000
+areas the issues related to the
+
+51
+00:02:18,000 --> 00:02:19,739
+computing power and the differences in
+
+52
+00:02:19,739 --> 00:02:21,750
+the computing power and the different
+
+53
+00:02:21,750 --> 00:02:23,519
+the issues are related to the
+
+54
+00:02:23,519 --> 00:02:25,680
+differences in network speed and I'm
+
+55
+00:02:25,680 --> 00:02:29,870
+going to refer to this as CPU and IO and
+
+56
+00:02:29,870 --> 00:02:33,239
+in the context of react when we think of
+
+57
+00:02:33,239 --> 00:02:35,549
+the CPU work you usually think about
+
+58
+00:02:35,549 --> 00:02:37,470
+creating the Dom nodes creating
+
+59
+00:02:37,470 --> 00:02:40,079
+components rendering them updating them
+
+60
+00:02:40,079 --> 00:02:43,230
+calculating the updates and so on so
+
+61
+00:02:43,230 --> 00:02:45,180
+things that are tend to be synchronous
+
+62
+00:02:45,180 --> 00:02:48,299
+and when we think about the i/o work in
+
+63
+00:02:48,299 --> 00:02:50,099
+the context of react we should think
+
+64
+00:02:50,099 --> 00:02:51,750
+about the data fashion and the code
+
+65
+00:02:51,750 --> 00:02:53,909
+splitting so is there something that we
+
+66
+00:02:53,909 --> 00:02:57,420
+I could do better in those areas I'm
+
+67
+00:02:57,420 --> 00:03:01,980
+going to start with the CPU area and I
+
+68
+00:03:01,980 --> 00:03:04,470
+have a demo as I said this is a demo
+
+69
+00:03:04,470 --> 00:03:12,540
+oriented talk so this is my demo if
+
+70
+00:03:12,540 --> 00:03:14,400
+maybe it doesn't look like a real I have
+
+71
+00:03:14,400 --> 00:03:16,500
+that T built but at least it's pretty
+
+72
+00:03:16,500 --> 00:03:19,019
+beautiful and it's graphic so it's
+
+73
+00:03:19,019 --> 00:03:22,440
+easier to see from the audience but what
+
+74
+00:03:22,440 --> 00:03:25,470
+I have here is I have a tax box I can
+
+75
+00:03:25,470 --> 00:03:27,470
+type into the text box
+
+76
+00:03:27,470 --> 00:03:31,470
+hello yes come and I have a bunch of
+
+77
+00:03:31,470 --> 00:03:33,329
+charts and every time I type the charts
+
+78
+00:03:33,329 --> 00:03:35,819
+update and I made it so that the longer
+
+79
+00:03:35,819 --> 00:03:43,230
+I type the more complicated the charts
+
+80
+00:03:43,230 --> 00:03:46,739
+become so this lets me show that no
+
+81
+00:03:46,739 --> 00:03:49,709
+matter how fast the implementation of
+
+82
+00:03:49,709 --> 00:03:52,620
+component is eventually if the component
+
+83
+00:03:52,620 --> 00:03:55,230
+tree is deep enough and there are enough
+
+84
+00:03:55,230 --> 00:03:57,900
+Dom nodes there is enough computation is
+
+85
+00:03:57,900 --> 00:04:00,480
+going to slow down and I don't mean to
+
+86
+00:04:00,480 --> 00:04:02,250
+nitpick us on a specific like chart
+
+87
+00:04:02,250 --> 00:04:05,790
+example the you can imagine that instead
+
+88
+00:04:05,790 --> 00:04:07,560
+of a chart there could be any kind of
+
+89
+00:04:07,560 --> 00:04:09,690
+react component tree so the main point
+
+90
+00:04:09,690 --> 00:04:11,340
+is just that it's a heavy tree with a
+
+91
+00:04:11,340 --> 00:04:12,989
+lot of dumb notes a lot of components
+
+92
+00:04:12,989 --> 00:04:16,549
+and it updates every time I type and so
+
+93
+00:04:16,549 --> 00:04:19,409
+already with this level of complexity
+
+94
+00:04:19,409 --> 00:04:21,470
+when I type I experience color
+
+95
+00:04:21,470 --> 00:04:23,060
+and I'm the one who experiences it
+
+96
+00:04:23,060 --> 00:04:25,100
+you're probably maybe you don't see it
+
+97
+00:04:25,100 --> 00:04:29,840
+so I build a small clock so the clock
+
+98
+00:04:29,840 --> 00:04:34,280
+shows the how how the screen updates so
+
+99
+00:04:34,280 --> 00:04:37,340
+when the when the crate sorry when the
+
+100
+00:04:37,340 --> 00:04:40,190
+clock is green it means that the last
+
+101
+00:04:40,190 --> 00:04:43,640
+frames are were drawn pretty near to
+
+102
+00:04:43,640 --> 00:04:47,030
+each other so it feels responsive but if
+
+103
+00:04:47,030 --> 00:04:50,840
+you see when I type I can see yellow and
+
+104
+00:04:50,840 --> 00:04:52,700
+even red this means that it takes a lot
+
+105
+00:04:52,700 --> 00:04:55,550
+of time between different frames so the
+
+106
+00:04:55,550 --> 00:05:03,620
+user experience suffers and eventually
+
+107
+00:05:03,620 --> 00:05:06,110
+no matter usually no matter what kind of
+
+108
+00:05:06,110 --> 00:05:07,580
+app you're building eventually you're
+
+109
+00:05:07,580 --> 00:05:09,440
+bumping into this problem where no
+
+110
+00:05:09,440 --> 00:05:11,150
+particular component is slow but you
+
+111
+00:05:11,150 --> 00:05:12,860
+just have so many features and such
+
+112
+00:05:12,860 --> 00:05:15,910
+deepness then that you have this problem
+
+113
+00:05:15,910 --> 00:05:18,590
+so the typical solution to this is to
+
+114
+00:05:18,590 --> 00:05:20,900
+debounce the input so instead of
+
+115
+00:05:20,900 --> 00:05:23,570
+updating the updating the output
+
+116
+00:05:23,570 --> 00:05:26,570
+immediately as a type I can just wait
+
+117
+00:05:26,570 --> 00:05:28,820
+until the type and finishes and then do
+
+118
+00:05:28,820 --> 00:05:34,100
+a single update so I can type the the
+
+119
+00:05:34,100 --> 00:05:38,180
+input is completely responsive but then
+
+120
+00:05:38,180 --> 00:05:40,100
+the user experience suffers in the sense
+
+121
+00:05:40,100 --> 00:05:42,770
+that if my computer is actually powerful
+
+122
+00:05:42,770 --> 00:05:45,860
+enough so like I will remove some
+
+123
+00:05:45,860 --> 00:05:48,350
+characters to make the the the
+
+124
+00:05:48,350 --> 00:05:52,010
+complexity smaller I still have to wait
+
+125
+00:05:52,010 --> 00:05:54,650
+until to finish typing to see the
+
+126
+00:05:54,650 --> 00:05:56,660
+results so this program doesn't really
+
+127
+00:05:56,660 --> 00:05:59,480
+adapt to the performance of the of my
+
+128
+00:05:59,480 --> 00:06:01,970
+computer and to the complexity of the
+
+129
+00:06:01,970 --> 00:06:06,800
+team and this is even more pronounced if
+
+130
+00:06:06,800 --> 00:06:09,919
+I enable the CPU throttling so CPU
+
+131
+00:06:09,919 --> 00:06:12,740
+throttling is a way to emulate
+
+132
+00:06:12,740 --> 00:06:15,140
+performance of a mobile device of a less
+
+133
+00:06:15,140 --> 00:06:17,630
+powered device so I will slow down the
+
+134
+00:06:17,630 --> 00:06:23,780
+CPU by 4 times and now you can see that
+
+135
+00:06:23,780 --> 00:06:28,490
+even so a type which is called Iceland
+
+136
+00:06:28,490 --> 00:06:32,330
+and even though you waited a little bit
+
+137
+00:06:32,330 --> 00:06:35,360
+it still froze the underlying
+
+138
+00:06:35,360 --> 00:06:37,220
+it's just that the update is big and
+
+139
+00:06:37,220 --> 00:06:39,199
+it's synchronous so as soon as the react
+
+140
+00:06:39,199 --> 00:06:42,139
+starts rendering it cannot stop well
+
+141
+00:06:42,139 --> 00:06:44,650
+what if there was a way to make updates
+
+142
+00:06:44,650 --> 00:06:47,750
+asynchronous so that reactive starts
+
+143
+00:06:47,750 --> 00:06:49,819
+rendering something but then healed back
+
+144
+00:06:49,819 --> 00:06:51,710
+to the browser and if there is a higher
+
+145
+00:06:51,710 --> 00:06:54,409
+priority event like an input the browser
+
+146
+00:06:54,409 --> 00:06:56,689
+could handle that first and not started
+
+147
+00:06:56,689 --> 00:06:59,300
+a thread so I will disable the throttle
+
+148
+00:06:59,300 --> 00:07:01,430
+thing for now let's see how it normally
+
+149
+00:07:01,430 --> 00:07:11,360
+behaves in asynchronous mode so what you
+
+150
+00:07:11,360 --> 00:07:13,669
+can see here is that when the input is
+
+151
+00:07:13,669 --> 00:07:16,969
+short and it doesn't there is not a lot
+
+152
+00:07:16,969 --> 00:07:18,979
+of computation in a base almost
+
+153
+00:07:18,979 --> 00:07:21,469
+synchronously so it feels like as if it
+
+154
+00:07:21,469 --> 00:07:30,169
+were synchronous but if I type more what
+
+155
+00:07:30,169 --> 00:07:32,509
+happens is that instead of hanging the
+
+156
+00:07:32,509 --> 00:07:34,580
+thread the thread says responds if you
+
+157
+00:07:34,580 --> 00:07:36,379
+can see that it's most agreeing but
+
+158
+00:07:36,379 --> 00:07:39,440
+instead we actress updates the chart
+
+159
+00:07:39,440 --> 00:07:42,440
+it's left less often and the elect
+
+160
+00:07:42,440 --> 00:07:44,870
+behind my input a little bit but in many
+
+161
+00:07:44,870 --> 00:07:46,940
+cases this actually doesn't matter and
+
+162
+00:07:46,940 --> 00:07:49,400
+it's a completely fine compromise from
+
+163
+00:07:49,400 --> 00:07:53,900
+the UI perspective let's see what
+
+164
+00:07:53,900 --> 00:07:56,990
+happens on a slow device so I enable the
+
+165
+00:07:56,990 --> 00:08:06,200
+CPU throttling four times slower
+
+166
+00:08:06,210 --> 00:08:08,380
+you can see that it does starter a
+
+167
+00:08:08,380 --> 00:08:10,780
+little bit but it's mostly green and it
+
+168
+00:08:10,780 --> 00:08:12,610
+tries to catch up to of my typing even
+
+169
+00:08:12,610 --> 00:08:15,430
+though the device is slower compared to
+
+170
+00:08:15,430 --> 00:08:17,020
+the synchronous version where it just
+
+171
+00:08:17,020 --> 00:08:27,530
+stutters on every keystroke
+
+172
+00:08:27,540 --> 00:08:30,280
+of course in real apps you often can
+
+173
+00:08:30,280 --> 00:08:32,320
+optimize updates specifically so maybe
+
+174
+00:08:32,320 --> 00:08:35,140
+only part of your app updates and so you
+
+175
+00:08:35,140 --> 00:08:36,970
+can just update those components and
+
+176
+00:08:36,970 --> 00:08:42,099
+avoid a large update but not every there
+
+177
+00:08:42,099 --> 00:08:43,539
+are also scenarios where you just need
+
+178
+00:08:43,539 --> 00:08:46,510
+to mount and you have a tree so I will
+
+179
+00:08:46,510 --> 00:08:49,870
+unmount this chart completely and then
+
+180
+00:08:49,870 --> 00:08:52,990
+mount it again with froth enabled so
+
+181
+00:08:52,990 --> 00:08:55,150
+that's simulating a slow device and you
+
+182
+00:08:55,150 --> 00:08:57,070
+can see that it hangs every time and
+
+183
+00:08:57,070 --> 00:08:59,590
+while it's while it's rendering the
+
+184
+00:08:59,590 --> 00:09:00,130
+chart
+
+185
+00:09:00,130 --> 00:09:02,500
+nothing is interactive so I can actually
+
+186
+00:09:02,500 --> 00:09:04,150
+click on this clock to simulate an
+
+187
+00:09:04,150 --> 00:09:06,460
+interaction but while it's mounting it
+
+188
+00:09:06,460 --> 00:09:10,660
+doesn't register my clicks now
+
+189
+00:09:10,660 --> 00:09:12,130
+debouncing doesn't help us here because
+
+190
+00:09:12,130 --> 00:09:14,350
+d bouncing is only helpful for updates
+
+191
+00:09:14,350 --> 00:09:16,240
+but here I'm just mounting a huge
+
+192
+00:09:16,240 --> 00:09:18,460
+component tree so let's compare this
+
+193
+00:09:18,460 --> 00:09:20,830
+with asynchronous mode and I still have
+
+194
+00:09:20,830 --> 00:09:22,270
+the throttle and a enabled so that's
+
+195
+00:09:22,270 --> 00:09:26,350
+emulating the slow device so in
+
+196
+00:09:26,350 --> 00:09:28,840
+asynchronous mode you can see that even
+
+197
+00:09:28,840 --> 00:09:30,670
+though it Strutters a little bit it
+
+198
+00:09:30,670 --> 00:09:33,580
+doesn't go into red and interestingly
+
+199
+00:09:33,580 --> 00:09:36,490
+the circle stays interactive so I can
+
+200
+00:09:36,490 --> 00:09:39,490
+actually I can start mountain I can
+
+201
+00:09:39,490 --> 00:09:41,800
+click on this interact with this so the
+
+202
+00:09:41,800 --> 00:09:44,530
+whole app is still working while the
+
+203
+00:09:44,530 --> 00:09:47,440
+rendering is mounting in fact I can even
+
+204
+00:09:47,440 --> 00:09:50,350
+start typing in the input and it's going
+
+205
+00:09:50,350 --> 00:09:56,470
+to update to my type in so that was the
+
+206
+00:09:56,470 --> 00:09:59,530
+CPU demo
+
+207
+00:09:59,540 --> 00:10:06,070
+[Applause]
+
+208
+00:10:06,070 --> 00:10:08,960
+and I want to emphasize that this is not
+
+209
+00:10:08,960 --> 00:10:11,060
+about the charts or the inputs we've
+
+210
+00:10:11,060 --> 00:10:13,340
+built a generic way to ensure the high
+
+211
+00:10:13,340 --> 00:10:15,560
+priority updates don't get blocked by
+
+212
+00:10:15,560 --> 00:10:17,510
+low prior to update and in this
+
+213
+00:10:17,510 --> 00:10:19,670
+particular example high priority update
+
+214
+00:10:19,670 --> 00:10:21,710
+was updating the input and a low
+
+215
+00:10:21,710 --> 00:10:23,450
+priority update was rerender in the
+
+216
+00:10:23,450 --> 00:10:25,460
+chart but it could have been any kind of
+
+217
+00:10:25,460 --> 00:10:28,370
+react component for example a feed story
+
+218
+00:10:28,370 --> 00:10:30,980
+that gets loaded and we don't want to
+
+219
+00:10:30,980 --> 00:10:32,960
+freeze the scroll while we'll load in
+
+220
+00:10:32,960 --> 00:10:36,110
+new items and defeat and we call this
+
+221
+00:10:36,110 --> 00:10:40,190
+feature time slicing so it doesn't block
+
+222
+00:10:40,190 --> 00:10:42,170
+the Frog the thread while it's rendering
+
+223
+00:10:42,170 --> 00:10:44,900
+and if my device is fast enough it feels
+
+224
+00:10:44,900 --> 00:10:47,390
+almost like it's synchronous but if it
+
+225
+00:10:47,390 --> 00:10:49,550
+is slow then it feels at least it feels
+
+226
+00:10:49,550 --> 00:10:52,430
+responsive so it adapts to the device
+
+227
+00:10:52,430 --> 00:10:54,800
+thanks to browser exposing a request
+
+228
+00:10:54,800 --> 00:10:57,100
+idle callback api that we use for that
+
+229
+00:10:57,100 --> 00:10:59,600
+also notice that only the final state
+
+230
+00:10:59,600 --> 00:11:02,270
+was displayed the update the rendered
+
+231
+00:11:02,270 --> 00:11:04,040
+screen is always consistent we don't get
+
+232
+00:11:04,040 --> 00:11:07,280
+artifacts of slowly rendering something
+
+233
+00:11:07,280 --> 00:11:09,890
+that is going to cause a junky user
+
+234
+00:11:09,890 --> 00:11:12,110
+experience we only flush when the low
+
+235
+00:11:12,110 --> 00:11:14,540
+priority update is ready and you might
+
+236
+00:11:14,540 --> 00:11:17,960
+think oh maybe I changed those chars to
+
+237
+00:11:17,960 --> 00:11:20,300
+like make it's probably a lot of work to
+
+238
+00:11:20,300 --> 00:11:23,420
+make charts this chart component worked
+
+239
+00:11:23,420 --> 00:11:25,700
+like this but actually I just used it a
+
+240
+00:11:25,700 --> 00:11:27,650
+ready-made component from NPM
+
+241
+00:11:27,650 --> 00:11:30,770
+I didn't make any changes to it so we
+
+242
+00:11:30,770 --> 00:11:34,550
+can look at the code and it's just a run
+
+243
+00:11:34,550 --> 00:11:36,350
+a regular render method I have a chart
+
+244
+00:11:36,350 --> 00:11:38,960
+component it renders components from NPM
+
+245
+00:11:38,960 --> 00:11:42,020
+I pass data to it and I call set state
+
+246
+00:11:42,020 --> 00:11:44,240
+and I use a special flag to tell react
+
+247
+00:11:44,240 --> 00:11:54,120
+that it's is a low priority sad state
+
+248
+00:11:54,130 --> 00:11:56,330
+and personally I've found it very
+
+249
+00:11:56,330 --> 00:11:58,760
+helpful to use version control as a
+
+250
+00:11:58,760 --> 00:12:01,190
+metaphor for this so when I didn't know
+
+251
+00:12:01,190 --> 00:12:02,870
+about version control and I would just
+
+252
+00:12:02,870 --> 00:12:05,660
+modify the files as I've worked on them
+
+253
+00:12:05,660 --> 00:12:07,880
+hopefully I never like did anything
+
+254
+00:12:07,880 --> 00:12:11,930
+silly that I can't undo so I would just
+
+255
+00:12:11,930 --> 00:12:15,440
+work on a feature in my application but
+
+256
+00:12:15,440 --> 00:12:17,060
+then if suddenly in the middle of
+
+257
+00:12:17,060 --> 00:12:18,740
+working on that feature I need to fix a
+
+258
+00:12:18,740 --> 00:12:21,200
+bug now I can't do it because I only
+
+259
+00:12:21,200 --> 00:12:23,990
+have one version of my tree so I have to
+
+260
+00:12:23,990 --> 00:12:25,640
+finish working on the future first and
+
+261
+00:12:25,640 --> 00:12:28,130
+this is kind of how react works without
+
+262
+00:12:28,130 --> 00:12:30,680
+time slicing the react that you know is
+
+263
+00:12:30,680 --> 00:12:32,600
+that it can't interrupt the lunk update
+
+264
+00:12:32,600 --> 00:12:34,940
+but when I learned version control I
+
+265
+00:12:34,940 --> 00:12:36,740
+learned to work in a branch so I could
+
+266
+00:12:36,740 --> 00:12:38,630
+start working on the feature working it
+
+267
+00:12:38,630 --> 00:12:40,640
+in the branch but then if I need to do
+
+268
+00:12:40,640 --> 00:12:42,440
+an urgent bug fix I just do it and
+
+269
+00:12:42,440 --> 00:12:44,960
+master and then I can rebase the branch
+
+270
+00:12:44,960 --> 00:12:48,140
+on top of that and so this is pretty
+
+271
+00:12:48,140 --> 00:12:50,180
+much how react works with time slicing
+
+272
+00:12:50,180 --> 00:12:51,860
+except that you don't have to rebase
+
+273
+00:12:51,860 --> 00:12:53,930
+anything and react does that work so
+
+274
+00:12:53,930 --> 00:12:55,610
+reactive term is how to apply a
+
+275
+00:12:55,610 --> 00:12:58,220
+low-priority update on the top and it
+
+276
+00:12:58,220 --> 00:13:00,590
+can continue working and then flush when
+
+277
+00:13:00,590 --> 00:13:02,390
+everything is ready just like I can
+
+278
+00:13:02,390 --> 00:13:08,990
+merge the branch when it's ready so
+
+279
+00:13:08,990 --> 00:13:10,970
+we'll look at what we have could do
+
+280
+00:13:10,970 --> 00:13:14,600
+better at the CPU side what about the
+
+281
+00:13:14,600 --> 00:13:17,080
+i/o data fashion and code splitting I
+
+282
+00:13:17,080 --> 00:13:21,140
+have another demo that's that's the fun
+
+283
+00:13:21,140 --> 00:13:22,280
+part
+
+284
+00:13:22,280 --> 00:13:25,750
+[Applause]
+
+285
+00:13:25,750 --> 00:13:30,730
+all right
+
+286
+00:13:30,740 --> 00:13:38,090
+I built a movie app so you can see this
+
+287
+00:13:38,090 --> 00:13:41,540
+is the app it has a list of movies I can
+
+288
+00:13:41,540 --> 00:13:42,920
+click on a movie
+
+289
+00:13:42,920 --> 00:13:44,870
+it shows the detailed page were with
+
+290
+00:13:44,870 --> 00:13:47,960
+movie details and the reviews and that's
+
+291
+00:13:47,960 --> 00:13:50,720
+basically pretty much everything that it
+
+292
+00:13:50,720 --> 00:13:53,360
+does so it has an app component at the
+
+293
+00:13:53,360 --> 00:13:56,330
+top the trenders either movie list from
+
+294
+00:13:56,330 --> 00:13:58,730
+movie list page which is this page or
+
+295
+00:13:58,730 --> 00:14:01,340
+the movie details page which is this
+
+296
+00:14:01,340 --> 00:14:03,860
+page so there is just to kind of pages
+
+297
+00:14:03,860 --> 00:14:06,200
+here and the data is currently
+
+298
+00:14:06,200 --> 00:14:08,210
+absolutely hard-coded so there's like a
+
+299
+00:14:08,210 --> 00:14:11,120
+Jason with with the array of those
+
+300
+00:14:11,120 --> 00:14:14,750
+things and we take the data by ID from
+
+301
+00:14:14,750 --> 00:14:17,660
+the Jason so what if I wanted to change
+
+302
+00:14:17,660 --> 00:14:21,010
+that to fetch data from a remote API
+
+303
+00:14:21,010 --> 00:14:24,200
+let's go to the movie page component I'm
+
+304
+00:14:24,200 --> 00:14:26,090
+going to remove the hard-coded movie
+
+305
+00:14:26,090 --> 00:14:28,400
+details trace and import and instead I
+
+306
+00:14:28,400 --> 00:14:37,870
+will import fetch movie details from API
+
+307
+00:14:37,870 --> 00:14:41,600
+alright and I'm going to use another
+
+308
+00:14:41,600 --> 00:14:44,030
+function that I'll import from the
+
+309
+00:14:44,030 --> 00:14:48,440
+future again the exact API doesn't
+
+310
+00:14:48,440 --> 00:14:52,310
+matter it may change most likely so I
+
+311
+00:14:52,310 --> 00:14:56,330
+will call it create fetcher for now then
+
+312
+00:14:56,330 --> 00:14:57,590
+I'll go through the movie details
+
+313
+00:14:57,590 --> 00:15:01,580
+component so currently movie details
+
+314
+00:15:01,580 --> 00:15:05,510
+reads from JSON object but I'm going to
+
+315
+00:15:05,510 --> 00:15:06,980
+do something different I will create
+
+316
+00:15:06,980 --> 00:15:09,500
+something called a fetcher so I'll call
+
+317
+00:15:09,500 --> 00:15:13,520
+it movie details fetcher equals create
+
+318
+00:15:13,520 --> 00:15:16,100
+fetcher and I will pass my promised
+
+319
+00:15:16,100 --> 00:15:17,990
+return the function fetch movie details
+
+320
+00:15:17,990 --> 00:15:21,050
+through it now the next step is going to
+
+321
+00:15:21,050 --> 00:15:25,310
+be a little bit controversial so if you
+
+322
+00:15:25,310 --> 00:15:28,040
+know react you probably know that you're
+
+323
+00:15:28,040 --> 00:15:29,780
+not supposed to do data fetch and in
+
+324
+00:15:29,780 --> 00:15:33,020
+renderer so in this talk I'm going to
+
+325
+00:15:33,020 --> 00:15:35,960
+ban this rule a little bit and I just
+
+326
+00:15:35,960 --> 00:15:38,870
+want you to follow along with it and see
+
+327
+00:15:38,870 --> 00:15:42,740
+where it leads us so when react came out
+
+328
+00:15:42,740 --> 00:15:44,480
+it was pretty controversial
+
+329
+00:15:44,480 --> 00:15:47,809
+I think we can make more controversial
+
+330
+00:15:47,809 --> 00:15:55,249
+things all right so I have this fetcher
+
+331
+00:15:55,249 --> 00:15:58,999
+object and it works as a cache it has a
+
+332
+00:15:58,999 --> 00:16:01,129
+single method called read so I'm going
+
+333
+00:16:01,129 --> 00:16:03,829
+to call movie details fetcher that read
+
+334
+00:16:03,829 --> 00:16:08,720
+and pass the ID so what's going to
+
+335
+00:16:08,720 --> 00:16:10,609
+happen is that when a reactor enters the
+
+336
+00:16:10,609 --> 00:16:12,769
+movie details component it will try to
+
+337
+00:16:12,769 --> 00:16:15,410
+get this data from the cache but the TV
+
+338
+00:16:15,410 --> 00:16:17,149
+is not there because it's not fetched
+
+339
+00:16:17,149 --> 00:16:17,569
+yet
+
+340
+00:16:17,569 --> 00:16:19,609
+so reactor is going to fetch the data
+
+341
+00:16:19,609 --> 00:16:22,519
+and Rehab is going to prevent the entire
+
+342
+00:16:22,519 --> 00:16:25,069
+update from occurring until the data is
+
+343
+00:16:25,069 --> 00:16:27,350
+ready there is just one more thing I
+
+344
+00:16:27,350 --> 00:16:29,329
+need to do I need to tell react that is
+
+345
+00:16:29,329 --> 00:16:32,389
+actually ok for the transition from this
+
+346
+00:16:32,389 --> 00:16:34,730
+page to the details page to be
+
+347
+00:16:34,730 --> 00:16:38,059
+asynchronous so again the exact API is
+
+348
+00:16:38,059 --> 00:16:40,639
+probably going to be different but here
+
+349
+00:16:40,639 --> 00:16:42,259
+in the movie click where it says state
+
+350
+00:16:42,259 --> 00:16:46,459
+show detail true I will call something
+
+351
+00:16:46,459 --> 00:16:49,549
+called differs at state with the same
+
+352
+00:16:49,549 --> 00:16:56,419
+state so let's see if that works I click
+
+353
+00:16:56,419 --> 00:17:03,049
+on an item it waits and it loads and if
+
+354
+00:17:03,049 --> 00:17:04,610
+you don't believe me I actually built a
+
+355
+00:17:04,610 --> 00:17:06,709
+small debugger here so it shows the
+
+356
+00:17:06,709 --> 00:17:09,110
+pending requests and how requests happen
+
+357
+00:17:09,110 --> 00:17:11,329
+so if I remove everything from the cache
+
+358
+00:17:11,329 --> 00:17:13,189
+and I click on the movie there is a
+
+359
+00:17:13,189 --> 00:17:15,169
+request here and when it comes back
+
+360
+00:17:15,169 --> 00:17:18,350
+react renders the detail view now you
+
+361
+00:17:18,350 --> 00:17:20,059
+might think oh there must be a race
+
+362
+00:17:20,059 --> 00:17:22,939
+conditions and maybe you think that the
+
+363
+00:17:22,939 --> 00:17:24,620
+screen is not interactive well as
+
+364
+00:17:24,620 --> 00:17:27,139
+fashion no it's it's interactive I can
+
+365
+00:17:27,139 --> 00:17:29,570
+click here I can click here it's going
+
+366
+00:17:29,570 --> 00:17:32,029
+to load the right one now it's in cache
+
+367
+00:17:32,029 --> 00:17:35,450
+I can go back I can click on this movie
+
+368
+00:17:35,450 --> 00:17:40,680
+it's in cache so it renders instantly
+
+369
+00:17:40,690 --> 00:17:43,279
+however what if the latency is high what
+
+370
+00:17:43,279 --> 00:17:44,929
+if their network request takes a lot of
+
+371
+00:17:44,929 --> 00:17:47,419
+time like in this example three seconds
+
+372
+00:17:47,419 --> 00:17:49,159
+but it could have been like 15 seconds
+
+373
+00:17:49,159 --> 00:17:52,940
+so now if I click on a movie it seems
+
+374
+00:17:52,940 --> 00:17:54,440
+like nothing is happening if you don't
+
+375
+00:17:54,440 --> 00:17:56,419
+have the debugger open so that's not a
+
+376
+00:17:56,419 --> 00:17:57,960
+very good user
+
+377
+00:17:57,960 --> 00:18:02,410
+we can improve it so I'm going to import
+
+378
+00:18:02,410 --> 00:18:06,490
+something else from the future it's very
+
+379
+00:18:06,490 --> 00:18:09,540
+convenient to have access to the feature
+
+380
+00:18:09,540 --> 00:18:12,070
+I'm going to import the component called
+
+381
+00:18:12,070 --> 00:18:17,880
+a placeholder and I'm going to say that
+
+382
+00:18:17,880 --> 00:18:21,220
+if anything inside the movie page is not
+
+383
+00:18:21,220 --> 00:18:27,470
+ready we're gonna render a placeholder
+
+384
+00:18:27,480 --> 00:18:31,720
+if the movie page takes more than a
+
+385
+00:18:31,720 --> 00:18:33,880
+second and a half to load so there's a
+
+386
+00:18:33,880 --> 00:18:37,330
+delay milliseconds argument then I want
+
+387
+00:18:37,330 --> 00:18:46,720
+to show a spinner
+
+388
+00:18:46,730 --> 00:18:48,890
+so what we are is going to do is going
+
+389
+00:18:48,890 --> 00:18:51,020
+to try to render this component but if
+
+390
+00:18:51,020 --> 00:18:53,810
+any of its child is going to render as
+
+391
+00:18:53,810 --> 00:18:56,930
+much of the tree as it can but if any of
+
+392
+00:18:56,930 --> 00:18:58,700
+the children are waiting for a single
+
+393
+00:18:58,700 --> 00:19:00,560
+dependencies is going to wait for those
+
+394
+00:19:00,560 --> 00:19:02,840
+children and if it takes more than this
+
+395
+00:19:02,840 --> 00:19:04,790
+amount of time is going to display the
+
+396
+00:19:04,790 --> 00:19:07,400
+for the placeholder until those
+
+397
+00:19:07,400 --> 00:19:09,950
+dependencies are resolved so let's see
+
+398
+00:19:09,950 --> 00:19:10,670
+how this works
+
+399
+00:19:10,670 --> 00:19:17,540
+I click on a movie in this case my
+
+400
+00:19:17,540 --> 00:19:20,000
+default latency is 1 second so it
+
+401
+00:19:20,000 --> 00:19:23,330
+actually feels almost instantaneous so I
+
+402
+00:19:23,330 --> 00:19:25,610
+don't see the loading indicator but if
+
+403
+00:19:25,610 --> 00:19:29,480
+the latency is high 3 seconds and I
+
+404
+00:19:29,480 --> 00:19:34,220
+click on a movie then it shows the the
+
+405
+00:19:34,220 --> 00:19:36,200
+placeholder and then it shows the real
+
+406
+00:19:36,200 --> 00:19:39,980
+thing when it's ready here is another
+
+407
+00:19:39,980 --> 00:19:42,020
+interesting thing even while it's
+
+408
+00:19:42,020 --> 00:19:43,670
+showing the placeholder the app is fully
+
+409
+00:19:43,670 --> 00:19:46,160
+interactive it is never frozen so I can
+
+410
+00:19:46,160 --> 00:19:49,930
+pause all new requests start a fashion
+
+411
+00:19:49,930 --> 00:19:54,850
+imitate the fetch it takes a long time
+
+412
+00:19:54,850 --> 00:19:58,010
+but say I want to go back I can actually
+
+413
+00:19:58,010 --> 00:20:00,410
+go back so the whole the screen is
+
+414
+00:20:00,410 --> 00:20:08,510
+always interactive now which has fetched
+
+415
+00:20:08,510 --> 00:20:10,280
+the details but what if we want to fetch
+
+416
+00:20:10,280 --> 00:20:14,450
+the reviews as well to do that I'm going
+
+417
+00:20:14,450 --> 00:20:16,610
+to back to movie page component and I'm
+
+418
+00:20:16,610 --> 00:20:21,320
+opening the let me import remove the
+
+419
+00:20:21,320 --> 00:20:23,420
+hard-coded chase on import and instead
+
+420
+00:20:23,420 --> 00:20:30,470
+import fetch movie reviews and I'm
+
+421
+00:20:30,470 --> 00:20:32,030
+scrolling down to my movie reviews
+
+422
+00:20:32,030 --> 00:20:34,970
+component that currently reads it from
+
+423
+00:20:34,970 --> 00:20:40,570
+Jason and I create movie reviews fetcher
+
+424
+00:20:40,570 --> 00:20:44,990
+great fetcher with fetch movie reviews
+
+425
+00:20:44,990 --> 00:20:49,250
+and again I just call read I said sorry
+
+426
+00:20:49,250 --> 00:20:54,860
+movie reviews fetcher dot read for props
+
+427
+00:20:54,860 --> 00:20:57,380
+idea
+
+428
+00:20:57,390 --> 00:20:59,830
+so move your reviews and movie details
+
+429
+00:20:59,830 --> 00:21:01,810
+are siblings but the reality is going to
+
+430
+00:21:01,810 --> 00:21:03,820
+wait for both of them before continuing
+
+431
+00:21:03,820 --> 00:21:06,850
+so let's see if the latency is 1 second
+
+432
+00:21:06,850 --> 00:21:10,510
+is waiting for both but wolf resolved in
+
+433
+00:21:10,510 --> 00:21:12,700
+time so it doesn't display any
+
+434
+00:21:12,700 --> 00:21:14,500
+intermediate loading states and doesn't
+
+435
+00:21:14,500 --> 00:21:18,430
+the page doesn't jump with spinners but
+
+436
+00:21:18,430 --> 00:21:21,360
+let's say that I pause near request a
+
+437
+00:21:21,360 --> 00:21:23,020
+start fetching
+
+438
+00:21:23,020 --> 00:21:24,940
+I'll let the reviews come through first
+
+439
+00:21:24,940 --> 00:21:27,250
+while reactor can't render reviews alone
+
+440
+00:21:27,250 --> 00:21:29,350
+it's important that the screen is always
+
+441
+00:21:29,350 --> 00:21:31,120
+consistent with what's in the render
+
+442
+00:21:31,120 --> 00:21:32,920
+methods so react is still showing the
+
+443
+00:21:32,920 --> 00:21:35,290
+placeholder but when the details of the
+
+444
+00:21:35,290 --> 00:21:37,330
+movie are loaded this is when it shows
+
+445
+00:21:37,330 --> 00:21:41,230
+everything together now this may be fine
+
+446
+00:21:41,230 --> 00:21:42,610
+but there is a downside what if I
+
+447
+00:21:42,610 --> 00:21:44,170
+actually don't care about the reviews
+
+448
+00:21:44,170 --> 00:21:46,330
+that much and I don't want to delay
+
+449
+00:21:46,330 --> 00:21:48,190
+showing the details if the details told
+
+450
+00:21:48,190 --> 00:21:49,290
+it first
+
+451
+00:21:49,290 --> 00:21:52,150
+well to do that I use the placeholder
+
+452
+00:21:52,150 --> 00:21:56,800
+component from the future so I can wrap
+
+453
+00:21:56,800 --> 00:21:58,930
+the movie reviews component in a
+
+454
+00:21:58,930 --> 00:22:02,740
+placeholder and I can say that if the
+
+455
+00:22:02,740 --> 00:22:05,230
+movie review specifically took longer
+
+456
+00:22:05,230 --> 00:22:07,360
+than a second to load since the
+
+457
+00:22:07,360 --> 00:22:09,790
+interaction we actually don't care about
+
+458
+00:22:09,790 --> 00:22:11,800
+them that much and we're going to show
+
+459
+00:22:11,800 --> 00:22:20,380
+another spinner with a medium size let's
+
+460
+00:22:20,380 --> 00:22:24,700
+see what happens so I pause all new
+
+461
+00:22:24,700 --> 00:22:28,270
+requests start loading a movie and allow
+
+462
+00:22:28,270 --> 00:22:32,620
+the details first it shows the details
+
+463
+00:22:32,620 --> 00:22:34,570
+but the reviews are still loading and
+
+464
+00:22:34,570 --> 00:22:37,060
+when the read is already it shows the
+
+465
+00:22:37,060 --> 00:22:39,190
+reviews and again there are no risk
+
+466
+00:22:39,190 --> 00:22:42,910
+conditions I can go back I can clear
+
+467
+00:22:42,910 --> 00:22:45,400
+this I can start fetching this start
+
+468
+00:22:45,400 --> 00:22:48,900
+fetching the reviews go back well here
+
+469
+00:22:48,900 --> 00:22:52,090
+start afresh in the details it knows
+
+470
+00:22:52,090 --> 00:22:55,360
+exactly what's the right thing to do and
+
+471
+00:22:55,360 --> 00:22:56,770
+it respects the props that I passed
+
+472
+00:22:56,770 --> 00:22:59,740
+through it but we can still make the
+
+473
+00:22:59,740 --> 00:23:02,230
+user experience better for example when
+
+474
+00:23:02,230 --> 00:23:05,380
+I just click if the delay is less than a
+
+475
+00:23:05,380 --> 00:23:06,040
+second
+
+476
+00:23:06,040 --> 00:23:08,530
+it's nice that the screen pops in when
+
+477
+00:23:08,530 --> 00:23:11,020
+is ready but before that happens I don't
+
+478
+00:23:11,020 --> 00:23:12,370
+have any visual indication that
+
+479
+00:23:12,370 --> 00:23:13,390
+something's happening
+
+480
+00:23:13,390 --> 00:23:19,570
+so can we fix that yes I will go into
+
+481
+00:23:19,570 --> 00:23:25,870
+the app component and I will import
+
+482
+00:23:25,870 --> 00:23:27,690
+something else from the future
+
+483
+00:23:27,690 --> 00:23:31,570
+it's called loading so this is not the
+
+484
+00:23:31,570 --> 00:23:34,300
+final API this actually this API is most
+
+485
+00:23:34,300 --> 00:23:37,210
+likely to change but for now loading is
+
+486
+00:23:37,210 --> 00:23:40,780
+just a component that gives me a render
+
+487
+00:23:40,780 --> 00:23:44,440
+prop cold is loading that lets me decide
+
+488
+00:23:44,440 --> 00:23:47,050
+what to show for now I'll copy paste
+
+489
+00:23:47,050 --> 00:23:48,370
+what I already have here
+
+490
+00:23:48,370 --> 00:23:49,930
+so either the detail view or the
+
+491
+00:23:49,930 --> 00:23:55,930
+ListView but I already prepared my movie
+
+492
+00:23:55,930 --> 00:23:58,300
+list page in a way that I can pass a
+
+493
+00:23:58,300 --> 00:24:00,580
+load and ID through it and it will show
+
+494
+00:24:00,580 --> 00:24:02,560
+an inline spinner so for example if I
+
+495
+00:24:02,560 --> 00:24:04,960
+pass loading ID equals 1 it shows a
+
+496
+00:24:04,960 --> 00:24:07,360
+spinner like this if a passcode and D
+
+497
+00:24:07,360 --> 00:24:08,140
+equals 2
+
+498
+00:24:08,140 --> 00:24:09,940
+it shows the spinner on the second movie
+
+499
+00:24:09,940 --> 00:24:11,950
+so what I'm going to do is I'm going to
+
+500
+00:24:11,950 --> 00:24:14,170
+make loading ID and argument to render
+
+501
+00:24:14,170 --> 00:24:18,040
+list and I'm going to call render
+
+502
+00:24:18,040 --> 00:24:21,990
+released so if we are currently loading
+
+503
+00:24:21,990 --> 00:24:24,340
+which is what we wanted to ask react
+
+504
+00:24:24,340 --> 00:24:26,550
+then I just pass the current idea
+
+505
+00:24:26,550 --> 00:24:30,940
+otherwise I pass null and I can even
+
+506
+00:24:30,940 --> 00:24:34,350
+remove the the main placeholder now
+
+507
+00:24:34,350 --> 00:24:39,100
+let's see what happens so now when I
+
+508
+00:24:39,100 --> 00:24:41,800
+click it shows an inline spinner and
+
+509
+00:24:41,800 --> 00:24:43,990
+again no race conditions I can click
+
+510
+00:24:43,990 --> 00:24:46,000
+here then click here it shows the right
+
+511
+00:24:46,000 --> 00:24:47,950
+thing the screen is always interactive
+
+512
+00:24:47,950 --> 00:24:58,050
+and now this is cached
+
+513
+00:24:58,060 --> 00:25:01,520
+so this is all cool but we can still
+
+514
+00:25:01,520 --> 00:25:03,430
+improve the user experience even further
+
+515
+00:25:03,430 --> 00:25:07,280
+for example currently we show the the
+
+516
+00:25:07,280 --> 00:25:09,560
+movie page below the code for the movie
+
+517
+00:25:09,560 --> 00:25:11,300
+page right away but we don't actually
+
+518
+00:25:11,300 --> 00:25:14,060
+need it until we click on the movie so
+
+519
+00:25:14,060 --> 00:25:16,220
+I'm going to replace this with a
+
+520
+00:25:16,220 --> 00:25:18,200
+component that does code splitting so
+
+521
+00:25:18,200 --> 00:25:20,000
+I'll call it movie page loader and I
+
+522
+00:25:20,000 --> 00:25:25,400
+define it above it takes the props and
+
+523
+00:25:25,400 --> 00:25:30,470
+passes them to movie page so if we are
+
+524
+00:25:30,470 --> 00:25:32,240
+code splitting do we need to show a
+
+525
+00:25:32,240 --> 00:25:35,390
+spinner while the code is loading or
+
+526
+00:25:35,390 --> 00:25:37,130
+does a question even make sense if we
+
+527
+00:25:37,130 --> 00:25:40,010
+have these new primitives that's him I'm
+
+528
+00:25:40,010 --> 00:25:44,990
+going to import create fetcher again and
+
+529
+00:25:44,990 --> 00:25:52,550
+I will create a movie page fetcher to
+
+530
+00:25:52,550 --> 00:25:54,170
+fetch the movie page I will use the
+
+531
+00:25:54,170 --> 00:25:57,350
+dynamic import syntax so I will return a
+
+532
+00:25:57,350 --> 00:25:59,690
+promise that returns import to movie
+
+533
+00:25:59,690 --> 00:26:02,060
+page and I remove the static webpack
+
+534
+00:26:02,060 --> 00:26:03,710
+import so it's not going to be in the
+
+535
+00:26:03,710 --> 00:26:07,820
+initial bundle finally to get the movie
+
+536
+00:26:07,820 --> 00:26:11,150
+page component I call the read function
+
+537
+00:26:11,150 --> 00:26:14,500
+on the fetcher and read the default
+
+538
+00:26:14,500 --> 00:26:16,880
+default property from the module because
+
+539
+00:26:16,880 --> 00:26:20,420
+it's the default export so I'll see if
+
+540
+00:26:20,420 --> 00:26:23,210
+that works I click here there is no
+
+541
+00:26:23,210 --> 00:26:26,030
+global loading indicator if the request
+
+542
+00:26:26,030 --> 00:26:27,980
+takes fast enough
+
+543
+00:26:27,980 --> 00:26:31,990
+yeah just edit code split into my app
+
+544
+00:26:31,990 --> 00:26:35,510
+but if the request is slow oh I guess I
+
+545
+00:26:35,510 --> 00:26:37,340
+removed the fallback so yeah that's not
+
+546
+00:26:37,340 --> 00:26:41,270
+gonna work but we can check that this
+
+547
+00:26:41,270 --> 00:26:44,240
+actually did something so if i refresh I
+
+548
+00:26:44,240 --> 00:26:47,360
+clear the network top and I press you
+
+549
+00:26:47,360 --> 00:26:49,400
+can see that there is a chunk here so
+
+550
+00:26:49,400 --> 00:26:50,960
+you can see that this component truly
+
+551
+00:26:50,960 --> 00:26:54,470
+was loaded with collision there is still
+
+552
+00:26:54,470 --> 00:26:56,570
+one improvement to the user interface
+
+553
+00:26:56,570 --> 00:27:01,909
+that I can make her
+
+554
+00:27:01,919 --> 00:27:05,500
+you might have noticed that this movie
+
+555
+00:27:05,500 --> 00:27:09,039
+has a taller posture than other movies
+
+556
+00:27:09,039 --> 00:27:10,779
+let's say that we don't know their sizes
+
+557
+00:27:10,779 --> 00:27:13,299
+immediately so when I click on it for
+
+558
+00:27:13,299 --> 00:27:15,460
+the first time the page jumps a little
+
+559
+00:27:15,460 --> 00:27:19,029
+bit when they when they movie loads so
+
+560
+00:27:19,029 --> 00:27:21,820
+can we avoid showing the page until the
+
+561
+00:27:21,820 --> 00:27:25,720
+image is ready well we can go to the
+
+562
+00:27:25,720 --> 00:27:29,049
+movie page component and find the movie
+
+563
+00:27:29,049 --> 00:27:31,200
+poster component that renders an image
+
+564
+00:27:31,200 --> 00:27:33,580
+and I will create my custom image
+
+565
+00:27:33,580 --> 00:27:37,600
+component with capital I the choice
+
+566
+00:27:37,600 --> 00:27:43,539
+renders the browser image except with
+
+567
+00:27:43,539 --> 00:27:48,450
+the twist I create an image feature
+
+568
+00:27:48,450 --> 00:27:52,840
+which is a fetcher now I need to return
+
+569
+00:27:52,840 --> 00:27:55,140
+a promise so return a function that
+
+570
+00:27:55,140 --> 00:27:59,320
+returns a promise that resolves when I
+
+571
+00:27:59,320 --> 00:28:03,490
+create a browser image object to preload
+
+572
+00:28:03,490 --> 00:28:07,179
+the image and what that image loads I
+
+573
+00:28:07,179 --> 00:28:11,950
+resolve my promise and I started the
+
+574
+00:28:11,950 --> 00:28:19,270
+loading process and now I say that the
+
+575
+00:28:19,270 --> 00:28:22,960
+source is image fetcher that read prop
+
+576
+00:28:22,960 --> 00:28:30,909
+source I'm bad at this right yeah this
+
+577
+00:28:30,909 --> 00:28:33,220
+should be an argument because I pass it
+
+578
+00:28:33,220 --> 00:28:34,840
+to the wreath so it's going to come out
+
+579
+00:28:34,840 --> 00:28:40,779
+here now if I click on it that didn't
+
+580
+00:28:40,779 --> 00:28:44,140
+work okay it's a live demo some things
+
+581
+00:28:44,140 --> 00:28:44,980
+don't
+
+582
+00:28:44,980 --> 00:28:46,840
+oh right I forgot to use my image
+
+583
+00:28:46,840 --> 00:28:49,750
+component that's why you should let look
+
+584
+00:28:49,750 --> 00:28:52,929
+at the lint warnings so let's use the
+
+585
+00:28:52,929 --> 00:28:57,039
+image component now I'll click on it and
+
+586
+00:28:57,039 --> 00:28:59,020
+jumps on the page when the image is
+
+587
+00:28:59,020 --> 00:29:03,900
+ready
+
+588
+00:29:03,910 --> 00:29:07,550
+and this was the IO demo
+
+589
+00:29:07,550 --> 00:29:16,470
+[Applause]
+
+590
+00:29:16,480 --> 00:29:19,130
+we've built a generic way for components
+
+591
+00:29:19,130 --> 00:29:21,200
+to suspend rendering when they load
+
+592
+00:29:21,200 --> 00:29:23,150
+asynchronous data or dependencies or
+
+593
+00:29:23,150 --> 00:29:26,090
+really anything asynchronous and we call
+
+594
+00:29:26,090 --> 00:29:30,710
+this feature suspense you can pause any
+
+595
+00:29:30,710 --> 00:29:32,809
+state update until the data is ready as
+
+596
+00:29:32,809 --> 00:29:35,270
+specified by the components and you can
+
+597
+00:29:35,270 --> 00:29:37,640
+add agent load into any component
+
+598
+00:29:37,640 --> 00:29:39,200
+anywhere deep in the tree without
+
+599
+00:29:39,200 --> 00:29:41,660
+clumping all the props and state and
+
+600
+00:29:41,660 --> 00:29:44,590
+hoisting it up and using readouts or
+
+601
+00:29:44,590 --> 00:29:49,100
+anything you usually do for that and on
+
+602
+00:29:49,100 --> 00:29:51,559
+a fast Network the upside is that you
+
+603
+00:29:51,559 --> 00:29:53,720
+can make it appear very fluent and
+
+604
+00:29:53,720 --> 00:29:56,809
+almost instantaneous without the cheran
+
+605
+00:29:56,809 --> 00:29:59,150
+cascade of spinners that appear and
+
+606
+00:29:59,150 --> 00:30:01,760
+disappear all the time but on a slow
+
+607
+00:30:01,760 --> 00:30:04,429
+Network you you can be intentional about
+
+608
+00:30:04,429 --> 00:30:06,440
+design in the loading States and not
+
+609
+00:30:06,440 --> 00:30:09,110
+just let them be artifacts of how the
+
+610
+00:30:09,110 --> 00:30:11,330
+code is written in study explicitly
+
+611
+00:30:11,330 --> 00:30:12,890
+design which load and States you want
+
+612
+00:30:12,890 --> 00:30:14,840
+the user to see and how brenner
+
+613
+00:30:14,840 --> 00:30:17,960
+of course they must be and there is both
+
+614
+00:30:17,960 --> 00:30:20,360
+a high level and a low level API so the
+
+615
+00:30:20,360 --> 00:30:22,490
+API that I showed you is a high level
+
+616
+00:30:22,490 --> 00:30:24,440
+reference implementation that we're
+
+617
+00:30:24,440 --> 00:30:26,330
+going to provide but there is a lower
+
+618
+00:30:26,330 --> 00:30:28,340
+level API that libraries can use to
+
+619
+00:30:28,340 --> 00:30:32,150
+integrate with this and again I found it
+
+620
+00:30:32,150 --> 00:30:33,650
+helpful to use version control as a
+
+621
+00:30:33,650 --> 00:30:37,280
+metaphor so when I use version version
+
+622
+00:30:37,280 --> 00:30:39,080
+control and I start working on something
+
+623
+00:30:39,080 --> 00:30:42,380
+and do this on a branch but sometimes
+
+624
+00:30:42,380 --> 00:30:44,179
+maybe I can't continue working on the
+
+625
+00:30:44,179 --> 00:30:45,920
+feature because I'm waiting for the
+
+626
+00:30:45,920 --> 00:30:49,190
+designer to give me the final design so
+
+627
+00:30:49,190 --> 00:30:51,950
+I put that work aside and I can do
+
+628
+00:30:51,950 --> 00:30:54,530
+something else and this is how react
+
+629
+00:30:54,530 --> 00:30:57,710
+suspends works is that react knows that
+
+630
+00:30:57,710 --> 00:30:59,480
+these some of the children need some
+
+631
+00:30:59,480 --> 00:31:01,970
+async dependencies so it just suspends
+
+632
+00:31:01,970 --> 00:31:05,570
+that tree but it can still handle a
+
+633
+00:31:05,570 --> 00:31:07,610
+higher priority event so this is why I
+
+634
+00:31:07,610 --> 00:31:10,270
+was able to click on everything and
+
+635
+00:31:10,270 --> 00:31:14,240
+continue navigating through the app and
+
+636
+00:31:14,240 --> 00:31:16,850
+later just like I can rebase my old
+
+637
+00:31:16,850 --> 00:31:18,590
+branch when I finally have the designs
+
+638
+00:31:18,590 --> 00:31:22,400
+on top of the master react rebuses they
+
+639
+00:31:22,400 --> 00:31:23,360
+suspended update
+
+640
+00:31:23,360 --> 00:31:25,610
+and can continue when the async
+
+641
+00:31:25,610 --> 00:31:27,620
+dependencies are satisfied and then
+
+642
+00:31:27,620 --> 00:31:32,510
+committed to the Dom so coming back to
+
+643
+00:31:32,510 --> 00:31:34,940
+my question how does how can a reaction
+
+644
+00:31:34,940 --> 00:31:36,950
+able better user experiences for people
+
+645
+00:31:36,950 --> 00:31:38,450
+with different devices and different
+
+646
+00:31:38,450 --> 00:31:42,530
+networks we think that time slicing
+
+647
+00:31:42,530 --> 00:31:47,390
+helps the CPU case and the the saucepans
+
+648
+00:31:47,390 --> 00:31:50,690
+feature helps the i/o case is that we
+
+649
+00:31:50,690 --> 00:31:53,270
+can be more intentional about designing
+
+650
+00:31:53,270 --> 00:31:54,920
+for slower devices and how they should
+
+651
+00:31:54,920 --> 00:31:57,680
+behave but we can also provide better
+
+652
+00:31:57,680 --> 00:32:00,830
+experiences of past devices and you can
+
+653
+00:32:00,830 --> 00:32:03,080
+see that there are a lot of similarities
+
+654
+00:32:03,080 --> 00:32:06,740
+between these two these two axes so this
+
+655
+00:32:06,740 --> 00:32:08,380
+is why we don't really think these are
+
+656
+00:32:08,380 --> 00:32:11,210
+separate performance problems we think
+
+657
+00:32:11,210 --> 00:32:14,120
+that both the problem the main problem
+
+658
+00:32:14,120 --> 00:32:15,500
+here is not the performance but
+
+659
+00:32:15,500 --> 00:32:18,080
+scheduling and the solution has to think
+
+660
+00:32:18,080 --> 00:32:20,840
+about the scheduling and so we call this
+
+661
+00:32:20,840 --> 00:32:23,450
+see the features async rendering in
+
+662
+00:32:23,450 --> 00:32:26,720
+react and our goals is to let app
+
+663
+00:32:26,720 --> 00:32:29,330
+developers adapt to users constraints
+
+664
+00:32:29,330 --> 00:32:31,580
+such as device and network to make fast
+
+665
+00:32:31,580 --> 00:32:33,620
+interactions feel instant without the
+
+666
+00:32:33,620 --> 00:32:35,930
+janky things popping out of the screen
+
+667
+00:32:35,930 --> 00:32:39,230
+and make slower interactions feel
+
+668
+00:32:39,230 --> 00:32:41,410
+responsive and we designed intentionally
+
+669
+00:32:41,410 --> 00:32:46,160
+and importantly this is still the react
+
+670
+00:32:46,160 --> 00:32:47,930
+you know this is still the component
+
+671
+00:32:47,930 --> 00:32:51,140
+declarative component paradigm now if he
+
+672
+00:32:51,140 --> 00:32:53,270
+is reactive you probably that's what you
+
+673
+00:32:53,270 --> 00:32:57,260
+like about it so it's not ready yet but
+
+674
+00:32:57,260 --> 00:33:00,170
+these are not fake product like you saw
+
+675
+00:33:00,170 --> 00:33:03,680
+me really using it so it's a real thing
+
+676
+00:33:03,680 --> 00:33:06,310
+there is a pull request for this and
+
+677
+00:33:06,310 --> 00:33:08,360
+there is more work to be done
+
+678
+00:33:08,360 --> 00:33:10,880
+to enable this and to ship this as a
+
+679
+00:33:10,880 --> 00:33:13,400
+stable feature and we hope to deliver it
+
+680
+00:33:13,400 --> 00:33:23,039
+this year thank you
+

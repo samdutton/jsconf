@@ -1,0 +1,1977 @@
+1
+00:00:10,580 --> 00:00:14,160
+
+and there's a query API that's really
+
+2
+00:00:14,160 --> 00:00:17,279
+really nice and really flexible to get
+
+3
+00:00:17,279 --> 00:00:19,710
+at you know lists of your data slices of
+
+4
+00:00:19,710 --> 00:00:20,730
+your data
+
+5
+00:00:20,730 --> 00:00:23,909
+that's what per store is all about so at
+
+6
+00:00:23,909 --> 00:00:25,890
+the lowest level actually these these
+
+7
+00:00:25,890 --> 00:00:27,210
+stores you don't gonna have to use per
+
+8
+00:00:27,210 --> 00:00:29,189
+store these stores can be shared across
+
+9
+00:00:29,189 --> 00:00:34,800
+different other JavaScript frameworks so
+
+10
+00:00:34,800 --> 00:00:35,940
+there's a lot of people working on
+
+11
+00:00:35,940 --> 00:00:37,680
+persistence in JavaScript so there's
+
+12
+00:00:37,680 --> 00:00:39,240
+like node persistence
+
+13
+00:00:39,240 --> 00:00:40,950
+I think it's Tim Caswell is doing that
+
+14
+00:00:40,950 --> 00:00:42,330
+there's there's a bunch of things going
+
+15
+00:00:42,330 --> 00:00:43,740
+on with node there's some stuff going on
+
+16
+00:00:43,740 --> 00:00:45,180
+all over the place stuff that uses the
+
+17
+00:00:45,180 --> 00:00:48,540
+JDBC to talk to sequel it would be great
+
+18
+00:00:48,540 --> 00:00:50,790
+if we could get together and actually at
+
+19
+00:00:50,790 --> 00:00:53,400
+the very lowest level just have an API
+
+20
+00:00:53,400 --> 00:00:55,860
+to that we can all reuse the same code
+
+21
+00:00:55,860 --> 00:00:57,060
+to talk to all these different no sequel
+
+22
+00:00:57,060 --> 00:00:59,430
+databases and so that's pretty much what
+
+23
+00:00:59,430 --> 00:01:01,170
+this API is about I'd show you some
+
+24
+00:01:01,170 --> 00:01:06,119
+examples that demonstrate this but it's
+
+25
+00:01:06,119 --> 00:01:07,979
+if anybody's familiar with the w3c
+
+26
+00:01:07,979 --> 00:01:11,490
+indexeddb api it's that it's it's just
+
+27
+00:01:11,490 --> 00:01:14,609
+that it's it's there's get and that
+
+28
+00:01:14,609 --> 00:01:17,429
+takes an ID and it gives you your you
+
+29
+00:01:17,429 --> 00:01:20,340
+know your data there's there's put you
+
+30
+00:01:20,340 --> 00:01:22,799
+give it an object and some directives
+
+31
+00:01:22,799 --> 00:01:25,429
+and it puts it you know in its store
+
+32
+00:01:25,429 --> 00:01:27,960
+there's you know delete same thing you
+
+33
+00:01:27,960 --> 00:01:32,990
+get the idea so the way per store works
+
+34
+00:01:32,990 --> 00:01:36,090
+there's the the models constructed with
+
+35
+00:01:36,090 --> 00:01:37,829
+three pieces three things that you need
+
+36
+00:01:37,829 --> 00:01:40,799
+to to create a model you really just you
+
+37
+00:01:40,799 --> 00:01:43,619
+require the store you instantiate it you
+
+38
+00:01:43,619 --> 00:01:46,859
+then you have VAR model equals if this
+
+39
+00:01:46,859 --> 00:01:47,999
+was a whiteboard that would work out
+
+40
+00:01:47,999 --> 00:01:48,450
+really well
+
+41
+00:01:48,450 --> 00:01:51,420
+but VAR ma you know my model equals and
+
+42
+00:01:51,420 --> 00:01:52,590
+you just give it three things you give
+
+43
+00:01:52,590 --> 00:01:56,340
+it an ID you give it a schema which is
+
+44
+00:01:56,340 --> 00:01:58,349
+it's just a JavaScript object it's it's
+
+45
+00:01:58,349 --> 00:02:00,179
+not like XML schema it's just JSON
+
+46
+00:02:00,179 --> 00:02:02,399
+schema it's really simple the empty
+
+47
+00:02:02,399 --> 00:02:05,249
+empty brackets like the empty object is
+
+48
+00:02:05,249 --> 00:02:08,039
+a valid schema that means schema Furi it
+
+49
+00:02:08,039 --> 00:02:09,180
+means do whatever you want there's no
+
+50
+00:02:09,180 --> 00:02:12,000
+constraints and then you give it the
+
+51
+00:02:12,000 --> 00:02:15,170
+store and so those three things
+
+52
+00:02:15,170 --> 00:02:18,630
+are now allow you to essentially have a
+
+53
+00:02:18,630 --> 00:02:21,990
+back-end storage for and whatever back
+
+54
+00:02:21,990 --> 00:02:23,930
+in storage you want for a given
+
+55
+00:02:23,930 --> 00:02:26,250
+collection like to have some models just
+
+56
+00:02:26,250 --> 00:02:28,160
+like an MVC it's there like a class
+
+57
+00:02:28,160 --> 00:02:31,230
+there's nothing it's not specifically a
+
+58
+00:02:31,230 --> 00:02:34,080
+class there's no you know it doesn't do
+
+59
+00:02:34,080 --> 00:02:35,940
+any magic with you no it doesn't require
+
+60
+00:02:35,940 --> 00:02:38,670
+any like you to choose a particular
+
+61
+00:02:38,670 --> 00:02:41,070
+class in prototype will inherit and
+
+62
+00:02:41,070 --> 00:02:43,080
+structure but it's like a class I mean
+
+63
+00:02:43,080 --> 00:02:46,830
+it's it's a place where all of the like
+
+64
+00:02:46,830 --> 00:02:49,320
+things gets get persisted and you can
+
+65
+00:02:49,320 --> 00:02:51,720
+you can talk to that that model and say
+
+66
+00:02:51,720 --> 00:02:54,300
+give me all of all of it and then for
+
+67
+00:02:54,300 --> 00:02:56,010
+each over it for instance if you're not
+
+68
+00:02:56,010 --> 00:02:57,900
+over HTTP that's a really helpful thing
+
+69
+00:02:57,900 --> 00:03:00,330
+to do or you can just ask for a very
+
+70
+00:03:00,330 --> 00:03:02,940
+specific query a very specific bit of a
+
+71
+00:03:02,940 --> 00:03:05,670
+model which is it returns a collection
+
+72
+00:03:05,670 --> 00:03:07,350
+it actually streams that all the way
+
+73
+00:03:07,350 --> 00:03:11,900
+back through the process and it returns
+
+74
+00:03:11,900 --> 00:03:14,690
+if by default it's going to return
+
+75
+00:03:14,690 --> 00:03:18,750
+application JavaScript if you're over
+
+76
+00:03:18,750 --> 00:03:21,150
+HTTP so I have a whole progression of
+
+77
+00:03:21,150 --> 00:03:23,459
+slides I was going to use here and we
+
+78
+00:03:23,459 --> 00:03:25,230
+did some artwork with some leaves it was
+
+79
+00:03:25,230 --> 00:03:26,340
+really pretty on I'll show you guys
+
+80
+00:03:26,340 --> 00:03:27,440
+later
+
+81
+00:03:27,440 --> 00:03:33,630
+but so that's per store per store is all
+
+82
+00:03:33,630 --> 00:03:36,600
+about just storing a very specific type
+
+83
+00:03:36,600 --> 00:03:39,510
+of data that's defined by a model in any
+
+84
+00:03:39,510 --> 00:03:41,970
+database you want we don't have all of
+
+85
+00:03:41,970 --> 00:03:44,040
+the stores yet we have many of the
+
+86
+00:03:44,040 --> 00:03:45,740
+stores there's a Mongo store there's a
+
+87
+00:03:45,740 --> 00:03:48,900
+almost I'm in the couch store if anybody
+
+88
+00:03:48,900 --> 00:03:51,930
+are you guys node users if you Felix
+
+89
+00:03:51,930 --> 00:03:55,080
+have you anybody seen no dirty so I was
+
+90
+00:03:55,080 --> 00:03:57,780
+okay so I was trying to map that as a
+
+91
+00:03:57,780 --> 00:03:59,190
+store and then I realized that wait a
+
+92
+00:03:59,190 --> 00:04:00,240
+minute we have this thing called a
+
+93
+00:04:00,240 --> 00:04:03,600
+memory store that it's just it just
+
+94
+00:04:03,600 --> 00:04:04,830
+stores everything in memory but it gives
+
+95
+00:04:04,830 --> 00:04:06,150
+you the same interface to get to data
+
+96
+00:04:06,150 --> 00:04:11,130
+and so I just wrapped that in a like so
+
+97
+00:04:11,130 --> 00:04:12,660
+stores compose really well because it
+
+98
+00:04:12,660 --> 00:04:14,700
+has this common API this it just exposes
+
+99
+00:04:14,700 --> 00:04:17,070
+a set of functions like that's all it
+
+100
+00:04:17,070 --> 00:04:18,510
+returns it's an object with a set of
+
+101
+00:04:18,510 --> 00:04:20,940
+functions and so I just wrapped that and
+
+102
+00:04:20,940 --> 00:04:23,760
+you can override any give and be hit
+
+103
+00:04:23,760 --> 00:04:24,990
+like all of the different behaviors that
+
+104
+00:04:24,990 --> 00:04:26,220
+you might need to actually make this
+
+105
+00:04:26,220 --> 00:04:27,990
+memory store
+
+106
+00:04:27,990 --> 00:04:29,610
+to write it out you know with new lines
+
+107
+00:04:29,610 --> 00:04:32,099
+separating every you know Jason objects
+
+108
+00:04:32,099 --> 00:04:33,660
+and now you have it essentially you have
+
+109
+00:04:33,660 --> 00:04:36,300
+no dirty except probably not quite as
+
+110
+00:04:36,300 --> 00:04:40,860
+fast but definitely more flexible so you
+
+111
+00:04:40,860 --> 00:04:45,030
+have you're able to use this common
+
+112
+00:04:45,030 --> 00:04:46,229
+query API that I was gonna demonstrate
+
+113
+00:04:46,229 --> 00:04:50,669
+this is awful let me see if I can't
+
+114
+00:04:50,669 --> 00:04:57,599
+bring this up yes okay so the query API
+
+115
+00:04:57,599 --> 00:04:59,099
+this is the this is that actually that
+
+116
+00:04:59,099 --> 00:05:01,590
+the coolest part of I think the most
+
+117
+00:05:01,590 --> 00:05:05,069
+effective thing that per store provides
+
+118
+00:05:05,069 --> 00:05:10,259
+is this notion of like the queries
+
+119
+00:05:10,259 --> 00:05:12,509
+themselves are they look an awful lot
+
+120
+00:05:12,509 --> 00:05:14,909
+like your standard query strings and
+
+121
+00:05:14,909 --> 00:05:16,620
+Chris died when he created called
+
+122
+00:05:16,620 --> 00:05:18,479
+resource query you still I think he's
+
+123
+00:05:18,479 --> 00:05:20,639
+gonna spec it and actually you know IETF
+
+124
+00:05:20,639 --> 00:05:24,900
+IETF it or something but what what it
+
+125
+00:05:24,900 --> 00:05:28,620
+does fundamentally it has two primary
+
+126
+00:05:28,620 --> 00:05:31,020
+terms that you can use so a query would
+
+127
+00:05:31,020 --> 00:05:33,810
+look like question over HTTP a query
+
+128
+00:05:33,810 --> 00:05:35,969
+would look like question mark you know
+
+129
+00:05:35,969 --> 00:05:38,280
+foo equals bar so that that's that would
+
+130
+00:05:38,280 --> 00:05:39,930
+be a comparison query and that would
+
+131
+00:05:39,930 --> 00:05:42,000
+look like a standard query string you
+
+132
+00:05:42,000 --> 00:05:44,370
+can do greater than less than greater
+
+133
+00:05:44,370 --> 00:05:45,630
+than equals you know all of that good
+
+134
+00:05:45,630 --> 00:05:49,650
+stuff and that's one term and then
+
+135
+00:05:49,650 --> 00:05:50,849
+there's another that's that's a
+
+136
+00:05:50,849 --> 00:05:53,070
+comparison type term there's another
+
+137
+00:05:53,070 --> 00:05:55,740
+term there's other type of term called a
+
+138
+00:05:55,740 --> 00:05:59,520
+call which is you know to do sorts for
+
+139
+00:05:59,520 --> 00:06:01,169
+instance the standard ways to just say
+
+140
+00:06:01,169 --> 00:06:06,449
+and sort open paren you know and then
+
+141
+00:06:06,449 --> 00:06:07,889
+you can put the actual sorts as
+
+142
+00:06:07,889 --> 00:06:11,310
+arguments in this this these question
+
+143
+00:06:11,310 --> 00:06:13,680
+are these parentheses close that and
+
+144
+00:06:13,680 --> 00:06:16,620
+then once you close the friends you have
+
+145
+00:06:16,620 --> 00:06:18,180
+this this thing that parses down as a
+
+146
+00:06:18,180 --> 00:06:20,280
+call so it's it's one term in this list
+
+147
+00:06:20,280 --> 00:06:22,560
+of terms that's your query string and
+
+148
+00:06:22,560 --> 00:06:24,389
+the parsed object actually really easy
+
+149
+00:06:24,389 --> 00:06:25,650
+to work with so it allows you to do some
+
+150
+00:06:25,650 --> 00:06:29,340
+fun some fun stuff too like manipulate
+
+151
+00:06:29,340 --> 00:06:32,159
+queries that come in so there's this
+
+152
+00:06:32,159 --> 00:06:35,520
+like at your model for instance or you
+
+153
+00:06:35,520 --> 00:06:38,430
+might want to actually override a
+
+154
+00:06:38,430 --> 00:06:42,750
+particular particular behavior like it's
+
+155
+00:06:42,750 --> 00:06:44,310
+a you know blog storm I had a whole
+
+156
+00:06:44,310 --> 00:06:46,979
+example that was a blog store and so you
+
+157
+00:06:46,979 --> 00:06:51,800
+might want to tack on a published thing
+
+158
+00:06:51,800 --> 00:06:53,789
+like you might want to say okay this is
+
+159
+00:06:53,789 --> 00:06:55,800
+a timestamp this is the author that
+
+160
+00:06:55,800 --> 00:06:57,240
+would you would override the put to do
+
+161
+00:06:57,240 --> 00:06:58,289
+that you would just it's just like
+
+162
+00:06:58,289 --> 00:06:59,610
+aspect-oriented programming kind of like
+
+163
+00:06:59,610 --> 00:07:02,039
+a round advice or in Python it would be
+
+164
+00:07:02,039 --> 00:07:03,990
+decorators like it's like you can met a
+
+165
+00:07:03,990 --> 00:07:06,960
+program you're the store functions that
+
+166
+00:07:06,960 --> 00:07:09,419
+actually that you expose you can wrap
+
+167
+00:07:09,419 --> 00:07:12,659
+them and do new things let's see what
+
+168
+00:07:12,659 --> 00:07:15,750
+else so but the query would look kind of
+
+169
+00:07:15,750 --> 00:07:17,339
+there's that's that there's there's
+
+170
+00:07:17,339 --> 00:07:18,389
+different terms and then they're
+
+171
+00:07:18,389 --> 00:07:20,370
+combined with a logic operator so either
+
+172
+00:07:20,370 --> 00:07:23,820
+an ampersand or a bar which is or and
+
+173
+00:07:23,820 --> 00:07:26,940
+you can have groups what comes out of
+
+174
+00:07:26,940 --> 00:07:28,649
+that what gets parsed and what you get
+
+175
+00:07:28,649 --> 00:07:30,779
+to use is this just a list of these
+
+176
+00:07:30,779 --> 00:07:33,599
+things these different terms and you can
+
+177
+00:07:33,599 --> 00:07:36,149
+use so I was saying you can actually use
+
+178
+00:07:36,149 --> 00:07:38,130
+it for effective things like so I wrote
+
+179
+00:07:38,130 --> 00:07:40,110
+a adaptive indexing store that you can
+
+180
+00:07:40,110 --> 00:07:42,199
+take say say have a sequel store it
+
+181
+00:07:42,199 --> 00:07:44,940
+every query that comes in I can inspect
+
+182
+00:07:44,940 --> 00:07:46,979
+that and say oh what fields are you
+
+183
+00:07:46,979 --> 00:07:50,070
+using and then if it's a field that
+
+184
+00:07:50,070 --> 00:07:51,149
+hasn't been indexed
+
+185
+00:07:51,149 --> 00:07:53,729
+I can set I can tell the sequel database
+
+186
+00:07:53,729 --> 00:07:55,399
+to create the index so kind of like how
+
+187
+00:07:55,399 --> 00:07:57,419
+in person for one pointer that's what
+
+188
+00:07:57,419 --> 00:08:01,380
+jason deep or j sdb did so in 2.0 i can
+
+189
+00:08:01,380 --> 00:08:03,599
+actually do that with sequel which makes
+
+190
+00:08:03,599 --> 00:08:07,860
+it kind of fun okay so there's this
+
+191
+00:08:07,860 --> 00:08:10,500
+other notion of the applicator assets
+
+192
+00:08:10,500 --> 00:08:12,529
+that those actually wrap the model
+
+193
+00:08:12,529 --> 00:08:16,139
+facets are they come from oh cap they
+
+194
+00:08:16,139 --> 00:08:21,120
+are a security mechanism they expose
+
+195
+00:08:21,120 --> 00:08:23,430
+this view of the model like of the
+
+196
+00:08:23,430 --> 00:08:25,710
+objects that exist in your database you
+
+197
+00:08:25,710 --> 00:08:27,719
+can only you can see just a bit of it
+
+198
+00:08:27,719 --> 00:08:29,580
+you get a certain set of capabilities so
+
+199
+00:08:29,580 --> 00:08:32,399
+a read-only facet would eliminate put
+
+200
+00:08:32,399 --> 00:08:34,409
+and delete and you would just have a get
+
+201
+00:08:34,409 --> 00:08:36,120
+that you would be able to like you just
+
+202
+00:08:36,120 --> 00:08:39,120
+be able to get and query the object but
+
+203
+00:08:39,120 --> 00:08:40,860
+they also have some other uses some of
+
+204
+00:08:40,860 --> 00:08:42,570
+interesting benefits
+
+205
+00:08:42,570 --> 00:08:44,189
+so that that's kind of that's the
+
+206
+00:08:44,189 --> 00:08:47,640
+general idea of per store it's on github
+
+207
+00:08:47,640 --> 00:08:49,860
+Chris's I slash per store it's
+
+208
+00:08:49,860 --> 00:08:53,670
+incredibly simple I now that I don't
+
+209
+00:08:53,670 --> 00:08:54,220
+have slot
+
+210
+00:08:54,220 --> 00:08:55,899
+I'll have to put I'll obviously get the
+
+211
+00:08:55,899 --> 00:08:58,629
+slides online and to actually
+
+212
+00:08:58,629 --> 00:09:00,850
+instantiate a store like and to use this
+
+213
+00:09:00,850 --> 00:09:03,399
+code it's it takes no effort like it's
+
+214
+00:09:03,399 --> 00:09:05,199
+really like ten lines of code and then
+
+215
+00:09:05,199 --> 00:09:07,420
+all of a sudden you've got a working API
+
+216
+00:09:07,420 --> 00:09:10,410
+to do effectively what no dirty does
+
+217
+00:09:10,410 --> 00:09:12,639
+except you can underneath the hood you
+
+218
+00:09:12,639 --> 00:09:14,470
+can swap that out for Mongo you can swap
+
+219
+00:09:14,470 --> 00:09:16,209
+that out for sequel evening but then you
+
+220
+00:09:16,209 --> 00:09:18,250
+have to define your schema obviously
+
+221
+00:09:18,250 --> 00:09:20,709
+because sequel is not gonna do a very
+
+222
+00:09:20,709 --> 00:09:23,970
+good job story just any arbitrary data
+
+223
+00:09:23,970 --> 00:09:27,100
+but once you do that there's there's now
+
+224
+00:09:27,100 --> 00:09:31,029
+no you're completely not no longer tied
+
+225
+00:09:31,029 --> 00:09:33,730
+to a specific database no sequel or
+
+226
+00:09:33,730 --> 00:09:38,160
+sequel it doesn't matter ok so on
+
+227
+00:09:38,160 --> 00:09:40,839
+ignoring per store like there's this
+
+228
+00:09:40,839 --> 00:09:42,879
+thing on top of it that's called pintura
+
+229
+00:09:42,879 --> 00:09:45,220
+that's where the HTTP side of things
+
+230
+00:09:45,220 --> 00:09:47,470
+comes in and that's the most interesting
+
+231
+00:09:47,470 --> 00:09:49,389
+thing to me because I don't I'm not
+
+232
+00:09:49,389 --> 00:09:51,730
+necessarily when I'm interacting with my
+
+233
+00:09:51,730 --> 00:09:54,550
+date I'm usually doing it over HTTP and
+
+234
+00:09:54,550 --> 00:09:58,449
+so pintura is just effectively its
+
+235
+00:09:58,449 --> 00:10:01,089
+documentation might as well be RFC 2616
+
+236
+00:10:01,089 --> 00:10:04,509
+like it I mean it's HTTP like the good
+
+237
+00:10:04,509 --> 00:10:07,089
+part so what the slide said but so it
+
+238
+00:10:07,089 --> 00:10:09,040
+does it does some of the stuff from HTTP
+
+239
+00:10:09,040 --> 00:10:13,120
+that you would typically most people
+
+240
+00:10:13,120 --> 00:10:16,509
+just ignore so it uses HTTP like all
+
+241
+00:10:16,509 --> 00:10:19,029
+these like edge things in HTTP in a
+
+242
+00:10:19,029 --> 00:10:20,379
+really effective way so content
+
+243
+00:10:20,379 --> 00:10:22,360
+negotiation turns out that's really
+
+244
+00:10:22,360 --> 00:10:24,220
+useful like if you do it right like if
+
+245
+00:10:24,220 --> 00:10:26,829
+you actually have a means by which to do
+
+246
+00:10:26,829 --> 00:10:27,300
+it
+
+247
+00:10:27,300 --> 00:10:30,250
+you it's so it's solved certain problems
+
+248
+00:10:30,250 --> 00:10:31,540
+that I didn't even I didn't know where
+
+249
+00:10:31,540 --> 00:10:33,189
+they're early because I'm I'm more
+
+250
+00:10:33,189 --> 00:10:34,329
+interested in just getting you know
+
+251
+00:10:34,329 --> 00:10:35,800
+Jason out of my database or or
+
+252
+00:10:35,800 --> 00:10:37,779
+JavaScript actually because then you can
+
+253
+00:10:37,779 --> 00:10:38,980
+have functions and you can share them
+
+254
+00:10:38,980 --> 00:10:40,660
+with the client and that's kind of nice
+
+255
+00:10:40,660 --> 00:10:44,680
+I didn't mention that feature but but I
+
+256
+00:10:44,680 --> 00:10:47,889
+mean there's just simply no way to turn
+
+257
+00:10:47,889 --> 00:10:50,920
+a JSON database to turn to turn the
+
+258
+00:10:50,920 --> 00:10:52,439
+Jason coming out of your database into
+
+259
+00:10:52,439 --> 00:10:55,540
+an atom feed just you can't do that on
+
+260
+00:10:55,540 --> 00:10:59,459
+the client it's not really gonna work so
+
+261
+00:10:59,459 --> 00:11:01,959
+it's helpful to have a way to tell the
+
+262
+00:11:01,959 --> 00:11:03,880
+server hey I want this thing as
+
+263
+00:11:03,880 --> 00:11:07,490
+application slash atom plus XML can you
+
+264
+00:11:07,490 --> 00:11:09,020
+that for me that's what content
+
+265
+00:11:09,020 --> 00:11:11,209
+negotiation is and it works out really
+
+266
+00:11:11,209 --> 00:11:13,250
+well so a lot of the time you have to
+
+267
+00:11:13,250 --> 00:11:14,980
+set a header to do that you say accept
+
+268
+00:11:14,980 --> 00:11:18,170
+application slash atom plus XML well you
+
+269
+00:11:18,170 --> 00:11:20,330
+can't always obviously can't do that if
+
+270
+00:11:20,330 --> 00:11:21,740
+only the browser's were a little smarter
+
+271
+00:11:21,740 --> 00:11:23,089
+like when you clicked on it stupid
+
+272
+00:11:23,089 --> 00:11:24,800
+little feed button it actually sent the
+
+273
+00:11:24,800 --> 00:11:26,899
+right accept header I don't think most
+
+274
+00:11:26,899 --> 00:11:28,459
+professors do that it would be nice if
+
+275
+00:11:28,459 --> 00:11:32,510
+they did so instead of actually since
+
+276
+00:11:32,510 --> 00:11:35,120
+the client can't actually say can't set
+
+277
+00:11:35,120 --> 00:11:36,170
+the accept header the browser's not
+
+278
+00:11:36,170 --> 00:11:38,450
+doing it properly we can set the accept
+
+279
+00:11:38,450 --> 00:11:40,040
+header you know and in the query string
+
+280
+00:11:40,040 --> 00:11:42,410
+just using a simple little syntax and
+
+281
+00:11:42,410 --> 00:11:44,959
+some jsg i middleware that interprets
+
+282
+00:11:44,959 --> 00:11:46,610
+and tears down all like you can pass any
+
+283
+00:11:46,610 --> 00:11:48,290
+header you want the query string if you
+
+284
+00:11:48,290 --> 00:11:51,800
+prefix it with HTTP - and you know it'll
+
+285
+00:11:51,800 --> 00:11:53,089
+just tear that down into a header and
+
+286
+00:11:53,089 --> 00:11:54,980
+then it'll look exactly like it'll run
+
+287
+00:11:54,980 --> 00:11:56,080
+through the rest of your application
+
+288
+00:11:56,080 --> 00:11:58,580
+through the middleware stack looking
+
+289
+00:11:58,580 --> 00:12:00,980
+exactly like the header was set you know
+
+290
+00:12:00,980 --> 00:12:06,230
+by like as an actual HTTP header so kind
+
+291
+00:12:06,230 --> 00:12:08,029
+of content negotiation can go both ways
+
+292
+00:12:08,029 --> 00:12:10,899
+- so it's not just for getting data out
+
+293
+00:12:10,899 --> 00:12:14,899
+it's also really interesting like for
+
+294
+00:12:14,899 --> 00:12:16,970
+putting data back in you don't have to
+
+295
+00:12:16,970 --> 00:12:20,240
+serialize everything into jason if
+
+296
+00:12:20,240 --> 00:12:22,160
+you're especially if you're not using
+
+297
+00:12:22,160 --> 00:12:23,540
+like the thin server approach where it's
+
+298
+00:12:23,540 --> 00:12:24,709
+just jason going back and forth over the
+
+299
+00:12:24,709 --> 00:12:29,390
+wire then it's really cool like if you
+
+300
+00:12:29,390 --> 00:12:31,430
+say you have CSV like this this does
+
+301
+00:12:31,430 --> 00:12:33,290
+happen if it happens to me actually I
+
+302
+00:12:33,290 --> 00:12:35,959
+work in the enterprise-e world CSV very
+
+303
+00:12:35,959 --> 00:12:37,490
+common I don't know why they just they
+
+304
+00:12:37,490 --> 00:12:39,110
+dumped us they had a CSV it's got no
+
+305
+00:12:39,110 --> 00:12:41,270
+type it's got nothing but you know a lot
+
+306
+00:12:41,270 --> 00:12:42,440
+of the time that's that's what you're
+
+307
+00:12:42,440 --> 00:12:45,410
+dealing with so CSV actually is not that
+
+308
+00:12:45,410 --> 00:12:48,260
+bad of a representation if you have a
+
+309
+00:12:48,260 --> 00:12:50,000
+schema that says hey this is a date hey
+
+310
+00:12:50,000 --> 00:12:52,310
+this is a yeah this is an integer this
+
+311
+00:12:52,310 --> 00:12:54,470
+is so so when you define these models
+
+312
+00:12:54,470 --> 00:12:56,959
+and you define your schemas you don't
+
+313
+00:12:56,959 --> 00:12:58,940
+have to but you can define a schema and
+
+314
+00:12:58,940 --> 00:13:00,980
+then you can include this representation
+
+315
+00:13:00,980 --> 00:13:04,700
+that's text CSV and so someone can
+
+316
+00:13:04,700 --> 00:13:06,620
+actually put back in the interfaces like
+
+317
+00:13:06,620 --> 00:13:08,720
+I said it's I was describing the first
+
+318
+00:13:08,720 --> 00:13:10,640
+row interface the Pantera interface just
+
+319
+00:13:10,640 --> 00:13:13,190
+as simple all of those methods map to
+
+320
+00:13:13,190 --> 00:13:16,130
+http so you know put and then some
+
+321
+00:13:16,130 --> 00:13:18,350
+object does your put but you can put
+
+322
+00:13:18,350 --> 00:13:21,139
+some object that's a CSV file and say
+
+323
+00:13:21,139 --> 00:13:24,829
+ten type you know text CSV and per store
+
+324
+00:13:24,829 --> 00:13:27,949
+will because it actually the CSV is
+
+325
+00:13:27,949 --> 00:13:29,269
+actually relatively easy to do so we can
+
+326
+00:13:29,269 --> 00:13:31,040
+have a generic interface that we we can
+
+327
+00:13:31,040 --> 00:13:33,350
+have a generic module that does this so
+
+328
+00:13:33,350 --> 00:13:34,730
+you require that module to turn it on
+
+329
+00:13:34,730 --> 00:13:37,369
+and then it'll it'll rip down that data
+
+330
+00:13:37,369 --> 00:13:40,189
+into Jason and put it into your database
+
+331
+00:13:40,189 --> 00:13:41,989
+so it doesn't matter if your database is
+
+332
+00:13:41,989 --> 00:13:43,519
+sequel if your database is Mongo like
+
+333
+00:13:43,519 --> 00:13:44,779
+it'll just put it wherever the data
+
+334
+00:13:44,779 --> 00:13:50,720
+store is that's not that useful but it
+
+335
+00:13:50,720 --> 00:13:53,509
+can be useful like for atom pub you can
+
+336
+00:13:53,509 --> 00:13:55,939
+you can support any of these models and
+
+337
+00:13:55,939 --> 00:13:57,529
+what the really cool thing is you can do
+
+338
+00:13:57,529 --> 00:14:00,199
+in a very generic way you don't have to
+
+339
+00:14:00,199 --> 00:14:03,109
+choose like you don't have to every time
+
+340
+00:14:03,109 --> 00:14:04,309
+you write your like as you're writing
+
+341
+00:14:04,309 --> 00:14:06,019
+your models you don't like for instance
+
+342
+00:14:06,019 --> 00:14:09,499
+to support atom or to support HTML for
+
+343
+00:14:09,499 --> 00:14:10,669
+instance because we can do H atom just
+
+344
+00:14:10,669 --> 00:14:13,459
+if we can do atom we can do H atom to
+
+345
+00:14:13,459 --> 00:14:14,989
+support that you don't have to think too
+
+346
+00:14:14,989 --> 00:14:17,239
+much about how it should look how your
+
+347
+00:14:17,239 --> 00:14:18,829
+how your actual model should look but if
+
+348
+00:14:18,829 --> 00:14:20,989
+you want to over override the behavior
+
+349
+00:14:20,989 --> 00:14:22,519
+you can define a little bit a little
+
+350
+00:14:22,519 --> 00:14:24,169
+interface that lets you define a get
+
+351
+00:14:24,169 --> 00:14:26,299
+title property you can define a get
+
+352
+00:14:26,299 --> 00:14:27,860
+content property it gets summary
+
+353
+00:14:27,860 --> 00:14:29,480
+property alright and these are just
+
+354
+00:14:29,480 --> 00:14:31,879
+functions that if they exist the default
+
+355
+00:14:31,879 --> 00:14:33,679
+the serial is the serializer which you
+
+356
+00:14:33,679 --> 00:14:36,410
+can also override it'll use those
+
+357
+00:14:36,410 --> 00:14:38,629
+functions to actually make your your
+
+358
+00:14:38,629 --> 00:14:41,569
+representation for that specific model a
+
+359
+00:14:41,569 --> 00:14:46,699
+little nicer so what was gonna be
+
+360
+00:14:46,699 --> 00:14:51,009
+next on the slides hmm
+
+361
+00:14:51,019 --> 00:14:54,079
+the the one of the nicest things I
+
+362
+00:14:54,079 --> 00:14:55,480
+didn't really get into the details but
+
+363
+00:14:55,480 --> 00:14:59,360
+so pintura like the way it's built it's
+
+364
+00:14:59,360 --> 00:15:01,519
+a pure j SGI op location and what that
+
+365
+00:15:01,519 --> 00:15:05,209
+means is it all it is is this stack of
+
+366
+00:15:05,209 --> 00:15:06,259
+middleware and i have this interesting
+
+367
+00:15:06,259 --> 00:15:08,389
+slide that's like a log that has the
+
+368
+00:15:08,389 --> 00:15:09,439
+different layers but it's fourteen
+
+369
+00:15:09,439 --> 00:15:11,209
+different layers of middleware most of
+
+370
+00:15:11,209 --> 00:15:13,850
+which are reusable they're not specific
+
+371
+00:15:13,850 --> 00:15:15,259
+to peter at also like I was describing
+
+372
+00:15:15,259 --> 00:15:17,449
+the the HTTP headers thing where you can
+
+373
+00:15:17,449 --> 00:15:19,549
+just take any header and it'll pull it
+
+374
+00:15:19,549 --> 00:15:21,230
+out of the the query string and put it
+
+375
+00:15:21,230 --> 00:15:24,319
+into the the actual you know header of
+
+376
+00:15:24,319 --> 00:15:27,069
+the the request object
+
+377
+00:15:27,069 --> 00:15:30,949
+so that's your the Pinterest pure
+
+378
+00:15:30,949 --> 00:15:32,989
+application that way that's just one
+
+379
+00:15:32,989 --> 00:15:34,290
+little matter where
+
+380
+00:15:34,290 --> 00:15:36,060
+that then it uses and it stacks all of
+
+381
+00:15:36,060 --> 00:15:37,740
+these on top of each other
+
+382
+00:15:37,740 --> 00:15:39,959
+I should probably define jsg I a little
+
+383
+00:15:39,959 --> 00:15:43,740
+bit better so it's a lips
+
+384
+00:15:43,740 --> 00:15:46,500
+I guess web gateway interface if
+
+385
+00:15:46,500 --> 00:15:48,750
+anybody's used was gear rack same
+
+386
+00:15:48,750 --> 00:15:52,110
+general idea we kind of I guess deviated
+
+387
+00:15:52,110 --> 00:15:54,300
+quite a little bit to be a little more
+
+388
+00:15:54,300 --> 00:15:57,149
+like HTTP because CGI it has some
+
+389
+00:15:57,149 --> 00:15:59,430
+problems it's got some significant
+
+390
+00:15:59,430 --> 00:16:02,190
+problems so I we papered over a lot of
+
+391
+00:16:02,190 --> 00:16:03,269
+those and I think it actually came out
+
+392
+00:16:03,269 --> 00:16:05,279
+really nice like it there's I think
+
+393
+00:16:05,279 --> 00:16:06,660
+we're still you know trying to figure
+
+394
+00:16:06,660 --> 00:16:08,759
+out how to finalize it it still depends
+
+395
+00:16:08,759 --> 00:16:10,920
+on having a few more things in common
+
+396
+00:16:10,920 --> 00:16:15,930
+Jas but it pintura is kind of a
+
+397
+00:16:15,930 --> 00:16:21,199
+candidate of just it's one of the first
+
+398
+00:16:21,199 --> 00:16:24,300
+applications I guess full full stack
+
+399
+00:16:24,300 --> 00:16:26,279
+applications that runs across all these
+
+400
+00:16:26,279 --> 00:16:28,740
+different engines and all these
+
+401
+00:16:28,740 --> 00:16:32,040
+different platforms so it's kind of the
+
+402
+00:16:32,040 --> 00:16:34,410
+first experiment in that in that sense I
+
+403
+00:16:34,410 --> 00:16:36,839
+mean there was a jack obviously that is
+
+404
+00:16:36,839 --> 00:16:41,069
+an or wall application that that is kind
+
+405
+00:16:41,069 --> 00:16:45,990
+of the jsg i implement or kind of
+
+406
+00:16:45,990 --> 00:16:49,740
+default implementation but yeah it's a
+
+407
+00:16:49,740 --> 00:16:52,160
+port of racket it's the it's this guy
+
+408
+00:16:52,160 --> 00:16:55,980
+and it's really nice but so ventura
+
+409
+00:16:55,980 --> 00:16:58,050
+ventura actually depends on jack and
+
+410
+00:16:58,050 --> 00:17:00,750
+uses quite a bit of jack's functionality
+
+411
+00:17:00,750 --> 00:17:03,959
+so there's just the point i was going to
+
+412
+00:17:03,959 --> 00:17:05,610
+get across was there's just a lot of
+
+413
+00:17:05,610 --> 00:17:07,260
+these pieces you can pull out and use on
+
+414
+00:17:07,260 --> 00:17:10,380
+your own so but there's I mean there's a
+
+415
+00:17:10,380 --> 00:17:12,510
+lot of really cool stuff so the bottom
+
+416
+00:17:12,510 --> 00:17:15,510
+line I guess is it's not that hard to
+
+417
+00:17:15,510 --> 00:17:18,449
+get started with there's there's a build
+
+418
+00:17:18,449 --> 00:17:21,240
+that the Chris is set up that I should
+
+419
+00:17:21,240 --> 00:17:22,949
+also say I don't think I said this it's
+
+420
+00:17:22,949 --> 00:17:26,490
+a dojo Foundation project written by
+
+421
+00:17:26,490 --> 00:17:28,740
+Chris type I just kind of like hack on
+
+422
+00:17:28,740 --> 00:17:30,690
+it I get to do it for work it's awesome
+
+423
+00:17:30,690 --> 00:17:32,400
+like I highly recommend being able to
+
+424
+00:17:32,400 --> 00:17:33,780
+like hack on server-side JavaScript for
+
+425
+00:17:33,780 --> 00:17:35,880
+your day job because your life will be a
+
+426
+00:17:35,880 --> 00:17:38,280
+lot easier if you can figure out like I
+
+427
+00:17:38,280 --> 00:17:40,140
+work for dotnet shop but I get to hack
+
+428
+00:17:40,140 --> 00:17:42,750
+on server-side JavaScript so I I'm much
+
+429
+00:17:42,750 --> 00:17:45,540
+happier person because of it but so it's
+
+430
+00:17:45,540 --> 00:17:48,330
+it's uh it's really easy to hack on
+
+431
+00:17:48,330 --> 00:17:50,820
+I mean you you can crack open any of the
+
+432
+00:17:50,820 --> 00:17:52,140
+modules and you can just start using
+
+433
+00:17:52,140 --> 00:17:54,200
+them all right so yeah you crack open
+
+434
+00:17:54,200 --> 00:17:56,100
+something in Pinterest something in
+
+435
+00:17:56,100 --> 00:17:57,930
+first or something from a depending
+
+436
+00:17:57,930 --> 00:17:59,430
+library and you can just start changing
+
+437
+00:17:59,430 --> 00:18:01,920
+stuff it's amazing how it'll just work
+
+438
+00:18:01,920 --> 00:18:03,300
+it's there's a build step I mean you
+
+439
+00:18:03,300 --> 00:18:05,640
+guys know this obviously it's JavaScript
+
+440
+00:18:05,640 --> 00:18:12,060
+interpretive yeah so okay I I was
+
+441
+00:18:12,060 --> 00:18:14,280
+supposed to try I was trying to get like
+
+442
+00:18:14,280 --> 00:18:15,950
+get that point across but I guess I
+
+443
+00:18:15,950 --> 00:18:18,500
+confused it somewhere so per store is
+
+444
+00:18:18,500 --> 00:18:21,000
+it's you wouldn't there's no apes it's
+
+445
+00:18:21,000 --> 00:18:23,130
+not necessarily the HTTP part it's just
+
+446
+00:18:23,130 --> 00:18:26,130
+you would use it from your code now it
+
+447
+00:18:26,130 --> 00:18:27,990
+would be a package you require but
+
+448
+00:18:27,990 --> 00:18:30,570
+pintura is this other package so this is
+
+449
+00:18:30,570 --> 00:18:31,860
+a big branding problem I think with the
+
+450
+00:18:31,860 --> 00:18:33,540
+project there's just these three notions
+
+451
+00:18:33,540 --> 00:18:36,810
+is persevere which now 2.0 consists of
+
+452
+00:18:36,810 --> 00:18:39,870
+pintura and per store so this per store
+
+453
+00:18:39,870 --> 00:18:42,000
+thing is just that that library that you
+
+454
+00:18:42,000 --> 00:18:44,490
+would require pintura requires it and
+
+455
+00:18:44,490 --> 00:18:47,940
+maps HTTP to all the calls so yes and
+
+456
+00:18:47,940 --> 00:18:49,830
+their peen it's it's restful to like in
+
+457
+00:18:49,830 --> 00:18:52,290
+a sane degree like a lot of people would
+
+458
+00:18:52,290 --> 00:18:54,900
+say uh you know arrests just like it
+
+459
+00:18:54,900 --> 00:18:56,160
+doesn't really mean anything
+
+460
+00:18:56,160 --> 00:19:00,720
+I would having especially now like spent
+
+461
+00:19:00,720 --> 00:19:01,920
+so much time working with it like it's
+
+462
+00:19:01,920 --> 00:19:05,190
+amazing how how well-defined it really
+
+463
+00:19:05,190 --> 00:19:07,440
+is and like I mean obviously there's
+
+464
+00:19:07,440 --> 00:19:08,940
+there's certain pillars that you try to
+
+465
+00:19:08,940 --> 00:19:10,710
+ascribe to it's not just the uniform
+
+466
+00:19:10,710 --> 00:19:13,500
+interface obviously like things like
+
+467
+00:19:13,500 --> 00:19:15,300
+content negotiation things like just
+
+468
+00:19:15,300 --> 00:19:16,860
+using for instance content ranges why
+
+469
+00:19:16,860 --> 00:19:18,330
+don't we use more of that like we should
+
+470
+00:19:18,330 --> 00:19:20,820
+really do that more they allow you to
+
+471
+00:19:20,820 --> 00:19:22,590
+take like a resource and have all these
+
+472
+00:19:22,590 --> 00:19:24,410
+different dimensions on it now so
+
+473
+00:19:24,410 --> 00:19:29,370
+pintura uses the items type the items
+
+474
+00:19:29,370 --> 00:19:32,400
+content range that that obviously dojo
+
+475
+00:19:32,400 --> 00:19:34,350
+use cuz again Chris type said you know
+
+476
+00:19:34,350 --> 00:19:37,050
+dojo committer so I think you know they
+
+477
+00:19:37,050 --> 00:19:38,760
+originally kind of created this items
+
+478
+00:19:38,760 --> 00:19:41,220
+range that's representative of a slice
+
+479
+00:19:41,220 --> 00:19:43,260
+of a given query and so if your if your
+
+480
+00:19:43,260 --> 00:19:45,780
+store is just a big table there's a big
+
+481
+00:19:45,780 --> 00:19:48,450
+list of objects well then you can you
+
+482
+00:19:48,450 --> 00:19:49,920
+can look at that store and slice that up
+
+483
+00:19:49,920 --> 00:19:51,450
+any way you want
+
+484
+00:19:51,450 --> 00:19:56,640
+using this there's simple syntax that's
+
+485
+00:19:56,640 --> 00:19:58,470
+defined in HTTP really well I mean it's
+
+486
+00:19:58,470 --> 00:20:00,210
+it's only defined for the bytes there's
+
+487
+00:20:00,210 --> 00:20:01,380
+a there's something called bytes range
+
+488
+00:20:01,380 --> 00:20:02,140
+that's that's the
+
+489
+00:20:02,140 --> 00:20:03,790
+wellspect in HTTP but then it just says
+
+490
+00:20:03,790 --> 00:20:05,200
+yeah you can use this for other stuff
+
+491
+00:20:05,200 --> 00:20:08,710
+too in any event check it out there's a
+
+492
+00:20:08,710 --> 00:20:13,120
+lot like there's so much left to do but
+
+493
+00:20:13,120 --> 00:20:14,670
+there's already so much you can steal
+
+494
+00:20:14,670 --> 00:20:18,040
+like if like you summit it it just it
+

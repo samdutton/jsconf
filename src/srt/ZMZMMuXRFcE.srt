@@ -1,0 +1,2257 @@
+1
+00:00:00,000 --> 00:00:16,840
+
+[Music]
+
+2
+00:00:16,850 --> 00:00:18,210
+selamat pagi
+
+3
+00:00:18,210 --> 00:00:23,850
+anyhow hello today I would like to talk
+
+4
+00:00:23,850 --> 00:00:26,910
+to you about web components and an
+
+5
+00:00:26,910 --> 00:00:29,789
+experimental JavaScript API called the
+
+6
+00:00:29,789 --> 00:00:34,320
+accessibility object model or a om when
+
+7
+00:00:34,320 --> 00:00:36,149
+we load some HTML into the browser
+
+8
+00:00:36,149 --> 00:00:38,610
+several things happen more or less at
+
+9
+00:00:38,610 --> 00:00:41,550
+the same time the HTML gets translated
+
+10
+00:00:41,550 --> 00:00:44,430
+into the Dom tree it also gets
+
+11
+00:00:44,430 --> 00:00:46,680
+translated into the accessibility tree
+
+12
+00:00:46,680 --> 00:00:49,860
+and finally it gets translated into the
+
+13
+00:00:49,860 --> 00:00:52,170
+user interface the part that we can see
+
+14
+00:00:52,170 --> 00:00:55,739
+and we can interact with so if we take a
+
+15
+00:00:55,739 --> 00:00:58,410
+button element our HTML is very very
+
+16
+00:00:58,410 --> 00:01:00,300
+simple just open and close the button
+
+17
+00:01:00,300 --> 00:01:02,309
+elements with some text content in the
+
+18
+00:01:02,309 --> 00:01:05,339
+middle our Dom looks exactly the same we
+
+19
+00:01:05,339 --> 00:01:07,229
+see that element is a node in the Dom
+
+20
+00:01:07,229 --> 00:01:09,229
+tree and the text leaf in the middle
+
+21
+00:01:09,229 --> 00:01:11,460
+when we look at the accessibility tree
+
+22
+00:01:11,460 --> 00:01:13,770
+we get more information about this node
+
+23
+00:01:13,770 --> 00:01:15,840
+and the node in the accessibility tree
+
+24
+00:01:15,840 --> 00:01:17,520
+for this button element says that it has
+
+25
+00:01:17,520 --> 00:01:20,280
+a role of button but its accessible name
+
+26
+00:01:20,280 --> 00:01:22,439
+is play that's the text inside the
+
+27
+00:01:22,439 --> 00:01:24,420
+button element and that it's state is
+
+28
+00:01:24,420 --> 00:01:26,850
+focusable so if you use a keyboard and
+
+29
+00:01:26,850 --> 00:01:29,159
+not a mouse or trackpad you can use the
+
+30
+00:01:29,159 --> 00:01:31,079
+tab key to focus on the button and
+
+31
+00:01:31,079 --> 00:01:34,799
+interact with it our UI then presents a
+
+32
+00:01:34,799 --> 00:01:36,750
+button on the screen that we can click
+
+33
+00:01:36,750 --> 00:01:38,549
+or interact with with a keyboard or
+
+34
+00:01:38,549 --> 00:01:41,400
+touchpad and with a bit of styling it
+
+35
+00:01:41,400 --> 00:01:44,299
+looks hopefully reasonably presentable
+
+36
+00:01:44,299 --> 00:01:47,040
+so if we were to try and create a button
+
+37
+00:01:47,040 --> 00:01:49,649
+elements using a web component there are
+
+38
+00:01:49,649 --> 00:01:51,509
+a couple of ways we could do this we
+
+39
+00:01:51,509 --> 00:01:54,149
+could use a customized custom element
+
+40
+00:01:54,149 --> 00:01:57,180
+this takes the HTML button element and
+
+41
+00:01:57,180 --> 00:01:59,549
+extends it so it means that when we set
+
+42
+00:01:59,549 --> 00:02:01,649
+up our web component our constructor is
+
+43
+00:02:01,649 --> 00:02:03,540
+really simple we just call super because
+
+44
+00:02:03,540 --> 00:02:05,820
+that's good practice in web components
+
+45
+00:02:05,820 --> 00:02:07,829
+and we don't need to do anything else
+
+46
+00:02:07,829 --> 00:02:09,599
+apart from give our custom element a
+
+47
+00:02:09,599 --> 00:02:12,660
+name in this case custom dash button if
+
+48
+00:02:12,660 --> 00:02:13,620
+you're not familiar we
+
+49
+00:02:13,620 --> 00:02:15,690
+web components and custom elements they
+
+50
+00:02:15,690 --> 00:02:17,790
+must always have a dash in their name
+
+51
+00:02:17,790 --> 00:02:19,319
+and this is just to help the browser
+
+52
+00:02:19,319 --> 00:02:22,680
+separate a native HTML element from the
+
+53
+00:02:22,680 --> 00:02:25,409
+HTML spec from one that we've created as
+
+54
+00:02:25,409 --> 00:02:27,030
+developers through the custom elements
+
+55
+00:02:27,030 --> 00:02:30,239
+API our connected callback is also
+
+56
+00:02:30,239 --> 00:02:32,010
+really simple we don't need to do very
+
+57
+00:02:32,010 --> 00:02:33,989
+much at all we just need to add some
+
+58
+00:02:33,989 --> 00:02:37,110
+click functionality to make button work
+
+59
+00:02:37,110 --> 00:02:40,019
+and that's pretty much all there is to
+
+60
+00:02:40,019 --> 00:02:43,379
+it our HTML however looks a little bit
+
+61
+00:02:43,379 --> 00:02:45,959
+ugly we use the button elements as we
+
+62
+00:02:45,959 --> 00:02:48,660
+would in standard HTML but we add the is
+
+63
+00:02:48,660 --> 00:02:51,500
+attribute to it so we say button is
+
+64
+00:02:51,500 --> 00:02:54,840
+custom button so our HTML has already
+
+65
+00:02:54,840 --> 00:02:57,269
+grown another attribute which is not too
+
+66
+00:02:57,269 --> 00:03:00,000
+terrible but it's not as clean in code
+
+67
+00:03:00,000 --> 00:03:03,390
+terms as we might like it to be Dom
+
+68
+00:03:03,390 --> 00:03:05,129
+looks pretty much exactly the same
+
+69
+00:03:05,129 --> 00:03:07,230
+nothing much changes in that translation
+
+70
+00:03:07,230 --> 00:03:10,590
+and accessibility tree also looks pretty
+
+71
+00:03:10,590 --> 00:03:12,780
+much the same it still says it's the
+
+72
+00:03:12,780 --> 00:03:14,579
+thing with a roll of button the text is
+
+73
+00:03:14,579 --> 00:03:16,379
+still its accessible name and it's still
+
+74
+00:03:16,379 --> 00:03:18,720
+focusable so effectively what we've done
+
+75
+00:03:18,720 --> 00:03:21,389
+is just recreate the button element as a
+
+76
+00:03:21,389 --> 00:03:24,690
+custom element and we can see this work
+
+77
+00:03:24,690 --> 00:03:26,459
+pretty much like you'd expect a button
+
+78
+00:03:26,459 --> 00:03:28,530
+to work only this time we'll hear a
+
+79
+00:03:28,530 --> 00:03:31,400
+screen reader announce the button to
+
+80
+00:03:31,400 --> 00:03:34,799
+play button and the screen reader picks
+
+81
+00:03:34,799 --> 00:03:36,419
+up that information from the
+
+82
+00:03:36,419 --> 00:03:38,459
+accessibility tree it recognizes the
+
+83
+00:03:38,459 --> 00:03:40,919
+accessible name play and it recognizes
+
+84
+00:03:40,919 --> 00:03:42,870
+it that it's a button and tells the user
+
+85
+00:03:42,870 --> 00:03:45,750
+that information there's a problem
+
+86
+00:03:45,750 --> 00:03:48,060
+though apart from the fact that the HTML
+
+87
+00:03:48,060 --> 00:03:50,010
+looks a little bit less clean than we
+
+88
+00:03:50,010 --> 00:03:52,919
+want it to be customized custom elements
+
+89
+00:03:52,919 --> 00:03:54,389
+are not particularly well supported
+
+90
+00:03:54,389 --> 00:03:57,120
+they're not supported in WebKit Apple is
+
+91
+00:03:57,120 --> 00:04:00,120
+pretty firmly opposed to introducing
+
+92
+00:04:00,120 --> 00:04:02,310
+support for customized custom elements
+
+93
+00:04:02,310 --> 00:04:04,919
+so we might have to turn our attention
+
+94
+00:04:04,919 --> 00:04:07,980
+to autonomous custom elements now an
+
+95
+00:04:07,980 --> 00:04:10,379
+autonomous custom element doesn't extend
+
+96
+00:04:10,379 --> 00:04:12,510
+an existing HTML element so we can't
+
+97
+00:04:12,510 --> 00:04:14,579
+inherit all the good behavior from say
+
+98
+00:04:14,579 --> 00:04:16,169
+button that we just did with the
+
+99
+00:04:16,169 --> 00:04:18,750
+customized element instead we have to
+
+100
+00:04:18,750 --> 00:04:20,549
+start pretty much from scratch and that
+
+101
+00:04:20,549 --> 00:04:22,079
+means we've got to do all the work that
+
+102
+00:04:22,079 --> 00:04:24,479
+the browser does for us normally for
+
+103
+00:04:24,479 --> 00:04:25,200
+ourselves
+
+104
+00:04:25,200 --> 00:04:27,600
+so in constructor
+
+105
+00:04:27,600 --> 00:04:30,150
+need to set things up a little bit
+
+106
+00:04:30,150 --> 00:04:31,860
+differently you'll notice that the the
+
+107
+00:04:31,860 --> 00:04:34,170
+definition is slightly different this
+
+108
+00:04:34,170 --> 00:04:35,760
+time I'm going to create a toggle button
+
+109
+00:04:35,760 --> 00:04:37,650
+as well you may have noticed from the
+
+110
+00:04:37,650 --> 00:04:39,720
+video we just played that that button
+
+111
+00:04:39,720 --> 00:04:42,060
+looked different when it was pressed but
+
+112
+00:04:42,060 --> 00:04:43,440
+the screen reader didn't pick up on that
+
+113
+00:04:43,440 --> 00:04:45,570
+information so we're gonna set about
+
+114
+00:04:45,570 --> 00:04:47,490
+creating that toggle button so the
+
+115
+00:04:47,490 --> 00:04:49,710
+definition has changed to be a toggle -
+
+116
+00:04:49,710 --> 00:04:52,080
+button this time and if we look at the
+
+117
+00:04:52,080 --> 00:04:53,640
+connected callback there's an awful lot
+
+118
+00:04:53,640 --> 00:04:56,730
+more going on inside it we need to set
+
+119
+00:04:56,730 --> 00:04:59,520
+the role just using setattribute so
+
+120
+00:04:59,520 --> 00:05:00,810
+that's the bit that fills in the
+
+121
+00:05:00,810 --> 00:05:02,910
+accessibility role we need to set
+
+122
+00:05:02,910 --> 00:05:04,890
+tabindex to zero that's the bit that
+
+123
+00:05:04,890 --> 00:05:06,720
+will make our custom element focusable
+
+124
+00:05:06,720 --> 00:05:09,810
+with the keyboard and we add in an aria
+
+125
+00:05:09,810 --> 00:05:11,970
+attribute aria-pressed and we set it
+
+126
+00:05:11,970 --> 00:05:14,820
+initially to false this is the attribute
+
+127
+00:05:14,820 --> 00:05:17,190
+that will tell screen readers and inform
+
+128
+00:05:17,190 --> 00:05:19,140
+the accessibility tree that this is a
+
+129
+00:05:19,140 --> 00:05:20,880
+different kind of button it's one that
+
+130
+00:05:20,880 --> 00:05:23,370
+can be turned on or off and we'll see
+
+131
+00:05:23,370 --> 00:05:26,790
+how that develops we have a function
+
+132
+00:05:26,790 --> 00:05:31,680
+into the click and keyboard event
+
+133
+00:05:31,680 --> 00:05:33,540
+handlers and we're just gonna switch the
+
+134
+00:05:33,540 --> 00:05:35,640
+status of the aria-pressed attribute
+
+135
+00:05:35,640 --> 00:05:38,430
+over so when someone uses the keyboard
+
+136
+00:05:38,430 --> 00:05:40,200
+or the mouse to interact with the button
+
+137
+00:05:40,200 --> 00:05:42,870
+will flip the value to true while it's
+
+138
+00:05:42,870 --> 00:05:44,910
+pressed and flip it back again to false
+
+139
+00:05:44,910 --> 00:05:46,740
+when it's not pressed and this will
+
+140
+00:05:46,740 --> 00:05:48,060
+change the accessibility state
+
+141
+00:05:48,060 --> 00:05:51,330
+information in the accessibility tree so
+
+142
+00:05:51,330 --> 00:05:54,000
+our HTML looks a lot more simple we just
+
+143
+00:05:54,000 --> 00:05:56,430
+open and close our toggle - button
+
+144
+00:05:56,430 --> 00:05:58,110
+elements and we still put the text on
+
+145
+00:05:58,110 --> 00:06:01,260
+the inside our Dom however it starts to
+
+146
+00:06:01,260 --> 00:06:03,720
+look a little bit messy we see all the
+
+147
+00:06:03,720 --> 00:06:05,580
+attributes we've just set inside the
+
+148
+00:06:05,580 --> 00:06:07,290
+custom elements that have indexed the
+
+149
+00:06:07,290 --> 00:06:09,810
+role the aria-pressed they actually leak
+
+150
+00:06:09,810 --> 00:06:12,060
+out from the custom element into the Dom
+
+151
+00:06:12,060 --> 00:06:14,430
+so unfortunately here things start to
+
+152
+00:06:14,430 --> 00:06:17,310
+get a bit more messy looking our
+
+153
+00:06:17,310 --> 00:06:19,080
+accessibility tree has also changed a
+
+154
+00:06:19,080 --> 00:06:20,850
+little bit the type of the button the
+
+155
+00:06:20,850 --> 00:06:22,980
+role of the button is now toggle button
+
+156
+00:06:22,980 --> 00:06:24,960
+in some browsers and some accessibility
+
+157
+00:06:24,960 --> 00:06:27,720
+API is it's known as a push button so
+
+158
+00:06:27,720 --> 00:06:29,580
+this is just a different type of button
+
+159
+00:06:29,580 --> 00:06:31,680
+everything else is pretty much the same
+
+160
+00:06:31,680 --> 00:06:34,890
+but the state now also has a recognition
+
+161
+00:06:34,890 --> 00:06:36,240
+of the fact that this button can be
+
+162
+00:06:36,240 --> 00:06:39,210
+pressed or not pressed so there is more
+
+163
+00:06:39,210 --> 00:06:41,129
+named States and roll
+
+164
+00:06:41,129 --> 00:06:42,539
+information available in the
+
+165
+00:06:42,539 --> 00:06:45,509
+accessibility tree in the browser when a
+
+166
+00:06:45,509 --> 00:06:46,830
+screen reader or another assistive
+
+167
+00:06:46,830 --> 00:06:48,659
+technology queries that information from
+
+168
+00:06:48,659 --> 00:06:50,969
+the browser the experience for the user
+
+169
+00:06:50,969 --> 00:06:54,179
+changes quite dramatically play toggle
+
+170
+00:06:54,179 --> 00:06:58,849
+button not pressed pressed not pressed
+
+171
+00:06:58,849 --> 00:07:01,349
+so we now have a custom element that is
+
+172
+00:07:01,349 --> 00:07:02,819
+a toggle button it has all the
+
+173
+00:07:02,819 --> 00:07:04,649
+accessibility characteristics that we
+
+174
+00:07:04,649 --> 00:07:06,869
+need to inform something like a screen
+
+175
+00:07:06,869 --> 00:07:09,029
+reader that it's a toggle button and the
+
+176
+00:07:09,029 --> 00:07:10,979
+user now gets to understand when that
+
+177
+00:07:10,979 --> 00:07:13,080
+button is pressed and when it's not so
+
+178
+00:07:13,080 --> 00:07:15,449
+the experience is a lot better for
+
+179
+00:07:15,449 --> 00:07:17,459
+someone who can't see the visual state
+
+180
+00:07:17,459 --> 00:07:20,610
+of the button changing here's where we
+
+181
+00:07:20,610 --> 00:07:22,649
+come to that experimental JavaScript API
+
+182
+00:07:22,649 --> 00:07:26,219
+I mentioned the AOM is still relatively
+
+183
+00:07:26,219 --> 00:07:28,800
+new it's being developed in the web
+
+184
+00:07:28,800 --> 00:07:31,439
+platform incubator community group ycg
+
+185
+00:07:31,439 --> 00:07:34,829
+at the w3c and it's being worked on by
+
+186
+00:07:34,829 --> 00:07:38,639
+people from Apple Mozilla and Google and
+
+187
+00:07:38,639 --> 00:07:42,179
+it's a JavaScript API that will let us
+
+188
+00:07:42,179 --> 00:07:44,639
+get involved in that relationship that I
+
+189
+00:07:44,639 --> 00:07:46,529
+mentioned in the very first slide that
+
+190
+00:07:46,529 --> 00:07:48,569
+until now has only happened within the
+
+191
+00:07:48,569 --> 00:07:52,139
+browser so up till now the accessibility
+
+192
+00:07:52,139 --> 00:07:54,689
+tree has only ever been created by the
+
+193
+00:07:54,689 --> 00:07:56,789
+browser and the only thing that has
+
+194
+00:07:56,789 --> 00:07:59,099
+access to that accessibility tree other
+
+195
+00:07:59,099 --> 00:08:01,110
+than the browser our assistive
+
+196
+00:08:01,110 --> 00:08:03,539
+technologies like screen readers for the
+
+197
+00:08:03,539 --> 00:08:05,189
+first time now as developers through the
+
+198
+00:08:05,189 --> 00:08:08,099
+AOM JavaScript API we're about to get
+
+199
+00:08:08,099 --> 00:08:10,379
+access to that tree ourselves and that
+
+200
+00:08:10,379 --> 00:08:11,459
+opens up a lot of different
+
+201
+00:08:11,459 --> 00:08:14,219
+possibilities and also a few challenges
+
+202
+00:08:14,219 --> 00:08:15,479
+and things that we're going to need to
+
+203
+00:08:15,479 --> 00:08:19,079
+be aware of phase one is going to
+
+204
+00:08:19,079 --> 00:08:22,439
+introduce Aria reflection it means we're
+
+205
+00:08:22,439 --> 00:08:24,839
+going to be able to set different roles
+
+206
+00:08:24,839 --> 00:08:27,029
+and attributes and have them reflected
+
+207
+00:08:27,029 --> 00:08:29,099
+back so it keeps things much simpler and
+
+208
+00:08:29,099 --> 00:08:31,289
+lets us use more familiar JavaScript
+
+209
+00:08:31,289 --> 00:08:34,529
+syntax so for reflecting the attributes
+
+210
+00:08:34,529 --> 00:08:37,079
+there are two interface mix-ins that
+
+211
+00:08:37,079 --> 00:08:39,209
+have actually been added not only to the
+
+212
+00:08:39,209 --> 00:08:41,490
+AOM specification but they will also be
+
+213
+00:08:41,490 --> 00:08:43,680
+added to one point two of the Aria
+
+214
+00:08:43,680 --> 00:08:46,230
+specification Aria is accessible rich
+
+215
+00:08:46,230 --> 00:08:48,959
+Internet applications and these two
+
+216
+00:08:48,959 --> 00:08:50,610
+interface mix-ins will let us reflect
+
+217
+00:08:50,610 --> 00:08:54,460
+back rolls and other Aria attributes
+
+218
+00:08:54,460 --> 00:08:57,250
+so if we rewrite our connected callback
+
+219
+00:08:57,250 --> 00:08:59,350
+for the toggle button we can see the
+
+220
+00:08:59,350 --> 00:09:01,330
+change in syntax instead of having to
+
+221
+00:09:01,330 --> 00:09:04,600
+use set attribute we can use element dot
+
+222
+00:09:04,600 --> 00:09:07,060
+roll equals button to set the the role
+
+223
+00:09:07,060 --> 00:09:09,810
+of the element we can use element dots
+
+224
+00:09:09,810 --> 00:09:12,490
+tabindex equals 0 and element
+
+225
+00:09:12,490 --> 00:09:15,940
+aria-pressed 'false notice though that
+
+226
+00:09:15,940 --> 00:09:19,690
+the way tabindex & aria-pressed written
+
+227
+00:09:19,690 --> 00:09:22,240
+has changed there's now a capital I on
+
+228
+00:09:22,240 --> 00:09:23,920
+the index of tabindex where there
+
+229
+00:09:23,920 --> 00:09:26,020
+wouldn't normally be and the dash has
+
+230
+00:09:26,020 --> 00:09:27,700
+gone from the Aria dashed pressed
+
+231
+00:09:27,700 --> 00:09:29,770
+attribute and instead it two uses
+
+232
+00:09:29,770 --> 00:09:30,310
+camelcase
+
+233
+00:09:30,310 --> 00:09:33,220
+so all of these Aria attributes have a
+
+234
+00:09:33,220 --> 00:09:35,080
+slightly different way of being written
+
+235
+00:09:35,080 --> 00:09:37,000
+but they achieve pretty much the same
+
+236
+00:09:37,000 --> 00:09:38,589
+thing we set all those properties and
+
+237
+00:09:38,589 --> 00:09:40,870
+characteristics exactly as we did in the
+
+238
+00:09:40,870 --> 00:09:44,589
+earlier example we can also or we will
+
+239
+00:09:44,589 --> 00:09:47,200
+be able to set element references now
+
+240
+00:09:47,200 --> 00:09:49,120
+this is where we get into the part that
+
+241
+00:09:49,120 --> 00:09:50,709
+is still so experimental it doesn't
+
+242
+00:09:50,709 --> 00:09:52,240
+actually exist in the browser's yet not
+
+243
+00:09:52,240 --> 00:09:54,940
+even behind the flag but what we'd be
+
+244
+00:09:54,940 --> 00:09:56,770
+able to do is where we have an element
+
+245
+00:09:56,770 --> 00:09:59,200
+sorry an attribute like Aria described
+
+246
+00:09:59,200 --> 00:10:02,230
+by which up till now you can use to
+
+247
+00:10:02,230 --> 00:10:03,730
+point to another piece of content on the
+
+248
+00:10:03,730 --> 00:10:06,820
+page using its ID value as the reference
+
+249
+00:10:06,820 --> 00:10:08,950
+point and it will associate that piece
+
+250
+00:10:08,950 --> 00:10:11,350
+of text with the first element so
+
+251
+00:10:11,350 --> 00:10:14,140
+typical example is you focus on a form
+
+252
+00:10:14,140 --> 00:10:16,089
+filled with a screen reader you'll here
+
+253
+00:10:16,089 --> 00:10:17,650
+the label of the form field announced
+
+254
+00:10:17,650 --> 00:10:19,480
+the type of the form field announced and
+
+255
+00:10:19,480 --> 00:10:21,610
+then you could use Aria described by to
+
+256
+00:10:21,610 --> 00:10:23,830
+associate an extra hint to help someone
+
+257
+00:10:23,830 --> 00:10:25,870
+fill out that information and the screen
+
+258
+00:10:25,870 --> 00:10:27,370
+reader would automatically read that out
+
+259
+00:10:27,370 --> 00:10:31,230
+to putting ID references on things is
+
+260
+00:10:31,230 --> 00:10:33,490
+often quite heavy weights you can have
+
+261
+00:10:33,490 --> 00:10:36,070
+hundreds sometimes thousands in a heavy
+
+262
+00:10:36,070 --> 00:10:38,500
+application of ID references on a page
+
+263
+00:10:38,500 --> 00:10:40,810
+but what will happen in the future is
+
+264
+00:10:40,810 --> 00:10:42,610
+that we'll be able to use just plain
+
+265
+00:10:42,610 --> 00:10:45,370
+JavaScript element references in our
+
+266
+00:10:45,370 --> 00:10:47,140
+code instead of having to use ID
+
+267
+00:10:47,140 --> 00:10:49,690
+references so for example we'll be able
+
+268
+00:10:49,690 --> 00:10:52,149
+to use Aria described by elements to
+
+269
+00:10:52,149 --> 00:10:54,579
+feed it one or more reference points for
+
+270
+00:10:54,579 --> 00:10:56,770
+the information we want to hook up in
+
+271
+00:10:56,770 --> 00:10:59,410
+the user interface but as I say this is
+
+272
+00:10:59,410 --> 00:11:01,089
+experimental yet we can't play around
+
+273
+00:11:01,089 --> 00:11:03,610
+with this feature if you're curious
+
+274
+00:11:03,610 --> 00:11:05,980
+there is a series of harness of web
+
+275
+00:11:05,980 --> 00:11:07,930
+platform tests available for
+
+276
+00:11:07,930 --> 00:11:10,690
+one a at the moment if you take a look
+
+277
+00:11:10,690 --> 00:11:13,149
+at it in Chrome or the new edge chromium
+
+278
+00:11:13,149 --> 00:11:16,089
+beta you'll find that about 65 out of
+
+279
+00:11:16,089 --> 00:11:18,760
+the 95 tests are currently passing so
+
+280
+00:11:18,760 --> 00:11:20,920
+that's all the attribute and role
+
+281
+00:11:20,920 --> 00:11:22,870
+reflections but none of the element
+
+282
+00:11:22,870 --> 00:11:26,680
+reflections Safari is doing really well
+
+283
+00:11:26,680 --> 00:11:29,709
+with about 79 interestingly WebKit
+
+284
+00:11:29,709 --> 00:11:31,420
+Safari has taken out from behind the
+
+285
+00:11:31,420 --> 00:11:33,100
+flag so this works actually at the
+
+286
+00:11:33,100 --> 00:11:35,200
+production level in Chrome it's still
+
+287
+00:11:35,200 --> 00:11:37,080
+behind the AOM accessibility flag
+
+288
+00:11:37,080 --> 00:11:39,670
+Firefox hasn't yet introduced any
+
+289
+00:11:39,670 --> 00:11:41,620
+support behind the flag or otherwise but
+
+290
+00:11:41,620 --> 00:11:44,010
+I'm pretty sure it will catch up soon so
+
+291
+00:11:44,010 --> 00:11:46,750
+hitting those tests in your browser is a
+
+292
+00:11:46,750 --> 00:11:48,160
+pretty good way to keep up to date with
+
+293
+00:11:48,160 --> 00:11:50,320
+how much of phase one is currently
+
+294
+00:11:50,320 --> 00:11:53,920
+available to play with phase one B
+
+295
+00:11:53,920 --> 00:11:56,950
+introduces custom element semantics now
+
+296
+00:11:56,950 --> 00:11:58,540
+the idea behind this phase is that we
+
+297
+00:11:58,540 --> 00:12:00,250
+can start to clean up some of that Dom
+
+298
+00:12:00,250 --> 00:12:01,870
+leakage that we saw with our toggle
+
+299
+00:12:01,870 --> 00:12:04,420
+button example we don't want all the
+
+300
+00:12:04,420 --> 00:12:06,790
+tabindex the role the Aria press to the
+
+301
+00:12:06,790 --> 00:12:08,529
+other attributes to leak out into the
+
+302
+00:12:08,529 --> 00:12:10,149
+Dom when we create a custom element we
+
+303
+00:12:10,149 --> 00:12:11,339
+want to keep the accessibility
+
+304
+00:12:11,339 --> 00:12:14,440
+encapsulated so this is the part of the
+
+305
+00:12:14,440 --> 00:12:16,839
+spec that will let us do that in two
+
+306
+00:12:16,839 --> 00:12:18,640
+different ways ultimately we'll be able
+
+307
+00:12:18,640 --> 00:12:21,850
+to set accessibility characteristics at
+
+308
+00:12:21,850 --> 00:12:23,470
+the time the custom element is created
+
+309
+00:12:23,470 --> 00:12:26,400
+and ones that can be adapted and changed
+
+310
+00:12:26,400 --> 00:12:31,029
+in the element internals so for example
+
+311
+00:12:31,029 --> 00:12:32,980
+we could change our code slightly so
+
+312
+00:12:32,980 --> 00:12:35,620
+that element definitions options include
+
+313
+00:12:35,620 --> 00:12:37,029
+things like setting the role and the
+
+314
+00:12:37,029 --> 00:12:38,950
+tabindex because we want those to be
+
+315
+00:12:38,950 --> 00:12:41,140
+established in the custom element the
+
+316
+00:12:41,140 --> 00:12:43,570
+moment it's created exactly as though we
+
+317
+00:12:43,570 --> 00:12:45,160
+were using a standard HTML button
+
+318
+00:12:45,160 --> 00:12:48,370
+element we can then do per instance
+
+319
+00:12:48,370 --> 00:12:51,520
+semantics using an internals variable we
+
+320
+00:12:51,520 --> 00:12:53,970
+can attach the internals in the
+
+321
+00:12:53,970 --> 00:12:56,140
+constructor for the custom element and
+
+322
+00:12:56,140 --> 00:12:58,060
+that lets us set things that will change
+
+323
+00:12:58,060 --> 00:12:59,709
+through the course of the custom
+
+324
+00:12:59,709 --> 00:13:01,600
+elements lifetime so aria-pressed will
+
+325
+00:13:01,600 --> 00:13:03,940
+change in response to user interactions
+
+326
+00:13:03,940 --> 00:13:06,910
+so we set that here instead of as an
+
+327
+00:13:06,910 --> 00:13:09,550
+immutable characteristic in the element
+
+328
+00:13:09,550 --> 00:13:11,770
+definition options but as I say
+
+329
+00:13:11,770 --> 00:13:13,209
+unfortunately at the moment we still
+
+330
+00:13:13,209 --> 00:13:16,310
+can't play with this just yet
+
+331
+00:13:16,310 --> 00:13:19,130
+phase two is all about user interactions
+
+332
+00:13:19,130 --> 00:13:21,740
+and events we're all really used to
+
+333
+00:13:21,740 --> 00:13:24,980
+events like click key down key press a
+
+334
+00:13:24,980 --> 00:13:27,260
+whole bunch of others but when you
+
+335
+00:13:27,260 --> 00:13:29,270
+introduce an assistive technology like a
+
+336
+00:13:29,270 --> 00:13:31,220
+screen reader into the equation things
+
+337
+00:13:31,220 --> 00:13:33,670
+get a little bit more complicated so
+
+338
+00:13:33,670 --> 00:13:36,890
+they are going to change the way that
+
+339
+00:13:36,890 --> 00:13:39,770
+events are synthesized and also
+
+340
+00:13:39,770 --> 00:13:43,130
+introduced some new events the reason
+
+341
+00:13:43,130 --> 00:13:45,350
+for the synthesis is to protect the
+
+342
+00:13:45,350 --> 00:13:48,080
+privacy of assistive technology users so
+
+343
+00:13:48,080 --> 00:13:50,300
+if they were just to create some
+
+344
+00:13:50,300 --> 00:13:52,160
+assistive technology events it would
+
+345
+00:13:52,160 --> 00:13:55,010
+very very easy to detect not only that
+
+346
+00:13:55,010 --> 00:13:56,750
+the user was using a particular
+
+347
+00:13:56,750 --> 00:13:59,240
+assistive technology but what type of
+
+348
+00:13:59,240 --> 00:14:00,950
+assistive technology they were using and
+
+349
+00:14:00,950 --> 00:14:02,870
+that of course would make it very easy
+
+350
+00:14:02,870 --> 00:14:05,210
+to determine that the person was blind
+
+351
+00:14:05,210 --> 00:14:06,490
+because they're using a screen reader
+
+352
+00:14:06,490 --> 00:14:08,960
+had mobility impairments because they're
+
+353
+00:14:08,960 --> 00:14:10,820
+using speech recognition and so
+
+354
+00:14:10,820 --> 00:14:12,410
+obviously it's important that we protect
+
+355
+00:14:12,410 --> 00:14:15,170
+that user privacy so what happens is
+
+356
+00:14:15,170 --> 00:14:17,500
+when someone using a screen reader
+
+357
+00:14:17,500 --> 00:14:19,940
+carries out an action it will synthesize
+
+358
+00:14:19,940 --> 00:14:21,980
+a click event for example so
+
+359
+00:14:21,980 --> 00:14:24,680
+particularly on touch devices if you tap
+
+360
+00:14:24,680 --> 00:14:26,300
+a device with a screen reader running
+
+361
+00:14:26,300 --> 00:14:28,160
+it's a double tap gesture not a single
+
+362
+00:14:28,160 --> 00:14:30,110
+tap that you'll be used to but that will
+
+363
+00:14:30,110 --> 00:14:32,570
+synthesize a click event and similarly
+
+364
+00:14:32,570 --> 00:14:35,210
+other events are cloaked if you like
+
+365
+00:14:35,210 --> 00:14:38,420
+using these synthesized events they're
+
+366
+00:14:38,420 --> 00:14:40,460
+also going to introduce some new events
+
+367
+00:14:40,460 --> 00:14:42,830
+particularly increment and decrement
+
+368
+00:14:42,830 --> 00:14:46,010
+scroll up scroll down and dismiss and
+
+369
+00:14:46,010 --> 00:14:49,070
+this very much plays into touchscreen
+
+370
+00:14:49,070 --> 00:14:51,890
+devices at the moment it's pretty much
+
+371
+00:14:51,890 --> 00:14:55,390
+impossible to create a custom slider
+
+372
+00:14:55,390 --> 00:14:57,950
+using all the accessibility
+
+373
+00:14:57,950 --> 00:15:00,470
+characteristics that are available and
+
+374
+00:15:00,470 --> 00:15:02,420
+to have it usable with a screen reader
+
+375
+00:15:02,420 --> 00:15:04,790
+on a touch device the reason is that
+
+376
+00:15:04,790 --> 00:15:06,560
+when you have a screen reader running on
+
+377
+00:15:06,560 --> 00:15:08,810
+your touch screen flick up and flick
+
+378
+00:15:08,810 --> 00:15:11,630
+down the gestures you'd probably use to
+
+379
+00:15:11,630 --> 00:15:13,940
+adjust the value of a slider are already
+
+380
+00:15:13,940 --> 00:15:16,190
+used for screen reader specific commands
+
+381
+00:15:16,190 --> 00:15:18,200
+so there's no way that those commands
+
+382
+00:15:18,200 --> 00:15:21,980
+can be separated out into using a slider
+
+383
+00:15:21,980 --> 00:15:23,990
+they're always protected they're always
+
+384
+00:15:23,990 --> 00:15:26,660
+ring-fenced for the screen reader so if
+
+385
+00:15:26,660 --> 00:15:28,580
+you go to something like the Aria
+
+386
+00:15:28,580 --> 00:15:29,630
+authoring practice
+
+387
+00:15:29,630 --> 00:15:31,400
+guide and pick up the blueprint design
+
+388
+00:15:31,400 --> 00:15:34,340
+pattern for a slider there implement it
+
+389
+00:15:34,340 --> 00:15:35,930
+perfectly but try to use it on a
+
+390
+00:15:35,930 --> 00:15:37,190
+touchscreen device with the screen
+
+391
+00:15:37,190 --> 00:15:39,410
+reader running it won't work the slider
+
+392
+00:15:39,410 --> 00:15:41,570
+can't be adjusted in the way that you'd
+
+393
+00:15:41,570 --> 00:15:44,920
+expect so these are being put into
+
+394
+00:15:44,920 --> 00:15:46,820
+practice these new events will come
+
+395
+00:15:46,820 --> 00:15:49,930
+along to help us get around that problem
+
+396
+00:15:49,930 --> 00:15:53,180
+phase 3 will let us introduce virtual
+
+397
+00:15:53,180 --> 00:15:55,400
+accessibility nodes into the tree this
+
+398
+00:15:55,400 --> 00:15:56,720
+is where we really start to get our
+
+399
+00:15:56,720 --> 00:15:58,880
+hands on that browser only functionality
+
+400
+00:15:58,880 --> 00:16:02,180
+will be able to add entirely new nodes
+
+401
+00:16:02,180 --> 00:16:04,460
+into the accessibility tree up until
+
+402
+00:16:04,460 --> 00:16:06,050
+this point there is always a
+
+403
+00:16:06,050 --> 00:16:07,910
+corresponding Dom node for an
+
+404
+00:16:07,910 --> 00:16:09,950
+accessibility node but we can change
+
+405
+00:16:09,950 --> 00:16:12,890
+that this is the bit where it starts to
+
+406
+00:16:12,890 --> 00:16:14,900
+feel really scary what we don't want to
+
+407
+00:16:14,900 --> 00:16:16,970
+happen is for developers to start
+
+408
+00:16:16,970 --> 00:16:18,890
+creating entirely secondary
+
+409
+00:16:18,890 --> 00:16:21,080
+accessibility trees just for screen
+
+410
+00:16:21,080 --> 00:16:22,970
+reader users that bear no resemblance to
+
+411
+00:16:22,970 --> 00:16:25,520
+the Dom good practice is always going to
+
+412
+00:16:25,520 --> 00:16:26,900
+be to try and keep those two things
+
+413
+00:16:26,900 --> 00:16:29,450
+synchronized with each other but one
+
+414
+00:16:29,450 --> 00:16:31,490
+really clear use case is doing something
+
+415
+00:16:31,490 --> 00:16:34,010
+with the canvas element when we draw
+
+416
+00:16:34,010 --> 00:16:35,420
+something to the screen using canvas
+
+417
+00:16:35,420 --> 00:16:37,400
+it's all done in JavaScript so there are
+
+418
+00:16:37,400 --> 00:16:38,780
+no HTML elements there's no
+
+419
+00:16:38,780 --> 00:16:40,280
+accessibility semantics that are
+
+420
+00:16:40,280 --> 00:16:42,380
+available to the accessibility tree and
+
+421
+00:16:42,380 --> 00:16:45,080
+so two screen readers so one use of
+
+422
+00:16:45,080 --> 00:16:46,790
+being able to add virtual nodes to the
+
+423
+00:16:46,790 --> 00:16:48,710
+accessibility tree is that we can attach
+
+424
+00:16:48,710 --> 00:16:51,500
+a shadow root to the canvas element we
+
+425
+00:16:51,500 --> 00:16:53,900
+can then start adding a virtual branch
+
+426
+00:16:53,900 --> 00:16:55,790
+of the accessibility tree in there to
+
+427
+00:16:55,790 --> 00:16:57,950
+provide fullback content specifically
+
+428
+00:16:57,950 --> 00:16:59,690
+for people who can't see the JavaScript
+
+429
+00:16:59,690 --> 00:17:01,370
+rendered content inside the canvas
+
+430
+00:17:01,370 --> 00:17:03,560
+element but this is a long way off now
+
+431
+00:17:03,560 --> 00:17:05,720
+and there's a lot of obstacles to
+
+432
+00:17:05,720 --> 00:17:07,250
+getting to this point but it really does
+
+433
+00:17:07,250 --> 00:17:09,670
+have some interesting possibilities
+
+434
+00:17:09,670 --> 00:17:12,860
+phase four lastly is probably the most
+
+435
+00:17:12,860 --> 00:17:15,050
+complicated of all the phases it's going
+
+436
+00:17:15,050 --> 00:17:16,699
+to give us access to all computed
+
+437
+00:17:16,699 --> 00:17:18,290
+accessibility properties in the
+
+438
+00:17:18,290 --> 00:17:20,900
+accessibility tree both for the
+
+439
+00:17:20,900 --> 00:17:22,579
+accessibility nodes that are associated
+
+440
+00:17:22,579 --> 00:17:25,750
+with Dom nodes but also for the entire
+
+441
+00:17:25,750 --> 00:17:27,890
+accessibility tree we'll be able to walk
+
+442
+00:17:27,890 --> 00:17:29,840
+through the accessibility tree in the
+
+443
+00:17:29,840 --> 00:17:32,150
+same way that we can walk the Dom now so
+
+444
+00:17:32,150 --> 00:17:34,010
+again it's going to open up a lot of
+
+445
+00:17:34,010 --> 00:17:35,930
+possibilities for functionality and
+
+446
+00:17:35,930 --> 00:17:38,060
+capability but I think they're keeping
+
+447
+00:17:38,060 --> 00:17:40,160
+this one till the last phase because it
+
+448
+00:17:40,160 --> 00:17:41,630
+is the one that's going to take the most
+
+449
+00:17:41,630 --> 00:17:43,630
+discussion the most thinking
+
+450
+00:17:43,630 --> 00:17:46,370
+so looking at those things this is how
+
+451
+00:17:46,370 --> 00:17:48,110
+we can think about building
+
+452
+00:17:48,110 --> 00:17:50,770
+accessibility into our custom elements
+
+453
+00:17:50,770 --> 00:17:53,299
+recognizing that if we use autonomous
+
+454
+00:17:53,299 --> 00:17:55,490
+custom elements we need to add in the
+
+455
+00:17:55,490 --> 00:17:56,960
+accessibility characteristics for
+
+456
+00:17:56,960 --> 00:17:59,960
+ourselves and that the AO M in time is
+
+457
+00:17:59,960 --> 00:18:01,820
+going to give us a lot more flexibility
+
+458
+00:18:01,820 --> 00:18:05,240
+to do that but we can also use custom
+
+459
+00:18:05,240 --> 00:18:07,070
+elements in fact the whole web component
+
+460
+00:18:07,070 --> 00:18:09,740
+stack to solve accessibility problems as
+
+461
+00:18:09,740 --> 00:18:14,510
+well sorry so we can create a speak
+
+462
+00:18:14,510 --> 00:18:17,539
+content element for example I use a
+
+463
+00:18:17,539 --> 00:18:19,220
+screen reader and one thing I quite
+
+464
+00:18:19,220 --> 00:18:21,710
+often do is if I want to look at the
+
+465
+00:18:21,710 --> 00:18:24,320
+news I will go and set my screen reader
+
+466
+00:18:24,320 --> 00:18:26,720
+reading a news item on the website and
+
+467
+00:18:26,720 --> 00:18:27,740
+then I'll go off and make myself a cup
+
+468
+00:18:27,740 --> 00:18:29,330
+of tea while I'm still listening to it
+
+469
+00:18:29,330 --> 00:18:30,740
+because I don't need to look at the
+
+470
+00:18:30,740 --> 00:18:33,049
+screen my screen reader on my headset is
+
+471
+00:18:33,049 --> 00:18:34,880
+portable I can just walk around the
+
+472
+00:18:34,880 --> 00:18:36,740
+house put the kettle on make the tea and
+
+473
+00:18:36,740 --> 00:18:39,049
+still listen to the news story and I've
+
+474
+00:18:39,049 --> 00:18:40,220
+often thought this would be a really
+
+475
+00:18:40,220 --> 00:18:42,530
+useful thing for everybody to be able to
+
+476
+00:18:42,530 --> 00:18:45,230
+do being tied to your chair to your
+
+477
+00:18:45,230 --> 00:18:47,750
+computer your laptop is not always the
+
+478
+00:18:47,750 --> 00:18:50,299
+ideal experience so perhaps we can use
+
+479
+00:18:50,299 --> 00:18:52,370
+custom elements to create a widget that
+
+480
+00:18:52,370 --> 00:18:55,309
+will let us have a button on screen that
+
+481
+00:18:55,309 --> 00:18:57,470
+will read a designated piece of content
+
+482
+00:18:57,470 --> 00:18:59,840
+out loud and it turns out it's
+
+483
+00:18:59,840 --> 00:19:02,840
+reasonably easy to achieve we can use
+
+484
+00:19:02,840 --> 00:19:05,900
+the HTML template element to set up the
+
+485
+00:19:05,900 --> 00:19:08,360
+actual element we'll chuck some styling
+
+486
+00:19:08,360 --> 00:19:10,280
+in there just to make the the button and
+
+487
+00:19:10,280 --> 00:19:14,750
+the div look good we will also use some
+
+488
+00:19:14,750 --> 00:19:19,610
+slots to manage things so in the
+
+489
+00:19:19,610 --> 00:19:21,320
+template we've got a button element that
+
+490
+00:19:21,320 --> 00:19:23,780
+contains a slot element and this will
+
+491
+00:19:23,780 --> 00:19:25,340
+let us pull through content from the
+
+492
+00:19:25,340 --> 00:19:27,049
+light Dom from the the developer code
+
+493
+00:19:27,049 --> 00:19:30,500
+and we'll also set up a div that's also
+
+494
+00:19:30,500 --> 00:19:32,299
+going to be a slot for the content that
+
+495
+00:19:32,299 --> 00:19:34,850
+we want to be spoken out loud
+
+496
+00:19:34,850 --> 00:19:37,850
+in our connected callback we will do all
+
+497
+00:19:37,850 --> 00:19:40,909
+sorts of things we will grab the control
+
+498
+00:19:40,909 --> 00:19:42,409
+the thing we'll hit to make it speak
+
+499
+00:19:42,409 --> 00:19:45,200
+we'll grab the element that contains the
+
+500
+00:19:45,200 --> 00:19:46,909
+content and then from there we'll grab
+
+501
+00:19:46,909 --> 00:19:48,620
+the content that we want to be spoken
+
+502
+00:19:48,620 --> 00:19:52,820
+out loud in our function we will set up
+
+503
+00:19:52,820 --> 00:19:56,059
+the web speech API to make it talk we'll
+
+504
+00:19:56,059 --> 00:19:56,960
+create
+
+505
+00:19:56,960 --> 00:20:00,049
+since this is object and will attach to
+
+506
+00:20:00,049 --> 00:20:01,880
+that to the text that we want spoken out
+
+507
+00:20:01,880 --> 00:20:03,529
+loud that we've grabbed from the light
+
+508
+00:20:03,529 --> 00:20:06,320
+Dom and then lastly we need to set a
+
+509
+00:20:06,320 --> 00:20:08,750
+timeout because what we want to do is
+
+510
+00:20:08,750 --> 00:20:11,000
+lastly make the button look like it's
+
+511
+00:20:11,000 --> 00:20:12,980
+been pressed for as long as the contents
+
+512
+00:20:12,980 --> 00:20:15,049
+being spoken and then we want to return
+
+513
+00:20:15,049 --> 00:20:17,360
+it to its default States when it's
+
+514
+00:20:17,360 --> 00:20:19,279
+finished we're using the aria-pressed
+
+515
+00:20:19,279 --> 00:20:21,020
+attribute again to make sure that that
+
+516
+00:20:21,020 --> 00:20:23,090
+happens in the accessibility state as
+
+517
+00:20:23,090 --> 00:20:25,940
+well as the visual state reset state
+
+518
+00:20:25,940 --> 00:20:29,870
+then just checks after 500 milliseconds
+
+519
+00:20:29,870 --> 00:20:31,909
+and it checks to see if the speech uh
+
+520
+00:20:31,909 --> 00:20:34,640
+pterence is still talking if it is still
+
+521
+00:20:34,640 --> 00:20:36,470
+talking it resets the timer for another
+
+522
+00:20:36,470 --> 00:20:39,350
+500 if it isn't then it returns the
+
+523
+00:20:39,350 --> 00:20:42,070
+state of the button back to non pressed
+
+524
+00:20:42,070 --> 00:20:44,750
+would you one last bit of under the hood
+
+525
+00:20:44,750 --> 00:20:46,880
+magic and we're going to attach the
+
+526
+00:20:46,880 --> 00:20:49,520
+visual state of the button to the
+
+527
+00:20:49,520 --> 00:20:52,250
+attribute selector using aria-pressed so
+
+528
+00:20:52,250 --> 00:20:54,440
+as the value of aria-pressed is changed
+
+529
+00:20:54,440 --> 00:20:56,809
+the visual style of the button changes
+
+530
+00:20:56,809 --> 00:20:58,520
+accordingly and it just makes the whole
+
+531
+00:20:58,520 --> 00:21:00,620
+thing sync up a lot more easily under
+
+532
+00:21:00,620 --> 00:21:02,720
+the hood and what we get at the end of
+
+533
+00:21:02,720 --> 00:21:04,850
+it is a very simple piece of text on
+
+534
+00:21:04,850 --> 00:21:07,429
+page a button that we can hit and
+
+535
+00:21:07,429 --> 00:21:09,679
+hopefully everything all works for
+
+536
+00:21:09,679 --> 00:21:15,909
+everybody one tequila two tequila three
+
+537
+00:21:15,909 --> 00:21:22,250
+tequila floor and so custom elements
+
+538
+00:21:22,250 --> 00:21:24,380
+hopefully this has given you a brief
+
+539
+00:21:24,380 --> 00:21:27,080
+insight into can be used not only as I
+
+540
+00:21:27,080 --> 00:21:29,870
+said to solve accessibility problems but
+
+541
+00:21:29,870 --> 00:21:31,549
+if we get them right add in all the
+
+542
+00:21:31,549 --> 00:21:33,260
+accessibility properties that we need to
+
+543
+00:21:33,260 --> 00:21:35,330
+they give us a really powerful way to
+
+544
+00:21:35,330 --> 00:21:38,990
+create new and useful features on the
+
+545
+00:21:38,990 --> 00:21:41,960
+web I need to really thank a couple of
+
+546
+00:21:41,960 --> 00:21:44,539
+people Scott O'Hara and Patrick Walker
+
+547
+00:21:44,539 --> 00:21:46,880
+and Dan Hopkins who all gave me a
+
+548
+00:21:46,880 --> 00:21:48,289
+tremendous amount of help while I was
+
+549
+00:21:48,289 --> 00:21:50,450
+putting this together there's a URL
+
+550
+00:21:50,450 --> 00:21:54,409
+on-screen from Pat which leads to a way
+
+551
+00:21:54,409 --> 00:21:56,870
+to implement a slider that will work in
+
+552
+00:21:56,870 --> 00:21:58,340
+accessibility terms on touchscreen
+
+553
+00:21:58,340 --> 00:22:00,080
+devices you basically use a native
+
+554
+00:22:00,080 --> 00:22:02,240
+slider element you hook it up to the
+
+555
+00:22:02,240 --> 00:22:03,620
+custom visuals that you want to make
+
+556
+00:22:03,620 --> 00:22:05,029
+sure you keep it all in sync but if
+
+557
+00:22:05,029 --> 00:22:06,770
+you're curious about an interim solution
+
+558
+00:22:06,770 --> 00:22:08,660
+until the aom arrives
+
+559
+00:22:08,660 --> 00:22:10,430
+that's a really good one to check but
+
+560
+00:22:10,430 --> 00:22:12,500
+otherwise I recommend that you follow
+
+561
+00:22:12,500 --> 00:22:13,730
+all of these people they're all damn
+
+562
+00:22:13,730 --> 00:22:15,620
+good developers in their own right and
+
+563
+00:22:15,620 --> 00:22:18,170
+pretty damn good people too and lastly
+
+564
+00:22:18,170 --> 00:22:21,370
+thank you very much to all of you
+

@@ -1,0 +1,2469 @@
+1
+00:00:15,300 --> 00:00:18,360
+
+my name is Michele rotzinger I work for
+
+2
+00:00:18,360 --> 00:00:21,720
+Google as a software engineer I work on
+
+3
+00:00:21,720 --> 00:00:25,080
+the v8 team which is now totally based
+
+4
+00:00:25,080 --> 00:00:27,419
+in in Munich so we ate this developed in
+
+5
+00:00:27,419 --> 00:00:31,020
+Munich and engineering office and the
+
+6
+00:00:31,020 --> 00:00:32,279
+purpose of this talk is basically
+
+7
+00:00:32,279 --> 00:00:35,160
+twofold one is performance of course we
+
+8
+00:00:35,160 --> 00:00:37,019
+are all talking about performance but
+
+9
+00:00:37,019 --> 00:00:39,180
+the second point is the memory footprint
+
+10
+00:00:39,180 --> 00:00:41,870
+that all the performance optimizations
+
+11
+00:00:41,870 --> 00:00:46,320
+introduced and so I want to give it a
+
+12
+00:00:46,320 --> 00:00:48,210
+different spin from all the other talks
+
+13
+00:00:48,210 --> 00:00:51,540
+that have been given about v8 and see
+
+14
+00:00:51,540 --> 00:00:53,549
+how we can get both of best worlds so
+
+15
+00:00:53,549 --> 00:00:56,159
+great performance and low memory
+
+16
+00:00:56,159 --> 00:01:01,320
+footprint so before I head off into that
+
+17
+00:01:01,320 --> 00:01:05,250
+first one slide basic overview of how v8
+
+18
+00:01:05,250 --> 00:01:08,610
+works and kind of a reminder of what you
+
+19
+00:01:08,610 --> 00:01:11,640
+might have already heard so the main
+
+20
+00:01:11,640 --> 00:01:13,920
+thing there are a few things at Google
+
+21
+00:01:13,920 --> 00:01:15,960
+that we know to be true and one of those
+
+22
+00:01:15,960 --> 00:01:18,750
+things is fast is better than slow so
+
+23
+00:01:18,750 --> 00:01:21,179
+obviously that's the main driving force
+
+24
+00:01:21,179 --> 00:01:24,210
+for v8 we want to be the fastest
+
+25
+00:01:24,210 --> 00:01:29,670
+javascript engine out there how do we
+
+26
+00:01:29,670 --> 00:01:31,499
+try to achieve that so there are a few
+
+27
+00:01:31,499 --> 00:01:35,149
+ingredients as to that one would be
+
+28
+00:01:35,149 --> 00:01:38,520
+inline caching which allows us to access
+
+29
+00:01:38,520 --> 00:01:40,679
+properties of objects fast because
+
+30
+00:01:40,679 --> 00:01:42,659
+that's the main thing that all
+
+31
+00:01:42,659 --> 00:01:45,270
+JavaScript applications do manipulate
+
+32
+00:01:45,270 --> 00:01:48,659
+objects access properties then as we
+
+33
+00:01:48,659 --> 00:01:50,520
+heard in a previous talk optimizing
+
+34
+00:01:50,520 --> 00:01:53,009
+compiler to really kick ass at the hot
+
+35
+00:01:53,009 --> 00:01:57,869
+methods and also another important
+
+36
+00:01:57,869 --> 00:01:59,549
+ingredients an efficient garbage
+
+37
+00:01:59,549 --> 00:02:01,799
+collector and we actually have a new GC
+
+38
+00:02:01,799 --> 00:02:05,340
+that's an incremental low post garbage
+
+39
+00:02:05,340 --> 00:02:10,860
+collector it's generational and we try
+
+40
+00:02:10,860 --> 00:02:13,560
+to get the power the post post times as
+
+41
+00:02:13,560 --> 00:02:15,900
+low as possible by basically
+
+42
+00:02:15,900 --> 00:02:19,650
+interleaving mutator work so work that
+
+43
+00:02:19,650 --> 00:02:21,510
+your application has to do with garbage
+
+44
+00:02:21,510 --> 00:02:24,060
+collection work slicing these up and
+
+45
+00:02:24,060 --> 00:02:25,980
+interleaving it so that we can make
+
+46
+00:02:25,980 --> 00:02:28,200
+progress with garbage collection as well
+
+47
+00:02:28,200 --> 00:02:29,120
+as pro
+
+48
+00:02:29,120 --> 00:02:33,349
+with your application and a lot of other
+
+49
+00:02:33,349 --> 00:02:35,450
+ingredients --is we mix those up and
+
+50
+00:02:35,450 --> 00:02:39,200
+stir them well and hopefully get high
+
+51
+00:02:39,200 --> 00:02:41,360
+performance characteristics in our
+
+52
+00:02:41,360 --> 00:02:47,810
+engine so we got speed awesome but what
+
+53
+00:02:47,810 --> 00:02:48,980
+else did we get with death
+
+54
+00:02:48,980 --> 00:02:51,110
+imagine your you bought a new car and
+
+55
+00:02:51,110 --> 00:02:54,200
+you know it has a pretty damn engine in
+
+56
+00:02:54,200 --> 00:02:56,510
+there and you want to take it out for a
+
+57
+00:02:56,510 --> 00:02:58,579
+quick Drive and suddenly you find
+
+58
+00:02:58,579 --> 00:03:02,299
+yourself in here so you look around and
+
+59
+00:03:02,299 --> 00:03:05,180
+see you want the other cars and start
+
+60
+00:03:05,180 --> 00:03:07,250
+thinking about well hang on wait a
+
+61
+00:03:07,250 --> 00:03:09,079
+second what is the footprint of all of
+
+62
+00:03:09,079 --> 00:03:11,450
+that in your car you might be worried
+
+63
+00:03:11,450 --> 00:03:14,000
+about carbon footprint if you're talking
+
+64
+00:03:14,000 --> 00:03:16,250
+about JavaScript engines you might be
+
+65
+00:03:16,250 --> 00:03:22,819
+worried about memory footprint so before
+
+66
+00:03:22,819 --> 00:03:24,370
+I dive off into the memory footprint
+
+67
+00:03:24,370 --> 00:03:26,629
+first of all how would you optimize a
+
+68
+00:03:26,629 --> 00:03:30,019
+JavaScript application the most
+
+69
+00:03:30,019 --> 00:03:31,940
+important thing first of all is to find
+
+70
+00:03:31,940 --> 00:03:33,950
+the actual hotspots find what is
+
+71
+00:03:33,950 --> 00:03:36,099
+important for your application
+
+72
+00:03:36,099 --> 00:03:38,810
+performance wise that would be functions
+
+73
+00:03:38,810 --> 00:03:41,419
+that are worth being optimized because
+
+74
+00:03:41,419 --> 00:03:43,880
+they are executed often frequently a lot
+
+75
+00:03:43,880 --> 00:03:46,310
+of times memory wise that would be
+
+76
+00:03:46,310 --> 00:03:49,879
+finding objects that dominate the heap
+
+77
+00:03:49,879 --> 00:03:52,870
+that are omnipresent in the heap and
+
+78
+00:03:52,870 --> 00:03:55,940
+they live long or that have a bad memory
+
+79
+00:03:55,940 --> 00:04:00,889
+layout but once you found the actual
+
+80
+00:04:00,889 --> 00:04:03,019
+object is causing a problem you need to
+
+81
+00:04:03,019 --> 00:04:04,849
+understand why it's actually causing a
+
+82
+00:04:04,849 --> 00:04:07,519
+problem so without understanding the
+
+83
+00:04:07,519 --> 00:04:09,349
+actual problem there is no way you can
+
+84
+00:04:09,349 --> 00:04:15,139
+fix it and then you fix it and the last
+
+85
+00:04:15,139 --> 00:04:18,579
+item is really just that fixing it so
+
+86
+00:04:18,579 --> 00:04:21,099
+here is my very personal very
+
+87
+00:04:21,099 --> 00:04:24,020
+unscientific opinion of how much time
+
+88
+00:04:24,020 --> 00:04:27,680
+you need to invest into these steps so
+
+89
+00:04:27,680 --> 00:04:29,750
+fixing it is really just that if you
+
+90
+00:04:29,750 --> 00:04:31,849
+understood the problem getting rid of it
+
+91
+00:04:31,849 --> 00:04:33,460
+should be easy
+
+92
+00:04:33,460 --> 00:04:35,810
+this talk is mainly gonna focus about
+
+93
+00:04:35,810 --> 00:04:38,320
+understanding the problem at hand and
+
+94
+00:04:38,320 --> 00:04:39,919
+since these fix things
+
+95
+00:04:39,919 --> 00:04:42,169
+since fixing is so easy we will also
+
+96
+00:04:42,169 --> 00:04:47,569
+do that okay so let's look at a few
+
+97
+00:04:47,569 --> 00:04:49,580
+examples and three examples that I want
+
+98
+00:04:49,580 --> 00:04:52,460
+to present here are objects like
+
+99
+00:04:52,460 --> 00:04:54,699
+tracking array representation and
+
+100
+00:04:54,699 --> 00:04:58,879
+execution context we will look at three
+
+101
+00:04:58,879 --> 00:05:02,029
+examples in depth and discuss a few best
+
+102
+00:05:02,029 --> 00:05:05,659
+practices how to improve hot code around
+
+103
+00:05:05,659 --> 00:05:07,969
+those optimizations the first one will
+
+104
+00:05:07,969 --> 00:05:10,639
+be about how our objects represented in
+
+105
+00:05:10,639 --> 00:05:12,740
+memory second one our area is
+
+106
+00:05:12,740 --> 00:05:14,839
+represented in memory and the third one
+
+107
+00:05:14,839 --> 00:05:17,719
+how is your actual execution environment
+
+108
+00:05:17,719 --> 00:05:20,620
+of some function represented in memory
+
+109
+00:05:20,620 --> 00:05:23,060
+okay let's dive into that so the first
+
+110
+00:05:23,060 --> 00:05:26,689
+thing objects like tracking most of you
+
+111
+00:05:26,689 --> 00:05:28,400
+might have already seen this example the
+
+112
+00:05:28,400 --> 00:05:31,219
+famous point example and how would this
+
+113
+00:05:31,219 --> 00:05:35,210
+point be represented in memory so please
+
+114
+00:05:35,210 --> 00:05:36,710
+stick with me I'm gonna give it a
+
+115
+00:05:36,710 --> 00:05:39,020
+different spin this time with the
+
+116
+00:05:39,020 --> 00:05:42,050
+addition of slack tracking so let's go
+
+117
+00:05:42,050 --> 00:05:43,580
+through that application step by step
+
+118
+00:05:43,580 --> 00:05:48,830
+and I promise so I try to do this
+
+119
+00:05:48,830 --> 00:05:51,110
+without assembler so I just have fancy
+
+120
+00:05:51,110 --> 00:05:52,939
+graphics explaining it know assembler
+
+121
+00:05:52,939 --> 00:05:55,849
+code I hope that's okay so the first
+
+122
+00:05:55,849 --> 00:05:57,800
+thing when we execute that constructor
+
+123
+00:05:57,800 --> 00:06:02,149
+is we actually allocate the object in
+
+124
+00:06:02,149 --> 00:06:06,199
+memory you probably know that we have a
+
+125
+00:06:06,199 --> 00:06:08,360
+hidden class system behind all of that
+
+126
+00:06:08,360 --> 00:06:11,210
+because JavaScript in itself is a very
+
+127
+00:06:11,210 --> 00:06:14,120
+loosely typed language and to really
+
+128
+00:06:14,120 --> 00:06:16,189
+optimize for for certain objects we need
+
+129
+00:06:16,189 --> 00:06:18,800
+to have a more precise type system
+
+130
+00:06:18,800 --> 00:06:22,039
+behind it so we invent our own types and
+
+131
+00:06:22,039 --> 00:06:25,430
+call them hidden classes and we just
+
+132
+00:06:25,430 --> 00:06:26,990
+give that new object a little bit of
+
+133
+00:06:26,990 --> 00:06:29,240
+slack so in this graphic that would be
+
+134
+00:06:29,240 --> 00:06:31,430
+four slots that are available directly
+
+135
+00:06:31,430 --> 00:06:34,669
+in the object so there is no indirection
+
+136
+00:06:34,669 --> 00:06:36,469
+going on here you don't have a packing
+
+137
+00:06:36,469 --> 00:06:39,080
+store where the actual content will be
+
+138
+00:06:39,080 --> 00:06:41,149
+stored it's directly in the object that
+
+139
+00:06:41,149 --> 00:06:45,379
+also serves as an identity so let's add
+
+140
+00:06:45,379 --> 00:06:49,490
+the first property that would be X we we
+
+141
+00:06:49,490 --> 00:06:51,889
+add it and since we now modify the
+
+142
+00:06:51,889 --> 00:06:54,919
+object layout we actually added a new
+
+143
+00:06:54,919 --> 00:06:56,150
+property that can be ax
+
+144
+00:06:56,150 --> 00:06:58,190
+we also need to transition the hidden
+
+145
+00:06:58,190 --> 00:07:00,740
+class so it's now a new type in our type
+
+146
+00:07:00,740 --> 00:07:03,020
+system and we remember that transition
+
+147
+00:07:03,020 --> 00:07:04,910
+so whenever we start from the first
+
+148
+00:07:04,910 --> 00:07:07,729
+hidden class at X we'll go to the next
+
+149
+00:07:07,729 --> 00:07:11,720
+hidden class and as I mentioned before
+
+150
+00:07:11,720 --> 00:07:14,540
+we store the value directly in the
+
+151
+00:07:14,540 --> 00:07:17,449
+object so accessing it is just taking
+
+152
+00:07:17,449 --> 00:07:19,610
+it's just loading one word out of the
+
+153
+00:07:19,610 --> 00:07:23,660
+object no indirection second step
+
+154
+00:07:23,660 --> 00:07:26,720
+obvious add a new property transition to
+
+155
+00:07:26,720 --> 00:07:30,680
+a hidden class again so if you think of
+
+156
+00:07:30,680 --> 00:07:33,650
+this transition chain or transition tree
+
+157
+00:07:33,650 --> 00:07:35,090
+that you get on the on the on the right
+
+158
+00:07:35,090 --> 00:07:38,300
+hand side you can imagine what would
+
+159
+00:07:38,300 --> 00:07:40,400
+happen if you suddenly add these
+
+160
+00:07:40,400 --> 00:07:42,620
+properties in a different order you
+
+161
+00:07:42,620 --> 00:07:44,479
+would end up with a different in class
+
+162
+00:07:44,479 --> 00:07:47,270
+in the end so that would be one point to
+
+163
+00:07:47,270 --> 00:07:53,030
+avoid now let's repeat that with the
+
+164
+00:07:53,030 --> 00:07:54,590
+follow up down there so we get two
+
+165
+00:07:54,590 --> 00:07:57,620
+objects both have x and y and now we
+
+166
+00:07:57,620 --> 00:08:01,010
+have this fancy modification of the
+
+167
+00:08:01,010 --> 00:08:02,750
+object that comes right after the
+
+168
+00:08:02,750 --> 00:08:04,970
+constructor so how would we deal with
+
+169
+00:08:04,970 --> 00:08:07,780
+that so every second object gets a set
+
+170
+00:08:07,780 --> 00:08:10,580
+property okay we can just add that no
+
+171
+00:08:10,580 --> 00:08:14,180
+problem we still have slack in the
+
+172
+00:08:14,180 --> 00:08:16,700
+object so both objects are actually over
+
+173
+00:08:16,700 --> 00:08:18,889
+allocated we allocated too much memory
+
+174
+00:08:18,889 --> 00:08:23,960
+for those objects and at some point when
+
+175
+00:08:23,960 --> 00:08:25,639
+we have enough of these objects we
+
+176
+00:08:25,639 --> 00:08:30,500
+decide to basically freeze T the T
+
+177
+00:08:30,500 --> 00:08:32,150
+transition tree we say okay your
+
+178
+00:08:32,150 --> 00:08:34,810
+application has allocated enough objects
+
+179
+00:08:34,810 --> 00:08:37,400
+they are probably gonna look like this
+
+180
+00:08:37,400 --> 00:08:39,860
+most of the time so we are gonna freeze
+
+181
+00:08:39,860 --> 00:08:42,560
+that state and say okay those are those
+
+182
+00:08:42,560 --> 00:08:44,600
+are the classes two hidden classes that
+
+183
+00:08:44,600 --> 00:08:47,089
+you're gonna work with now we actually
+
+184
+00:08:47,089 --> 00:08:48,980
+want to get rid of the slack that we
+
+185
+00:08:48,980 --> 00:08:50,870
+have at the end of each object and we
+
+186
+00:08:50,870 --> 00:08:53,779
+can do that we just shrink the objects
+
+187
+00:08:53,779 --> 00:08:57,410
+the problem is every point that you
+
+188
+00:08:57,410 --> 00:08:59,089
+instantiate with the point constructor
+
+189
+00:08:59,089 --> 00:09:01,880
+can either have two or three properties
+
+190
+00:09:01,880 --> 00:09:05,300
+and we don't know how many so we need to
+
+191
+00:09:05,300 --> 00:09:08,300
+keep around at least three slacks in
+
+192
+00:09:08,300 --> 00:09:09,920
+each newly allocated
+
+193
+00:09:09,920 --> 00:09:11,810
+check and that means for half of the
+
+194
+00:09:11,810 --> 00:09:14,240
+object we waste that memory it's really
+
+195
+00:09:14,240 --> 00:09:18,589
+wasted so that's probably bad if that's
+
+196
+00:09:18,589 --> 00:09:20,420
+a hot object meaning you have like a
+
+197
+00:09:20,420 --> 00:09:21,889
+million of those objects floating around
+
+198
+00:09:21,889 --> 00:09:27,680
+in memory that would be pretty bad so we
+
+199
+00:09:27,680 --> 00:09:29,209
+hopefully understood the problem now how
+
+200
+00:09:29,209 --> 00:09:31,459
+can we fix it well fixing it is easy
+
+201
+00:09:31,459 --> 00:09:34,220
+just use two constructors meaning you
+
+202
+00:09:34,220 --> 00:09:36,860
+come up with to transition freeze or
+
+203
+00:09:36,860 --> 00:09:40,220
+transition chains and both Maps can be
+
+204
+00:09:40,220 --> 00:09:43,970
+optimized for their object size so that
+
+205
+00:09:43,970 --> 00:09:48,769
+fix is pretty easy and either so I left
+
+206
+00:09:48,769 --> 00:09:50,360
+the implementation of those to construct
+
+207
+00:09:50,360 --> 00:09:52,130
+this point one point two and point three
+
+208
+00:09:52,130 --> 00:09:52,550
+out
+
+209
+00:09:52,550 --> 00:09:54,860
+you can either implement them directly
+
+210
+00:09:54,860 --> 00:09:56,720
+which means you have some duplication in
+
+211
+00:09:56,720 --> 00:10:00,170
+there you could use some frameworks that
+
+212
+00:10:00,170 --> 00:10:01,639
+are out there like the prototype
+
+213
+00:10:01,639 --> 00:10:06,529
+framework all types of inheritance you
+
+214
+00:10:06,529 --> 00:10:10,699
+could even use you from within point
+
+215
+00:10:10,699 --> 00:10:12,500
+three you could call the point two
+
+216
+00:10:12,500 --> 00:10:16,490
+constructor by using point to call this
+
+217
+00:10:16,490 --> 00:10:18,260
+and pass the arguments through that
+
+218
+00:10:18,260 --> 00:10:20,899
+would all work the object layout would
+
+219
+00:10:20,899 --> 00:10:22,579
+still look like this important thing is
+
+220
+00:10:22,579 --> 00:10:25,640
+use two different constructors tell the
+
+221
+00:10:25,640 --> 00:10:27,709
+VM that you actually are dealing with
+
+222
+00:10:27,709 --> 00:10:32,990
+two different types here so I said we
+
+223
+00:10:32,990 --> 00:10:36,529
+should measure it I hacked this pattern
+
+224
+00:10:36,529 --> 00:10:39,350
+into a ray tracer which deals with about
+
+225
+00:10:39,350 --> 00:10:43,459
+600 points 600 thousand points and up to
+
+226
+00:10:43,459 --> 00:10:48,440
+three wasted stack as select slots in
+
+227
+00:10:48,440 --> 00:10:49,910
+the in the objects and keeps them alive
+
+228
+00:10:49,910 --> 00:10:52,819
+in memory and that's improvement that
+
+229
+00:10:52,819 --> 00:10:55,610
+you get out of that and those are forty
+
+230
+00:10:55,610 --> 00:10:59,870
+percent so forty percent less memory
+
+231
+00:10:59,870 --> 00:11:02,149
+that your application consumes which is
+
+232
+00:11:02,149 --> 00:11:10,910
+quite ok I guess so now since if you
+
+233
+00:11:10,910 --> 00:11:13,730
+don't want to to to to think through all
+
+234
+00:11:13,730 --> 00:11:15,709
+of this every time and and come up with
+
+235
+00:11:15,709 --> 00:11:18,170
+the actual representation that your
+
+236
+00:11:18,170 --> 00:11:21,500
+object is gonna be in memory I will give
+
+237
+00:11:21,500 --> 00:11:23,240
+you a few best practices that you can
+
+238
+00:11:23,240 --> 00:11:23,750
+follow
+
+239
+00:11:23,750 --> 00:11:25,790
+and that will hopefully allow you to
+
+240
+00:11:25,790 --> 00:11:27,139
+write applications that are both
+
+241
+00:11:27,139 --> 00:11:30,410
+extremely fast and slick memory
+
+242
+00:11:30,410 --> 00:11:33,740
+consumption wise so first thing is try
+
+243
+00:11:33,740 --> 00:11:36,290
+to initialize all properties in the
+
+244
+00:11:36,290 --> 00:11:40,009
+constructor and as I mentioned before at
+
+245
+00:11:40,009 --> 00:11:41,449
+all the properties in the same order
+
+246
+00:11:41,449 --> 00:11:43,399
+because otherwise that would screw up or
+
+247
+00:11:43,399 --> 00:11:47,990
+our hidden classes and avoid object
+
+248
+00:11:47,990 --> 00:11:50,209
+layout modification after the fact so
+
+249
+00:11:50,209 --> 00:11:52,009
+after the constructor has come up with
+
+250
+00:11:52,009 --> 00:11:57,649
+the initial object layout now this might
+
+251
+00:11:57,649 --> 00:11:59,839
+sound like I'm taking away a little bit
+
+252
+00:11:59,839 --> 00:12:02,959
+of freedom from the from there from the
+
+253
+00:12:02,959 --> 00:12:04,779
+expressiveness that you have in
+
+254
+00:12:04,779 --> 00:12:08,360
+JavaScript but let me tell you a story
+
+255
+00:12:08,360 --> 00:12:11,750
+about that so I went into this I went to
+
+256
+00:12:11,750 --> 00:12:13,850
+this pup recently and that the entry
+
+257
+00:12:13,850 --> 00:12:17,269
+they had to sign and it said this pup
+
+258
+00:12:17,269 --> 00:12:21,050
+serves food that is good cheap and
+
+259
+00:12:21,050 --> 00:12:24,829
+served fast you can choose 3 you can
+
+260
+00:12:24,829 --> 00:12:29,059
+choose 2 and that's kind of this kind of
+
+261
+00:12:29,059 --> 00:12:30,879
+reminded me of this so you have
+
+262
+00:12:30,879 --> 00:12:34,009
+performance speed only one hand then you
+
+263
+00:12:34,009 --> 00:12:35,870
+have memory footprint on the other hand
+
+264
+00:12:35,870 --> 00:12:37,730
+and then you have the expressive power
+
+265
+00:12:37,730 --> 00:12:39,649
+or the freedom that JavaScript gives you
+
+266
+00:12:39,649 --> 00:12:41,389
+and I'm not claiming that those three
+
+267
+00:12:41,389 --> 00:12:43,550
+are actually all the time mutually
+
+268
+00:12:43,550 --> 00:12:46,850
+exclusive but knowing about those three
+
+269
+00:12:46,850 --> 00:12:49,309
+points in the triangle understanding it
+
+270
+00:12:49,309 --> 00:12:51,230
+and knowing where you're located in this
+
+271
+00:12:51,230 --> 00:12:53,720
+triangle might help you to write better
+
+272
+00:12:53,720 --> 00:12:59,000
+applications ok so let's move on to the
+
+273
+00:12:59,000 --> 00:13:02,449
+second example array representation so
+
+274
+00:13:02,449 --> 00:13:04,730
+far we only talked about named
+
+275
+00:13:04,730 --> 00:13:06,980
+properties now it's gonna be about index
+
+276
+00:13:06,980 --> 00:13:11,329
+properties so again we have something
+
+277
+00:13:11,329 --> 00:13:13,129
+that is used as a constructor or that
+
+278
+00:13:13,129 --> 00:13:15,410
+that used as a factory to instantiate
+
+279
+00:13:15,410 --> 00:13:19,220
+arrays and again it's a hot method
+
+280
+00:13:19,220 --> 00:13:20,750
+because it's executed several times
+
+281
+00:13:20,750 --> 00:13:22,759
+there by the array it repeats it
+
+282
+00:13:22,759 --> 00:13:27,829
+produces is a hot object and might make
+
+283
+00:13:27,829 --> 00:13:32,209
+up a bulk of your heap so the first
+
+284
+00:13:32,209 --> 00:13:33,860
+thing we do here is we actually
+
+285
+00:13:33,860 --> 00:13:36,450
+instantiate a new array
+
+286
+00:13:36,450 --> 00:13:39,720
+for Aries we want to have an object it
+
+287
+00:13:39,720 --> 00:13:41,550
+represents its identity that would be
+
+288
+00:13:41,550 --> 00:13:44,820
+the small box at the top that also
+
+289
+00:13:44,820 --> 00:13:47,040
+stores the length so how many elements
+
+290
+00:13:47,040 --> 00:13:48,690
+how many index properties do you
+
+291
+00:13:48,690 --> 00:13:50,700
+actually have another array and we over
+
+292
+00:13:50,700 --> 00:13:53,310
+reserved the backing store again so we
+
+293
+00:13:53,310 --> 00:13:55,350
+again have like four entries that we can
+
+294
+00:13:55,350 --> 00:13:57,570
+fill up after the fact without resizing
+
+295
+00:13:57,570 --> 00:14:00,630
+the actual packing store so we can do
+
+296
+00:14:00,630 --> 00:14:04,650
+that we add in index property with the
+
+297
+00:14:04,650 --> 00:14:08,490
+name zero we add the index property with
+
+298
+00:14:08,490 --> 00:14:11,250
+the name one and now we add another
+
+299
+00:14:11,250 --> 00:14:14,610
+property that's actually a double value
+
+300
+00:14:14,610 --> 00:14:17,760
+so the packing store is intended to
+
+301
+00:14:17,760 --> 00:14:21,660
+store integers or small integers
+
+302
+00:14:21,660 --> 00:14:23,940
+actually so now that we store a double
+
+303
+00:14:23,940 --> 00:14:25,830
+into it we actually want to have an
+
+304
+00:14:25,830 --> 00:14:27,600
+efficient representation of that packing
+
+305
+00:14:27,600 --> 00:14:29,730
+store efficient performance wise that
+
+306
+00:14:29,730 --> 00:14:31,890
+means we actually want to unbox those
+
+307
+00:14:31,890 --> 00:14:34,170
+doubles in that packing store that means
+
+308
+00:14:34,170 --> 00:14:35,820
+we have to change the layout of that
+
+309
+00:14:35,820 --> 00:14:38,640
+packing store and we do that it's now
+
+310
+00:14:38,640 --> 00:14:44,370
+taking 64-bit words and that packing
+
+311
+00:14:44,370 --> 00:14:46,620
+store is able to store doubles directly
+
+312
+00:14:46,620 --> 00:14:49,650
+in them so as you see the 0.5 is stored
+
+313
+00:14:49,650 --> 00:14:51,780
+directly into that packing store that
+
+314
+00:14:51,780 --> 00:14:54,000
+means we have to convert all the
+
+315
+00:14:54,000 --> 00:14:56,070
+previous small integers into actual
+
+316
+00:14:56,070 --> 00:14:58,650
+doubles now that conversion takes a bit
+
+317
+00:14:58,650 --> 00:15:01,440
+of time takes additional memory but that
+
+318
+00:15:01,440 --> 00:15:02,910
+doesn't matter that much because the old
+
+319
+00:15:02,910 --> 00:15:05,040
+one is no longer reference and can be
+
+320
+00:15:05,040 --> 00:15:10,640
+garbage collected so and next we store
+
+321
+00:15:10,640 --> 00:15:13,920
+an object and the true value in that
+
+322
+00:15:13,920 --> 00:15:15,930
+packing store that's represented as an
+
+323
+00:15:15,930 --> 00:15:18,900
+object and that means the work we just
+
+324
+00:15:18,900 --> 00:15:21,660
+did most bogus we have to go back to the
+
+325
+00:15:21,660 --> 00:15:24,540
+old representation again 32-bit and now
+
+326
+00:15:24,540 --> 00:15:27,780
+we actually need to box the 0.5 to
+
+327
+00:15:27,780 --> 00:15:30,630
+double value which again means we have
+
+328
+00:15:30,630 --> 00:15:32,790
+wasted a few cycles by converting back
+
+329
+00:15:32,790 --> 00:15:35,130
+and forth allocated a new backing store
+
+330
+00:15:35,130 --> 00:15:38,460
+again and collected by a bunch of hidden
+
+331
+00:15:38,460 --> 00:15:41,310
+class transitions that track those
+
+332
+00:15:41,310 --> 00:15:45,990
+transitions so if we generate lots of
+
+333
+00:15:45,990 --> 00:15:47,870
+these arrays
+
+334
+00:15:47,870 --> 00:15:50,210
+it's gonna get gonna have a bad
+
+335
+00:15:50,210 --> 00:15:52,760
+performance and also you see there are a
+
+336
+00:15:52,760 --> 00:15:54,230
+lot of packing stores which actually
+
+337
+00:15:54,230 --> 00:15:58,580
+contain the same the same values so that
+
+338
+00:15:58,580 --> 00:16:00,230
+doesn't look very efficient neither
+
+339
+00:16:00,230 --> 00:16:04,640
+performance wise nor memory wise so what
+
+340
+00:16:04,640 --> 00:16:07,010
+would be a possible fix of that possible
+
+341
+00:16:07,010 --> 00:16:10,250
+fix would be to not use this strange
+
+342
+00:16:10,250 --> 00:16:13,760
+construct at all but use an array
+
+343
+00:16:13,760 --> 00:16:17,270
+literal with an array literal b8 can
+
+344
+00:16:17,270 --> 00:16:19,430
+basically infer the optimal
+
+345
+00:16:19,430 --> 00:16:21,080
+representation of the backing store I
+
+346
+00:16:21,080 --> 00:16:23,120
+locate that right away and the most
+
+347
+00:16:23,120 --> 00:16:25,250
+important thing we can share the backing
+
+348
+00:16:25,250 --> 00:16:27,650
+store between the Aries and those
+
+349
+00:16:27,650 --> 00:16:29,060
+backing store is now becoming a
+
+350
+00:16:29,060 --> 00:16:30,920
+copy-on-write backing store that's what
+
+351
+00:16:30,920 --> 00:16:34,400
+the cow should indicate that means we
+
+352
+00:16:34,400 --> 00:16:35,930
+can share the backing store as long as
+
+353
+00:16:35,930 --> 00:16:37,820
+you don't modify any anything that's
+
+354
+00:16:37,820 --> 00:16:39,680
+stored in it as soon as you start
+
+355
+00:16:39,680 --> 00:16:42,020
+writing to one of those backing stores
+
+356
+00:16:42,020 --> 00:16:44,810
+it will be copied and modified so all
+
+357
+00:16:44,810 --> 00:16:46,070
+the other areas will still share the
+
+358
+00:16:46,070 --> 00:16:50,300
+backing store and this change should
+
+359
+00:16:50,300 --> 00:16:52,880
+give you a performance boost and the
+
+360
+00:16:52,880 --> 00:16:55,760
+memory boost awesome right you can have
+
+361
+00:16:55,760 --> 00:17:01,880
+but best of both worlds and again there
+
+362
+00:17:01,880 --> 00:17:03,350
+are a few easy things to follow here
+
+363
+00:17:03,350 --> 00:17:06,470
+which should allow you to avoid this
+
+364
+00:17:06,470 --> 00:17:11,900
+kind of trap the most obvious one is if
+
+365
+00:17:11,900 --> 00:17:14,689
+you use the Eric if you're able to use
+
+366
+00:17:14,689 --> 00:17:17,030
+area literals try to use array literals
+
+367
+00:17:17,030 --> 00:17:18,500
+they're really awesome we can generate
+
+368
+00:17:18,500 --> 00:17:20,390
+highly optimized code for it and we can
+
+369
+00:17:20,390 --> 00:17:21,920
+immediately come up with the optimal
+
+370
+00:17:21,920 --> 00:17:24,730
+representation in memory for it
+
+371
+00:17:24,730 --> 00:17:26,780
+pre-allocate small arrays to the correct
+
+372
+00:17:26,780 --> 00:17:29,630
+size so that basically means pass if you
+
+373
+00:17:29,630 --> 00:17:31,370
+know the size ahead of time pass it to
+
+374
+00:17:31,370 --> 00:17:35,300
+the constructor and most importantly try
+
+375
+00:17:35,300 --> 00:17:38,660
+to use arrays for to store only one kind
+
+376
+00:17:38,660 --> 00:17:42,410
+of element in it so especially try to
+
+377
+00:17:42,410 --> 00:17:47,570
+avoid mixing object values with double
+
+378
+00:17:47,570 --> 00:17:53,510
+or integer values okay the last thing is
+
+379
+00:17:53,510 --> 00:17:59,240
+about execution context so javascript is
+
+380
+00:17:59,240 --> 00:18:00,870
+a functional language
+
+381
+00:18:00,870 --> 00:18:04,170
+and what that means is that on one hand
+
+382
+00:18:04,170 --> 00:18:08,040
+you can have so one thing is functions
+
+383
+00:18:08,040 --> 00:18:10,110
+are first class object so that means you
+
+384
+00:18:10,110 --> 00:18:14,640
+can pass them around as in variables you
+
+385
+00:18:14,640 --> 00:18:16,710
+can have nested functions inside each
+
+386
+00:18:16,710 --> 00:18:18,630
+other and they have a proper lexical
+
+387
+00:18:18,630 --> 00:18:20,550
+scoping so that means the inner function
+
+388
+00:18:20,550 --> 00:18:23,580
+can reference any variable that's
+
+389
+00:18:23,580 --> 00:18:26,400
+declared in the outside function so what
+
+390
+00:18:26,400 --> 00:18:29,250
+does it mean in this example we have an
+
+391
+00:18:29,250 --> 00:18:31,640
+auto function may closure with two
+
+392
+00:18:31,640 --> 00:18:34,230
+variables in it large value small value
+
+393
+00:18:34,230 --> 00:18:36,570
+so obviously large value is going to be
+
+394
+00:18:36,570 --> 00:18:39,780
+the bumpy one we have two inner
+
+395
+00:18:39,780 --> 00:18:42,360
+functions in it and closure and both
+
+396
+00:18:42,360 --> 00:18:45,200
+reference some of the auto values and
+
+397
+00:18:45,200 --> 00:18:49,020
+then we call this function a closure
+
+398
+00:18:49,020 --> 00:18:51,210
+several times so what does this actually
+
+399
+00:18:51,210 --> 00:18:56,490
+mean since the inner functions reference
+
+400
+00:18:56,490 --> 00:18:57,990
+variables from the outer functions we
+
+401
+00:18:57,990 --> 00:18:59,610
+need to preserve that execution
+
+402
+00:18:59,610 --> 00:19:01,920
+environment in some way so it means it
+
+403
+00:19:01,920 --> 00:19:04,980
+needs to be stored in memory and the way
+
+404
+00:19:04,980 --> 00:19:08,130
+we do that is we have a context object
+
+405
+00:19:08,130 --> 00:19:10,110
+that's actually in heap object that's
+
+406
+00:19:10,110 --> 00:19:12,750
+allocated on the heap and we put the
+
+407
+00:19:12,750 --> 00:19:16,590
+values that are basically gonna survive
+
+408
+00:19:16,590 --> 00:19:19,290
+the execution of the outer function in
+
+409
+00:19:19,290 --> 00:19:22,559
+there so arguments can be context
+
+410
+00:19:22,559 --> 00:19:25,170
+allocated in this case the size argument
+
+411
+00:19:25,170 --> 00:19:27,950
+because it's used by a nested function
+
+412
+00:19:27,950 --> 00:19:30,510
+so should the nested function in it
+
+413
+00:19:30,510 --> 00:19:33,210
+escape that outer closure we need to
+
+414
+00:19:33,210 --> 00:19:36,390
+preserve that execution environment same
+
+415
+00:19:36,390 --> 00:19:38,280
+thing applies for variables they can
+
+416
+00:19:38,280 --> 00:19:40,140
+also be context allocated they are also
+
+417
+00:19:40,140 --> 00:19:44,520
+going to be put into that context and as
+
+418
+00:19:44,520 --> 00:19:45,990
+I said this context is going to be
+
+419
+00:19:45,990 --> 00:19:47,760
+referenced by the nested function so
+
+420
+00:19:47,760 --> 00:19:50,370
+this context is the execution context
+
+421
+00:19:50,370 --> 00:19:52,020
+the execution environment for those
+
+422
+00:19:52,020 --> 00:19:54,059
+nested functions so they are gonna keep
+
+423
+00:19:54,059 --> 00:19:56,940
+it alive until as long as they itself
+
+424
+00:19:56,940 --> 00:20:02,940
+survive so what does that mean if one of
+
+425
+00:20:02,940 --> 00:20:04,470
+those functions dies like the init
+
+426
+00:20:04,470 --> 00:20:07,020
+function it's gonna go away but the
+
+427
+00:20:07,020 --> 00:20:09,179
+context is still alive because it's
+
+428
+00:20:09,179 --> 00:20:11,280
+referenced by the closure function which
+
+429
+00:20:11,280 --> 00:20:14,150
+escaped the outer function and
+
+430
+00:20:14,150 --> 00:20:17,300
+large value can be some huge objects and
+
+431
+00:20:17,300 --> 00:20:19,970
+huge array which is basically the bloat
+
+432
+00:20:19,970 --> 00:20:21,980
+in your application and you want to get
+
+433
+00:20:21,980 --> 00:20:27,550
+rid of that so how would you fix that
+
+434
+00:20:27,550 --> 00:20:30,500
+easiest solution just get rid of that
+
+435
+00:20:30,500 --> 00:20:34,480
+large value context allocated variable
+
+436
+00:20:34,480 --> 00:20:37,190
+move it in today into the inner function
+
+437
+00:20:37,190 --> 00:20:39,260
+that's the easiest way thereby you got
+
+438
+00:20:39,260 --> 00:20:41,000
+rid of the context allocated variable
+
+439
+00:20:41,000 --> 00:20:44,360
+and the closure function will no longer
+
+440
+00:20:44,360 --> 00:20:47,990
+keep alive the bloat so again I wanted
+
+441
+00:20:47,990 --> 00:20:51,640
+to measure this and measuring this
+
+442
+00:20:51,640 --> 00:20:54,230
+giving a percentage here is just is just
+
+443
+00:20:54,230 --> 00:20:56,510
+pointless basically most of the
+
+444
+00:20:56,510 --> 00:20:57,800
+application developers will just
+
+445
+00:20:57,800 --> 00:21:02,230
+consider this to be a leak so
+
+446
+00:21:02,230 --> 00:21:04,580
+understanding this construct
+
+447
+00:21:04,580 --> 00:21:07,520
+understanding this way that we ate
+
+448
+00:21:07,520 --> 00:21:10,010
+context allocates variables and that
+
+449
+00:21:10,010 --> 00:21:13,150
+functions can keep alive whole contexts
+
+450
+00:21:13,150 --> 00:21:16,550
+might allow you to fix severe memory
+
+451
+00:21:16,550 --> 00:21:23,270
+memory leaks in your application so here
+
+452
+00:21:23,270 --> 00:21:28,010
+are again the basic best practices the
+
+453
+00:21:28,010 --> 00:21:30,080
+first and most important thing is you
+
+454
+00:21:30,080 --> 00:21:32,570
+should be aware of context allocated
+
+455
+00:21:32,570 --> 00:21:34,250
+variables so you should be aware that
+
+456
+00:21:34,250 --> 00:21:40,880
+these things exist and ensure that what
+
+457
+00:21:40,880 --> 00:21:42,560
+closures so basically closures that you
+
+458
+00:21:42,560 --> 00:21:45,350
+generate often have us have a small
+
+459
+00:21:45,350 --> 00:21:49,340
+outer context and move variables as deep
+
+460
+00:21:49,340 --> 00:21:51,200
+as possible into the nested functions
+
+461
+00:21:51,200 --> 00:21:59,030
+thereby about avoiding those leaks so we
+
+462
+00:21:59,030 --> 00:22:03,190
+just got rid of all the bloat and
+
+463
+00:22:03,190 --> 00:22:06,620
+hopefully this allows you to to write
+
+464
+00:22:06,620 --> 00:22:10,610
+applications that that that don't
+
+465
+00:22:10,610 --> 00:22:11,960
+introduce memory bloat that are
+
+466
+00:22:11,960 --> 00:22:17,030
+performant after all and hopefully this
+
+467
+00:22:17,030 --> 00:22:18,620
+might also apply to other virtual
+
+468
+00:22:18,620 --> 00:22:23,450
+machines because so although all the
+
+469
+00:22:23,450 --> 00:22:25,010
+examples I gave are highly highly
+
+470
+00:22:25,010 --> 00:22:27,330
+targeted for for v8 so they
+
+471
+00:22:27,330 --> 00:22:29,610
+they discussed how how v8 represents
+
+472
+00:22:29,610 --> 00:22:33,210
+these objects in memory but I guess the
+
+473
+00:22:33,210 --> 00:22:36,990
+same same optimizations could be applied
+
+474
+00:22:36,990 --> 00:22:39,420
+in other VMs I cannot judge that but it
+
+475
+00:22:39,420 --> 00:22:41,430
+should allow you to drive all of your
+
+476
+00:22:41,430 --> 00:22:43,980
+engines safely and have a free highway
+
+477
+00:22:43,980 --> 00:22:49,230
+like this so with that I want to thank
+
+478
+00:22:49,230 --> 00:23:02,100
+you very much for listening in so I hope
+
+479
+00:23:02,100 --> 00:23:03,630
+I could convey some of the basic
+
+480
+00:23:03,630 --> 00:23:08,120
+concepts how v8 come comes up with
+
+481
+00:23:08,120 --> 00:23:10,200
+representations of objects in memory and
+
+482
+00:23:10,200 --> 00:23:12,660
+how to avoid some booby traps that are
+
+483
+00:23:12,660 --> 00:23:14,970
+hidden in there not intentionally if you
+
+484
+00:23:14,970 --> 00:23:17,310
+want to know more ever ask me now
+
+485
+00:23:17,310 --> 00:23:18,930
+because we have yeah actually we have
+
+486
+00:23:18,930 --> 00:23:22,530
+lots of time and you can also find me in
+
+487
+00:23:22,530 --> 00:23:23,880
+the break during the breaks at the
+
+488
+00:23:23,880 --> 00:23:27,690
+Google booth or contact me directly so
+
+489
+00:23:27,690 --> 00:23:33,630
+if you have questions shoot I've got a
+
+490
+00:23:33,630 --> 00:23:35,250
+question about hidden classes
+
+491
+00:23:35,250 --> 00:23:39,680
+you said you prefer if people would
+
+492
+00:23:39,680 --> 00:23:41,610
+create instance variables in
+
+493
+00:23:41,610 --> 00:23:44,730
+constructors yes that said also work if
+
+494
+00:23:44,730 --> 00:23:46,500
+you do something like object of
+
+495
+00:23:46,500 --> 00:23:49,260
+prototype dot variable name equals
+
+496
+00:23:49,260 --> 00:23:56,010
+something or other so if you if you
+
+497
+00:23:56,010 --> 00:23:58,920
+store an and property on the prototype
+
+498
+00:23:58,920 --> 00:24:00,420
+of an object that means it's actually
+
+499
+00:24:00,420 --> 00:24:02,940
+gonna be stored in a different object
+
+500
+00:24:02,940 --> 00:24:06,870
+that's referenced through the done the
+
+501
+00:24:06,870 --> 00:24:11,240
+proto field as I learned yesterday and
+
+502
+00:24:11,240 --> 00:24:14,040
+so whenever we access that property we
+
+503
+00:24:14,040 --> 00:24:16,350
+have to follow that down the property
+
+504
+00:24:16,350 --> 00:24:18,540
+field and then access that object but
+
+505
+00:24:18,540 --> 00:24:20,970
+the representation of that object same
+
+506
+00:24:20,970 --> 00:24:22,830
+rules apply there so how you come up
+
+507
+00:24:22,830 --> 00:24:26,700
+with that representation is again
+
+508
+00:24:26,700 --> 00:24:32,490
+follows the same rules so probably it
+
+509
+00:24:32,490 --> 00:24:34,200
+the prototype object that you use for
+
+510
+00:24:34,200 --> 00:24:36,600
+this object is gonna be shared among a
+
+511
+00:24:36,600 --> 00:24:39,580
+different among several objects so
+
+512
+00:24:39,580 --> 00:24:41,890
+most of the time the prototype objects
+
+513
+00:24:41,890 --> 00:24:44,110
+aren't hot in a sense that they that
+
+514
+00:24:44,110 --> 00:24:45,820
+several of them exists on the heap
+
+515
+00:24:45,820 --> 00:24:47,830
+they are just hot because they are used
+
+516
+00:24:47,830 --> 00:24:51,960
+often so they should have a performant
+
+517
+00:24:51,960 --> 00:24:53,680
+implementation performant memory
+
+518
+00:24:53,680 --> 00:24:56,320
+representation but if you waste some
+
+519
+00:24:56,320 --> 00:24:58,420
+space in there it's probably not that
+
+520
+00:24:58,420 --> 00:25:07,590
+important
+
+521
+00:25:07,600 --> 00:25:10,390
+Thanks so I was I want a one at the
+
+522
+00:25:10,390 --> 00:25:12,100
+example where you had two different
+
+523
+00:25:12,100 --> 00:25:14,160
+representations so at this point he and
+
+524
+00:25:14,160 --> 00:25:16,930
+usually if this object is hot it's it's
+
+525
+00:25:16,930 --> 00:25:19,450
+used very often and yeah and yet it's
+
+526
+00:25:19,450 --> 00:25:21,640
+much much faster if it's monomorphic so
+
+527
+00:25:21,640 --> 00:25:23,410
+my general advice would be to say only
+
+528
+00:25:23,410 --> 00:25:26,860
+have one car that has three fields and
+
+529
+00:25:26,860 --> 00:25:29,140
+if you don't use this deep field just
+
+530
+00:25:29,140 --> 00:25:31,270
+but undefined and you will be just fast
+
+531
+00:25:31,270 --> 00:25:37,180
+and I mean it's 32 bits okay yes you
+
+532
+00:25:37,180 --> 00:25:38,590
+obviously understand the problem at hand
+
+533
+00:25:38,590 --> 00:25:41,350
+I hope I could teach that underlying
+
+534
+00:25:41,350 --> 00:25:43,180
+general underlying problem to more
+
+535
+00:25:43,180 --> 00:25:45,160
+people but knowing about this trade of
+
+536
+00:25:45,160 --> 00:25:47,860
+either waste space or have a monomorphic
+
+537
+00:25:47,860 --> 00:25:52,530
+object brings you forward and a huge
+
+538
+00:25:52,530 --> 00:26:02,120
+second question was functions function
+
+539
+00:26:02,130 --> 00:26:04,150
+you have to run through the whole
+
+540
+00:26:04,150 --> 00:26:07,120
+function to to see what where those are
+
+541
+00:26:07,120 --> 00:26:09,220
+captured or in the nested function yeah
+
+542
+00:26:09,220 --> 00:26:11,710
+why not also see if the init function
+
+543
+00:26:11,710 --> 00:26:14,230
+itself is actually captured itself or
+
+544
+00:26:14,230 --> 00:26:15,880
+leaves the scope so in this case it's
+
+545
+00:26:15,880 --> 00:26:18,340
+called from within the constructor so
+
+546
+00:26:18,340 --> 00:26:19,750
+you know it's not going to capture any
+
+547
+00:26:19,750 --> 00:26:24,520
+variable yeah so you could just say okay
+
+548
+00:26:24,520 --> 00:26:27,250
+I see you drive I look at all the code
+
+549
+00:26:27,250 --> 00:26:29,440
+and see it but it requires escape
+
+550
+00:26:29,440 --> 00:26:31,210
+analysis because you need to find out
+
+551
+00:26:31,210 --> 00:26:32,650
+whether that function escapes are not
+
+552
+00:26:32,650 --> 00:26:33,820
+well but you're really looking if
+
+553
+00:26:33,820 --> 00:26:36,910
+something is kind of I mean you have to
+
+554
+00:26:36,910 --> 00:26:38,590
+see if large values inside the init
+
+555
+00:26:38,590 --> 00:26:40,450
+function so you just keep tracking the
+
+556
+00:26:40,450 --> 00:26:42,220
+unit to so it doesn't seem that
+
+557
+00:26:42,220 --> 00:26:45,010
+difficult you just I mean if it if n it
+
+558
+00:26:45,010 --> 00:26:46,750
+is used in a non calling function
+
+559
+00:26:46,750 --> 00:26:50,260
+context okay then just say we need to
+
+560
+00:26:50,260 --> 00:26:51,880
+capture everything in there but that
+
+561
+00:26:51,880 --> 00:26:53,230
+doesn't look that difficult it's not
+
+562
+00:26:53,230 --> 00:26:56,880
+really a difficult analysis no it's not
+
+563
+00:26:56,880 --> 00:26:59,320
+maybe it's not a difficult analysis but
+
+564
+00:26:59,320 --> 00:27:01,210
+the problem is you need some optimizing
+
+565
+00:27:01,210 --> 00:27:03,640
+compiler for that and layout of the
+
+566
+00:27:03,640 --> 00:27:07,150
+context you need to get them right the
+
+567
+00:27:07,150 --> 00:27:10,020
+first time so when you have when you
+
+568
+00:27:10,020 --> 00:27:12,870
+didn't optimize the function yet or
+
+569
+00:27:12,870 --> 00:27:16,720
+otherwise transition that context layout
+
+570
+00:27:16,720 --> 00:27:18,850
+somehow if you optimize a function
+
+571
+00:27:18,850 --> 00:27:20,050
+because you already created some
+
+572
+00:27:20,050 --> 00:27:21,340
+instances of the
+
+573
+00:27:21,340 --> 00:27:23,710
+function object they escaped into your
+
+574
+00:27:23,710 --> 00:27:25,390
+hip they're floating around and now you
+
+575
+00:27:25,390 --> 00:27:28,750
+decide to optimize this whole mess this
+
+576
+00:27:28,750 --> 00:27:30,400
+whole make closure thing and you come up
+
+577
+00:27:30,400 --> 00:27:32,940
+with more with a better representation
+
+578
+00:27:32,940 --> 00:27:35,410
+but there is already the bad
+
+579
+00:27:35,410 --> 00:27:39,270
+representation out there so if we could
+
+580
+00:27:39,270 --> 00:27:42,910
+if we crank shift everything then we
+
+581
+00:27:42,910 --> 00:27:44,650
+would be smarter about that but then
+
+582
+00:27:44,650 --> 00:27:47,320
+start a performant would suck so again
+
+583
+00:27:47,320 --> 00:27:49,810
+classic trade-off
+
+584
+00:27:49,810 --> 00:27:51,910
+one more quite detailed question you
+
+585
+00:27:51,910 --> 00:27:53,350
+were talking about allocating and
+
+586
+00:27:53,350 --> 00:27:54,370
+assigning all the properties and
+
+587
+00:27:54,370 --> 00:27:56,400
+constructors so that you can presumably
+
+588
+00:27:56,400 --> 00:27:58,990
+allocate the precise amount of space and
+
+589
+00:27:58,990 --> 00:28:01,150
+the object itself how accurate can you
+
+590
+00:28:01,150 --> 00:28:02,980
+be in that can you can you really
+
+591
+00:28:02,980 --> 00:28:04,990
+determine precisely how much to allocate
+
+592
+00:28:04,990 --> 00:28:07,510
+or will you ever have to spill to so
+
+593
+00:28:07,510 --> 00:28:12,670
+it's not right the perfect scenario
+
+594
+00:28:12,670 --> 00:28:15,490
+forum from a VM implementer point of
+
+595
+00:28:15,490 --> 00:28:17,860
+view is if you just have simple this
+
+596
+00:28:17,860 --> 00:28:19,570
+assignments in the constructor so if you
+
+597
+00:28:19,570 --> 00:28:21,700
+construct it looks like this is this is
+
+598
+00:28:21,700 --> 00:28:23,440
+this is we just look at that code see
+
+599
+00:28:23,440 --> 00:28:25,660
+during parse time so now optimizing
+
+600
+00:28:25,660 --> 00:28:28,300
+compiler we see the layout there in the
+
+601
+00:28:28,300 --> 00:28:30,460
+code and just boom come up with the
+
+602
+00:28:30,460 --> 00:28:33,130
+optimal representation and when the in
+
+603
+00:28:33,130 --> 00:28:35,020
+line when when we optimize the function
+
+604
+00:28:35,020 --> 00:28:37,210
+boom in line that know how it looks like
+
+605
+00:28:37,210 --> 00:28:39,610
+so that's the optimal way but that takes
+
+606
+00:28:39,610 --> 00:28:41,890
+away a lot of freedom from JavaScript
+
+607
+00:28:41,890 --> 00:28:43,210
+eval I was asking about the more
+
+608
+00:28:43,210 --> 00:28:44,620
+complicated case where you might have
+
+609
+00:28:44,620 --> 00:28:46,990
+some branching or whatever which you
+
+610
+00:28:46,990 --> 00:28:51,490
+know yeah the one solution we we use is
+
+611
+00:28:51,490 --> 00:28:53,350
+this objects like tracking so we overall
+
+612
+00:28:53,350 --> 00:28:55,510
+allocate all the time like this and
+
+613
+00:28:55,510 --> 00:28:59,200
+after we have observed fixed amount of
+
+614
+00:28:59,200 --> 00:29:01,800
+allocations we shrink the objects and
+
+615
+00:29:01,800 --> 00:29:05,460
+heal their size if you want so that
+
+616
+00:29:05,460 --> 00:29:08,200
+gives us the most flexibility even if
+
+617
+00:29:08,200 --> 00:29:13,030
+you have non simple constructors okay I
+

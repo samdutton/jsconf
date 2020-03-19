@@ -1,0 +1,2545 @@
+1
+00:00:00,110 --> 00:00:05,160
+
+hello Cascadia welcome to the N API
+
+2
+00:00:05,160 --> 00:00:07,980
+session my name is Etta Shea and I'm a
+
+3
+00:00:07,980 --> 00:00:11,130
+developer at Adobe I'm here today to get
+
+4
+00:00:11,130 --> 00:00:13,139
+you all excited about writing native
+
+5
+00:00:13,139 --> 00:00:16,320
+modules in no js' in building
+
+6
+00:00:16,320 --> 00:00:18,539
+functionality that would bridge the
+
+7
+00:00:18,539 --> 00:00:21,720
+grand old C++ language with the modern
+
+8
+00:00:21,720 --> 00:00:28,050
+the hip the class II JavaScript a few
+
+9
+00:00:28,050 --> 00:00:31,199
+tidbits about me I work in San Francisco
+
+10
+00:00:31,199 --> 00:00:34,200
+and I am co-located with most of the
+
+11
+00:00:34,200 --> 00:00:43,230
+former flash team here's a view of this
+
+12
+00:00:43,230 --> 00:00:46,219
+San Francisco skyline right from my desk
+
+13
+00:00:46,219 --> 00:00:48,600
+over the years I've worked with a
+
+14
+00:00:48,600 --> 00:00:51,180
+variety of technology stacks I've worked
+
+15
+00:00:51,180 --> 00:00:53,239
+on flagship desktop applications
+
+16
+00:00:53,239 --> 00:00:55,949
+award-winning mobile software but my
+
+17
+00:00:55,949 --> 00:00:58,739
+heart still lies with the vamp the first
+
+18
+00:00:58,739 --> 00:01:01,079
+website that I worked on was all in
+
+19
+00:01:01,079 --> 00:01:03,870
+flash and the lamp stack we cared a lot
+
+20
+00:01:03,870 --> 00:01:09,270
+about ie6 back then over time I have
+
+21
+00:01:09,270 --> 00:01:12,049
+moved on and covered up the HTML
+
+22
+00:01:12,049 --> 00:01:15,509
+progression with that I've been
+
+23
+00:01:15,509 --> 00:01:16,740
+rewriting my website
+
+24
+00:01:16,740 --> 00:01:18,900
+the latest rewrite happened just a month
+
+25
+00:01:18,900 --> 00:01:21,570
+ago when I moved off bootstrap on to CSS
+
+26
+00:01:21,570 --> 00:01:26,759
+grid and Adobe I work on a background
+
+27
+00:01:26,759 --> 00:01:29,340
+process this process synchronizes all
+
+28
+00:01:29,340 --> 00:01:31,380
+the network i/o that adobe applications
+
+29
+00:01:31,380 --> 00:01:33,030
+due to the cloud
+
+30
+00:01:33,030 --> 00:01:35,280
+since it is i/o heavy the best
+
+31
+00:01:35,280 --> 00:01:37,829
+technology to write this in is no js'
+
+32
+00:01:37,829 --> 00:01:41,130
+and adobe this ship a node.js based
+
+33
+00:01:41,130 --> 00:01:43,560
+process a node.js based background
+
+34
+00:01:43,560 --> 00:01:45,899
+process to millions of customers that
+
+35
+00:01:45,899 --> 00:01:47,820
+run our products if you've used
+
+36
+00:01:47,820 --> 00:01:49,829
+Photoshop in the last three four years
+
+37
+00:01:49,829 --> 00:01:51,450
+you would have interacted with this
+
+38
+00:01:51,450 --> 00:01:54,630
+process in the background since we
+
+39
+00:01:54,630 --> 00:01:55,920
+shipped to a variety of machine
+
+40
+00:01:55,920 --> 00:01:58,530
+configurations and node.js is really
+
+41
+00:01:58,530 --> 00:02:01,110
+built for the server side there are some
+
+42
+00:02:01,110 --> 00:02:03,329
+issues that node doesn't solve and for
+
+43
+00:02:03,329 --> 00:02:05,250
+that we need to go down to the native
+
+44
+00:02:05,250 --> 00:02:08,129
+layer and to go down to the native layer
+
+45
+00:02:08,129 --> 00:02:12,180
+means working in C++ I am the go-to guy
+
+46
+00:02:12,180 --> 00:02:13,379
+in my team to
+
+47
+00:02:13,379 --> 00:02:17,579
+with C++ and I've been doing it for the
+
+48
+00:02:17,579 --> 00:02:20,310
+last three years in this talk today
+
+49
+00:02:20,310 --> 00:02:22,980
+we'll talk about why we should write or
+
+50
+00:02:22,980 --> 00:02:25,739
+when we should write native code we will
+
+51
+00:02:25,739 --> 00:02:27,659
+talk about the various ways to interact
+
+52
+00:02:27,659 --> 00:02:32,159
+with native code from Vidin nodejs we
+
+53
+00:02:32,159 --> 00:02:34,409
+will go through a running example of a n
+
+54
+00:02:34,409 --> 00:02:38,310
+a n n API based plugin to node.js a
+
+55
+00:02:38,310 --> 00:02:41,370
+module that looks like JavaScript but is
+
+56
+00:02:41,370 --> 00:02:44,340
+written in C++ we will do a synchronous
+
+57
+00:02:44,340 --> 00:02:47,069
+asynchronous version as well and then
+
+58
+00:02:47,069 --> 00:02:48,750
+we'll be also running it in electron
+
+59
+00:02:48,750 --> 00:02:51,359
+I'll share some tips and tricks to be
+
+60
+00:02:51,359 --> 00:02:53,549
+successful in the native world and leave
+
+61
+00:02:53,549 --> 00:02:55,980
+you all with a bunch of resources to
+
+62
+00:02:55,980 --> 00:02:57,659
+play with at the end of the conference
+
+63
+00:02:57,659 --> 00:03:01,349
+as JavaScript developers we are like
+
+64
+00:03:01,349 --> 00:03:04,739
+astronauts we fly in the space and don't
+
+65
+00:03:04,739 --> 00:03:07,260
+really care about what happens down at
+
+66
+00:03:07,260 --> 00:03:12,180
+the mother earth actually sometimes we
+
+67
+00:03:12,180 --> 00:03:14,639
+do have to sometimes each Iowa script
+
+68
+00:03:14,639 --> 00:03:16,650
+developers do have to go down a layer
+
+69
+00:03:16,650 --> 00:03:20,090
+into the world of unmanaged memory of
+
+70
+00:03:20,090 --> 00:03:23,459
+multi-threaded architectures and my
+
+71
+00:03:23,459 --> 00:03:30,900
+favorite segmentation faults this what
+
+72
+00:03:30,900 --> 00:03:32,459
+let me talk about what this talk is not
+
+73
+00:03:32,459 --> 00:03:37,169
+about this talk is not about the v8
+
+74
+00:03:37,169 --> 00:03:39,209
+engine the engine that's used to build
+
+75
+00:03:39,209 --> 00:03:41,940
+node.js we will not be going into the v8
+
+76
+00:03:41,940 --> 00:03:43,650
+internals or learning how it works
+
+77
+00:03:43,650 --> 00:03:46,829
+this talk is also not about the C++
+
+78
+00:03:46,829 --> 00:03:48,659
+programming language why we will be
+
+79
+00:03:48,659 --> 00:03:51,030
+using C++ there are better ways to learn
+
+80
+00:03:51,030 --> 00:03:55,590
+C++ this talk is also not about
+
+81
+00:03:55,590 --> 00:03:57,449
+improving the performance of your node
+
+82
+00:03:57,449 --> 00:03:59,840
+based application frankly speaking
+
+83
+00:03:59,840 --> 00:04:02,430
+poorly written native code would be a
+
+84
+00:04:02,430 --> 00:04:04,439
+lot worse than average JavaScript code
+
+85
+00:04:04,439 --> 00:04:09,989
+it would crash your app what this talk
+
+86
+00:04:09,989 --> 00:04:12,090
+is really about is about building
+
+87
+00:04:12,090 --> 00:04:14,340
+modules it's about extending the node
+
+88
+00:04:14,340 --> 00:04:16,409
+ecosystem with the functionality that
+
+89
+00:04:16,409 --> 00:04:18,209
+was not practically or efficiently
+
+90
+00:04:18,209 --> 00:04:20,130
+possible with the current state of
+
+91
+00:04:20,130 --> 00:04:22,680
+JavaScript it's about writing a module
+
+92
+00:04:22,680 --> 00:04:25,380
+that looks and behaves just like any
+
+93
+00:04:25,380 --> 00:04:26,780
+other module in the node
+
+94
+00:04:26,780 --> 00:04:28,790
+ecosystem but in from the insight is
+
+95
+00:04:28,790 --> 00:04:34,190
+written in a very different way so let's
+
+96
+00:04:34,190 --> 00:04:36,560
+get started why would we write native
+
+97
+00:04:36,560 --> 00:04:38,690
+code that's a big question that comes up
+
+98
+00:04:38,690 --> 00:04:40,460
+whenever we talk about native code
+
+99
+00:04:40,460 --> 00:04:44,780
+javascript has everything well there are
+
+100
+00:04:44,780 --> 00:04:47,210
+a few things that make JavaScript
+
+101
+00:04:47,210 --> 00:04:49,630
+slightly difficult to write for example
+
+102
+00:04:49,630 --> 00:04:53,540
+your OSS are mostly written in C C++ or
+
+103
+00:04:53,540 --> 00:04:55,340
+expose their functionality in those
+
+104
+00:04:55,340 --> 00:04:57,800
+languages something new came out the
+
+105
+00:04:57,800 --> 00:05:00,470
+dark mode in Mohave what do you do do
+
+106
+00:05:00,470 --> 00:05:02,240
+you wait for it to be standardized to
+
+107
+00:05:02,240 --> 00:05:05,180
+use it in a node app you could directly
+
+108
+00:05:05,180 --> 00:05:08,330
+include it for in C++ in electron you
+
+109
+00:05:08,330 --> 00:05:10,520
+could write C++ code to read the current
+
+110
+00:05:10,520 --> 00:05:12,470
+state or the dark mode and show it to
+
+111
+00:05:12,470 --> 00:05:13,690
+the user
+
+112
+00:05:13,690 --> 00:05:16,040
+the second big reason to write native
+
+113
+00:05:16,040 --> 00:05:18,800
+code is if you have some C++ code lying
+
+114
+00:05:18,800 --> 00:05:22,840
+around C++ is a thirty-year-old
+
+115
+00:05:22,840 --> 00:05:26,210
+developed very values language we have
+
+116
+00:05:26,210 --> 00:05:28,460
+tons of production ready code in C++ and
+
+117
+00:05:28,460 --> 00:05:31,720
+not all of that compiles to webassembly
+
+118
+00:05:31,720 --> 00:05:34,760
+so kind we are kind of forced if you
+
+119
+00:05:34,760 --> 00:05:35,900
+want to do you want to rewrite
+
+120
+00:05:35,900 --> 00:05:38,390
+everything in jeaious or maybe just for
+
+121
+00:05:38,390 --> 00:05:40,130
+this case let's use what we have and
+
+122
+00:05:40,130 --> 00:05:42,169
+that is a very good use case for going
+
+123
+00:05:42,169 --> 00:05:45,979
+down native another important case where
+
+124
+00:05:45,979 --> 00:05:47,690
+we actually have to go down native is
+
+125
+00:05:47,690 --> 00:05:51,410
+when we need to crunch numbers now
+
+126
+00:05:51,410 --> 00:05:53,270
+javascript is the best language for
+
+127
+00:05:53,270 --> 00:05:55,460
+doing i/o if you have to communicate
+
+128
+00:05:55,460 --> 00:05:57,350
+over the network or file system is your
+
+129
+00:05:57,350 --> 00:05:59,510
+main mode of communication right yes
+
+130
+00:05:59,510 --> 00:06:02,900
+don't go native but then if you have to
+
+131
+00:06:02,900 --> 00:06:04,850
+do heavy number crunching something that
+
+132
+00:06:04,850 --> 00:06:07,850
+would burn the CPU hot it's better to go
+
+133
+00:06:07,850 --> 00:06:10,100
+down to the native layer you'll save
+
+134
+00:06:10,100 --> 00:06:14,539
+quite a lot of dollars in summary the
+
+135
+00:06:14,539 --> 00:06:16,580
+only reason to write native code is that
+
+136
+00:06:16,580 --> 00:06:19,400
+we are not JavaScript developers we are
+
+137
+00:06:19,400 --> 00:06:21,770
+solution providers to a problem and we
+
+138
+00:06:21,770 --> 00:06:22,760
+are building race cars
+
+139
+00:06:22,760 --> 00:06:25,640
+we love the metal too much but then in a
+
+140
+00:06:25,640 --> 00:06:27,979
+race car we do need some plastic we do
+
+141
+00:06:27,979 --> 00:06:31,280
+need some rubber and therefore to build
+
+142
+00:06:31,280 --> 00:06:35,690
+a race car let's assemble everything so
+
+143
+00:06:35,690 --> 00:06:37,220
+let's talk about the various ways to
+
+144
+00:06:37,220 --> 00:06:40,249
+communicate with native code in node.js
+
+145
+00:06:40,249 --> 00:06:42,529
+process that's my favorite and I think
+
+146
+00:06:42,529 --> 00:06:44,029
+that's the one that most of you would
+
+147
+00:06:44,029 --> 00:06:46,999
+have already used child process comes
+
+148
+00:06:46,999 --> 00:06:49,369
+natively in node you can just require
+
+149
+00:06:49,369 --> 00:06:51,499
+child process from any of your modules
+
+150
+00:06:51,499 --> 00:06:54,559
+and huge trial process child process
+
+151
+00:06:54,559 --> 00:06:56,719
+runs in its own process and therefore
+
+152
+00:06:56,719 --> 00:07:00,289
+you can write typical Nord code your no
+
+153
+00:07:00,289 --> 00:07:02,239
+thread would not be blocked when a child
+
+154
+00:07:02,239 --> 00:07:04,879
+process is running you can get it to run
+
+155
+00:07:04,879 --> 00:07:07,309
+asynchronously pass it arguments and
+
+156
+00:07:07,309 --> 00:07:10,189
+take that as a result a process it's
+
+157
+00:07:10,189 --> 00:07:13,639
+perfect perfect for what it does but it
+
+158
+00:07:13,639 --> 00:07:15,469
+does have a few limitations and there
+
+159
+00:07:15,469 --> 00:07:17,149
+are a few cases where it does not work
+
+160
+00:07:17,149 --> 00:07:19,879
+that well what if the functionality that
+
+161
+00:07:19,879 --> 00:07:22,249
+you want is not natively available or
+
+162
+00:07:22,249 --> 00:07:24,229
+easily possible with a shell script or a
+
+163
+00:07:24,229 --> 00:07:26,929
+bad script or direct command line are
+
+164
+00:07:26,929 --> 00:07:30,110
+you willing to ship another binary will
+
+165
+00:07:30,110 --> 00:07:32,149
+that binary work well given the
+
+166
+00:07:32,149 --> 00:07:33,829
+antivirus that some user has installed
+
+167
+00:07:33,829 --> 00:07:38,899
+somewhere in Japan how do I know and
+
+168
+00:07:38,899 --> 00:07:41,119
+that is a big reason to be careful with
+
+169
+00:07:41,119 --> 00:07:43,039
+child processes you're writing into
+
+170
+00:07:43,039 --> 00:07:45,079
+shell directly and there are cases where
+
+171
+00:07:45,079 --> 00:07:48,289
+it's not a good idea especially if stdio
+
+172
+00:07:48,289 --> 00:07:50,269
+is not enough the communication with
+
+173
+00:07:50,269 --> 00:07:52,159
+child processes normally happens to the
+
+174
+00:07:52,159 --> 00:07:54,709
+standard input output and error ports
+
+175
+00:07:54,709 --> 00:07:56,869
+now the problem with that is it's good
+
+176
+00:07:56,869 --> 00:07:58,729
+if you want to work with that but say
+
+177
+00:07:58,729 --> 00:08:00,289
+you're passing a large amount of image
+
+178
+00:08:00,289 --> 00:08:02,149
+data you'll have to go down to the file
+
+179
+00:08:02,149 --> 00:08:06,829
+system which is very complicated child
+
+180
+00:08:06,829 --> 00:08:09,379
+process is like a tow-truck it can get
+
+181
+00:08:09,379 --> 00:08:11,479
+you to your destination but I would
+
+182
+00:08:11,479 --> 00:08:17,959
+never want to talk about that let's talk
+
+183
+00:08:17,959 --> 00:08:20,809
+about something better FFI or foreign
+
+184
+00:08:20,809 --> 00:08:23,179
+function injection FFI is not really a
+
+185
+00:08:23,179 --> 00:08:25,489
+node concept it is a concept that's
+
+186
+00:08:25,489 --> 00:08:28,129
+there in all programming languages the
+
+187
+00:08:28,129 --> 00:08:29,719
+binary interface of the C programming
+
+188
+00:08:29,719 --> 00:08:32,779
+languages has been standardized as the
+
+189
+00:08:32,779 --> 00:08:34,519
+interface for information exchange
+
+190
+00:08:34,519 --> 00:08:38,120
+between languages in short if you have a
+
+191
+00:08:38,120 --> 00:08:40,610
+C style library then any language can
+
+192
+00:08:40,610 --> 00:08:42,379
+read through the binary and directly
+
+193
+00:08:42,379 --> 00:08:44,449
+call into the functionality so if a
+
+194
+00:08:44,449 --> 00:08:46,399
+method is exporting a C style library
+
+195
+00:08:46,399 --> 00:08:49,370
+you can directly read it from nodejs and
+
+196
+00:08:49,370 --> 00:08:50,269
+call into it
+
+197
+00:08:50,269 --> 00:08:53,990
+no writing C++ no writing C you are
+
+198
+00:08:53,990 --> 00:08:56,450
+still in GS and there is a native module
+
+199
+00:08:56,450 --> 00:08:58,790
+available in node called f fi or f fi
+
+200
+00:08:58,790 --> 00:09:01,570
+napi in node 10-plus which can do that
+
+201
+00:09:01,570 --> 00:09:04,610
+it is actually the best approach if you
+
+202
+00:09:04,610 --> 00:09:06,740
+have a library with C style code lying
+
+203
+00:09:06,740 --> 00:09:07,160
+there
+
+204
+00:09:07,160 --> 00:09:10,100
+the reason you can use it in multiple
+
+205
+00:09:10,100 --> 00:09:12,740
+languages your C guy can write the C
+
+206
+00:09:12,740 --> 00:09:15,620
+code and you can focus on Jas but it has
+
+207
+00:09:15,620 --> 00:09:18,860
+its own set of disadvantages for example
+
+208
+00:09:18,860 --> 00:09:23,420
+the J's bridge to C++ is still slow the
+
+209
+00:09:23,420 --> 00:09:25,370
+other big disadvantage which affects GS
+
+210
+00:09:25,370 --> 00:09:28,310
+developers is that C developers like to
+
+211
+00:09:28,310 --> 00:09:31,370
+take on the main thread if the C library
+
+212
+00:09:31,370 --> 00:09:33,200
+is actually slow and you're actually
+
+213
+00:09:33,200 --> 00:09:34,550
+doing number crunching you would want to
+
+214
+00:09:34,550 --> 00:09:36,440
+do this in a background thread don't
+
+215
+00:09:36,440 --> 00:09:38,450
+stall my application while this thing is
+
+216
+00:09:38,450 --> 00:09:41,320
+running and you cannot do that with FF I
+
+217
+00:09:41,320 --> 00:09:44,000
+for doing something like that you need
+
+218
+00:09:44,000 --> 00:09:46,370
+more something more advanced FF I is
+
+219
+00:09:46,370 --> 00:09:48,470
+more like a toy it works for what it
+
+220
+00:09:48,470 --> 00:09:50,660
+works but if it doesn't look for a
+
+221
+00:09:50,660 --> 00:09:55,190
+better solution now note is build in v8
+
+222
+00:09:55,190 --> 00:09:58,730
+v8 is a C++ based library and what that
+
+223
+00:09:58,730 --> 00:10:02,450
+means is you can directly call C++ why
+
+224
+00:10:02,450 --> 00:10:04,250
+are the v8 API is excellent and extend
+
+225
+00:10:04,250 --> 00:10:06,890
+node so simple you'll get the full
+
+226
+00:10:06,890 --> 00:10:09,560
+performance of v8 you can extend v8 and
+
+227
+00:10:09,560 --> 00:10:12,620
+write new JavaScript maybe write es 2019
+
+228
+00:10:12,620 --> 00:10:17,810
+in your module but then there is one big
+
+229
+00:10:17,810 --> 00:10:18,520
+problem
+
+230
+00:10:18,520 --> 00:10:21,320
+v8 releases a new version every month
+
+231
+00:10:21,320 --> 00:10:23,390
+and they cannot guarantee the
+
+232
+00:10:23,390 --> 00:10:25,399
+compatibility of their API across
+
+233
+00:10:25,399 --> 00:10:28,310
+releases what that means is that if I
+
+234
+00:10:28,310 --> 00:10:30,560
+write a node module using the v8 API is
+
+235
+00:10:30,560 --> 00:10:34,370
+next month I'm I need to rewrite it no
+
+236
+00:10:34,370 --> 00:10:36,620
+one can maintain that and that node team
+
+237
+00:10:36,620 --> 00:10:39,170
+realized it very early that is why they
+
+238
+00:10:39,170 --> 00:10:41,690
+created na N and wrapper over the v8 API
+
+239
+00:10:41,690 --> 00:10:44,420
+which hides the changes as v8 changes
+
+240
+00:10:44,420 --> 00:10:47,300
+and if you use any and you can recompile
+
+241
+00:10:47,300 --> 00:10:49,370
+your module across various versions of
+
+242
+00:10:49,370 --> 00:10:52,130
+node and it will continue to run nor
+
+243
+00:10:52,130 --> 00:10:55,130
+rewriting needed NN was built as a
+
+244
+00:10:55,130 --> 00:10:57,320
+specific solution to a very specific
+
+245
+00:10:57,320 --> 00:11:00,920
+problem that was to hide v8 and it does
+
+246
+00:11:00,920 --> 00:11:03,170
+the job perfectly but it was never
+
+247
+00:11:03,170 --> 00:11:05,529
+thought out to be a very well-defined
+
+248
+00:11:05,529 --> 00:11:07,680
+C++ interface
+
+249
+00:11:07,680 --> 00:11:09,839
+jiae's communication and it starts to
+
+250
+00:11:09,839 --> 00:11:12,630
+show its age for example you need to
+
+251
+00:11:12,630 --> 00:11:15,600
+understand v8 to use any and properly
+
+252
+00:11:15,600 --> 00:11:18,680
+you need to recompile with every release
+
+253
+00:11:18,680 --> 00:11:21,360
+people who use multiple versions of
+
+254
+00:11:21,360 --> 00:11:23,160
+north would have seen this error at some
+
+255
+00:11:23,160 --> 00:11:25,740
+point or the other this error comes in
+
+256
+00:11:25,740 --> 00:11:28,980
+because of any n n n is highly tied to a
+
+257
+00:11:28,980 --> 00:11:32,130
+version of node and so if you want to
+
+258
+00:11:32,130 --> 00:11:33,810
+switch your node version there are
+
+259
+00:11:33,810 --> 00:11:36,870
+problems more than that if you happen to
+
+260
+00:11:36,870 --> 00:11:39,120
+be writing electron and have your unit
+
+261
+00:11:39,120 --> 00:11:41,370
+tests in node you will only be
+
+262
+00:11:41,370 --> 00:11:47,490
+recompiling for the entire day another
+
+263
+00:11:47,490 --> 00:11:49,440
+issue with any n is that it's so
+
+264
+00:11:49,440 --> 00:11:51,690
+complicated to set up any n that you
+
+265
+00:11:51,690 --> 00:11:53,250
+will be actually ending up setting up
+
+266
+00:11:53,250 --> 00:11:56,250
+your production machine to have a C
+
+267
+00:11:56,250 --> 00:11:59,100
+compiler a Python compiler and the
+
+268
+00:11:59,100 --> 00:12:00,839
+JavaScript runtime just to use
+
+269
+00:12:00,839 --> 00:12:03,630
+JavaScript in production which is not
+
+270
+00:12:03,630 --> 00:12:06,570
+really a good thing to do any n is like
+
+271
+00:12:06,570 --> 00:12:08,940
+manual transmission you need to know
+
+272
+00:12:08,940 --> 00:12:10,470
+what gear to go into for your
+
+273
+00:12:10,470 --> 00:12:12,779
+application to work otherwise this error
+
+274
+00:12:12,779 --> 00:12:16,470
+awaits now if any n is manual let's talk
+
+275
+00:12:16,470 --> 00:12:20,160
+about the automatic the n API the N API
+
+276
+00:12:20,160 --> 00:12:23,010
+has been marked stable with no ten and
+
+277
+00:12:23,010 --> 00:12:26,160
+for the last 15 days no 10 has been the
+
+278
+00:12:26,160 --> 00:12:28,800
+LTS version of node so n API is
+
+279
+00:12:28,800 --> 00:12:31,920
+production-ready n api has a very
+
+280
+00:12:31,920 --> 00:12:35,670
+well-defined binary interface that is it
+
+281
+00:12:35,670 --> 00:12:39,779
+is a bi-stable in short the node team
+
+282
+00:12:39,779 --> 00:12:41,430
+guarantees that if you write something
+
+283
+00:12:41,430 --> 00:12:44,220
+using the N API you can not only use it
+
+284
+00:12:44,220 --> 00:12:46,680
+in the past versions of node node eight
+
+285
+00:12:46,680 --> 00:12:49,020
+where it was experimental and no 10 but
+
+286
+00:12:49,020 --> 00:12:51,329
+also in the future versions the node a
+
+287
+00:12:51,329 --> 00:12:53,430
+node team will gain will try to make
+
+288
+00:12:53,430 --> 00:12:55,440
+sure that your napi mod you stays
+
+289
+00:12:55,440 --> 00:12:57,000
+relevant and you do not need to
+
+290
+00:12:57,000 --> 00:12:59,730
+recompile across your users n api
+
+291
+00:12:59,730 --> 00:13:01,740
+provides a full set of utility methods
+
+292
+00:13:01,740 --> 00:13:05,430
+to communicate with c++ in a proper JS
+
+293
+00:13:05,430 --> 00:13:07,680
+way for example it hides all the
+
+294
+00:13:07,680 --> 00:13:10,230
+complications around pointers it hides
+
+295
+00:13:10,230 --> 00:13:12,270
+how to create a background thread in a
+
+296
+00:13:12,270 --> 00:13:15,540
+very simple method and electron rebuild
+
+297
+00:13:15,540 --> 00:13:18,420
+is officially dead once we have all
+
+298
+00:13:18,420 --> 00:13:20,710
+plugins that have moved to the N API
+
+299
+00:13:20,710 --> 00:13:23,200
+now before I talk about how to write
+
+300
+00:13:23,200 --> 00:13:25,240
+some napi code I would like to know how
+
+301
+00:13:25,240 --> 00:13:27,520
+many if you've heard about C++ before my
+
+302
+00:13:27,520 --> 00:13:31,810
+talk everyone how many of you actually
+
+303
+00:13:31,810 --> 00:13:35,800
+used C++ or written C++ code it's quite
+
+304
+00:13:35,800 --> 00:13:39,040
+a few how many of you will love C++ love
+
+305
+00:13:39,040 --> 00:13:43,660
+it more than JavaScript again at your
+
+306
+00:13:43,660 --> 00:13:45,970
+question because C++ is much more
+
+307
+00:13:45,970 --> 00:13:47,950
+difficult to write and unless you really
+
+308
+00:13:47,950 --> 00:13:49,990
+need to I would prefer to stay in the
+
+309
+00:13:49,990 --> 00:13:53,410
+jail and less socials to show some
+
+310
+00:13:53,410 --> 00:13:56,440
+sample an API based code so I have a es6
+
+311
+00:13:56,440 --> 00:13:59,470
+module that exports a property X which
+
+312
+00:13:59,470 --> 00:14:01,950
+is a function that returns hello world
+
+313
+00:14:01,950 --> 00:14:05,130
+this is what it would look like in es5
+
+314
+00:14:05,130 --> 00:14:10,270
+slightly more verbose but look at C++ it
+
+315
+00:14:10,270 --> 00:14:13,149
+looks very complicated but actually it's
+
+316
+00:14:13,149 --> 00:14:15,370
+very simple from the C++ standards at
+
+317
+00:14:15,370 --> 00:14:18,100
+the bottom of the file we have this node
+
+318
+00:14:18,100 --> 00:14:20,980
+API module which is declaring that the
+
+319
+00:14:20,980 --> 00:14:23,050
+module dot exports come from the export
+
+320
+00:14:23,050 --> 00:14:25,270
+method and the name of the module comes
+
+321
+00:14:25,270 --> 00:14:27,220
+from the JIP file the JIP file is
+
+322
+00:14:27,220 --> 00:14:29,050
+equivalent to packet or JSON in the
+
+323
+00:14:29,050 --> 00:14:31,630
+native world in the exports method we
+
+324
+00:14:31,630 --> 00:14:34,900
+are setting a property X to be the Foo
+
+325
+00:14:34,900 --> 00:14:36,820
+function which has been converted from a
+
+326
+00:14:36,820 --> 00:14:39,400
+c function to a JS function and in the
+
+327
+00:14:39,400 --> 00:14:40,870
+Foo function we are returning a string
+
+328
+00:14:40,870 --> 00:14:44,260
+hello world at the top of the file there
+
+329
+00:14:44,260 --> 00:14:46,500
+is any P I dot H which we are including
+
+330
+00:14:46,500 --> 00:14:49,180
+include is kind of like imports I think
+
+331
+00:14:49,180 --> 00:14:51,700
+most of us are C++ developers so I don't
+
+332
+00:14:51,700 --> 00:14:53,339
+need to go into details for all of that
+
+333
+00:14:53,339 --> 00:14:55,470
+now what we'll be doing today is
+
+334
+00:14:55,470 --> 00:14:58,330
+building or showing a running native
+
+335
+00:14:58,330 --> 00:15:00,700
+module let's go to a hypothetical
+
+336
+00:15:00,700 --> 00:15:03,370
+situation that I have been very lucky in
+
+337
+00:15:03,370 --> 00:15:05,910
+Vegas
+
+338
+00:15:05,920 --> 00:15:10,810
+and not only that all of you have been
+
+339
+00:15:10,810 --> 00:15:13,990
+luckier so while I get some cash you get
+
+340
+00:15:13,990 --> 00:15:16,600
+to drive a brand new car and as you
+
+341
+00:15:16,600 --> 00:15:18,640
+drive through the Vegas Strip you see me
+
+342
+00:15:18,640 --> 00:15:21,280
+in your sideview mirror and for another
+
+343
+00:15:21,280 --> 00:15:23,260
+lucky break it's actually raining in
+
+344
+00:15:23,260 --> 00:15:28,180
+Vegas and that is what we would be doing
+
+345
+00:15:28,180 --> 00:15:31,420
+we'll be taking an image adding a rain
+
+346
+00:15:31,420 --> 00:15:33,550
+effect to it overlaying it with another
+
+347
+00:15:33,550 --> 00:15:35,830
+image and fitting it inside a frame we
+
+348
+00:15:35,830 --> 00:15:37,680
+are doing all of this using imagemagick
+
+349
+00:15:37,680 --> 00:15:40,810
+image magic is an open source C++ API
+
+350
+00:15:40,810 --> 00:15:43,990
+for image manipulation very popular on
+
+351
+00:15:43,990 --> 00:15:45,430
+the server side very popular on the
+
+352
+00:15:45,430 --> 00:15:47,290
+command line you can read all about it
+
+353
+00:15:47,290 --> 00:15:49,530
+it's all over the Internet
+
+354
+00:15:49,530 --> 00:15:54,970
+so let's get started and I'm here in the
+
+355
+00:15:54,970 --> 00:15:58,900
+middle of a test file where I'm loading
+
+356
+00:15:58,900 --> 00:16:02,040
+a module called version dot node in
+
+357
+00:16:02,040 --> 00:16:05,170
+version dot node we export a method
+
+358
+00:16:05,170 --> 00:16:07,030
+called version which returns the current
+
+359
+00:16:07,030 --> 00:16:10,420
+node version as a string and I'm logging
+
+360
+00:16:10,420 --> 00:16:12,760
+it onto the console let's look at
+
+361
+00:16:12,760 --> 00:16:15,250
+binding dot chip which represents the
+
+362
+00:16:15,250 --> 00:16:17,920
+packet or JSON for this module it has
+
+363
+00:16:17,920 --> 00:16:19,540
+the similar things just like packet or
+
+364
+00:16:19,540 --> 00:16:21,580
+JSON the name is called target name
+
+365
+00:16:21,580 --> 00:16:23,530
+because we are C++ developers you want
+
+366
+00:16:23,530 --> 00:16:27,550
+to make it a bit more confusing than it
+
+367
+00:16:27,550 --> 00:16:30,160
+has dependencies which is an array and
+
+368
+00:16:30,160 --> 00:16:32,380
+it can run some shell scripts or note
+
+369
+00:16:32,380 --> 00:16:35,020
+scripts directly we have some flags to
+
+370
+00:16:35,020 --> 00:16:36,730
+tell the compiler how to compile it and
+
+371
+00:16:36,730 --> 00:16:40,420
+we have some OS specific stuff and that
+
+372
+00:16:40,420 --> 00:16:42,610
+is all there is to it when node would
+
+373
+00:16:42,610 --> 00:16:44,410
+read this file it would understand that
+
+374
+00:16:44,410 --> 00:16:45,940
+it is native code and compile this
+
+375
+00:16:45,940 --> 00:16:48,370
+binary let's go into the binary version
+
+376
+00:16:48,370 --> 00:16:51,490
+or the C++ version of this module this
+
+377
+00:16:51,490 --> 00:16:53,650
+looks exactly like the demo that a
+
+378
+00:16:53,650 --> 00:16:56,440
+sample code that I just showed so at the
+
+379
+00:16:56,440 --> 00:16:58,000
+bottom of the file we again have known
+
+380
+00:16:58,000 --> 00:17:00,250
+API module the name comes from the JIP
+
+381
+00:17:00,250 --> 00:17:02,860
+file there is a method called init which
+
+382
+00:17:02,860 --> 00:17:04,690
+has a property called version which is
+
+383
+00:17:04,690 --> 00:17:07,870
+the function get version in the get
+
+384
+00:17:07,870 --> 00:17:09,550
+version function we are returning a
+
+385
+00:17:09,550 --> 00:17:11,470
+string which we are instead of
+
+386
+00:17:11,470 --> 00:17:13,570
+hard-coding hello world getting from the
+
+387
+00:17:13,570 --> 00:17:15,880
+imagemagick api which we've included by
+
+388
+00:17:15,880 --> 00:17:19,000
+a magic plus plus dot h now as i execute
+
+389
+00:17:19,000 --> 00:17:19,630
+this and my
+
+390
+00:17:19,630 --> 00:17:21,160
+a console I think it's slightly
+
+391
+00:17:21,160 --> 00:17:23,920
+difficult to see we have image magic
+
+392
+00:17:23,920 --> 00:17:26,890
+version 7 being logged that is the
+
+393
+00:17:26,890 --> 00:17:28,390
+version of image magic that's installed
+
+394
+00:17:28,390 --> 00:17:30,910
+on my machine now that we've gone
+
+395
+00:17:30,910 --> 00:17:33,100
+through a hello world I will like you to
+
+396
+00:17:33,100 --> 00:17:34,630
+go through something a little more
+
+397
+00:17:34,630 --> 00:17:37,360
+complicated so in this second example we
+
+398
+00:17:37,360 --> 00:17:39,160
+are reading a file called photos or JPEG
+
+399
+00:17:39,160 --> 00:17:42,580
+which is a binary image file please
+
+400
+00:17:42,580 --> 00:17:44,170
+don't point at read file sync I know
+
+401
+00:17:44,170 --> 00:17:48,340
+it's bad code once we get the image file
+
+402
+00:17:48,340 --> 00:17:52,090
+we load the info dot node info provider
+
+403
+00:17:52,090 --> 00:17:54,550
+native module which exports a method
+
+404
+00:17:54,550 --> 00:17:56,080
+process image which is going to process
+
+405
+00:17:56,080 --> 00:18:00,160
+this image and return a.j saab jekt this
+
+406
+00:18:00,160 --> 00:18:02,740
+object I am logging on to console many
+
+407
+00:18:02,740 --> 00:18:04,540
+JavaScript developers don't know that
+
+408
+00:18:04,540 --> 00:18:06,310
+JSON dot stringify actually can take
+
+409
+00:18:06,310 --> 00:18:08,920
+more than one argument the third
+
+410
+00:18:08,920 --> 00:18:10,690
+argument of JSON dot stringify is
+
+411
+00:18:10,690 --> 00:18:13,570
+extremely useful this is the number of
+
+412
+00:18:13,570 --> 00:18:15,220
+white spaces so you can get a pretty
+
+413
+00:18:15,220 --> 00:18:18,220
+fide JSON string from a JavaScript
+
+414
+00:18:18,220 --> 00:18:20,260
+object directly without going to J's
+
+415
+00:18:20,260 --> 00:18:22,650
+beautify or whatever you guys are using
+
+416
+00:18:22,650 --> 00:18:25,810
+coming back to native code let's look at
+
+417
+00:18:25,810 --> 00:18:28,570
+info dot CC the code for the info dot
+
+418
+00:18:28,570 --> 00:18:31,090
+node module the bottom of the file looks
+
+419
+00:18:31,090 --> 00:18:33,160
+exactly like I've just shown to you all
+
+420
+00:18:33,160 --> 00:18:35,440
+of you the name comes from the JIP file
+
+421
+00:18:35,440 --> 00:18:38,080
+the init method provides the exports the
+
+422
+00:18:38,080 --> 00:18:40,090
+expose is actually a property called
+
+423
+00:18:40,090 --> 00:18:42,160
+process image which comes from the
+
+424
+00:18:42,160 --> 00:18:45,070
+process image C++ function now let's get
+
+425
+00:18:45,070 --> 00:18:47,260
+into the process image function the
+
+426
+00:18:47,260 --> 00:18:48,880
+first thing to note is that it doesn't
+
+427
+00:18:48,880 --> 00:18:51,070
+take multiple arguments it takes an info
+
+428
+00:18:51,070 --> 00:18:53,590
+object this info object is very similar
+
+429
+00:18:53,590 --> 00:18:55,900
+to the arguments object in Jas or the
+
+430
+00:18:55,900 --> 00:18:58,320
+triple dot args like you write in es6
+
+431
+00:18:58,320 --> 00:19:00,940
+then from this info object we can verify
+
+432
+00:19:00,940 --> 00:19:03,070
+that the parameters being passed are
+
+433
+00:19:03,070 --> 00:19:05,200
+correct and if they are not we throw a
+
+434
+00:19:05,200 --> 00:19:07,690
+JS exception why we want to do that
+
+435
+00:19:07,690 --> 00:19:09,550
+they're still living in the world of
+
+436
+00:19:09,550 --> 00:19:11,620
+segmentation false if we make a mistake
+
+437
+00:19:11,620 --> 00:19:14,020
+our program would crash and therefore we
+
+438
+00:19:14,020 --> 00:19:17,200
+want to be extra careful it's better to
+
+439
+00:19:17,200 --> 00:19:18,820
+get into the unhandled exception in the
+
+440
+00:19:18,820 --> 00:19:21,130
+notes place rather than crashing here in
+
+441
+00:19:21,130 --> 00:19:25,270
+C once we know that it is a buffer we
+
+442
+00:19:25,270 --> 00:19:27,970
+can convert it from a raw JSON buffer
+
+443
+00:19:27,970 --> 00:19:29,920
+typescript folks would understand that
+
+444
+00:19:29,920 --> 00:19:31,450
+this looks very close to typescript
+
+445
+00:19:31,450 --> 00:19:33,400
+and generic since
+
+446
+00:19:33,400 --> 00:19:35,530
+plus plus have been an inspiration for a
+
+447
+00:19:35,530 --> 00:19:37,390
+lot of languages including typescript
+
+448
+00:19:37,390 --> 00:19:39,730
+once we converted to a buffer we have
+
+449
+00:19:39,730 --> 00:19:41,890
+direct access to the raw binary data and
+
+450
+00:19:41,890 --> 00:19:44,680
+the length of the buffer we can use this
+
+451
+00:19:44,680 --> 00:19:46,600
+to pass on and create an image magic
+
+452
+00:19:46,600 --> 00:19:49,180
+image now from the image I'm not doing
+
+453
+00:19:49,180 --> 00:19:50,620
+much I'm reading the width and the
+
+454
+00:19:50,620 --> 00:19:52,900
+height of the image a few attributes and
+
+455
+00:19:52,900 --> 00:19:55,750
+then creating a JS object creating a J's
+
+456
+00:19:55,750 --> 00:19:58,810
+in C++ is a little more verbose than
+
+457
+00:19:58,810 --> 00:20:02,140
+creating it is in GS so I need to create
+
+458
+00:20:02,140 --> 00:20:03,820
+an object with the width height created
+
+459
+00:20:03,820 --> 00:20:06,160
+and modified parameters which I again
+
+460
+00:20:06,160 --> 00:20:07,840
+get from the number in string tied data
+
+461
+00:20:07,840 --> 00:20:11,230
+and then I return it back to node now as
+
+462
+00:20:11,230 --> 00:20:13,750
+I executed in my debug console you
+
+463
+00:20:13,750 --> 00:20:15,280
+should see that I'm loading a full at
+
+464
+00:20:15,280 --> 00:20:17,800
+the image the mod if the Creator time is
+
+465
+00:20:17,800 --> 00:20:20,230
+actually right now and that is because I
+
+466
+00:20:20,230 --> 00:20:22,800
+passed on a binary image to image magic
+
+467
+00:20:22,800 --> 00:20:25,150
+image magic did not get to read a file
+
+468
+00:20:25,150 --> 00:20:26,830
+from disk and that is why it was just
+
+469
+00:20:26,830 --> 00:20:28,420
+created when the binary editor was
+
+470
+00:20:28,420 --> 00:20:30,430
+provided and it did not have a modified
+
+471
+00:20:30,430 --> 00:20:33,820
+time the demo that I just showed was
+
+472
+00:20:33,820 --> 00:20:36,340
+kind of a example that we would not like
+
+473
+00:20:36,340 --> 00:20:37,990
+to use in production it's doing
+
+474
+00:20:37,990 --> 00:20:40,900
+processing in the main thread right and
+
+475
+00:20:40,900 --> 00:20:44,860
+main thread stalls and our application
+
+476
+00:20:44,860 --> 00:20:47,050
+stops working so let's do something
+
+477
+00:20:47,050 --> 00:20:48,610
+where it goes to a background thread
+
+478
+00:20:48,610 --> 00:20:51,250
+takes a callback gives us the processed
+
+479
+00:20:51,250 --> 00:20:54,400
+image in our callback now we pass it on
+
+480
+00:20:54,400 --> 00:20:58,150
+and save the file as edit dot JPEG on to
+
+481
+00:20:58,150 --> 00:21:01,690
+our console let's look at the code for
+
+482
+00:21:01,690 --> 00:21:04,780
+edit dot C C now this also starts just
+
+483
+00:21:04,780 --> 00:21:06,430
+like the code that I showed for the
+
+484
+00:21:06,430 --> 00:21:08,800
+previous two examples we again get the
+
+485
+00:21:08,800 --> 00:21:10,750
+name from the Gipp file the init method
+
+486
+00:21:10,750 --> 00:21:13,150
+provides a method called edit which is
+
+487
+00:21:13,150 --> 00:21:15,850
+the function edit in the function edit
+
+488
+00:21:15,850 --> 00:21:17,770
+we validate the arguments just like we
+
+489
+00:21:17,770 --> 00:21:20,110
+did in the previous example and then
+
+490
+00:21:20,110 --> 00:21:22,210
+instead of doing some calculation we
+
+491
+00:21:22,210 --> 00:21:24,550
+create a worker called image modifier
+
+492
+00:21:24,550 --> 00:21:26,950
+which takes the buffer and they call
+
+493
+00:21:26,950 --> 00:21:29,830
+back and then we queue that worker on a
+
+494
+00:21:29,830 --> 00:21:32,170
+background thread we are not creating
+
+495
+00:21:32,170 --> 00:21:34,750
+background threads manually oh god it's
+
+496
+00:21:34,750 --> 00:21:36,340
+so difficult to create background
+
+497
+00:21:36,340 --> 00:21:40,960
+threads things like deadlocks they stall
+
+498
+00:21:40,960 --> 00:21:41,890
+your application
+
+499
+00:21:41,890 --> 00:21:45,580
+do not waste CPU but you don't run this
+
+500
+00:21:45,580 --> 00:21:47,080
+is so much better
+
+501
+00:21:47,080 --> 00:21:50,019
+and API provides direct access to run
+
+502
+00:21:50,019 --> 00:21:51,909
+stuff in a background thread and it
+
+503
+00:21:51,909 --> 00:21:54,309
+manages the thread pool now let's look
+
+504
+00:21:54,309 --> 00:21:58,299
+at the image modifier class event
+
+505
+00:21:58,299 --> 00:21:59,980
+modifier derived from an async worker
+
+506
+00:21:59,980 --> 00:22:01,179
+which and capsule eights all the
+
+507
+00:22:01,179 --> 00:22:03,549
+background thread calculations a sync
+
+508
+00:22:03,549 --> 00:22:05,980
+worker takes a callback and it ensures
+
+509
+00:22:05,980 --> 00:22:10,510
+the unmanaged memory part of C++ so when
+
+510
+00:22:10,510 --> 00:22:12,039
+we need the koala back back again after
+
+511
+00:22:12,039 --> 00:22:14,470
+execution in the background thread the
+
+512
+00:22:14,470 --> 00:22:15,850
+async worker will ensure that the
+
+513
+00:22:15,850 --> 00:22:17,919
+callback has not been garbage collected
+
+514
+00:22:17,919 --> 00:22:23,019
+by v8 and we can use it again we can
+
+515
+00:22:23,019 --> 00:22:24,940
+directly copy in values that we get like
+
+516
+00:22:24,940 --> 00:22:27,370
+numbers and strings but in this case I
+
+517
+00:22:27,370 --> 00:22:29,710
+am passing a lot of binary data and we
+
+518
+00:22:29,710 --> 00:22:31,389
+don't want to copy the binary data in
+
+519
+00:22:31,389 --> 00:22:33,639
+the J's thread and that is why we are
+
+520
+00:22:33,639 --> 00:22:36,370
+using the node buffer despite the
+
+521
+00:22:36,370 --> 00:22:38,409
+presence of array buffers nor buffer is
+
+522
+00:22:38,409 --> 00:22:41,620
+not dead because of a reason node buffer
+
+523
+00:22:41,620 --> 00:22:44,169
+is a very special object the binary data
+
+524
+00:22:44,169 --> 00:22:46,809
+of node buffer is accessible even from
+
+525
+00:22:46,809 --> 00:22:49,360
+background threads and that is why node
+
+526
+00:22:49,360 --> 00:22:52,990
+buffer still exists and to do that what
+
+527
+00:22:52,990 --> 00:22:54,220
+we are doing is you're marking it
+
+528
+00:22:54,220 --> 00:22:56,409
+persistent so that accidentally the node
+
+529
+00:22:56,409 --> 00:22:58,600
+buffer does not get deleted it will get
+
+530
+00:22:58,600 --> 00:23:01,899
+garbage collected once this class object
+
+531
+00:23:01,899 --> 00:23:04,870
+is destroyed and then we are keeping a
+
+532
+00:23:04,870 --> 00:23:06,730
+reference to the actual binary data and
+
+533
+00:23:06,730 --> 00:23:08,590
+the length of the data to pass on to
+
+534
+00:23:08,590 --> 00:23:11,980
+image magic and API will ensure that my
+
+535
+00:23:11,980 --> 00:23:13,659
+execute method is actually called in the
+
+536
+00:23:13,659 --> 00:23:15,909
+background thread now in the execute
+
+537
+00:23:15,909 --> 00:23:18,100
+method I am passing on that image data
+
+538
+00:23:18,100 --> 00:23:20,980
+to image magic I'm loading a few images
+
+539
+00:23:20,980 --> 00:23:25,240
+I specified array in effect I overlay it
+
+540
+00:23:25,240 --> 00:23:28,090
+with my water image and then change its
+
+541
+00:23:28,090 --> 00:23:33,240
+dimension to fit it inside the car frame
+
+542
+00:23:33,240 --> 00:23:35,980
+once I am done I can write this output
+
+543
+00:23:35,980 --> 00:23:38,440
+to another variable we don't have to
+
+544
+00:23:38,440 --> 00:23:41,740
+write to disk now note is happy passing
+
+545
+00:23:41,740 --> 00:23:44,260
+this variable directly to the J's land
+
+546
+00:23:44,260 --> 00:23:47,200
+we do not need to copy it over or waste
+
+547
+00:23:47,200 --> 00:23:50,019
+our memory or CPU doing things with the
+
+548
+00:23:50,019 --> 00:23:52,690
+data we can directly use it in Jas but
+
+549
+00:23:52,690 --> 00:23:54,789
+unfortunately event magic does not allow
+
+550
+00:23:54,789 --> 00:23:56,770
+me to and therefore I need to copy this
+
+551
+00:23:56,770 --> 00:23:59,139
+data into a binary object into a basic
+
+552
+00:23:59,139 --> 00:24:01,059
+object now to do that
+
+553
+00:24:01,059 --> 00:24:02,919
+I'm using this but this is not really
+
+554
+00:24:02,919 --> 00:24:05,019
+stalling your JavaScript read all this
+
+555
+00:24:05,019 --> 00:24:06,370
+code is running in your background
+
+556
+00:24:06,370 --> 00:24:08,830
+thread in the execute method so your JS
+
+557
+00:24:08,830 --> 00:24:11,230
+code will still be performant once that
+
+558
+00:24:11,230 --> 00:24:13,419
+method executes we get to the on ok
+
+559
+00:24:13,419 --> 00:24:15,220
+method which is again called in the J's
+
+560
+00:24:15,220 --> 00:24:17,889
+thread where we can execute JavaScript
+
+561
+00:24:17,889 --> 00:24:20,350
+and this method what we are doing is
+
+562
+00:24:20,350 --> 00:24:23,019
+getting a callback and calling it with
+
+563
+00:24:23,019 --> 00:24:24,820
+undefined as the error argument and D
+
+564
+00:24:24,820 --> 00:24:27,669
+buffer as the success argument now
+
+565
+00:24:27,669 --> 00:24:28,990
+there's one more thing that we need to
+
+566
+00:24:28,990 --> 00:24:31,929
+remember and that is this line which is
+
+567
+00:24:31,929 --> 00:24:34,779
+not really declaring a c++ variable that
+
+568
+00:24:34,779 --> 00:24:36,669
+we are not going to use this is actually
+
+569
+00:24:36,669 --> 00:24:39,549
+creating a J scope all functions in J s
+
+570
+00:24:39,549 --> 00:24:42,580
+are automatically having a scope but
+
+571
+00:24:42,580 --> 00:24:44,080
+since we are not creating a function we
+
+572
+00:24:44,080 --> 00:24:45,549
+directly calling a function we need to
+
+573
+00:24:45,549 --> 00:24:48,190
+create a scope manually and once the
+
+574
+00:24:48,190 --> 00:24:50,230
+scope is destroyed if any of the objects
+
+575
+00:24:50,230 --> 00:24:52,240
+created in the scope are not referenced
+
+576
+00:24:52,240 --> 00:24:52,869
+anywhere
+
+577
+00:24:52,869 --> 00:24:55,509
+there could be garbage collected now
+
+578
+00:24:55,509 --> 00:24:57,070
+let's see how I create the buffer to
+
+579
+00:24:57,070 --> 00:24:59,289
+pass on the buffer is again created by
+
+580
+00:24:59,289 --> 00:25:00,519
+the buffer new just like you were using
+
+581
+00:25:00,519 --> 00:25:02,980
+string new or a number new a buffer is
+
+582
+00:25:02,980 --> 00:25:05,200
+slightly more complicated in sense that
+
+583
+00:25:05,200 --> 00:25:07,869
+it takes this an asynchronous function
+
+584
+00:25:07,869 --> 00:25:10,869
+called a C++ lambda we need to do this
+
+585
+00:25:10,869 --> 00:25:14,289
+because C++ still has managed doesn't
+
+586
+00:25:14,289 --> 00:25:16,480
+have managed memory so for unmanaged
+
+587
+00:25:16,480 --> 00:25:18,129
+memory when this buffer is actually
+
+588
+00:25:18,129 --> 00:25:20,110
+garbage collected we will need to free
+
+589
+00:25:20,110 --> 00:25:21,669
+the internal data and that is what we
+
+590
+00:25:21,669 --> 00:25:25,720
+are doing now as I execute this you
+
+591
+00:25:25,720 --> 00:25:27,460
+won't see anything in the console but
+
+592
+00:25:27,460 --> 00:25:30,100
+will successfully log done and instead
+
+593
+00:25:30,100 --> 00:25:32,230
+of showing what I was doing since I'm
+
+594
+00:25:32,230 --> 00:25:33,999
+running out of time I'll show you
+
+595
+00:25:33,999 --> 00:25:36,429
+something cooler now what I'm going to
+
+596
+00:25:36,429 --> 00:25:38,860
+do is without recompiling I'm going to
+
+597
+00:25:38,860 --> 00:25:41,379
+load it in electron and as I click on
+
+598
+00:25:41,379 --> 00:25:44,710
+this here it is the same code running an
+
+599
+00:25:44,710 --> 00:25:48,070
+electron no recompilation and i am going
+
+600
+00:25:48,070 --> 00:25:50,289
+to make a fool of myself now as i take a
+
+601
+00:25:50,289 --> 00:25:52,029
+selfie of myself in front of all of you
+
+602
+00:25:52,029 --> 00:25:54,910
+on the stage yeah
+
+603
+00:25:54,910 --> 00:25:57,340
+and it does that processing and it's
+
+604
+00:25:57,340 --> 00:26:05,380
+instantly available for me to save now
+
+605
+00:26:05,380 --> 00:26:07,900
+the same thing is available at napi dot
+
+606
+00:26:07,900 --> 00:26:10,200
+efficient dot me feel free to try it out
+
+607
+00:26:10,200 --> 00:26:14,200
+after my speech and have a souvenir for
+
+608
+00:26:14,200 --> 00:26:16,960
+the conference and I'm already out of
+
+609
+00:26:16,960 --> 00:26:18,640
+time so I'll just make it quick
+
+610
+00:26:18,640 --> 00:26:21,220
+the best tips to work with native code
+
+611
+00:26:21,220 --> 00:26:24,670
+are actually three things rule number
+
+612
+00:26:24,670 --> 00:26:27,610
+one do not write native code try to see
+
+613
+00:26:27,610 --> 00:26:29,650
+if something that is not native can
+
+614
+00:26:29,650 --> 00:26:32,320
+solve the problem for you because child
+
+615
+00:26:32,320 --> 00:26:33,910
+processes are good for a lot of cases
+
+616
+00:26:33,910 --> 00:26:36,850
+and so is FFI and unless you really need
+
+617
+00:26:36,850 --> 00:26:40,450
+native code do not write native code the
+
+618
+00:26:40,450 --> 00:26:42,490
+second rule of writing native code is do
+
+619
+00:26:42,490 --> 00:26:44,850
+not give it to a native developer
+
+620
+00:26:44,850 --> 00:26:47,500
+because they don't understand Jas
+
+621
+00:26:47,500 --> 00:26:50,230
+they'll hog your main thread write it
+
+622
+00:26:50,230 --> 00:26:53,230
+like beautiful Jas and ugly C++ and you
+
+623
+00:26:53,230 --> 00:26:57,490
+will be successful the third rule of
+
+624
+00:26:57,490 --> 00:27:00,340
+writing native code is again to remember
+
+625
+00:27:00,340 --> 00:27:03,750
+the first rule don't write native god if
+
+626
+00:27:03,750 --> 00:27:06,190
+you have it in some native code just
+
+627
+00:27:06,190 --> 00:27:08,620
+evaluate if you need it Jas is evolving
+
+628
+00:27:08,620 --> 00:27:10,720
+and over time more and more stuff is
+
+629
+00:27:10,720 --> 00:27:13,120
+moving to Jas what you needed in native
+
+630
+00:27:13,120 --> 00:27:16,300
+a year back may be redundant now keep
+
+631
+00:27:16,300 --> 00:27:19,570
+yourself up to date the code for all of
+
+632
+00:27:19,570 --> 00:27:22,720
+my demos are available at napi in my
+
+633
+00:27:22,720 --> 00:27:25,150
+github repo the sample service is
+
+634
+00:27:25,150 --> 00:27:27,420
+available at n API dot Atisha dot me
+
+635
+00:27:27,420 --> 00:27:30,460
+that's all I have to say drive safely
+
+636
+00:27:30,460 --> 00:27:32,470
+if you're going to use native code thank
+

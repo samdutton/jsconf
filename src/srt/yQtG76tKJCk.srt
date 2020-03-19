@@ -1,0 +1,2177 @@
+1
+00:00:07,580 --> 00:00:10,670
+
+I'm Tom Robinson I'm talking about
+
+2
+00:00:10,670 --> 00:00:13,320
+parsers and compilers say so originally
+
+3
+00:00:13,320 --> 00:00:14,759
+it was just called compilers but it's
+
+4
+00:00:14,759 --> 00:00:16,859
+actually more about our sirs and in
+
+5
+00:00:16,859 --> 00:00:20,960
+general and as they relate to JavaScript
+
+6
+00:00:20,960 --> 00:00:25,380
+so previously i started a company called
+
+7
+00:00:25,380 --> 00:00:28,859
+280 north where we built a language
+
+8
+00:00:28,859 --> 00:00:32,610
+called objective j it was a superset of
+
+9
+00:00:32,610 --> 00:00:35,399
+javascript and it was a moment in
+
+10
+00:00:35,399 --> 00:00:37,940
+JavaScript so you know you would just
+
+11
+00:00:37,940 --> 00:00:40,079
+reload your web page it will load your
+
+12
+00:00:40,079 --> 00:00:44,579
+code compile it and evaluate it not
+
+13
+00:00:44,579 --> 00:00:46,469
+working there anymore but cappuccino is
+
+14
+00:00:46,469 --> 00:00:50,280
+is the project that uses objective J and
+
+15
+00:00:50,280 --> 00:00:53,520
+it's open source it's a sort of desktop
+
+16
+00:00:53,520 --> 00:00:56,309
+like framework for building applications
+
+17
+00:00:56,309 --> 00:00:59,609
+on the web so I'm going to talk about
+
+18
+00:00:59,609 --> 00:01:02,699
+two kinds of compilers today compilers
+
+19
+00:01:02,699 --> 00:01:05,659
+that produce and consume JavaScript and
+
+20
+00:01:05,659 --> 00:01:07,530
+compilers that are implemented in
+
+21
+00:01:07,530 --> 00:01:11,790
+JavaScript and you know objective JS a
+
+22
+00:01:11,790 --> 00:01:13,490
+good example of one that produces
+
+23
+00:01:13,490 --> 00:01:16,140
+JavaScript and it's also implemented in
+
+24
+00:01:16,140 --> 00:01:18,210
+JavaScript so they're not mutually
+
+25
+00:01:18,210 --> 00:01:24,659
+exclusive so before I started working on
+
+26
+00:01:24,659 --> 00:01:27,630
+on objector J in cappuccino I really
+
+27
+00:01:27,630 --> 00:01:29,640
+thought of compilers is Magic really
+
+28
+00:01:29,640 --> 00:01:33,540
+like had no idea how they worked but
+
+29
+00:01:33,540 --> 00:01:35,040
+once you really start looking into it
+
+30
+00:01:35,040 --> 00:01:37,079
+it's it's not it's nothing magic it's uh
+
+31
+00:01:37,079 --> 00:01:42,150
+it's just it's code and I hope that you
+
+32
+00:01:42,150 --> 00:01:43,860
+know if if you think of compilers is
+
+33
+00:01:43,860 --> 00:01:45,360
+Magic you'll no longer think of them
+
+34
+00:01:45,360 --> 00:01:48,329
+that way and start experimenting with
+
+35
+00:01:48,329 --> 00:01:49,950
+them because there's a lot of all things
+
+36
+00:01:49,950 --> 00:01:53,520
+you do a lot of people think of
+
+37
+00:01:53,520 --> 00:01:55,439
+compilers is something that you know C
+
+38
+00:01:55,439 --> 00:01:58,200
+programmers hefty we use and it's really
+
+39
+00:01:58,200 --> 00:02:00,210
+not the case there a lot of other uses
+
+40
+00:02:00,210 --> 00:02:01,180
+for them
+
+41
+00:02:01,180 --> 00:02:03,020
+there's a lot of good tools available
+
+42
+00:02:03,020 --> 00:02:04,759
+for JavaScript developers and web
+
+43
+00:02:04,759 --> 00:02:07,220
+developers and you probably already use
+
+44
+00:02:07,220 --> 00:02:08,450
+a lot of them I'll talk about a few of
+
+45
+00:02:08,450 --> 00:02:13,520
+them so start off this is just a really
+
+46
+00:02:13,520 --> 00:02:17,000
+simple example of a compiler for sort of
+
+47
+00:02:17,000 --> 00:02:19,850
+a calculator it's like a prefix notation
+
+48
+00:02:19,850 --> 00:02:21,500
+calculator kind of a little bit like
+
+49
+00:02:21,500 --> 00:02:25,550
+Lisp but I was able to fit each of the
+
+50
+00:02:25,550 --> 00:02:28,430
+components into a tweet so each of these
+
+51
+00:02:28,430 --> 00:02:31,400
+is 140 characters or less we've got a
+
+52
+00:02:31,400 --> 00:02:33,739
+lexer that i'll talk about each of these
+
+53
+00:02:33,739 --> 00:02:37,550
+in a moment but lexer parser interpreter
+
+54
+00:02:37,550 --> 00:02:41,510
+and compiler so let me just show a
+
+55
+00:02:41,510 --> 00:02:49,819
+little quick demo that so sad little
+
+56
+00:02:49,819 --> 00:02:54,110
+program with a little people I'm just
+
+57
+00:02:54,110 --> 00:02:56,660
+going to copy this string here but so if
+
+58
+00:02:56,660 --> 00:02:57,650
+you're not familiar with this notation
+
+59
+00:02:57,650 --> 00:03:00,980
+it's just the the operator is first so
+
+60
+00:03:00,980 --> 00:03:03,709
+this is 1 plus 2 plus this expression
+
+61
+00:03:03,709 --> 00:03:05,989
+here plus this expression in that
+
+62
+00:03:05,989 --> 00:03:08,510
+expression and then this is you know pi
+
+63
+00:03:08,510 --> 00:03:15,350
+x 42 and this is 3-4 5/6 so whoops that
+
+64
+00:03:15,350 --> 00:03:21,839
+wasn't
+
+65
+00:03:21,849 --> 00:03:24,530
+so here it sits out putting that each
+
+66
+00:03:24,530 --> 00:03:27,730
+sort of stage that I mentioned earlier
+
+67
+00:03:27,730 --> 00:03:30,250
+now the first stage is the tokenizer
+
+68
+00:03:30,250 --> 00:03:32,900
+basically splits the input into tokens
+
+69
+00:03:32,900 --> 00:03:36,290
+we've got like a parenthesis of plus a
+
+70
+00:03:36,290 --> 00:03:42,049
+number etc so that very first step the
+
+71
+00:03:42,049 --> 00:03:45,019
+second step is parsing turns that stream
+
+72
+00:03:45,019 --> 00:03:48,709
+of tokens into a hierarchical data
+
+73
+00:03:48,709 --> 00:03:50,719
+structure called an ABS abstract syntax
+
+74
+00:03:50,719 --> 00:03:55,790
+tree so here you can see we have plus 12
+
+75
+00:03:55,790 --> 00:03:59,120
+and then we have another array here for
+
+76
+00:03:59,120 --> 00:04:03,280
+that sub expression and and so on so
+
+77
+00:04:03,280 --> 00:04:07,340
+it's pretty pretty simple structure it's
+
+78
+00:04:07,340 --> 00:04:13,040
+just arrays and then the the next two
+
+79
+00:04:13,040 --> 00:04:15,290
+steps are a compiler an interpreter and
+
+80
+00:04:15,290 --> 00:04:18,250
+you know those are two different ways of
+
+81
+00:04:18,250 --> 00:04:21,949
+you know evaluating this code and so the
+
+82
+00:04:21,949 --> 00:04:23,840
+both the compiler and the interpreter
+
+83
+00:04:23,840 --> 00:04:26,150
+take the abstract syntax tree as an
+
+84
+00:04:26,150 --> 00:04:32,270
+input to their to their code so here you
+
+85
+00:04:32,270 --> 00:04:36,830
+can see we Lex the code we parse it and
+
+86
+00:04:36,830 --> 00:04:40,370
+then interpret it and you know up it's
+
+87
+00:04:40,370 --> 00:04:44,690
+this number and in this case we exit
+
+88
+00:04:44,690 --> 00:04:47,840
+parsad compile it and then just evaluate
+
+89
+00:04:47,840 --> 00:04:52,280
+it so end up here I skip this step but
+
+90
+00:04:52,280 --> 00:04:54,259
+this is the compiled code so just
+
+91
+00:04:54,259 --> 00:04:57,770
+compiled it to JavaScript replacing
+
+92
+00:04:57,770 --> 00:05:00,169
+changing it from prefix notation to
+
+93
+00:05:00,169 --> 00:05:04,620
+JavaScript you know infix notation
+
+94
+00:05:04,630 --> 00:05:07,759
+so here's here's that same process or
+
+95
+00:05:07,759 --> 00:05:10,759
+laid out starting with the string going
+
+96
+00:05:10,759 --> 00:05:13,190
+through the tokenizer than the parser
+
+97
+00:05:13,190 --> 00:05:16,430
+and then either a code generator or
+
+98
+00:05:16,430 --> 00:05:22,130
+interpreter this is just the code for
+
+99
+00:05:22,130 --> 00:05:23,600
+each of these functions sort of
+
+100
+00:05:23,600 --> 00:05:28,850
+undefined on gulf i guess and you know
+
+101
+00:05:28,850 --> 00:05:29,900
+you can see here we're just using a
+
+102
+00:05:29,900 --> 00:05:31,250
+regular expression which is fairly
+
+103
+00:05:31,250 --> 00:05:35,780
+common for for tokenizing in parsers and
+
+104
+00:05:35,780 --> 00:05:38,419
+then we we convert the numbers into
+
+105
+00:05:38,419 --> 00:05:42,440
+actual numbers the parser is just this
+
+106
+00:05:42,440 --> 00:05:43,880
+is sort of just a recursive function
+
+107
+00:05:43,880 --> 00:05:45,650
+that that looks at each token and
+
+108
+00:05:45,650 --> 00:05:49,820
+decides if it needs to you know add the
+
+109
+00:05:49,820 --> 00:05:55,310
+sub expression as another element or if
+
+110
+00:05:55,310 --> 00:05:59,750
+it's a literal detik and it can add so
+
+111
+00:05:59,750 --> 00:06:02,240
+that outputs the AST and this is just a
+
+112
+00:06:02,240 --> 00:06:06,199
+very simple interpreter it gets the the
+
+113
+00:06:06,199 --> 00:06:10,220
+function as the first first element of
+
+114
+00:06:10,220 --> 00:06:12,830
+the current node and the arguments are
+
+115
+00:06:12,830 --> 00:06:15,770
+the rest and it applies those arguments
+
+116
+00:06:15,770 --> 00:06:19,669
+to that function or if it's a number
+
+117
+00:06:19,669 --> 00:06:22,370
+then it just returns the number and this
+
+118
+00:06:22,370 --> 00:06:25,039
+last part here is is basically looking
+
+119
+00:06:25,039 --> 00:06:27,320
+up the function implementation in an
+
+120
+00:06:27,320 --> 00:06:30,080
+environment which you know just contain
+
+121
+00:06:30,080 --> 00:06:32,990
+sort of the built-in functions for for
+
+122
+00:06:32,990 --> 00:06:37,370
+this interpreter and here's the code
+
+123
+00:06:37,370 --> 00:06:39,530
+generator basically just you know
+
+124
+00:06:39,530 --> 00:06:43,940
+outputs string with the the operator in
+
+125
+00:06:43,940 --> 00:06:50,140
+between each value of the oven owed
+
+126
+00:06:50,150 --> 00:06:55,670
+so yeah this is I think pretty relevant
+
+127
+00:06:55,670 --> 00:06:57,980
+a lot of you know people think of
+
+128
+00:06:57,980 --> 00:07:01,790
+compilers as just you know desktop
+
+129
+00:07:01,790 --> 00:07:06,290
+software server Java kind of thing but
+
+130
+00:07:06,290 --> 00:07:08,030
+they're really useful for all kinds of
+
+131
+00:07:08,030 --> 00:07:11,990
+things so here's a here's a funeral
+
+132
+00:07:11,990 --> 00:07:14,560
+thing so optimizers you know minna fires
+
+133
+00:07:14,560 --> 00:07:17,210
+more advanced tools like closure
+
+134
+00:07:17,210 --> 00:07:21,410
+compiler do more aggressive
+
+135
+00:07:21,410 --> 00:07:25,640
+optimizations like in lining and unused
+
+136
+00:07:25,640 --> 00:07:28,670
+code removal that kind of thing linters
+
+137
+00:07:28,670 --> 00:07:30,830
+will tell you sort of common errors that
+
+138
+00:07:30,830 --> 00:07:36,440
+in your in your syntax we can have you
+
+139
+00:07:36,440 --> 00:07:37,970
+no alternative languages like objective
+
+140
+00:07:37,970 --> 00:07:41,150
+j or language extensions i'll select
+
+141
+00:07:41,150 --> 00:07:44,510
+object Jake concurrency and security or
+
+142
+00:07:44,510 --> 00:07:46,490
+to other applications of compilers we'll
+
+143
+00:07:46,490 --> 00:07:49,220
+talk about in a moment so yeah closure
+
+144
+00:07:49,220 --> 00:07:52,280
+compiler uglify is another fairly
+
+145
+00:07:52,280 --> 00:07:56,630
+advanced optimizer in in parentheses it
+
+146
+00:07:56,630 --> 00:07:59,060
+shows you what's what language is
+
+147
+00:07:59,060 --> 00:08:00,980
+actually implemented in so closure
+
+148
+00:08:00,980 --> 00:08:03,830
+tyler's java Uggla thighs javascript and
+
+149
+00:08:03,830 --> 00:08:06,170
+common lisp shrink safe and yui
+
+150
+00:08:06,170 --> 00:08:09,260
+compressor I think use basically the
+
+151
+00:08:09,260 --> 00:08:11,930
+same parser and then there's a couple
+
+152
+00:08:11,930 --> 00:08:16,790
+others less popular ones winters there's
+
+153
+00:08:16,790 --> 00:08:18,770
+Jesslyn that's the popular one by
+
+154
+00:08:18,770 --> 00:08:23,480
+crockford j/s hint is a port or a fork
+
+155
+00:08:23,480 --> 00:08:28,010
+of JSON with some different different
+
+156
+00:08:28,010 --> 00:08:31,040
+rules javascript lane closure actually
+
+157
+00:08:31,040 --> 00:08:33,770
+has a winter and you can get linters for
+
+158
+00:08:33,770 --> 00:08:35,530
+lots of different things CSS HTML
+
+159
+00:08:35,530 --> 00:08:38,990
+there's even jQuery not really sure what
+
+160
+00:08:38,990 --> 00:08:42,089
+that does but
+
+161
+00:08:42,099 --> 00:08:45,009
+so alternative languages coffeescript is
+
+162
+00:08:45,009 --> 00:08:46,089
+probably the one most people are
+
+163
+00:08:46,089 --> 00:08:50,440
+familiar with you know Java scripts
+
+164
+00:08:50,440 --> 00:08:52,690
+great we all love JavaScript but you
+
+165
+00:08:52,690 --> 00:08:55,329
+know it has its problems and you know
+
+166
+00:08:55,329 --> 00:08:57,089
+some people prefer other languages
+
+167
+00:08:57,089 --> 00:08:59,110
+there's a lot of different options out
+
+168
+00:08:59,110 --> 00:09:00,850
+there like pretty much any popular
+
+169
+00:09:00,850 --> 00:09:02,079
+programming language has been
+
+170
+00:09:02,079 --> 00:09:04,060
+implemented in JavaScript at least once
+
+171
+00:09:04,060 --> 00:09:08,290
+like sometimes several times yeah
+
+172
+00:09:08,290 --> 00:09:13,560
+there's here's just a few okay so
+
+173
+00:09:13,560 --> 00:09:15,880
+extensions to the language or an
+
+174
+00:09:15,880 --> 00:09:20,100
+interesting example so tracer and
+
+175
+00:09:20,100 --> 00:09:22,680
+narcissus of tracers from google
+
+176
+00:09:22,680 --> 00:09:26,440
+narcissus is the javascript it's
+
+177
+00:09:26,440 --> 00:09:28,630
+actually both an interpreter and just a
+
+178
+00:09:28,630 --> 00:09:32,940
+parser is implemented by Brendan and
+
+179
+00:09:32,940 --> 00:09:35,050
+both these are being used to serve
+
+180
+00:09:35,050 --> 00:09:37,029
+prototype new language features so you
+
+181
+00:09:37,029 --> 00:09:39,839
+can try them out in current browsers and
+
+182
+00:09:39,839 --> 00:09:42,399
+provide new backwards compatibility for
+
+183
+00:09:42,399 --> 00:09:43,959
+for older browsers that don't implement
+
+184
+00:09:43,959 --> 00:09:48,160
+language features natively so and then
+
+185
+00:09:48,160 --> 00:09:54,430
+objector J so objector J the first
+
+186
+00:09:54,430 --> 00:09:57,819
+version of objective J was a custom bar
+
+187
+00:09:57,819 --> 00:10:00,579
+sir just hand rolled we really did that
+
+188
+00:10:00,579 --> 00:10:03,550
+for for performance reasons so initially
+
+189
+00:10:03,550 --> 00:10:07,569
+we wanted users to be able to just load
+
+190
+00:10:07,569 --> 00:10:08,980
+up their application and have the
+
+191
+00:10:08,980 --> 00:10:10,870
+JavaScript or the objective J compile to
+
+192
+00:10:10,870 --> 00:10:13,750
+JavaScript on the fly without you know
+
+193
+00:10:13,750 --> 00:10:16,720
+really noticing any slowdown or anything
+
+194
+00:10:16,720 --> 00:10:19,180
+but you know it became clear that even
+
+195
+00:10:19,180 --> 00:10:22,509
+with a very fast parser it's not
+
+196
+00:10:22,509 --> 00:10:24,850
+negligible amount of time so we've sort
+
+197
+00:10:24,850 --> 00:10:28,380
+of moved to deploying with precompiled
+
+198
+00:10:28,380 --> 00:10:31,899
+objected shade to javascript so it's
+
+199
+00:10:31,899 --> 00:10:36,550
+less important now that speed and I'll
+
+200
+00:10:36,550 --> 00:10:38,079
+talk a little bit about language jas
+
+201
+00:10:38,079 --> 00:10:41,380
+which is a new parser generator that
+
+202
+00:10:41,380 --> 00:10:44,470
+that we've been working on for building
+
+203
+00:10:44,470 --> 00:10:48,440
+the new objective J compiler
+
+204
+00:10:48,440 --> 00:10:52,430
+here if you the things that tracer in
+
+205
+00:10:52,430 --> 00:10:55,190
+particular implements the new language
+
+206
+00:10:55,190 --> 00:10:57,140
+features you know if you saw Brendan's
+
+207
+00:10:57,140 --> 00:10:59,570
+talk yesterday a lot of these things are
+
+208
+00:10:59,570 --> 00:11:03,680
+you know proposed in es6 so you know you
+
+209
+00:11:03,680 --> 00:11:06,140
+won't need to wait until every browser
+
+210
+00:11:06,140 --> 00:11:08,540
+implements these start using them if you
+
+211
+00:11:08,540 --> 00:11:11,780
+were to use something like tracer to add
+
+212
+00:11:11,780 --> 00:11:14,780
+sort of compatibility layer 44 older
+
+213
+00:11:14,780 --> 00:11:16,730
+browsers not gonna go through each one
+
+214
+00:11:16,730 --> 00:11:21,080
+but there's a lot of them concurrency is
+
+215
+00:11:21,080 --> 00:11:24,100
+an interesting application of compilers
+
+216
+00:11:24,100 --> 00:11:28,520
+so if you're you know at all familiar
+
+217
+00:11:28,520 --> 00:11:31,220
+with node or you know any any sort of
+
+218
+00:11:31,220 --> 00:11:32,870
+asynchronous callback oriented
+
+219
+00:11:32,870 --> 00:11:35,960
+programming you're probably familiar
+
+220
+00:11:35,960 --> 00:11:38,990
+with the the problem of you know all
+
+221
+00:11:38,990 --> 00:11:41,600
+these callbacks scattered all over the
+
+222
+00:11:41,600 --> 00:11:44,450
+place and nested and everything so
+
+223
+00:11:44,450 --> 00:11:45,830
+there's a lot of solutions out there
+
+224
+00:11:45,830 --> 00:11:47,870
+that will actually let you write your
+
+225
+00:11:47,870 --> 00:11:52,040
+code as if it were synchronous and it
+
+226
+00:11:52,040 --> 00:11:55,100
+will transform it so that it's it uses
+
+227
+00:11:55,100 --> 00:11:57,470
+those callbacks internally but you don't
+
+228
+00:11:57,470 --> 00:11:59,840
+actually have to deal with all the
+
+229
+00:11:59,840 --> 00:12:02,150
+callbacks it's there's a few different
+
+230
+00:12:02,150 --> 00:12:05,810
+projects out there they'll work a little
+
+231
+00:12:05,810 --> 00:12:09,150
+bit differently but
+
+232
+00:12:09,160 --> 00:12:12,200
+security is the last serve a Legation
+
+233
+00:12:12,200 --> 00:12:15,200
+I'll talk about so there's this common
+
+234
+00:12:15,200 --> 00:12:16,670
+problem where you have you know widget
+
+235
+00:12:16,670 --> 00:12:17,959
+that you want to embed in your web page
+
+236
+00:12:17,959 --> 00:12:19,790
+but you don't want that widget to access
+
+237
+00:12:19,790 --> 00:12:21,890
+all of your data steal your cookies or
+
+238
+00:12:21,890 --> 00:12:26,680
+your private data so there's these these
+
+239
+00:12:26,680 --> 00:12:29,000
+tools that will verify that the
+
+240
+00:12:29,000 --> 00:12:31,000
+JavaScript provided by the widget is
+
+241
+00:12:31,000 --> 00:12:33,920
+safe to execute or it will actually
+
+242
+00:12:33,920 --> 00:12:36,320
+transform it to something that's safe
+
+243
+00:12:36,320 --> 00:12:39,709
+and you know there's usually a pretty
+
+244
+00:12:39,709 --> 00:12:41,899
+big performance penalty by doing this is
+
+245
+00:12:41,899 --> 00:12:44,019
+the Aptus or intercept pretty much every
+
+246
+00:12:44,019 --> 00:12:46,579
+every property access and that sort of
+
+247
+00:12:46,579 --> 00:12:51,160
+thing so yes five I think is sort of
+
+248
+00:12:51,160 --> 00:12:54,890
+strict mode in es5 s or designs to make
+
+249
+00:12:54,890 --> 00:12:57,290
+a little bit easier for these kind of
+
+250
+00:12:57,290 --> 00:13:02,420
+tools to work so there's a huge list of
+
+251
+00:13:02,420 --> 00:13:04,190
+all these different types of compilers
+
+252
+00:13:04,190 --> 00:13:08,120
+at ljs org this is sort of a new
+
+253
+00:13:08,120 --> 00:13:11,060
+movement of people interested in in
+
+254
+00:13:11,060 --> 00:13:13,910
+alternative compilers and languages on
+
+255
+00:13:13,910 --> 00:13:16,910
+top of JavaScript so courage encourage
+
+256
+00:13:16,910 --> 00:13:19,279
+you to check that out it's like a huge
+
+257
+00:13:19,279 --> 00:13:21,529
+list like hundreds of 10 hundreds but
+
+258
+00:13:21,529 --> 00:13:26,920
+maybe 100 different projects so yeah
+
+259
+00:13:26,920 --> 00:13:29,120
+that's those are the existing things
+
+260
+00:13:29,120 --> 00:13:32,480
+that are already out there but there's
+
+261
+00:13:32,480 --> 00:13:34,670
+things that you know other people
+
+262
+00:13:34,670 --> 00:13:35,959
+haven't even imagined yet that you could
+
+263
+00:13:35,959 --> 00:13:39,649
+build and so there's a lot of different
+
+264
+00:13:39,649 --> 00:13:42,110
+tools out there you know there's
+
+265
+00:13:42,110 --> 00:13:45,649
+existing parsers narcissus I mentioned
+
+266
+00:13:45,649 --> 00:13:50,810
+earlier it's written by Brandon tracer
+
+267
+00:13:50,810 --> 00:13:54,410
+another that's the google one also
+
+268
+00:13:54,410 --> 00:13:57,380
+implemented in JavaScript Rhino has a
+
+269
+00:13:57,380 --> 00:14:00,110
+parser you can you can programmatically
+
+270
+00:14:00,110 --> 00:14:04,250
+access from Java j/s parse and jazz par
+
+271
+00:14:04,250 --> 00:14:08,060
+cas which are used in uglify and a few
+
+272
+00:14:08,060 --> 00:14:10,810
+different projects and the json parser
+
+273
+00:14:10,810 --> 00:14:13,190
+i'm sure i'm missing something that is
+
+274
+00:14:13,190 --> 00:14:15,910
+fuel
+
+275
+00:14:15,920 --> 00:14:17,839
+and you know if you don't to use one of
+
+276
+00:14:17,839 --> 00:14:19,610
+those or if you want to build a language
+
+277
+00:14:19,610 --> 00:14:23,600
+it's not JavaScript or parts r for
+
+278
+00:14:23,600 --> 00:14:25,250
+language it's not JavaScript you can use
+
+279
+00:14:25,250 --> 00:14:28,250
+a parser generator which basically takes
+
+280
+00:14:28,250 --> 00:14:30,320
+in a language definition in the form of
+
+281
+00:14:30,320 --> 00:14:35,180
+a grammar that defines you know how the
+
+282
+00:14:35,180 --> 00:14:39,050
+language is structured basically and you
+
+283
+00:14:39,050 --> 00:14:40,910
+know you input this this language into
+
+284
+00:14:40,910 --> 00:14:42,680
+the parser generator and outputs a
+
+285
+00:14:42,680 --> 00:14:46,220
+parser be either in JavaScript or you
+
+286
+00:14:46,220 --> 00:14:49,279
+know one of many languages typically
+
+287
+00:14:49,279 --> 00:14:51,310
+easier than hand rolling your own parser
+
+288
+00:14:51,310 --> 00:14:54,110
+sometimes it's slower so that's one
+
+289
+00:14:54,110 --> 00:14:56,060
+trade-off or larger a lot of times the
+
+290
+00:14:56,060 --> 00:14:57,829
+code that generates is is very large
+
+291
+00:14:57,829 --> 00:14:59,810
+which can be a problem if you're trying
+
+292
+00:14:59,810 --> 00:15:05,990
+to execute a client side here sort of
+
+293
+00:15:05,990 --> 00:15:11,149
+the the main popular ones JSON the
+
+294
+00:15:11,149 --> 00:15:13,190
+second column is the language of the
+
+295
+00:15:13,190 --> 00:15:14,720
+parser generator itself is implemented
+
+296
+00:15:14,720 --> 00:15:16,790
+in all of these parser generators it
+
+297
+00:15:16,790 --> 00:15:20,000
+will output JavaScript parsers but you
+
+298
+00:15:20,000 --> 00:15:21,709
+know sometimes you need to use Java or
+
+299
+00:15:21,709 --> 00:15:24,230
+yeah I guess that's just antler which is
+
+300
+00:15:24,230 --> 00:15:27,260
+a java program that outputs a JavaScript
+
+301
+00:15:27,260 --> 00:15:31,040
+parser then this notes column just
+
+302
+00:15:31,040 --> 00:15:34,190
+mentions a few sore what type of parser
+
+303
+00:15:34,190 --> 00:15:37,550
+generator is so there's sort of two main
+
+304
+00:15:37,550 --> 00:15:40,390
+different types of parsers there's
+
+305
+00:15:40,390 --> 00:15:43,579
+context-free grammars which is what the
+
+306
+00:15:43,579 --> 00:15:47,720
+lalr 1 s and ll ones are and then
+
+307
+00:15:47,720 --> 00:15:49,839
+there's peg which is sort of a a
+
+308
+00:15:49,839 --> 00:15:53,660
+different type of parser the main
+
+309
+00:15:53,660 --> 00:15:57,860
+difference between the two is CFG s the
+
+310
+00:15:57,860 --> 00:16:00,620
+context-free grammars can actually have
+
+311
+00:16:00,620 --> 00:16:04,250
+sort of ambiguous they're the definition
+
+312
+00:16:04,250 --> 00:16:09,709
+of the grammar is ambiguous whereas pegs
+
+313
+00:16:09,709 --> 00:16:15,410
+serve order the the rules they give each
+
+314
+00:16:15,410 --> 00:16:17,389
+rule sort of priority so it's it's
+
+315
+00:16:17,389 --> 00:16:20,000
+impossible to have sort of a you know an
+
+316
+00:16:20,000 --> 00:16:26,110
+ambiguity in the language
+
+317
+00:16:26,120 --> 00:16:29,660
+alright so here are a few other things
+
+318
+00:16:29,660 --> 00:16:32,720
+that are possible with with parsers so
+
+319
+00:16:32,720 --> 00:16:35,589
+you can instrument JavaScript which is
+
+320
+00:16:35,589 --> 00:16:38,810
+not commonly done I don't think but you
+
+321
+00:16:38,810 --> 00:16:40,900
+know you can do interesting things like
+
+322
+00:16:40,900 --> 00:16:44,800
+record stack traces more accurately than
+
+323
+00:16:44,800 --> 00:16:47,839
+the browser will give you so most you
+
+324
+00:16:47,839 --> 00:16:49,370
+know a lot of browsers won't give you
+
+325
+00:16:49,370 --> 00:16:51,650
+good stack traces but you can actually
+
+326
+00:16:51,650 --> 00:16:53,839
+add a line of code at the beginning of
+
+327
+00:16:53,839 --> 00:16:56,270
+each function to record the stack and
+
+328
+00:16:56,270 --> 00:16:59,120
+then you know pop that off at the end of
+
+329
+00:16:59,120 --> 00:17:02,779
+the function and you know you'll have an
+
+330
+00:17:02,779 --> 00:17:04,370
+accurate stack trace at any point in
+
+331
+00:17:04,370 --> 00:17:07,150
+your program you can catch exceptions
+
+332
+00:17:07,150 --> 00:17:10,250
+cross-browser completely the same in
+
+333
+00:17:10,250 --> 00:17:12,170
+every browser and there's this company
+
+334
+00:17:12,170 --> 00:17:14,150
+called proxy no it's actually doing that
+
+335
+00:17:14,150 --> 00:17:18,770
+they give you a proxy that you load your
+
+336
+00:17:18,770 --> 00:17:19,819
+JavaScript through and they
+
+337
+00:17:19,819 --> 00:17:21,829
+automatically do this for you and report
+
+338
+00:17:21,829 --> 00:17:23,750
+back errors and give you like a nice
+
+339
+00:17:23,750 --> 00:17:26,870
+dashboard and stuff it's pretty cool you
+
+340
+00:17:26,870 --> 00:17:29,990
+can do things like code coverage I saw
+
+341
+00:17:29,990 --> 00:17:33,380
+this project called heat wave though I
+
+342
+00:17:33,380 --> 00:17:35,450
+think was done it and one of the node
+
+343
+00:17:35,450 --> 00:17:38,120
+knockout things or something it's pretty
+
+344
+00:17:38,120 --> 00:17:40,820
+cool that sort of gives you a heat map
+
+345
+00:17:40,820 --> 00:17:42,740
+of your of your code like as it's
+
+346
+00:17:42,740 --> 00:17:46,700
+executing it does that by again putting
+
+347
+00:17:46,700 --> 00:17:48,770
+a function call it at each line of code
+
+348
+00:17:48,770 --> 00:17:53,179
+and recording when that that line is
+
+349
+00:17:53,179 --> 00:17:56,480
+executed you do things like runtime type
+
+350
+00:17:56,480 --> 00:18:01,040
+checking if you you know were to declare
+
+351
+00:18:01,040 --> 00:18:03,320
+all of your types in some sort of you
+
+352
+00:18:03,320 --> 00:18:04,700
+know readable format either in like a
+
+353
+00:18:04,700 --> 00:18:06,559
+comment or something you could read that
+
+354
+00:18:06,559 --> 00:18:08,440
+in and generate code that actually
+
+355
+00:18:08,440 --> 00:18:10,790
+checks that those arguments are the
+
+356
+00:18:10,790 --> 00:18:15,380
+correct type and debugging which is last
+
+357
+00:18:15,380 --> 00:18:21,290
+thing I'm talking about and so I sort of
+
+358
+00:18:21,290 --> 00:18:23,210
+started working on a code coverage tool
+
+359
+00:18:23,210 --> 00:18:26,929
+while ago and you know is instrumenting
+
+360
+00:18:26,929 --> 00:18:29,090
+my code to record which lines were
+
+361
+00:18:29,090 --> 00:18:33,250
+called you can get like sort of a a
+
+362
+00:18:33,250 --> 00:18:35,630
+report of you know your test coverage
+
+363
+00:18:35,630 --> 00:18:37,460
+basically you know show like what
+
+364
+00:18:37,460 --> 00:18:38,210
+percentage of each
+
+365
+00:18:38,210 --> 00:18:41,450
+file is covered by your tests and that
+
+366
+00:18:41,450 --> 00:18:44,150
+was cool but I realize you know if you
+
+367
+00:18:44,150 --> 00:18:46,250
+could actually you know block the
+
+368
+00:18:46,250 --> 00:18:48,620
+execution in each of these statements
+
+369
+00:18:48,620 --> 00:18:50,690
+you could sort of do a a debugger a
+
+370
+00:18:50,690 --> 00:18:53,000
+thing where you step through each line
+
+371
+00:18:53,000 --> 00:18:57,830
+that kind of thing so I've created this
+
+372
+00:18:57,830 --> 00:19:00,980
+project called Z bug it's basically an
+
+373
+00:19:00,980 --> 00:19:03,140
+instrumenting JavaScript debugger that's
+
+374
+00:19:03,140 --> 00:19:04,880
+written in JavaScript so it's it's
+
+375
+00:19:04,880 --> 00:19:08,950
+entirely JavaScript it works in any
+
+376
+00:19:08,950 --> 00:19:12,680
+JavaScript interpreter the one thing it
+
+377
+00:19:12,680 --> 00:19:15,440
+does need is asynchronous API to block
+
+378
+00:19:15,440 --> 00:19:17,540
+execution so in the browser that
+
+379
+00:19:17,540 --> 00:19:19,930
+basically means either prompt or
+
+380
+00:19:19,930 --> 00:19:24,400
+synchronous XL HP mer HTTP request and
+
+381
+00:19:24,400 --> 00:19:26,930
+we all know those are evil but for this
+
+382
+00:19:26,930 --> 00:19:30,130
+purpose it works pretty well actually so
+
+383
+00:19:30,130 --> 00:19:32,900
+and it works everywhere so like you know
+
+384
+00:19:32,900 --> 00:19:35,830
+you could run this you know in rhino or
+
+385
+00:19:35,830 --> 00:19:38,240
+you know Photoshop has a JavaScript
+
+386
+00:19:38,240 --> 00:19:41,180
+interpreter you use it there pretty much
+
+387
+00:19:41,180 --> 00:19:44,480
+anywhere and so it implements the VA
+
+388
+00:19:44,480 --> 00:19:46,220
+debugger API so rather than you know
+
+389
+00:19:46,220 --> 00:19:49,640
+building my own you I can actually just
+
+390
+00:19:49,640 --> 00:19:51,920
+integrate with any of the debuggers that
+
+391
+00:19:51,920 --> 00:19:54,260
+support that v8 API and there's quite a
+
+392
+00:19:54,260 --> 00:19:58,250
+few actually so the WebKit inspector is
+
+393
+00:19:58,250 --> 00:20:01,400
+one Eclipse has one I think there's a
+
+394
+00:20:01,400 --> 00:20:06,350
+few others cloud 9i think so i'm gonna
+
+395
+00:20:06,350 --> 00:20:09,380
+show that to you real quick how am i
+
+396
+00:20:09,380 --> 00:20:18,580
+doing on time
+
+397
+00:20:18,590 --> 00:20:22,730
+so if you have a computer you can play
+
+398
+00:20:22,730 --> 00:20:27,440
+along
+
+399
+00:20:27,450 --> 00:20:44,710
+oops
+
+400
+00:20:44,720 --> 00:20:50,299
+okay so if you have this IP address
+
+401
+00:20:50,299 --> 00:20:53,059
+there we go someone just popped up
+
+402
+00:20:53,059 --> 00:20:55,380
+someone else just show me your IP
+
+403
+00:20:55,380 --> 00:20:59,520
+address in your user agent so i can
+
+404
+00:20:59,520 --> 00:21:07,690
+actually you know go to one of these
+
+405
+00:21:07,700 --> 00:21:10,070
+oops yeah so it turns red when somebody
+
+406
+00:21:10,070 --> 00:21:18,460
+is connected so is that not working
+
+407
+00:21:18,470 --> 00:21:22,990
+okay well
+
+408
+00:21:23,000 --> 00:21:35,830
+let me try it myself
+
+409
+00:21:35,840 --> 00:21:37,900
+okay so it's working for me at least
+
+410
+00:21:37,900 --> 00:21:40,549
+this is you know the code that's running
+
+411
+00:21:40,549 --> 00:21:42,710
+on here it's just printing out a bunch
+
+412
+00:21:42,710 --> 00:21:46,070
+of stuff like every few seconds so I
+
+413
+00:21:46,070 --> 00:21:47,570
+could actually add a breakpoint in here
+
+414
+00:21:47,570 --> 00:21:52,070
+anywhere and next time it times out it
+
+415
+00:21:52,070 --> 00:22:05,799
+should open up it should break maybe not
+
+416
+00:22:05,809 --> 00:22:13,100
+okay um OOP that's not good I'm gonna
+
+417
+00:22:13,100 --> 00:22:15,570
+just disconnect you guys cuz that's
+
+418
+00:22:15,570 --> 00:22:27,830
+probably not working well
+
+419
+00:22:27,840 --> 00:22:43,110
+okay let's try the skin okay so
+
+420
+00:22:43,120 --> 00:22:50,500
+yeah perils of live demos I don't like
+
+421
+00:22:50,500 --> 00:23:26,140
+those me hmm ok try one more time
+
+422
+00:23:26,150 --> 00:23:30,380
+okay there it goes so you can see it's
+
+423
+00:23:30,380 --> 00:23:32,030
+selected that line and if i go over
+
+424
+00:23:32,030 --> 00:23:33,560
+safari it's you know completely
+
+425
+00:23:33,560 --> 00:23:37,820
+unresponsive so that's one problem with
+
+426
+00:23:37,820 --> 00:23:41,150
+this is it actually does completely lock
+
+427
+00:23:41,150 --> 00:23:42,950
+up your browser so you know if you're
+
+428
+00:23:42,950 --> 00:23:45,470
+using chrome that's fine because you
+
+429
+00:23:45,470 --> 00:23:46,670
+know each window has a different process
+
+430
+00:23:46,670 --> 00:23:48,080
+and it's not going to block your
+
+431
+00:23:48,080 --> 00:23:50,720
+debugger process but if you were to try
+
+432
+00:23:50,720 --> 00:23:55,010
+to debug safari in safari they'll just
+
+433
+00:23:55,010 --> 00:23:57,290
+you know sort of block up the entire UI
+
+434
+00:23:57,290 --> 00:23:59,890
+you won't be able to do anything so i
+
+435
+00:23:59,890 --> 00:24:05,120
+can actually you know step through the
+
+436
+00:24:05,120 --> 00:24:06,470
+line numbers on the server off a little
+
+437
+00:24:06,470 --> 00:24:08,410
+bit right now but you can kind of see it
+
+438
+00:24:08,410 --> 00:24:10,460
+you know basically stepping through all
+
+439
+00:24:10,460 --> 00:24:14,120
+these you can disable enable breakpoints
+
+440
+00:24:14,120 --> 00:24:17,540
+evaluate code so i should be able to
+
+441
+00:24:17,540 --> 00:24:20,780
+actually get that string yeah so you can
+
+442
+00:24:20,780 --> 00:24:23,630
+you know evaluate in the actual context
+
+443
+00:24:23,630 --> 00:24:25,100
+of the function that you're the
+
+444
+00:24:25,100 --> 00:24:28,700
+breakpoint is on that kind of thing so
+
+445
+00:24:28,700 --> 00:24:31,280
+it's still working progress it's a
+
+446
+00:24:31,280 --> 00:24:32,900
+little bit buggy and there's still some
+
+447
+00:24:32,900 --> 00:24:35,210
+stuff that's not implemented but it's
+
+448
+00:24:35,210 --> 00:24:38,390
+getting there and let me release this
+
+449
+00:24:38,390 --> 00:24:40,400
+there's a really old version on that
+
+450
+00:24:40,400 --> 00:24:43,490
+when my github right now but that uses
+
+451
+00:24:43,490 --> 00:24:46,160
+the prompt statements do that to do the
+
+452
+00:24:46,160 --> 00:24:47,630
+blogging so it doesn't have a nice
+
+453
+00:24:47,630 --> 00:24:52,400
+interface so i'll be releasing this in a
+
+454
+00:24:52,400 --> 00:25:06,660
+few weeks hopefully
+
+455
+00:25:06,670 --> 00:25:09,920
+so that's pretty much it um I'll take
+
+456
+00:25:09,920 --> 00:25:12,800
+questions i think if i have time am i
+
+457
+00:25:12,800 --> 00:25:28,310
+doing on time hmm ok any questions yeah
+
+458
+00:25:28,310 --> 00:25:32,130
+yeah
+
+459
+00:25:32,140 --> 00:25:36,130
+ah yeah I probably wouldn't have created
+
+460
+00:25:36,130 --> 00:25:42,070
+my own language but I mean I it's just a
+
+461
+00:25:42,070 --> 00:25:45,490
+lot of a lot to ask of people to adopt
+
+462
+00:25:45,490 --> 00:25:48,700
+entire language and a framework and is
+
+463
+00:25:48,700 --> 00:25:51,540
+great for you know the people who were
+
+464
+00:25:51,540 --> 00:25:55,030
+interested in the cocoa like environment
+
+465
+00:25:55,030 --> 00:25:58,390
+that objected j & objector cappuccino
+
+466
+00:25:58,390 --> 00:26:01,240
+offers but yeah and there's a lot of
+
+467
+00:26:01,240 --> 00:26:03,730
+people using it for you know great stuff
+
+468
+00:26:03,730 --> 00:26:07,120
+it's just yes it's harder it's a lot to
+
+469
+00:26:07,120 --> 00:26:10,710
+ask of people and but I'm a big fan of
+
+470
+00:26:10,710 --> 00:26:16,270
+you know the things like tracer and the
+
+471
+00:26:16,270 --> 00:26:18,430
+narcissist stuff we're through adding
+
+472
+00:26:18,430 --> 00:26:19,960
+these these new language features that
+
+473
+00:26:19,960 --> 00:26:23,340
+are you know sort of driven by Beckman
+
+474
+00:26:23,340 --> 00:26:25,720
+those kinds of things and we'll be able
+
+475
+00:26:25,720 --> 00:26:27,100
+to use them a lot sooner than if we had
+
+476
+00:26:27,100 --> 00:26:29,080
+to wait for every single browser to
+
+477
+00:26:29,080 --> 00:26:30,670
+implement them and every single used her
+
+478
+00:26:30,670 --> 00:26:35,710
+to start adopting them so yeah I still
+
+479
+00:26:35,710 --> 00:26:37,060
+encourage you to you know build your own
+
+480
+00:26:37,060 --> 00:26:38,650
+languages and play with it at least and
+
+481
+00:26:38,650 --> 00:26:40,090
+you know things like CoffeeScript are
+
+482
+00:26:40,090 --> 00:26:43,270
+great so yeah it's not you know it works
+
+483
+00:26:43,270 --> 00:26:45,640
+great with you know existing JavaScript
+
+484
+00:26:45,640 --> 00:26:53,200
+libraries so
+
+485
+00:26:53,210 --> 00:26:57,330
+yeah I haven't done a lot of stuff with
+
+486
+00:26:57,330 --> 00:27:10,350
+the generators but like so I think
+
+487
+00:27:10,350 --> 00:27:15,350
+there's one for JSON think one of these
+
+488
+00:27:15,350 --> 00:27:19,110
+let's see which one would tame j/s uses
+
+489
+00:27:19,110 --> 00:27:24,720
+a javascript grammar I don't I haven't
+
+490
+00:27:24,720 --> 00:27:26,129
+really evaluated it but there's one
+
+491
+00:27:26,129 --> 00:27:28,169
+there's definitely one for for that and
+
+492
+00:27:28,169 --> 00:27:30,809
+there's one for language jayus which we
+
+493
+00:27:30,809 --> 00:27:33,629
+use as the foundation of the objective
+
+494
+00:27:33,629 --> 00:27:35,279
+jayonce in subjection j is a superset of
+
+495
+00:27:35,279 --> 00:27:38,070
+of JavaScript we basically just add a
+
+496
+00:27:38,070 --> 00:27:41,940
+few a few new rules to the JavaScript
+
+497
+00:27:41,940 --> 00:27:46,200
+one and there's one for antler I tried
+
+498
+00:27:46,200 --> 00:27:48,330
+to get that to work once never never got
+
+499
+00:27:48,330 --> 00:28:07,740
+that working but yeah
+
+500
+00:28:07,750 --> 00:28:10,279
+at one point it is taking like 45
+
+501
+00:28:10,279 --> 00:28:13,220
+seconds but we're compiling the entire
+
+502
+00:28:13,220 --> 00:28:15,950
+framework which is fairly fairly large
+
+503
+00:28:15,950 --> 00:28:27,590
+it's like a megabyte of JavaScript so
+
+504
+00:28:27,600 --> 00:28:42,620
+sorry how much oh yeah was sorry what
+
+505
+00:28:42,630 --> 00:28:46,330
+yeah I mean that's and it depends on on
+
+506
+00:28:46,330 --> 00:28:47,650
+your type of application like free
+
+507
+00:28:47,650 --> 00:28:50,200
+google com no but you're not going to
+
+508
+00:28:50,200 --> 00:28:51,370
+need that much javascript for google.com
+
+509
+00:28:51,370 --> 00:28:56,110
+but if it's like you know our flagship
+
+510
+00:28:56,110 --> 00:28:57,190
+application that we built with
+
+511
+00:28:57,190 --> 00:29:00,520
+cappuccinos 280 slides and you know it
+
+512
+00:29:00,520 --> 00:29:02,410
+loads in three seconds something like
+
+513
+00:29:02,410 --> 00:29:03,929
+that which is faster than like
+
+514
+00:29:03,929 --> 00:29:06,370
+PowerPoint opens on your desktop so I
+
+515
+00:29:06,370 --> 00:29:08,380
+think that's for those types of
+
+516
+00:29:08,380 --> 00:29:10,150
+applications it's perfectly acceptable
+
+517
+00:29:10,150 --> 00:29:13,270
+so and you could do interesting things
+
+518
+00:29:13,270 --> 00:29:16,290
+like you know if the user has already
+
+519
+00:29:16,290 --> 00:29:18,250
+loaded the page once you could actually
+
+520
+00:29:18,250 --> 00:29:21,330
+cash the results of the compilation in
+
+521
+00:29:21,330 --> 00:29:24,100
+local storage or something like that be
+
+522
+00:29:24,100 --> 00:29:35,580
+interesting
+
+523
+00:29:35,590 --> 00:29:40,450
+oh yeah yeah that's I haven't done that
+
+524
+00:29:40,450 --> 00:29:44,679
+yet but yeah you can definitely use this
+
+525
+00:29:44,679 --> 00:29:47,620
+as a sort of native debugger for other
+
+526
+00:29:47,620 --> 00:29:50,200
+languages basically instead of sending
+
+527
+00:29:50,200 --> 00:29:54,970
+it the raw compiled JavaScript code you
+
+528
+00:29:54,970 --> 00:29:58,000
+would send it the original the original
+
+529
+00:29:58,000 --> 00:30:00,490
+source code for your your language like
+
+530
+00:30:00,490 --> 00:30:02,020
+coffee scripter objector J or whatever
+
+531
+00:30:02,020 --> 00:30:08,409
+and there's this new proposal for a map
+
+532
+00:30:08,409 --> 00:30:14,740
+mapping of I think you map the original
+
+533
+00:30:14,740 --> 00:30:16,690
+source code to the the compiled source
+
+534
+00:30:16,690 --> 00:30:19,299
+code lines so the debugger can actually
+
+535
+00:30:19,299 --> 00:30:22,770
+show the correct the correct code and
+
+536
+00:30:22,770 --> 00:30:30,120
+this could certainly support that
+
+537
+00:30:30,130 --> 00:30:38,920
+oh yeah now I forgot to mention so this
+
+538
+00:30:38,920 --> 00:30:42,610
+is using node inspector which is you
+
+539
+00:30:42,610 --> 00:30:44,680
+know web inspector for node basically
+
+540
+00:30:44,680 --> 00:30:46,000
+it's I I mean actually would work for
+
+541
+00:30:46,000 --> 00:30:49,750
+any anything that supports the the v8
+
+542
+00:30:49,750 --> 00:30:54,730
+JSON API be a debugger API so you know
+
+543
+00:30:54,730 --> 00:30:56,230
+you could also use the the Eclipse
+
+544
+00:30:56,230 --> 00:31:01,830
+debugger whatever
+

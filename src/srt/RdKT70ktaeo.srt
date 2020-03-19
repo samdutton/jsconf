@@ -1,0 +1,1600 @@
+1
+00:00:01,860 --> 00:00:10,660
+Sharing is Caring - Patterns for JavaScript
+Library Design
+
+2
+00:00:38,930 --> 00:00:39,930
+[Applause]
+MAGGIE: Hi, everybody.
+
+3
+00:00:39,930 --> 00:00:40,930
+How are you doing today?
+
+4
+00:00:40,930 --> 00:00:41,930
+You are hitting the end of the conference,
+it's like the tired part, but we are going
+
+5
+00:00:41,930 --> 00:00:42,930
+to be okay.
+
+6
+00:00:42,930 --> 00:00:45,060
+So I'm here to talk to you about API design
+for JavaScript libraries and how you can do
+
+7
+00:00:45,060 --> 00:00:51,579
+some sharing, so I will say up on the screen
+are my two kids and the oldest, Dalton, really
+
+8
+00:00:51,579 --> 00:00:58,350
+likes to tell you that caring is sharing when
+he wants to eat the food on your dinner plate.
+
+9
+00:00:58,350 --> 00:00:59,861
+So who am I?
+
+10
+00:00:59,861 --> 00:01:07,500
+I really think that you need know nothing
+other than semicolons, tabs, all the code
+
+11
+00:01:07,500 --> 00:01:11,330
+in the slide is semicolons, tabs.
+
+12
+00:01:11,330 --> 00:01:17,310
+In all seriousness I work for Microsoft, I'm
+a crisis management engineer, so if you are
+
+13
+00:01:17,310 --> 00:01:23,150
+hosted on Azure and your things are not working,
+I am the person who is on the phone being
+
+14
+00:01:23,150 --> 00:01:27,940
+like: everyone wake up!
+
+15
+00:01:27,940 --> 00:01:31,601
+I am a maintainer of Moment.js, there are
+two of us here today, I don't know if some
+
+16
+00:01:31,601 --> 00:01:36,850
+of you saw Matt's talk earlier, but I am a
+maintainer of Moment.js and in addition I
+
+17
+00:01:36,850 --> 00:01:46,380
+am the JS Foundation's representative to TC3
+... 9 and I represent the JS Foundation which
+
+18
+00:01:46,380 --> 00:01:51,850
+is awesome and supports JavaScript projects
+in the ecosystem.
+
+19
+00:01:51,850 --> 00:02:00,330
+I will tell you, if you have made a JavaScript
+commit to an open source project we represent
+
+20
+00:02:00,330 --> 00:02:08,110
+you so if you would like representation, we
+are your representation as an open source
+
+21
+00:02:08,110 --> 00:02:14,320
+committer, and on that note I am the champion
+of the date re-work proposal that was talked
+
+22
+00:02:14,320 --> 00:02:19,120
+about earlier, so if you are interested in
+what's happening in JavaScript date, I am
+
+23
+00:02:19,120 --> 00:02:23,030
+working on that, but today that is not what
+we are talking about.
+
+24
+00:02:23,030 --> 00:02:25,680
+Today what we are talking about is libraries.
+
+25
+00:02:25,680 --> 00:02:28,090
+Is anybody here besides me a library author?
+
+26
+00:02:28,090 --> 00:02:29,950
+Okay, all right.
+
+27
+00:02:29,950 --> 00:02:34,470
+I am going to bring up some libraries and
+if it's one of yours and I got it wrong, you
+
+28
+00:02:34,470 --> 00:02:39,210
+shout real loud: you got that library wrong,
+Maggie.
+
+29
+00:02:39,210 --> 00:02:43,209
+So what is a library?
+
+30
+00:02:43,209 --> 00:02:47,800
+There are a lot of definitions for the word
+library, but what I am going to go with is:
+
+31
+00:02:47,800 --> 00:02:54,400
+a library is a bit of code that's useful when
+it's packaged up and distributed to other
+
+32
+00:02:54,400 --> 00:02:55,900
+people.
+
+33
+00:02:55,900 --> 00:03:03,120
+This could be internal or external, so there
+are tons of external libraries that we know
+
+34
+00:03:03,120 --> 00:03:11,370
+about, like LoDash, jQuery, Request and I
+think everybody in the room nearly knows every
+
+35
+00:03:11,370 --> 00:03:15,230
+one of those, right?
+
+36
+00:03:15,230 --> 00:03:17,019
+Internally there's a tendency to make internal
+libraries.
+
+37
+00:03:17,019 --> 00:03:21,830
+I know at Microsoft we have millions of internal
+libraries for the purposes of logging and
+
+38
+00:03:21,830 --> 00:03:22,830
+analytics.
+
+39
+00:03:22,830 --> 00:03:28,130
+Oh my gosh, I add internal libraries to everything
+for that.
+
+40
+00:03:28,130 --> 00:03:33,700
+For the purpose of this talk I do want to
+define what is not a library.
+
+41
+00:03:33,700 --> 00:03:41,409
+I am going to say things like Express or Angular
+or webpack are not libraries for the purpose
+
+42
+00:03:41,409 --> 00:03:43,069
+of this talk.
+
+43
+00:03:43,069 --> 00:03:48,129
+Instead, Express or Angular would be a framework.
+
+44
+00:03:48,129 --> 00:03:50,910
+They do a whole lot more than provide some
+useful code.
+
+45
+00:03:50,910 --> 00:03:53,330
+They tell you how you should code.
+
+46
+00:03:53,330 --> 00:03:58,020
+Webpack on the other hand would be a full
+tool suite so I'm not going to consider those
+
+47
+00:03:58,020 --> 00:03:59,390
+things libraries.
+
+48
+00:03:59,390 --> 00:04:04,980
+One other thing I am going to mention about
+this talk is that I'm going to get out examples
+
+49
+00:04:04,980 --> 00:04:09,489
+of some of the libraries I have listed at
+the top, and we might think of those libraries
+
+50
+00:04:09,489 --> 00:04:18,369
+as like lame, like it's from 2007, guys, but
+the bottom line is these libraries have survived
+
+51
+00:04:18,369 --> 00:04:21,119
+a really long time.
+
+52
+00:04:21,119 --> 00:04:26,210
+So we are really into the new hotness in JavaScript
+but for the purposes of this talk I have stuck
+
+53
+00:04:26,210 --> 00:04:36,020
+to libraries that we are all npm installing
+several years later because longevity is good.
+
+54
+00:04:36,020 --> 00:04:39,689
+Call me lame, it's okay, I can live with it.
+
+55
+00:04:39,689 --> 00:04:43,279
+So here is what we think a library is like.
+
+56
+00:04:43,279 --> 00:04:48,900
+Whose kids behave like this all the time,
+like happy and playing?
+
+57
+00:04:48,900 --> 00:04:54,169
+All right, so here is what having a library
+is actually like.
+
+58
+00:04:54,169 --> 00:04:56,400
+Does anybody have this toy besides me?
+
+59
+00:04:56,400 --> 00:04:58,259
+This is a toy only a grandparent would give
+you.
+
+60
+00:04:58,259 --> 00:05:02,710
+There's two kids, some buttons and some whipped
+cream.
+
+61
+00:05:02,710 --> 00:05:07,020
+[Laughter]
+What is what having a library is like out
+
+62
+00:05:07,020 --> 00:05:08,500
+in the open source space.
+
+63
+00:05:08,500 --> 00:05:11,469
+Like that looked really fun, and then boom.
+
+64
+00:05:11,469 --> 00:05:17,569
+Kept in the open source space it actually
+looked leek this.
+
+65
+00:05:17,569 --> 00:05:22,599
+Tim Wood, awesome guy, he was like: I'm going
+to share, I am going to care - and here we
+
+66
+00:05:22,599 --> 00:05:30,879
+are four years later with 2,400 closed issues
+and 176 open.
+
+67
+00:05:30,879 --> 00:05:33,430
+That's what having a library is like.
+
+68
+00:05:33,430 --> 00:05:38,879
+And your best defence against that is making
+it well.
+
+69
+00:05:38,879 --> 00:05:41,259
+So what makes a library good?
+
+70
+00:05:41,259 --> 00:05:42,629
+Small size.
+
+71
+00:05:42,629 --> 00:05:48,860
+I never want to hear about it again.
+
+72
+00:05:48,860 --> 00:05:50,930
+Great code!
+
+73
+00:05:50,930 --> 00:05:52,860
+Your users don't use your code.
+
+74
+00:05:52,860 --> 00:05:57,270
+They are never going to look at it.
+
+75
+00:05:57,270 --> 00:06:04,229
+Encourages functional programming practices:
+it's big right now, isn't it?
+
+76
+00:06:04,229 --> 00:06:12,580
+Wait, wait, this is JavaScript, the amazing
+mocha ... tool chain that I spent 12 weeks
+
+77
+00:06:12,580 --> 00:06:16,370
+assembling, that made my library good.
+
+78
+00:06:16,370 --> 00:06:22,530
+Guys, ease of use.
+
+79
+00:06:22,530 --> 00:06:24,500
+Ease of use.
+
+80
+00:06:24,500 --> 00:06:26,979
+Nobody wants to learn your library.
+
+81
+00:06:26,979 --> 00:06:28,169
+They won't.
+
+82
+00:06:28,169 --> 00:06:36,460
+Those 2,400 odd GitHub issues, 50% of them
+are, "I didn't read your documentation".
+
+83
+00:06:36,460 --> 00:06:39,039
+It's okay to make it simple.
+
+84
+00:06:39,039 --> 00:06:41,610
+You don't have to get into fancy patterns.
+
+85
+00:06:41,610 --> 00:06:44,099
+Your users are just going to go: what's partial
+application?
+
+86
+00:06:44,099 --> 00:06:52,550
+So I am going to break this out into four
+areas.
+
+87
+00:06:52,550 --> 00:06:54,379
+One: invocation.
+
+88
+00:06:54,379 --> 00:06:57,180
+How do I invoke my library?
+
+89
+00:06:57,180 --> 00:06:58,919
+How do I actually call it?
+
+90
+00:06:58,919 --> 00:07:00,909
+Two, configuration.
+
+91
+00:07:00,909 --> 00:07:04,979
+This is a huge part of any library, it doesn't
+do what I want it to do unless it changes
+
+92
+00:07:04,979 --> 00:07:07,180
+its configuration this way.
+
+93
+00:07:07,180 --> 00:07:08,949
+Three, defaults.
+
+94
+00:07:08,949 --> 00:07:11,819
+What should the default behaviours of my library
+be?
+
+95
+00:07:11,819 --> 00:07:18,959
+And finally errors, which are no easy thing
+to deal with.
+
+96
+00:07:18,959 --> 00:07:22,619
+So invocation.
+
+97
+00:07:22,619 --> 00:07:27,990
+Basically for any library there's two kind
+of simple ways to invoke it.
+
+98
+00:07:27,990 --> 00:07:30,690
+One is static invocation, right?
+
+99
+00:07:30,690 --> 00:07:32,869
+You just call a function.
+
+100
+00:07:32,869 --> 00:07:37,759
+So here we have two great libraries that I
+think everyone here has probably touched,
+
+101
+00:07:37,759 --> 00:07:42,770
+a request from Node and this is aesthetic
+invocation, I want to get Google.com and I
+
+102
+00:07:42,770 --> 00:07:43,830
+get a call back.
+
+103
+00:07:43,830 --> 00:07:45,210
+It's just static.
+
+104
+00:07:45,210 --> 00:07:53,099
+Or good old 27 million downloads a month LoDash,
+who here hasn't used it - I am asking for
+
+105
+00:07:53,099 --> 00:07:57,999
+filter, and I get back a filtered list.
+
+106
+00:07:57,999 --> 00:07:59,879
+Awesome.
+
+107
+00:07:59,879 --> 00:08:02,740
+Static invocation is a great pattern.
+
+108
+00:08:02,740 --> 00:08:04,349
+I would not shy away from it.
+
+109
+00:08:04,349 --> 00:08:07,699
+For logging libraries this is the way to go.
+
+110
+00:08:07,699 --> 00:08:11,729
+It's easy, you just say dot log, dot error,
+it's easy for people to figure out, they don't
+
+111
+00:08:11,729 --> 00:08:15,300
+have to think too hard about what's going
+on so this is my go-to if I want to write
+
+112
+00:08:15,300 --> 00:08:16,939
+a simple library.
+
+113
+00:08:16,939 --> 00:08:19,719
+It has a drawback though.
+
+114
+00:08:19,719 --> 00:08:23,369
+Here is LoDash without using any of the chaining
+or functional features.
+
+115
+00:08:23,369 --> 00:08:26,589
+If I want to get the sum of some odd numbers
+doubled.
+
+116
+00:08:26,589 --> 00:08:33,000
+We are going down - like this almost looks
+like a Christmas tree but it's not, it's just
+
+117
+00:08:33,000 --> 00:08:34,039
+LoDash.
+
+118
+00:08:34,039 --> 00:08:40,519
+All right, so when you start getting into
+this kind of trap with your library then you
+
+119
+00:08:40,519 --> 00:08:43,490
+are probably going to move to doing something
+like a factory function.
+
+120
+00:08:43,490 --> 00:08:48,019
+Now, many libraries have done really well
+with the factory function.
+
+121
+00:08:48,019 --> 00:08:52,800
+Up here, I have Q - everybody has used Q,
+right?
+
+122
+00:08:52,800 --> 00:08:55,470
+Oh yes, it returns promises, doesn't it?
+
+123
+00:08:55,470 --> 00:09:00,230
+Q fundamentally is a library that makes promises,
+and then you can do what you will with those
+
+124
+00:09:00,230 --> 00:09:01,230
+promises.
+
+125
+00:09:01,230 --> 00:09:04,970
+JQuery, good old ubiquitous jQuery makes jQuery
+objects.
+
+126
+00:09:04,970 --> 00:09:09,670
+Who learnt that when they first started coding
+ten years ago?
+
+127
+00:09:09,670 --> 00:09:11,050
+And Moment, my library.
+
+128
+00:09:11,050 --> 00:09:15,110
+By the way, I am going to shred Moment in
+my examples.
+
+129
+00:09:15,110 --> 00:09:17,029
+I will tell you of my pain.
+
+130
+00:09:17,029 --> 00:09:20,149
+But Moment again is a factory library.
+
+131
+00:09:20,149 --> 00:09:23,510
+You invoke Moment and you get back a Moment
+object.
+
+132
+00:09:23,510 --> 00:09:27,950
+And these kinds of things allow for some really,
+really good patterns to happen.
+
+133
+00:09:27,950 --> 00:09:32,560
+A factory function is what's going to allow
+you to go into a chaining API or at least
+
+134
+00:09:32,560 --> 00:09:38,540
+is one very good way to do that, so here we
+can see Q, again we are doing F call, which
+
+135
+00:09:38,540 --> 00:09:43,459
+is going to give us a promise back, and then
+fundamentally we can chain on another promise
+
+136
+00:09:43,459 --> 00:09:47,400
+and chain on another promise because we just
+keep on getting promises all the way down,
+
+137
+00:09:47,400 --> 00:09:52,500
+so this is a super helpful way to invoke a
+library, to have it give an object back and
+
+138
+00:09:52,500 --> 00:09:54,889
+then have that give an object back.
+
+139
+00:09:54,889 --> 00:10:00,310
+There are some problems with chaining but
+on the whole it works well for a lot of people.
+
+140
+00:10:00,310 --> 00:10:08,449
+Here is chaining API, here I'm adding three
+days to the current time, then going to the
+
+141
+00:10:08,449 --> 00:10:10,690
+start, and then going to a year ago.
+
+142
+00:10:10,690 --> 00:10:13,800
+God knows why I would want to do that but
+people have.
+
+143
+00:10:13,800 --> 00:10:20,350
+It reads really easy, I'm not questioning
+where is this invocation in the world, I'm
+
+144
+00:10:20,350 --> 00:10:22,820
+just cruising along.
+
+145
+00:10:22,820 --> 00:10:28,100
+JQuery, again like for all that we like to
+rip on jQuery for the bad programming practices,
+
+146
+00:10:28,100 --> 00:10:30,329
+man does this get our work done?
+
+147
+00:10:30,329 --> 00:10:37,240
+I still bring in jQuery if I have a static
+ASVC web page.
+
+148
+00:10:37,240 --> 00:10:40,329
+Why not?
+
+149
+00:10:40,329 --> 00:10:47,100
+So the next set of patterns that I would like
+to look at are configuration patterns.
+
+150
+00:10:47,100 --> 00:10:51,959
+Almost every library in the world is going
+to need some form of configuration, and it
+
+151
+00:10:51,959 --> 00:10:55,810
+can get pretty difficult for people to figure
+out how to do.
+
+152
+00:10:55,810 --> 00:10:59,689
+So we will take a quick look at Moment.
+
+153
+00:10:59,689 --> 00:11:01,530
+This is Moment like circa 2012.
+
+154
+00:11:01,530 --> 00:11:06,339
+It was great.
+
+155
+00:11:06,339 --> 00:11:10,710
+You had a date string and you could either
+pass it into the Moment constructor and let
+
+156
+00:11:10,710 --> 00:11:14,810
+the Moment constructor deal with it or you
+could specify a format to make sure that the
+
+157
+00:11:14,810 --> 00:11:17,399
+constructor got the right thing.
+
+158
+00:11:17,399 --> 00:11:18,790
+This is beautiful.
+
+159
+00:11:18,790 --> 00:11:21,800
+This was easy.
+
+160
+00:11:21,800 --> 00:11:23,750
+Moment 2017.
+
+161
+00:11:23,750 --> 00:11:25,550
+Constructor.
+
+162
+00:11:25,550 --> 00:11:31,139
+Here, you can construct with an array, you
+can construct a Moment from another Moment
+
+163
+00:11:31,139 --> 00:11:35,319
+object that will give you a copy, you can
+construct a Moment from a date, I guess that
+
+164
+00:11:35,319 --> 00:11:41,129
+makes sense; you can do a date string with
+a format in the English language or any other
+
+165
+00:11:41,129 --> 00:11:47,449
+language; you can use strict mode which will
+force you to match the pattern that you are
+
+166
+00:11:47,449 --> 00:11:53,019
+supplying; you could combine language in strict
+mode, oh, multiple formats, maybe you are
+
+167
+00:11:53,019 --> 00:11:57,199
+expecting four or five formats, I am going
+to throw an array in there and I still need
+
+168
+00:11:57,199 --> 00:12:00,740
+to support language and strict mode.
+
+169
+00:12:00,740 --> 00:12:01,740
+Whoa!
+
+170
+00:12:01,740 --> 00:12:05,000
+Like that was intense.
+
+171
+00:12:05,000 --> 00:12:10,800
+By the way, having this overloaded constructor
+where your constructor is expecting like a
+
+172
+00:12:10,800 --> 00:12:17,939
+billion options, I think - so Moment uses
+ES6 modules and I think to actually parse
+
+173
+00:12:17,939 --> 00:12:25,900
+out this constructor it happens in about ten
+files that are all about 100 lines of code
+
+174
+00:12:25,900 --> 00:12:31,330
+each, just to parse this madness it's like
+type checking and then what does this actually
+
+175
+00:12:31,330 --> 00:12:34,949
+mean?
+
+176
+00:12:34,949 --> 00:12:38,100
+This isn't that great.
+
+177
+00:12:38,100 --> 00:12:42,529
+I am going to give some credit here to my
+colleagues on the ECMA402 Committee.
+
+178
+00:12:42,529 --> 00:12:46,149
+They have been putting together the new internationalisation
+API.
+
+179
+00:12:46,149 --> 00:12:48,069
+Has anybody used those?
+
+180
+00:12:48,069 --> 00:12:54,829
+Oh yeah, the international API so the standards
+said how are we going to do configuration
+
+181
+00:12:54,829 --> 00:12:59,829
+because localisation takes a heck of a lot
+of configuration and they came up with this
+
+182
+00:12:59,829 --> 00:13:04,629
+really simple paradigm, and for all that it
+isn't fancy, I love it.
+
+183
+00:13:04,629 --> 00:13:08,399
+I think it's really going to serve JavaScript's
+users over time, and it's this.
+
+184
+00:13:08,399 --> 00:13:12,170
+I am going to create a new date time format
+here.
+
+185
+00:13:12,170 --> 00:13:14,970
+I must know the locale for the format.
+
+186
+00:13:14,970 --> 00:13:17,610
+The locale is required, right?
+
+187
+00:13:17,610 --> 00:13:21,630
+So I put the required parameter here, and
+then everything else I need to know I put
+
+188
+00:13:21,630 --> 00:13:22,630
+in an options object.
+
+189
+00:13:22,630 --> 00:13:27,790
+Now, this is used the world over, in a million
+libraries, and it's used because it works.
+
+190
+00:13:27,790 --> 00:13:33,129
+I'm easily specifying hour, minute, second
+and time zone formats without having a mess
+
+191
+00:13:33,129 --> 00:13:37,509
+in my constructor, without having to chain
+defaults to the global object.
+
+192
+00:13:37,509 --> 00:13:39,939
+None of that is happening.
+
+193
+00:13:39,939 --> 00:13:44,980
+So options, objects, it seems simple, it seems
+almost stupid for me to say but they are going
+
+194
+00:13:44,980 --> 00:13:49,300
+to get you a long way in cleaning up constructors
+like I showed you with Moment.
+
+195
+00:13:49,300 --> 00:13:54,130
+The other thing they do and again good old
+jQuery, you are beautiful - you really were
+
+196
+00:13:54,130 --> 00:13:57,519
+- is they have simple business logic.
+
+197
+00:13:57,519 --> 00:14:02,009
+If you go into options object less than then
+say you want the user to be able to define
+
+198
+00:14:02,009 --> 00:14:07,370
+a behaviour in the library you are going to
+be able to do something like that with this,
+
+199
+00:14:07,370 --> 00:14:19,279
+here we have jQuery AJAX requests and if I
+want to file a 404 I can parse a custom function.
+
+200
+00:14:19,279 --> 00:14:20,279
+This is beautiful.
+
+201
+00:14:20,279 --> 00:14:24,360
+This is easy for the user.
+
+202
+00:14:24,360 --> 00:14:30,819
+So basically, when it comes to configuration,
+do required parameters at the beginning of
+
+203
+00:14:30,819 --> 00:14:34,480
+your constructor and then tie the options
+object to the end.
+
+204
+00:14:34,480 --> 00:14:38,819
+This is going to be the easiest way for anybody
+to invoke your library.
+
+205
+00:14:38,819 --> 00:14:40,069
+Defaults.
+
+206
+00:14:40,069 --> 00:14:45,290
+Now, defaults are a fascinating topic, and
+they are difficult to get right.
+
+207
+00:14:45,290 --> 00:14:47,509
+Let's look at this.
+
+208
+00:14:47,509 --> 00:14:51,809
+This is a clean HTTP request with a built
+in no JS APIs.
+
+209
+00:14:51,809 --> 00:14:59,950
+I assume a lot of people here have done this,
+the plain no library HTTP request and some
+
+210
+00:14:59,950 --> 00:15:00,950
+interesting stuff is going on.
+
+211
+00:15:00,950 --> 00:15:08,230
+What I want to do here is I want to get the
+Moment, so I am going to Tim R Wood/Moment,
+
+212
+00:15:08,230 --> 00:15:16,209
+okay, great, I assume I get requests and a
+few things get crazy here, I actually do like
+
+213
+00:15:16,209 --> 00:15:25,410
+continuous update stream, response body, but
+I want to call it this, I get a re-direct.
+
+214
+00:15:25,410 --> 00:15:28,329
+301, move permanently.
+
+215
+00:15:28,329 --> 00:15:33,621
+That's absolutely true because Tim moved the
+Moment repo to the Moment org years ago, but
+
+216
+00:15:33,621 --> 00:15:39,990
+now because I get a re-direct I am going to
+have to start this whole process again and
+
+217
+00:15:39,990 --> 00:15:42,420
+go look for the re-direct link that I got.
+
+218
+00:15:42,420 --> 00:15:45,160
+That's kind of a pain.
+
+219
+00:15:45,160 --> 00:15:46,389
+Request.
+
+220
+00:15:46,389 --> 00:15:48,129
+Anybody here a Request user?
+
+221
+00:15:48,129 --> 00:15:53,559
+This is a good library, it does a lot of good
+stuff for us but a big one is it will automatically
+
+222
+00:15:53,559 --> 00:15:59,899
+follow a re-direct so here when I kick off
+my request for Tim R Wood Moment, I actually
+
+223
+00:15:59,899 --> 00:16:05,209
+get back the repository I wanted with the
+data about it.
+
+224
+00:16:05,209 --> 00:16:07,149
+It just automatically followed the re-direct.
+
+225
+00:16:07,149 --> 00:16:12,910
+Now, what this is is best by default.
+
+226
+00:16:12,910 --> 00:16:17,519
+When was the last time that you got a re-direct
+link and didn't want to follow it?
+
+227
+00:16:17,519 --> 00:16:18,519
+Right.
+
+228
+00:16:18,519 --> 00:16:25,100
+I am sure it has happened and I am sure you
+can configure requests to not re-direct but
+
+229
+00:16:25,100 --> 00:16:31,279
+like seriously, this is like 95% of the time,
+99% of the time, you are going to follow the
+
+230
+00:16:31,279 --> 00:16:37,230
+re-direct, so if there's an obvious right
+best answer like that's like well over 90%
+
+231
+00:16:37,230 --> 00:16:39,319
+case, then do it!
+
+232
+00:16:39,319 --> 00:16:40,319
+Right?
+
+233
+00:16:40,319 --> 00:16:45,579
+But here is a flip side, I am going to go
+back to Moment, nothing like trashing the
+
+234
+00:16:45,579 --> 00:16:49,250
+library that I love so much.
+
+235
+00:16:49,250 --> 00:16:55,980
+Here I have Moment and I'm parsing in this
+date string, let's pan out 1025 and I get
+
+236
+00:16:55,980 --> 00:16:58,199
+out 1725.
+
+237
+00:16:58,199 --> 00:16:59,959
+Why?
+
+238
+00:16:59,959 --> 00:17:11,780
+So here is what is actually going on with
+Moment.
+
+239
+00:17:11,780 --> 00:17:18,000
+Time is complicated and when I parse in 1025
+to the base Moment constructor I get back
+
+240
+00:17:18,000 --> 00:17:26,190
+1725 because it's converting it to local time,
+minus 5 here, and then I came to Berlin time,
+
+241
+00:17:26,190 --> 00:17:27,190
+right?
+
+242
+00:17:27,190 --> 00:17:31,529
+If, in fact, I had wanted UTC, I would use
+the UTC constructor.
+
+243
+00:17:31,529 --> 00:17:35,480
+If I had wanted to stay in minus 5 I would
+use parse zone.
+
+244
+00:17:35,480 --> 00:17:39,230
+If I had wanted a different time zone, for
+instance New York, then I would use the time
+
+245
+00:17:39,230 --> 00:17:42,650
+zone constructor.
+
+246
+00:17:42,650 --> 00:17:47,400
+There's no good default here.
+
+247
+00:17:47,400 --> 00:17:53,430
+Like, honestly, are any of those like the
+thing that you do all the time, are any of
+
+248
+00:17:53,430 --> 00:17:56,750
+those a 95% case?
+
+249
+00:17:56,750 --> 00:17:57,770
+No.
+
+250
+00:17:57,770 --> 00:18:05,910
+And this single API flaw has caused more support
+issues in Moment.js than any other thing by
+
+251
+00:18:05,910 --> 00:18:07,740
+about three orders of magnitude.
+
+252
+00:18:07,740 --> 00:18:13,070
+People are like: why isn't this the day that
+I thought it was going to be?
+
+253
+00:18:13,070 --> 00:18:23,270
+And all they really had to do was this: instead
+of having that default just Moment paren constructor,
+
+254
+00:18:23,270 --> 00:18:33,299
+if we had made people choose and made them
+say Moment.local, they would have gone, "Oh,
+
+255
+00:18:33,299 --> 00:18:39,900
+local time", and it would have saved us I
+don't know how many hours.
+
+256
+00:18:39,900 --> 00:18:45,930
+The next time we ran a major version for me
+to deprecate the major constructor will be
+
+257
+00:18:45,930 --> 00:18:50,090
+all of 30 minutes of work and it is happening.
+
+258
+00:18:50,090 --> 00:18:54,010
+We are not living like this anymore.
+
+259
+00:18:54,010 --> 00:18:56,500
+Get to update all the docs.
+
+260
+00:18:56,500 --> 00:19:00,080
+Then you get to update your code.
+
+261
+00:19:00,080 --> 00:19:03,130
+So default only when there is a best answer.
+
+262
+00:19:03,130 --> 00:19:07,090
+If there are several likely behaviours, don't
+lock yourself into the trap of answering support
+
+263
+00:19:07,090 --> 00:19:08,779
+requests on all of them.
+
+264
+00:19:08,779 --> 00:19:14,350
+So the last thing I want to talk about is
+errors.
+
+265
+00:19:14,350 --> 00:19:19,760
+So errors at one time in JavaScript, we were
+like in happy fun land, like we are on the
+
+266
+00:19:19,760 --> 00:19:30,260
+bus, we will just ... the browser and it will
+be really great, then we will hit F12 and
+
+267
+00:19:30,260 --> 00:19:32,669
+it will be great, then this happens.
+
+268
+00:19:32,669 --> 00:19:35,460
+This is directly out of the Node.js docs.
+
+269
+00:19:35,460 --> 00:19:42,059
+Exception must be handled or the no process
+will be handled immediately.
+
+270
+00:19:42,059 --> 00:19:45,310
+Who has had this happen?
+
+271
+00:19:45,310 --> 00:19:47,390
+Oh yeah.
+
+272
+00:19:47,390 --> 00:19:52,500
+So we were like: you are going to use it on
+a server and then the error is going to happen
+
+273
+00:19:52,500 --> 00:19:54,030
+and we are going to crash the server?
+
+274
+00:19:54,030 --> 00:19:55,030
+Oh God!
+
+275
+00:19:55,030 --> 00:20:06,850
+And 
+for a long time people got this idea that
+
+276
+00:20:06,850 --> 00:20:08,960
+libraries should never throw errors.
+
+277
+00:20:08,960 --> 00:20:14,520
+Never throw errors in a library, you will
+kill things.
+
+278
+00:20:14,520 --> 00:20:19,150
+But that's difficult too, so I actually like
+any good software engineer went to Twitter
+
+279
+00:20:19,150 --> 00:20:24,940
+and was like: does Node give any official
+guidance about this error thing several years
+
+280
+00:20:24,940 --> 00:20:26,130
+in?
+
+281
+00:20:26,130 --> 00:20:32,929
+And it exploded into a massive Twitter conversation
+that lasted like four hours.
+
+282
+00:20:32,929 --> 00:20:37,580
+And the only thing back I really got from
+Node is that Miles cares a lot about errors.
+
+283
+00:20:37,580 --> 00:20:44,820
+He wanted me to tell you, so Miles cares a
+lot about errors.
+
+284
+00:20:44,820 --> 00:20:51,980
+But the general consensus on the thread can
+be summed up as: throw an obvious developer
+
+285
+00:20:51,980 --> 00:20:53,070
+error.
+
+286
+00:20:53,070 --> 00:20:54,570
+So let's break that one down.
+
+287
+00:20:54,570 --> 00:20:59,190
+Here is Moment doing actually a pretty good
+job at its thing.
+
+288
+00:20:59,190 --> 00:21:04,350
+This is a date and it's probably user input,
+and user input is always potentially junk,
+
+289
+00:21:04,350 --> 00:21:05,350
+right?
+
+290
+00:21:05,350 --> 00:21:10,779
+So we don't want to every time a user enters
+a date, if that date isn't in the format that
+
+291
+00:21:10,779 --> 00:21:16,470
+we want, start exploding Node servers, so
+instead what happens is we very politely take
+
+292
+00:21:16,470 --> 00:21:23,260
+your input and we say: oh, you have tried
+to format this; invalid date.
+
+293
+00:21:23,260 --> 00:21:26,380
+And then maybe your one user with the bad
+input sees invalid date but at least we haven't
+
+294
+00:21:26,380 --> 00:21:29,380
+taken out your Node process.
+
+295
+00:21:29,380 --> 00:21:31,380
+So this is done.
+
+296
+00:21:31,380 --> 00:21:33,269
+Bad user input doesn't crash.
+
+297
+00:21:33,269 --> 00:21:35,100
+But then we have this other thing going on.
+
+298
+00:21:35,100 --> 00:21:42,330
+You need to get on Moment to get the hours
+date part, and this looks great, it gets us
+
+299
+00:21:42,330 --> 00:21:49,910
+back 13, and must be some time in the early
+afternoon that I ran this, but this is weird.
+
+300
+00:21:49,910 --> 00:21:58,019
+I misspell hours, I put in hurs, and I get
+back a Moment object.
+
+301
+00:21:58,019 --> 00:22:07,850
+I would completely expect to get a Moment
+object from that method invocation.
+
+302
+00:22:07,850 --> 00:22:12,490
+At the end of the day this wouldn't be deployed
+onto a server in production.
+
+303
+00:22:12,490 --> 00:22:16,250
+This is a developer time error.
+
+304
+00:22:16,250 --> 00:22:19,529
+And it's one that's potentially very difficult
+to find.
+
+305
+00:22:19,529 --> 00:22:22,480
+You will go digging through your code and
+you will be like: where is it?
+
+306
+00:22:22,480 --> 00:22:25,610
+Why do I see JSON where I should see a string?
+
+307
+00:22:25,610 --> 00:22:27,130
+What the heck?
+
+308
+00:22:27,130 --> 00:22:33,710
+And you will get all the way down to the library
+and you will be like: those people! [Laughter]
+
+309
+00:22:33,710 --> 00:22:36,210
+So let's see an example of this actually being
+really done well.
+
+310
+00:22:36,210 --> 00:22:40,090
+Who here - this is immutable, people used
+Immutable from Facebook?
+
+311
+00:22:40,090 --> 00:22:41,090
+Sure.
+
+312
+00:22:41,090 --> 00:22:42,090
+Good library.
+
+313
+00:22:42,090 --> 00:22:45,279
+What Immutable does is it makes collections.
+
+314
+00:22:45,279 --> 00:22:48,850
+Here we are going to make a map and any time
+we change this map it will make a new map
+
+315
+00:22:48,850 --> 00:22:51,790
+and this is this library doing it very well.
+
+316
+00:22:51,790 --> 00:22:58,760
+We are making a map, ABC, 123, then we set
+B and the first map still has 2 and the second
+
+317
+00:22:58,760 --> 00:23:02,429
+map has 50 so that's what it does.
+
+318
+00:23:02,429 --> 00:23:04,409
+Okay.
+
+319
+00:23:04,409 --> 00:23:06,840
+But it does something awesome here.
+
+320
+00:23:06,840 --> 00:23:12,660
+When I try to make a map of the number 1,
+which is like impossible, because like how
+
+321
+00:23:12,660 --> 00:23:20,580
+do you map the number 1, it actually tells
+me: hey, developer, we expected an array or
+
+322
+00:23:20,580 --> 00:23:23,010
+an iterable object.
+
+323
+00:23:23,010 --> 00:23:26,710
+Could you hand that over?
+
+324
+00:23:26,710 --> 00:23:31,230
+[Laughter]
+This is good.
+
+325
+00:23:31,230 --> 00:23:37,580
+When it comes to errors, if it's about the
+parser user input then you are going to want
+
+326
+00:23:37,580 --> 00:23:44,720
+to try to suppress as best you can for Node.js
+but if you can tell the dead fat finger something,
+
+327
+00:23:44,720 --> 00:23:47,920
+help them out and undo the fat finger.
+
+328
+00:23:47,920 --> 00:23:52,960
+In conclusion, just make stuff easy to use.
+
+329
+00:23:52,960 --> 00:23:58,299
+Don't get fancy, don't spend a lot of time
+thinking about: oh, what are the functional
+
+330
+00:23:58,299 --> 00:24:03,140
+paradigms I can use here and how beautiful
+can my code be and what tool chain can I have?
+
+331
+00:24:03,140 --> 00:24:10,860
+At the end of the day, some have lived for
+years not for anything other than the fact
+
+332
+00:24:10,860 --> 00:24:14,850
+that people picked them up and were able to
+use them quickly.
+
+333
+00:24:14,850 --> 00:24:20,940
+So put your investment as a library author,
+whether internal or external, right there.
+
+334
+00:24:20,940 --> 00:24:23,049
+For invocation, static your factory.
+
+335
+00:24:23,049 --> 00:24:26,100
+One of them is going to work out for you.
+
+336
+00:24:26,100 --> 00:24:28,480
+Chaining may really enhance your problem domain.
+
+337
+00:24:28,480 --> 00:24:34,450
+Objects for configuration, everybody knows
+them and they really do clean things up.
+
+338
+00:24:34,450 --> 00:24:38,120
+Defaults, careful, careful.
+
+339
+00:24:38,120 --> 00:24:44,750
+When there is an obvious right answer, then
+pick that to be your default, but don't pick
+
+340
+00:24:44,750 --> 00:24:47,080
+an arbitrary default.
+
+341
+00:24:47,080 --> 00:24:49,950
+Do not do it.
+
+342
+00:24:49,950 --> 00:24:55,429
+And finally, throw for those obvious developer
+areas that make it so your users aren't sitting
+
+343
+00:24:55,429 --> 00:24:59,480
+there complaining about how you are a horrible
+person and how they couldn't find this mysterious
+
+344
+00:24:59,480 --> 00:25:01,260
+bug in your code.
+
+345
+00:25:01,260 --> 00:25:03,980
+After that, just share.
+
+346
+00:25:03,980 --> 00:25:10,710
+Get out on GitHub, through your company get
+people contributing to your library internally
+
+347
+00:25:10,710 --> 00:25:13,590
+and be friendly and be open to new ideas.
+
+348
+00:25:13,590 --> 00:25:18,049
+All right, well, thanks, everybody.
+
+349
+00:25:18,049 --> 00:25:24,500
+I love questions, so ... [Applause]
+>> Wasn't that fantastic?
+
+350
+00:25:24,500 --> 00:25:30,950
+Come on, more rounds of applause, please.
+
+351
+00:25:30,950 --> 00:25:31,950
+Woo!
+

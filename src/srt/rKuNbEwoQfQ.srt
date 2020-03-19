@@ -1,0 +1,1853 @@
+1
+00:00:15,150 --> 00:00:18,490
+
+hi my name is Esther McKenzie I work on
+
+2
+00:00:18,490 --> 00:00:20,380
+web content optimization and CloudFlare
+
+3
+00:00:20,380 --> 00:00:22,980
+so I work on making websites faster
+
+4
+00:00:22,980 --> 00:00:25,180
+monitoring performance that kind of
+
+5
+00:00:25,180 --> 00:00:25,630
+thing
+
+6
+00:00:25,630 --> 00:00:27,369
+so what I'm going to be talking to you
+
+7
+00:00:27,369 --> 00:00:29,860
+about to you today about is JavaScript
+
+8
+00:00:29,860 --> 00:00:32,829
+transformation so what is JavaScript
+
+9
+00:00:32,829 --> 00:00:35,500
+transformation well you put JavaScript
+
+10
+00:00:35,500 --> 00:00:37,899
+in and you get javascript out the
+
+11
+00:00:37,899 --> 00:00:39,760
+generated output is determined by
+
+12
+00:00:39,760 --> 00:00:42,070
+contextual information based on what you
+
+13
+00:00:42,070 --> 00:00:44,560
+put in so it like statically checks and
+
+14
+00:00:44,560 --> 00:00:46,660
+infer as kind of what the code does and
+
+15
+00:00:46,660 --> 00:00:49,650
+then transforms it as such into the
+
+16
+00:00:49,650 --> 00:00:53,829
+output JavaScript so first off let me
+
+17
+00:00:53,829 --> 00:00:56,560
+explain some history so there was this
+
+18
+00:00:56,560 --> 00:00:59,520
+thing new thing called es6 now es2015
+
+19
+00:00:59,520 --> 00:01:02,140
+there was a large gap my knowledge arm
+
+20
+00:01:02,140 --> 00:01:04,420
+passes compilers and generally the
+
+21
+00:01:04,420 --> 00:01:06,970
+intricacies of JavaScript so I decided
+
+22
+00:01:06,970 --> 00:01:09,490
+to make an a s-six transpiler to learn
+
+23
+00:01:09,490 --> 00:01:13,270
+it called six-to-five unfortunately this
+
+24
+00:01:13,270 --> 00:01:15,130
+wasn't a very good name people started
+
+25
+00:01:15,130 --> 00:01:18,159
+to use it and 65 already supported like
+
+26
+00:01:18,159 --> 00:01:20,920
+bleeding edge as7 stuff so it would have
+
+27
+00:01:20,920 --> 00:01:23,069
+required a name change to seven to five
+
+28
+00:01:23,069 --> 00:01:25,719
+and then once es6 became mainstream
+
+29
+00:01:25,719 --> 00:01:28,350
+would have been had to be changed to 76
+
+30
+00:01:28,350 --> 00:01:34,350
+but then es6 was renamed T as 2015
+
+31
+00:01:34,360 --> 00:01:37,250
+so this obviously wouldn't be in very
+
+32
+00:01:37,250 --> 00:01:39,860
+practical so in order to keep up with
+
+33
+00:01:39,860 --> 00:01:41,300
+the rapid pace of the web the name was
+
+34
+00:01:41,300 --> 00:01:44,510
+changed to babble with this name change
+
+35
+00:01:44,510 --> 00:01:47,720
+on not only came like the sense of
+
+36
+00:01:47,720 --> 00:01:49,520
+permanence where future versions be
+
+37
+00:01:49,520 --> 00:01:52,220
+supported but the scope of the project
+
+38
+00:01:52,220 --> 00:01:54,140
+was kind of expanded to be a more
+
+39
+00:01:54,140 --> 00:01:57,260
+general JavaScript compiler I'll go into
+
+40
+00:01:57,260 --> 00:01:58,910
+a bit more detail on what that actually
+
+41
+00:01:58,910 --> 00:01:59,780
+means
+
+42
+00:01:59,780 --> 00:02:02,120
+but basically different types of tools
+
+43
+00:02:02,120 --> 00:02:04,370
+could be built on top of Babel and there
+
+44
+00:02:04,370 --> 00:02:06,890
+be future-proof so what does that mean
+
+45
+00:02:06,890 --> 00:02:08,780
+so for example if you build a minnow
+
+46
+00:02:08,780 --> 00:02:10,940
+fire on top of Babel I mean some cool
+
+47
+00:02:10,940 --> 00:02:13,520
+new ears feature came out as long as
+
+48
+00:02:13,520 --> 00:02:15,350
+Babel supported it everything that was
+
+49
+00:02:15,350 --> 00:02:16,850
+built on it or used it would support it
+
+50
+00:02:16,850 --> 00:02:19,790
+too so to give some context on why this
+
+51
+00:02:19,790 --> 00:02:21,650
+is neat I need kind of understand a bit
+
+52
+00:02:21,650 --> 00:02:24,950
+about how it works so you have some
+
+53
+00:02:24,950 --> 00:02:27,050
+source code cool
+
+54
+00:02:27,050 --> 00:02:29,120
+how can I deal with this how would you
+
+55
+00:02:29,120 --> 00:02:31,459
+throw a regex at it no not really
+
+56
+00:02:31,459 --> 00:02:33,140
+there are way too many variations of
+
+57
+00:02:33,140 --> 00:02:35,660
+syntax in order to kind of do anything
+
+58
+00:02:35,660 --> 00:02:38,060
+good with just regular expressions so
+
+59
+00:02:38,060 --> 00:02:39,950
+you need to represent this code in a
+
+60
+00:02:39,950 --> 00:02:41,230
+data structure that you can deal with
+
+61
+00:02:41,230 --> 00:02:44,690
+called in abstract syntax tree or AST
+
+62
+00:02:44,690 --> 00:02:49,400
+for sure so this is the AST for the
+
+63
+00:02:49,400 --> 00:02:51,860
+previous code it's a group of deeply
+
+64
+00:02:51,860 --> 00:02:53,930
+nested objects that expressively define
+
+65
+00:02:53,930 --> 00:02:57,230
+each syntactic element so each property
+
+66
+00:02:57,230 --> 00:02:59,690
+of these nodes contains metadata about
+
+67
+00:02:59,690 --> 00:03:02,120
+what it represents so this may kind of
+
+68
+00:03:02,120 --> 00:03:03,530
+seem intimidating but an easy way to
+
+69
+00:03:03,530 --> 00:03:07,940
+visualize this is via a tree so it is
+
+70
+00:03:07,940 --> 00:03:10,850
+the T in AST after all so as I said
+
+71
+00:03:10,850 --> 00:03:13,280
+before each syntactic element represents
+
+72
+00:03:13,280 --> 00:03:15,170
+a node so now that you've got some
+
+73
+00:03:15,170 --> 00:03:17,239
+context on what an ast is it's the data
+
+74
+00:03:17,239 --> 00:03:19,220
+structure that we deal with when we're
+
+75
+00:03:19,220 --> 00:03:21,380
+dealing with code it's easier to
+
+76
+00:03:21,380 --> 00:03:24,590
+understand each component of Babel so
+
+77
+00:03:24,590 --> 00:03:26,299
+this split up into three very distinct
+
+78
+00:03:26,299 --> 00:03:29,390
+areas so you have the parser that turns
+
+79
+00:03:29,390 --> 00:03:32,060
+your raw code into an AST or some parses
+
+80
+00:03:32,060 --> 00:03:33,650
+it to the transformer to manipulate
+
+81
+00:03:33,650 --> 00:03:36,110
+manipulate then on to the generator to
+
+82
+00:03:36,110 --> 00:03:38,530
+turn back into code that you can execute
+
+83
+00:03:38,530 --> 00:03:41,090
+and so this graph is more to scale that
+
+84
+00:03:41,090 --> 00:03:43,220
+well most of the time in Babel is spent
+
+85
+00:03:43,220 --> 00:03:45,829
+and where the smarts and car logic
+
+86
+00:03:45,829 --> 00:03:47,740
+actually is
+
+87
+00:03:47,740 --> 00:03:50,480
+so the transformer is mostly where the
+
+88
+00:03:50,480 --> 00:03:52,790
+tricky stuff happens and in order to
+
+89
+00:03:52,790 --> 00:03:54,350
+understand the core concept of the
+
+90
+00:03:54,350 --> 00:03:58,000
+transformer is to understand traversal
+
+91
+00:03:58,000 --> 00:04:00,380
+so traversal is where you have a tree
+
+92
+00:04:00,380 --> 00:04:02,270
+represented by the red nodes and then
+
+93
+00:04:02,270 --> 00:04:03,530
+you have a visitor represented by the
+
+94
+00:04:03,530 --> 00:04:05,690
+blue node and you want to visit all
+
+95
+00:04:05,690 --> 00:04:07,459
+these nodes so basically it happened
+
+96
+00:04:07,459 --> 00:04:11,239
+like this so you would visit program the
+
+97
+00:04:11,239 --> 00:04:13,040
+variable declaration and then you keep
+
+98
+00:04:13,040 --> 00:04:15,830
+on continuing through the entire tree
+
+99
+00:04:15,830 --> 00:04:18,680
+I'm going at any points additional nodes
+
+100
+00:04:18,680 --> 00:04:20,570
+could pop into existence or no to be
+
+101
+00:04:20,570 --> 00:04:24,350
+deleted and this can be tricky so if
+
+102
+00:04:24,350 --> 00:04:26,510
+you're replacing a set of valid nodes
+
+103
+00:04:26,510 --> 00:04:30,890
+with a set of invalid nodes so to make
+
+104
+00:04:30,890 --> 00:04:32,840
+kind of this a bit easier bubble is
+
+105
+00:04:32,840 --> 00:04:34,790
+aware of JavaScript semantics so it can
+
+106
+00:04:34,790 --> 00:04:40,250
+understand what JavaScript means so what
+
+107
+00:04:40,250 --> 00:04:42,590
+does this kind of mean so here's an
+
+108
+00:04:42,590 --> 00:04:45,380
+example here you've got an array
+
+109
+00:04:45,380 --> 00:04:48,350
+destructuring assignment this this
+
+110
+00:04:48,350 --> 00:04:50,419
+should execute calculate coordinates and
+
+111
+00:04:50,419 --> 00:04:52,790
+assign the values of x and y to the 0
+
+112
+00:04:52,790 --> 00:04:54,800
+and 1 index of the result of the
+
+113
+00:04:54,800 --> 00:04:56,720
+function call so this would look
+
+114
+00:04:56,720 --> 00:04:59,990
+something like this so yeah this works
+
+115
+00:04:59,990 --> 00:05:02,330
+it's in a statement position but what if
+
+116
+00:05:02,330 --> 00:05:05,090
+we use the exact same transformer on an
+
+117
+00:05:05,090 --> 00:05:08,060
+expression so this should do the same as
+
+118
+00:05:08,060 --> 00:05:09,650
+before but the resulting value should be
+
+119
+00:05:09,650 --> 00:05:11,720
+the right hand side so it should be the
+
+120
+00:05:11,720 --> 00:05:14,539
+result of calculate coordinates so if
+
+121
+00:05:14,539 --> 00:05:16,100
+you use the exact same transformer on
+
+122
+00:05:16,100 --> 00:05:19,250
+that code it would output this which is
+
+123
+00:05:19,250 --> 00:05:20,900
+obviously invalid you're trying to
+
+124
+00:05:20,900 --> 00:05:22,370
+replace an expression with a list of
+
+125
+00:05:22,370 --> 00:05:24,710
+statements and what does this even mean
+
+126
+00:05:24,710 --> 00:05:27,440
+so JavaScript stems and expressions of
+
+127
+00:05:27,440 --> 00:05:29,900
+different things but in Babel that kind
+
+128
+00:05:29,900 --> 00:05:33,169
+of equivalent so it can tell kind of
+
+129
+00:05:33,169 --> 00:05:35,780
+what you're doing and explode that into
+
+130
+00:05:35,780 --> 00:05:38,000
+this so that's the exact same
+
+131
+00:05:38,000 --> 00:05:41,750
+transformer is so it's written only from
+
+132
+00:05:41,750 --> 00:05:44,840
+one context and it's can support many
+
+133
+00:05:44,840 --> 00:05:47,060
+just based on inferring information
+
+134
+00:05:47,060 --> 00:05:50,270
+about it and one of the other things
+
+135
+00:05:50,270 --> 00:05:52,100
+that you made so replacement is one of
+
+136
+00:05:52,100 --> 00:05:53,690
+the things you find yourself doing to
+
+137
+00:05:53,690 --> 00:05:57,530
+the tree and the other is removal so
+
+138
+00:05:57,530 --> 00:05:59,720
+here we have left + right is represented
+
+139
+00:05:59,720 --> 00:06:00,770
+by a binary expression
+
+140
+00:06:00,770 --> 00:06:03,110
+and say you won't remove the rat node so
+
+141
+00:06:03,110 --> 00:06:05,000
+typically you'd get something like this
+
+142
+00:06:05,000 --> 00:06:06,680
+scissors have left and missing a right
+
+143
+00:06:06,680 --> 00:06:11,449
+node this is invalid and so so babble
+
+144
+00:06:11,449 --> 00:06:13,370
+can tell or hey you're there's no right
+
+145
+00:06:13,370 --> 00:06:16,699
+hand side so it just places with this so
+
+146
+00:06:16,699 --> 00:06:20,060
+it's kind of powerful so that you just
+
+147
+00:06:20,060 --> 00:06:22,460
+ride it for one context and the
+
+148
+00:06:22,460 --> 00:06:24,319
+internals kind of handle it for you so
+
+149
+00:06:24,319 --> 00:06:26,960
+it reduces a lot of bugs where you know
+
+150
+00:06:26,960 --> 00:06:29,419
+repeating constantly each specific
+
+151
+00:06:29,419 --> 00:06:31,520
+scenario that something can appear in
+
+152
+00:06:31,520 --> 00:06:35,630
+and so there's a lot of applications for
+
+153
+00:06:35,630 --> 00:06:37,940
+this it's extremely wide from browser
+
+154
+00:06:37,940 --> 00:06:40,159
+compatibility to module mocking to
+
+155
+00:06:40,159 --> 00:06:42,500
+profiling so it's more or less the same
+
+156
+00:06:42,500 --> 00:06:46,060
+thing javascript in and javascript out
+
+157
+00:06:46,060 --> 00:06:48,110
+so today i'm going to be focusing on
+
+158
+00:06:48,110 --> 00:06:50,060
+four different areas translation so
+
+159
+00:06:50,060 --> 00:06:53,259
+es2015 to es 5 application optimization
+
+160
+00:06:53,259 --> 00:06:55,610
+browsing availability and a mystery use
+
+161
+00:06:55,610 --> 00:06:58,240
+case which is by and large my favorite
+
+162
+00:06:58,240 --> 00:07:02,180
+so first and foremost is translation so
+
+163
+00:07:02,180 --> 00:07:03,889
+there's this new fancy thing called es
+
+164
+00:07:03,889 --> 00:07:06,800
+2015 it adds a ton of new features from
+
+165
+00:07:06,800 --> 00:07:09,310
+arrow functions as hell calls
+
+166
+00:07:09,310 --> 00:07:11,960
+unfortunately browser support is fairly
+
+167
+00:07:11,960 --> 00:07:14,090
+poor I mean it's entirely new standard
+
+168
+00:07:14,090 --> 00:07:15,710
+these features are incredibly
+
+169
+00:07:15,710 --> 00:07:17,000
+complicated to implement in modern
+
+170
+00:07:17,000 --> 00:07:19,009
+engines and even when modern engine
+
+171
+00:07:19,009 --> 00:07:20,719
+modern browsers do support the whole
+
+172
+00:07:20,719 --> 00:07:22,610
+range of features there's always going
+
+173
+00:07:22,610 --> 00:07:23,930
+to be mosaics of the world more
+
+174
+00:07:23,930 --> 00:07:25,699
+importantly mobile browsers that rarely
+
+175
+00:07:25,699 --> 00:07:29,090
+get updated in an accessible and open
+
+176
+00:07:29,090 --> 00:07:31,069
+web it seems ridiculous how to limit
+
+177
+00:07:31,069 --> 00:07:32,740
+yourself to the latest greatest browsers
+
+178
+00:07:32,740 --> 00:07:35,150
+and so one of these new fancy features
+
+179
+00:07:35,150 --> 00:07:40,250
+is es 2015 error functions so these are
+
+180
+00:07:40,250 --> 00:07:41,750
+a different way to write functions
+
+181
+00:07:41,750 --> 00:07:43,639
+I picked this feature specifically
+
+182
+00:07:43,639 --> 00:07:45,159
+because it's seemingly straightforward
+
+183
+00:07:45,159 --> 00:07:48,199
+how to transpile this but there are kind
+
+184
+00:07:48,199 --> 00:07:50,389
+of some hitting gotchas associated with
+
+185
+00:07:50,389 --> 00:07:53,449
+where it's not perfect so these are the
+
+186
+00:07:53,449 --> 00:07:56,690
+four kind of main semantics of error
+
+187
+00:07:56,690 --> 00:07:59,330
+functions it has an implicit return for
+
+188
+00:07:59,330 --> 00:08:01,789
+expression bodies it inherits the
+
+189
+00:08:01,789 --> 00:08:03,650
+arguments and this binding so you cannot
+
+190
+00:08:03,650 --> 00:08:07,310
+new it and it has no prototype so for
+
+191
+00:08:07,310 --> 00:08:09,979
+this example it turns the multiple disk
+
+192
+00:08:09,979 --> 00:08:12,680
+into a return at this stage it's just
+
+193
+00:08:12,680 --> 00:08:14,580
+kind of just syntax handy on
+
+194
+00:08:14,580 --> 00:08:17,490
+around it so yes we can do implicit
+
+195
+00:08:17,490 --> 00:08:19,409
+return for expression bodies but what
+
+196
+00:08:19,409 --> 00:08:24,120
+about arguments in this well so we've
+
+197
+00:08:24,120 --> 00:08:27,270
+got this it's meant to reference Bob but
+
+198
+00:08:27,270 --> 00:08:29,280
+if it was just a normal function it
+
+199
+00:08:29,280 --> 00:08:31,199
+would reference this top friends so in
+
+200
+00:08:31,199 --> 00:08:34,440
+order to retain the same this binding
+
+201
+00:08:34,440 --> 00:08:37,289
+you can just simply add the decorator at
+
+202
+00:08:37,289 --> 00:08:39,450
+a reference of this and then replace the
+
+203
+00:08:39,450 --> 00:08:41,640
+this inner functions to reference that
+
+204
+00:08:41,640 --> 00:08:45,480
+temporary variable so we can inherit the
+
+205
+00:08:45,480 --> 00:08:48,149
+arguments and this bindings but now for
+
+206
+00:08:48,149 --> 00:08:48,690
+the bad news
+
+207
+00:08:48,690 --> 00:08:52,170
+what about not being able to new it so
+
+208
+00:08:52,170 --> 00:08:55,890
+in es2015 this should be illegal arrow
+
+209
+00:08:55,890 --> 00:08:57,480
+functions aren't completely synonymous
+
+210
+00:08:57,480 --> 00:08:59,730
+with normal functions I mean if it was
+
+211
+00:08:59,730 --> 00:09:01,380
+there wouldn't really be much excuse to
+
+212
+00:09:01,380 --> 00:09:03,360
+have it in the language and since we're
+
+213
+00:09:03,360 --> 00:09:04,800
+just telling our functions into normal
+
+214
+00:09:04,800 --> 00:09:08,100
+functions it works so one of the ways we
+
+215
+00:09:08,100 --> 00:09:10,829
+could do this is by adding a name to the
+
+216
+00:09:10,829 --> 00:09:12,540
+function so underscore error and then
+
+217
+00:09:12,540 --> 00:09:14,190
+replacing all new expressions with this
+
+218
+00:09:14,190 --> 00:09:16,950
+help a method that checks to save the
+
+219
+00:09:16,950 --> 00:09:22,500
+name of the function is um spa error but
+
+220
+00:09:22,500 --> 00:09:24,630
+what if you're relying on the name of an
+
+221
+00:09:24,630 --> 00:09:25,980
+error function so if you don't name
+
+222
+00:09:25,980 --> 00:09:28,199
+should be foo not an underscore error so
+
+223
+00:09:28,199 --> 00:09:31,260
+you're trying to implement specific
+
+224
+00:09:31,260 --> 00:09:33,750
+semantics by introducing bad ones as
+
+225
+00:09:33,750 --> 00:09:37,170
+well so it's kind of or you could add a
+
+226
+00:09:37,170 --> 00:09:41,490
+property and just use that and then in
+
+227
+00:09:41,490 --> 00:09:43,649
+the construct helper check to see if it
+
+228
+00:09:43,649 --> 00:09:47,120
+has the underscore our property this is
+
+229
+00:09:47,120 --> 00:09:49,920
+it's kind of crap so in the first
+
+230
+00:09:49,920 --> 00:09:51,839
+example we're adding the wrong name to
+
+231
+00:09:51,839 --> 00:09:54,120
+the function and in the second we added
+
+232
+00:09:54,120 --> 00:09:56,850
+a property even if this was practical it
+
+233
+00:09:56,850 --> 00:09:58,380
+only really affects code that we've
+
+234
+00:09:58,380 --> 00:10:01,110
+compiled so all third-party code that
+
+235
+00:10:01,110 --> 00:10:03,649
+would execute it it would work normally
+
+236
+00:10:03,649 --> 00:10:07,430
+so it's kind of iffy we can't completely
+
+237
+00:10:07,430 --> 00:10:09,959
+replicate at least not practically some
+
+238
+00:10:09,959 --> 00:10:12,390
+of these features and semantics so we
+
+239
+00:10:12,390 --> 00:10:16,470
+can't not allow people to do it at least
+
+240
+00:10:16,470 --> 00:10:19,699
+not practically what about no prototype
+
+241
+00:10:19,699 --> 00:10:22,440
+so as I said before our functions aren't
+
+242
+00:10:22,440 --> 00:10:26,310
+normal functions they so they have no
+
+243
+00:10:26,310 --> 00:10:28,110
+prototype so you can't use them
+
+244
+00:10:28,110 --> 00:10:30,660
+constructors so since we just turn them
+
+245
+00:10:30,660 --> 00:10:32,399
+into normal functions how could we get
+
+246
+00:10:32,399 --> 00:10:35,279
+the same behavior so we need some way to
+
+247
+00:10:35,279 --> 00:10:37,529
+mark it as an arrow function in this
+
+248
+00:10:37,529 --> 00:10:39,660
+case we add a property and then we
+
+249
+00:10:39,660 --> 00:10:41,730
+change all references to just dot
+
+250
+00:10:41,730 --> 00:10:44,430
+prototype to use this helper method that
+
+251
+00:10:44,430 --> 00:10:46,079
+checks see if its function if it is
+
+252
+00:10:46,079 --> 00:10:48,420
+returned undefined otherwise just return
+
+253
+00:10:48,420 --> 00:10:52,050
+the prototype um this is problematic
+
+254
+00:10:52,050 --> 00:10:54,089
+since Java scripts of dynamic language
+
+255
+00:10:54,089 --> 00:10:57,390
+so it could be like this it's kind of
+
+256
+00:10:57,390 --> 00:11:00,209
+difficult to catch so this means that
+
+257
+00:11:00,209 --> 00:11:02,220
+you have to wrap every single property
+
+258
+00:11:02,220 --> 00:11:04,500
+access computed property access to
+
+259
+00:11:04,500 --> 00:11:06,450
+determine whether or not it's ever going
+
+260
+00:11:06,450 --> 00:11:09,899
+to access prototype so you end up with
+
+261
+00:11:09,899 --> 00:11:11,430
+something like this
+
+262
+00:11:11,430 --> 00:11:12,779
+it's going to add a lot of additional
+
+263
+00:11:12,779 --> 00:11:15,360
+overhead especially in hot code where
+
+264
+00:11:15,360 --> 00:11:17,850
+performance is extremely critical it's
+
+265
+00:11:17,850 --> 00:11:20,850
+not really ideal you're really
+
+266
+00:11:20,850 --> 00:11:23,310
+implementing a lot of native JavaScript
+
+267
+00:11:23,310 --> 00:11:27,000
+features that are kind of unnecessary so
+
+268
+00:11:27,000 --> 00:11:29,880
+this is even worse the main wrapping or
+
+269
+00:11:29,880 --> 00:11:31,290
+code that we think is dynamic with
+
+270
+00:11:31,290 --> 00:11:33,300
+helpers so at this point were like a
+
+271
+00:11:33,300 --> 00:11:35,550
+little engine that could you can almost
+
+272
+00:11:35,550 --> 00:11:37,470
+get there you're so close but there are
+
+273
+00:11:37,470 --> 00:11:38,640
+some things that you can't really
+
+274
+00:11:38,640 --> 00:11:41,310
+practically implement using just a s5
+
+275
+00:11:41,310 --> 00:11:42,839
+especially if you want really good
+
+276
+00:11:42,839 --> 00:11:45,930
+performance so what is this mean for the
+
+277
+00:11:45,930 --> 00:11:47,519
+average developer that's currently
+
+278
+00:11:47,519 --> 00:11:49,709
+transpiring what would the migration
+
+279
+00:11:49,709 --> 00:11:51,930
+path be like from transpiled es6 to
+
+280
+00:11:51,930 --> 00:11:55,459
+normal es6 it'll likely be smooth but
+
+281
+00:11:55,459 --> 00:11:57,870
+you know like if you're relying on some
+
+282
+00:11:57,870 --> 00:12:01,320
+of these unspecified semantics split
+
+283
+00:12:01,320 --> 00:12:02,640
+that the transpiler
+
+284
+00:12:02,640 --> 00:12:05,519
+will kind of destroy then you may you're
+
+285
+00:12:05,519 --> 00:12:07,380
+likely to run into issues but it's
+
+286
+00:12:07,380 --> 00:12:08,519
+better than nothing
+
+287
+00:12:08,519 --> 00:12:12,390
+and so following this kind of want to
+
+288
+00:12:12,390 --> 00:12:14,850
+emphasize this point where you shouldn't
+
+289
+00:12:14,850 --> 00:12:16,170
+be using transpilers to learn new
+
+290
+00:12:16,170 --> 00:12:19,410
+language features you can definitely
+
+291
+00:12:19,410 --> 00:12:21,209
+like compare the output but if you're
+
+292
+00:12:21,209 --> 00:12:24,720
+just basing all of your knowledge on new
+
+293
+00:12:24,720 --> 00:12:26,070
+language features on hey this is
+
+294
+00:12:26,070 --> 00:12:27,839
+equivalent in es5 so it's exactly the
+
+295
+00:12:27,839 --> 00:12:29,339
+same then you're likely going to be
+
+296
+00:12:29,339 --> 00:12:30,660
+misinformed since there's a lot of
+
+297
+00:12:30,660 --> 00:12:32,670
+hidden semantics that can't properly be
+
+298
+00:12:32,670 --> 00:12:36,810
+replicated and even like stuff like
+
+299
+00:12:36,810 --> 00:12:38,190
+referencing a variable can drastically
+
+300
+00:12:38,190 --> 00:12:40,440
+change the way that the
+
+301
+00:12:40,440 --> 00:12:44,070
+it is generated and so yeah it's it's
+
+302
+00:12:44,070 --> 00:12:46,770
+really contextual so you shouldn't
+
+303
+00:12:46,770 --> 00:12:50,280
+really be relying on transpilers to
+
+304
+00:12:50,280 --> 00:12:51,690
+learn your language features so what
+
+305
+00:12:51,690 --> 00:12:54,890
+about something a little more practical
+
+306
+00:12:54,890 --> 00:12:57,690
+application optimization at face value
+
+307
+00:12:57,690 --> 00:13:00,630
+this may seem like an eclaim but allow
+
+308
+00:13:00,630 --> 00:13:01,440
+me to elaborate
+
+309
+00:13:01,440 --> 00:13:03,360
+so the preface is so I have to talk
+
+310
+00:13:03,360 --> 00:13:06,750
+about compile time versus run time so
+
+311
+00:13:06,750 --> 00:13:09,270
+when you're compiling your code it so at
+
+312
+00:13:09,270 --> 00:13:11,280
+compile time it's only compiling your
+
+313
+00:13:11,280 --> 00:13:12,930
+code that hasn't even been executed yet
+
+314
+00:13:12,930 --> 00:13:15,540
+and run time is when your code is
+
+315
+00:13:15,540 --> 00:13:16,950
+actually running so when it's executing
+
+316
+00:13:16,950 --> 00:13:18,660
+and you simply know different things at
+
+317
+00:13:18,660 --> 00:13:20,490
+different times so when you're compiling
+
+318
+00:13:20,490 --> 00:13:22,590
+the code you can determine that Square
+
+319
+00:13:22,590 --> 00:13:24,780
+is called with a two literal and then
+
+320
+00:13:24,780 --> 00:13:26,610
+and then Square is called the M with
+
+321
+00:13:26,610 --> 00:13:29,970
+just a variable at runtime you can't
+
+322
+00:13:29,970 --> 00:13:32,070
+determine the square function can't
+
+323
+00:13:32,070 --> 00:13:33,510
+determine what it's being called with
+
+324
+00:13:33,510 --> 00:13:34,740
+since it only cares about the actual
+
+325
+00:13:34,740 --> 00:13:36,630
+value not kind of where it came from or
+
+326
+00:13:36,630 --> 00:13:39,330
+how it was represented so this is
+
+327
+00:13:39,330 --> 00:13:40,830
+extremely useful so we can determine
+
+328
+00:13:40,830 --> 00:13:44,510
+what the exact intent of the code was
+
+329
+00:13:44,510 --> 00:13:47,610
+this is so what are some examples of
+
+330
+00:13:47,610 --> 00:13:50,790
+this so a big one is reiax
+
+331
+00:13:50,790 --> 00:13:53,010
+you may have heard of it it has a neat
+
+332
+00:13:53,010 --> 00:13:58,410
+feature or well feature JSX which is xml
+
+333
+00:13:58,410 --> 00:14:00,270
+like syntax you either love it or hate
+
+334
+00:14:00,270 --> 00:14:00,540
+it
+
+335
+00:14:00,540 --> 00:14:02,910
+it is however good for one thing which
+
+336
+00:14:02,910 --> 00:14:05,160
+is writing additional language semantics
+
+337
+00:14:05,160 --> 00:14:06,720
+now traditionally it's really just being
+
+338
+00:14:06,720 --> 00:14:08,280
+syntax handy so it's been like a
+
+339
+00:14:08,280 --> 00:14:10,350
+one-to-one mapping to your function
+
+340
+00:14:10,350 --> 00:14:14,070
+calls but in Reax 0.14 JSX elements are
+
+341
+00:14:14,070 --> 00:14:16,560
+treated as constant value types so if it
+
+342
+00:14:16,560 --> 00:14:18,030
+looks the same then we'll always return
+
+343
+00:14:18,030 --> 00:14:19,560
+the same value so whenever you call
+
+344
+00:14:19,560 --> 00:14:21,860
+render it will return the exact same
+
+345
+00:14:21,860 --> 00:14:25,320
+instance so this is extremely important
+
+346
+00:14:25,320 --> 00:14:27,270
+for performance since why you're
+
+347
+00:14:27,270 --> 00:14:28,860
+constantly doing more work than you have
+
+348
+00:14:28,860 --> 00:14:31,770
+to so this would be turn in something
+
+349
+00:14:31,770 --> 00:14:33,210
+like this so it'd be hosted to the
+
+350
+00:14:33,210 --> 00:14:35,580
+highest paper that could and then just
+
+351
+00:14:35,580 --> 00:14:37,650
+return free would be done in the render
+
+352
+00:14:37,650 --> 00:14:40,200
+method so each time you called through a
+
+353
+00:14:40,200 --> 00:14:43,040
+render story it would return the same
+
+354
+00:14:43,040 --> 00:14:46,530
+element so this works for immutable
+
+355
+00:14:46,530 --> 00:14:48,780
+elements but this enough to be applied
+
+356
+00:14:48,780 --> 00:14:51,330
+to readable ones as well so here the
+
+357
+00:14:51,330 --> 00:14:53,889
+react the JSX element you
+
+358
+00:14:53,889 --> 00:14:55,480
+as references the fruit and text
+
+359
+00:14:55,480 --> 00:14:58,239
+variables and so that can be wasted to
+
+360
+00:14:58,239 --> 00:15:02,549
+the create component function like so um
+
+361
+00:15:02,549 --> 00:15:05,040
+and so the core concept is just
+
+362
+00:15:05,040 --> 00:15:07,720
+pre-processing and making the JavaScript
+
+363
+00:15:07,720 --> 00:15:10,269
+engine do less since doing less is
+
+364
+00:15:10,269 --> 00:15:12,669
+generally faster and JavaScript engines
+
+365
+00:15:12,669 --> 00:15:14,949
+have no way to infer this kind of
+
+366
+00:15:14,949 --> 00:15:18,009
+behavior you have to tell it basically
+
+367
+00:15:18,009 --> 00:15:21,059
+using this kind of techniques
+
+368
+00:15:21,059 --> 00:15:25,359
+another example is M Bo so amber uses
+
+369
+00:15:25,359 --> 00:15:27,309
+HTML bars now you may want to use these
+
+370
+00:15:27,309 --> 00:15:29,230
+embedded in files in like stuff like
+
+371
+00:15:29,230 --> 00:15:31,569
+tests it seems silly to have to
+
+372
+00:15:31,569 --> 00:15:33,790
+constantly compile this every single
+
+373
+00:15:33,790 --> 00:15:35,379
+time the credits run since this is
+
+374
+00:15:35,379 --> 00:15:39,639
+static and like it's constant so there's
+
+375
+00:15:39,639 --> 00:15:42,309
+no reason to really be making the client
+
+376
+00:15:42,309 --> 00:15:44,049
+to it each and every time so you should
+
+377
+00:15:44,049 --> 00:15:46,089
+be doing it when the when you're
+
+378
+00:15:46,089 --> 00:15:47,319
+processing when you're building your
+
+379
+00:15:47,319 --> 00:15:50,429
+JavaScript and so you can determine that
+
+380
+00:15:50,429 --> 00:15:53,619
+tagged the the template and then compile
+
+381
+00:15:53,619 --> 00:15:55,749
+it when you're pre processing it into
+
+382
+00:15:55,749 --> 00:15:57,160
+something like that where the comment
+
+383
+00:15:57,160 --> 00:16:02,429
+represents the actual template contents
+
+384
+00:16:02,429 --> 00:16:04,899
+so the main points that I want to take
+
+385
+00:16:04,899 --> 00:16:07,660
+away from this you shouldn't be relying
+
+386
+00:16:07,660 --> 00:16:09,669
+on pre-processing for functionality so
+
+387
+00:16:09,669 --> 00:16:12,449
+like this type of stuff should purely be
+
+388
+00:16:12,449 --> 00:16:14,889
+supplementary instead of additive so it
+
+389
+00:16:14,889 --> 00:16:17,079
+shouldn't be it should it shouldn't
+
+390
+00:16:17,079 --> 00:16:19,029
+really be changing the way that the code
+
+391
+00:16:19,029 --> 00:16:21,629
+works it should just making it faster or
+
+392
+00:16:21,629 --> 00:16:23,889
+removing things that kind of don't
+
+393
+00:16:23,889 --> 00:16:25,360
+matter since your code may not care
+
+394
+00:16:25,360 --> 00:16:27,850
+about it and you're the only one who can
+
+395
+00:16:27,850 --> 00:16:29,769
+make assumptions about your code the
+
+396
+00:16:29,769 --> 00:16:31,449
+JavaScript engine copy more lenient it
+
+397
+00:16:31,449 --> 00:16:33,970
+can't not do things if you tell it to do
+
+398
+00:16:33,970 --> 00:16:35,259
+something it has to do it so you have to
+
+399
+00:16:35,259 --> 00:16:39,009
+tell it to do less so the next item is
+
+400
+00:16:39,009 --> 00:16:43,989
+browsing a pad ability it's a basically
+
+401
+00:16:43,989 --> 00:16:45,610
+it's just trying to patch broken browser
+
+402
+00:16:45,610 --> 00:16:48,009
+implementations of certain pages so this
+
+403
+00:16:48,009 --> 00:16:49,929
+isn't relevant really in newer browsers
+
+404
+00:16:49,929 --> 00:16:52,629
+but there's some things that in older
+
+405
+00:16:52,629 --> 00:16:54,809
+browsers that are just completely broken
+
+406
+00:16:54,809 --> 00:16:58,269
+sir Internet Explorer 8 who would have
+
+407
+00:16:58,269 --> 00:16:59,139
+thought this would've been one of the
+
+408
+00:16:59,139 --> 00:17:03,519
+browsers that was broken so there's an
+
+409
+00:17:03,519 --> 00:17:04,809
+issue with named function expressions
+
+410
+00:17:04,809 --> 00:17:06,610
+here we declare a variable with the
+
+411
+00:17:06,610 --> 00:17:07,100
+function
+
+412
+00:17:07,100 --> 00:17:10,730
+Russian note that it is named and then
+
+413
+00:17:10,730 --> 00:17:13,039
+online to that it's leaking out so it's
+
+414
+00:17:13,039 --> 00:17:14,360
+kinda been treated as a function
+
+415
+00:17:14,360 --> 00:17:16,870
+declaration and then on line three it's
+
+416
+00:17:16,870 --> 00:17:19,069
+trading two different bindings with two
+
+417
+00:17:19,069 --> 00:17:26,209
+different objects what so it HAP what's
+
+418
+00:17:26,209 --> 00:17:29,840
+the solution you automate it you fix it
+
+419
+00:17:29,840 --> 00:17:31,640
+so this is a babel plugin that will
+
+420
+00:17:31,640 --> 00:17:33,710
+change or name function expressions into
+
+421
+00:17:33,710 --> 00:17:35,750
+an immediately invoked function that
+
+422
+00:17:35,750 --> 00:17:37,850
+turns the function into a declaration
+
+423
+00:17:37,850 --> 00:17:40,850
+then returns that declaration so this
+
+424
+00:17:40,850 --> 00:17:42,169
+may is somewhat comprehend it actually
+
+425
+00:17:42,169 --> 00:17:44,750
+is but this is basically what it does it
+
+426
+00:17:44,750 --> 00:17:48,440
+turns the the function the name function
+
+427
+00:17:48,440 --> 00:17:50,090
+expression into this emailing invoked
+
+428
+00:17:50,090 --> 00:17:51,980
+function a return turns into a function
+
+429
+00:17:51,980 --> 00:17:53,150
+declaration than then returns our
+
+430
+00:17:53,150 --> 00:17:55,789
+function declaration so that basically
+
+431
+00:17:55,789 --> 00:17:59,570
+fixes the buggy behavior of insects per
+
+432
+00:17:59,570 --> 00:18:03,770
+eight so the last mystery application of
+
+433
+00:18:03,770 --> 00:18:06,650
+javascript transformation is a mirja
+
+434
+00:18:06,650 --> 00:18:09,559
+fication I have no idea if that's an
+
+435
+00:18:09,559 --> 00:18:12,350
+actual word but I think it is now
+
+436
+00:18:12,350 --> 00:18:16,840
+so is 2015 it has Unicode point escapes
+
+437
+00:18:16,840 --> 00:18:19,669
+so you can do stuff like this where the
+
+438
+00:18:19,669 --> 00:18:22,450
+variable declared our ID is a Unicode
+
+439
+00:18:22,450 --> 00:18:25,630
+character so what does this really mean
+
+440
+00:18:25,630 --> 00:18:30,799
+emojis so about this foreign code I took
+
+441
+00:18:30,799 --> 00:18:34,130
+this from the jQuery sauce trimming
+
+442
+00:18:34,130 --> 00:18:36,530
+letters and what can we do with this so
+
+443
+00:18:36,530 --> 00:18:40,220
+we can convert this to this now here all
+
+444
+00:18:40,220 --> 00:18:42,710
+the identifiers are escapes but have no
+
+445
+00:18:42,710 --> 00:18:45,740
+fear they do represent emoji so unescape
+
+446
+00:18:45,740 --> 00:18:56,940
+s-- it looks like this
+
+447
+00:18:56,950 --> 00:19:00,740
+beautiful so don't even need comments at
+
+448
+00:19:00,740 --> 00:19:02,090
+this stage you can just represent the
+
+449
+00:19:02,090 --> 00:19:04,120
+intent of your variable is using emoji
+
+450
+00:19:04,120 --> 00:19:09,470
+like so how can you do this well I made
+
+451
+00:19:09,470 --> 00:19:13,060
+an NPM package you can install it and
+
+452
+00:19:13,060 --> 00:19:17,990
+use it probably won't run in browsers
+
+453
+00:19:17,990 --> 00:19:19,970
+since not many support or I'm not sure
+
+454
+00:19:19,970 --> 00:19:21,260
+if there are any that's what Unicode
+
+455
+00:19:21,260 --> 00:19:24,140
+point escapes for identifiers yet but
+
+456
+00:19:24,140 --> 00:19:31,720
+the future so Java Script transformation
+
+457
+00:19:31,720 --> 00:19:36,080
+JavaScript in JavaScript out hopefully
+
+458
+00:19:36,080 --> 00:19:38,270
+by now kind of there's a lot of
+
+459
+00:19:38,270 --> 00:19:40,010
+potential for extremely high quality
+
+460
+00:19:40,010 --> 00:19:42,650
+tooling that not only evolves quickly
+
+461
+00:19:42,650 --> 00:19:45,140
+but it's very stable that keeps up with
+
+462
+00:19:45,140 --> 00:19:47,210
+the rapid pace of the web and as new
+
+463
+00:19:47,210 --> 00:19:53,030
+features implemented yes sir that's it
+

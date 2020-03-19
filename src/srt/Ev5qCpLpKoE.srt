@@ -1,0 +1,1141 @@
+1
+00:00:11,240 --> 00:00:17,430
+
+hello hi welcome to my talk it's very
+
+2
+00:00:17,430 --> 00:00:20,789
+loud there we go better still pretty
+
+3
+00:00:20,789 --> 00:00:24,269
+loud so my talk is called untitled thank
+
+4
+00:00:24,269 --> 00:00:26,609
+you all for coming here no just kidding
+
+5
+00:00:26,609 --> 00:00:28,380
+it's called breaking the rules mitering
+
+6
+00:00:28,380 --> 00:00:32,669
+your node application and my name is ron
+
+7
+00:00:32,669 --> 00:00:36,239
+i am from company called upbeat and we
+
+8
+00:00:36,239 --> 00:00:39,570
+do monitoring and this talk sort of came
+
+9
+00:00:39,570 --> 00:00:41,520
+out of some of the recent work we've
+
+10
+00:00:41,520 --> 00:00:44,309
+been doing with node and specifically
+
+11
+00:00:44,309 --> 00:00:47,160
+monitoring in node so it's gonna talk
+
+12
+00:00:47,160 --> 00:00:49,980
+about how you can do monitoring in node
+
+13
+00:00:49,980 --> 00:00:52,920
+in sort of a general way hopefully is
+
+14
+00:00:52,920 --> 00:00:54,180
+going to be interesting and hopefully
+
+15
+00:00:54,180 --> 00:00:56,280
+we're going to be breaking some some of
+
+16
+00:00:56,280 --> 00:01:00,090
+the rules a bit m so the goal here is
+
+17
+00:01:00,090 --> 00:01:02,760
+and i want to show you how you can get
+
+18
+00:01:02,760 --> 00:01:06,150
+out of the box monitoring for your web
+
+19
+00:01:06,150 --> 00:01:09,600
+application in node and so our box
+
+20
+00:01:09,600 --> 00:01:12,299
+monitoring for me means that i can see
+
+21
+00:01:12,299 --> 00:01:14,630
+how long my endpoints are taking to
+
+22
+00:01:14,630 --> 00:01:17,939
+respond but I can also see how long time
+
+23
+00:01:17,939 --> 00:01:20,460
+I'm spending in each endpoint talking to
+
+24
+00:01:20,460 --> 00:01:22,979
+Mongo Mongo DB for example how long time
+
+25
+00:01:22,979 --> 00:01:25,680
+I'm taking it how long time it takes to
+
+26
+00:01:25,680 --> 00:01:28,140
+talk to Redis how long time I'm spending
+
+27
+00:01:28,140 --> 00:01:30,060
+rendering templates etc and I want this
+
+28
+00:01:30,060 --> 00:01:33,270
+/ end point but further than that I
+
+29
+00:01:33,270 --> 00:01:35,400
+wanted to be out of the box so that I
+
+30
+00:01:35,400 --> 00:01:36,720
+don't have to go and change my
+
+31
+00:01:36,720 --> 00:01:37,979
+application very much to get this
+
+32
+00:01:37,979 --> 00:01:40,290
+monitoring so I wanted to work in a way
+
+33
+00:01:40,290 --> 00:01:42,270
+that I can just request a module and
+
+34
+00:01:42,270 --> 00:01:43,649
+that basically gives me out of the box
+
+35
+00:01:43,649 --> 00:01:47,960
+monitoring so how do you do that so
+
+36
+00:01:47,960 --> 00:01:52,320
+first i will introduce a bunch of a
+
+37
+00:01:52,320 --> 00:01:57,689
+small little things primitives and so
+
+38
+00:01:57,689 --> 00:02:00,090
+this is a trace bookkeeper it's very
+
+39
+00:02:00,090 --> 00:02:02,610
+very simple you can call call start and
+
+40
+00:02:02,610 --> 00:02:04,860
+end on a trace bookkeeper and basically
+
+41
+00:02:04,860 --> 00:02:07,500
+it will create a new trees if it doesn't
+
+42
+00:02:07,500 --> 00:02:09,509
+already have one with this name that you
+
+43
+00:02:09,509 --> 00:02:12,810
+gave it then call start on it and then
+
+44
+00:02:12,810 --> 00:02:13,710
+you can in the tree
+
+45
+00:02:13,710 --> 00:02:17,370
+ace em with a specific name so that's
+
+46
+00:02:17,370 --> 00:02:19,770
+pretty simple and I want to keep one of
+
+47
+00:02:19,770 --> 00:02:22,200
+these trace bookkeepers around for each
+
+48
+00:02:22,200 --> 00:02:26,640
+request to my application trace looks
+
+49
+00:02:26,640 --> 00:02:30,510
+like this and so when you do monitoring
+
+50
+00:02:30,510 --> 00:02:33,560
+a lot of stuff goes on at the same time
+
+51
+00:02:33,560 --> 00:02:37,350
+how do you measure time spent in an
+
+52
+00:02:37,350 --> 00:02:40,110
+application it's that can be kind of
+
+53
+00:02:40,110 --> 00:02:42,780
+tricky so let's say you have two Mongol
+
+54
+00:02:42,780 --> 00:02:44,850
+crew is going on at the same time you
+
+55
+00:02:44,850 --> 00:02:46,410
+doesn't really make sense to sort of add
+
+56
+00:02:46,410 --> 00:02:47,880
+the time up that each each one of them
+
+57
+00:02:47,880 --> 00:02:51,630
+spent so the the semantics around how
+
+58
+00:02:51,630 --> 00:02:52,950
+you actually how you actually measure
+
+59
+00:02:52,950 --> 00:02:54,780
+time when stuff happens concurrently
+
+60
+00:02:54,780 --> 00:02:56,760
+it's kind of interesting and what this
+
+61
+00:02:56,760 --> 00:02:59,370
+trace thing we'll do is that let's say
+
+62
+00:02:59,370 --> 00:03:01,830
+you have to Mongo queries that start
+
+63
+00:03:01,830 --> 00:03:03,780
+approximate at the same time but one
+
+64
+00:03:03,780 --> 00:03:06,540
+ends a way later than the other one then
+
+65
+00:03:06,540 --> 00:03:10,830
+with this trace a primitive here we're
+
+66
+00:03:10,830 --> 00:03:12,450
+going to count the time from the first
+
+67
+00:03:12,450 --> 00:03:14,970
+one started to the last one ended hey
+
+68
+00:03:14,970 --> 00:03:17,820
+what it also does is it can sort of
+
+69
+00:03:17,820 --> 00:03:21,420
+measure consecutive traces so if you
+
+70
+00:03:21,420 --> 00:03:23,670
+start a mockery and then end it it'll
+
+71
+00:03:23,670 --> 00:03:26,310
+take that time and summit with the next
+
+72
+00:03:26,310 --> 00:03:30,420
+Mongol crew you're doing so if so if you
+
+73
+00:03:30,420 --> 00:03:32,070
+have mon crews are not overlapping it
+
+74
+00:03:32,070 --> 00:03:34,290
+will some the time for each mockery
+
+75
+00:03:34,290 --> 00:03:37,530
+together okay so there was some
+
+76
+00:03:37,530 --> 00:03:40,080
+low-level all of the stuff and sorry
+
+77
+00:03:40,080 --> 00:03:41,730
+that was some primitives I think one
+
+78
+00:03:41,730 --> 00:03:43,320
+more thing to notice here is that I'm
+
+79
+00:03:43,320 --> 00:03:45,900
+using the high resolution timer and if
+
+80
+00:03:45,900 --> 00:03:48,540
+you're doing timing a sort of monitoring
+
+81
+00:03:48,540 --> 00:03:49,710
+like this you should be using the high
+
+82
+00:03:49,710 --> 00:03:51,660
+resolution high resolution timer because
+
+83
+00:03:51,660 --> 00:03:54,480
+it's much more a low-level then then
+
+84
+00:03:54,480 --> 00:03:56,100
+breaking out dates and started starting
+
+85
+00:03:56,100 --> 00:03:59,880
+to compare them and yeah okay so let's
+
+86
+00:03:59,880 --> 00:04:02,160
+not bring some rules first we want to
+
+87
+00:04:02,160 --> 00:04:05,190
+hook into HTTP server ed listener that's
+
+88
+00:04:05,190 --> 00:04:07,320
+part of the reason why we do that is
+
+89
+00:04:07,320 --> 00:04:09,600
+part of the idea that it should be
+
+90
+00:04:09,600 --> 00:04:11,210
+something that works out of the box and
+
+91
+00:04:11,210 --> 00:04:13,560
+so what I'm actually going to do is I'm
+
+92
+00:04:13,560 --> 00:04:18,390
+gonna monkey patch a the ed listener a
+
+93
+00:04:18,390 --> 00:04:22,710
+method on HTTP server and there's a lot
+
+94
+00:04:22,710 --> 00:04:25,770
+of stuff going on here but what you
+
+95
+00:04:25,770 --> 00:04:27,450
+actually need to sort of
+
+96
+00:04:27,450 --> 00:04:31,110
+is that we will call on request instead
+
+97
+00:04:31,110 --> 00:04:34,350
+of the original call back and we'll
+
+98
+00:04:34,350 --> 00:04:37,050
+we'll start a new trace bookkeeper for
+
+99
+00:04:37,050 --> 00:04:39,120
+this particular request will set it on
+
+100
+00:04:39,120 --> 00:04:40,860
+the request and once the request is
+
+101
+00:04:40,860 --> 00:04:43,950
+finished we extract the route name from
+
+102
+00:04:43,950 --> 00:04:46,200
+the request and we call this mythical
+
+103
+00:04:46,200 --> 00:04:51,020
+request finished so this obviously
+
+104
+00:04:51,020 --> 00:04:52,950
+requires that you're building an Express
+
+105
+00:04:52,950 --> 00:04:54,900
+application but you can do the same
+
+106
+00:04:54,900 --> 00:04:56,130
+thing for most of the other frameworks
+
+107
+00:04:56,130 --> 00:05:06,300
+out there yes okay now this was sort of
+
+108
+00:05:06,300 --> 00:05:08,700
+our hook into the request response cycle
+
+109
+00:05:08,700 --> 00:05:10,620
+now let's actually start measuring some
+
+110
+00:05:10,620 --> 00:05:13,470
+code so this is an example of how you
+
+111
+00:05:13,470 --> 00:05:16,620
+could be calling Redis talking to radis
+
+112
+00:05:16,620 --> 00:05:18,030
+this could happen anywhere in your
+
+113
+00:05:18,030 --> 00:05:21,390
+application and it's pretty standard so
+
+114
+00:05:21,390 --> 00:05:23,790
+you try to get a key from ritas and when
+
+115
+00:05:23,790 --> 00:05:25,110
+you when you get it you can log it out
+
+116
+00:05:25,110 --> 00:05:27,510
+to the console so how would we measure
+
+117
+00:05:27,510 --> 00:05:28,890
+the time it actually took to get this
+
+118
+00:05:28,890 --> 00:05:31,530
+key from ritas this is one way to do it
+
+119
+00:05:31,530 --> 00:05:34,440
+you can see that i'm using something
+
+120
+00:05:34,440 --> 00:05:36,240
+called trace code here and i gave trace
+
+121
+00:05:36,240 --> 00:05:39,690
+code is the name that i'm passing in
+
+122
+00:05:39,690 --> 00:05:42,060
+this time it's just ready to get sort of
+
+123
+00:05:42,060 --> 00:05:44,430
+indicates what I'm what I'm currently
+
+124
+00:05:44,430 --> 00:05:47,060
+trying to measure and you see that the
+
+125
+00:05:47,060 --> 00:05:49,950
+trace code will return a function that
+
+126
+00:05:49,950 --> 00:05:53,340
+then wraps the original call back so
+
+127
+00:05:53,340 --> 00:05:55,320
+when I call trace code it'll start the
+
+128
+00:05:55,320 --> 00:05:57,270
+timer and then when the callback is
+
+129
+00:05:57,270 --> 00:05:58,590
+called I'll stop the timer and then call
+
+130
+00:05:58,590 --> 00:06:02,580
+the original call back you could monkey
+
+131
+00:06:02,580 --> 00:06:03,960
+patch the register library if you wanted
+
+132
+00:06:03,960 --> 00:06:06,330
+to get this out of the box I'm going to
+
+133
+00:06:06,330 --> 00:06:08,580
+leave that as an exercise but it's quite
+
+134
+00:06:08,580 --> 00:06:12,240
+simple to do and you can see what trace
+
+135
+00:06:12,240 --> 00:06:15,030
+code looks like here so it's also quite
+
+136
+00:06:15,030 --> 00:06:18,330
+simple M will call stop on the current
+
+137
+00:06:18,330 --> 00:06:19,980
+on the book key before the current
+
+138
+00:06:19,980 --> 00:06:22,950
+request and when the when trace cold is
+
+139
+00:06:22,950 --> 00:06:25,440
+called and then we return this function
+
+140
+00:06:25,440 --> 00:06:27,690
+and that will wrap the original call
+
+141
+00:06:27,690 --> 00:06:29,670
+back and call end on the on the
+
+142
+00:06:29,670 --> 00:06:32,040
+bookkeeper for this for this name so you
+
+143
+00:06:32,040 --> 00:06:33,270
+might think this actually doesn't work
+
+144
+00:06:33,270 --> 00:06:34,560
+because there's something missing here
+
+145
+00:06:34,560 --> 00:06:36,900
+and then you will be right the request
+
+146
+00:06:36,900 --> 00:06:40,680
+is missing so what's going on here
+
+147
+00:06:40,680 --> 00:06:43,770
+is we have a request that comes in
+
+148
+00:06:43,770 --> 00:06:48,330
+through our HTTP server and we want to
+
+149
+00:06:48,330 --> 00:06:49,889
+measure some code that happens somewhere
+
+150
+00:06:49,889 --> 00:06:51,750
+else in my application and connect it to
+
+151
+00:06:51,750 --> 00:06:53,550
+this request because I'm not per request
+
+152
+00:06:53,550 --> 00:06:56,639
+oh poor endpoint measurements so how do
+
+153
+00:06:56,639 --> 00:06:59,550
+you do that that's pretty difficult
+
+154
+00:06:59,550 --> 00:07:02,759
+because a lot of stuff can go on in
+
+155
+00:07:02,759 --> 00:07:04,590
+between the request to the web server
+
+156
+00:07:04,590 --> 00:07:06,449
+and you actually measure measuring some
+
+157
+00:07:06,449 --> 00:07:09,419
+code somewhere in your application so
+
+158
+00:07:09,419 --> 00:07:12,900
+connecting measurements to a request is
+
+159
+00:07:12,900 --> 00:07:17,280
+not that simple um you have event loop
+
+160
+00:07:17,280 --> 00:07:19,320
+chicks and you have a lot of requests
+
+161
+00:07:19,320 --> 00:07:22,979
+going on at the same time so there was
+
+162
+00:07:22,979 --> 00:07:25,050
+this wonderful API called create a sink
+
+163
+00:07:25,050 --> 00:07:28,430
+listener and the quote there's from the
+
+164
+00:07:28,430 --> 00:07:32,729
+documentation and what this does is it
+
+165
+00:07:32,729 --> 00:07:34,650
+basically gives us a hook into the event
+
+166
+00:07:34,650 --> 00:07:37,110
+loop so that means we get a call back
+
+167
+00:07:37,110 --> 00:07:38,940
+just before anything is put on the event
+
+168
+00:07:38,940 --> 00:07:42,810
+loop and we get a call back just after
+
+169
+00:07:42,810 --> 00:07:45,300
+something is about to start that was on
+
+170
+00:07:45,300 --> 00:07:48,060
+the event you and just before we put
+
+171
+00:07:48,060 --> 00:07:49,320
+something on your win loop we get the
+
+172
+00:07:49,320 --> 00:07:51,659
+option to store some data that will then
+
+173
+00:07:51,659 --> 00:07:53,940
+be restored when that thing that we're
+
+174
+00:07:53,940 --> 00:07:55,349
+about to put on the event loop actually
+
+175
+00:07:55,349 --> 00:07:59,099
+runs and do we use using this you can
+
+176
+00:07:59,099 --> 00:08:02,960
+actually pass down the request from the
+
+177
+00:08:02,960 --> 00:08:06,150
+from where the request from where we
+
+178
+00:08:06,150 --> 00:08:08,849
+hook into the HP server all the way down
+
+179
+00:08:08,849 --> 00:08:12,750
+to where we want to trace our code so
+
+180
+00:08:12,750 --> 00:08:14,099
+it's like a primitive to actually allow
+
+181
+00:08:14,099 --> 00:08:17,820
+us to pass a context between a sinking
+
+182
+00:08:17,820 --> 00:08:20,130
+ticks in node that's wonderful that's
+
+183
+00:08:20,130 --> 00:08:23,009
+exactly what we need unfortunately it
+
+184
+00:08:23,009 --> 00:08:25,349
+only live in node for very very short
+
+185
+00:08:25,349 --> 00:08:29,330
+period of time that's really unfortunate
+
+186
+00:08:29,330 --> 00:08:32,880
+so how do we solve this we do some
+
+187
+00:08:32,880 --> 00:08:35,610
+monkey patching so basically what you
+
+188
+00:08:35,610 --> 00:08:37,770
+can do is you can monkey patch every
+
+189
+00:08:37,770 --> 00:08:39,690
+single time or in every single scenario
+
+190
+00:08:39,690 --> 00:08:41,070
+that something gets put on the event
+
+191
+00:08:41,070 --> 00:08:43,289
+loop and obtain the same functionality
+
+192
+00:08:43,289 --> 00:08:46,680
+and that's pretty complicated some
+
+193
+00:08:46,680 --> 00:08:48,480
+libraries out there they've tried to do
+
+194
+00:08:48,480 --> 00:08:50,850
+it and so the most popular one is the
+
+195
+00:08:50,850 --> 00:08:53,010
+esig listener there's also some stuff
+
+196
+00:08:53,010 --> 00:08:54,120
+going on in anglo
+
+197
+00:08:54,120 --> 00:08:58,320
+world with zone j/s and there's
+
+198
+00:08:58,320 --> 00:08:59,790
+something called a shrink wrap and as a
+
+199
+00:08:59,790 --> 00:09:01,800
+working group that is working with this
+
+200
+00:09:01,800 --> 00:09:06,029
+which is the most promising of the sort
+
+201
+00:09:06,029 --> 00:09:10,110
+of native primitives right now and it's
+
+202
+00:09:10,110 --> 00:09:12,360
+not the not in yet but hopefully it'll
+
+203
+00:09:12,360 --> 00:09:13,560
+be that soon so we don't have to monkey
+
+204
+00:09:13,560 --> 00:09:16,950
+patch so badly ah but so for right now
+
+205
+00:09:16,950 --> 00:09:18,120
+you have to you actually have to monkey
+
+206
+00:09:18,120 --> 00:09:21,270
+patch so there's this library called
+
+207
+00:09:21,270 --> 00:09:23,490
+Essex state that Thomas wrote some of
+
+208
+00:09:23,490 --> 00:09:26,760
+this right here and it's based on a
+
+209
+00:09:26,760 --> 00:09:29,820
+solicitor so it takes this pretty
+
+210
+00:09:29,820 --> 00:09:31,500
+convoluted interface that's called a
+
+211
+00:09:31,500 --> 00:09:33,930
+create a sink listener and basically
+
+212
+00:09:33,930 --> 00:09:36,750
+allows you to save some state anywhere
+
+213
+00:09:36,750 --> 00:09:40,170
+in your code and all the stuff that you
+
+214
+00:09:40,170 --> 00:09:41,940
+put on the event loop will then have a
+
+215
+00:09:41,940 --> 00:09:44,580
+this state available for you and so it's
+
+216
+00:09:44,580 --> 00:09:45,839
+a much more intuitive interface and it
+
+217
+00:09:45,839 --> 00:09:47,940
+looks like this so you require a sixth
+
+218
+00:09:47,940 --> 00:09:51,990
+eighth you basically set something on
+
+219
+00:09:51,990 --> 00:09:55,140
+the Essex state and then it gets sort of
+
+220
+00:09:55,140 --> 00:09:57,960
+frozen so when I put something on the
+
+221
+00:09:57,960 --> 00:10:00,029
+event loop it's going to take whatever
+
+222
+00:10:00,029 --> 00:10:02,910
+is in my currently well whatever is
+
+223
+00:10:02,910 --> 00:10:05,820
+currently in my state in Essex state and
+
+224
+00:10:05,820 --> 00:10:07,380
+make that available when the when the
+
+225
+00:10:07,380 --> 00:10:09,180
+thing runs that I've that I've put on
+
+226
+00:10:09,180 --> 00:10:12,150
+the event loop so this will print foo
+
+227
+00:10:12,150 --> 00:10:14,670
+and then bar which is a little bit
+
+228
+00:10:14,670 --> 00:10:15,890
+counterintuitive if you look at the
+
+229
+00:10:15,890 --> 00:10:19,830
+execution order here um but that's sort
+
+230
+00:10:19,830 --> 00:10:23,310
+of a simplified or a much easier
+
+231
+00:10:23,310 --> 00:10:25,380
+interface for us to use to pass data
+
+232
+00:10:25,380 --> 00:10:29,310
+between execution context so let's go
+
+233
+00:10:29,310 --> 00:10:33,240
+back to our beautifully wrapped HTTP
+
+234
+00:10:33,240 --> 00:10:36,740
+server so the new thing here is that
+
+235
+00:10:36,740 --> 00:10:41,490
+when I have a new request I actually put
+
+236
+00:10:41,490 --> 00:10:44,310
+the request in my asking state which
+
+237
+00:10:44,310 --> 00:10:46,350
+means that all the stuff all the things
+
+238
+00:10:46,350 --> 00:10:47,459
+that I put on the event loop now will
+
+239
+00:10:47,459 --> 00:10:49,680
+have access to the quest and which is
+
+240
+00:10:49,680 --> 00:10:51,360
+great that we like what we need that
+
+241
+00:10:51,360 --> 00:10:55,350
+means that in my trace code helper I can
+
+242
+00:10:55,350 --> 00:10:57,209
+just pull out the request and start
+
+243
+00:10:57,209 --> 00:11:02,220
+doing my measurements on the request but
+
+244
+00:11:02,220 --> 00:11:05,990
+that's quite useful
+
+245
+00:11:06,000 --> 00:11:09,020
+and all we need to do now is actually to
+
+246
+00:11:09,020 --> 00:11:11,100
+when our request is finished we need to
+
+247
+00:11:11,100 --> 00:11:12,570
+take all the measurements that we made
+
+248
+00:11:12,570 --> 00:11:15,480
+for this request and sort of put it in a
+
+249
+00:11:15,480 --> 00:11:17,160
+in a global somewhere that we can access
+
+250
+00:11:17,160 --> 00:11:19,500
+and so that's what fit request finish
+
+251
+00:11:19,500 --> 00:11:23,300
+does this is what that looks like and
+
+252
+00:11:23,300 --> 00:11:26,310
+it's very simple just to sort of take
+
+253
+00:11:26,310 --> 00:11:28,350
+the stuff that is in bookkeeper and put
+
+254
+00:11:28,350 --> 00:11:32,100
+it in request stats and I can spend too
+
+255
+00:11:32,100 --> 00:11:35,160
+much time with that and then finally we
+
+256
+00:11:35,160 --> 00:11:37,650
+can expose it as an end point in my
+
+257
+00:11:37,650 --> 00:11:39,150
+Express application so that's what this
+
+258
+00:11:39,150 --> 00:11:40,860
+thing does you see at the bottom here I
+
+259
+00:11:40,860 --> 00:11:46,350
+have / stats and calling that I will get
+
+260
+00:11:46,350 --> 00:11:49,080
+a nice JSON that actually shows what the
+
+261
+00:11:49,080 --> 00:11:51,450
+time has been spent on and so what i'm
+
+262
+00:11:51,450 --> 00:11:54,600
+doing here is i go over all the stuff
+
+263
+00:11:54,600 --> 00:11:57,680
+that i have in my request stats and
+
+264
+00:11:57,680 --> 00:12:00,360
+average average things out so i can see
+
+265
+00:12:00,360 --> 00:12:02,210
+on average how much time is being spent
+
+266
+00:12:02,210 --> 00:12:06,060
+in Redis how much time is being spent in
+
+267
+00:12:06,060 --> 00:12:10,200
+on go etc and so it looks like this
+
+268
+00:12:10,200 --> 00:12:14,460
+basically exposed to the endpoint you
+
+269
+00:12:14,460 --> 00:12:15,630
+can see how many requests are being made
+
+270
+00:12:15,630 --> 00:12:19,560
+to each endpoint and you can see em how
+
+271
+00:12:19,560 --> 00:12:22,080
+many red is gets how much time i'll
+
+272
+00:12:22,080 --> 00:12:23,970
+never spend on ready skate how much time
+
+273
+00:12:23,970 --> 00:12:27,330
+I spend on L range and how much time I
+
+274
+00:12:27,330 --> 00:12:31,550
+spend rendering the index view and etc
+
+275
+00:12:31,550 --> 00:12:34,140
+yeah so that was sort of a whirlwind of
+
+276
+00:12:34,140 --> 00:12:38,640
+how you can patch up your your node
+
+277
+00:12:38,640 --> 00:12:39,960
+application to get performance out of
+
+278
+00:12:39,960 --> 00:12:42,080
+the box and there's a lot of
+
+279
+00:12:42,080 --> 00:12:45,030
+complications involved here and so add
+
+280
+00:12:45,030 --> 00:12:46,290
+up at upbeat we've been working on this
+
+281
+00:12:46,290 --> 00:12:48,570
+and if you don't want to spend all that
+
+282
+00:12:48,570 --> 00:12:50,520
+time doing it yourself you can can check
+
+283
+00:12:50,520 --> 00:12:55,860
+out of it it looks like this and that's
+
+284
+00:12:55,860 --> 00:12:59,070
+pretty much it actually that was 12
+
+285
+00:12:59,070 --> 00:13:02,249
+minutes
+

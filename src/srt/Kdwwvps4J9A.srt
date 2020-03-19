@@ -1,0 +1,2659 @@
+1
+00:00:15,220 --> 00:00:17,950
+
+thanks everybody for coming so I'm Felix
+
+2
+00:00:17,950 --> 00:00:19,630
+guys and over you find me on Twitter on
+
+3
+00:00:19,630 --> 00:00:23,680
+github as Felix GE I have a startup here
+
+4
+00:00:23,680 --> 00:00:25,330
+in Berlin where called transloaded we do
+
+5
+00:00:25,330 --> 00:00:28,330
+file uploads and video encoding we were
+
+6
+00:00:28,330 --> 00:00:30,040
+one of the first users of nodejs
+
+7
+00:00:30,040 --> 00:00:32,140
+which also meant we were one of the
+
+8
+00:00:32,140 --> 00:00:34,060
+first contributors of nodejs because it
+
+9
+00:00:34,060 --> 00:00:35,710
+was not really doing everything we
+
+10
+00:00:35,710 --> 00:00:37,450
+wanted but I'm not talking about this
+
+11
+00:00:37,450 --> 00:00:39,960
+I'm talking about faster than C and
+
+12
+00:00:39,960 --> 00:00:42,640
+before I get into it I want to apologize
+
+13
+00:00:42,640 --> 00:00:44,950
+sorry about the title bait we all have a
+
+14
+00:00:44,950 --> 00:00:46,450
+reasonable discussion about performance
+
+15
+00:00:46,450 --> 00:00:48,220
+I'm not gonna make some claims that I
+
+16
+00:00:48,220 --> 00:00:49,780
+cannot back up but I think we're gonna
+
+17
+00:00:49,780 --> 00:00:51,670
+talk about high performance JavaScript
+
+18
+00:00:51,670 --> 00:00:53,530
+for sure and I think the results in some
+
+19
+00:00:53,530 --> 00:00:55,300
+of the stuff I was doing look very cool
+
+20
+00:00:55,300 --> 00:00:58,540
+even so C is probably still your tool of
+
+21
+00:00:58,540 --> 00:01:01,300
+choice for some problem domains so I
+
+22
+00:01:01,300 --> 00:01:03,430
+want to make it like a battle the battle
+
+23
+00:01:03,430 --> 00:01:06,880
+is JavaScript versus C or good versus
+
+24
+00:01:06,880 --> 00:01:07,330
+evil
+
+25
+00:01:07,330 --> 00:01:09,580
+wait it's a good part about this evil at
+
+26
+00:01:09,580 --> 00:01:13,479
+least we may even need the bad parts to
+
+27
+00:01:13,479 --> 00:01:14,439
+win this one
+
+28
+00:01:14,439 --> 00:01:19,240
+and so just little backstory here my
+
+29
+00:01:19,240 --> 00:01:21,250
+story starts in my suffering really
+
+30
+00:01:21,250 --> 00:01:24,190
+starts in early 2010 because in early
+
+31
+00:01:24,190 --> 00:01:27,580
+2010 we had no MySQL module for no chess
+
+32
+00:01:27,580 --> 00:01:29,320
+it did not exist many people in the
+
+33
+00:01:29,320 --> 00:01:31,120
+community wanted such a thing but it
+
+34
+00:01:31,120 --> 00:01:34,300
+just wasn't around however what we did
+
+35
+00:01:34,300 --> 00:01:37,420
+have was no SQL library go figure
+
+36
+00:01:37,420 --> 00:01:41,050
+no SQL was first in node and that was a
+
+37
+00:01:41,050 --> 00:01:42,990
+Noah scroll people doing SQL it's crazy
+
+38
+00:01:42,990 --> 00:01:46,900
+but so then in early 2010 this guy came
+
+39
+00:01:46,900 --> 00:01:50,830
+along my Siri Tryphon github and he
+
+40
+00:01:50,830 --> 00:01:53,140
+actually posted a message to the mailing
+
+41
+00:01:53,140 --> 00:01:54,909
+list a note mailing list and fix the
+
+42
+00:01:54,909 --> 00:01:56,590
+problem with promises which are long
+
+43
+00:01:56,590 --> 00:01:58,960
+gone and then he was like by the way I
+
+44
+00:01:58,960 --> 00:02:01,229
+started this node my sequel module and
+
+45
+00:02:01,229 --> 00:02:04,330
+link to it and everybody was like wow
+
+46
+00:02:04,330 --> 00:02:06,220
+somebody's finally doing it so I checked
+
+47
+00:02:06,220 --> 00:02:09,129
+out the code and I I was really curious
+
+48
+00:02:09,129 --> 00:02:10,840
+on how he did to look my sequel binding
+
+49
+00:02:10,840 --> 00:02:13,030
+because back then it wasn't quite clear
+
+50
+00:02:13,030 --> 00:02:15,280
+how we would do these blocking library
+
+51
+00:02:15,280 --> 00:02:17,680
+integrations into no chess that's not a
+
+52
+00:02:17,680 --> 00:02:19,720
+solve problem but Bexon I was curious on
+
+53
+00:02:19,720 --> 00:02:22,420
+how it would be done and when I looked
+
+54
+00:02:22,420 --> 00:02:24,130
+into it I found something weird he
+
+55
+00:02:24,130 --> 00:02:25,720
+actually didn't buy into binding to live
+
+56
+00:02:25,720 --> 00:02:28,450
+my sequel he wrote a pure JavaScript my
+
+57
+00:02:28,450 --> 00:02:28,780
+C
+
+58
+00:02:28,780 --> 00:02:31,660
+client and so I was like wow how did he
+
+59
+00:02:31,660 --> 00:02:34,540
+do that and so well if he thinks this is
+
+60
+00:02:34,540 --> 00:02:36,760
+impressive check this one out this was
+
+61
+00:02:36,760 --> 00:02:39,490
+before buffers became usable so he had
+
+62
+00:02:39,490 --> 00:02:41,890
+no buffer support a note he basically
+
+63
+00:02:41,890 --> 00:02:44,620
+did his parser using javascript strings
+
+64
+00:02:44,620 --> 00:02:48,490
+I was like what's the this guy was
+
+65
+00:02:48,490 --> 00:02:50,680
+crazy apparently what he did he is also
+
+66
+00:02:50,680 --> 00:02:52,450
+based on prior art credit where it's due
+
+67
+00:02:52,450 --> 00:02:55,690
+he tooks a ruby a Ruby implementations
+
+68
+00:02:55,690 --> 00:02:57,130
+that had done the same thing for Ruby
+
+69
+00:02:57,130 --> 00:02:59,320
+and my sequel module and he pulled at
+
+70
+00:02:59,320 --> 00:03:03,940
+that to know chess and so unfortunately
+
+71
+00:03:03,940 --> 00:03:05,590
+never finished it so he get is kind of
+
+72
+00:03:05,590 --> 00:03:07,330
+working but then gonna stop working on
+
+73
+00:03:07,330 --> 00:03:09,070
+it and it went away but while we're
+
+74
+00:03:09,070 --> 00:03:10,660
+talking about buffers and all times a
+
+75
+00:03:10,660 --> 00:03:12,630
+node here's a little piece of trivia
+
+76
+00:03:12,630 --> 00:03:14,530
+buffers and know it used to be called
+
+77
+00:03:14,530 --> 00:03:16,739
+blobs raise your hand if you knew that
+
+78
+00:03:16,739 --> 00:03:19,390
+holy crap you guys are good because it
+
+79
+00:03:19,390 --> 00:03:21,520
+was not a long time that buffers where I
+
+80
+00:03:21,520 --> 00:03:23,110
+called blob sonoda it was three minutes
+
+81
+00:03:23,110 --> 00:03:26,830
+and fifteen seconds which is really a
+
+82
+00:03:26,830 --> 00:03:29,020
+shame because blobs to me would have
+
+83
+00:03:29,020 --> 00:03:30,850
+been a much better name because I'm
+
+84
+00:03:30,850 --> 00:03:32,860
+sometimes talking about buffering data
+
+85
+00:03:32,860 --> 00:03:35,230
+but I may mean like concatenating
+
+86
+00:03:35,230 --> 00:03:37,150
+strings or pushing stuff into an array I
+
+87
+00:03:37,150 --> 00:03:39,010
+don't always mean like a buffer of
+
+88
+00:03:39,010 --> 00:03:41,019
+binary data so it's a shame
+
+89
+00:03:41,019 --> 00:03:45,130
+rest in peace blobs oh well anyway back
+
+90
+00:03:45,130 --> 00:03:48,130
+to my sequel so what what mastery drives
+
+91
+00:03:48,130 --> 00:03:50,290
+library really did for me it showed me
+
+92
+00:03:50,290 --> 00:03:51,820
+that my sequel can be done without lip
+
+93
+00:03:51,820 --> 00:03:53,470
+my sequel I had not considered this
+
+94
+00:03:53,470 --> 00:03:55,209
+before Ryan actually had not considered
+
+95
+00:03:55,209 --> 00:03:56,799
+it before he was really worried that my
+
+96
+00:03:56,799 --> 00:03:58,690
+sequel with the deal-breaker for note
+
+97
+00:03:58,690 --> 00:04:01,329
+and so I really wanted to use my sequel
+
+98
+00:04:01,329 --> 00:04:03,100
+this margin was not continued anymore it
+
+99
+00:04:03,100 --> 00:04:04,959
+was based on strings we now had buffers
+
+100
+00:04:04,959 --> 00:04:06,640
+so it was like okay maybe I can do this
+
+101
+00:04:06,640 --> 00:04:08,860
+so I started this module and I wasted
+
+102
+00:04:08,860 --> 00:04:10,360
+too much time on it instead of building
+
+103
+00:04:10,360 --> 00:04:11,829
+my startup product I built this module
+
+104
+00:04:11,829 --> 00:04:14,079
+for like three months but then it
+
+105
+00:04:14,079 --> 00:04:15,610
+started working and people started using
+
+106
+00:04:15,610 --> 00:04:18,700
+it so that was nice right but no good
+
+107
+00:04:18,700 --> 00:04:21,850
+deed goes unpunished and I actually
+
+108
+00:04:21,850 --> 00:04:24,040
+traced this back who came up with this I
+
+109
+00:04:24,040 --> 00:04:25,660
+think Sir Isaac Newton make two proof
+
+110
+00:04:25,660 --> 00:04:28,120
+for it and he called it the third law of
+
+111
+00:04:28,120 --> 00:04:31,570
+motion and it kinda goes like this when
+
+112
+00:04:31,570 --> 00:04:34,270
+the first body excerpts a force f1 on a
+
+113
+00:04:34,270 --> 00:04:35,890
+second buddy the second body
+
+114
+00:04:35,890 --> 00:04:37,960
+simultaneously exerts the force f2
+
+115
+00:04:37,960 --> 00:04:40,479
+equals minus f1 on the first buddy this
+
+116
+00:04:40,479 --> 00:04:42,620
+means that F 1 and F 2 are equal magnet
+
+117
+00:04:42,620 --> 00:04:45,710
+and opposite in direction so I'm not as
+
+118
+00:04:45,710 --> 00:04:47,360
+clever as Isaac Newton says for sure but
+
+119
+00:04:47,360 --> 00:04:49,699
+I can imagine if he was living today
+
+120
+00:04:49,699 --> 00:04:52,190
+maybe some of the stuff he would do I'm
+
+121
+00:04:52,190 --> 00:04:53,870
+sure I'm sure he would be on github I
+
+122
+00:04:53,870 --> 00:04:59,479
+guess we can all agree on that and and
+
+123
+00:04:59,479 --> 00:05:01,550
+so I don't know maybe he would study
+
+124
+00:05:01,550 --> 00:05:03,260
+like the community effect and get help
+
+125
+00:05:03,260 --> 00:05:04,310
+maybe that would be his saying I don't
+
+126
+00:05:04,310 --> 00:05:06,470
+know but let's imagine he came up with
+
+127
+00:05:06,470 --> 00:05:07,729
+some like the third law of
+
+128
+00:05:07,729 --> 00:05:10,430
+github and it could go like this when a
+
+129
+00:05:10,430 --> 00:05:12,590
+first person pushes a library l1 into
+
+130
+00:05:12,590 --> 00:05:15,380
+remote repository a second person
+
+131
+00:05:15,380 --> 00:05:16,910
+simultaneously starts working on a
+
+132
+00:05:16,910 --> 00:05:18,919
+second library l2 which will be equally
+
+133
+00:05:18,919 --> 00:05:21,830
+awesome but in a different way so that's
+
+134
+00:05:21,830 --> 00:05:26,750
+why we love github right so that's what
+
+135
+00:05:26,750 --> 00:05:29,539
+happened but it can also hurt sometimes
+
+136
+00:05:29,539 --> 00:05:30,620
+I'll show you why
+
+137
+00:05:30,620 --> 00:05:32,240
+so this guy came along son Ethan on
+
+138
+00:05:32,240 --> 00:05:34,340
+github and he wrote a library called
+
+139
+00:05:34,340 --> 00:05:36,199
+node my sequel live my sequel client
+
+140
+00:05:36,199 --> 00:05:37,520
+which was pretty much what you would
+
+141
+00:05:37,520 --> 00:05:39,380
+expect it to be it's a binding to look
+
+142
+00:05:39,380 --> 00:05:41,600
+my sequel what he also did he did some
+
+143
+00:05:41,600 --> 00:05:43,340
+benchmarks and I did some benchmarks of
+
+144
+00:05:43,340 --> 00:05:46,580
+my own and here's a recent one and this
+
+145
+00:05:46,580 --> 00:05:48,110
+is what happened so on the left side is
+
+146
+00:05:48,110 --> 00:05:50,090
+my library and on the right side is his
+
+147
+00:05:50,090 --> 00:05:52,760
+library that's what you would expect
+
+148
+00:05:52,760 --> 00:05:55,220
+right this is JavaScript or sassy of
+
+149
+00:05:55,220 --> 00:05:57,410
+course let my sequel is in Britain and
+
+150
+00:05:57,410 --> 00:05:59,570
+see my library's JavaScript and see you
+
+151
+00:05:59,570 --> 00:06:01,639
+so much faster than JavaScript right so
+
+152
+00:06:01,639 --> 00:06:03,700
+that's what I thought for a long time
+
+153
+00:06:03,700 --> 00:06:06,680
+but I felt I felt wrong because I mean
+
+154
+00:06:06,680 --> 00:06:08,150
+haven't we getting some marketing
+
+155
+00:06:08,150 --> 00:06:09,620
+message v8 is supposed to be really
+
+156
+00:06:09,620 --> 00:06:11,180
+really fast turning our code into
+
+157
+00:06:11,180 --> 00:06:13,160
+assembly and then they make crankshaft
+
+158
+00:06:13,160 --> 00:06:14,510
+and hold us now it's gonna be even
+
+159
+00:06:14,510 --> 00:06:15,770
+better and it's gonna analyze what our
+
+160
+00:06:15,770 --> 00:06:17,539
+programs are gonna do and I mean no
+
+161
+00:06:17,539 --> 00:06:19,160
+chess I think it's gonna solve world
+
+162
+00:06:19,160 --> 00:06:22,970
+hunger and everything so was i living a
+
+163
+00:06:22,970 --> 00:06:26,080
+lie and I've been lied to
+
+164
+00:06:26,080 --> 00:06:29,300
+kind of I mean the stuff you read on the
+
+165
+00:06:29,300 --> 00:06:33,020
+note home page is like crazy because the
+
+166
+00:06:33,020 --> 00:06:36,310
+ADA node are our tools their tools and
+
+167
+00:06:36,310 --> 00:06:39,349
+performance performance is not at all if
+
+168
+00:06:39,349 --> 00:06:41,150
+anybody's healthy performance as a tool
+
+169
+00:06:41,150 --> 00:06:43,400
+that you can just download and install I
+
+170
+00:06:43,400 --> 00:06:46,039
+don't know it's that crazy no what
+
+171
+00:06:46,039 --> 00:06:47,690
+actually turns out to be I think what it
+
+172
+00:06:47,690 --> 00:06:49,460
+is is performance is hard work and data
+
+173
+00:06:49,460 --> 00:06:51,289
+analysis so if you expect this talk
+
+174
+00:06:51,289 --> 00:06:53,060
+being me like telling you here's one
+
+175
+00:06:53,060 --> 00:06:55,340
+little trick to do to do in your
+
+176
+00:06:55,340 --> 00:06:56,390
+JavaScript and now
+
+177
+00:06:56,390 --> 00:06:57,890
+everything's gonna be faster I have to
+
+178
+00:06:57,890 --> 00:06:59,840
+disappoint but I will present some stuff
+
+179
+00:06:59,840 --> 00:07:01,490
+that's useful I promise
+
+180
+00:07:01,490 --> 00:07:04,820
+so anyway I set out and I tried this new
+
+181
+00:07:04,820 --> 00:07:06,650
+approach that I'm gonna show you and I
+
+182
+00:07:06,650 --> 00:07:08,660
+continued working on my library and so
+
+183
+00:07:08,660 --> 00:07:11,810
+this is what happened I I beat them a
+
+184
+00:07:11,810 --> 00:07:13,520
+little bit maybe at least I can say I'm
+
+185
+00:07:13,520 --> 00:07:16,280
+as fast as with my sequel client so - so
+
+186
+00:07:16,280 --> 00:07:17,660
+the colors have changed but - one the
+
+187
+00:07:17,660 --> 00:07:20,360
+first is to the right now and as you can
+
+188
+00:07:20,360 --> 00:07:22,250
+see it's alpha 3 which means I'm
+
+189
+00:07:22,250 --> 00:07:23,780
+spending time optimizing performance
+
+190
+00:07:23,780 --> 00:07:25,460
+problems nobody cares about instead of
+
+191
+00:07:25,460 --> 00:07:27,050
+finishing so saying I mean it's working
+
+192
+00:07:27,050 --> 00:07:28,760
+but I want to do connection pool and
+
+193
+00:07:28,760 --> 00:07:30,200
+stuff but I just geeked out on this all
+
+194
+00:07:30,200 --> 00:07:33,500
+the time anyway so I told you about the
+
+195
+00:07:33,500 --> 00:07:35,390
+third laugh github and it could be
+
+196
+00:07:35,390 --> 00:07:36,950
+ but I don't know I saw I'm
+
+197
+00:07:36,950 --> 00:07:38,630
+but I don't know I saw I'm
+starting to believe in it because after
+
+198
+00:07:38,630 --> 00:07:40,730
+I submitted my proposal it was accepted
+
+199
+00:07:40,730 --> 00:07:45,260
+this guy came along Brian White and he
+
+200
+00:07:45,260 --> 00:07:47,210
+wrote a new library called Note Maria
+
+201
+00:07:47,210 --> 00:07:50,770
+SQL and Maria SQL is a fork of MySQL and
+
+202
+00:07:50,770 --> 00:07:53,000
+they're continuing zuv development it's
+
+203
+00:07:53,000 --> 00:07:55,880
+actually won us a you see original MySQL
+
+204
+00:07:55,880 --> 00:07:58,460
+guy and they also continue to improve
+
+205
+00:07:58,460 --> 00:08:00,440
+the client so the Maria SQL client is
+
+206
+00:08:00,440 --> 00:08:01,340
+actually non-blocking
+
+207
+00:08:01,340 --> 00:08:02,840
+so it fits much better with what notice
+
+208
+00:08:02,840 --> 00:08:05,690
+doing not only that this guy Brian white
+
+209
+00:08:05,690 --> 00:08:08,060
+he's really smart so he knows how to do
+
+210
+00:08:08,060 --> 00:08:09,680
+C's findings much better and these two
+
+211
+00:08:09,680 --> 00:08:14,960
+things combined led to this add stuff
+
+212
+00:08:14,960 --> 00:08:18,590
+stuff here I was thinking I was present
+
+213
+00:08:18,590 --> 00:08:20,540
+like the fastest my sequel library on
+
+214
+00:08:20,540 --> 00:08:22,120
+earth written in JavaScript it's not
+
+215
+00:08:22,120 --> 00:08:24,950
+probably not gonna happen so is this the
+
+216
+00:08:24,950 --> 00:08:36,100
+time to give up should I give up never
+
+217
+00:08:36,110 --> 00:08:39,030
+so I'm working on this new partner and
+
+218
+00:08:39,030 --> 00:08:40,590
+this is undone it's not finished
+
+219
+00:08:40,590 --> 00:08:42,390
+and you shouldn't listen to it but it's
+
+220
+00:08:42,390 --> 00:08:44,160
+interesting because once again this is
+
+221
+00:08:44,160 --> 00:08:45,660
+my old library against my new library
+
+222
+00:08:45,660 --> 00:08:48,150
+it's a new parser it's not integrated as
+
+223
+00:08:48,150 --> 00:08:49,170
+a module or anything yet it's just
+
+224
+00:08:49,170 --> 00:08:51,270
+running a very limited benchmark but it
+
+225
+00:08:51,270 --> 00:08:53,370
+seems like I can get a 2x performance
+
+226
+00:08:53,370 --> 00:08:55,790
+increase or almost 2x and so I have
+
+227
+00:08:55,790 --> 00:08:59,250
+reasonable hopes that I can at least get
+
+228
+00:08:59,250 --> 00:09:02,400
+on speed parity with summary SQL marshal
+
+229
+00:09:02,400 --> 00:09:04,970
+if I find the time to finish this up but
+
+230
+00:09:04,970 --> 00:09:07,500
+should I do it because wouldn't the cert
+
+231
+00:09:07,500 --> 00:09:09,510
+love github kick in and somebody just
+
+232
+00:09:09,510 --> 00:09:11,460
+comes along and does a faster one I mean
+
+233
+00:09:11,460 --> 00:09:12,780
+what's the point
+
+234
+00:09:12,780 --> 00:09:14,430
+so actually I think I should do it
+
+235
+00:09:14,430 --> 00:09:15,780
+because I think we're we're getting
+
+236
+00:09:15,780 --> 00:09:18,030
+close to the end game and because the
+
+237
+00:09:18,030 --> 00:09:19,350
+end game here is that we're gonna run
+
+238
+00:09:19,350 --> 00:09:21,180
+into one last bottleneck and that's just
+
+239
+00:09:21,180 --> 00:09:23,100
+creating the JavaScript objects we're
+
+240
+00:09:23,100 --> 00:09:25,080
+gonna be able in JavaScript now or we
+
+241
+00:09:25,080 --> 00:09:27,060
+are already able on JavaScript to parse
+
+242
+00:09:27,060 --> 00:09:28,380
+these protocols really really quickly
+
+243
+00:09:28,380 --> 00:09:31,860
+but supposed to see libraries or to see
+
+244
+00:09:31,860 --> 00:09:34,170
+bindings and my code has to do the same
+
+245
+00:09:34,170 --> 00:09:36,030
+thing it has to ask v8 to create a new
+
+246
+00:09:36,030 --> 00:09:37,980
+JavaScript object like a row and to give
+
+247
+00:09:37,980 --> 00:09:39,720
+it column values and if I want to use
+
+248
+00:09:39,720 --> 00:09:41,280
+the library set bind or sets available
+
+249
+00:09:41,280 --> 00:09:42,900
+in JavaScript those performance
+
+250
+00:09:42,900 --> 00:09:44,430
+penalties probably going to be the same
+
+251
+00:09:44,430 --> 00:09:47,310
+for me in JavaScript and C++ people so I
+
+252
+00:09:47,310 --> 00:09:49,200
+think we will just end up at a very fast
+
+253
+00:09:49,200 --> 00:09:51,240
+speed where only the eight can make
+
+254
+00:09:51,240 --> 00:09:53,850
+things go faster but we will all get
+
+255
+00:09:53,850 --> 00:09:57,450
+faster C bindings and my module also we
+
+256
+00:09:57,450 --> 00:09:59,340
+already won because my sequel server is
+
+257
+00:09:59,340 --> 00:10:01,830
+already saturated I don't know unless
+
+258
+00:10:01,830 --> 00:10:03,750
+you're serving data from memory and you
+
+259
+00:10:03,750 --> 00:10:06,780
+have really good hardware setup I think
+
+260
+00:10:06,780 --> 00:10:09,420
+a single MySQL client either C bindings
+
+261
+00:10:09,420 --> 00:10:12,360
+also Java Script can fully saturate and
+
+262
+00:10:12,360 --> 00:10:14,310
+my sequel server using one processor on
+
+263
+00:10:14,310 --> 00:10:16,020
+a client so this stuff is getting fast
+
+264
+00:10:16,020 --> 00:10:20,880
+enough so anyway it was kind of cool but
+
+265
+00:10:20,880 --> 00:10:22,290
+what's even cooler is that I found out
+
+266
+00:10:22,290 --> 00:10:24,600
+some stuff on on how to do this stuff so
+
+267
+00:10:24,600 --> 00:10:26,610
+I studied a lot about how to write fast
+
+268
+00:10:26,610 --> 00:10:28,230
+JavaScript and I found out a few things
+
+269
+00:10:28,230 --> 00:10:30,210
+that don't work or at least not for me
+
+270
+00:10:30,210 --> 00:10:33,090
+for my problems one thing unfortunately
+
+271
+00:10:33,090 --> 00:10:36,060
+profiling profiling is cool the v8
+
+272
+00:10:36,060 --> 00:10:38,190
+profiler it can do good things for you
+
+273
+00:10:38,190 --> 00:10:40,350
+but I found that profiling is mostly
+
+274
+00:10:40,350 --> 00:10:42,180
+good for spotting small functions with
+
+275
+00:10:42,180 --> 00:10:43,800
+stupid algorithms performing many
+
+276
+00:10:43,800 --> 00:10:45,480
+iterations so that's the kind of stuff
+
+277
+00:10:45,480 --> 00:10:47,370
+where the profiler will be like hey yes
+
+278
+00:10:47,370 --> 00:10:48,690
+this function and you
+
+279
+00:10:48,690 --> 00:10:50,160
+and all your time in there and then you
+
+280
+00:10:50,160 --> 00:10:51,660
+go you look at that function you fix
+
+281
+00:10:51,660 --> 00:10:54,300
+that function is really nice but if you
+
+282
+00:10:54,300 --> 00:10:56,430
+have a complex function with many
+
+283
+00:10:56,430 --> 00:10:58,620
+primitive operations it's not so nice so
+
+284
+00:10:58,620 --> 00:11:00,930
+for example in my first my sequel module
+
+285
+00:11:00,930 --> 00:11:04,050
+ahead sis my whole part was one method
+
+286
+00:11:04,050 --> 00:11:07,080
+and that sounds stupid I know but stay
+
+287
+00:11:07,080 --> 00:11:09,240
+with me I I was cargo holding that
+
+288
+00:11:09,240 --> 00:11:11,520
+I was looking at Ryan's HTTP parser and
+
+289
+00:11:11,520 --> 00:11:13,200
+that's what he didn't see so I was like
+
+290
+00:11:13,200 --> 00:11:14,610
+that's the way to go one you just which
+
+291
+00:11:14,610 --> 00:11:16,770
+statement that's that's what we need to
+
+292
+00:11:16,770 --> 00:11:20,100
+do and so unfortunately the profiler did
+
+293
+00:11:20,100 --> 00:11:21,810
+not tell me since were stupid because he
+
+294
+00:11:21,810 --> 00:11:23,610
+just saw one big function posited right
+
+295
+00:11:23,610 --> 00:11:25,230
+being really hot and I'm like okay I
+
+296
+00:11:25,230 --> 00:11:28,020
+already know that so I didn't get very
+
+297
+00:11:28,020 --> 00:11:30,570
+far with supporter even as I continued
+
+298
+00:11:30,570 --> 00:11:32,760
+to make my module actually nicer and
+
+299
+00:11:32,760 --> 00:11:34,500
+separate things out into different
+
+300
+00:11:34,500 --> 00:11:36,360
+functions I still find supposed to be
+
+301
+00:11:36,360 --> 00:11:37,950
+lacking sometimes because sometimes I
+
+302
+00:11:37,950 --> 00:11:39,150
+spend all my time and stuff like
+
+303
+00:11:39,150 --> 00:11:42,090
+assigning properties to an object sure I
+
+304
+00:11:42,090 --> 00:11:43,950
+know it's this function is hot but how
+
+305
+00:11:43,950 --> 00:11:45,450
+do I make it faster why is it not fast
+
+306
+00:11:45,450 --> 00:11:47,610
+the profile I only gets you so far
+
+307
+00:11:47,610 --> 00:11:50,360
+use it but for some stuff it's not good
+
+308
+00:11:50,360 --> 00:11:52,860
+also another thing this one is important
+
+309
+00:11:52,860 --> 00:11:54,270
+please listen to this one don't take
+
+310
+00:11:54,270 --> 00:11:55,830
+performance advice from strangers and
+
+311
+00:11:55,830 --> 00:11:58,770
+I'm a stranger because I don't know I
+
+312
+00:11:58,770 --> 00:11:59,880
+don't know what your performance
+
+313
+00:11:59,880 --> 00:12:01,590
+problems are and I don't know what
+
+314
+00:12:01,590 --> 00:12:03,810
+you're trying to solve so any advice I
+
+315
+00:12:03,810 --> 00:12:05,250
+give you is really in the context of my
+
+316
+00:12:05,250 --> 00:12:07,470
+library so only use it for that there's
+
+317
+00:12:07,470 --> 00:12:08,970
+one piece of advice that I think is kind
+
+318
+00:12:08,970 --> 00:12:10,530
+of generic but all the other stuff just
+
+319
+00:12:10,530 --> 00:12:12,270
+ignore ignore all the stuffs of the
+
+320
+00:12:12,270 --> 00:12:14,280
+eight people tell you for optimizing
+
+321
+00:12:14,280 --> 00:12:15,900
+your code and blah blah blah I mean it
+
+322
+00:12:15,900 --> 00:12:17,340
+makes sense but only when you have
+
+323
+00:12:17,340 --> 00:12:18,990
+proven for it to make sense in your
+
+324
+00:12:18,990 --> 00:12:21,090
+problem domain so use this as good ideas
+
+325
+00:12:21,090 --> 00:12:23,340
+and inspiration but don't be a cargo
+
+326
+00:12:23,340 --> 00:12:25,530
+cool T like me like I was taking the big
+
+327
+00:12:25,530 --> 00:12:26,940
+switch statement idea and thinking that
+
+328
+00:12:26,940 --> 00:12:28,770
+was great without ever testing it
+
+329
+00:12:28,770 --> 00:12:32,640
+actually so what does work
+
+330
+00:12:32,640 --> 00:12:36,660
+I think PDD works oh that makes no sense
+
+331
+00:12:36,660 --> 00:12:38,940
+right behavior driven development no I
+
+332
+00:12:38,940 --> 00:12:41,190
+mean benchmark driven development and
+
+333
+00:12:41,190 --> 00:12:43,110
+since what I do all the time
+
+334
+00:12:43,110 --> 00:12:44,730
+benchmark driven development looks like
+
+335
+00:12:44,730 --> 00:12:46,500
+this it's basically very similar to
+
+336
+00:12:46,500 --> 00:12:50,640
+test-driven development so I only
+
+337
+00:12:50,640 --> 00:12:52,680
+suggest to use it when performance is an
+
+338
+00:12:52,680 --> 00:12:54,600
+explicit design call and it generally
+
+339
+00:12:54,600 --> 00:12:56,160
+works best if you writes a benchmark
+
+340
+00:12:56,160 --> 00:12:59,220
+first and not after so how do you do
+
+341
+00:12:59,220 --> 00:13:01,050
+that so basically you create a function
+
+342
+00:13:01,050 --> 00:13:02,010
+benchmark
+
+343
+00:13:02,010 --> 00:13:03,900
+and that's where your code is gonna go
+
+344
+00:13:03,900 --> 00:13:06,300
+in and I mean it's really stupid and
+
+345
+00:13:06,300 --> 00:13:08,130
+simple and then you do this while loop
+
+346
+00:13:08,130 --> 00:13:10,320
+you take some time when you start you
+
+347
+00:13:10,320 --> 00:13:11,640
+run the benchmark and you measure how
+
+348
+00:13:11,640 --> 00:13:14,100
+long it took well when you run this
+
+349
+00:13:14,100 --> 00:13:16,980
+obviously it's gonna say no zero because
+
+350
+00:13:16,980 --> 00:13:19,710
+we're not doing any work yet and if I
+
+351
+00:13:19,710 --> 00:13:21,060
+just add a little bit of code I'm
+
+352
+00:13:21,060 --> 00:13:22,620
+probably gonna stay at zero for a very
+
+353
+00:13:22,620 --> 00:13:24,210
+long time because the JavaScript timer
+
+354
+00:13:24,210 --> 00:13:26,220
+resolution is not very good it's only
+
+355
+00:13:26,220 --> 00:13:28,050
+giving me milliseconds whereas some of
+
+356
+00:13:28,050 --> 00:13:30,500
+those operations happen much faster
+
+357
+00:13:30,500 --> 00:13:32,700
+don't go out and try to find a better
+
+358
+00:13:32,700 --> 00:13:34,350
+timer just make sure that benchmark
+
+359
+00:13:34,350 --> 00:13:36,000
+function does enough work so you get
+
+360
+00:13:36,000 --> 00:13:38,190
+several milliseconds as a result it
+
+361
+00:13:38,190 --> 00:13:40,080
+suggests like 3 400 milliseconds is how
+
+362
+00:13:40,080 --> 00:13:41,460
+long your benchmark function should run
+
+363
+00:13:41,460 --> 00:13:44,520
+and that's that's where it will produce
+
+364
+00:13:44,520 --> 00:13:46,770
+good results this way anyway so the next
+
+365
+00:13:46,770 --> 00:13:48,750
+step is you implement a tiny part of
+
+366
+00:13:48,750 --> 00:13:51,540
+your function and that can be something
+
+367
+00:13:51,540 --> 00:13:52,950
+really stale like for example for my my
+
+368
+00:13:52,950 --> 00:13:55,470
+sequel library what I generally always
+
+369
+00:13:55,470 --> 00:13:56,730
+start out with when I repeat this
+
+370
+00:13:56,730 --> 00:13:59,190
+process to write a faster parser is I
+
+371
+00:13:59,190 --> 00:14:01,020
+just parse the headers in my sequel
+
+372
+00:14:01,020 --> 00:14:02,760
+packages so I get like a header that
+
+373
+00:14:02,760 --> 00:14:04,230
+tells me how many bytes are gonna follow
+
+374
+00:14:04,230 --> 00:14:06,210
+and then I skip over all these bytes and
+
+375
+00:14:06,210 --> 00:14:08,400
+just parse millions of packages really
+
+376
+00:14:08,400 --> 00:14:10,590
+fast and this is good enough for my
+
+377
+00:14:10,590 --> 00:14:12,150
+benchmark to slow down from zero to
+
+378
+00:14:12,150 --> 00:14:14,100
+something I can measure and then I start
+
+379
+00:14:14,100 --> 00:14:16,500
+to experiment I'm looking at what can I
+
+380
+00:14:16,500 --> 00:14:18,030
+do what did the v8 people tell me so
+
+381
+00:14:18,030 --> 00:14:19,470
+this way I remember the tips they gave
+
+382
+00:14:19,470 --> 00:14:21,630
+me but a lot of times I find that some
+
+383
+00:14:21,630 --> 00:14:23,400
+of them don't apply at all and some make
+
+384
+00:14:23,400 --> 00:14:24,990
+a big difference but you will never know
+
+385
+00:14:24,990 --> 00:14:27,150
+unless you actually benchmark it so I
+
+386
+00:14:27,150 --> 00:14:29,010
+mix these three except play around I try
+
+387
+00:14:29,010 --> 00:14:31,590
+different things and I repeated and that
+
+388
+00:14:31,590 --> 00:14:33,780
+was a result I get are surprising so I
+
+389
+00:14:33,780 --> 00:14:35,700
+found out that for example in my context
+
+390
+00:14:35,700 --> 00:14:38,430
+from my library try caches okay I can do
+
+391
+00:14:38,430 --> 00:14:40,590
+try caches performance penalties not too
+
+392
+00:14:40,590 --> 00:14:42,930
+bad I can do it big switch statement bad
+
+393
+00:14:42,930 --> 00:14:44,520
+I already knew that told you guys
+
+394
+00:14:44,520 --> 00:14:46,980
+function calls I was surprised I the
+
+395
+00:14:46,980 --> 00:14:48,210
+reason one of the reasons I saw the
+
+396
+00:14:48,210 --> 00:14:49,470
+switch statement would perform well
+
+397
+00:14:49,470 --> 00:14:51,540
+because it's all one function so has to
+
+398
+00:14:51,540 --> 00:14:53,220
+be easier for the compiler turns out I
+
+399
+00:14:53,220 --> 00:14:54,480
+can actually make almost as many
+
+400
+00:14:54,480 --> 00:14:56,220
+function calls as I want in my very hot
+
+401
+00:14:56,220 --> 00:14:58,380
+loop it hardly has any impact because v8
+
+402
+00:14:58,380 --> 00:15:00,240
+is really smart at inlining or doing
+
+403
+00:15:00,240 --> 00:15:02,160
+whatever magic by the way these VMs are
+
+404
+00:15:02,160 --> 00:15:03,870
+magic that's why I need to do this
+
+405
+00:15:03,870 --> 00:15:05,460
+I have no reasonable hope of ever
+
+406
+00:15:05,460 --> 00:15:06,870
+understand what's going on under the
+
+407
+00:15:06,870 --> 00:15:09,150
+hood so I need to like do this trial and
+
+408
+00:15:09,150 --> 00:15:09,450
+error
+
+409
+00:15:09,450 --> 00:15:12,540
+alchemy star another thing I found by
+
+410
+00:15:12,540 --> 00:15:15,270
+experimentation buffering is ok one of
+
+411
+00:15:15,270 --> 00:15:15,980
+the reasons my
+
+412
+00:15:15,980 --> 00:15:17,540
+original switch statement was the huge
+
+413
+00:15:17,540 --> 00:15:19,910
+was because I designed the parser the
+
+414
+00:15:19,910 --> 00:15:22,400
+cargo coding again after R I'm trying to
+
+415
+00:15:22,400 --> 00:15:24,500
+make it part use as little memory as
+
+416
+00:15:24,500 --> 00:15:26,360
+possible so I was trying to never buffer
+
+417
+00:15:26,360 --> 00:15:28,130
+any data so if I was receiving in my
+
+418
+00:15:28,130 --> 00:15:29,840
+sequel package I would always try to
+
+419
+00:15:29,840 --> 00:15:31,670
+parse the amount of bytes are already
+
+420
+00:15:31,670 --> 00:15:33,380
+received without ever storing any up
+
+421
+00:15:33,380 --> 00:15:35,210
+beforehand so what I'm doing now I'm
+
+422
+00:15:35,210 --> 00:15:37,220
+hovering entire packages and this
+
+423
+00:15:37,220 --> 00:15:38,960
+results in much less housekeeping I need
+
+424
+00:15:38,960 --> 00:15:41,360
+to keep less track of sustain less track
+
+425
+00:15:41,360 --> 00:15:43,100
+of where I am in the buffer I can write
+
+426
+00:15:43,100 --> 00:15:44,570
+much easier code that's actually better
+
+427
+00:15:44,570 --> 00:15:45,890
+and I only found this out by
+
+428
+00:15:45,890 --> 00:15:47,480
+benchmarking I thought if I use more
+
+429
+00:15:47,480 --> 00:15:49,070
+memories has to be slower but actually
+
+430
+00:15:49,070 --> 00:15:50,720
+turns out you can use memory in many
+
+431
+00:15:50,720 --> 00:15:52,550
+situations to gain better performance
+
+432
+00:15:52,550 --> 00:15:54,950
+here's my favorite one I think you guys
+
+433
+00:15:54,950 --> 00:15:58,760
+gonna like this one so I hoped I had
+
+434
+00:15:58,760 --> 00:16:00,470
+this function called pause rose in my
+
+435
+00:16:00,470 --> 00:16:03,080
+posture it very much looks like this so
+
+436
+00:16:03,080 --> 00:16:04,790
+it takes two arguments the columns and
+
+437
+00:16:04,790 --> 00:16:06,770
+the parse itself so parse itself is
+
+438
+00:16:06,770 --> 00:16:09,170
+hooked up to the socket which pumps data
+
+439
+00:16:09,170 --> 00:16:12,680
+into it so it's a writable stream but so
+
+440
+00:16:12,680 --> 00:16:14,360
+whenever I have a row data a row
+
+441
+00:16:14,360 --> 00:16:16,250
+buffered up this message gets called and
+
+442
+00:16:16,250 --> 00:16:17,870
+it's basically loops over all the
+
+443
+00:16:17,870 --> 00:16:19,760
+columns which I get beforehand and then
+
+444
+00:16:19,760 --> 00:16:21,440
+I receive two column data so I do this
+
+445
+00:16:21,440 --> 00:16:23,630
+loop and then for every column I have I
+
+446
+00:16:23,630 --> 00:16:26,150
+read one parser that read column value
+
+447
+00:16:26,150 --> 00:16:29,720
+one column value and this is I mean this
+
+448
+00:16:29,720 --> 00:16:31,280
+as simple as get and I have to do this
+
+449
+00:16:31,280 --> 00:16:34,190
+because I won't know the rows i I mean I
+
+450
+00:16:34,190 --> 00:16:35,780
+get to his columns beforehand but
+
+451
+00:16:35,780 --> 00:16:37,460
+they're different for every query so I
+
+452
+00:16:37,460 --> 00:16:38,900
+cannot really optimize his code faster
+
+453
+00:16:38,900 --> 00:16:40,400
+at least that's what I thought for a
+
+454
+00:16:40,400 --> 00:16:42,260
+long time and the profiler was also like
+
+455
+00:16:42,260 --> 00:16:44,210
+you're creating an object or something
+
+456
+00:16:44,210 --> 00:16:46,700
+but I don't know what can you do so I
+
+457
+00:16:46,700 --> 00:16:48,950
+set out to make this faster and so this
+
+458
+00:16:48,950 --> 00:16:50,900
+is what I came up with I'll give you
+
+459
+00:16:50,900 --> 00:16:56,450
+guys a second to take a look does this
+
+460
+00:16:56,450 --> 00:17:00,380
+make sense okay so what this basically
+
+461
+00:17:00,380 --> 00:17:02,690
+does is it creates a new pass or it
+
+462
+00:17:02,690 --> 00:17:04,160
+creates a new pause row function and
+
+463
+00:17:04,160 --> 00:17:09,650
+uses evolve so what comes out of it is
+
+464
+00:17:09,650 --> 00:17:11,060
+basically aesthetic functions that
+
+465
+00:17:11,060 --> 00:17:12,770
+already knows what column values it's
+
+466
+00:17:12,770 --> 00:17:14,540
+going to parse so instead of dynamically
+
+467
+00:17:14,540 --> 00:17:16,280
+adding C's values to the object it gives
+
+468
+00:17:16,280 --> 00:17:19,100
+supporter or b8 this work to do and so
+
+469
+00:17:19,100 --> 00:17:21,709
+we've heard all these things about evil
+
+470
+00:17:21,709 --> 00:17:23,209
+being terrible and being slow and blah
+
+471
+00:17:23,209 --> 00:17:23,660
+blah blah
+
+472
+00:17:23,660 --> 00:17:30,410
+screw that evils awesome here I said it
+
+473
+00:17:30,420 --> 00:17:33,280
+this is this is actually the Z trick
+
+474
+00:17:33,280 --> 00:17:35,470
+that got me the most performance for my
+
+475
+00:17:35,470 --> 00:17:37,060
+recent parser for the new experimental
+
+476
+00:17:37,060 --> 00:17:38,860
+parts I'm working on this thing was you
+
+477
+00:17:38,860 --> 00:17:41,710
+should get me from parsing 350,000 rows
+
+478
+00:17:41,710 --> 00:17:44,680
+per second to 450,000 rows per second it
+
+479
+00:17:44,680 --> 00:17:46,690
+makes an amazing difference and again I
+
+480
+00:17:46,690 --> 00:17:48,850
+don't recommend this in all contexts I
+
+481
+00:17:48,850 --> 00:17:50,440
+did only when it's your problem and
+
+482
+00:17:50,440 --> 00:17:52,330
+you've proven evil to you be useful and
+
+483
+00:17:52,330 --> 00:17:53,890
+you still need to make sure nobody's
+
+484
+00:17:53,890 --> 00:17:55,450
+trolling you this is my sequel server
+
+485
+00:17:55,450 --> 00:17:57,850
+sending me back if a column name that is
+
+486
+00:17:57,850 --> 00:18:01,270
+escaping my well my code then crazy
+
+487
+00:18:01,270 --> 00:18:04,900
+things will happen so anyway if you want
+
+488
+00:18:04,900 --> 00:18:06,490
+to level up your game next the next
+
+489
+00:18:06,490 --> 00:18:08,620
+thing you can do is you can do data
+
+490
+00:18:08,620 --> 00:18:10,810
+analysis and the way to do good data
+
+491
+00:18:10,810 --> 00:18:13,120
+analysis is to produce data points as
+
+492
+00:18:13,120 --> 00:18:16,990
+tab-separated values and so each line in
+
+493
+00:18:16,990 --> 00:18:18,640
+your in your output should be one
+
+494
+00:18:18,640 --> 00:18:20,050
+measurement like the duration how long
+
+495
+00:18:20,050 --> 00:18:21,610
+your benchmark function was running and
+
+496
+00:18:21,610 --> 00:18:24,010
+then tap separated you add as much
+
+497
+00:18:24,010 --> 00:18:25,240
+matter information as you can
+
+498
+00:18:25,240 --> 00:18:27,310
+so ya add virtual machine' matrix so
+
+499
+00:18:27,310 --> 00:18:29,710
+heap used heap total you had operating
+
+500
+00:18:29,710 --> 00:18:31,990
+system metrics like process RSS usage
+
+501
+00:18:31,990 --> 00:18:33,370
+and everything you can you get your
+
+502
+00:18:33,370 --> 00:18:34,810
+hands on that could be relevant to what
+
+503
+00:18:34,810 --> 00:18:36,610
+you're doing or relevant because
+
+504
+00:18:36,610 --> 00:18:38,020
+sometimes it turns out these things also
+
+505
+00:18:38,020 --> 00:18:41,020
+impact and the last one is the most
+
+506
+00:18:41,020 --> 00:18:43,600
+important one do not mix data now data
+
+507
+00:18:43,600 --> 00:18:47,170
+and analysis it was my biggest criticism
+
+508
+00:18:47,170 --> 00:18:48,760
+for all the performance benchmarking
+
+509
+00:18:48,760 --> 00:18:49,480
+tools out there
+
+510
+00:18:49,480 --> 00:18:51,010
+I give me a framework to write
+
+511
+00:18:51,010 --> 00:18:52,480
+benchmarks and performance things in and
+
+512
+00:18:52,480 --> 00:18:54,040
+then they will run my benchmark and
+
+513
+00:18:54,040 --> 00:18:56,500
+they'll be like the median is this or
+
+514
+00:18:56,500 --> 00:18:58,360
+they'll be like this function is 2%
+
+515
+00:18:58,360 --> 00:18:59,110
+faster
+
+516
+00:18:59,110 --> 00:19:00,970
+well they'll draw me one graph I mean
+
+517
+00:19:00,970 --> 00:19:03,010
+it's nice it's convenient it's fast but
+
+518
+00:19:03,010 --> 00:19:05,020
+it's nice and convenient and fast like
+
+519
+00:19:05,020 --> 00:19:06,550
+something else and since something else
+
+520
+00:19:06,550 --> 00:19:08,110
+is running sequel queries from HTML
+
+521
+00:19:08,110 --> 00:19:09,880
+templates you can put these things
+
+522
+00:19:09,880 --> 00:19:12,070
+together it works you get your done
+
+523
+00:19:12,070 --> 00:19:13,720
+really quickly but it's an estimate aim
+
+524
+00:19:13,720 --> 00:19:15,250
+and it limits your options of what you
+
+525
+00:19:15,250 --> 00:19:17,680
+can do later on so don't mix those two
+
+526
+00:19:17,680 --> 00:19:19,470
+steps per two separate files
+
+527
+00:19:19,470 --> 00:19:22,720
+here's how to do it best run your
+
+528
+00:19:22,720 --> 00:19:24,280
+benchmark print your stuff on standard
+
+529
+00:19:24,280 --> 00:19:26,380
+out and then pipe it into T it's a UNIX
+
+530
+00:19:26,380 --> 00:19:28,660
+utility and write it in two types of
+
+531
+00:19:28,660 --> 00:19:30,340
+rated value file so you can watch the
+
+532
+00:19:30,340 --> 00:19:32,320
+output while status coming out now that
+
+533
+00:19:32,320 --> 00:19:34,540
+the benchmark has finished running you
+
+534
+00:19:34,540 --> 00:19:36,460
+get this pure data in a file and you can
+
+535
+00:19:36,460 --> 00:19:38,230
+analyze it and for the analyzing I
+
+536
+00:19:38,230 --> 00:19:39,310
+recommend to use a tool that's really
+
+537
+00:19:39,310 --> 00:19:40,540
+good for it so that
+
+538
+00:19:40,540 --> 00:19:42,490
+see our programming language I'm not
+
+539
+00:19:42,490 --> 00:19:45,400
+really an expert but ggplot2 is the
+
+540
+00:19:45,400 --> 00:19:46,570
+library you can use to make really
+
+541
+00:19:46,570 --> 00:19:48,130
+pretty crafts with it the previous ones
+
+542
+00:19:48,130 --> 00:19:51,850
+we're useful that and later on I'll have
+
+543
+00:19:51,850 --> 00:19:53,380
+a link where you get really good art
+
+544
+00:19:53,380 --> 00:19:54,910
+tutorials it gets you up to speed in a
+
+545
+00:19:54,910 --> 00:19:57,850
+few minutes another thing I recommend is
+
+546
+00:19:57,850 --> 00:19:59,650
+use make files imagemagick
+
+547
+00:19:59,650 --> 00:20:02,410
+to just automate certain things so for
+
+548
+00:20:02,410 --> 00:20:04,840
+example R will produce PDFs and then you
+
+549
+00:20:04,840 --> 00:20:06,910
+can use make to automatically convert
+
+550
+00:20:06,910 --> 00:20:10,360
+the CSV runs ER or the tab separated
+
+551
+00:20:10,360 --> 00:20:12,760
+values make it run co-op program I'll
+
+552
+00:20:12,760 --> 00:20:14,860
+put PDS and then use image magic to get
+
+553
+00:20:14,860 --> 00:20:17,410
+PNG images for the web part of it and
+
+554
+00:20:17,410 --> 00:20:18,970
+then there's a tool called Skitch for
+
+555
+00:20:18,970 --> 00:20:21,010
+always ten that you can use to make
+
+556
+00:20:21,010 --> 00:20:24,970
+annotations so so why do you need to do
+
+557
+00:20:24,970 --> 00:20:26,320
+this I'll show you a practical example
+
+558
+00:20:26,320 --> 00:20:29,020
+of what I found so I showed you this
+
+559
+00:20:29,020 --> 00:20:30,790
+benchmark before and actually not only
+
+560
+00:20:30,790 --> 00:20:32,740
+this benchmark but all the benchmarks I
+
+561
+00:20:32,740 --> 00:20:34,270
+showed you so far we're kind of
+
+562
+00:20:34,270 --> 00:20:36,190
+because I give you little crafts that
+
+563
+00:20:36,190 --> 00:20:37,840
+show this thing is faster than listening
+
+564
+00:20:37,840 --> 00:20:39,730
+and they don't analyze anything and this
+
+565
+00:20:39,730 --> 00:20:40,840
+is what's wrong with most of the
+
+566
+00:20:40,840 --> 00:20:42,370
+benchmarks you see out there they don't
+
+567
+00:20:42,370 --> 00:20:44,740
+give a very deep so when you go very
+
+568
+00:20:44,740 --> 00:20:46,540
+deep you sometimes sometimes it doesn't
+
+569
+00:20:46,540 --> 00:20:47,470
+matter but sometimes you find
+
+570
+00:20:47,470 --> 00:20:48,880
+interesting things and I did with this
+
+571
+00:20:48,880 --> 00:20:51,910
+one this is what I found so this is a
+
+572
+00:20:51,910 --> 00:20:54,430
+jitter plot similar to the bar graph but
+
+573
+00:20:54,430 --> 00:20:56,020
+it shows me each data points that I
+
+574
+00:20:56,020 --> 00:20:58,690
+recorded and see x-axis doesn't matter
+
+575
+00:20:58,690 --> 00:21:00,760
+just randomly distributed for their
+
+576
+00:21:00,760 --> 00:21:02,740
+library I'm currently testing and what I
+
+577
+00:21:02,740 --> 00:21:05,740
+can see is the what is going on why
+
+578
+00:21:05,740 --> 00:21:08,650
+do I have two data islands here it makes
+
+579
+00:21:08,650 --> 00:21:10,750
+no sense it seems like sometimes my code
+
+580
+00:21:10,750 --> 00:21:12,310
+is really fast and sometimes it's really
+
+581
+00:21:12,310 --> 00:21:15,310
+slow I was really confused when I saw
+
+582
+00:21:15,310 --> 00:21:16,960
+this and I questioned my code for a long
+
+583
+00:21:16,960 --> 00:21:20,080
+time so but here's the value of having
+
+584
+00:21:20,080 --> 00:21:21,640
+your data separated from your analysis
+
+585
+00:21:21,640 --> 00:21:23,620
+you can dig deeper so when you now plot
+
+586
+00:21:23,620 --> 00:21:26,740
+this same performance data points over
+
+587
+00:21:26,740 --> 00:21:29,110
+the time axis it's not actually time
+
+588
+00:21:29,110 --> 00:21:31,180
+it's a iteration number for the
+
+589
+00:21:31,180 --> 00:21:33,880
+benchmark you'll see that both libraries
+
+590
+00:21:33,880 --> 00:21:36,220
+make a huge performance drop at the same
+
+591
+00:21:36,220 --> 00:21:38,410
+point in time or the same iteration and
+
+592
+00:21:38,410 --> 00:21:40,390
+then they stay at terrible performance
+
+593
+00:21:40,390 --> 00:21:42,610
+there's something happens there again if
+
+594
+00:21:42,610 --> 00:21:44,140
+you have more data you can look what
+
+595
+00:21:44,140 --> 00:21:46,570
+what happened else at the same moment so
+
+596
+00:21:46,570 --> 00:21:49,630
+the next thing I found was here's the
+
+597
+00:21:49,630 --> 00:21:52,420
+heap usage for off v8 or the heap total
+
+598
+00:21:52,420 --> 00:21:54,350
+so that's a total amount of memory v8
+
+599
+00:21:54,350 --> 00:21:56,690
+kids for putting my objects in and at
+
+600
+00:21:56,690 --> 00:21:58,549
+the point where my performance goes to
+
+601
+00:21:58,549 --> 00:22:01,130
+ basically the eight decided I have
+
+602
+00:22:01,130 --> 00:22:03,020
+basically the eight decided I have
+20 megabytes of heap but I would like I
+
+603
+00:22:03,020 --> 00:22:05,059
+don't know 35 and then my performance
+
+604
+00:22:05,059 --> 00:22:07,429
+just goes terrible and I find all the
+
+605
+00:22:07,429 --> 00:22:08,720
+benchmarks that Ruth is pretty well or
+
+606
+00:22:08,720 --> 00:22:11,360
+another craft this is a heap used so you
+
+607
+00:22:11,360 --> 00:22:13,160
+can see v8 is actually doing garbage
+
+608
+00:22:13,160 --> 00:22:14,630
+collection it doesn't look like I'm
+
+609
+00:22:14,630 --> 00:22:16,910
+leaking anything it just said v8 decided
+
+610
+00:22:16,910 --> 00:22:19,760
+hey this is where I should get a bigger
+
+611
+00:22:19,760 --> 00:22:21,830
+heap and it it seems like the wrong
+
+612
+00:22:21,830 --> 00:22:23,690
+decision could still be a problem in my
+
+613
+00:22:23,690 --> 00:22:25,820
+code I don't know but these are the
+
+614
+00:22:25,820 --> 00:22:27,350
+things you find when you do data
+
+615
+00:22:27,350 --> 00:22:29,710
+collection well and you analyze it well
+
+616
+00:22:29,710 --> 00:22:33,919
+so ya collect data analyze it find
+
+617
+00:22:33,919 --> 00:22:35,120
+problems tweak C code
+
+618
+00:22:35,120 --> 00:22:37,010
+repeat that process it takes a ton
+
+619
+00:22:37,010 --> 00:22:40,640
+of time there's no like easy fixes but
+
+620
+00:22:40,640 --> 00:22:42,799
+that's the process that helped me do
+
+621
+00:22:42,799 --> 00:22:54,910
+these my sequel things thank you
+
+622
+00:22:54,920 --> 00:23:04,010
+I think we can do questions I'm open
+
+623
+00:23:04,010 --> 00:23:07,490
+sourcing this right now so now it's open
+
+624
+00:23:07,490 --> 00:23:29,210
+source cool questions okay hey I just
+
+625
+00:23:29,210 --> 00:23:31,040
+remember some times where we had to like
+
+626
+00:23:31,040 --> 00:23:32,960
+doing this kind of performance
+
+627
+00:23:32,960 --> 00:23:36,440
+improvements for other browsers and we
+
+628
+00:23:36,440 --> 00:23:39,650
+did really crazy stuff to get it faster
+
+629
+00:23:39,650 --> 00:23:42,580
+and then it turns out that other like
+
+630
+00:23:42,580 --> 00:23:46,040
+mechanics behind was optimized by p8 or
+
+631
+00:23:46,040 --> 00:23:48,260
+other process and so it turns out that
+
+632
+00:23:48,260 --> 00:23:51,080
+the original idea was very faster than
+
+633
+00:23:51,080 --> 00:23:52,760
+the tweak we did Oh
+
+634
+00:23:52,760 --> 00:23:55,700
+how do you handle that okay you're the
+
+635
+00:23:55,700 --> 00:23:58,220
+history of all your results and see okay
+
+636
+00:23:58,220 --> 00:24:00,860
+I have to rework this for the new v8
+
+637
+00:24:00,860 --> 00:24:04,280
+yeah so that's a good point so sometimes
+
+638
+00:24:04,280 --> 00:24:05,870
+you do crazy optimizations for example
+
+639
+00:24:05,870 --> 00:24:07,490
+my evil sing falls in the crazy
+
+640
+00:24:07,490 --> 00:24:09,500
+optimization category and could be that
+
+641
+00:24:09,500 --> 00:24:10,850
+the v8 guys figure out how to optimize
+
+642
+00:24:10,850 --> 00:24:12,440
+this case and they produce a result
+
+643
+00:24:12,440 --> 00:24:13,850
+that's much better than what I'm doing
+
+644
+00:24:13,850 --> 00:24:15,770
+was evil and then my evil optimization
+
+645
+00:24:15,770 --> 00:24:18,550
+actually turns into a non optimal code
+
+646
+00:24:18,550 --> 00:24:21,080
+again hard work do it again look at the
+
+647
+00:24:21,080 --> 00:24:23,810
+data it so far I was really lucky I mean
+
+648
+00:24:23,810 --> 00:24:25,250
+I was bitching about some virtual
+
+649
+00:24:25,250 --> 00:24:26,390
+machines being matching and all but
+
+650
+00:24:26,390 --> 00:24:28,040
+they're getting really really fast so I
+
+651
+00:24:28,040 --> 00:24:29,540
+get huge performance increases from
+
+652
+00:24:29,540 --> 00:24:31,310
+notes here that 4206
+
+653
+00:24:31,310 --> 00:24:34,700
+it was insane and 0.6 to 0.8 was also
+
+654
+00:24:34,700 --> 00:24:37,160
+with huge improvements new v8 versions
+
+655
+00:24:37,160 --> 00:24:38,930
+have helped me but they could also hurt
+
+656
+00:24:38,930 --> 00:24:40,640
+me if I'm doing optimizations that are
+
+657
+00:24:40,640 --> 00:24:42,290
+really stupid but generally speaking
+
+658
+00:24:42,290 --> 00:24:44,870
+evil is the only crazy thing I did for
+
+659
+00:24:44,870 --> 00:24:46,610
+most part my code actually turned out to
+
+660
+00:24:46,610 --> 00:24:49,550
+be simpler and more modular and not
+
+661
+00:24:49,550 --> 00:24:51,710
+worse so I'm not I'm not going crazy to
+
+662
+00:24:51,710 --> 00:24:53,810
+just please a VM if I can avoid it
+
+663
+00:24:53,810 --> 00:25:00,410
+the evil thing is just fun ok that's it
+
+664
+00:25:00,410 --> 00:25:02,080
+thank you very much Felix
+

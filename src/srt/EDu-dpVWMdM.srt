@@ -1,0 +1,3657 @@
+1
+00:00:07,670 --> 00:00:10,769
+
+so let's talk about p oj s first of all
+
+2
+00:00:10,769 --> 00:00:12,570
+thank you all for coming here I know
+
+3
+00:00:12,570 --> 00:00:14,820
+that I'm competing this fall down stairs
+
+4
+00:00:14,820 --> 00:00:17,010
+so I'm amazed as many people came here I
+
+5
+00:00:17,010 --> 00:00:18,539
+would be in vaults talk right now but I
+
+6
+00:00:18,539 --> 00:00:21,720
+have to get the talk right now so my
+
+7
+00:00:21,720 --> 00:00:23,369
+name is on us Carl I've work this was a
+
+8
+00:00:23,369 --> 00:00:25,140
+lot and this work i'm presenting today
+
+9
+00:00:25,140 --> 00:00:28,230
+was made by by now something like 15
+
+10
+00:00:28,230 --> 00:00:29,910
+contributors that are not all on a slide
+
+11
+00:00:29,910 --> 00:00:31,650
+one person is gonna slide is julian
+
+12
+00:00:31,650 --> 00:00:33,210
+actually made the slides for me he's
+
+13
+00:00:33,210 --> 00:00:35,280
+also half a PDF of GS offers so Julian
+
+14
+00:00:35,280 --> 00:00:41,340
+raise your hand hi Julian yeah p Please
+
+15
+00:00:41,340 --> 00:00:42,960
+time Julian you don't have look at
+
+16
+00:00:42,960 --> 00:00:44,610
+montes kind of slides I usually make
+
+17
+00:00:44,610 --> 00:00:47,550
+that's a big plus so I'm going to talk
+
+18
+00:00:47,550 --> 00:00:49,500
+to the what PR rendering and about
+
+19
+00:00:49,500 --> 00:00:51,329
+structure PDF and how we do this in PDF
+
+20
+00:00:51,329 --> 00:00:54,930
+OGS about images and fonts but also I
+
+21
+00:00:54,930 --> 00:00:56,219
+would have spent quite a bit of time on
+
+22
+00:00:56,219 --> 00:00:58,289
+the problems he encounters encountered
+
+23
+00:00:58,289 --> 00:01:00,719
+and also actual performance problems
+
+24
+00:01:00,719 --> 00:01:04,019
+around here and I want to show you what
+
+25
+00:01:04,019 --> 00:01:05,159
+kind of things are really important to
+
+26
+00:01:05,159 --> 00:01:06,450
+optimize if you are looking at system
+
+27
+00:01:06,450 --> 00:01:08,340
+like this and then we conclude is a to
+
+28
+00:01:08,340 --> 00:01:10,560
+do and the to do list or PM tjs and
+
+29
+00:01:10,560 --> 00:01:14,010
+double gatorade MO so the goal of the
+
+30
+00:01:14,010 --> 00:01:15,840
+PDF ojs project was to produce a
+
+31
+00:01:15,840 --> 00:01:18,990
+faithful high quality fast efficient PDF
+
+32
+00:01:18,990 --> 00:01:21,210
+renderer and by the time we started this
+
+33
+00:01:21,210 --> 00:01:22,920
+project really the motivation for us was
+
+34
+00:01:22,920 --> 00:01:25,380
+to find out what is possible to use the
+
+35
+00:01:25,380 --> 00:01:28,320
+HTML Javascript platform to build a PDF
+
+36
+00:01:28,320 --> 00:01:29,909
+member at that point they were a couple
+
+37
+00:01:29,909 --> 00:01:31,979
+connect to a PDF renderers for tiny
+
+38
+00:01:31,979 --> 00:01:35,100
+subset or maybe can not draw figures PDF
+
+39
+00:01:35,100 --> 00:01:37,470
+like render commands but collection PDF
+
+40
+00:01:37,470 --> 00:01:39,030
+renderer and all browsers at that point
+
+41
+00:01:39,030 --> 00:01:41,880
+you're using native code to do PDF
+
+42
+00:01:41,880 --> 00:01:44,250
+rendering so chrome for example embeds
+
+43
+00:01:44,250 --> 00:01:46,259
+is like commercial foxit PDF renderer
+
+44
+00:01:46,259 --> 00:01:48,390
+and we were just wondering why it's not
+
+45
+00:01:48,390 --> 00:01:49,680
+being done in javascript in order to
+
+46
+00:01:49,680 --> 00:01:51,540
+find out and personally I'm not reading
+
+47
+00:01:51,540 --> 00:01:54,000
+a web authoring a platform engineer I'm
+
+48
+00:01:54,000 --> 00:01:55,259
+a browser platform so I was curious
+
+49
+00:01:55,259 --> 00:01:56,790
+whether there are things in a platform
+
+50
+00:01:56,790 --> 00:01:58,259
+that some are prohibitive maybe it's a
+
+51
+00:01:58,259 --> 00:02:00,450
+slow features on the same so there's one
+
+52
+00:02:00,450 --> 00:02:01,979
+experiment in browser technology with
+
+53
+00:02:01,979 --> 00:02:06,030
+event PDF entering and really the the
+
+54
+00:02:06,030 --> 00:02:07,770
+main goal from this perspective being a
+
+55
+00:02:07,770 --> 00:02:09,780
+browser implementer is you want to avoid
+
+56
+00:02:09,780 --> 00:02:11,080
+having native code no platform
+
+57
+00:02:11,080 --> 00:02:14,250
+of former vp engineering of mozilla
+
+58
+00:02:14,250 --> 00:02:16,270
+affectionately called Acrobat Reader or
+
+59
+00:02:16,270 --> 00:02:18,180
+popular native code execution format
+
+60
+00:02:18,180 --> 00:02:20,560
+there's every time you put native code
+
+61
+00:02:20,560 --> 00:02:22,180
+into a browser there's always a risk if
+
+62
+00:02:22,180 --> 00:02:24,370
+getting it exploited and PDF readers
+
+63
+00:02:24,370 --> 00:02:26,530
+have been exploiting a pass intensively
+
+64
+00:02:26,530 --> 00:02:28,960
+so the last major iPhone exploit wall
+
+65
+00:02:28,960 --> 00:02:31,870
+space on the PDF reader in the iPhone
+
+66
+00:02:31,870 --> 00:02:35,530
+itself so using the web to build these
+
+67
+00:02:35,530 --> 00:02:38,140
+pieces gives us a secure platform where
+
+68
+00:02:38,140 --> 00:02:40,210
+you can run PDF documents display that
+
+69
+00:02:40,210 --> 00:02:41,980
+may don't with your risk of being taking
+
+70
+00:02:41,980 --> 00:02:44,970
+about shop so that's at the PDF format
+
+71
+00:02:44,970 --> 00:02:47,350
+PDF is kind of pretty standard document
+
+72
+00:02:47,350 --> 00:02:49,360
+format it looks very similar to unlock
+
+73
+00:02:49,360 --> 00:02:50,830
+my formats like your documents there's a
+
+74
+00:02:50,830 --> 00:02:52,090
+header that tell us a little bit about a
+
+75
+00:02:52,090 --> 00:02:55,209
+PDF version and this an actual body wrap
+
+76
+00:02:55,209 --> 00:02:59,260
+contains streamed objects that are
+
+77
+00:02:59,260 --> 00:03:00,910
+identified by a position into the file
+
+78
+00:03:00,910 --> 00:03:03,040
+and this building an object or after
+
+79
+00:03:03,040 --> 00:03:04,510
+concepts of the different pages that are
+
+80
+00:03:04,510 --> 00:03:05,830
+linked together to a document and
+
+81
+00:03:05,830 --> 00:03:07,690
+individual pages of rendering commands
+
+82
+00:03:07,690 --> 00:03:09,640
+and images and so on and then at the end
+
+83
+00:03:09,640 --> 00:03:11,980
+of documents there's a table the xref
+
+84
+00:03:11,980 --> 00:03:14,830
+table and this provides click mapping of
+
+85
+00:03:14,830 --> 00:03:17,110
+object ids to index us into the file so
+
+86
+00:03:17,110 --> 00:03:18,580
+this is what you use to achieve fine
+
+87
+00:03:18,580 --> 00:03:20,200
+individual objects in this large file
+
+88
+00:03:20,200 --> 00:03:22,630
+and this fights going to be large that's
+
+89
+00:03:22,630 --> 00:03:23,890
+a megabyte so it's really important to
+
+90
+00:03:23,890 --> 00:03:25,239
+have a central point where you can find
+
+91
+00:03:25,239 --> 00:03:28,060
+them and then the trailer at the very
+
+92
+00:03:28,060 --> 00:03:29,380
+end of the file kind of tells you how
+
+93
+00:03:29,380 --> 00:03:31,180
+you can find to the root of this object
+
+94
+00:03:31,180 --> 00:03:34,209
+tree and when this PDF format was
+
+95
+00:03:34,209 --> 00:03:36,700
+specified many many years ago it's kind
+
+96
+00:03:36,700 --> 00:03:39,040
+of predated really exchanging data or
+
+97
+00:03:39,040 --> 00:03:41,230
+the wire so I just for my country not
+
+98
+00:03:41,230 --> 00:03:44,680
+very suitable to actually be transferred
+
+99
+00:03:44,680 --> 00:03:45,670
+because you have too busy fetch the
+
+100
+00:03:45,670 --> 00:03:47,230
+entire file all the way the last bite
+
+101
+00:03:47,230 --> 00:03:48,970
+before you can display any single page
+
+102
+00:03:48,970 --> 00:03:50,380
+so by now there are couple additional
+
+103
+00:03:50,380 --> 00:03:51,880
+extensions to this format but it can
+
+104
+00:03:51,880 --> 00:03:54,340
+only just fetch some parts of it and
+
+105
+00:03:54,340 --> 00:03:56,200
+stuff like that so there's like
+
+106
+00:03:56,200 --> 00:03:57,550
+complications on top of this but this is
+
+107
+00:03:57,550 --> 00:04:00,700
+the basic structure the video processing
+
+108
+00:04:00,700 --> 00:04:02,110
+this is for currently loading the entire
+
+109
+00:04:02,110 --> 00:04:04,840
+file with six HR into an array but we
+
+110
+00:04:04,840 --> 00:04:06,820
+can also support very easily this idea
+
+111
+00:04:06,820 --> 00:04:08,650
+of having range requests only get parts
+
+112
+00:04:08,650 --> 00:04:10,239
+of the files you can quickly window
+
+113
+00:04:10,239 --> 00:04:12,790
+these things and you basically you
+
+114
+00:04:12,790 --> 00:04:14,500
+create a PDF document object around that
+
+115
+00:04:14,500 --> 00:04:16,989
+and you can fetch pages from that the
+
+116
+00:04:16,989 --> 00:04:20,650
+document and these two stages to
+
+117
+00:04:20,650 --> 00:04:23,380
+rendering first we start rendering by
+
+118
+00:04:23,380 --> 00:04:24,370
+providing a graphics
+
+119
+00:04:24,370 --> 00:04:27,490
+context and the page and this is going
+
+120
+00:04:27,490 --> 00:04:29,020
+to go and read all the objects
+
+121
+00:04:29,020 --> 00:04:30,460
+associated with that page which contains
+
+122
+00:04:30,460 --> 00:04:34,180
+of rendering objects and images and it's
+
+123
+00:04:34,180 --> 00:04:35,229
+going to process all of them to identify
+
+124
+00:04:35,229 --> 00:04:37,180
+resources we have to load before we can
+
+125
+00:04:37,180 --> 00:04:38,949
+actually display the page and then once
+
+126
+00:04:38,949 --> 00:04:41,650
+those resources have been loaded in
+
+127
+00:04:41,650 --> 00:04:43,270
+particular fonts and images then we can
+
+128
+00:04:43,270 --> 00:04:45,639
+actually execute is the sequence of
+
+129
+00:04:45,639 --> 00:04:47,770
+commands that we have just reported for
+
+130
+00:04:47,770 --> 00:04:49,930
+the page this is important because in a
+
+131
+00:04:49,930 --> 00:04:52,780
+general HTML page when you apply some
+
+132
+00:04:52,780 --> 00:04:56,740
+custom font by CSS then the CSS rule
+
+133
+00:04:56,740 --> 00:04:58,389
+takes a moment to load they can just go
+
+134
+00:04:58,389 --> 00:05:00,130
+ahead and render the page miss of their
+
+135
+00:05:00,130 --> 00:05:01,600
+own font and the browser automatically
+
+136
+00:05:01,600 --> 00:05:03,310
+is going to we render the page assume
+
+137
+00:05:03,310 --> 00:05:05,080
+the actual CSS rule and the font is
+
+138
+00:05:05,080 --> 00:05:07,449
+available for canvas unfortunate is not
+
+139
+00:05:07,449 --> 00:05:09,639
+being done so if you set a new font on
+
+140
+00:05:09,639 --> 00:05:11,199
+canvas and don't wait for the browser to
+
+141
+00:05:11,199 --> 00:05:12,580
+load it and start drawing you just get
+
+142
+00:05:12,580 --> 00:05:14,350
+the bad font in there in its it so to
+
+143
+00:05:14,350 --> 00:05:16,360
+avoid that be basically that's what we
+
+144
+00:05:16,360 --> 00:05:18,729
+record these pdfs home as first and then
+
+145
+00:05:18,729 --> 00:05:20,050
+load the font the months of font is
+
+146
+00:05:20,050 --> 00:05:21,550
+loaded then they actually display the
+
+147
+00:05:21,550 --> 00:05:26,470
+page so here's an example of a PDF file
+
+148
+00:05:26,470 --> 00:05:28,030
+and an object on this kind of PDF file
+
+149
+00:05:28,030 --> 00:05:31,110
+so object number three is a page in this
+
+150
+00:05:31,110 --> 00:05:33,550
+this PDF document and have read two
+
+151
+00:05:33,550 --> 00:05:35,410
+important parts when it's the resource
+
+152
+00:05:35,410 --> 00:05:37,900
+part where funds and graphic objects are
+
+153
+00:05:37,900 --> 00:05:39,400
+in and then contents is the actual
+
+154
+00:05:39,400 --> 00:05:41,110
+command screen that renders a PDF
+
+155
+00:05:41,110 --> 00:05:45,130
+document so initially we attach numbered
+
+156
+00:05:45,130 --> 00:05:47,020
+option number three if you say get page
+
+157
+00:05:47,020 --> 00:05:48,820
+and then if you start rendering we have
+
+158
+00:05:48,820 --> 00:05:50,530
+to fetch the resources and actual
+
+159
+00:05:50,530 --> 00:05:52,960
+content and parcels further and this is
+
+160
+00:05:52,960 --> 00:05:54,669
+what the extra content stream of this
+
+161
+00:05:54,669 --> 00:05:56,919
+page he looks like it's a sequence of
+
+162
+00:05:56,919 --> 00:05:59,410
+commands here streams can Adobe's way of
+
+163
+00:05:59,410 --> 00:06:01,479
+saying array so it's just an array of
+
+164
+00:06:01,479 --> 00:06:03,699
+commands that executes in sequence in
+
+165
+00:06:03,699 --> 00:06:04,840
+this very different commands here the
+
+166
+00:06:04,840 --> 00:06:06,910
+first one sets a graphic state this is
+
+167
+00:06:06,910 --> 00:06:09,340
+the second one is the s0 there that's a
+
+168
+00:06:09,340 --> 00:06:12,220
+fun command it says select 10 and then
+
+169
+00:06:12,220 --> 00:06:13,900
+you can see actually text go on commands
+
+170
+00:06:13,900 --> 00:06:18,970
+the middle part of it and if you were to
+
+171
+00:06:18,970 --> 00:06:20,710
+look at a PDF document in a text editor
+
+172
+00:06:20,710 --> 00:06:22,479
+and it's not encrypted and it's not
+
+173
+00:06:22,479 --> 00:06:23,800
+compressed you would actually literally
+
+174
+00:06:23,800 --> 00:06:25,570
+see this text here so it's a text-based
+
+175
+00:06:25,570 --> 00:06:30,190
+format however to achieve better achieve
+
+176
+00:06:30,190 --> 00:06:32,409
+small documents frequently is actually
+
+177
+00:06:32,409 --> 00:06:35,080
+compressed with zip so basically the
+
+178
+00:06:35,080 --> 00:06:36,620
+stream part isn't taken and compare
+
+179
+00:06:36,620 --> 00:06:40,520
+it's a simple deflate algorithm so in
+
+180
+00:06:40,520 --> 00:06:42,080
+this first step that we collect all the
+
+181
+00:06:42,080 --> 00:06:44,540
+resources we walk the extra catalog and
+
+182
+00:06:44,540 --> 00:06:45,889
+find all these different funds and
+
+183
+00:06:45,889 --> 00:06:47,810
+anything else you need and apparently
+
+184
+00:06:47,810 --> 00:06:50,690
+build an intermediate presentation that
+
+185
+00:06:50,690 --> 00:06:52,669
+contains all the rendering commands that
+
+186
+00:06:52,669 --> 00:06:55,490
+we encounter and again we cannot execute
+
+187
+00:06:55,490 --> 00:06:57,500
+them yet because we have not loaded all
+
+188
+00:06:57,500 --> 00:06:59,000
+the resources associated with it so you
+
+189
+00:06:59,000 --> 00:07:00,650
+can see here that we set the graphic
+
+190
+00:07:00,650 --> 00:07:02,240
+stage and then we nor this dependency
+
+191
+00:07:02,240 --> 00:07:04,520
+this actually goes off and files off a
+
+192
+00:07:04,520 --> 00:07:06,380
+custom CSS rule that attaches to the
+
+193
+00:07:06,380 --> 00:07:09,490
+document to load the font and the
+
+194
+00:07:09,490 --> 00:07:11,570
+satphone command here cannot be executed
+
+195
+00:07:11,570 --> 00:07:13,520
+yet we are destroying this in an array
+
+196
+00:07:13,520 --> 00:07:15,710
+as soon the actual font loading is
+
+197
+00:07:15,710 --> 00:07:17,000
+complete then you can execute this
+
+198
+00:07:17,000 --> 00:07:19,190
+sequence and the rest of the IR looks
+
+199
+00:07:19,190 --> 00:07:21,020
+pretty much like a canvas interface so
+
+200
+00:07:21,020 --> 00:07:22,250
+canvas is currently the back end we are
+
+201
+00:07:22,250 --> 00:07:25,010
+using and it's roughly the same commands
+
+202
+00:07:25,010 --> 00:07:27,680
+that are also in canvas though one minor
+
+203
+00:07:27,680 --> 00:07:28,789
+difference is that we actually keep
+
+204
+00:07:28,789 --> 00:07:30,289
+track of the state of a per serve and
+
+205
+00:07:30,289 --> 00:07:32,419
+texas output it so not everything in PDF
+
+206
+00:07:32,419 --> 00:07:34,940
+is absolute position actual text you
+
+207
+00:07:34,940 --> 00:07:36,800
+have to measure how long the virtus and
+
+208
+00:07:36,800 --> 00:07:38,510
+then position refers to the air since
+
+209
+00:07:38,510 --> 00:07:39,770
+there might be more text showing up
+
+210
+00:07:39,770 --> 00:07:44,450
+without an extra positioning so once
+
+211
+00:07:44,450 --> 00:07:45,620
+then all the phones are loaded then we
+
+212
+00:07:45,620 --> 00:07:46,550
+can't you go ahead and execute the
+
+213
+00:07:46,550 --> 00:07:48,020
+sequence of commands and all the funds
+
+214
+00:07:48,020 --> 00:07:49,729
+will be available and all the images we
+
+215
+00:07:49,729 --> 00:07:51,200
+are payable and we can draw them to a
+
+216
+00:07:51,200 --> 00:07:55,340
+canvas and that's it images so PDF
+
+217
+00:07:55,340 --> 00:07:56,419
+documents can contain a bunch of
+
+218
+00:07:56,419 --> 00:07:58,400
+different image formats this is like
+
+219
+00:07:58,400 --> 00:08:00,620
+eight or nine different ones pretty
+
+220
+00:08:00,620 --> 00:08:03,289
+common one is jpg and then we first
+
+221
+00:08:03,289 --> 00:08:04,700
+started this we did a little experiment
+
+222
+00:08:04,700 --> 00:08:07,280
+of implementing jtag just in JavaScript
+
+223
+00:08:07,280 --> 00:08:09,110
+they turned out to be really really slow
+
+224
+00:08:09,110 --> 00:08:10,460
+something like 10 to 100 x slower
+
+225
+00:08:10,460 --> 00:08:12,500
+depending on what exactly the JPEG file
+
+226
+00:08:12,500 --> 00:08:13,970
+look like so what we ended up doing
+
+227
+00:08:13,970 --> 00:08:15,860
+instead is since the format stalls
+
+228
+00:08:15,860 --> 00:08:17,930
+natively supported by the browser we
+
+229
+00:08:17,930 --> 00:08:19,550
+just take the content of the file and
+
+230
+00:08:19,550 --> 00:08:21,560
+basically for encode it and then stick
+
+231
+00:08:21,560 --> 00:08:23,930
+it back into a Dom element that does the
+
+232
+00:08:23,930 --> 00:08:27,530
+actual decoding work for us and if it's
+
+233
+00:08:27,530 --> 00:08:29,090
+not a JPEG stream then we have to do the
+
+234
+00:08:29,090 --> 00:08:30,889
+manual the corn by hand there's a bunch
+
+235
+00:08:30,889 --> 00:08:32,390
+of different formats if it is at four so
+
+236
+00:08:32,390 --> 00:08:34,570
+PNG for example can appear NPS
+
+237
+00:08:34,570 --> 00:08:36,890
+unfortunately the pd a-- the PNG format
+
+238
+00:08:36,890 --> 00:08:39,169
+that we use is not exactly the Veda PNG
+
+239
+00:08:39,169 --> 00:08:40,909
+standard looks like there's a couple of
+
+240
+00:08:40,909 --> 00:08:43,219
+different things in there I'm not sure
+
+241
+00:08:43,219 --> 00:08:44,600
+it'll become available so I think by the
+
+242
+00:08:44,600 --> 00:08:46,430
+time that it is they avoid the sound of
+
+243
+00:08:46,430 --> 00:08:47,910
+an entire past yet so I do
+
+244
+00:08:47,910 --> 00:08:50,130
+like snapchat original fit and that
+
+245
+00:08:50,130 --> 00:08:51,330
+ended up not being what's being a
+
+246
+00:08:51,330 --> 00:08:53,520
+standard so PNG we have to do by hand
+
+247
+00:08:53,520 --> 00:08:55,830
+it's a pretty efficient file format so
+
+248
+00:08:55,830 --> 00:08:57,150
+it's not very difficult to do that
+
+249
+00:08:57,150 --> 00:09:00,140
+there's also this just bitmap
+
+250
+00:09:00,140 --> 00:09:02,550
+compression formats and so on but you do
+
+251
+00:09:02,550 --> 00:09:03,930
+they're basically just read the data we
+
+252
+00:09:03,930 --> 00:09:05,400
+convert it to a color space and then use
+
+253
+00:09:05,400 --> 00:09:08,040
+canvas and just blit the pixel data and
+
+254
+00:09:08,040 --> 00:09:09,720
+there so most of this tends to be three
+
+255
+00:09:09,720 --> 00:09:14,340
+efficient fonts so PDF documents can
+
+256
+00:09:14,340 --> 00:09:15,570
+contain a bunch of different font
+
+257
+00:09:15,570 --> 00:09:17,730
+formats as type 1 fonts type two phones
+
+258
+00:09:17,730 --> 00:09:20,040
+type 3 fonts and the casual observer
+
+259
+00:09:20,040 --> 00:09:21,270
+might think that these are like super
+
+260
+00:09:21,270 --> 00:09:23,160
+sized right like type 2 is a superset of
+
+261
+00:09:23,160 --> 00:09:25,170
+type 1 and then type 3 super sub type 2
+
+262
+00:09:25,170 --> 00:09:26,850
+and there's this farthest thing from the
+
+263
+00:09:26,850 --> 00:09:29,160
+truth so type 1 and type 2 are super
+
+264
+00:09:29,160 --> 00:09:31,830
+sets and subsets of each other and you
+
+265
+00:09:31,830 --> 00:09:35,400
+cannot cannot convert trivially either
+
+266
+00:09:35,400 --> 00:09:36,840
+one into the other but you can do some
+
+267
+00:09:36,840 --> 00:09:38,820
+tricks so type 1 fonts actually not
+
+268
+00:09:38,820 --> 00:09:41,460
+support on the web type 2 fonts are it
+
+269
+00:09:41,460 --> 00:09:43,410
+since you can convert it to open type so
+
+270
+00:09:43,410 --> 00:09:45,180
+what you end up doing is we take type 1
+
+271
+00:09:45,180 --> 00:09:46,710
+fonts and kind of reinterpret them the
+
+272
+00:09:46,710 --> 00:09:48,840
+interpret the sequence of commands that
+
+273
+00:09:48,840 --> 00:09:50,190
+draws the autumn out of the phone and
+
+274
+00:09:50,190 --> 00:09:52,130
+amid the equivalent have two
+
+275
+00:09:52,130 --> 00:09:54,060
+instructions for that and convert all
+
+276
+00:09:54,060 --> 00:09:55,860
+the hinting data and they get a type too
+
+277
+00:09:55,860 --> 00:09:57,870
+fond out of that and a type two font we
+
+278
+00:09:57,870 --> 00:10:00,210
+can wrap into an open type font
+
+279
+00:10:00,210 --> 00:10:01,650
+container and then that the browser can
+
+280
+00:10:01,650 --> 00:10:04,800
+load and I'll use a custom CSS rule let
+
+281
+00:10:04,800 --> 00:10:05,970
+me inject in the document to actually
+
+282
+00:10:05,970 --> 00:10:08,940
+load the font as we are parsing through
+
+283
+00:10:08,940 --> 00:10:11,040
+the document unfortunately some funds
+
+284
+00:10:11,040 --> 00:10:13,050
+cannot be converted this way so type 3
+
+285
+00:10:13,050 --> 00:10:15,480
+fonts they even go a step further and
+
+286
+00:10:15,480 --> 00:10:18,030
+it's typed refund every glyph is a PDF
+
+287
+00:10:18,030 --> 00:10:20,550
+document so in theory for every glue if
+
+288
+00:10:20,550 --> 00:10:21,900
+you can have a video playing in there
+
+289
+00:10:21,900 --> 00:10:23,550
+and I will flash running and everything
+
+290
+00:10:23,550 --> 00:10:25,860
+else creativeness you can do in PDF so
+
+291
+00:10:25,860 --> 00:10:27,210
+attack free fonts you cannot convert
+
+292
+00:10:27,210 --> 00:10:28,200
+this easily basic whether you're
+
+293
+00:10:28,200 --> 00:10:29,640
+planning to do there this is simply use
+
+294
+00:10:29,640 --> 00:10:31,080
+the rendering pipeline you already have
+
+295
+00:10:31,080 --> 00:10:33,000
+to draw a to individual good it's going
+
+296
+00:10:33,000 --> 00:10:35,400
+to horace loeb fantastically type free
+
+297
+00:10:35,400 --> 00:10:36,810
+phones almost never use so it's not be a
+
+298
+00:10:36,810 --> 00:10:41,220
+practical problem alright so this is
+
+299
+00:10:41,220 --> 00:10:42,450
+kind of nice part so far everything's
+
+300
+00:10:42,450 --> 00:10:43,620
+weird everything is great everything is
+
+301
+00:10:43,620 --> 00:10:45,120
+fast let's talk about the promise
+
+302
+00:10:45,120 --> 00:10:47,340
+furniture and live a quite a few so
+
+303
+00:10:47,340 --> 00:10:49,350
+there's plenty in a browser no way to
+
+304
+00:10:49,350 --> 00:10:50,970
+detect it on it's loaded I explained
+
+305
+00:10:50,970 --> 00:10:52,950
+this before on canvas that if you just
+
+306
+00:10:52,950 --> 00:10:55,170
+specify a new font and start drawing
+
+307
+00:10:55,170 --> 00:10:56,790
+with it you can have the wrong form
+
+308
+00:10:56,790 --> 00:10:57,540
+under the fundage
+
+309
+00:10:57,540 --> 00:11:00,660
+loads so there's no way to get notified
+
+310
+00:11:00,660 --> 00:11:02,820
+right now that's of course kind of like
+
+311
+00:11:02,820 --> 00:11:05,790
+BRB so the ended up doing is you can
+
+312
+00:11:05,790 --> 00:11:08,759
+detect it and I by by indirection so you
+
+313
+00:11:08,759 --> 00:11:10,230
+can set yourself a timeout that's going
+
+314
+00:11:10,230 --> 00:11:11,579
+to call you back all the time you're
+
+315
+00:11:11,579 --> 00:11:13,259
+waiting for the phone to load it can
+
+316
+00:11:13,259 --> 00:11:15,810
+take the little one pixel canvas and put
+
+317
+00:11:15,810 --> 00:11:17,190
+the font in there and then measure its
+
+318
+00:11:17,190 --> 00:11:19,620
+bids and if the font loads eventually
+
+319
+00:11:19,620 --> 00:11:21,029
+it's going to change then and then you
+
+320
+00:11:21,029 --> 00:11:22,920
+know the phone has been loaded of course
+
+321
+00:11:22,920 --> 00:11:24,360
+this is not a particularly efficient way
+
+322
+00:11:24,360 --> 00:11:27,569
+of doing these things so that's that's a
+
+323
+00:11:27,569 --> 00:11:28,740
+nice thing when you're working for a
+
+324
+00:11:28,740 --> 00:11:30,569
+company it makes the browser so you can
+
+325
+00:11:30,569 --> 00:11:32,040
+talk to the guys so do these things and
+
+326
+00:11:32,040 --> 00:11:34,470
+we already proposed in addition the
+
+327
+00:11:34,470 --> 00:11:36,209
+html5 to the lord have an event in
+
+328
+00:11:36,209 --> 00:11:37,680
+actual font loading is complete on the
+
+329
+00:11:37,680 --> 00:11:40,440
+canvas now that kind of random problem
+
+330
+00:11:40,440 --> 00:11:42,120
+ran into was actual phone measurements
+
+331
+00:11:42,120 --> 00:11:44,610
+so I explained before that in PDF not
+
+332
+00:11:44,610 --> 00:11:46,500
+every command is absolute positioned in
+
+333
+00:11:46,500 --> 00:11:47,940
+case of text you're supposed to measure
+
+334
+00:11:47,940 --> 00:11:49,410
+the width of the text and I continued
+
+335
+00:11:49,410 --> 00:11:52,470
+after that and this over that sometimes
+
+336
+00:11:52,470 --> 00:11:53,699
+absolute positioning as well so it's
+
+337
+00:11:53,699 --> 00:11:55,170
+very important to be very precise on
+
+338
+00:11:55,170 --> 00:11:56,850
+measurements and it turns out if you
+
+339
+00:11:56,850 --> 00:11:58,829
+measure with canvas fonts on many
+
+340
+00:11:58,829 --> 00:12:00,540
+different browsers including ours you
+
+341
+00:12:00,540 --> 00:12:02,100
+get kind of like results a little bit
+
+342
+00:12:02,100 --> 00:12:03,660
+off by a couple pic pixels but that's
+
+343
+00:12:03,660 --> 00:12:05,519
+enough like your fonts kind of blew into
+
+344
+00:12:05,519 --> 00:12:08,339
+each other looks really crappy and we
+
+345
+00:12:08,339 --> 00:12:09,600
+realize that this is a rounding error
+
+346
+00:12:09,600 --> 00:12:11,220
+that happens in many font
+
+347
+00:12:11,220 --> 00:12:12,779
+implementations so many browsers didn't
+
+348
+00:12:12,779 --> 00:12:14,040
+use the same font engines and they have
+
+349
+00:12:14,040 --> 00:12:15,600
+certain rounding errors they're getting
+
+350
+00:12:15,600 --> 00:12:19,050
+used by PDF and you're not doing a very
+
+351
+00:12:19,050 --> 00:12:20,880
+gross hack to other come back though at
+
+352
+00:12:20,880 --> 00:12:22,050
+the end of the talk I can show you what
+
+353
+00:12:22,050 --> 00:12:23,519
+it looks like took it everywhere all
+
+354
+00:12:23,519 --> 00:12:26,010
+these kind of things subject response
+
+355
+00:12:26,010 --> 00:12:27,389
+look very different than in Europe
+
+356
+00:12:27,389 --> 00:12:29,010
+platforms it looks different for paying
+
+357
+00:12:29,010 --> 00:12:30,660
+the person operating system different
+
+358
+00:12:30,660 --> 00:12:33,180
+from like version of the OS to be
+
+359
+00:12:33,180 --> 00:12:35,579
+depending on canvas drawers so on more
+
+360
+00:12:35,579 --> 00:12:37,230
+modern platforms like mac OS and the
+
+361
+00:12:37,230 --> 00:12:38,610
+recent version of windows looks pretty
+
+362
+00:12:38,610 --> 00:12:39,870
+good but if you go back to Windows XP
+
+363
+00:12:39,870 --> 00:12:43,260
+you cannot on your own text selection
+
+364
+00:12:43,260 --> 00:12:44,579
+doesn't be repairable for us right now
+
+365
+00:12:44,579 --> 00:12:46,199
+these in cameras to the back end so you
+
+366
+00:12:46,199 --> 00:12:47,639
+exploring other options they are using
+
+367
+00:12:47,639 --> 00:12:49,889
+SVG for example a text search little bit
+
+368
+00:12:49,889 --> 00:12:52,439
+easier to do that on canvas printing is
+
+369
+00:12:52,439 --> 00:12:54,120
+the same using right now fixed size
+
+370
+00:12:54,120 --> 00:12:55,800
+canvas if you print that we leave a
+
+371
+00:12:55,800 --> 00:12:57,329
+little black crap because we are
+
+372
+00:12:57,329 --> 00:12:58,949
+pixelating at a much lower resolution
+
+373
+00:12:58,949 --> 00:13:01,620
+this mostly again an API problem there
+
+374
+00:13:01,620 --> 00:13:03,329
+is no turbid good API right now on the
+
+375
+00:13:03,329 --> 00:13:06,240
+web to print so I'm be filed a bug and
+
+376
+00:13:06,240 --> 00:13:08,519
+it's something they want to fix so it
+
+377
+00:13:08,519 --> 00:13:09,660
+should be much more efficient way how
+
+378
+00:13:09,660 --> 00:13:10,290
+you can communicate
+
+379
+00:13:10,290 --> 00:13:12,329
+print commands for example you could
+
+380
+00:13:12,329 --> 00:13:13,860
+have a print canvas they can say okay I
+
+381
+00:13:13,860 --> 00:13:15,570
+want to like to print Lima canvas I will
+
+382
+00:13:15,570 --> 00:13:17,279
+do print commands on it and the browser
+
+383
+00:13:17,279 --> 00:13:18,660
+can figure out how to translate that to
+
+384
+00:13:18,660 --> 00:13:21,389
+your local printer and a performance of
+
+385
+00:13:21,389 --> 00:13:22,529
+course is a problem i'm going to talk
+
+386
+00:13:22,529 --> 00:13:26,000
+about that a little bit more in a second
+
+387
+00:13:26,000 --> 00:13:29,819
+been doing this project II this has been
+
+388
+00:13:29,819 --> 00:13:32,029
+my first video our JavaScript project
+
+389
+00:13:32,029 --> 00:13:34,920
+I'm not a drastic web author I do
+
+390
+00:13:34,920 --> 00:13:37,649
+browsers for a living so then they
+
+391
+00:13:37,649 --> 00:13:39,899
+started doing this is very important for
+
+392
+00:13:39,899 --> 00:13:41,519
+us to have very nice maintainable code
+
+393
+00:13:41,519 --> 00:13:43,440
+because we're not very good javascript
+
+394
+00:13:43,440 --> 00:13:45,089
+hackers so want to make sure everything
+
+395
+00:13:45,089 --> 00:13:46,110
+is really extensible people to
+
+396
+00:13:46,110 --> 00:13:47,490
+understand it they start a project
+
+397
+00:13:47,490 --> 00:13:48,750
+straight on github phone and make sure
+
+398
+00:13:48,750 --> 00:13:51,149
+people can help us and how about just
+
+399
+00:13:51,149 --> 00:13:52,709
+committee contributors so we really try
+
+400
+00:13:52,709 --> 00:13:55,430
+to write very nice stylized modular code
+
+401
+00:13:55,430 --> 00:13:59,699
+that's great however in some cases it
+
+402
+00:13:59,699 --> 00:14:01,529
+also has to be really fast so if you are
+
+403
+00:14:01,529 --> 00:14:03,089
+sitting somewhere deep and an image
+
+404
+00:14:03,089 --> 00:14:05,160
+decoder we have to make you t-shirt it's
+
+405
+00:14:05,160 --> 00:14:07,920
+very fast and efficient otherwise be
+
+406
+00:14:07,920 --> 00:14:09,269
+doesn't seem enough competitive for some
+
+407
+00:14:09,269 --> 00:14:10,980
+native code PDF reader and their must
+
+408
+00:14:10,980 --> 00:14:12,180
+view the goal we wanted to see that you
+
+409
+00:14:12,180 --> 00:14:13,920
+can use javascript to be as efficient as
+
+410
+00:14:13,920 --> 00:14:17,100
+the native code implementations so just
+
+411
+00:14:17,100 --> 00:14:18,660
+a couple of things that's going to run
+
+412
+00:14:18,660 --> 00:14:21,750
+into an optimizing observations more or
+
+413
+00:14:21,750 --> 00:14:24,480
+less then we've this piece of code here
+
+414
+00:14:24,480 --> 00:14:27,660
+is the actual deflate algorithm that we
+
+415
+00:14:27,660 --> 00:14:29,519
+also had and decompresses the PDF
+
+416
+00:14:29,519 --> 00:14:30,899
+command screen that comes with another
+
+417
+00:14:30,899 --> 00:14:34,800
+text file and first for tonight's
+
+418
+00:14:34,800 --> 00:14:36,300
+modular version was way too slow to be
+
+419
+00:14:36,300 --> 00:14:38,160
+used and I use the profiler then we're
+
+420
+00:14:38,160 --> 00:14:39,329
+going to go ahead and find out where the
+
+421
+00:14:39,329 --> 00:14:41,010
+problems are one of the first things i
+
+422
+00:14:41,010 --> 00:14:44,100
+optimize is that this little compunction
+
+423
+00:14:44,100 --> 00:14:45,540
+their insurer buffer but it does every
+
+424
+00:14:45,540 --> 00:14:48,680
+time you're decoding more data from the
+
+425
+00:14:48,680 --> 00:14:50,819
+compressed file you have to make sure
+
+426
+00:14:50,819 --> 00:14:52,260
+you can write your output buffer and
+
+427
+00:14:52,260 --> 00:14:54,240
+it's ensure buffer make sure but it is
+
+428
+00:14:54,240 --> 00:14:55,680
+enough room to ride another character
+
+429
+00:14:55,680 --> 00:14:57,000
+and I used to call this straight
+
+430
+00:14:57,000 --> 00:14:58,769
+directly from the code and it turns out
+
+431
+00:14:58,769 --> 00:14:59,880
+this function part is way too expensive
+
+432
+00:14:59,880 --> 00:15:01,230
+there are too many characters these
+
+433
+00:15:01,230 --> 00:15:02,850
+files a large amounts of megabytes and
+
+434
+00:15:02,850 --> 00:15:04,620
+make Bay 20 function calls really slow
+
+435
+00:15:04,620 --> 00:15:07,110
+so instead but you're not doing is
+
+436
+00:15:07,110 --> 00:15:08,850
+either kind pulled if condition out of
+
+437
+00:15:08,850 --> 00:15:10,500
+there and we only conditionally call it
+
+438
+00:15:10,500 --> 00:15:12,269
+if the buffer needs to be extended and
+
+439
+00:15:12,269 --> 00:15:15,149
+that mean that was a base substantial
+
+440
+00:15:15,149 --> 00:15:17,910
+speed up at the same time it's important
+
+441
+00:15:17,910 --> 00:15:19,380
+you don't go overboard so kind of this
+
+442
+00:15:19,380 --> 00:15:20,830
+kind of inlining makes sense
+
+443
+00:15:20,830 --> 00:15:22,630
+we perform is critical and it's a very
+
+444
+00:15:22,630 --> 00:15:24,820
+thin function you don't want to go
+
+445
+00:15:24,820 --> 00:15:26,230
+overboard completely stop using
+
+446
+00:15:26,230 --> 00:15:27,940
+functions because your coat looks
+
+447
+00:15:27,940 --> 00:15:30,340
+totally unreadable so just get code here
+
+448
+00:15:30,340 --> 00:15:31,120
+that's actually a very substantial
+
+449
+00:15:31,120 --> 00:15:33,250
+amount of code I use several times in
+
+450
+00:15:33,250 --> 00:15:35,080
+its function if I take that apart
+
+451
+00:15:35,080 --> 00:15:36,790
+everywhere then the code needs to be
+
+452
+00:15:36,790 --> 00:15:38,920
+long and readable and there the function
+
+453
+00:15:38,920 --> 00:15:40,690
+call overhead is much less in comparison
+
+454
+00:15:40,690 --> 00:15:42,160
+to what happens in the function so that
+
+455
+00:15:42,160 --> 00:15:44,410
+one we didn't touch and then similarly
+
+456
+00:15:44,410 --> 00:15:46,900
+vettel like helper functions are on this
+
+457
+00:15:46,900 --> 00:15:49,060
+like code one shift right at sixteen you
+
+458
+00:15:49,060 --> 00:15:50,620
+can't afford in this kind of performance
+
+459
+00:15:50,620 --> 00:15:52,690
+critical code according to helper
+
+460
+00:15:52,690 --> 00:15:54,820
+functions it's also important the wavy
+
+461
+00:15:54,820 --> 00:15:56,470
+represent data here so this length the
+
+462
+00:15:56,470 --> 00:15:58,480
+code is an array contains data and it
+
+463
+00:15:58,480 --> 00:16:00,220
+contains we two different things length
+
+464
+00:16:00,220 --> 00:16:02,680
+and a code initially we used to have an
+
+465
+00:16:02,680 --> 00:16:04,960
+array in there is two indexes index zero
+
+466
+00:16:04,960 --> 00:16:06,940
+index one for data and length and it's
+
+467
+00:16:06,940 --> 00:16:08,200
+additional area look up was also pretty
+
+468
+00:16:08,200 --> 00:16:09,820
+expensive so just kind of munch those
+
+469
+00:16:09,820 --> 00:16:11,050
+two numbers together and shifted them
+
+470
+00:16:11,050 --> 00:16:12,880
+together and that God where's another
+
+471
+00:16:12,880 --> 00:16:14,230
+like fifty percent or so speed
+
+472
+00:16:14,230 --> 00:16:16,210
+improvement so it's very important that
+
+473
+00:16:16,210 --> 00:16:18,130
+when you have critical code after you
+
+474
+00:16:18,130 --> 00:16:19,300
+have written in a nice way you can go
+
+475
+00:16:19,300 --> 00:16:21,820
+ahead and optimize it and you will only
+
+476
+00:16:21,820 --> 00:16:23,230
+do that for the critical parts of your
+
+477
+00:16:23,230 --> 00:16:25,990
+code something else that I was talking
+
+478
+00:16:25,990 --> 00:16:27,130
+about earlier is if you're using the
+
+479
+00:16:27,130 --> 00:16:29,230
+internal jpeg dakota in the browser and
+
+480
+00:16:29,230 --> 00:16:31,090
+it's really important abroad jpg is a
+
+481
+00:16:31,090 --> 00:16:32,470
+very complex format it's a lot of
+
+482
+00:16:32,470 --> 00:16:34,360
+complex math going on to decode it you
+
+483
+00:16:34,360 --> 00:16:35,670
+do not want to rather than JavaScript
+
+484
+00:16:35,670 --> 00:16:37,300
+unfortunately we are into the same
+
+485
+00:16:37,300 --> 00:16:39,970
+problem here as this PNG that Adobe's
+
+486
+00:16:39,970 --> 00:16:41,560
+implementation of JPEGs subtly different
+
+487
+00:16:41,560 --> 00:16:43,710
+differs on the way sentiment on the web
+
+488
+00:16:43,710 --> 00:16:45,580
+in particular there's something wrong
+
+489
+00:16:45,580 --> 00:16:47,200
+with color space conversion so actually
+
+490
+00:16:47,200 --> 00:16:49,270
+hear the vet is wrong on the web the
+
+491
+00:16:49,270 --> 00:16:50,890
+Jeep actor displayed is the very
+
+492
+00:16:50,890 --> 00:16:52,480
+Photoshop generates done not the way the
+
+493
+00:16:52,480 --> 00:16:55,000
+standards say and you can't we change
+
+494
+00:16:55,000 --> 00:16:56,380
+that because so many images are made by
+
+495
+00:16:56,380 --> 00:16:59,350
+Photoshop and in PDF the format is
+
+496
+00:16:59,350 --> 00:17:00,880
+correctly the way the spec wants it to
+
+497
+00:17:00,880 --> 00:17:03,010
+be used and unfortunately incompatible
+
+498
+00:17:03,010 --> 00:17:04,839
+so if you try to render the document at
+
+499
+00:17:04,839 --> 00:17:08,199
+the PDF JPEG you get completely wrong
+
+500
+00:17:08,199 --> 00:17:10,240
+color space so the end up doing we can
+
+501
+00:17:10,240 --> 00:17:12,520
+manage the JPEG fiber redid the insert a
+
+502
+00:17:12,520 --> 00:17:14,199
+little header the browser knows about
+
+503
+00:17:14,199 --> 00:17:16,000
+and choose a different color space and
+
+504
+00:17:16,000 --> 00:17:18,240
+then we load that you leave rewritten
+
+505
+00:17:18,240 --> 00:17:21,160
+jpg file into the browser that made that
+
+506
+00:17:21,160 --> 00:17:24,159
+work
+
+507
+00:17:24,169 --> 00:17:25,949
+that's or at least I'm going to talk a
+
+508
+00:17:25,949 --> 00:17:27,360
+lil bit about the way we journeyed all
+
+509
+00:17:27,360 --> 00:17:29,279
+these data streams so we have frequently
+
+510
+00:17:29,279 --> 00:17:30,960
+but we do in PDF to jsu read data and
+
+511
+00:17:30,960 --> 00:17:33,210
+invite out data into a file again or a
+
+512
+00:17:33,210 --> 00:17:34,919
+buffer and then loaded into browser and
+
+513
+00:17:34,919 --> 00:17:37,230
+the first naive implementation that
+
+514
+00:17:37,230 --> 00:17:39,149
+someone from the team did look like this
+
+515
+00:17:39,149 --> 00:17:41,340
+here you get the screen data as a bunch
+
+516
+00:17:41,340 --> 00:17:42,840
+of bytes and then you've a lot of right
+
+517
+00:17:42,840 --> 00:17:44,970
+function that you give an array of data
+
+518
+00:17:44,970 --> 00:17:46,889
+and it goes through that it's a for in
+
+519
+00:17:46,889 --> 00:17:49,710
+loop and pushes into a new font array
+
+520
+00:17:49,710 --> 00:17:50,940
+we're also new phone data is collected
+
+521
+00:17:50,940 --> 00:17:52,950
+and then down there is kind of roughly
+
+522
+00:17:52,950 --> 00:17:54,870
+about the font loop well look look like
+
+523
+00:17:54,870 --> 00:17:56,309
+there's some data by pull out of there
+
+524
+00:17:56,309 --> 00:17:58,889
+and be right two bytes for example with
+
+525
+00:17:58,889 --> 00:18:00,840
+a file and this was horribly slow and
+
+526
+00:18:00,840 --> 00:18:03,510
+for like many different reasons and just
+
+527
+00:18:03,510 --> 00:18:06,120
+animate a couple of minutes or four in a
+
+528
+00:18:06,120 --> 00:18:08,909
+race if you do a for in loop or an array
+
+529
+00:18:08,909 --> 00:18:11,700
+and the indexes have to be string defied
+
+530
+00:18:11,700 --> 00:18:13,769
+in the for in loop so I in this array
+
+531
+00:18:13,769 --> 00:18:16,080
+learn in this loop over this array it's
+
+532
+00:18:16,080 --> 00:18:18,899
+always a string by the specification so
+
+533
+00:18:18,899 --> 00:18:20,669
+you have to take this numeric index is 0
+
+534
+00:18:20,669 --> 00:18:22,409
+and 1 and string defy them all the time
+
+535
+00:18:22,409 --> 00:18:24,690
+and that definitely substantial cost so
+
+536
+00:18:24,690 --> 00:18:27,679
+you want to avoid for in loops or a race
+
+537
+00:18:27,679 --> 00:18:30,960
+the next thing is the actual push on an
+
+538
+00:18:30,960 --> 00:18:32,610
+array to store data it's not a
+
+539
+00:18:32,610 --> 00:18:34,139
+particularly good idea that's really
+
+540
+00:18:34,139 --> 00:18:35,549
+expensive you have to call this native
+
+541
+00:18:35,549 --> 00:18:36,899
+push method you have to extend their
+
+542
+00:18:36,899 --> 00:18:38,490
+array every time so that turned out
+
+543
+00:18:38,490 --> 00:18:42,690
+pretty expensive down here to write out
+
+544
+00:18:42,690 --> 00:18:44,490
+the data and he created a new array
+
+545
+00:18:44,490 --> 00:18:47,399
+around it every time and modern GCS can
+
+546
+00:18:47,399 --> 00:18:49,200
+take care of the trash for generating
+
+547
+00:18:49,200 --> 00:18:50,880
+here in this loop but just making that
+
+548
+00:18:50,880 --> 00:18:52,950
+object is pretty expensive so you're
+
+549
+00:18:52,950 --> 00:18:54,779
+kind of using Apple of like cash space
+
+550
+00:18:54,779 --> 00:18:56,730
+there and the hardware it is to make all
+
+551
+00:18:56,730 --> 00:18:58,889
+the solar rays and that's what at least
+
+552
+00:18:58,889 --> 00:19:00,299
+also call in this function here it
+
+553
+00:19:00,299 --> 00:19:02,519
+almost does nothing it's a pretty big
+
+554
+00:19:02,519 --> 00:19:04,260
+overhead so after optimizing all these
+
+555
+00:19:04,260 --> 00:19:05,850
+things the font loading code would
+
+556
+00:19:05,850 --> 00:19:09,480
+substantially faster and I was after
+
+557
+00:19:09,480 --> 00:19:10,590
+optimizing either but pretty curious
+
+558
+00:19:10,590 --> 00:19:12,090
+what is actually really the fastest way
+
+559
+00:19:12,090 --> 00:19:14,010
+in a browser to ride into a variable
+
+560
+00:19:14,010 --> 00:19:16,740
+size buffer and 20 prize that you eat
+
+561
+00:19:16,740 --> 00:19:18,450
+strings and that's the sweetie weird
+
+562
+00:19:18,450 --> 00:19:20,000
+because strings are not even eight byte
+
+563
+00:19:20,000 --> 00:19:24,649
+array is every 16 bit arrays so
+
+564
+00:19:24,649 --> 00:19:26,760
+basically what I ended up doing a
+
+565
+00:19:26,760 --> 00:19:28,380
+current code base now is that we have
+
+566
+00:19:28,380 --> 00:19:29,700
+started string out empty and then
+
+567
+00:19:29,700 --> 00:19:31,440
+concatenate characters in there using
+
+568
+00:19:31,440 --> 00:19:34,470
+from charcoal and give a constants we
+
+569
+00:19:34,470 --> 00:19:35,600
+have to write in there because you
+
+570
+00:19:35,600 --> 00:19:38,900
+this hex string notation to write it in
+
+571
+00:19:38,900 --> 00:19:41,990
+and the best explanation I can give you
+
+572
+00:19:41,990 --> 00:19:43,789
+for that why strings are so efficient in
+
+573
+00:19:43,789 --> 00:19:44,929
+browsers is that they are highly
+
+574
+00:19:44,929 --> 00:19:47,150
+optimized for benchmarks so kind of pre
+
+575
+00:19:47,150 --> 00:19:48,919
+sunspider it's like very popular a
+
+576
+00:19:48,919 --> 00:19:50,440
+terrible terrible JavaScript benchmark
+
+577
+00:19:50,440 --> 00:19:52,400
+people used to avoid string
+
+578
+00:19:52,400 --> 00:19:53,840
+concatenation because it was terribly
+
+579
+00:19:53,840 --> 00:19:56,630
+slow in ie6 now in a post Suns by the
+
+580
+00:19:56,630 --> 00:19:58,220
+world and suffered a lot of string
+
+581
+00:19:58,220 --> 00:20:00,320
+concatenation so today everything
+
+582
+00:20:00,320 --> 00:20:02,330
+everybody deeply optimized for computing
+
+583
+00:20:02,330 --> 00:20:03,500
+strengths some knowledge reaching
+
+584
+00:20:03,500 --> 00:20:06,320
+operation so if you want a bit something
+
+585
+00:20:06,320 --> 00:20:07,760
+really fast what you do we have to make
+
+586
+00:20:07,760 --> 00:20:09,049
+a benchmark and then everyone's been
+
+587
+00:20:09,049 --> 00:20:13,669
+optimized for it all right that's what
+
+588
+00:20:13,669 --> 00:20:15,650
+at least typed arrays to not to be also
+
+589
+00:20:15,650 --> 00:20:16,880
+a really important performance feature
+
+590
+00:20:16,880 --> 00:20:18,830
+for us so we switched all over they used
+
+591
+00:20:18,830 --> 00:20:20,770
+to type the race the best we can and
+
+592
+00:20:20,770 --> 00:20:22,850
+that gives you a nice speed up and even
+
+593
+00:20:22,850 --> 00:20:24,409
+for literal is just like tables of data
+
+594
+00:20:24,409 --> 00:20:26,120
+it's actually very efficient to do that
+
+595
+00:20:26,120 --> 00:20:28,070
+it's often also more compact so this is
+
+596
+00:20:28,070 --> 00:20:30,350
+for example a 32-bit array of 32-bit
+
+597
+00:20:30,350 --> 00:20:33,169
+integers and it's much more compact
+
+598
+00:20:33,169 --> 00:20:35,270
+represented to the typed array because a
+
+599
+00:20:35,270 --> 00:20:37,100
+regular arranged larger data entities
+
+600
+00:20:37,100 --> 00:20:38,840
+that store the type and the value and
+
+601
+00:20:38,840 --> 00:20:40,190
+type the race everything is the same
+
+602
+00:20:40,190 --> 00:20:42,830
+time unfortunately for type 2 race you
+
+603
+00:20:42,830 --> 00:20:44,690
+can't form easily the literals or on
+
+604
+00:20:44,690 --> 00:20:45,919
+them so what you did because we make a
+
+605
+00:20:45,919 --> 00:20:47,570
+regular array that you can initialize
+
+606
+00:20:47,570 --> 00:20:49,580
+the literal and then this rather typed
+
+607
+00:20:49,580 --> 00:20:51,980
+array all around it and for a brief
+
+608
+00:20:51,980 --> 00:20:53,299
+moment you have the full array in memory
+
+609
+00:20:53,299 --> 00:20:54,919
+but then it gets replaced this it happed
+
+610
+00:20:54,919 --> 00:20:58,970
+array of course and then some some
+
+611
+00:20:58,970 --> 00:21:01,000
+browsers you don't have time to raise a
+
+612
+00:21:01,000 --> 00:21:04,309
+new slides Opera Safari mobile 99 don't
+
+613
+00:21:04,309 --> 00:21:06,289
+heaven yet as far as I can tell in that
+
+614
+00:21:06,289 --> 00:21:07,580
+case you just emulated type area so
+
+615
+00:21:07,580 --> 00:21:09,380
+using traditional erase and their their
+
+616
+00:21:09,380 --> 00:21:11,960
+API is roughly compatible so basic on
+
+617
+00:21:11,960 --> 00:21:13,280
+these browsers works is a little
+
+618
+00:21:13,280 --> 00:21:14,659
+emulation layer in between it's just
+
+619
+00:21:14,659 --> 00:21:18,350
+much lower believe what I was going to
+
+620
+00:21:18,350 --> 00:21:20,450
+encourage this a couple of slides views
+
+621
+00:21:20,450 --> 00:21:22,490
+to hear is I encourage you to use
+
+622
+00:21:22,490 --> 00:21:24,440
+profilers the really fundamentally
+
+623
+00:21:24,440 --> 00:21:27,169
+useful in our code base you go ahead and
+
+624
+00:21:27,169 --> 00:21:29,690
+you write the code as nicely as you can
+
+625
+00:21:29,690 --> 00:21:31,370
+and you grab a profiler and you kind of
+
+626
+00:21:31,370 --> 00:21:32,929
+knock off the top like five or six
+
+627
+00:21:32,929 --> 00:21:35,090
+performance photos you can find that
+
+628
+00:21:35,090 --> 00:21:36,799
+visit has already taken care of the
+
+629
+00:21:36,799 --> 00:21:37,970
+majority of the performance you can
+
+630
+00:21:37,970 --> 00:21:39,620
+squeeze out of the program so you can
+
+631
+00:21:39,620 --> 00:21:41,450
+have it kind of boat you can have a very
+
+632
+00:21:41,450 --> 00:21:43,159
+nice modular code the same time it can
+
+633
+00:21:43,159 --> 00:21:45,860
+also be very efficient and some of the
+
+634
+00:21:45,860 --> 00:21:47,210
+stuff is really subtle it's very hard to
+
+635
+00:21:47,210 --> 00:21:48,850
+tell so I started
+
+636
+00:21:48,850 --> 00:21:51,590
+fi I was founded type of syntax really
+
+637
+00:21:51,590 --> 00:21:54,320
+confusing so I like to avoid it like the
+
+638
+00:21:54,320 --> 00:21:55,610
+plague and I wrote myself a little
+
+639
+00:21:55,610 --> 00:21:57,410
+helper functions like is now it's going
+
+640
+00:21:57,410 --> 00:21:58,790
+to tell me that that value as a number
+
+641
+00:21:58,790 --> 00:22:00,770
+and the users very consistent is the
+
+642
+00:22:00,770 --> 00:22:01,940
+code base and one of the things their
+
+643
+00:22:01,940 --> 00:22:04,970
+profile are highlighted as I was going
+
+644
+00:22:04,970 --> 00:22:06,650
+through the cool base is that in this
+
+645
+00:22:06,650 --> 00:22:08,360
+little loop here where data is being
+
+646
+00:22:08,360 --> 00:22:12,620
+processed and rewritten I used to I used
+
+647
+00:22:12,620 --> 00:22:14,510
+Islam to check whether that the value
+
+648
+00:22:14,510 --> 00:22:16,730
+was getting back as invalid a bite or
+
+649
+00:22:16,730 --> 00:22:17,930
+actually I have reached the end of the
+
+650
+00:22:17,930 --> 00:22:19,310
+file in which case i think i define it's
+
+651
+00:22:19,310 --> 00:22:21,440
+coming back and this function call to
+
+652
+00:22:21,440 --> 00:22:23,720
+islam was the majority of the cost of
+
+653
+00:22:23,720 --> 00:22:24,950
+this loop here and like ninety percent
+
+654
+00:22:24,950 --> 00:22:26,900
+of the time was being spent calling the
+
+655
+00:22:26,900 --> 00:22:28,550
+islam function not even inside it as
+
+656
+00:22:28,550 --> 00:22:31,700
+much is calling it so a profiler can
+
+657
+00:22:31,700 --> 00:22:32,660
+very easily kind of highlight these
+
+658
+00:22:32,660 --> 00:22:33,710
+things and there's various different
+
+659
+00:22:33,710 --> 00:22:35,660
+ones other the Firebug is available
+
+660
+00:22:35,660 --> 00:22:38,510
+Firefox and then Kate based process of a
+
+661
+00:22:38,510 --> 00:22:40,670
+profiler built in so we can very nicely
+
+662
+00:22:40,670 --> 00:22:42,380
+identified that's a problem you can just
+
+663
+00:22:42,380 --> 00:22:43,790
+take the guts of the function in line it
+
+664
+00:22:43,790 --> 00:22:46,520
+and you have a limited overhead for the
+
+665
+00:22:46,520 --> 00:22:50,210
+call there and that video get this goes
+
+666
+00:22:50,210 --> 00:22:52,100
+a long way so you sacrifice a little bit
+
+667
+00:22:52,100 --> 00:22:54,560
+of beauty there you fix a couple places
+
+668
+00:22:54,560 --> 00:22:56,090
+up and they're not as nice as you would
+
+669
+00:22:56,090 --> 00:22:57,290
+prefer to write them but you get me a
+
+670
+00:22:57,290 --> 00:23:01,970
+dramatic performance improvements um the
+
+671
+00:23:01,970 --> 00:23:04,670
+last but not least don't pause we all
+
+672
+00:23:04,670 --> 00:23:06,710
+have run into quite a few problems just
+
+673
+00:23:06,710 --> 00:23:08,390
+this dumb cause being slow and the
+
+674
+00:23:08,390 --> 00:23:10,250
+reason for that is that javascript has a
+
+675
+00:23:10,250 --> 00:23:12,110
+different representation for objects and
+
+676
+00:23:12,110 --> 00:23:13,910
+most implementations of browsers which
+
+677
+00:23:13,910 --> 00:23:16,220
+are usually in C++ so even JavaScript if
+
+678
+00:23:16,220 --> 00:23:18,500
+a Jobs get string a draft object and C++
+
+679
+00:23:18,500 --> 00:23:20,300
+it is like see strings and see the space
+
+680
+00:23:20,300 --> 00:23:22,490
+objects so whenever you call the Dom it
+
+681
+00:23:22,490 --> 00:23:24,320
+take those jobs objects return to see
+
+682
+00:23:24,320 --> 00:23:26,120
+those fast objects and then it dont does
+
+683
+00:23:26,120 --> 00:23:27,230
+some processing on it and then it
+
+684
+00:23:27,230 --> 00:23:28,640
+returns the data which we have to again
+
+685
+00:23:28,640 --> 00:23:30,740
+convert back and we the only way to make
+
+686
+00:23:30,740 --> 00:23:32,960
+that fast is to not do that do not on
+
+687
+00:23:32,960 --> 00:23:35,180
+the damage with it all can avoid it so
+
+688
+00:23:35,180 --> 00:23:38,330
+in this case here is rattled cash around
+
+689
+00:23:38,330 --> 00:23:40,040
+measure text so whenever even measured
+
+690
+00:23:40,040 --> 00:23:42,380
+text for the same form or the same tags
+
+691
+00:23:42,380 --> 00:23:44,630
+and the same size then we just don't hit
+
+692
+00:23:44,630 --> 00:23:46,370
+the dorm again put in a little cash on a
+
+693
+00:23:46,370 --> 00:23:47,930
+JavaScript side and everything is much
+
+694
+00:23:47,930 --> 00:23:50,900
+much faster and this particular useful
+
+695
+00:23:50,900 --> 00:23:52,940
+for rear ndering so when I showed em own
+
+696
+00:23:52,940 --> 00:23:54,080
+a second you will see that the second
+
+697
+00:23:54,080 --> 00:23:55,730
+time you go across the pages is very
+
+698
+00:23:55,730 --> 00:23:57,530
+fast instant because nothing has to be
+
+699
+00:23:57,530 --> 00:23:58,530
+really measured anymore
+
+700
+00:23:58,530 --> 00:24:01,380
+and something else it's this one is live
+
+701
+00:24:01,380 --> 00:24:02,820
+here is a little ugly hacker was talking
+
+702
+00:24:02,820 --> 00:24:04,620
+about so I mentioned to you then many
+
+703
+00:24:04,620 --> 00:24:06,750
+browsers don't measure fonts right in
+
+704
+00:24:06,750 --> 00:24:08,730
+canvas so if you end up doing we just
+
+705
+00:24:08,730 --> 00:24:10,440
+take the text and we pick a much much
+
+706
+00:24:10,440 --> 00:24:12,870
+larger font size so it's like 50 times
+
+707
+00:24:12,870 --> 00:24:14,700
+larger and then you measure the text is
+
+708
+00:24:14,700 --> 00:24:17,250
+a larger XL size and then we divide it
+
+709
+00:24:17,250 --> 00:24:20,820
+by the P modification factor this is not
+
+710
+00:24:20,820 --> 00:24:22,770
+exactly the size because hinting can
+
+711
+00:24:22,770 --> 00:24:24,870
+cause different text measurement but
+
+712
+00:24:24,870 --> 00:24:28,050
+it's it's closer to the truth then if
+
+713
+00:24:28,050 --> 00:24:30,360
+you just use the direct methods all
+
+714
+00:24:30,360 --> 00:24:32,730
+right a couple things of the f to still
+
+715
+00:24:32,730 --> 00:24:34,410
+do there's more fun than printing work
+
+716
+00:24:34,410 --> 00:24:36,690
+to be done they're not implementing
+
+717
+00:24:36,690 --> 00:24:38,250
+entire backyard vendor some more back
+
+718
+00:24:38,250 --> 00:24:41,640
+ends in particular at fuji in HTML maybe
+
+719
+00:24:41,640 --> 00:24:43,530
+advanced PDF features like forms and
+
+720
+00:24:43,530 --> 00:24:45,750
+stuff like that and automated testing
+
+721
+00:24:45,750 --> 00:24:47,160
+zalto pretty important it's very easy in
+
+722
+00:24:47,160 --> 00:24:49,380
+the code size of the size of the code
+
+723
+00:24:49,380 --> 00:24:50,580
+base we have nice pretty easy to break
+
+724
+00:24:50,580 --> 00:24:52,770
+stuff if you don't have decent tests all
+
+725
+00:24:52,770 --> 00:24:54,930
+right demo that's what people want to
+
+726
+00:24:54,930 --> 00:24:58,400
+see anyway so I was not raised enough to
+
+727
+00:24:58,400 --> 00:25:02,840
+give the entire presentation this on
+
+728
+00:25:02,840 --> 00:25:07,470
+this video for GS but you can see that
+
+729
+00:25:07,470 --> 00:25:08,940
+we can render the entire content as well
+
+730
+00:25:08,940 --> 00:25:11,100
+you see a couple of entering artifacts
+
+731
+00:25:11,100 --> 00:25:12,210
+here and there many of those actually
+
+732
+00:25:12,210 --> 00:25:14,490
+are in keynote so keynote exported a bad
+
+733
+00:25:14,490 --> 00:25:16,140
+PDF it's not even prev you can actually
+
+734
+00:25:16,140 --> 00:25:19,980
+read what we roughly looks the same and
+
+735
+00:25:19,980 --> 00:25:22,290
+then be able to like slide out here that
+
+736
+00:25:22,290 --> 00:25:23,460
+shows your preview and it's actually
+
+737
+00:25:23,460 --> 00:25:25,500
+using the same renderer so if I cool
+
+738
+00:25:25,500 --> 00:25:28,560
+down really quickly you can see this is
+
+739
+00:25:28,560 --> 00:25:30,510
+all these your Android so if you only
+
+740
+00:25:30,510 --> 00:25:31,800
+display a couple of these things and
+
+741
+00:25:31,800 --> 00:25:33,540
+lazily render them and the rear ndering
+
+742
+00:25:33,540 --> 00:25:35,370
+is fast enough to kind of keep up this
+
+743
+00:25:35,370 --> 00:25:39,060
+actual scrolling and then hopefully the
+
+744
+00:25:39,060 --> 00:25:40,440
+network is going to work because when I
+
+745
+00:25:40,440 --> 00:25:45,930
+contribu this here so this is a little
+
+746
+00:25:45,930 --> 00:25:48,810
+demo that someone from Azad put together
+
+747
+00:25:48,810 --> 00:25:51,420
+this students from this university so
+
+748
+00:25:51,420 --> 00:25:56,250
+this is a 3d that GL canvas that uses
+
+749
+00:25:56,250 --> 00:25:58,050
+PDF to jas to render the content of this
+
+750
+00:25:58,050 --> 00:25:59,880
+very first document that we end up is
+
+751
+00:25:59,880 --> 00:26:01,620
+PHAs and put in a few then you can
+
+752
+00:26:01,620 --> 00:26:03,060
+rotate this around and zoom into it and
+
+753
+00:26:03,060 --> 00:26:05,160
+what not and this going to show us a
+
+754
+00:26:05,160 --> 00:26:06,690
+power wheel you of using proper web
+
+755
+00:26:06,690 --> 00:26:07,660
+technology so
+
+756
+00:26:07,660 --> 00:26:08,920
+it will be much much harder to do sounds
+
+757
+00:26:08,920 --> 00:26:10,240
+like this is a native cool plugin
+
+758
+00:26:10,240 --> 00:26:11,290
+because you have to get the content
+
+759
+00:26:11,290 --> 00:26:13,240
+somehow into the web stack and if you
+
+760
+00:26:13,240 --> 00:26:14,470
+use that technology to render these
+
+761
+00:26:14,470 --> 00:26:15,550
+things that's already automatically
+
+762
+00:26:15,550 --> 00:26:18,730
+there all right that's for my talk any
+
+763
+00:26:18,730 --> 00:26:44,700
+questions
+
+764
+00:26:44,710 --> 00:26:47,890
+so there's a pdx back the spec tells you
+
+765
+00:26:47,890 --> 00:26:48,970
+about pdfs were supposed to look like
+
+766
+00:26:48,970 --> 00:26:50,740
+and then there's reality which is part
+
+767
+00:26:50,740 --> 00:26:52,240
+of a different on that gear to
+
+768
+00:26:52,240 --> 00:26:54,100
+reverse-engineer so there's many PDF
+
+769
+00:26:54,100 --> 00:26:55,390
+termination to literally hundreds of
+
+770
+00:26:55,390 --> 00:26:56,919
+them and you have to come back guess a
+
+771
+00:26:56,919 --> 00:26:57,880
+little bit and look at different
+
+772
+00:26:57,880 --> 00:26:59,110
+documents we find out what the reality
+
+773
+00:26:59,110 --> 00:27:00,370
+looks like but the basic spec is
+
+774
+00:27:00,370 --> 00:27:12,279
+available and it's an iso spec we
+
+775
+00:27:12,279 --> 00:27:14,500
+started we pick candles as the first
+
+776
+00:27:14,500 --> 00:27:17,760
+thing we will do HTML and SVG next
+
+777
+00:27:17,760 --> 00:27:20,320
+there's no particular reason we know
+
+778
+00:27:20,320 --> 00:27:21,760
+that campus is very fast for the same
+
+779
+00:27:21,760 --> 00:27:25,029
+reason as string operations fast this
+
+780
+00:27:25,029 --> 00:27:27,880
+time competed in marketing / canos
+
+781
+00:27:27,880 --> 00:27:29,559
+performance so everyone men's and make
+
+782
+00:27:29,559 --> 00:27:31,059
+the candles really fast so we knew we
+
+783
+00:27:31,059 --> 00:27:32,980
+would be very fast as canvas we have not
+
+784
+00:27:32,980 --> 00:27:34,390
+investigated other ones yet it will
+
+785
+00:27:34,390 --> 00:27:38,289
+probably be fast as well oh yeah
+
+786
+00:27:38,289 --> 00:27:40,390
+absolutely so SVG is for text selection
+
+787
+00:27:40,390 --> 00:27:46,210
+and printing very interesting yeah
+
+788
+00:27:46,220 --> 00:27:54,840
+you
+
+789
+00:27:54,850 --> 00:27:57,550
+sure I'm not too familiar sports i know
+
+790
+00:27:57,550 --> 00:27:59,230
+there's roughly based on a PDF rendering
+
+791
+00:27:59,230 --> 00:28:01,080
+pipeline so it should be possible yeah
+
+792
+00:28:01,080 --> 00:28:04,750
+yeah oh ok so he was asking that it's
+
+793
+00:28:04,750 --> 00:28:08,410
+possible to render he related specs like
+
+794
+00:28:08,410 --> 00:28:10,450
+the ports you I rendering pipeline to
+
+795
+00:28:10,450 --> 00:28:18,460
+PDF to GS and I swim yes specifications
+
+796
+00:28:18,460 --> 00:28:20,410
+but I assume you you dropped a lot of
+
+797
+00:28:20,410 --> 00:28:23,470
+stuff because the PDF reader does a lot
+
+798
+00:28:23,470 --> 00:28:26,560
+of fancy things let you decide what to
+
+799
+00:28:26,560 --> 00:28:28,960
+throw ok so the question box with the V
+
+800
+00:28:28,960 --> 00:28:30,340
+implement entire speckle we have dropped
+
+801
+00:28:30,340 --> 00:28:32,290
+parts of it because the PDF readers is
+
+802
+00:28:32,290 --> 00:28:34,090
+so extensive that's what we true so the
+
+803
+00:28:34,090 --> 00:28:35,680
+octopod reader is like a 50 megabyte
+
+804
+00:28:35,680 --> 00:28:37,090
+download something that there's a ton of
+
+805
+00:28:37,090 --> 00:28:39,280
+crap in there there's like various two
+
+806
+00:28:39,280 --> 00:28:40,870
+jobs with engines and I think a flash
+
+807
+00:28:40,870 --> 00:28:42,820
+engine or two flash engines various
+
+808
+00:28:42,820 --> 00:28:45,190
+stuff that you don't need that's just
+
+809
+00:28:45,190 --> 00:28:46,450
+for the business modulus every year they
+
+810
+00:28:46,450 --> 00:28:47,860
+put up a new version of a reader some
+
+811
+00:28:47,860 --> 00:28:50,710
+more crap in it and in reality most pdx
+
+812
+00:28:50,710 --> 00:28:52,300
+an event don't reuse that so if you look
+
+813
+00:28:52,300 --> 00:28:53,680
+at popular readers like the monitors in
+
+814
+00:28:53,680 --> 00:28:55,480
+chrome or the preview one that's a mac
+
+815
+00:28:55,480 --> 00:28:58,480
+OS that thing really to supports PDF 1.3
+
+816
+00:28:58,480 --> 00:29:01,270
+plus a few little things so that's
+
+817
+00:29:01,270 --> 00:29:02,500
+roughly what we are shooting for we are
+
+818
+00:29:02,500 --> 00:29:03,580
+shooting for compatibility vyas
+
+819
+00:29:03,580 --> 00:29:04,810
+ninety-nine point nine percent of the
+
+820
+00:29:04,810 --> 00:29:06,790
+PDF you will find on to that and that's
+
+821
+00:29:06,790 --> 00:29:08,590
+a much much smaller subset about the
+
+822
+00:29:08,590 --> 00:29:11,110
+actual spec is so we kind of knew what
+
+823
+00:29:11,110 --> 00:29:12,370
+the important stuff is and from the arm
+
+824
+00:29:12,370 --> 00:29:14,080
+is iterating we pick a new document that
+
+825
+00:29:14,080 --> 00:29:16,570
+we find somewhere the PDF education so
+
+826
+00:29:16,570 --> 00:29:18,040
+it's all for example it's going to see
+
+827
+00:29:18,040 --> 00:29:32,080
+what features are needed and add those
+
+828
+00:29:32,090 --> 00:29:34,650
+the impression that would be very useful
+
+829
+00:29:34,650 --> 00:29:45,880
+in other professions as well very good
+
+830
+00:29:45,890 --> 00:29:52,350
+um so the disease of stuff for example
+
+831
+00:29:52,350 --> 00:29:53,670
+we were considering that it's still a
+
+832
+00:29:53,670 --> 00:29:55,530
+quite a bit slower actually so by the
+
+833
+00:29:55,530 --> 00:29:58,680
+way some incident code it's up on github
+
+834
+00:29:58,680 --> 00:30:00,660
+the zeod stuff in particular is going
+
+835
+00:30:00,660 --> 00:30:02,220
+too slow in a browser and Java scripts
+
+836
+00:30:02,220 --> 00:30:04,290
+like 10x lower so than native that's
+
+837
+00:30:04,290 --> 00:30:06,870
+something we were considering there's
+
+838
+00:30:06,870 --> 00:30:08,760
+also we we found also this holds in the
+
+839
+00:30:08,760 --> 00:30:10,170
+camera specification you cannot draw a
+
+840
+00:30:10,170 --> 00:30:12,630
+dashed line in canvas you can emulate
+
+841
+00:30:12,630 --> 00:30:14,520
+that it's just really hard math so
+
+842
+00:30:14,520 --> 00:30:15,750
+that's something we propose that's
+
+843
+00:30:15,750 --> 00:30:17,790
+already in this back actually similarly
+
+844
+00:30:17,790 --> 00:30:19,890
+there's compositing things together in
+
+845
+00:30:19,890 --> 00:30:21,750
+canvas and merging images is kind of
+
+846
+00:30:21,750 --> 00:30:23,610
+difficult so they will use this project
+
+847
+00:30:23,610 --> 00:30:24,840
+to kind of drive what kind of features
+
+848
+00:30:24,840 --> 00:30:28,560
+are missing absolutely in the questions
+
+849
+00:30:28,560 --> 00:30:42,440
+are back maybe all right
+
+850
+00:30:42,450 --> 00:30:46,450
+yeah so I used to work a JavaScript boob
+
+851
+00:30:46,450 --> 00:30:47,860
+unless there's a talking on JavaScript
+
+852
+00:30:47,860 --> 00:30:49,360
+performance and also couch catches
+
+853
+00:30:49,360 --> 00:30:51,159
+performance so there's an ongoing battle
+
+854
+00:30:51,159 --> 00:30:52,809
+to like nature's get fast that's going
+
+855
+00:30:52,809 --> 00:30:54,669
+to take some time javascript is language
+
+856
+00:30:54,669 --> 00:30:56,409
+is actually much harder to optimize than
+
+857
+00:30:56,409 --> 00:30:58,360
+a traditional i typed statically
+
+858
+00:30:58,360 --> 00:31:01,210
+compiled language as a simple thing as a
+
+859
+00:31:01,210 --> 00:31:03,279
+function call with this is really hard
+
+860
+00:31:03,279 --> 00:31:05,799
+to tell where it's going there might be
+
+861
+00:31:05,799 --> 00:31:07,299
+a getter than just fired you can be
+
+862
+00:31:07,299 --> 00:31:09,190
+seated in a code easily that somewhat
+
+863
+00:31:09,190 --> 00:31:11,139
+change the binding of that function on
+
+864
+00:31:11,139 --> 00:31:13,090
+this somewhere else or you might want
+
+865
+00:31:13,090 --> 00:31:14,799
+the Dom the dumb cause an event handler
+
+866
+00:31:14,799 --> 00:31:16,690
+that changes it somehow so it's very
+
+867
+00:31:16,690 --> 00:31:18,639
+hard to determine you can do you can do
+
+868
+00:31:18,639 --> 00:31:20,620
+optimistic population you can kind of in
+
+869
+00:31:20,620 --> 00:31:22,840
+line and guard against not failing these
+
+870
+00:31:22,840 --> 00:31:23,919
+things are being done so the next
+
+871
+00:31:23,919 --> 00:31:26,289
+version of our compiler will do that to
+
+872
+00:31:26,289 --> 00:31:29,350
+degree but right now if you wanna make
+
+873
+00:31:29,350 --> 00:31:31,299
+it fast and current browsers if you do a
+
+874
+00:31:31,299 --> 00:31:32,470
+little bit of poo finding a little bit
+
+875
+00:31:32,470 --> 00:31:34,120
+of August occation a couple lines of
+
+876
+00:31:34,120 --> 00:31:35,860
+code you get massive performance gains
+
+877
+00:31:35,860 --> 00:31:42,039
+so I think it is worth it
+
+878
+00:31:42,049 --> 00:31:45,000
+absolutely so the goal for this quarter
+
+879
+00:31:45,000 --> 00:31:46,289
+is if you want to put out an extension
+
+880
+00:31:46,289 --> 00:31:48,289
+that you can download and install and
+
+881
+00:31:48,289 --> 00:31:50,070
+ultimately we would like to see this in
+
+882
+00:31:50,070 --> 00:31:55,559
+Firefox about our main focuses Firefox
+
+883
+00:31:55,559 --> 00:31:58,260
+that's we know best it runs committee
+
+884
+00:31:58,260 --> 00:31:59,490
+contributors have poured it to Eddie
+
+885
+00:31:59,490 --> 00:32:02,090
+browser out there it runs very well in
+
+886
+00:32:02,090 --> 00:32:05,850
+Safari Chrome and Firefox it runs
+
+887
+00:32:05,850 --> 00:32:07,650
+somewhat in ie9 as well I just really
+
+888
+00:32:07,650 --> 00:32:16,120
+slow because I don't have typed arrays
+
+889
+00:32:16,130 --> 00:32:22,049
+yes well so when we set out to do this
+
+890
+00:32:22,049 --> 00:32:23,820
+project really one motivation was very
+
+891
+00:32:23,820 --> 00:32:24,990
+marginal platform side like we don't
+
+892
+00:32:24,990 --> 00:32:26,970
+like plugins plugins crash their crappy
+
+893
+00:32:26,970 --> 00:32:29,100
+their security problem so if we pick
+
+894
+00:32:29,100 --> 00:32:31,080
+kind of one popular plugin or native
+
+895
+00:32:31,080 --> 00:32:33,179
+code piece PDF but flash is kind of the
+
+896
+00:32:33,179 --> 00:32:34,799
+obvious elephant in a room as well so
+
+897
+00:32:34,799 --> 00:32:36,659
+they has already been project we do
+
+898
+00:32:36,659 --> 00:32:39,240
+flash it's it's very partial that's very
+
+899
+00:32:39,240 --> 00:32:41,309
+small and we are very hopeful that that
+
+900
+00:32:41,309 --> 00:32:42,720
+project will be extended rather poor
+
+901
+00:32:42,720 --> 00:32:44,070
+just like it will eventually your place
+
+902
+00:32:44,070 --> 00:32:46,350
+flash conceptually PDF and flush every
+
+903
+00:32:46,350 --> 00:32:47,970
+the same thing you have commands in the
+
+904
+00:32:47,970 --> 00:32:49,470
+stream that summer renders stuff to the
+
+905
+00:32:49,470 --> 00:32:51,299
+screen and I think you proved that you
+
+906
+00:32:51,299 --> 00:32:53,070
+can look very effectively using the web
+
+907
+00:32:53,070 --> 00:32:55,409
+pipeline can I PS like canvas a very
+
+908
+00:32:55,409 --> 00:32:58,020
+high level very efficient api's to this
+
+909
+00:32:58,020 --> 00:32:59,549
+kind of pixel pushing so really all you
+
+910
+00:32:59,549 --> 00:33:01,559
+do is kind of map the high level flash
+
+911
+00:33:01,559 --> 00:33:03,960
+format to a high level a canvas format
+
+912
+00:33:03,960 --> 00:33:05,820
+there's not all that much heavy lifting
+
+913
+00:33:05,820 --> 00:33:07,260
+and computation to be done in javascript
+
+914
+00:33:07,260 --> 00:33:10,860
+so you can do it very efficiently all
+

@@ -1,0 +1,2737 @@
+1
+00:00:05,210 --> 00:00:08,340
+
+hello everyone I'm really excited to be
+
+2
+00:00:08,340 --> 00:00:11,160
+here because the first international
+
+3
+00:00:11,160 --> 00:00:13,170
+conference talk that I ever gave was
+
+4
+00:00:13,170 --> 00:00:17,520
+actually right here on this stage I came
+
+5
+00:00:17,520 --> 00:00:20,880
+in 2016 for I think it was the very
+
+6
+00:00:20,880 --> 00:00:23,670
+first CSS company the past and what I
+
+7
+00:00:23,670 --> 00:00:27,510
+talked about was actually styling using
+
+8
+00:00:27,510 --> 00:00:30,480
+just CSS and HTML but now today we're
+
+9
+00:00:30,480 --> 00:00:32,759
+gonna bring CSS HTML in the little bit
+
+10
+00:00:32,759 --> 00:00:34,590
+of JavaScript together and see how we
+
+11
+00:00:34,590 --> 00:00:36,870
+could craft stateful styles with state
+
+12
+00:00:36,870 --> 00:00:38,790
+machines which Mike talked about at the
+
+13
+00:00:38,790 --> 00:00:41,640
+very beginning so basically the hello
+
+14
+00:00:41,640 --> 00:00:44,460
+world of any design system any component
+
+15
+00:00:44,460 --> 00:00:46,920
+library is of course your button so
+
+16
+00:00:46,920 --> 00:00:48,899
+imagine we have this button you get this
+
+17
+00:00:48,899 --> 00:00:52,140
+design you're happy it looks good but
+
+18
+00:00:52,140 --> 00:00:54,899
+there's many different variants like
+
+19
+00:00:54,899 --> 00:00:57,120
+Mike talked about that this button can
+
+20
+00:00:57,120 --> 00:00:59,160
+be in so we have to consider what
+
+21
+00:00:59,160 --> 00:01:01,289
+happens if you hover the button what
+
+22
+00:01:01,289 --> 00:01:04,140
+happens if the button is active and what
+
+23
+00:01:04,140 --> 00:01:05,850
+happens that the button is disabled so
+
+24
+00:01:05,850 --> 00:01:08,340
+you might be thinking we're done here
+
+25
+00:01:08,340 --> 00:01:10,470
+but we have to also think about the
+
+26
+00:01:10,470 --> 00:01:12,840
+application states that this button can
+
+27
+00:01:12,840 --> 00:01:15,090
+be into for example if we're fetching
+
+28
+00:01:15,090 --> 00:01:17,520
+data we might want to fade it out if
+
+29
+00:01:17,520 --> 00:01:20,790
+it's a success we might want to have it
+
+30
+00:01:20,790 --> 00:01:23,009
+be green and say hey we've got your data
+
+31
+00:01:23,009 --> 00:01:25,830
+or if it's an error you might want it to
+
+32
+00:01:25,830 --> 00:01:30,689
+be a different variants such as red but
+
+33
+00:01:30,689 --> 00:01:32,970
+looking at application behavior and
+
+34
+00:01:32,970 --> 00:01:35,610
+component Styles this way is very
+
+35
+00:01:35,610 --> 00:01:37,890
+limited because we also have to think
+
+36
+00:01:37,890 --> 00:01:39,840
+about how we transition between these
+
+37
+00:01:39,840 --> 00:01:41,759
+states to illustrate this problem let's
+
+38
+00:01:41,759 --> 00:01:43,409
+say we have this fetch button user
+
+39
+00:01:43,409 --> 00:01:46,079
+clicks it we're waiting for data and we
+
+40
+00:01:46,079 --> 00:01:47,460
+eventually get it that's great
+
+41
+00:01:47,460 --> 00:01:49,470
+but what happens if the data takes a
+
+42
+00:01:49,470 --> 00:01:52,200
+long time to load then maybe we want to
+
+43
+00:01:52,200 --> 00:01:55,409
+show a spinner and eventually we get our
+
+44
+00:01:55,409 --> 00:01:59,969
+data but if you're like me then you'll
+
+45
+00:01:59,969 --> 00:02:02,610
+get frustrated after a while and start
+
+46
+00:02:02,610 --> 00:02:04,380
+clicking this button a few times and
+
+47
+00:02:04,380 --> 00:02:06,149
+this is gonna make a lot of unnecessary
+
+48
+00:02:06,149 --> 00:02:09,090
+API requests until you finally get your
+
+49
+00:02:09,090 --> 00:02:12,239
+data but you're a developer and you're
+
+50
+00:02:12,239 --> 00:02:14,380
+smart you think you know what
+
+51
+00:02:14,380 --> 00:02:16,540
+I'm going to disable the button and that
+
+52
+00:02:16,540 --> 00:02:18,790
+way they could only click it once they
+
+53
+00:02:18,790 --> 00:02:20,620
+have to wait for the data and then it
+
+54
+00:02:20,620 --> 00:02:23,140
+comes back successfully but guess what
+
+55
+00:02:23,140 --> 00:02:25,600
+I'm a developer too I know chrome dev
+
+56
+00:02:25,600 --> 00:02:28,030
+tools so I could just go in under Sabol
+
+57
+00:02:28,030 --> 00:02:30,160
+that button and make as many requests as
+
+58
+00:02:30,160 --> 00:02:33,760
+I want so I ran into this problem a lot
+
+59
+00:02:33,760 --> 00:02:36,100
+of times and I wasn't always good at
+
+60
+00:02:36,100 --> 00:02:38,500
+JavaScript which is why at the very
+
+61
+00:02:38,500 --> 00:02:41,080
+beginning I decided to see how much I
+
+62
+00:02:41,080 --> 00:02:44,200
+could do with just HTML and CSS this was
+
+63
+00:02:44,200 --> 00:02:45,820
+one of the very first code pens that I
+
+64
+00:02:45,820 --> 00:02:48,430
+made using hover States to just go
+
+65
+00:02:48,430 --> 00:02:50,650
+between the days and recreate this
+
+66
+00:02:50,650 --> 00:02:54,610
+dribble by 2bic studio as well as this
+
+67
+00:02:54,610 --> 00:02:58,240
+one now to do to do complex animations
+
+68
+00:02:58,240 --> 00:03:00,850
+like this you sort of have to use a few
+
+69
+00:03:00,850 --> 00:03:03,010
+hacks if you're not going to use
+
+70
+00:03:03,010 --> 00:03:05,410
+JavaScript and so that's exactly what I
+
+71
+00:03:05,410 --> 00:03:07,810
+did just like was talked about in the
+
+72
+00:03:07,810 --> 00:03:10,750
+very first talk I used check boxes
+
+73
+00:03:10,750 --> 00:03:13,540
+because check boxes can represent States
+
+74
+00:03:13,540 --> 00:03:16,810
+and radio buttons as well so what I did
+
+75
+00:03:16,810 --> 00:03:19,540
+here was if you have a checkbox and it
+
+76
+00:03:19,540 --> 00:03:21,460
+sort of lives outside the app you could
+
+77
+00:03:21,460 --> 00:03:23,140
+use the squiggly selector a tilde
+
+78
+00:03:23,140 --> 00:03:25,390
+selector which is more formally known as
+
+79
+00:03:25,390 --> 00:03:27,430
+the adjutant sibling selector but I mean
+
+80
+00:03:27,430 --> 00:03:29,650
+no one's gonna remember that and you
+
+81
+00:03:29,650 --> 00:03:32,380
+could apply a label inside the app that
+
+82
+00:03:32,380 --> 00:03:34,900
+labels are great because they magically
+
+83
+00:03:34,900 --> 00:03:39,790
+map the the check box over to the label
+
+84
+00:03:39,790 --> 00:03:41,260
+in your app so when you click the label
+
+85
+00:03:41,260 --> 00:03:43,570
+it doesn't matter where it is it will
+
+86
+00:03:43,570 --> 00:03:45,760
+check that checkbox and so what happens
+
+87
+00:03:45,760 --> 00:03:47,290
+is when you click that label which could
+
+88
+00:03:47,290 --> 00:03:49,930
+be a button or anything else then that
+
+89
+00:03:49,930 --> 00:03:51,610
+check box is going to be checked you
+
+90
+00:03:51,610 --> 00:03:53,140
+could use the squiggly selector and
+
+91
+00:03:53,140 --> 00:03:56,020
+select that box and make it change
+
+92
+00:03:56,020 --> 00:03:57,730
+styles and you could also do this with
+
+93
+00:03:57,730 --> 00:04:00,190
+more than one check box which gives you
+
+94
+00:04:00,190 --> 00:04:01,840
+sort of that dynamic behavior and
+
+95
+00:04:01,840 --> 00:04:04,810
+dynamic styling now like I mentioned you
+
+96
+00:04:04,810 --> 00:04:06,430
+could do this with both check boxes and
+
+97
+00:04:06,430 --> 00:04:09,520
+radios with one distinction with check
+
+98
+00:04:09,520 --> 00:04:11,590
+boxes you could have zero or more check
+
+99
+00:04:11,590 --> 00:04:13,630
+boxes checked but while I found myself
+
+100
+00:04:13,630 --> 00:04:15,910
+using more and more for radio buttons
+
+101
+00:04:15,910 --> 00:04:18,130
+because it enforced the idea that you
+
+102
+00:04:18,130 --> 00:04:20,410
+could have only one of them checked at a
+
+103
+00:04:20,410 --> 00:04:23,740
+time so I was playing around with this
+
+104
+00:04:23,740 --> 00:04:25,330
+and I was playing around with crazier
+
+105
+00:04:25,330 --> 00:04:27,700
+things like this CSS only dog animation
+
+106
+00:04:27,700 --> 00:04:28,030
+that I
+
+107
+00:04:28,030 --> 00:04:30,760
+showed at the very first CSS company the
+
+108
+00:04:30,760 --> 00:04:36,370
+pest that I was at and I decided to go
+
+109
+00:04:36,370 --> 00:04:38,560
+with my friends sha and we do this
+
+110
+00:04:38,560 --> 00:04:40,720
+weekly livestream called the key framers
+
+111
+00:04:40,720 --> 00:04:42,610
+in which we bring imaginative user
+
+112
+00:04:42,610 --> 00:04:45,760
+interfaces to like using HTML CSS and a
+
+113
+00:04:45,760 --> 00:04:48,100
+little bit of JavaScript so what we do
+
+114
+00:04:48,100 --> 00:04:51,220
+is we take these really complex
+
+115
+00:04:51,220 --> 00:04:53,860
+animations from Tribble and we try to
+
+116
+00:04:53,860 --> 00:04:56,410
+recreate them live on the air in under
+
+117
+00:04:56,410 --> 00:04:58,510
+two hours but what we found ourselves
+
+118
+00:04:58,510 --> 00:05:00,730
+seeing more and more is that a lot of
+
+119
+00:05:00,730 --> 00:05:02,830
+these animations are States based and
+
+120
+00:05:02,830 --> 00:05:04,810
+not just two states so we can't use a
+
+121
+00:05:04,810 --> 00:05:07,750
+checkbox but three states where you
+
+122
+00:05:07,750 --> 00:05:10,540
+click and you know you might go back or
+
+123
+00:05:10,540 --> 00:05:12,460
+you might have this play button and then
+
+124
+00:05:12,460 --> 00:05:18,160
+you go to something else so that's more
+
+125
+00:05:18,160 --> 00:05:20,919
+easily illustrated here because we have
+
+126
+00:05:20,919 --> 00:05:23,470
+this plateless state at the top which
+
+127
+00:05:23,470 --> 00:05:25,900
+shows what state our app is in and you
+
+128
+00:05:25,900 --> 00:05:27,810
+could scroll through these albums and
+
+129
+00:05:27,810 --> 00:05:30,460
+this is another recreation of a dribble
+
+130
+00:05:30,460 --> 00:05:32,500
+and so you could drag back and forth and
+
+131
+00:05:32,500 --> 00:05:35,050
+you could see that the state of our
+
+132
+00:05:35,050 --> 00:05:38,050
+entire application changes as the user
+
+133
+00:05:38,050 --> 00:05:41,229
+interacts with this application so you
+
+134
+00:05:41,229 --> 00:05:46,419
+could see those moving side to side so
+
+135
+00:05:46,419 --> 00:05:48,100
+this sort of illustrates the problem
+
+136
+00:05:48,100 --> 00:05:50,260
+that we have with our currents design
+
+137
+00:05:50,260 --> 00:05:51,850
+systems in the current way that we
+
+138
+00:05:51,850 --> 00:05:55,300
+develop is that a designer might present
+
+139
+00:05:55,300 --> 00:05:59,380
+you a very high fidelity mock-up or you
+
+140
+00:05:59,380 --> 00:06:01,960
+know just like a simple prototype but
+
+141
+00:06:01,960 --> 00:06:05,520
+that mock-up represents only one of
+
+142
+00:06:05,520 --> 00:06:08,229
+potentially many if not hundreds
+
+143
+00:06:08,229 --> 00:06:10,690
+thousands of possible states that your
+
+144
+00:06:10,690 --> 00:06:13,390
+app of your components can be in and so
+
+145
+00:06:13,390 --> 00:06:15,160
+the problem I'm sorry the problem is
+
+146
+00:06:15,160 --> 00:06:17,650
+that this Ireson cycle is a bit slow
+
+147
+00:06:17,650 --> 00:06:20,680
+because not only does a designer have to
+
+148
+00:06:20,680 --> 00:06:23,110
+make all of those changes in all of
+
+149
+00:06:23,110 --> 00:06:25,870
+those different screens but if the logic
+
+150
+00:06:25,870 --> 00:06:27,940
+changes of the design changes you have
+
+151
+00:06:27,940 --> 00:06:29,320
+to go through all of those possible
+
+152
+00:06:29,320 --> 00:06:31,630
+changes or all those possible screens
+
+153
+00:06:31,630 --> 00:06:37,539
+and apply those changes so what what we
+
+154
+00:06:37,539 --> 00:06:39,729
+do currently today and I'm sure most of
+
+155
+00:06:39,729 --> 00:06:41,229
+you are guilty of this I know I was
+
+156
+00:06:41,229 --> 00:06:41,800
+guilty of the
+
+157
+00:06:41,800 --> 00:06:44,229
+for the longest time is we apply classes
+
+158
+00:06:44,229 --> 00:06:46,270
+we're like okay if this button is in the
+
+159
+00:06:46,270 --> 00:06:48,340
+loading state then we have a class of
+
+160
+00:06:48,340 --> 00:06:51,550
+loading of course so we could do the
+
+161
+00:06:51,550 --> 00:06:53,979
+same with success but the problem with
+
+162
+00:06:53,979 --> 00:06:56,289
+classes we can't enforce that we only
+
+163
+00:06:56,289 --> 00:06:59,409
+have one possible value so we might have
+
+164
+00:06:59,409 --> 00:07:02,080
+a button that shows loading and success
+
+165
+00:07:02,080 --> 00:07:04,419
+and some of you might think like I'm I'm
+
+166
+00:07:04,419 --> 00:07:07,240
+smart enough not to do this I have class
+
+167
+00:07:07,240 --> 00:07:09,159
+list I could remove the loading class
+
+168
+00:07:09,159 --> 00:07:11,919
+and then at the success class by this
+
+169
+00:07:11,919 --> 00:07:14,050
+many of you know this does happen in the
+
+170
+00:07:14,050 --> 00:07:17,110
+real world and this is something that we
+
+171
+00:07:17,110 --> 00:07:20,530
+wants to avoid so is there a better way
+
+172
+00:07:20,530 --> 00:07:22,780
+that we could model the state for our
+
+173
+00:07:22,780 --> 00:07:25,629
+dynamic UI's and have it in a way that
+
+174
+00:07:25,629 --> 00:07:28,659
+we could visualize it and easily see all
+
+175
+00:07:28,659 --> 00:07:31,360
+these possible states and be able to
+
+176
+00:07:31,360 --> 00:07:34,479
+know how states change from one state to
+
+177
+00:07:34,479 --> 00:07:36,969
+another in our app and can we do it in a
+
+178
+00:07:36,969 --> 00:07:38,710
+more formal way that designers and
+
+179
+00:07:38,710 --> 00:07:41,469
+developers can understand equally so I
+
+180
+00:07:41,469 --> 00:07:43,090
+looked at a lot of different prototyping
+
+181
+00:07:43,090 --> 00:07:46,779
+apps like origami design envision app
+
+182
+00:07:46,779 --> 00:07:49,000
+which you define each of the different
+
+183
+00:07:49,000 --> 00:07:51,069
+states in it smoothly transitions
+
+184
+00:07:51,069 --> 00:07:53,650
+between each of them prototype does the
+
+185
+00:07:53,650 --> 00:07:56,319
+same thing where it's sort of like magic
+
+186
+00:07:56,319 --> 00:07:58,150
+move for designers because you could
+
+187
+00:07:58,150 --> 00:08:00,400
+define shapes and it will magically
+
+188
+00:08:00,400 --> 00:08:03,669
+transform then scale them translate them
+
+189
+00:08:03,669 --> 00:08:05,469
+into the shape that they're supposed to
+
+190
+00:08:05,469 --> 00:08:07,630
+be and you could add triggers and then
+
+191
+00:08:07,630 --> 00:08:10,779
+there's more formal user flow tools such
+
+192
+00:08:10,779 --> 00:08:13,300
+as overflowed IO in which you could
+
+193
+00:08:13,300 --> 00:08:15,279
+design each of these screens and add
+
+194
+00:08:15,279 --> 00:08:18,789
+these custom triggers so what I realized
+
+195
+00:08:18,789 --> 00:08:20,650
+was common between all of these tools
+
+196
+00:08:20,650 --> 00:08:23,469
+and more is that user flows are these
+
+197
+00:08:23,469 --> 00:08:25,539
+transitions between these user interface
+
+198
+00:08:25,539 --> 00:08:27,759
+States and these transitions could be
+
+199
+00:08:27,759 --> 00:08:30,430
+caused based on either user events or
+
+200
+00:08:30,430 --> 00:08:33,130
+other external events such as a timer an
+
+201
+00:08:33,130 --> 00:08:36,820
+API requests coming in etc and so this
+
+202
+00:08:36,820 --> 00:08:39,279
+brings me to the topic of finite state
+
+203
+00:08:39,279 --> 00:08:41,529
+machines and state charts which I mean
+
+204
+00:08:41,529 --> 00:08:43,120
+if you know me long enough you know that
+
+205
+00:08:43,120 --> 00:08:44,980
+this is what I talked about you could
+
+206
+00:08:44,980 --> 00:08:46,990
+type state machine on Twitter and I will
+
+207
+00:08:46,990 --> 00:08:49,390
+find you and I will respond to you it's
+
+208
+00:08:49,390 --> 00:08:51,250
+just my thing one of my favorite
+
+209
+00:08:51,250 --> 00:08:53,440
+definitions of the states is
+
+210
+00:08:53,440 --> 00:08:55,420
+actually in the Aria guidelines in the
+
+211
+00:08:55,420 --> 00:08:58,240
+w3.org website where a States is a
+
+212
+00:08:58,240 --> 00:09:00,010
+dynamic property that expresses the
+
+213
+00:09:00,010 --> 00:09:03,430
+characteristics of an object in a
+
+214
+00:09:03,430 --> 00:09:05,980
+certain point of time so this point of
+
+215
+00:09:05,980 --> 00:09:08,380
+time can be in response to a user action
+
+216
+00:09:08,380 --> 00:09:11,470
+or other automated processes or external
+
+217
+00:09:11,470 --> 00:09:13,660
+events that come in and so this is a
+
+218
+00:09:13,660 --> 00:09:16,240
+distinction between properties such as
+
+219
+00:09:16,240 --> 00:09:19,120
+like an anchor might have an H ref tag
+
+220
+00:09:19,120 --> 00:09:23,320
+or an href attribute or a button can
+
+221
+00:09:23,320 --> 00:09:24,850
+have a variant where you know that
+
+222
+00:09:24,850 --> 00:09:27,280
+that's not going to change but state is
+
+223
+00:09:27,280 --> 00:09:30,160
+different state describes at one point
+
+224
+00:09:30,160 --> 00:09:33,070
+in time this represents my component and
+
+225
+00:09:33,070 --> 00:09:36,100
+that could change at any time and area
+
+226
+00:09:36,100 --> 00:09:38,200
+also has all of these builds and
+
+227
+00:09:38,200 --> 00:09:41,110
+attributes for states that they describe
+
+228
+00:09:41,110 --> 00:09:45,310
+a stateful attributes which describe you
+
+229
+00:09:45,310 --> 00:09:48,550
+know certain finite states of components
+
+230
+00:09:48,550 --> 00:09:52,150
+such as invalid valid disabled currents
+
+231
+00:09:52,150 --> 00:09:57,090
+and yeah so finite state machines are
+
+232
+00:09:57,090 --> 00:10:00,670
+pretty much the same concept where it
+
+233
+00:10:00,670 --> 00:10:02,530
+has five parts I'm gonna review finite
+
+234
+00:10:02,530 --> 00:10:04,210
+state machines real briefly there's a
+
+235
+00:10:04,210 --> 00:10:06,190
+ton of resources on this though but the
+
+236
+00:10:06,190 --> 00:10:08,350
+finite state machine is one that has an
+
+237
+00:10:08,350 --> 00:10:10,750
+initial state it has a finite number of
+
+238
+00:10:10,750 --> 00:10:12,760
+states which means we could only be in
+
+239
+00:10:12,760 --> 00:10:15,130
+one of those states at a time it has a
+
+240
+00:10:15,130 --> 00:10:16,930
+finite number of vents and these are the
+
+241
+00:10:16,930 --> 00:10:18,970
+signals that cause transitions between
+
+242
+00:10:18,970 --> 00:10:21,310
+those states it has a mapping of
+
+243
+00:10:21,310 --> 00:10:23,740
+transitions that go between those states
+
+244
+00:10:23,740 --> 00:10:26,410
+so for example for an idle and the user
+
+245
+00:10:26,410 --> 00:10:28,270
+makes a fetch request by pressing a
+
+246
+00:10:28,270 --> 00:10:30,130
+button now we're in the pending States
+
+247
+00:10:30,130 --> 00:10:32,440
+and it also has a finite number of final
+
+248
+00:10:32,440 --> 00:10:34,840
+states which represent the app being
+
+249
+00:10:34,840 --> 00:10:38,430
+done there being no more left to do so
+
+250
+00:10:38,430 --> 00:10:41,320
+the beauty of these finite state
+
+251
+00:10:41,320 --> 00:10:43,000
+machines is number one they could be
+
+252
+00:10:43,000 --> 00:10:45,550
+visualized such as this state diagram
+
+253
+00:10:45,550 --> 00:10:49,750
+and number two they outline just all the
+
+254
+00:10:49,750 --> 00:10:52,150
+possible transitions and what's not
+
+255
+00:10:52,150 --> 00:10:54,490
+possible as well so if we do a search
+
+256
+00:10:54,490 --> 00:10:57,940
+action on the searching state we realize
+
+257
+00:10:57,940 --> 00:11:00,280
+that there is no transition outgoing
+
+258
+00:11:00,280 --> 00:11:02,830
+from the searching State so that search
+
+259
+00:11:02,830 --> 00:11:04,810
+should have no effect and this is
+
+260
+00:11:04,810 --> 00:11:06,700
+exactly what we wants to occur so that
+
+261
+00:11:06,700 --> 00:11:07,440
+the user isn't
+
+262
+00:11:07,440 --> 00:11:09,510
+keep making all of these different API
+
+263
+00:11:09,510 --> 00:11:15,960
+requests so to do this in CSS in HTML
+
+264
+00:11:15,960 --> 00:11:17,610
+and to do it in a scalable way I
+
+265
+00:11:17,610 --> 00:11:20,460
+employed the use of data attributes so
+
+266
+00:11:20,460 --> 00:11:23,160
+whereas we can't use Aria attributes for
+
+267
+00:11:23,160 --> 00:11:25,680
+everything we could use data attributes
+
+268
+00:11:25,680 --> 00:11:29,220
+to describe a more colorful and more
+
+269
+00:11:29,220 --> 00:11:31,200
+varied way of describing all of the
+
+270
+00:11:31,200 --> 00:11:34,530
+possible states of our application or of
+
+271
+00:11:34,530 --> 00:11:37,500
+the individual components as well the
+
+272
+00:11:37,500 --> 00:11:39,330
+other attributes are something that are
+
+273
+00:11:39,330 --> 00:11:42,990
+very underused but this goes back to the
+
+274
+00:11:42,990 --> 00:11:45,600
+beginning of HTML and I highly encourage
+
+275
+00:11:45,600 --> 00:11:47,880
+you to use it because they end up being
+
+276
+00:11:47,880 --> 00:11:51,750
+a lot simpler than class names to use so
+
+277
+00:11:51,750 --> 00:11:53,250
+for example we could have a data state
+
+278
+00:11:53,250 --> 00:11:55,470
+equals loading and we could target that
+
+279
+00:11:55,470 --> 00:11:58,410
+using an attribute selector in CSS data
+
+280
+00:11:58,410 --> 00:12:01,170
+state equals loading and so in
+
+281
+00:12:01,170 --> 00:12:03,570
+JavaScript it actually makes it really
+
+282
+00:12:03,570 --> 00:12:08,010
+easy to to change the the data attribute
+
+283
+00:12:08,010 --> 00:12:10,830
+of whatever you're working with so we
+
+284
+00:12:10,830 --> 00:12:12,600
+could have a data state and we could say
+
+285
+00:12:12,600 --> 00:12:14,370
+you know it's loading your success and
+
+286
+00:12:14,370 --> 00:12:17,730
+then we could change that or we could
+
+287
+00:12:17,730 --> 00:12:20,730
+delete it completely and then it's gone
+
+288
+00:12:20,730 --> 00:12:23,220
+and so changing it is just setting that
+
+289
+00:12:23,220 --> 00:12:25,350
+attribute and deleting it is just
+
+290
+00:12:25,350 --> 00:12:27,420
+deleting so there's no weird api's like
+
+291
+00:12:27,420 --> 00:12:30,000
+classless dot add class list that has
+
+292
+00:12:30,000 --> 00:12:32,160
+class lists that remove that you have to
+
+293
+00:12:32,160 --> 00:12:34,890
+worry about it's just JavaScript so
+
+294
+00:12:34,890 --> 00:12:37,500
+these data attributes represents each
+
+295
+00:12:37,500 --> 00:12:40,440
+one of these finite States in your
+
+296
+00:12:40,440 --> 00:12:42,390
+components or your application for
+
+297
+00:12:42,390 --> 00:12:44,400
+example this button we could have data
+
+298
+00:12:44,400 --> 00:12:46,020
+state of idle which means nothing
+
+299
+00:12:46,020 --> 00:12:46,620
+happened yet
+
+300
+00:12:46,620 --> 00:12:48,780
+we could have loading we could have a
+
+301
+00:12:48,780 --> 00:12:51,570
+success and we could have a failure so
+
+302
+00:12:51,570 --> 00:12:55,110
+you could also imagine that you you can
+
+303
+00:12:55,110 --> 00:12:56,910
+name these states whatever you want and
+
+304
+00:12:56,910 --> 00:12:58,200
+that's the beauty of these data
+
+305
+00:12:58,200 --> 00:13:02,280
+attributes so how do we implement data
+
+306
+00:13:02,280 --> 00:13:04,620
+attributes with these finite States
+
+307
+00:13:04,620 --> 00:13:07,260
+traditionally finite state machines
+
+308
+00:13:07,260 --> 00:13:09,300
+especially in other languages can be
+
+309
+00:13:09,300 --> 00:13:11,400
+done using switch case statements where
+
+310
+00:13:11,400 --> 00:13:14,250
+you would first figure out what state
+
+311
+00:13:14,250 --> 00:13:16,290
+you're in and you would switch on that
+
+312
+00:13:16,290 --> 00:13:17,820
+so for example for in the searching
+
+313
+00:13:17,820 --> 00:13:20,010
+state we go to the key statement for
+
+314
+00:13:20,010 --> 00:13:20,540
+search
+
+315
+00:13:20,540 --> 00:13:22,730
+and then we switch on what events
+
+316
+00:13:22,730 --> 00:13:25,160
+occurred so if you're used to Redux on
+
+317
+00:13:25,160 --> 00:13:26,630
+them getting into JavaScript a little
+
+318
+00:13:26,630 --> 00:13:30,200
+bit here by Redux or ng rx or any of
+
+319
+00:13:30,200 --> 00:13:32,990
+those reducers then typically you would
+
+320
+00:13:32,990 --> 00:13:35,240
+do action first but now we're doing it
+
+321
+00:13:35,240 --> 00:13:37,250
+the other way around we're looking at
+
+322
+00:13:37,250 --> 00:13:39,710
+what state were on first and then we're
+
+323
+00:13:39,710 --> 00:13:42,470
+going to the event I call it embeds
+
+324
+00:13:42,470 --> 00:13:43,910
+instead of action because that's a more
+
+325
+00:13:43,910 --> 00:13:47,240
+accurate term but we check what events
+
+326
+00:13:47,240 --> 00:13:49,100
+just happened and what state we should
+
+327
+00:13:49,100 --> 00:13:51,770
+go to next based on that event such as
+
+328
+00:13:51,770 --> 00:13:55,250
+success and of course if that is not
+
+329
+00:13:55,250 --> 00:13:56,570
+handled by the switch case statement
+
+330
+00:13:56,570 --> 00:13:59,210
+then you just default to the same state
+
+331
+00:13:59,210 --> 00:14:01,790
+now personally I find switch case
+
+332
+00:14:01,790 --> 00:14:03,800
+statements a little bit verbose so I
+
+333
+00:14:03,800 --> 00:14:06,530
+like to do object mapping instead and so
+
+334
+00:14:06,530 --> 00:14:08,180
+this is just you it looks like a big
+
+335
+00:14:08,180 --> 00:14:10,340
+JSON object and it's essentially the
+
+336
+00:14:10,340 --> 00:14:13,790
+same idea where you have a state such as
+
+337
+00:14:13,790 --> 00:14:17,270
+searching you look at the on property to
+
+338
+00:14:17,270 --> 00:14:19,370
+see which events just occurred and if
+
+339
+00:14:19,370 --> 00:14:21,950
+there's a mapping between the events and
+
+340
+00:14:21,950 --> 00:14:24,350
+the next state that should happen and if
+
+341
+00:14:24,350 --> 00:14:26,090
+there isn't you just default to the
+
+342
+00:14:26,090 --> 00:14:29,630
+current state so I also wrote a library
+
+343
+00:14:29,630 --> 00:14:31,730
+for this called XE which you do not have
+
+344
+00:14:31,730 --> 00:14:34,880
+to use it doesn't apply directly to what
+
+345
+00:14:34,880 --> 00:14:36,350
+I'm talking about because you could do
+
+346
+00:14:36,350 --> 00:14:38,660
+this today without any JavaScript
+
+347
+00:14:38,660 --> 00:14:41,030
+library but I just felt like mentioning
+
+348
+00:14:41,030 --> 00:14:42,410
+it because it does have a lot of these
+
+349
+00:14:42,410 --> 00:14:45,020
+things built in to use x8 you would just
+
+350
+00:14:45,020 --> 00:14:48,740
+have a machine function which takes in
+
+351
+00:14:48,740 --> 00:14:51,440
+that object configuration and it gives
+
+352
+00:14:51,440 --> 00:14:54,460
+you a few nice things such as automatic
+
+353
+00:14:54,460 --> 00:14:56,870
+transitions so you don't need to code
+
+354
+00:14:56,870 --> 00:14:58,730
+that transition function yourself and
+
+355
+00:14:58,730 --> 00:15:01,010
+you could say if I'm in the idle State
+
+356
+00:15:01,010 --> 00:15:04,760
+and these search events happens then we
+
+357
+00:15:04,760 --> 00:15:06,590
+should go to the searching State that's
+
+358
+00:15:06,590 --> 00:15:10,420
+actually wrong I'll correct that but
+
+359
+00:15:10,420 --> 00:15:14,270
+yeah so here's an example over here have
+
+360
+00:15:14,270 --> 00:15:16,580
+you ever wondered how how they implement
+
+361
+00:15:16,580 --> 00:15:19,490
+sort of a drag-and-drop type of thing I
+
+362
+00:15:19,490 --> 00:15:22,460
+mean it looks pretty simple but then you
+
+363
+00:15:22,460 --> 00:15:24,560
+get around to trying to implement it and
+
+364
+00:15:24,560 --> 00:15:26,600
+seeing okay which event listeners do I
+
+365
+00:15:26,600 --> 00:15:28,880
+need to listen to what do I have to do
+
+366
+00:15:28,880 --> 00:15:31,100
+when do I stop listening to these event
+
+367
+00:15:31,100 --> 00:15:32,460
+listener
+
+368
+00:15:32,460 --> 00:15:34,290
+and it just gets really confusing so you
+
+369
+00:15:34,290 --> 00:15:36,450
+probably reach for a library but it's
+
+370
+00:15:36,450 --> 00:15:38,640
+actually a lot simpler than it seems if
+
+371
+00:15:38,640 --> 00:15:40,710
+you think about drag-and-drop as two
+
+372
+00:15:40,710 --> 00:15:43,860
+states either idle or dragging anything
+
+373
+00:15:43,860 --> 00:15:46,290
+about four properties the X and y which
+
+374
+00:15:46,290 --> 00:15:48,630
+represents the position of the object
+
+375
+00:15:48,630 --> 00:15:51,300
+and the dxdy which represents how far
+
+376
+00:15:51,300 --> 00:15:54,150
+you move the object then it becomes
+
+377
+00:15:54,150 --> 00:15:56,790
+pretty easy to visualize this as two
+
+378
+00:15:56,790 --> 00:15:59,160
+states idle and then when you pick
+
+379
+00:15:59,160 --> 00:16:01,470
+something up like this that's like
+
+380
+00:16:01,470 --> 00:16:03,570
+you're dragging state's own I'm changing
+
+381
+00:16:03,570 --> 00:16:06,270
+the dxdy properties and then I would
+
+382
+00:16:06,270 --> 00:16:08,430
+move it somewhere and then once I stop
+
+383
+00:16:08,430 --> 00:16:10,860
+now I'm in the idle State again
+
+384
+00:16:10,860 --> 00:16:14,100
+and so we could visualize this here once
+
+385
+00:16:14,100 --> 00:16:17,160
+I start dragging you see those dxdy
+
+386
+00:16:17,160 --> 00:16:20,310
+properties moving and then I drop it and
+
+387
+00:16:20,310 --> 00:16:23,580
+then now I change those to x and y and
+
+388
+00:16:23,580 --> 00:16:26,880
+then I could do it again and so you can
+
+389
+00:16:26,880 --> 00:16:29,580
+see it's very easy to visualize these
+
+390
+00:16:29,580 --> 00:16:33,030
+two states within the context of your
+
+391
+00:16:33,030 --> 00:16:35,490
+application in your animations and this
+
+392
+00:16:35,490 --> 00:16:37,340
+on this playing by the way using those
+
+393
+00:16:37,340 --> 00:16:46,220
+data attributes as well so we could also
+
+394
+00:16:46,220 --> 00:16:48,390
+if you want to do more advanced
+
+395
+00:16:48,390 --> 00:16:50,970
+animations based on what state you're on
+
+396
+00:16:50,970 --> 00:16:53,940
+and what state you came from because the
+
+397
+00:16:53,940 --> 00:16:55,700
+different actions that could happen
+
+398
+00:16:55,700 --> 00:16:58,140
+depend on which state that you may have
+
+399
+00:16:58,140 --> 00:17:01,500
+come from and so that's why using a data
+
+400
+00:17:01,500 --> 00:17:04,350
+pre state attribute stands for previous
+
+401
+00:17:04,350 --> 00:17:07,560
+state can be useful as well because you
+
+402
+00:17:07,560 --> 00:17:09,000
+know we could have two different things
+
+403
+00:17:09,000 --> 00:17:13,050
+for example if we're coming to a loading
+
+404
+00:17:13,050 --> 00:17:15,330
+state from an idle state that might do
+
+405
+00:17:15,330 --> 00:17:16,620
+one thing but if we're coming from an
+
+406
+00:17:16,620 --> 00:17:18,630
+error state then maybe we want to show
+
+407
+00:17:18,630 --> 00:17:21,209
+an error gone animation and then we're
+
+408
+00:17:21,209 --> 00:17:23,760
+back to loading and then so in our same
+
+409
+00:17:23,760 --> 00:17:25,709
+function where we apply those data
+
+410
+00:17:25,709 --> 00:17:28,200
+attributes we would just set the
+
+411
+00:17:28,200 --> 00:17:29,760
+previous state to whatever the state was
+
+412
+00:17:29,760 --> 00:17:32,070
+before and we could target those right
+
+413
+00:17:32,070 --> 00:17:34,860
+in our CSS just by combining those
+
+414
+00:17:34,860 --> 00:17:39,840
+selectors like so and so this if it ever
+
+415
+00:17:39,840 --> 00:17:43,770
+loads is an example of that so we have
+
+416
+00:17:43,770 --> 00:17:45,660
+different behaviors based on whether
+
+417
+00:17:45,660 --> 00:17:48,240
+going up for example and then we have a
+
+418
+00:17:48,240 --> 00:17:50,850
+difference animation over here and then
+
+419
+00:17:50,850 --> 00:17:52,550
+going down it does something different
+
+420
+00:17:52,550 --> 00:17:55,320
+so we do want to keep track of which
+
+421
+00:17:55,320 --> 00:17:58,710
+state that we came from and so again
+
+422
+00:17:58,710 --> 00:18:01,820
+this is using data attributes to change
+
+423
+00:18:01,820 --> 00:18:09,420
+which state were in so so as I started
+
+424
+00:18:09,420 --> 00:18:11,040
+playing around more with this idea of
+
+425
+00:18:11,040 --> 00:18:13,080
+using finite state machines for
+
+426
+00:18:13,080 --> 00:18:15,180
+animations I saw more and more complex
+
+427
+00:18:15,180 --> 00:18:17,340
+animations on Tribble that I really want
+
+428
+00:18:17,340 --> 00:18:19,170
+to recreate such as this one by Cal
+
+429
+00:18:19,170 --> 00:18:22,320
+shear which lets you extend your weekend
+
+430
+00:18:22,320 --> 00:18:25,110
+which I really hope I was I want to do
+
+431
+00:18:25,110 --> 00:18:26,390
+this weekend
+
+432
+00:18:26,390 --> 00:18:29,580
+so I broke this animation down and I
+
+433
+00:18:29,580 --> 00:18:31,380
+start to see all of the different states
+
+434
+00:18:31,380 --> 00:18:33,990
+of it so at the beginning when the user
+
+435
+00:18:33,990 --> 00:18:37,470
+starts dragging their mouse then we
+
+436
+00:18:37,470 --> 00:18:39,690
+start searching or sorry we start
+
+437
+00:18:39,690 --> 00:18:42,360
+selecting each of the days and then once
+
+438
+00:18:42,360 --> 00:18:44,010
+the user let's go now we're in the
+
+439
+00:18:44,010 --> 00:18:47,250
+selected state so now a mouse movement
+
+440
+00:18:47,250 --> 00:18:48,330
+is going to mean something different
+
+441
+00:18:48,330 --> 00:18:50,460
+because then we're in the dragging state
+
+442
+00:18:50,460 --> 00:18:52,230
+and we could move those states around
+
+443
+00:18:52,230 --> 00:18:55,680
+and then we're in the disposed dates so
+
+444
+00:18:55,680 --> 00:18:57,960
+once we start grabbing now the mouse
+
+445
+00:18:57,960 --> 00:18:59,790
+movement means something different it
+
+446
+00:18:59,790 --> 00:19:02,640
+means we're extending a day so the exact
+
+447
+00:19:02,640 --> 00:19:04,980
+same events can mean something different
+
+448
+00:19:04,980 --> 00:19:06,750
+depending on what state you're on and I
+
+449
+00:19:06,750 --> 00:19:08,700
+think that that's a really important
+
+450
+00:19:08,700 --> 00:19:13,080
+point so just to show you over here if I
+
+451
+00:19:13,080 --> 00:19:16,170
+start dragging and selecting remember
+
+452
+00:19:16,170 --> 00:19:18,210
+mouse movement means one thing so I
+
+453
+00:19:18,210 --> 00:19:20,400
+could start dragging over here and if I
+
+454
+00:19:20,400 --> 00:19:23,130
+don't go to the trash can then it just
+
+455
+00:19:23,130 --> 00:19:25,050
+goes back there and back to that state
+
+456
+00:19:25,050 --> 00:19:27,540
+and so I could drag it all the way here
+
+457
+00:19:27,540 --> 00:19:30,300
+disposes and then now I'm in the
+
+458
+00:19:30,300 --> 00:19:32,520
+grabbing state which means that if I
+
+459
+00:19:32,520 --> 00:19:34,080
+move my mouse and I start dragging
+
+460
+00:19:34,080 --> 00:19:36,270
+outside it's not gonna have that initial
+
+461
+00:19:36,270 --> 00:19:37,830
+behavior of showing the selection
+
+462
+00:19:37,830 --> 00:19:40,080
+rectangle because I'm not in that state
+
+463
+00:19:40,080 --> 00:19:44,250
+where that behavior is defined so that's
+
+464
+00:19:44,250 --> 00:19:46,380
+an important point when dealing with
+
+465
+00:19:46,380 --> 00:19:49,410
+application state is not just mapping an
+
+466
+00:19:49,410 --> 00:19:53,820
+event to an action or to side effects
+
+467
+00:19:53,820 --> 00:19:56,700
+but instead mapping it to what state
+
+468
+00:19:56,700 --> 00:19:57,120
+you're in
+
+469
+00:19:57,120 --> 00:19:59,070
+and what events just have
+
+470
+00:19:59,070 --> 00:20:01,830
+mapping those two together so using the
+
+471
+00:20:01,830 --> 00:20:03,600
+state machine which I created using x8
+
+472
+00:20:03,600 --> 00:20:05,460
+but of course you don't need to you
+
+473
+00:20:05,460 --> 00:20:07,200
+could also automatically generate
+
+474
+00:20:07,200 --> 00:20:09,419
+visualizations such as this which
+
+475
+00:20:09,419 --> 00:20:12,480
+explained the whole process of the logic
+
+476
+00:20:12,480 --> 00:20:14,820
+of you know how the app is supposed to
+
+477
+00:20:14,820 --> 00:20:16,590
+behave once you're dragging and dropping
+
+478
+00:20:16,590 --> 00:20:21,210
+certain things so does this scale that's
+
+479
+00:20:21,210 --> 00:20:24,870
+a big problem which which we have to
+
+480
+00:20:24,870 --> 00:20:27,299
+talk about because of course once you
+
+481
+00:20:27,299 --> 00:20:29,759
+have so many different combinations like
+
+482
+00:20:29,759 --> 00:20:32,009
+Mike was talking about then we could
+
+483
+00:20:32,009 --> 00:20:33,960
+have an exponentially large number of
+
+484
+00:20:33,960 --> 00:20:36,149
+states and we sort of need to manage
+
+485
+00:20:36,149 --> 00:20:40,590
+that thankfully a solution in 1987 by a
+
+486
+00:20:40,590 --> 00:20:42,360
+computer scientist by the name of David
+
+487
+00:20:42,360 --> 00:20:44,909
+Harrell sort of solved that for us it
+
+488
+00:20:44,909 --> 00:20:46,980
+says 1997 there but it was actually a
+
+489
+00:20:46,980 --> 00:20:49,019
+decade earlier so these are really
+
+490
+00:20:49,019 --> 00:20:52,080
+really old ideas state charts extend the
+
+491
+00:20:52,080 --> 00:20:54,149
+idea of state machines by adding things
+
+492
+00:20:54,149 --> 00:20:56,190
+such as actions whether you're entering
+
+493
+00:20:56,190 --> 00:20:58,559
+state exiting a state or performing a
+
+494
+00:20:58,559 --> 00:21:01,289
+transition between states it has guards
+
+495
+00:21:01,289 --> 00:21:03,059
+so you can make sure that transitions
+
+496
+00:21:03,059 --> 00:21:06,000
+only occur when a condition based on the
+
+497
+00:21:06,000 --> 00:21:08,700
+state is met there's also the idea of
+
+498
+00:21:08,700 --> 00:21:10,559
+hierarchy so you could have nested
+
+499
+00:21:10,559 --> 00:21:12,690
+states you can think of those as sub
+
+500
+00:21:12,690 --> 00:21:16,139
+routes or if you're in one state and you
+
+501
+00:21:16,139 --> 00:21:18,179
+could be in a sub state of that state
+
+502
+00:21:18,179 --> 00:21:21,330
+also orthogonality which represents two
+
+503
+00:21:21,330 --> 00:21:24,000
+different ideas of states which don't
+
+504
+00:21:24,000 --> 00:21:26,370
+really have too much to do to each with
+
+505
+00:21:26,370 --> 00:21:27,929
+each other but you want to represent
+
+506
+00:21:27,929 --> 00:21:29,070
+them both equally
+
+507
+00:21:29,070 --> 00:21:31,230
+and the idea of history States as well
+
+508
+00:21:31,230 --> 00:21:33,720
+so hierarchical states can really help
+
+509
+00:21:33,720 --> 00:21:36,899
+simplify how we combine States and make
+
+510
+00:21:36,899 --> 00:21:39,000
+the logic easier so we see in the
+
+511
+00:21:39,000 --> 00:21:40,980
+success and failure state the search
+
+512
+00:21:40,980 --> 00:21:44,100
+events can occur from both of them so
+
+513
+00:21:44,100 --> 00:21:45,480
+instead we could group those two
+
+514
+00:21:45,480 --> 00:21:47,730
+together and make it so that whether
+
+515
+00:21:47,730 --> 00:21:49,409
+we're in the success or failure state
+
+516
+00:21:49,409 --> 00:21:51,600
+that search events can take us back to
+
+517
+00:21:51,600 --> 00:21:54,000
+the searching State so in X state that's
+
+518
+00:21:54,000 --> 00:21:56,340
+done just by nesting those states within
+
+519
+00:21:56,340 --> 00:21:58,590
+the search State over there and then we
+
+520
+00:21:58,590 --> 00:22:00,750
+could see that when we perform the
+
+521
+00:22:00,750 --> 00:22:04,259
+search event on any of those states then
+
+522
+00:22:04,259 --> 00:22:06,480
+we go back to the searching State so it
+
+523
+00:22:06,480 --> 00:22:11,279
+really simplifies the design of these of
+
+524
+00:22:11,279 --> 00:22:12,610
+the logic
+
+525
+00:22:12,610 --> 00:22:15,220
+now to represent these nested states and
+
+526
+00:22:15,220 --> 00:22:18,010
+hierarchical states in CSS we have to
+
+527
+00:22:18,010 --> 00:22:20,289
+get a little bit into the weeds of data
+
+528
+00:22:20,289 --> 00:22:23,140
+attribute selectors so of course we have
+
+529
+00:22:23,140 --> 00:22:25,570
+the existence selector which just checks
+
+530
+00:22:25,570 --> 00:22:28,210
+if it exists we have the data attribute
+
+531
+00:22:28,210 --> 00:22:30,580
+selector of if it's exactly equal to if
+
+532
+00:22:30,580 --> 00:22:34,330
+it contains anywhere at all if it starts
+
+533
+00:22:34,330 --> 00:22:37,059
+with something such as idle if it
+
+534
+00:22:37,059 --> 00:22:39,159
+contains or if it ends with something
+
+535
+00:22:39,159 --> 00:22:43,210
+such as error or this is the one we want
+
+536
+00:22:43,210 --> 00:22:46,750
+if our data state or our data attribute
+
+537
+00:22:46,750 --> 00:22:50,049
+contains the string passed in such as
+
+538
+00:22:50,049 --> 00:22:52,720
+idle error but that string is basically
+
+539
+00:22:52,720 --> 00:22:54,610
+a word that's separated by whitespace
+
+540
+00:22:54,610 --> 00:22:57,100
+and this makes it acts just like a class
+
+541
+00:22:57,100 --> 00:22:59,139
+now this isn't the same as saying that
+
+542
+00:22:59,139 --> 00:23:00,580
+we're in two states at the same time
+
+543
+00:23:00,580 --> 00:23:02,529
+we're really in this idle dot error
+
+544
+00:23:02,529 --> 00:23:05,470
+state but we want that idle just to let
+
+545
+00:23:05,470 --> 00:23:07,600
+CSS know that we are in that parent
+
+546
+00:23:07,600 --> 00:23:09,700
+state and so we could use data
+
+547
+00:23:09,700 --> 00:23:12,490
+attributes as like even further like
+
+548
+00:23:12,490 --> 00:23:16,149
+data show and data hide and use that to
+
+549
+00:23:16,149 --> 00:23:18,070
+show which elements are active based on
+
+550
+00:23:18,070 --> 00:23:20,320
+which state we're on and so that's just
+
+551
+00:23:20,320 --> 00:23:21,639
+with a little bit of JavaScript you
+
+552
+00:23:21,639 --> 00:23:22,929
+don't need to read this code right now
+
+553
+00:23:22,929 --> 00:23:27,039
+but just know that by by just figuring
+
+554
+00:23:27,039 --> 00:23:29,159
+out what state were in we could show
+
+555
+00:23:29,159 --> 00:23:32,559
+elements based on what state we're on
+
+556
+00:23:32,559 --> 00:23:34,659
+and so you could play around with the
+
+557
+00:23:34,659 --> 00:23:36,399
+idea you don't have to use data show
+
+558
+00:23:36,399 --> 00:23:38,590
+where dala hide you could just use
+
+559
+00:23:38,590 --> 00:23:40,840
+whatever you want to use but the idea is
+
+560
+00:23:40,840 --> 00:23:42,519
+that you're not directly toggling
+
+561
+00:23:42,519 --> 00:23:45,309
+classes are talking attributes on each
+
+562
+00:23:45,309 --> 00:23:48,460
+of these states so for the final example
+
+563
+00:23:48,460 --> 00:23:51,639
+here's this password form and you can
+
+564
+00:23:51,639 --> 00:23:54,220
+see that there's this idol and Idol dot
+
+565
+00:23:54,220 --> 00:23:56,649
+normal sub state that we're in because
+
+566
+00:23:56,649 --> 00:24:00,039
+if I enter a password incorrectly and it
+
+567
+00:24:00,039 --> 00:24:03,010
+validates now we go to isle dot error
+
+568
+00:24:03,010 --> 00:24:05,289
+and eventually it goes back to idle dot
+
+569
+00:24:05,289 --> 00:24:08,409
+normal because we want those two states
+
+570
+00:24:08,409 --> 00:24:12,100
+to be similar but also we want them to
+
+571
+00:24:12,100 --> 00:24:14,049
+be distinct enough so that we could
+
+572
+00:24:14,049 --> 00:24:16,330
+group its similar characteristics and
+
+573
+00:24:16,330 --> 00:24:18,070
+its unique characteristics such as
+
+574
+00:24:18,070 --> 00:24:21,159
+showing the red outline when when the
+
+575
+00:24:21,159 --> 00:24:23,679
+password is incorrect then we eventually
+
+576
+00:24:23,679 --> 00:24:26,400
+have a success date as well
+
+577
+00:24:26,400 --> 00:24:28,660
+so the main idea that I want to bring
+
+578
+00:24:28,660 --> 00:24:30,100
+home to you is that you should think in
+
+579
+00:24:30,100 --> 00:24:32,590
+states and events and not just events
+
+580
+00:24:32,590 --> 00:24:34,750
+and the reason for doing this is because
+
+581
+00:24:34,750 --> 00:24:37,240
+once you define your application in your
+
+582
+00:24:37,240 --> 00:24:39,190
+components as a finite state machine or
+
+583
+00:24:39,190 --> 00:24:42,250
+a state chart and you model it in a very
+
+584
+00:24:42,250 --> 00:24:44,230
+explicit way you could do some really
+
+585
+00:24:44,230 --> 00:24:47,080
+cool things such as visualize these and
+
+586
+00:24:47,080 --> 00:24:49,929
+so just to show you that animation I
+
+587
+00:24:49,929 --> 00:24:52,630
+just showed you can be visualized right
+
+588
+00:24:52,630 --> 00:24:55,510
+over here so I copied and pasted of the
+
+589
+00:24:55,510 --> 00:24:57,160
+machine used to define and we could see
+
+590
+00:24:57,160 --> 00:24:59,500
+that we're in the Isle States but we're
+
+591
+00:24:59,500 --> 00:25:01,750
+also in the normal state as well and so
+
+592
+00:25:01,750 --> 00:25:03,940
+when we change now we go to the
+
+593
+00:25:03,940 --> 00:25:06,159
+validating state in if it's an error
+
+594
+00:25:06,159 --> 00:25:08,440
+then it's invalid and then we go back to
+
+595
+00:25:08,440 --> 00:25:11,159
+the normal States just like that
+
+596
+00:25:11,159 --> 00:25:14,789
+now so there's a lot of powerful
+
+597
+00:25:14,789 --> 00:25:18,190
+applications of this such as analysis
+
+598
+00:25:18,190 --> 00:25:20,470
+automatic testing and other things that
+
+599
+00:25:20,470 --> 00:25:23,919
+I talked about but there's also other
+
+600
+00:25:23,919 --> 00:25:26,169
+tools that could do this for you sketch
+
+601
+00:25:26,169 --> 00:25:28,929
+systems is a very useful tool for
+
+602
+00:25:28,929 --> 00:25:31,210
+prototyping your applications and your
+
+603
+00:25:31,210 --> 00:25:34,030
+designs using these AI same ideas of
+
+604
+00:25:34,030 --> 00:25:36,280
+finite state machines and state charts
+
+605
+00:25:36,280 --> 00:25:37,929
+because you could write it in this
+
+606
+00:25:37,929 --> 00:25:40,090
+pseudo syntax and be able to play around
+
+607
+00:25:40,090 --> 00:25:43,030
+with it in a little prototype editor at
+
+608
+00:25:43,030 --> 00:25:45,070
+the bottom so I highly encourage you to
+
+609
+00:25:45,070 --> 00:25:47,200
+check that out there's a lot of
+
+610
+00:25:47,200 --> 00:25:49,270
+advantages to using state charts NASA
+
+611
+00:25:49,270 --> 00:25:51,940
+use them that their selves with the Mars
+
+612
+00:25:51,940 --> 00:25:54,730
+rover which I mean honestly if you have
+
+613
+00:25:54,730 --> 00:25:57,750
+one shot at going to production with a
+
+614
+00:25:57,750 --> 00:26:01,419
+multi hundred billion dollar thing you
+
+615
+00:26:01,419 --> 00:26:02,830
+don't want to it up
+
+616
+00:26:02,830 --> 00:26:05,860
+so I mean imagine doing this in
+
+617
+00:26:05,860 --> 00:26:08,530
+JavaScript it would it would go nowhere
+
+618
+00:26:08,530 --> 00:26:11,409
+so there's a lot of advantages to this
+
+619
+00:26:11,409 --> 00:26:13,870
+they had visualized modeling precise
+
+620
+00:26:13,870 --> 00:26:15,820
+diagrams they were able to use those
+
+621
+00:26:15,820 --> 00:26:17,679
+state charts to generate code
+
+622
+00:26:17,679 --> 00:26:20,260
+automatically and also to make sure that
+
+623
+00:26:20,260 --> 00:26:22,750
+every single possible thing that could
+
+624
+00:26:22,750 --> 00:26:25,450
+happen to this Mars rover was tested and
+
+625
+00:26:25,450 --> 00:26:28,030
+was covered and also when requirements
+
+626
+00:26:28,030 --> 00:26:30,159
+changed they didn't have to go into code
+
+627
+00:26:30,159 --> 00:26:32,470
+to figure out what needs to change but
+
+628
+00:26:32,470 --> 00:26:34,299
+instead they could just go to the
+
+629
+00:26:34,299 --> 00:26:38,470
+diagram and see okay this is now this so
+
+630
+00:26:38,470 --> 00:26:40,150
+now we have to have an arrow
+
+631
+00:26:40,150 --> 00:26:43,000
+here and this goes here and so it's a
+
+632
+00:26:43,000 --> 00:26:45,280
+lot easier to to deal with these
+
+633
+00:26:45,280 --> 00:26:47,470
+automatic late-breaking changes with
+
+634
+00:26:47,470 --> 00:26:50,230
+visual diagrams instead of code now of
+
+635
+00:26:50,230 --> 00:26:52,000
+course there are disadvantages because
+
+636
+00:26:52,000 --> 00:26:54,190
+as you could tell there is a huge
+
+637
+00:26:54,190 --> 00:26:56,230
+learning curve and modeling these day
+
+638
+00:26:56,230 --> 00:26:58,570
+charts requires planning ahead you can't
+
+639
+00:26:58,570 --> 00:27:01,000
+just put your head down in code you need
+
+640
+00:27:01,000 --> 00:27:04,450
+to actually stop and plan it and draw
+
+641
+00:27:04,450 --> 00:27:06,310
+those boxes and draw those arrows and
+
+642
+00:27:06,310 --> 00:27:08,470
+give it to your developers and designers
+
+643
+00:27:08,470 --> 00:27:11,260
+and say is this a correct behavior in
+
+644
+00:27:11,260 --> 00:27:13,300
+our application and of course you can't
+
+645
+00:27:13,300 --> 00:27:14,770
+just use finite state machines for
+
+646
+00:27:14,770 --> 00:27:16,660
+everything but they could be a very good
+
+647
+00:27:16,660 --> 00:27:18,820
+abstraction for the overall logic of
+
+648
+00:27:18,820 --> 00:27:20,800
+your applications there are also
+
+649
+00:27:20,800 --> 00:27:22,900
+complexity trade-offs where you might
+
+650
+00:27:22,900 --> 00:27:25,450
+say I don't need state charts because my
+
+651
+00:27:25,450 --> 00:27:27,730
+application is so simple and that's when
+
+652
+00:27:27,730 --> 00:27:29,230
+you might use finite state machines
+
+653
+00:27:29,230 --> 00:27:32,350
+whereas normal code which I call
+
+654
+00:27:32,350 --> 00:27:33,730
+bottom-up code because we're putting
+
+655
+00:27:33,730 --> 00:27:35,860
+everything in the event listeners
+
+656
+00:27:35,860 --> 00:27:38,830
+instead of instead of structuring it in
+
+657
+00:27:38,830 --> 00:27:41,770
+a nice modeled way it increases linearly
+
+658
+00:27:41,770 --> 00:27:43,840
+but as we saw finite state machines can
+
+659
+00:27:43,840 --> 00:27:46,600
+increase exponentially state charts
+
+660
+00:27:46,600 --> 00:27:48,190
+however might seem more complex at first
+
+661
+00:27:48,190 --> 00:27:50,920
+but they manage complexity at scale and
+
+662
+00:27:50,920 --> 00:27:53,710
+this is why I love using them because no
+
+663
+00:27:53,710 --> 00:27:56,890
+trivial app ever stays trivial once more
+
+664
+00:27:56,890 --> 00:27:58,990
+features come in it becomes so much more
+
+665
+00:27:58,990 --> 00:28:00,790
+complex and you want a good way to
+
+666
+00:28:00,790 --> 00:28:03,430
+manage that complexity there's a lot of
+
+667
+00:28:03,430 --> 00:28:05,080
+resources online for learning about
+
+668
+00:28:05,080 --> 00:28:06,970
+state machines and state charts which I
+
+669
+00:28:06,970 --> 00:28:08,860
+encourage you to check out there's a
+
+670
+00:28:08,860 --> 00:28:11,530
+community on spectrum Piazza de chartes
+
+671
+00:28:11,530 --> 00:28:13,360
+and there's the world of state charts
+
+672
+00:28:13,360 --> 00:28:15,640
+which just explains in the very easy to
+
+673
+00:28:15,640 --> 00:28:18,280
+read way how to get started with stage
+
+674
+00:28:18,280 --> 00:28:20,110
+arts and what kinds of problems they
+
+675
+00:28:20,110 --> 00:28:20,650
+solve
+
+676
+00:28:20,650 --> 00:28:22,720
+so in general I want to make your code
+
+677
+00:28:22,720 --> 00:28:24,730
+do more than just applying the
+
+678
+00:28:24,730 --> 00:28:27,010
+application logic I want you to be able
+
+679
+00:28:27,010 --> 00:28:30,150
+to visualize automatically test analyze
+
+680
+00:28:30,150 --> 00:28:32,260
+simulate your applications in your
+
+681
+00:28:32,260 --> 00:28:34,600
+components and be able to visualize all
+
+682
+00:28:34,600 --> 00:28:37,060
+the possible states and transitions
+
+683
+00:28:37,060 --> 00:28:39,700
+between your components and applications
+
+684
+00:28:39,700 --> 00:28:42,220
+thank you very much CSS contest
+

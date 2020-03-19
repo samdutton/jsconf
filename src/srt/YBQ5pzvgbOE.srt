@@ -1,0 +1,1669 @@
+1
+00:00:37,940 --> 00:00:40,469
+
+so this is single processing with live
+
+2
+00:00:40,469 --> 00:00:40,920
+audio
+
+3
+00:00:40,920 --> 00:00:44,339
+I'm Jordan Santo and so a quick
+
+4
+00:00:44,339 --> 00:00:46,710
+introduction the Web Audio it's a
+
+5
+00:00:46,710 --> 00:00:49,890
+relatively new API all major browsers
+
+6
+00:00:49,890 --> 00:00:52,170
+support this except ie but they just
+
+7
+00:00:52,170 --> 00:00:53,519
+announced this week that they will
+
+8
+00:00:53,519 --> 00:00:54,960
+support this in the next version which
+
+9
+00:00:54,960 --> 00:00:59,420
+is awesome so this Audio API is a
+
+10
+00:00:59,420 --> 00:01:02,909
+modular routing API use for manipulating
+
+11
+00:01:02,909 --> 00:01:06,509
+audio it's using games synthesizers and
+
+12
+00:01:06,509 --> 00:01:08,729
+audio production tools so what is the
+
+13
+00:01:08,729 --> 00:01:12,000
+signal processing component of this so
+
+14
+00:01:12,000 --> 00:01:14,509
+signal processing is the theory of
+
+15
+00:01:14,509 --> 00:01:17,399
+manipulating and analyzing a signal in
+
+16
+00:01:17,399 --> 00:01:20,340
+the case of Web Audio the signal is an
+
+17
+00:01:20,340 --> 00:01:22,880
+audio buffer so just a giant array of
+
+18
+00:01:22,880 --> 00:01:29,329
+data so quick about me I love this gif
+
+19
+00:01:29,329 --> 00:01:32,250
+so I work for Mozilla on the SDK team
+
+20
+00:01:32,250 --> 00:01:34,710
+for the SDK for add-ons and developer
+
+21
+00:01:34,710 --> 00:01:37,020
+tools and also the Web Audio developer
+
+22
+00:01:37,020 --> 00:01:42,509
+tools so the audio API it is a route
+
+23
+00:01:42,509 --> 00:01:44,700
+based audio API for processing audio
+
+24
+00:01:44,700 --> 00:01:47,310
+signals as constructed as a directed
+
+25
+00:01:47,310 --> 00:01:50,159
+acyclic graph so the audio flows from
+
+26
+00:01:50,159 --> 00:01:53,310
+source nodes to the destination node and
+
+27
+00:01:53,310 --> 00:01:54,929
+along the way it gets either transformed
+
+28
+00:01:54,929 --> 00:02:01,229
+or analyzed and manipulated and all the
+
+29
+00:02:01,229 --> 00:02:03,749
+audio nodes are created within a sandbox
+
+30
+00:02:03,749 --> 00:02:06,630
+called the audio context all nodes must
+
+31
+00:02:06,630 --> 00:02:08,550
+live within a context and the context
+
+32
+00:02:08,550 --> 00:02:10,530
+decides things like what's the sample
+
+33
+00:02:10,530 --> 00:02:14,400
+rate of this whole graph
+
+34
+00:02:14,400 --> 00:02:17,220
+so it can be a little confusing because
+
+35
+00:02:17,220 --> 00:02:22,400
+it's unlike most other new web api's so
+
+36
+00:02:22,400 --> 00:02:24,780
+therefore no types these aren't official
+
+37
+00:02:24,780 --> 00:02:27,360
+these are just ways to classify them to
+
+38
+00:02:27,360 --> 00:02:29,459
+better understand the API so there are
+
+39
+00:02:29,459 --> 00:02:33,450
+source nodes and so source nodes emit
+
+40
+00:02:33,450 --> 00:02:35,640
+sound for the origin of some kind of
+
+41
+00:02:35,640 --> 00:02:38,790
+signal we can make a source nodes out of
+
+42
+00:02:38,790 --> 00:02:42,150
+things like the WebRTC audio stream HTML
+
+43
+00:02:42,150 --> 00:02:48,230
+audio element oscillator and a last one
+
+44
+00:02:48,230 --> 00:02:51,690
+something else and so this is where the
+
+45
+00:02:51,690 --> 00:02:54,989
+origin of sound so the sound travels
+
+46
+00:02:54,989 --> 00:02:57,840
+through the directed graph i'm it could
+
+47
+00:02:57,840 --> 00:03:00,090
+possibly either transformer analyzed so
+
+48
+00:03:00,090 --> 00:03:01,920
+transformation audio node would be
+
+49
+00:03:01,920 --> 00:03:05,250
+something like delay filter compression
+
+50
+00:03:05,250 --> 00:03:07,109
+something they'll transform the audio
+
+51
+00:03:07,109 --> 00:03:09,989
+signal to so it sounds differently an
+
+52
+00:03:09,989 --> 00:03:12,390
+animal ization node it doesn't affect
+
+53
+00:03:12,390 --> 00:03:14,760
+the actual signal it just lets us better
+
+54
+00:03:14,760 --> 00:03:16,590
+interpret it and get information about
+
+55
+00:03:16,590 --> 00:03:18,870
+it so we'd do that for something like an
+
+56
+00:03:18,870 --> 00:03:22,049
+audio visualization and finally we have
+
+57
+00:03:22,049 --> 00:03:24,419
+a destination node and anything that we
+
+58
+00:03:24,419 --> 00:03:26,790
+want to hear must ultimately arrive at
+
+59
+00:03:26,790 --> 00:03:28,889
+the destination so in this example we
+
+60
+00:03:28,889 --> 00:03:31,560
+have three sources and they could be
+
+61
+00:03:31,560 --> 00:03:33,480
+anything really and it goes through some
+
+62
+00:03:33,480 --> 00:03:36,150
+filtering distortion panning reverb and
+
+63
+00:03:36,150 --> 00:03:38,519
+ultimately a compressor and the
+
+64
+00:03:38,519 --> 00:03:40,079
+destination node in the Web Audio API is
+
+65
+00:03:40,079 --> 00:03:43,650
+a abstraction for our sound cards so if
+
+66
+00:03:43,650 --> 00:03:45,540
+we want if we have a source node and we
+
+67
+00:03:45,540 --> 00:03:46,230
+want to hear it
+
+68
+00:03:46,230 --> 00:03:48,780
+whether it's a mp3 file or whatever it
+
+69
+00:03:48,780 --> 00:03:50,579
+only has to flow into the the
+
+70
+00:03:50,579 --> 00:03:52,109
+destination node so we can actually hear
+
+71
+00:03:52,109 --> 00:03:56,639
+it so if this still doesn't make sense
+
+72
+00:03:56,639 --> 00:04:00,389
+here's a Viking metal band so you go to
+
+73
+00:04:00,389 --> 00:04:02,639
+a concert the guitarist is setting up
+
+74
+00:04:02,639 --> 00:04:05,609
+and the new thing of the guitar is a
+
+75
+00:04:05,609 --> 00:04:07,440
+source node this is where the sound
+
+76
+00:04:07,440 --> 00:04:10,590
+originates the signal travels from the
+
+77
+00:04:10,590 --> 00:04:13,919
+guitar through the cable into a this is
+
+78
+00:04:13,919 --> 00:04:15,359
+a Viking metal band so they have a lot
+
+79
+00:04:15,359 --> 00:04:18,060
+of distortion so they to transform the
+
+80
+00:04:18,060 --> 00:04:20,099
+clean guitar signal it goes into a
+
+81
+00:04:20,099 --> 00:04:21,930
+distortion pedal makes it heavy much
+
+82
+00:04:21,930 --> 00:04:23,490
+louder you know things like that it
+
+83
+00:04:23,490 --> 00:04:25,860
+transforms the signal and then
+
+84
+00:04:25,860 --> 00:04:27,090
+ultimately from the
+
+85
+00:04:27,090 --> 00:04:29,250
+you distortion pedal go into an
+
+86
+00:04:29,250 --> 00:04:31,050
+amplifier so we can actually perceive it
+
+87
+00:04:31,050 --> 00:04:35,350
+and you know it'll be a good concert
+
+88
+00:04:35,360 --> 00:04:38,550
+another way to think about this flow
+
+89
+00:04:38,550 --> 00:04:41,930
+this audio context flow is similar to
+
+90
+00:04:41,930 --> 00:04:45,330
+middleware in routing so like expressjs
+
+91
+00:04:45,330 --> 00:04:48,180
+middleware you can think of a request as
+
+92
+00:04:48,180 --> 00:04:50,580
+a source so when someone requests some
+
+93
+00:04:50,580 --> 00:04:54,720
+file from a server that's the origin of
+
+94
+00:04:54,720 --> 00:04:56,580
+this process and then ultimately it
+
+95
+00:04:56,580 --> 00:04:58,830
+could go through several pieces of
+
+96
+00:04:58,830 --> 00:05:00,360
+middleware when this middleware can
+
+97
+00:05:00,360 --> 00:05:02,610
+transform or analyze the requests
+
+98
+00:05:02,610 --> 00:05:04,680
+throughout so if you want to you know
+
+99
+00:05:04,680 --> 00:05:07,440
+have a middleware check make sure the
+
+100
+00:05:07,440 --> 00:05:09,360
+users logged in or something for some
+
+101
+00:05:09,360 --> 00:05:11,610
+resource then the middleware would
+
+102
+00:05:11,610 --> 00:05:13,770
+analyze that and determine whether it
+
+103
+00:05:13,770 --> 00:05:16,380
+should proceed and ultimately you get a
+
+104
+00:05:16,380 --> 00:05:19,050
+response which is the final destination
+
+105
+00:05:19,050 --> 00:05:24,889
+for that so a really simple example
+
+106
+00:05:24,889 --> 00:05:27,240
+first we create the audio context again
+
+107
+00:05:27,240 --> 00:05:29,190
+all nodes and everything must live
+
+108
+00:05:29,190 --> 00:05:30,600
+within audio context and you have to
+
+109
+00:05:30,600 --> 00:05:32,039
+have the context to create these nodes
+
+110
+00:05:32,039 --> 00:05:34,050
+as well so we instantiate an audio
+
+111
+00:05:34,050 --> 00:05:36,120
+context and create an oscillator and a
+
+112
+00:05:36,120 --> 00:05:39,240
+gain node to use the node types I
+
+113
+00:05:39,240 --> 00:05:40,740
+explained before an oscillator is a
+
+114
+00:05:40,740 --> 00:05:43,080
+source node so it creates a for example
+
+115
+00:05:43,080 --> 00:05:45,330
+a sine wave so that's where the sound
+
+116
+00:05:45,330 --> 00:05:46,830
+originates and I can travel through a
+
+117
+00:05:46,830 --> 00:05:49,349
+gain node and gain is a fancy word for
+
+118
+00:05:49,349 --> 00:05:53,940
+how loud something is so it originally
+
+119
+00:05:53,940 --> 00:05:55,530
+it's the signal originates from an
+
+120
+00:05:55,530 --> 00:05:57,330
+oscillator travels through a gain node
+
+121
+00:05:57,330 --> 00:05:58,860
+since we connected our oscillator to our
+
+122
+00:05:58,860 --> 00:06:00,419
+gain node and then the gain node
+
+123
+00:06:00,419 --> 00:06:01,979
+connected to the destination so we can
+
+124
+00:06:01,979 --> 00:06:03,840
+actually hear it and then we have to
+
+125
+00:06:03,840 --> 00:06:08,310
+start the oscillator so here's an
+
+126
+00:06:08,310 --> 00:06:14,160
+example make sure we're quiet so it's a
+
+127
+00:06:14,160 --> 00:06:18,090
+really annoying sound so here's an
+
+128
+00:06:18,090 --> 00:06:21,240
+example of the audio tools in Firefox
+
+129
+00:06:21,240 --> 00:06:26,520
+which just draws the contacts graph so
+
+130
+00:06:26,520 --> 00:06:27,599
+we can see what node is connected to
+
+131
+00:06:27,599 --> 00:06:30,030
+which node we can also edit things so in
+
+132
+00:06:30,030 --> 00:06:32,370
+the last slide we solved an oscillator
+
+133
+00:06:32,370 --> 00:06:33,840
+node that's connected to the gain node
+
+134
+00:06:33,840 --> 00:06:35,789
+which is connected to the destination of
+
+135
+00:06:35,789 --> 00:06:38,250
+the far right the other two notes the
+
+136
+00:06:38,250 --> 00:06:39,870
+analyzer and script process are just for
+
+137
+00:06:39,870 --> 00:06:40,410
+the demos
+
+138
+00:06:40,410 --> 00:06:43,740
+to display the time domain data so it
+
+139
+00:06:43,740 --> 00:06:47,130
+that's obviously a sine wave very fast
+
+140
+00:06:47,130 --> 00:06:51,440
+so oscillators create these tones with
+
+141
+00:06:51,440 --> 00:06:54,630
+periodic cycles so assignment and their
+
+142
+00:06:54,630 --> 00:06:56,850
+prey by some kind of equation so a sine
+
+143
+00:06:56,850 --> 00:06:59,490
+wave is created by the mathematical sine
+
+144
+00:06:59,490 --> 00:07:03,780
+function and all these waves are
+
+145
+00:07:03,780 --> 00:07:06,330
+periodic waves so they're repeated
+
+146
+00:07:06,330 --> 00:07:09,980
+patterns so let me make sure there's
+
+147
+00:07:09,980 --> 00:07:12,390
+other type of oscillator than sine wave
+
+148
+00:07:12,390 --> 00:07:18,660
+we can have a triangle and it's named
+
+149
+00:07:18,660 --> 00:07:19,800
+that way because it looks like a
+
+150
+00:07:19,800 --> 00:07:26,750
+triangle square wave is that too loud
+
+151
+00:07:26,750 --> 00:07:31,800
+excellent and my favorite you can see
+
+152
+00:07:31,800 --> 00:07:33,960
+what how these waves are named because
+
+153
+00:07:33,960 --> 00:07:35,550
+they actually look like the object that
+
+154
+00:07:35,550 --> 00:07:39,300
+they were named after so if those
+
+155
+00:07:39,300 --> 00:07:41,640
+familiar with electronica music or
+
+156
+00:07:41,640 --> 00:07:43,590
+synthesizers or you know if you ever
+
+157
+00:07:43,590 --> 00:07:46,350
+played a game boy a lot of these sounds
+
+158
+00:07:46,350 --> 00:07:51,260
+are the foundation of any synthesizer
+
+159
+00:07:51,260 --> 00:07:53,820
+synthesizers use these basic waveforms
+
+160
+00:07:53,820 --> 00:07:56,220
+to construct more abstract and complex
+
+161
+00:07:56,220 --> 00:07:57,840
+shapes and we'll do a little bit that in
+
+162
+00:07:57,840 --> 00:08:02,610
+a bit so we can change the type so right
+
+163
+00:08:02,610 --> 00:08:04,410
+now it's a sawtooth and we also changed
+
+164
+00:08:04,410 --> 00:08:07,830
+the frequency so a frequency is measured
+
+165
+00:08:07,830 --> 00:08:12,480
+in hertz and it's a unit that represents
+
+166
+00:08:12,480 --> 00:08:13,920
+how many times per second in this
+
+167
+00:08:13,920 --> 00:08:17,480
+periodic wave cycles so at 440 Hertz
+
+168
+00:08:17,480 --> 00:08:20,460
+this shape is repeated forty times per
+
+169
+00:08:20,460 --> 00:08:22,380
+second and that's what we perceive as
+
+170
+00:08:22,380 --> 00:08:25,440
+pitch so 440 is uh you know concert
+
+171
+00:08:25,440 --> 00:08:34,110
+eight for let's so if I drop this in
+
+172
+00:08:34,110 --> 00:08:39,570
+octave to 220 we can see we actually
+
+173
+00:08:39,570 --> 00:08:42,539
+perceive a lower pitch and the it's a
+
+174
+00:08:42,539 --> 00:08:44,340
+much you can see the cycles are a little
+
+175
+00:08:44,340 --> 00:08:46,350
+bit slower it's still 220 times a second
+
+176
+00:08:46,350 --> 00:08:48,570
+but if we drop this to something
+
+177
+00:08:48,570 --> 00:08:51,900
+inaudible like below 20 Hertz 5 let's
+
+178
+00:08:51,900 --> 00:08:53,779
+say
+
+179
+00:08:53,779 --> 00:08:56,040
+we can actually perceive that because
+
+180
+00:08:56,040 --> 00:09:00,180
+we're not robots right yeah we're
+
+181
+00:09:00,180 --> 00:09:07,920
+scaring all the animals right now so I
+
+182
+00:09:07,920 --> 00:09:10,770
+mean that's a really terrible sound no
+
+183
+00:09:10,770 --> 00:09:12,589
+one wants to listen to pure sine waves
+
+184
+00:09:12,589 --> 00:09:15,180
+all the dogs are angry right now so we
+
+185
+00:09:15,180 --> 00:09:17,760
+can manipulate these signals in a bunch
+
+186
+00:09:17,760 --> 00:09:20,070
+of different ways so one technique is
+
+187
+00:09:20,070 --> 00:09:22,740
+amplitude modulation in which we want to
+
+188
+00:09:22,740 --> 00:09:26,870
+chain an amplitude is the so how high
+
+189
+00:09:26,870 --> 00:09:30,110
+the signal is and which we perceive as
+
+190
+00:09:30,110 --> 00:09:33,390
+volume so if we want a really loud sine
+
+191
+00:09:33,390 --> 00:09:36,210
+wave we would have really large cycles
+
+192
+00:09:36,210 --> 00:09:37,200
+one quiet
+
+193
+00:09:37,200 --> 00:09:40,560
+sine wave would be a really subtle wave
+
+194
+00:09:40,560 --> 00:09:43,020
+so what we can do is and the previous
+
+195
+00:09:43,020 --> 00:09:45,060
+example we connected one audio node to
+
+196
+00:09:45,060 --> 00:09:46,350
+another audio node but we can also
+
+197
+00:09:46,350 --> 00:09:48,690
+connect audio nodes which again is just
+
+198
+00:09:48,690 --> 00:09:51,740
+this pure signal to an audio parameter
+
+199
+00:09:51,740 --> 00:09:55,680
+so in amplitude modulation so we have a
+
+200
+00:09:55,680 --> 00:09:58,140
+carrier signal which this is our pitch
+
+201
+00:09:58,140 --> 00:10:00,240
+same thing we did in the last one so
+
+202
+00:10:00,240 --> 00:10:03,330
+let's assume this is a 440 sine wave we
+
+203
+00:10:03,330 --> 00:10:05,430
+also have a modulating sine wave signal
+
+204
+00:10:05,430 --> 00:10:09,420
+that affects some other property in the
+
+205
+00:10:09,420 --> 00:10:11,670
+audio context so it's modulating sine
+
+206
+00:10:11,670 --> 00:10:14,490
+wave signal is much lower frequency than
+
+207
+00:10:14,490 --> 00:10:16,290
+the carrier signal so we use this
+
+208
+00:10:16,290 --> 00:10:18,270
+modulating sine wave signal to between
+
+209
+00:10:18,270 --> 00:10:21,630
+between a loud sound and a soft sound so
+
+210
+00:10:21,630 --> 00:10:23,730
+if we combine these two signals or have
+
+211
+00:10:23,730 --> 00:10:26,490
+the modulating wave signal affect the
+
+212
+00:10:26,490 --> 00:10:29,760
+subsequent gain we can see in the last
+
+213
+00:10:29,760 --> 00:10:33,630
+image as the modulating sine wave signal
+
+214
+00:10:33,630 --> 00:10:35,790
+approaches negative one the carrier
+
+215
+00:10:35,790 --> 00:10:40,200
+signal gets much quieter so implement
+
+216
+00:10:40,200 --> 00:10:41,970
+something like this similar to the
+
+217
+00:10:41,970 --> 00:10:45,810
+previous one we have a an oscillator or
+
+218
+00:10:45,810 --> 00:10:47,550
+carrier signal connected to our gain
+
+219
+00:10:47,550 --> 00:10:49,620
+node RJ nodes connected to our contacts
+
+220
+00:10:49,620 --> 00:10:51,360
+destination just like we had in the last
+
+221
+00:10:51,360 --> 00:10:53,459
+example we also have another oscillator
+
+222
+00:10:53,459 --> 00:10:57,000
+our modulator that's connected to the
+
+223
+00:10:57,000 --> 00:11:00,990
+gain nodes gain Auto audio parameter so
+
+224
+00:11:00,990 --> 00:11:03,180
+as the modulator goes between 1 and
+
+225
+00:11:03,180 --> 00:11:04,899
+negative 1 it'll
+
+226
+00:11:04,899 --> 00:11:08,800
+the the volume of our signal so it's a
+
+227
+00:11:08,800 --> 00:11:13,389
+little bit more interesting so it'll
+
+228
+00:11:13,389 --> 00:11:15,040
+sound something like like a-- i'm like a
+
+229
+00:11:15,040 --> 00:11:18,369
+lot of weird sounds throughout this so
+
+230
+00:11:18,369 --> 00:11:20,170
+it'd be like well well well because
+
+231
+00:11:20,170 --> 00:11:30,369
+we're pulsating the volume so so so in
+
+232
+00:11:30,369 --> 00:11:31,509
+this in this graph we have our
+
+233
+00:11:31,509 --> 00:11:33,639
+oscillator again gain node connected to
+
+234
+00:11:33,639 --> 00:11:37,119
+our destination node but this oscillator
+
+235
+00:11:37,119 --> 00:11:39,480
+down here this is our modulating signal
+
+236
+00:11:39,480 --> 00:11:41,619
+so right now it's only a frequency of
+
+237
+00:11:41,619 --> 00:11:43,569
+five so this is only repeating five
+
+238
+00:11:43,569 --> 00:11:46,119
+times per second so this means it's
+
+239
+00:11:46,119 --> 00:11:47,980
+going the carrier signal is going to go
+
+240
+00:11:47,980 --> 00:11:52,329
+between full gain and no gain five times
+
+241
+00:11:52,329 --> 00:11:53,949
+per second so if we change the
+
+242
+00:11:53,949 --> 00:11:56,889
+modulating signal we can change how
+
+243
+00:11:56,889 --> 00:12:03,519
+often this pattern is repeated so so
+
+244
+00:12:03,519 --> 00:12:08,559
+changes to one so only once per second
+
+245
+00:12:08,559 --> 00:12:10,779
+is the scheme changing and we can see it
+
+246
+00:12:10,779 --> 00:12:13,480
+actually being visualized as the volume
+
+247
+00:12:13,480 --> 00:12:16,749
+decreases there's no activity and the
+
+248
+00:12:16,749 --> 00:12:23,970
+time domain data we do this with other
+
+249
+00:12:23,970 --> 00:12:26,199
+waves over on the sine wave so we got a
+
+250
+00:12:26,199 --> 00:12:30,610
+sawtooth wave as our carrier signal it
+
+251
+00:12:30,610 --> 00:12:34,540
+sounds like a broken Gameboy so yes so
+
+252
+00:12:34,540 --> 00:12:36,220
+we can use amplitude modulation to make
+
+253
+00:12:36,220 --> 00:12:37,269
+things a little bit more interesting
+
+254
+00:12:37,269 --> 00:12:38,559
+because no one wants to hear pure sine
+
+255
+00:12:38,559 --> 00:12:45,040
+tones another thing we do is a frequency
+
+256
+00:12:45,040 --> 00:12:47,709
+modulation is where instead where
+
+257
+00:12:47,709 --> 00:12:49,959
+instead of modifying the amplitude or
+
+258
+00:12:49,959 --> 00:12:51,939
+the volume we're modifying the actual
+
+259
+00:12:51,939 --> 00:12:54,009
+pitch or frequency of the carrier signal
+
+260
+00:12:54,009 --> 00:12:58,059
+so same idea as amplitude modulation so
+
+261
+00:12:58,059 --> 00:12:59,999
+our modulating sine wave signal is
+
+262
+00:12:59,999 --> 00:13:03,129
+changing the frequency or how often the
+
+263
+00:13:03,129 --> 00:13:04,809
+cycle of the carrier signals repeating
+
+264
+00:13:04,809 --> 00:13:06,670
+so we see in this example as the
+
+265
+00:13:06,670 --> 00:13:08,199
+modulating sine wave approaches negative
+
+266
+00:13:08,199 --> 00:13:11,009
+one the frequency of the carrier signal
+
+267
+00:13:11,009 --> 00:13:13,179
+increases so the distance between each
+
+268
+00:13:13,179 --> 00:13:16,509
+cycle is lessened which we perceive as
+
+269
+00:13:16,509 --> 00:13:17,410
+pitch
+
+270
+00:13:17,410 --> 00:13:19,300
+so if we're going between a lower pitch
+
+271
+00:13:19,300 --> 00:13:20,860
+and a higher pitch in a synthesizer
+
+272
+00:13:20,860 --> 00:13:23,079
+we'll get some like weird 80s sci-fi
+
+273
+00:13:23,079 --> 00:13:32,829
+like and we're gonna do that so I think
+
+274
+00:13:32,829 --> 00:13:34,930
+I did it better but you sounded pretty
+
+275
+00:13:34,930 --> 00:13:39,370
+good so this is pretty much the same
+
+276
+00:13:39,370 --> 00:13:43,689
+example except where I'm gonna code real
+
+277
+00:13:43,689 --> 00:13:46,329
+quick so the same thing except instead
+
+278
+00:13:46,329 --> 00:13:48,550
+of connecting our modulating oscillator
+
+279
+00:13:48,550 --> 00:13:50,620
+into our gain nodes audio parameter
+
+280
+00:13:50,620 --> 00:13:52,720
+we're connecting it to the carrier's
+
+281
+00:13:52,720 --> 00:13:54,610
+frequency so as the modulating signal
+
+282
+00:13:54,610 --> 00:13:56,860
+goes up and down so does the carrier's
+
+283
+00:13:56,860 --> 00:14:00,459
+frequency as we've seen the sweet
+
+284
+00:14:00,459 --> 00:14:05,199
+example of an album just of that and so
+
+285
+00:14:05,199 --> 00:14:06,339
+the only difference thing here is that
+
+286
+00:14:06,339 --> 00:14:08,529
+our modulating oscillator is also going
+
+287
+00:14:08,529 --> 00:14:10,930
+into a gain node just to increase the
+
+288
+00:14:10,930 --> 00:14:15,750
+change so if we change the modulating
+
+289
+00:14:15,750 --> 00:14:21,610
+oscillators gain node to one it's not
+
+290
+00:14:21,610 --> 00:14:22,569
+that much of a difference does not
+
+291
+00:14:22,569 --> 00:14:24,459
+change the frequency too much if we
+
+292
+00:14:24,459 --> 00:14:31,540
+crank it up to mmm 1000 we get some
+
+293
+00:14:31,540 --> 00:14:33,970
+weird stuff going on and we see like
+
+294
+00:14:33,970 --> 00:14:35,589
+again this is modulating the frequency
+
+295
+00:14:35,589 --> 00:14:37,839
+so we see the sine wave the carrier
+
+296
+00:14:37,839 --> 00:14:39,880
+signal crushing together when it's
+
+297
+00:14:39,880 --> 00:14:41,920
+higher if you can see in expanding when
+
+298
+00:14:41,920 --> 00:14:43,449
+it's a lower frequency so we see this
+
+299
+00:14:43,449 --> 00:14:47,519
+kind of like breathing effect so again
+
+300
+00:14:47,519 --> 00:14:49,569
+you're not gonna listen to you know
+
+301
+00:14:49,569 --> 00:14:52,810
+that's the doesn't sound good but again
+
+302
+00:14:52,810 --> 00:14:55,750
+this is a foundation of you know any
+
+303
+00:14:55,750 --> 00:14:58,410
+kind of like electronic music synthesis
+
+304
+00:14:58,410 --> 00:15:02,370
+and so notice that we're also using
+
+305
+00:15:02,370 --> 00:15:04,600
+really low frequencies for the
+
+306
+00:15:04,600 --> 00:15:07,000
+modulating signal this is 2 Hertz humans
+
+307
+00:15:07,000 --> 00:15:09,459
+can hear between 20-ish Hertz and like
+
+308
+00:15:09,459 --> 00:15:13,029
+20,000 Hertz so we can't really perceive
+
+309
+00:15:13,029 --> 00:15:15,430
+this this signal even though because
+
+310
+00:15:15,430 --> 00:15:19,529
+it's affecting it so if we crease the
+
+311
+00:15:19,529 --> 00:15:22,120
+the modulating signal to something that
+
+312
+00:15:22,120 --> 00:15:25,360
+we can perceive things get weird so
+
+313
+00:15:25,360 --> 00:15:28,000
+let's make this so the killer sting goes
+
+314
+00:15:28,000 --> 00:15:29,860
+for 40 and if we make the modulating
+
+315
+00:15:29,860 --> 00:15:30,950
+signal
+
+316
+00:15:30,950 --> 00:15:34,850
+so that's like a bass note on a bass
+
+317
+00:15:34,850 --> 00:15:39,380
+guitar so we get this weird modulation
+
+318
+00:15:39,380 --> 00:15:41,329
+effect so like if you want to pretend
+
+319
+00:15:41,329 --> 00:15:42,620
+you're a Dalek you'd do something like
+
+320
+00:15:42,620 --> 00:15:46,519
+this and so the reason why we use low
+
+321
+00:15:46,519 --> 00:15:55,310
+frequencies for a modulating is so we
+
+322
+00:15:55,310 --> 00:15:56,720
+can't perceive we just maybe we just
+
+323
+00:15:56,720 --> 00:15:59,510
+want a subtle effect like a use often
+
+324
+00:15:59,510 --> 00:16:04,100
+like tremolo phasing vibrato we don't
+
+325
+00:16:04,100 --> 00:16:05,600
+want to perceive that so this is called
+
+326
+00:16:05,600 --> 00:16:08,000
+LFO not the 90's boy band but a
+
+327
+00:16:08,000 --> 00:16:11,360
+low-frequency oscillator so we don't
+
+328
+00:16:11,360 --> 00:16:13,850
+perceive we just we have some kind of
+
+329
+00:16:13,850 --> 00:16:17,630
+pattern so we can like repeat amplitude
+
+330
+00:16:17,630 --> 00:16:19,339
+modulation or frequency modulation or
+
+331
+00:16:19,339 --> 00:16:30,150
+some other effect so and we can also
+
+332
+00:16:30,160 --> 00:16:33,410
+modulate other audio parameters not just
+
+333
+00:16:33,410 --> 00:16:38,149
+frequency and amplitude so we can plug
+
+334
+00:16:38,149 --> 00:16:40,370
+this in we can pipe an oscillator into
+
+335
+00:16:40,370 --> 00:16:42,949
+filter a delay node anything that we
+
+336
+00:16:42,949 --> 00:16:44,540
+want so we can get more interesting
+
+337
+00:16:44,540 --> 00:16:46,940
+things otherwise we just sound like you
+
+338
+00:16:46,940 --> 00:16:52,519
+know game boys so that sounds really
+
+339
+00:16:52,519 --> 00:16:56,930
+cool in here so for this example so
+
+340
+00:16:56,930 --> 00:16:58,940
+again so much of the other ones except
+
+341
+00:16:58,940 --> 00:17:01,399
+right now we have two oscillators two
+
+342
+00:17:01,399 --> 00:17:05,959
+carrier signals one at a 3/3 a sawtooth
+
+343
+00:17:05,959 --> 00:17:09,620
+and a square wave at 80 yards and those
+
+344
+00:17:09,620 --> 00:17:11,480
+are octaves apart so it doesn't sound
+
+345
+00:17:11,480 --> 00:17:13,610
+awful going into a filter node and a
+
+346
+00:17:13,610 --> 00:17:16,910
+filter you know think of like an array
+
+347
+00:17:16,910 --> 00:17:18,980
+filter function filtering is kind of
+
+348
+00:17:18,980 --> 00:17:21,860
+pretty much equalizing so right now this
+
+349
+00:17:21,860 --> 00:17:24,679
+filter node a bi quad filter is a
+
+350
+00:17:24,679 --> 00:17:26,839
+low-pass type so it has a frequency
+
+351
+00:17:26,839 --> 00:17:30,770
+value and right now it's a 500 so this
+
+352
+00:17:30,770 --> 00:17:33,320
+means that any frequency higher than 500
+
+353
+00:17:33,320 --> 00:17:36,080
+is significantly reduced so we only
+
+354
+00:17:36,080 --> 00:17:41,900
+really hear the notes below 500 and the
+
+355
+00:17:41,900 --> 00:17:42,320
+modulator
+
+356
+00:17:42,320 --> 00:17:43,970
+never performing here we have again an
+
+357
+00:17:43,970 --> 00:17:48,669
+oscillator node one one hurt one hurts
+
+358
+00:17:48,669 --> 00:17:51,049
+so this is the modulation will happen
+
+359
+00:17:51,049 --> 00:17:53,690
+once per second and that's being pumped
+
+360
+00:17:53,690 --> 00:17:56,210
+into the by quad filters of frequency
+
+361
+00:17:56,210 --> 00:17:58,220
+property so what is being you know
+
+362
+00:17:58,220 --> 00:18:00,980
+animated or tweened or modulated is the
+
+363
+00:18:00,980 --> 00:18:03,679
+low-pass filter frequency so as the sine
+
+364
+00:18:03,679 --> 00:18:07,039
+wave continues we're going between only
+
+365
+00:18:07,039 --> 00:18:09,380
+allowing just the low frequencies which
+
+366
+00:18:09,380 --> 00:18:11,059
+humans have a hard time perceiving so it
+
+367
+00:18:11,059 --> 00:18:12,880
+sounds quieter than higher frequencies
+
+368
+00:18:12,880 --> 00:18:15,830
+into allowing more and more frequencies
+
+369
+00:18:15,830 --> 00:18:17,990
+and then oscillating back so that's what
+
+370
+00:18:17,990 --> 00:18:23,299
+we hear here so it's just going cycling
+
+371
+00:18:23,299 --> 00:18:25,490
+over letting lower frequencies only
+
+372
+00:18:25,490 --> 00:18:27,139
+lower frequencies and letting more and
+
+373
+00:18:27,139 --> 00:18:36,419
+more frequencies in and then going back
+
+374
+00:18:36,429 --> 00:18:53,500
+so sorry so in this example same thing
+
+375
+00:18:53,500 --> 00:18:55,220
+slightly different properties for the
+
+376
+00:18:55,220 --> 00:18:59,659
+oscillator node except we also have two
+
+377
+00:18:59,659 --> 00:19:01,850
+modulating signals at this point one is
+
+378
+00:19:01,850 --> 00:19:06,350
+controlling the filter node just as in
+
+379
+00:19:06,350 --> 00:19:08,690
+the last one so 0.5 Hertz so this is
+
+380
+00:19:08,690 --> 00:19:11,500
+happening once every two seconds and
+
+381
+00:19:11,500 --> 00:19:14,389
+again no to increase it and then we have
+
+382
+00:19:14,389 --> 00:19:15,529
+an oscillator no that's controlling the
+
+383
+00:19:15,529 --> 00:19:17,629
+game so we're also doing the filter
+
+384
+00:19:17,629 --> 00:19:19,639
+modulation as well as amplitude
+
+385
+00:19:19,639 --> 00:19:27,770
+modulation
+
+386
+00:19:27,780 --> 00:19:32,380
+okay so so and we can also so again this
+
+387
+00:19:32,380 --> 00:19:33,580
+isn't you know this is just like a
+
+388
+00:19:33,580 --> 00:19:35,650
+simple example of some you know
+
+389
+00:19:35,650 --> 00:19:37,660
+synthesis that can be performed and we
+
+390
+00:19:37,660 --> 00:19:40,360
+can hook this up to a you know a touch
+
+391
+00:19:40,360 --> 00:19:41,860
+interface like a keyboard or something
+
+392
+00:19:41,860 --> 00:19:44,230
+and trigger whether or not these notes
+
+393
+00:19:44,230 --> 00:19:46,630
+stop and start and deal with sustain if
+
+394
+00:19:46,630 --> 00:19:48,490
+you a user holds in a node and things
+
+395
+00:19:48,490 --> 00:19:49,060
+like that
+
+396
+00:19:49,060 --> 00:19:51,310
+and we can also just automate everything
+
+397
+00:19:51,310 --> 00:19:54,610
+and just compose a song that requires no
+
+398
+00:19:54,610 --> 00:20:08,890
+human input so we can do things like so
+
+399
+00:20:08,890 --> 00:20:10,980
+and this again we're just dealing with
+
+400
+00:20:10,980 --> 00:20:14,740
+I'm a composer so we're just dealing
+
+401
+00:20:14,740 --> 00:20:16,990
+with we just started with two oscillator
+
+402
+00:20:16,990 --> 00:20:18,580
+nodes once a sawtooth one's a square
+
+403
+00:20:18,580 --> 00:20:20,290
+wave and so we came from this like
+
+404
+00:20:20,290 --> 00:20:22,960
+Gameboy sound into you know something
+
+405
+00:20:22,960 --> 00:20:26,470
+that could possibly be in a a song or an
+
+406
+00:20:26,470 --> 00:20:28,060
+album or a concert because we just made
+
+407
+00:20:28,060 --> 00:20:40,680
+dubstep so thanks everyone
+
+408
+00:20:40,690 --> 00:20:43,640
+so I'm Jason tow and github and Twitter
+
+409
+00:20:43,640 --> 00:20:44,930
+bug me if you have any questions about
+
+410
+00:20:44,930 --> 00:20:47,570
+Web Audio stuff or the Firefox dev tools
+
+411
+00:20:47,570 --> 00:20:50,350
+for audio which coming out in Firefox 32
+
+412
+00:20:50,350 --> 00:20:54,290
+and still have no idea what we're doing
+
+413
+00:20:54,290 --> 00:20:56,000
+with it completely but any feedback
+
+414
+00:20:56,000 --> 00:20:57,110
+would be awesome so we can make it
+
+415
+00:20:57,110 --> 00:20:59,090
+better so we have more you know game
+
+416
+00:20:59,090 --> 00:21:00,400
+developers using Web Audio API
+
+417
+00:21:00,400 --> 00:21:03,170
+synthesizer makers and you know audio
+

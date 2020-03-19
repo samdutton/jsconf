@@ -1,0 +1,3225 @@
+1
+00:00:19,820 --> 00:00:24,720
+
+the web forward and my what I want to
+
+2
+00:00:24,720 --> 00:00:26,580
+encourage everyone to do is to open up
+
+3
+00:00:26,580 --> 00:00:28,830
+your favorite projects on github or
+
+4
+00:00:28,830 --> 00:00:30,810
+wherever they're at and get pull
+
+5
+00:00:30,810 --> 00:00:33,000
+requests and issues ready because I'll
+
+6
+00:00:33,000 --> 00:00:36,480
+be discussing a common performance over
+
+7
+00:00:36,480 --> 00:00:39,840
+sites in popular libraries and possibly
+
+8
+00:00:39,840 --> 00:00:42,449
+in your own code so if you find
+
+9
+00:00:42,449 --> 00:00:44,640
+something that's useful tweet it there's
+
+10
+00:00:44,640 --> 00:00:49,019
+hashtag / forward and at the end of the
+
+11
+00:00:49,019 --> 00:00:50,640
+talk I'd like to see like a list of
+
+12
+00:00:50,640 --> 00:00:52,170
+hands of how many our show of hands to
+
+13
+00:00:52,170 --> 00:00:55,110
+see how many issues have been reported
+
+14
+00:00:55,110 --> 00:00:59,070
+or poor requests have been started so
+
+15
+00:00:59,070 --> 00:01:05,369
+cool all right a little bit about me I'm
+
+16
+00:01:05,369 --> 00:01:08,040
+co maintainer of Jasper com how many
+
+17
+00:01:08,040 --> 00:01:10,229
+people have used Jas perf com awesome
+
+18
+00:01:10,229 --> 00:01:14,939
+cool Wow I'm also the lead dev on lodash
+
+19
+00:01:14,939 --> 00:01:16,770
+solo dash is an underscore alternative
+
+20
+00:01:16,770 --> 00:01:17,840
+how many people have heard of allah desh
+
+21
+00:01:17,840 --> 00:01:21,119
+awesome sweet and then benchmark Jas and
+
+22
+00:01:21,119 --> 00:01:23,189
+benchmark Jas is what powers j/s perf
+
+23
+00:01:23,189 --> 00:01:25,140
+and it also allows you to do things on
+
+24
+00:01:25,140 --> 00:01:29,450
+knowed Ringo Rhino all the browsers and
+
+25
+00:01:29,450 --> 00:01:32,399
+then i'm also a perf p.m. at microsoft
+
+26
+00:01:32,399 --> 00:01:34,259
+so I helped make chakra the JavaScript
+
+27
+00:01:34,259 --> 00:01:44,009
+engine faster alright I'm back kind of
+
+28
+00:01:44,009 --> 00:01:47,990
+cool and by by looking at patterns
+
+29
+00:01:47,990 --> 00:01:51,659
+popular patterns on the web and helping
+
+30
+00:01:51,659 --> 00:01:55,189
+relay them to the C++ Java engine devs
+
+31
+00:01:55,189 --> 00:02:00,420
+and i am a javascript fanboy so before i
+
+32
+00:02:00,420 --> 00:02:02,369
+begin and talk about the specific
+
+33
+00:02:02,369 --> 00:02:05,069
+performance tweaks there's a couple of
+
+34
+00:02:05,069 --> 00:02:06,899
+themes that i'll be trying to reiterate
+
+35
+00:02:06,899 --> 00:02:09,450
+throughout the talk and that's optimized
+
+36
+00:02:09,450 --> 00:02:11,250
+for the common case optimized for the
+
+37
+00:02:11,250 --> 00:02:13,920
+common case whenever you're implementing
+
+38
+00:02:13,920 --> 00:02:18,090
+a API design or using a library if you
+
+39
+00:02:18,090 --> 00:02:21,060
+are a library author think about the
+
+40
+00:02:21,060 --> 00:02:23,160
+most common case for that API to be used
+
+41
+00:02:23,160 --> 00:02:25,620
+and and optimized for it everything else
+
+42
+00:02:25,620 --> 00:02:28,140
+is secondary at that point a lot of
+
+43
+00:02:28,140 --> 00:02:30,960
+mistakes I've seen when debs are doing
+
+44
+00:02:30,960 --> 00:02:32,100
+API is is they
+
+45
+00:02:32,100 --> 00:02:34,590
+they're putting things in their code
+
+46
+00:02:34,590 --> 00:02:38,460
+that slow things down for no for no
+
+47
+00:02:38,460 --> 00:02:40,920
+reason or for this edge case the
+
+48
+00:02:40,920 --> 00:02:44,390
+scenario next is is using natives wisely
+
+49
+00:02:44,390 --> 00:02:47,700
+last year I gave a talk at jfcom called
+
+50
+00:02:47,700 --> 00:02:50,670
+the hidden cost of natives and that was
+
+51
+00:02:50,670 --> 00:02:54,150
+looking at the performance of native
+
+52
+00:02:54,150 --> 00:02:58,080
+methods like array for each filter map
+
+53
+00:02:58,080 --> 00:03:01,070
+and then comparing them to alternatives
+
+54
+00:03:01,070 --> 00:03:04,200
+written with four loops also things like
+
+55
+00:03:04,200 --> 00:03:07,530
+bind as well and then avoid abstraction
+
+56
+00:03:07,530 --> 00:03:09,510
+one of the easiest ways to gain
+
+57
+00:03:09,510 --> 00:03:11,730
+performance in a JavaScript library or a
+
+58
+00:03:11,730 --> 00:03:13,680
+JavaScript project is to just peel back
+
+59
+00:03:13,680 --> 00:03:16,650
+a layer of abstraction reduce those
+
+60
+00:03:16,650 --> 00:03:18,450
+function calls you don't have to go
+
+61
+00:03:18,450 --> 00:03:21,690
+crazy you don't have to compile all the
+
+62
+00:03:21,690 --> 00:03:24,420
+things like method compilation but just
+
+63
+00:03:24,420 --> 00:03:25,290
+pulling back the layer of abstraction
+
+64
+00:03:25,290 --> 00:03:27,480
+can can help you with your perf and then
+
+65
+00:03:27,480 --> 00:03:28,910
+the balance the pros and the cons
+
+66
+00:03:28,910 --> 00:03:32,010
+everything I'm talking about here is is
+
+67
+00:03:32,010 --> 00:03:34,440
+just advice if you're not seeing a
+
+68
+00:03:34,440 --> 00:03:35,580
+performance issue then you certainly
+
+69
+00:03:35,580 --> 00:03:37,290
+don't have to refactor your code and run
+
+70
+00:03:37,290 --> 00:03:40,140
+out and do it I work with a lot of like
+
+71
+00:03:40,140 --> 00:03:42,930
+low-level library functions where they
+
+72
+00:03:42,930 --> 00:03:44,280
+have to be fast because you don't know
+
+73
+00:03:44,280 --> 00:03:45,720
+what's going to be built on top of it
+
+74
+00:03:45,720 --> 00:03:47,880
+it's the baseline for a lot of projects
+
+75
+00:03:47,880 --> 00:03:51,990
+and so keep that in mind when I show
+
+76
+00:03:51,990 --> 00:03:53,640
+like I'll show one way to implement
+
+77
+00:03:53,640 --> 00:03:55,830
+something and then I'll show another way
+
+78
+00:03:55,830 --> 00:03:57,030
+to implement it that gets a little bit
+
+79
+00:03:57,030 --> 00:03:59,760
+deeper and then you know code in kind of
+
+80
+00:03:59,760 --> 00:04:01,860
+increases in complexity increases so you
+
+81
+00:04:01,860 --> 00:04:03,780
+just have to judge for yourself do I
+
+82
+00:04:03,780 --> 00:04:05,790
+want to pre compile all things or do I
+
+83
+00:04:05,790 --> 00:04:07,410
+just want to maybe just remove one layer
+
+84
+00:04:07,410 --> 00:04:11,640
+of abstraction so cool now that that's
+
+85
+00:04:11,640 --> 00:04:14,550
+out of the way all right so I also hope
+
+86
+00:04:14,550 --> 00:04:15,960
+to blow some minds and I just love this
+
+87
+00:04:15,960 --> 00:04:20,310
+Jeff so I said let's just let's just
+
+88
+00:04:20,310 --> 00:04:23,460
+absorb this for a second how awesome it
+
+89
+00:04:23,460 --> 00:04:27,540
+repeats forever too I love it okay okay
+
+90
+00:04:27,540 --> 00:04:31,650
+so the first technique is to hoist out
+
+91
+00:04:31,650 --> 00:04:36,000
+dot call and apply from your iteration
+
+92
+00:04:36,000 --> 00:04:38,490
+functions and I put a little key down
+
+93
+00:04:38,490 --> 00:04:40,830
+here at the bottom that shows the
+
+94
+00:04:40,830 --> 00:04:42,540
+libraries that this applies to so if you
+
+95
+00:04:42,540 --> 00:04:43,979
+use any of these libraries this
+
+96
+00:04:43,979 --> 00:04:45,450
+technique applies to that and you can
+
+97
+00:04:45,450 --> 00:04:45,660
+create
+
+98
+00:04:45,660 --> 00:04:47,430
+patch for it or an issue for that
+
+99
+00:04:47,430 --> 00:04:51,180
+library so that's backbone dojo ember
+
+100
+00:04:51,180 --> 00:04:55,290
+jquery prime which is mu tools to and
+
+101
+00:04:55,290 --> 00:04:56,760
+then underscore and i'm sure there's
+
+102
+00:04:56,760 --> 00:04:58,680
+more every every library has some kind
+
+103
+00:04:58,680 --> 00:05:00,720
+of iteration utility every library has
+
+104
+00:05:00,720 --> 00:05:02,880
+some kind of event loop or event emitter
+
+105
+00:05:02,880 --> 00:05:04,860
+and this technique can be applied to
+
+106
+00:05:04,860 --> 00:05:07,260
+those so the general gist is we've all
+
+107
+00:05:07,260 --> 00:05:09,450
+seen code like this while loop call back
+
+108
+00:05:09,450 --> 00:05:11,520
+call and what it's doing is it's doing
+
+109
+00:05:11,520 --> 00:05:13,770
+the dot call for the this the disarm
+
+110
+00:05:13,770 --> 00:05:15,420
+your this context but if you don't pass
+
+111
+00:05:15,420 --> 00:05:17,910
+it this context it's still or this argh
+
+112
+00:05:17,910 --> 00:05:20,160
+it's still doing a dot call and that is
+
+113
+00:05:20,160 --> 00:05:22,260
+slower than just a straight function
+
+114
+00:05:22,260 --> 00:05:24,300
+call so one way to do it like we all
+
+115
+00:05:24,300 --> 00:05:27,090
+know like when you have loops you move
+
+116
+00:05:27,090 --> 00:05:30,510
+the the hard work out of the loop and in
+
+117
+00:05:30,510 --> 00:05:33,270
+this case you can move that call out of
+
+118
+00:05:33,270 --> 00:05:38,370
+the loop by doing something like this so
+
+119
+00:05:38,370 --> 00:05:42,830
+this create call back allows you to
+
+120
+00:05:42,830 --> 00:05:46,410
+evaluate and do the binding inside this
+
+121
+00:05:46,410 --> 00:05:49,740
+function here and then in your main loop
+
+122
+00:05:49,740 --> 00:05:52,230
+you've just got a straight function call
+
+123
+00:05:52,230 --> 00:05:55,740
+and so that increases your your
+
+124
+00:05:55,740 --> 00:05:58,170
+iteration performance and your event
+
+125
+00:05:58,170 --> 00:06:00,810
+emitter performance and the inside of
+
+126
+00:06:00,810 --> 00:06:01,980
+that function there that I've
+
+127
+00:06:01,980 --> 00:06:09,690
+highlighted looks like this AHA there it
+
+128
+00:06:09,690 --> 00:06:13,860
+is like this if you don't pass it this
+
+129
+00:06:13,860 --> 00:06:15,660
+arc it just returns the call back and if
+
+130
+00:06:15,660 --> 00:06:18,240
+you do it wraps the function and does
+
+131
+00:06:18,240 --> 00:06:21,180
+the call now this makes your common case
+
+132
+00:06:21,180 --> 00:06:23,310
+very very fast and I'll show you I'll
+
+133
+00:06:23,310 --> 00:06:26,000
+step back this is I applied this
+
+134
+00:06:26,000 --> 00:06:28,140
+optimization to backbone which already
+
+135
+00:06:28,140 --> 00:06:31,350
+has a very fast event system like they
+
+136
+00:06:31,350 --> 00:06:33,120
+go out of their way to really fine-tune
+
+137
+00:06:33,120 --> 00:06:35,820
+it and you're still able to get
+
+138
+00:06:35,820 --> 00:06:39,660
+performance gains in various browsers
+
+139
+00:06:39,660 --> 00:06:44,100
+because of this and I'll step back or
+
+140
+00:06:44,100 --> 00:06:48,210
+forward there's trade-offs for this this
+
+141
+00:06:48,210 --> 00:06:49,830
+makes your comment case very fast this
+
+142
+00:06:49,830 --> 00:06:51,630
+makes your case where you pass at this
+
+143
+00:06:51,630 --> 00:06:54,539
+argh very slow because it is having to
+
+144
+00:06:54,539 --> 00:06:56,100
+do a function rapper so there's there's
+
+145
+00:06:56,100 --> 00:06:57,990
+variations you can do on this
+
+146
+00:06:57,990 --> 00:07:00,300
+what you can do is you can check to see
+
+147
+00:07:00,300 --> 00:07:04,170
+if there is if this file show you here
+
+148
+00:07:04,170 --> 00:07:07,620
+if there is a this binding and then in
+
+149
+00:07:07,620 --> 00:07:10,800
+your loop do a conditional sure like a
+
+150
+00:07:10,800 --> 00:07:12,480
+ternary operator that says hey if
+
+151
+00:07:12,480 --> 00:07:15,150
+there's a binding do the call if not or
+
+152
+00:07:15,150 --> 00:07:17,490
+do the function call wit call if not
+
+153
+00:07:17,490 --> 00:07:19,800
+then dude alcohol and that will give you
+
+154
+00:07:19,800 --> 00:07:21,630
+a little bit better performance and not
+
+155
+00:07:21,630 --> 00:07:23,550
+as bad a big of a per penalty so it's
+
+156
+00:07:23,550 --> 00:07:25,230
+just up to you to weigh the pros and
+
+157
+00:07:25,230 --> 00:07:27,390
+cons of your approach one of the good
+
+158
+00:07:27,390 --> 00:07:31,430
+things about using create callback is
+
+159
+00:07:31,430 --> 00:07:35,430
+that with this approach you could then
+
+160
+00:07:35,430 --> 00:07:38,010
+add extra functionality without having
+
+161
+00:07:38,010 --> 00:07:39,990
+to modify this function you could just
+
+162
+00:07:39,990 --> 00:07:42,870
+modify create call back so I did this
+
+163
+00:07:42,870 --> 00:07:46,350
+with lodash for our map function usually
+
+164
+00:07:46,350 --> 00:07:47,640
+there's a function called pluck which
+
+165
+00:07:47,640 --> 00:07:49,380
+would then you you give it a collection
+
+166
+00:07:49,380 --> 00:07:52,170
+or an array of objects let's say and you
+
+167
+00:07:52,170 --> 00:07:54,750
+want to get the the name property value
+
+168
+00:07:54,750 --> 00:07:56,250
+off of all the objects there's a
+
+169
+00:07:56,250 --> 00:07:57,420
+function called pluck which would do
+
+170
+00:07:57,420 --> 00:07:59,630
+that well instead you could have map
+
+171
+00:07:59,630 --> 00:08:02,010
+which we all know whatever a map is you
+
+172
+00:08:02,010 --> 00:08:04,320
+could have map that accepts a string a
+
+173
+00:08:04,320 --> 00:08:07,230
+string for callback and it would pass
+
+174
+00:08:07,230 --> 00:08:08,940
+here it would automatically create the
+
+175
+00:08:08,940 --> 00:08:11,790
+callback that does the object property
+
+176
+00:08:11,790 --> 00:08:14,700
+retrieval for you and it's at zero perf
+
+177
+00:08:14,700 --> 00:08:17,340
+cost so you're able to extend your your
+
+178
+00:08:17,340 --> 00:08:19,950
+existing iteration function without any
+
+179
+00:08:19,950 --> 00:08:22,530
+extra perf cost and it's optimized for
+
+180
+00:08:22,530 --> 00:08:24,960
+the common case so you get win win win
+
+181
+00:08:24,960 --> 00:08:32,430
+win win out of that
+
+182
+00:08:32,440 --> 00:08:34,599
+all right before i get into the next one
+
+183
+00:08:34,599 --> 00:08:37,810
+i also want to touch on event systems
+
+184
+00:08:37,810 --> 00:08:40,180
+like jquery so if we looked at back at
+
+185
+00:08:40,180 --> 00:08:43,150
+this chart here you saw that so this is
+
+186
+00:08:43,150 --> 00:08:45,580
+higher is better so the longer the bar
+
+187
+00:08:45,580 --> 00:08:47,920
+the better backbone alt is my
+
+188
+00:08:47,920 --> 00:08:51,070
+implementation you'll see like jquery's
+
+189
+00:08:51,070 --> 00:08:53,410
+version here there there event system is
+
+190
+00:08:53,410 --> 00:08:55,600
+considerably slower but they're doing a
+
+191
+00:08:55,600 --> 00:08:57,370
+lot more they've got a more robust event
+
+192
+00:08:57,370 --> 00:08:58,900
+system it's for handling elements it's
+
+193
+00:08:58,900 --> 00:09:02,440
+not just generic objects and with this
+
+194
+00:09:02,440 --> 00:09:05,880
+technique you can improve jquery's event
+
+195
+00:09:05,880 --> 00:09:09,430
+iteration by like eighteen percent which
+
+196
+00:09:09,430 --> 00:09:11,500
+considering how much other stuff they
+
+197
+00:09:11,500 --> 00:09:13,870
+have around just removing that call and
+
+198
+00:09:13,870 --> 00:09:16,990
+dot apply is a pretty easy tweak so if
+
+199
+00:09:16,990 --> 00:09:18,910
+anyone digs jquery wants to optimize
+
+200
+00:09:18,910 --> 00:09:22,150
+that this would help their event system
+
+201
+00:09:22,150 --> 00:09:27,260
+this would help their dot each cool
+
+202
+00:09:27,270 --> 00:09:30,460
+alright i really like this this
+
+203
+00:09:30,460 --> 00:09:32,440
+technique and so I you'll see a lot of
+
+204
+00:09:32,440 --> 00:09:34,240
+this stuff is I've taken out of low dash
+
+205
+00:09:34,240 --> 00:09:37,120
+because I'm not just like coming up with
+
+206
+00:09:37,120 --> 00:09:39,160
+ideas for optimizations I use these in
+
+207
+00:09:39,160 --> 00:09:41,800
+my own projects and I've tested them
+
+208
+00:09:41,800 --> 00:09:44,980
+I've refined them to try to gain
+
+209
+00:09:44,980 --> 00:09:47,710
+performance and to offset the cost of
+
+210
+00:09:47,710 --> 00:09:51,640
+like bug fixes or compliance alright so
+
+211
+00:09:51,640 --> 00:09:54,760
+avoiding binding how many people know
+
+212
+00:09:54,760 --> 00:09:56,200
+that you can coerce a function to a
+
+213
+00:09:56,200 --> 00:09:59,170
+string and access its function source ok
+
+214
+00:09:59,170 --> 00:10:01,450
+cool you may also know that it's
+
+215
+00:10:01,450 --> 00:10:04,480
+non-standard technically but it's like a
+
+216
+00:10:04,480 --> 00:10:06,610
+de facto standard like everyone kind of
+
+217
+00:10:06,610 --> 00:10:11,710
+does it so I found a way to avoid the
+
+218
+00:10:11,710 --> 00:10:14,530
+this binding if you can detect that the
+
+219
+00:10:14,530 --> 00:10:16,980
+function isn't using the this keyword
+
+220
+00:10:16,980 --> 00:10:26,140
+and so so so so check this out you yeah
+
+221
+00:10:26,140 --> 00:10:29,920
+so it's so by the way this is going to
+
+222
+00:10:29,920 --> 00:10:33,850
+be in lodash as well so expected for
+
+223
+00:10:33,850 --> 00:10:35,350
+those that are like wow that's on stand
+
+224
+00:10:35,350 --> 00:10:36,970
+that's not standard I'm kind of scared
+
+225
+00:10:36,970 --> 00:10:39,010
+of it I in another slide I show you how
+
+226
+00:10:39,010 --> 00:10:40,420
+to do a feature detection for it so you
+
+227
+00:10:40,420 --> 00:10:43,750
+can get this benefit if it exists and
+
+228
+00:10:43,750 --> 00:10:44,769
+you can drop
+
+229
+00:10:44,769 --> 00:10:48,069
+it doesn't but the the the gist is and
+
+230
+00:10:48,069 --> 00:10:49,720
+this is me showing like a generic event
+
+231
+00:10:49,720 --> 00:10:51,670
+system but you could patch so you could
+
+232
+00:10:51,670 --> 00:10:53,589
+do this with jquery event system for
+
+233
+00:10:53,589 --> 00:10:56,920
+example or backbones of its system and
+
+234
+00:10:56,920 --> 00:10:59,079
+usually when you're registering an event
+
+235
+00:10:59,079 --> 00:11:02,019
+listener you you might pass intimated
+
+236
+00:11:02,019 --> 00:11:03,489
+that metadata so like right now I'm
+
+237
+00:11:03,489 --> 00:11:05,049
+passing in like the function and its
+
+238
+00:11:05,049 --> 00:11:07,029
+context but what I'm doing is I'm
+
+239
+00:11:07,029 --> 00:11:09,850
+testing to see if the function is using
+
+240
+00:11:09,850 --> 00:11:12,459
+this reference if it's not then I'm not
+
+241
+00:11:12,459 --> 00:11:15,819
+going to do a binding to it and so that
+
+242
+00:11:15,819 --> 00:11:17,230
+will let will speed up the iteration
+
+243
+00:11:17,230 --> 00:11:18,670
+there because it's not just doing this
+
+244
+00:11:18,670 --> 00:11:20,709
+implicit this binding if you're not
+
+245
+00:11:20,709 --> 00:11:23,019
+using this this also allows you to say
+
+246
+00:11:23,019 --> 00:11:24,670
+to your dad's that if they do care about
+
+247
+00:11:24,670 --> 00:11:27,369
+performance but you can you can actually
+
+248
+00:11:27,369 --> 00:11:29,379
+enforce a different coding pattern for
+
+249
+00:11:29,379 --> 00:11:30,790
+them and say all right well then just do
+
+250
+00:11:30,790 --> 00:11:32,379
+their that equals this which is you know
+
+251
+00:11:32,379 --> 00:11:34,329
+gross some people hate it but if you
+
+252
+00:11:34,329 --> 00:11:36,579
+need it your system will now allow for
+
+253
+00:11:36,579 --> 00:11:37,809
+it and actually have optimism
+
+254
+00:11:37,809 --> 00:11:40,119
+optimizations for it kind of backed into
+
+255
+00:11:40,119 --> 00:11:44,079
+it so that's that's this technique i'm
+
+256
+00:11:44,079 --> 00:11:46,569
+using functioned up prototype to string
+
+257
+00:11:46,569 --> 00:11:48,069
+because this avoids issues if the
+
+258
+00:11:48,069 --> 00:11:50,589
+function has a custom to string so like
+
+259
+00:11:50,589 --> 00:11:53,889
+I've seen charting libraries do that to
+
+260
+00:11:53,889 --> 00:11:54,970
+their instances and objects and
+
+261
+00:11:54,970 --> 00:11:56,499
+functions and so this way that even
+
+262
+00:11:56,499 --> 00:11:59,350
+avoids that gotcha there what this will
+
+263
+00:11:59,350 --> 00:12:01,689
+do is this may have false positives if
+
+264
+00:12:01,689 --> 00:12:04,839
+you have a comment that has dot this but
+
+265
+00:12:04,839 --> 00:12:07,569
+in that case the worst case scenario is
+
+266
+00:12:07,569 --> 00:12:09,309
+that it's treated like every every other
+
+267
+00:12:09,309 --> 00:12:12,999
+function and wrapped or bound so just if
+
+268
+00:12:12,999 --> 00:12:14,230
+you know that this could be a pattern
+
+269
+00:12:14,230 --> 00:12:16,029
+for you to increase performance so what
+
+270
+00:12:16,029 --> 00:12:18,629
+I'm doing is I'm adding this to my
+
+271
+00:12:18,629 --> 00:12:23,110
+iteration sugar in lodash so if you pass
+
+272
+00:12:23,110 --> 00:12:24,819
+at this binding but your callback isn't
+
+273
+00:12:24,819 --> 00:12:26,679
+using it it's not going to actually do
+
+274
+00:12:26,679 --> 00:12:28,029
+the bind so it's going to hit the fast
+
+275
+00:12:28,029 --> 00:12:30,220
+path because I showed you that that slow
+
+276
+00:12:30,220 --> 00:12:32,619
+path is considerably slower for me
+
+277
+00:12:32,619 --> 00:12:33,939
+because I do the create callback
+
+278
+00:12:33,939 --> 00:12:37,629
+technique all right so here's the
+
+279
+00:12:37,629 --> 00:12:40,209
+feature test for example that one up
+
+280
+00:12:40,209 --> 00:12:42,579
+there so I do an assignment I test to
+
+281
+00:12:42,579 --> 00:12:44,559
+see if i can find the this value if i
+
+282
+00:12:44,559 --> 00:12:47,559
+can then i return the value else it'll
+
+283
+00:12:47,559 --> 00:12:49,480
+be false then you can do something
+
+284
+00:12:49,480 --> 00:12:51,459
+similar this was just a cheap way to do
+
+285
+00:12:51,459 --> 00:12:54,610
+this what I've done in lodash is to use
+
+286
+00:12:54,610 --> 00:12:56,740
+the the running context method because
+
+287
+00:12:56,740 --> 00:12:57,990
+that's the method that wraps
+
+288
+00:12:57,990 --> 00:12:59,970
+everything so it's a it's a very big
+
+289
+00:12:59,970 --> 00:13:02,040
+function body and this allows me to
+
+290
+00:13:02,040 --> 00:13:03,899
+detect issues with mobile browsers that
+
+291
+00:13:03,899 --> 00:13:06,600
+may truncate function string function
+
+292
+00:13:06,600 --> 00:13:09,750
+body strings and so I reference this
+
+293
+00:13:09,750 --> 00:13:11,490
+like way down there in the bottom so
+
+294
+00:13:11,490 --> 00:13:12,990
+they can catch it then I know it's it's
+
+295
+00:13:12,990 --> 00:13:19,350
+probably safe to use all right let's see
+
+296
+00:13:19,350 --> 00:13:21,480
+this is me actually showing the inside
+
+297
+00:13:21,480 --> 00:13:24,570
+of the listener so before I showed how
+
+298
+00:13:24,570 --> 00:13:25,980
+to register it and this is an
+
+299
+00:13:25,980 --> 00:13:28,800
+implementation of it using that that
+
+300
+00:13:28,800 --> 00:13:30,540
+information now now that I know that I
+
+301
+00:13:30,540 --> 00:13:33,540
+can conditionally if there is a context
+
+302
+00:13:33,540 --> 00:13:35,940
+call it if not do a straight function
+
+303
+00:13:35,940 --> 00:13:38,190
+call and that is how you get your
+
+304
+00:13:38,190 --> 00:13:40,670
+performance now this is kind of like the
+
+305
+00:13:40,670 --> 00:13:43,620
+backbones implementation where they do a
+
+306
+00:13:43,620 --> 00:13:45,990
+switch statement on a number of
+
+307
+00:13:45,990 --> 00:13:49,080
+arguments I just did up to one but you
+
+308
+00:13:49,080 --> 00:13:51,120
+they do it like up to three you may
+
+309
+00:13:51,120 --> 00:13:54,690
+would do for it manuf eyes to almost
+
+310
+00:13:54,690 --> 00:13:57,480
+nothing so if you're totally grossed out
+
+311
+00:13:57,480 --> 00:13:59,209
+about that just say it's for perch and
+
+312
+00:13:59,209 --> 00:14:08,180
+and move on oh yeah okay all right so
+
+313
+00:14:08,180 --> 00:14:11,970
+the the next technique i have is reduce
+
+314
+00:14:11,970 --> 00:14:14,100
+your searches so a lot of people when
+
+315
+00:14:14,100 --> 00:14:17,930
+you they have a lot a large array or a
+
+316
+00:14:17,930 --> 00:14:20,010
+group of a race they want to do
+
+317
+00:14:20,010 --> 00:14:25,940
+operations like without or union or
+
+318
+00:14:25,940 --> 00:14:29,670
+unique on their arrays but that's doing
+
+319
+00:14:29,670 --> 00:14:32,130
+a lot of linear searches index of values
+
+320
+00:14:32,130 --> 00:14:34,740
+going through the collection every time
+
+321
+00:14:34,740 --> 00:14:38,279
+and that's very very slow and to fix
+
+322
+00:14:38,279 --> 00:14:40,170
+that you may think well i'll just use an
+
+323
+00:14:40,170 --> 00:14:44,430
+object cache so if the if the value in
+
+324
+00:14:44,430 --> 00:14:47,160
+this case turns the value into a
+
+325
+00:14:47,160 --> 00:14:49,829
+property name and they set its result to
+
+326
+00:14:49,829 --> 00:14:52,079
+true so then if it does exist as a
+
+327
+00:14:52,079 --> 00:14:54,240
+property then they know it's there and
+
+328
+00:14:54,240 --> 00:14:56,250
+they can they can continue on their way
+
+329
+00:14:56,250 --> 00:14:59,370
+they found the property or the value but
+
+330
+00:14:59,370 --> 00:15:00,329
+there's there's a couple of problems
+
+331
+00:15:00,329 --> 00:15:02,640
+with that it conflates things that look
+
+332
+00:15:02,640 --> 00:15:05,730
+like identical at strings so like the
+
+333
+00:15:05,730 --> 00:15:08,250
+number string are the number two and the
+
+334
+00:15:08,250 --> 00:15:11,130
+string to look the same and so
+
+335
+00:15:11,130 --> 00:15:12,990
+if you're doing something that's is like
+
+336
+00:15:12,990 --> 00:15:14,910
+a unique operation it's going to treat
+
+337
+00:15:14,910 --> 00:15:17,580
+them as equal when they are not or even
+
+338
+00:15:17,580 --> 00:15:20,340
+a function that coerced to the for some
+
+339
+00:15:20,340 --> 00:15:22,140
+reason course to a number it would with
+
+340
+00:15:22,140 --> 00:15:24,540
+two string would do it so that that
+
+341
+00:15:24,540 --> 00:15:28,800
+approach doesn't work well for generic
+
+342
+00:15:28,800 --> 00:15:31,020
+use now if that is your only use case
+
+343
+00:15:31,020 --> 00:15:33,360
+then maybe maybe you could do it but
+
+344
+00:15:33,360 --> 00:15:35,340
+this is how you could tweak that so
+
+345
+00:15:35,340 --> 00:15:37,110
+here's the first one where it's index of
+
+346
+00:15:37,110 --> 00:15:41,340
+and you'll also see that I've got a
+
+347
+00:15:41,340 --> 00:15:43,320
+little bit of something up here but I'll
+
+348
+00:15:43,320 --> 00:15:46,770
+talk about that later and then the the
+
+349
+00:15:46,770 --> 00:15:49,320
+tweak is what I've done is I've in this
+
+350
+00:15:49,320 --> 00:15:52,620
+example created a cache of that value
+
+351
+00:15:52,620 --> 00:15:54,330
+and then I just look to see if it's
+
+352
+00:15:54,330 --> 00:15:58,350
+contained in that cache or if it's not
+
+353
+00:15:58,350 --> 00:16:01,380
+contained in this case now I'm going to
+
+354
+00:16:01,380 --> 00:16:02,550
+go into actually showing you how i
+
+355
+00:16:02,550 --> 00:16:05,700
+create the object cache for that so this
+
+356
+00:16:05,700 --> 00:16:08,250
+is what the idea is is instead of doing
+
+357
+00:16:08,250 --> 00:16:10,950
+a long linear search you're breaking
+
+358
+00:16:10,950 --> 00:16:12,870
+that massive array into two smaller
+
+359
+00:16:12,870 --> 00:16:16,110
+buckets so you're taking all of the in
+
+360
+00:16:16,110 --> 00:16:20,130
+my previous example of two like values
+
+361
+00:16:20,130 --> 00:16:21,720
+so all of your number two's and string
+
+362
+00:16:21,720 --> 00:16:23,760
+tues and sticking them into a smaller
+
+363
+00:16:23,760 --> 00:16:26,580
+array so you have less of an array to
+
+364
+00:16:26,580 --> 00:16:28,710
+search so that should be faster and it
+
+365
+00:16:28,710 --> 00:16:31,260
+is it's considerably faster and so now
+
+366
+00:16:31,260 --> 00:16:34,590
+here's just a small code that shows you
+
+367
+00:16:34,590 --> 00:16:38,070
+an implementation of this what I do is I
+
+368
+00:16:38,070 --> 00:16:40,410
+detect if the array is large and what is
+
+369
+00:16:40,410 --> 00:16:44,870
+large it's an arbitrary number that I've
+
+370
+00:16:44,870 --> 00:16:48,810
+created based on research so in my case
+
+371
+00:16:48,810 --> 00:16:52,580
+my implementation the large array size
+
+372
+00:16:52,580 --> 00:16:56,370
+was at one time 200 so anything over 200
+
+373
+00:16:56,370 --> 00:16:58,890
+got this optimization now it's reduced
+
+374
+00:16:58,890 --> 00:17:01,980
+to 75 so now any array over 75 gets this
+
+375
+00:17:01,980 --> 00:17:05,520
+optimization but what it is is it's the
+
+376
+00:17:05,520 --> 00:17:09,350
+point at which your cost for doing this
+
+377
+00:17:09,350 --> 00:17:11,640
+actually gives you a perf win because
+
+378
+00:17:11,640 --> 00:17:13,439
+you're having to sit there and create an
+
+379
+00:17:13,439 --> 00:17:15,209
+object and populate it with properties
+
+380
+00:17:15,209 --> 00:17:18,120
+and if you if your array is for items
+
+381
+00:17:18,120 --> 00:17:20,100
+long then it's not going to be a big not
+
+382
+00:17:20,100 --> 00:17:21,630
+going to be a win so what this is doing
+
+383
+00:17:21,630 --> 00:17:24,750
+is I'm doing a prefix here for the
+
+384
+00:17:24,750 --> 00:17:27,209
+you to avoid issues with object
+
+385
+00:17:27,209 --> 00:17:30,210
+properties on objects of prototype so to
+
+386
+00:17:30,210 --> 00:17:32,400
+string has owned property it also avoids
+
+387
+00:17:32,400 --> 00:17:34,200
+issues with the magic proto property
+
+388
+00:17:34,200 --> 00:17:35,430
+double underscore proto double
+
+389
+00:17:35,430 --> 00:17:38,040
+underscore and that is the
+
+390
+00:17:38,040 --> 00:17:39,780
+implementation there I basically push
+
+391
+00:17:39,780 --> 00:17:41,690
+the values into their smaller buckets in
+
+392
+00:17:41,690 --> 00:17:45,630
+this cash and then in this function here
+
+393
+00:17:45,630 --> 00:17:48,150
+I check to see if it is in that smaller
+
+394
+00:17:48,150 --> 00:17:51,350
+array so instead of doing let's say 200
+
+395
+00:17:51,350 --> 00:17:53,820
+search over 200 items it's doing a
+
+396
+00:17:53,820 --> 00:17:57,620
+search over four so it makes it faster
+
+397
+00:17:57,620 --> 00:18:02,610
+now this is me zooming into that chunk
+
+398
+00:18:02,610 --> 00:18:04,290
+right there that that is what's actually
+
+399
+00:18:04,290 --> 00:18:07,050
+creating the cash but it was pretty
+
+400
+00:18:07,050 --> 00:18:11,100
+pretty clear before so there's an
+
+401
+00:18:11,100 --> 00:18:12,990
+alternative technique that you can do
+
+402
+00:18:12,990 --> 00:18:16,080
+that takes it another step further and
+
+403
+00:18:16,080 --> 00:18:17,340
+this is what I'm doing in the next
+
+404
+00:18:17,340 --> 00:18:19,920
+version of lodash and what this is is
+
+405
+00:18:19,920 --> 00:18:22,740
+instead of creating a bunch of smaller
+
+406
+00:18:22,740 --> 00:18:26,550
+arrays what it's doing a hybrid approach
+
+407
+00:18:26,550 --> 00:18:28,500
+of that the first naive approach which
+
+408
+00:18:28,500 --> 00:18:31,920
+was to do object properties and it's
+
+409
+00:18:31,920 --> 00:18:34,410
+also doing a race so object properties
+
+410
+00:18:34,410 --> 00:18:37,200
+for things like boolean values false and
+
+411
+00:18:37,200 --> 00:18:42,870
+true no undefined and I only do those
+
+412
+00:18:42,870 --> 00:18:45,300
+lookups if i'm looking for a value that
+
+413
+00:18:45,300 --> 00:18:48,120
+is one of those so it's not going to get
+
+414
+00:18:48,120 --> 00:18:50,070
+a false positive like with the number
+
+415
+00:18:50,070 --> 00:18:52,560
+two and string two and then I have an
+
+416
+00:18:52,560 --> 00:18:55,620
+object cash for anything else that's an
+
+417
+00:18:55,620 --> 00:18:57,540
+object so they'll get the their own
+
+418
+00:18:57,540 --> 00:19:01,920
+arrays there and this is just me
+
+419
+00:19:01,920 --> 00:19:05,340
+creating that cash again still you know
+
+420
+00:19:05,340 --> 00:19:07,050
+if it's an object it's getting pushed
+
+421
+00:19:07,050 --> 00:19:09,180
+into the smaller array if it's one of
+
+422
+00:19:09,180 --> 00:19:10,830
+the other primitive values it's being
+
+423
+00:19:10,830 --> 00:19:13,110
+set to true so that's the hybrid of the
+
+424
+00:19:13,110 --> 00:19:15,780
+naive approach and the the smaller
+
+425
+00:19:15,780 --> 00:19:17,160
+bucket approach and this gets
+
+426
+00:19:17,160 --> 00:19:19,140
+considerable ones this was this allowed
+
+427
+00:19:19,140 --> 00:19:22,680
+me to remove to reduce the size of my
+
+428
+00:19:22,680 --> 00:19:25,260
+large array limit from 200 down to 75 so
+
+429
+00:19:25,260 --> 00:19:27,450
+that means more arrays are impacted and
+
+430
+00:19:27,450 --> 00:19:30,270
+more you get better performance out of
+
+431
+00:19:30,270 --> 00:19:32,220
+it because the optimization kicks in
+
+432
+00:19:32,220 --> 00:19:34,380
+earlier
+
+433
+00:19:34,380 --> 00:19:38,190
+cool all right another another technique
+
+434
+00:19:38,190 --> 00:19:41,310
+is cool by the way that that
+
+435
+00:19:41,310 --> 00:19:44,000
+optimization can be used in underscore
+
+436
+00:19:44,000 --> 00:19:48,630
+and possibly jQuery another thing you
+
+437
+00:19:48,630 --> 00:19:52,460
+can do here is coerce values with care a
+
+438
+00:19:52,460 --> 00:19:54,960
+lot of times debs will get in the habit
+
+439
+00:19:54,960 --> 00:19:57,150
+of doing sliced call arguments all the
+
+440
+00:19:57,150 --> 00:20:00,000
+time just whether they need to or not
+
+441
+00:20:00,000 --> 00:20:02,280
+they're sliced up calling arguments and
+
+442
+00:20:02,280 --> 00:20:03,870
+in many cases you don't have two
+
+443
+00:20:03,870 --> 00:20:05,790
+arguments are an array-like object if
+
+444
+00:20:05,790 --> 00:20:08,310
+you're about to iterate over arguments
+
+445
+00:20:08,310 --> 00:20:09,540
+you don't have to convert them to an
+
+446
+00:20:09,540 --> 00:20:10,890
+array you can just iterate over them
+
+447
+00:20:10,890 --> 00:20:13,140
+straight up and many times you can avoid
+
+448
+00:20:13,140 --> 00:20:15,960
+slicing them if you just if your are
+
+449
+00:20:15,960 --> 00:20:17,640
+going to iterate over them just set your
+
+450
+00:20:17,640 --> 00:20:20,850
+eye index or your your index value to
+
+451
+00:20:20,850 --> 00:20:22,320
+one or something so you don't have to
+
+452
+00:20:22,320 --> 00:20:26,520
+slice them there's an example here where
+
+453
+00:20:26,520 --> 00:20:28,470
+I've done that where instead of instead
+
+454
+00:20:28,470 --> 00:20:30,480
+of slicing your arguments and doing an
+
+455
+00:20:30,480 --> 00:20:33,330
+index search actually I missed a value
+
+456
+00:20:33,330 --> 00:20:35,370
+there but use your imagination there's
+
+457
+00:20:35,370 --> 00:20:38,100
+about you the argument instead of that
+
+458
+00:20:38,100 --> 00:20:40,560
+I'm leveraging the the from index of
+
+459
+00:20:40,560 --> 00:20:43,590
+index of so index of an array index of
+
+460
+00:20:43,590 --> 00:20:46,110
+in this case the library index m allows
+
+461
+00:20:46,110 --> 00:20:47,760
+you to set a from index where you start
+
+462
+00:20:47,760 --> 00:20:49,890
+your linear search from so it doesn't
+
+463
+00:20:49,890 --> 00:20:51,060
+always have to start from zero we can
+
+464
+00:20:51,060 --> 00:20:52,590
+start forward so you don't have to slice
+
+465
+00:20:52,590 --> 00:20:55,860
+things there you can also avoid things
+
+466
+00:20:55,860 --> 00:21:01,420
+like concat so let's see
+
+467
+00:21:01,420 --> 00:21:06,610
+I have a typo which is lame but I'll
+
+468
+00:21:06,610 --> 00:21:08,970
+jump down to this example over here
+
+469
+00:21:08,970 --> 00:21:11,170
+instead of flattening a lot of times
+
+470
+00:21:11,170 --> 00:21:13,270
+Deb's will include a Lib to flatten
+
+471
+00:21:13,270 --> 00:21:16,990
+arrays and you don't have to you can use
+
+472
+00:21:16,990 --> 00:21:20,440
+native can cat concatenate so in this
+
+473
+00:21:20,440 --> 00:21:22,840
+case I'm having a variable reference to
+
+474
+00:21:22,840 --> 00:21:27,910
+concatenate anything that's me storing
+
+475
+00:21:27,910 --> 00:21:29,830
+their slice equals or rate up prototype
+
+476
+00:21:29,830 --> 00:21:34,120
+nestlings and instead you can use concat
+
+477
+00:21:34,120 --> 00:21:36,430
+to flatten your arrays and you don't
+
+478
+00:21:36,430 --> 00:21:38,650
+have to pass it an array as it's this
+
+479
+00:21:38,650 --> 00:21:40,870
+argh so I've seen many lives do this
+
+480
+00:21:40,870 --> 00:21:43,300
+where they're just creating garbage like
+
+481
+00:21:43,300 --> 00:21:45,670
+extra unneeded arrays there and you can
+
+482
+00:21:45,670 --> 00:21:47,380
+tidy that up the array dot prototype
+
+483
+00:21:47,380 --> 00:21:49,840
+itself is an array so you can use that
+
+484
+00:21:49,840 --> 00:21:51,910
+as the despot as that this value there
+
+485
+00:21:51,910 --> 00:21:54,850
+which is what i do in lodash too and i
+
+486
+00:21:54,850 --> 00:21:56,500
+believe it's been added to underscore
+
+487
+00:21:56,500 --> 00:22:00,300
+but this that pattern there is from
+
+488
+00:22:00,300 --> 00:22:03,190
+jQuery so if you're a jquery fans you
+
+489
+00:22:03,190 --> 00:22:05,680
+can go and patch that up and I'm sure
+
+490
+00:22:05,680 --> 00:22:07,360
+you could find it in all the other lips
+
+491
+00:22:07,360 --> 00:22:09,340
+too they all kind of do similar things
+
+492
+00:22:09,340 --> 00:22:11,670
+there and you can you can tighten up
+
+493
+00:22:11,670 --> 00:22:16,750
+their object creation and then the
+
+494
+00:22:16,750 --> 00:22:19,630
+bottom one is avoiding can cat when it's
+
+495
+00:22:19,630 --> 00:22:21,430
+not needed so in this case they were
+
+496
+00:22:21,430 --> 00:22:25,870
+doing food.com cat slice arrays /
+
+497
+00:22:25,870 --> 00:22:28,450
+arguments and you can you can avoid that
+
+498
+00:22:28,450 --> 00:22:32,500
+and do like push that apply and push
+
+499
+00:22:32,500 --> 00:22:34,510
+because push accepts more than just one
+
+500
+00:22:34,510 --> 00:22:36,970
+argument to push I don't know of many of
+
+501
+00:22:36,970 --> 00:22:38,170
+how many people knew that you could push
+
+502
+00:22:38,170 --> 00:22:40,900
+more than one argument okay cool well
+
+503
+00:22:40,900 --> 00:22:42,550
+you can and so you can leverage that
+
+504
+00:22:42,550 --> 00:22:44,470
+apply there and push all of your
+
+505
+00:22:44,470 --> 00:22:46,120
+arguments on to the array without having
+
+506
+00:22:46,120 --> 00:22:47,500
+the dukan cat and creating all these
+
+507
+00:22:47,500 --> 00:22:51,460
+intermediate arrays so try that instead
+
+508
+00:22:51,460 --> 00:22:53,440
+and that's me again having a reference
+
+509
+00:22:53,440 --> 00:22:56,200
+to array dot prototype top push assigned
+
+510
+00:22:56,200 --> 00:23:02,200
+to a variable push okay sugar in
+
+511
+00:23:02,200 --> 00:23:06,910
+moderation how many people use a jquery
+
+512
+00:23:06,910 --> 00:23:08,770
+straining syntax and not J queries
+
+513
+00:23:08,770 --> 00:23:10,659
+underscores changing syntax
+
+514
+00:23:10,659 --> 00:23:14,919
+okay a few if you're using a lib that's
+
+515
+00:23:14,919 --> 00:23:18,309
+optimized for the generic use you need
+
+516
+00:23:18,309 --> 00:23:20,619
+to be aware that the chaining syntax the
+
+517
+00:23:20,619 --> 00:23:22,419
+non-common syntax has a performance
+
+518
+00:23:22,419 --> 00:23:24,009
+penalty so if you have an animation
+
+519
+00:23:24,009 --> 00:23:27,279
+framework or tight loop try pulling it
+
+520
+00:23:27,279 --> 00:23:30,609
+back to the API that is is optimized for
+
+521
+00:23:30,609 --> 00:23:34,239
+that library before you even have to
+
+522
+00:23:34,239 --> 00:23:35,799
+roll it back to like four loops or go
+
+523
+00:23:35,799 --> 00:23:39,039
+crazy other optimizations and in this
+
+524
+00:23:39,039 --> 00:23:40,479
+case I've shown the the difference
+
+525
+00:23:40,479 --> 00:23:43,769
+between the two there you've got the the
+
+526
+00:23:43,769 --> 00:23:47,679
+chain version versus the generic version
+
+527
+00:23:47,679 --> 00:23:49,389
+and there's a trade-off there one is
+
+528
+00:23:49,389 --> 00:23:52,479
+pretty and in the chaining API is very
+
+529
+00:23:52,479 --> 00:23:54,489
+pretty but the other one is actually how
+
+530
+00:23:54,489 --> 00:23:58,029
+it was designed to be used from its core
+
+531
+00:23:58,029 --> 00:24:01,299
+so it's faster this way keep in mind the
+
+532
+00:24:01,299 --> 00:24:03,159
+differences underscore and lodash are
+
+533
+00:24:03,159 --> 00:24:06,039
+optimized for their generic use but mood
+
+534
+00:24:06,039 --> 00:24:07,809
+tools and anything but operates on a
+
+535
+00:24:07,809 --> 00:24:09,700
+prototype so that even means jQuery are
+
+536
+00:24:09,700 --> 00:24:13,690
+optimized for the chaining syntax so be
+
+537
+00:24:13,690 --> 00:24:16,479
+aware of the libs you're using be aware
+
+538
+00:24:16,479 --> 00:24:18,639
+of that in your own code to like if
+
+539
+00:24:18,639 --> 00:24:19,840
+you're doing something that's a
+
+540
+00:24:19,840 --> 00:24:22,330
+moderately performance intensive or
+
+541
+00:24:22,330 --> 00:24:24,249
+could be make sure you're using the API
+
+542
+00:24:24,249 --> 00:24:28,299
+that's appropriate for your your use all
+
+543
+00:24:28,299 --> 00:24:36,429
+right next I wanted to say is with the
+
+544
+00:24:36,429 --> 00:24:38,109
+chaining syntax if you do have a
+
+545
+00:24:38,109 --> 00:24:40,149
+chaining syntax there's an optimization
+
+546
+00:24:40,149 --> 00:24:43,359
+opportunity there and that is deferred
+
+547
+00:24:43,359 --> 00:24:46,239
+evaluation so just a week or two ago I
+
+548
+00:24:46,239 --> 00:24:48,849
+saw a library come out that was called
+
+549
+00:24:48,849 --> 00:24:51,070
+lazy j s which was boasting better
+
+550
+00:24:51,070 --> 00:24:53,470
+performance than lodash aha it caught my
+
+551
+00:24:53,470 --> 00:24:55,640
+attention
+
+552
+00:24:55,650 --> 00:24:58,620
+because uh because yeah I'm pretty
+
+553
+00:24:58,620 --> 00:25:01,880
+competitive in that in that space and
+
+554
+00:25:01,880 --> 00:25:05,460
+now normal usage normal usage you could
+
+555
+00:25:05,460 --> 00:25:08,730
+see I I beat them I'd be a beat
+
+556
+00:25:08,730 --> 00:25:10,170
+underscore two underscores the little
+
+557
+00:25:10,170 --> 00:25:16,110
+book I'm the big blue but but but as the
+
+558
+00:25:16,110 --> 00:25:18,180
+co as the complexity of the chain
+
+559
+00:25:18,180 --> 00:25:20,760
+functions increases this one starts to
+
+560
+00:25:20,760 --> 00:25:24,060
+win and win by a considerable amount and
+
+561
+00:25:24,060 --> 00:25:26,760
+that's because what they're doing is
+
+562
+00:25:26,760 --> 00:25:29,190
+instead of doing two hundred iterations
+
+563
+00:25:29,190 --> 00:25:31,320
+for map and then doing two hundred
+
+564
+00:25:31,320 --> 00:25:32,970
+iterations for filter and then doing
+
+565
+00:25:32,970 --> 00:25:34,950
+some other things in their collections
+
+566
+00:25:34,950 --> 00:25:36,810
+so iteration iteration iteration and
+
+567
+00:25:36,810 --> 00:25:38,760
+then at the end only getting build the
+
+568
+00:25:38,760 --> 00:25:42,690
+the last five values lazy evaluation at
+
+569
+00:25:42,690 --> 00:25:44,910
+that time doesn't execute that at all it
+
+570
+00:25:44,910 --> 00:25:46,740
+adds it to a queue and then whenever you
+
+571
+00:25:46,740 --> 00:25:48,930
+call to array or in this case like if
+
+572
+00:25:48,930 --> 00:25:50,400
+you're familiar with the underscore
+
+573
+00:25:50,400 --> 00:25:52,470
+lodash chaining syntax the value command
+
+574
+00:25:52,470 --> 00:25:54,690
+or the value method that's when it
+
+575
+00:25:54,690 --> 00:25:58,380
+flattens that down and instead of it
+
+576
+00:25:58,380 --> 00:26:01,770
+being 200 or 400 or 600 iterations since
+
+577
+00:26:01,770 --> 00:26:04,050
+you're only needing five values at the
+
+578
+00:26:04,050 --> 00:26:05,520
+end because you're saying like take the
+
+579
+00:26:05,520 --> 00:26:07,350
+last five values it only does five
+
+580
+00:26:07,350 --> 00:26:10,590
+iterations and so that gives you massive
+
+581
+00:26:10,590 --> 00:26:12,180
+performance wins so as you're chaining
+
+582
+00:26:12,180 --> 00:26:16,800
+gets longer you get better wins now i'm
+
+583
+00:26:16,800 --> 00:26:18,540
+experimenting with adding support for
+
+584
+00:26:18,540 --> 00:26:20,460
+this because i like this so much and i
+
+585
+00:26:20,460 --> 00:26:23,280
+like the performance opportunity my
+
+586
+00:26:23,280 --> 00:26:25,620
+chaining syntax is usually a perf hit
+
+587
+00:26:25,620 --> 00:26:27,900
+because it seemed like i said lodash and
+
+588
+00:26:27,900 --> 00:26:31,590
+underscore are optimized for the generic
+
+589
+00:26:31,590 --> 00:26:37,140
+use but i can back this in whoops hey
+
+590
+00:26:37,140 --> 00:26:45,080
+hey Matt no it's cool let's see Boop
+
+591
+00:26:45,090 --> 00:26:50,070
+someone's birthday all right yeah all
+
+592
+00:26:50,070 --> 00:27:05,139
+right and that's it questions yeah
+
+593
+00:27:05,149 --> 00:27:13,910
+mm-hmm
+
+594
+00:27:13,920 --> 00:27:17,430
+so general use case is the use case I've
+
+595
+00:27:17,430 --> 00:27:19,680
+seen promoted throughout like
+
+596
+00:27:19,680 --> 00:27:22,770
+documentation or through tutorials so in
+
+597
+00:27:22,770 --> 00:27:24,660
+my case I know that that most most
+
+598
+00:27:24,660 --> 00:27:25,830
+deaths aren't passing that this value
+
+599
+00:27:25,830 --> 00:27:27,930
+there so I know that the common case is
+
+600
+00:27:27,930 --> 00:27:30,480
+not to do that it's being familiar with
+
+601
+00:27:30,480 --> 00:27:32,550
+your own lib being familiar especially
+
+602
+00:27:32,550 --> 00:27:34,050
+if you're the lib author being familiar
+
+603
+00:27:34,050 --> 00:27:36,300
+with how you want your Deb's to use that
+
+604
+00:27:36,300 --> 00:27:37,830
+API and how you're promoting it through
+
+605
+00:27:37,830 --> 00:27:40,740
+your your evangelism and then you know
+
+606
+00:27:40,740 --> 00:27:42,780
+what the the common case would be so you
+
+607
+00:27:42,780 --> 00:27:45,090
+can optimize for what going back to the
+
+608
+00:27:45,090 --> 00:27:47,580
+themes again where I said optimized for
+
+609
+00:27:47,580 --> 00:27:50,940
+the common case jquery has an implicit
+
+610
+00:27:50,940 --> 00:27:53,910
+this binding in its event system because
+
+611
+00:27:53,910 --> 00:27:55,950
+if you know if you're doing each or
+
+612
+00:27:55,950 --> 00:27:58,560
+whatever you'll see this equals is is
+
+613
+00:27:58,560 --> 00:28:00,060
+the element that's currently being in
+
+614
+00:28:00,060 --> 00:28:04,380
+rated over something and that was baked
+
+615
+00:28:04,380 --> 00:28:06,000
+in from the beginning so it's hard to
+
+616
+00:28:06,000 --> 00:28:07,710
+kind of back in perf there because
+
+617
+00:28:07,710 --> 00:28:09,710
+they're always doing call or not apply
+
+618
+00:28:09,710 --> 00:28:11,900
+but if you want that eighteen percent
+
+619
+00:28:11,900 --> 00:28:16,050
+boost oh what you can do is do that that
+
+620
+00:28:16,050 --> 00:28:18,060
+function sniff inference where you can
+
+621
+00:28:18,060 --> 00:28:20,060
+detect if the dis binding is there and
+
+622
+00:28:20,060 --> 00:28:23,400
+in toggling but you wouldn't have to go
+
+623
+00:28:23,400 --> 00:28:25,170
+to that length if at the beginning you
+
+624
+00:28:25,170 --> 00:28:27,780
+said oh okay maybe not all going to use
+
+625
+00:28:27,780 --> 00:28:30,240
+this or maybe this will become an
+
+626
+00:28:30,240 --> 00:28:32,430
+anti-pattern or whatever and they get
+
+627
+00:28:32,430 --> 00:28:35,760
+instead have put that property on the
+
+628
+00:28:35,760 --> 00:28:36,810
+event object that they're already
+
+629
+00:28:36,810 --> 00:28:38,490
+passing down and so that would have
+
+630
+00:28:38,490 --> 00:28:39,930
+avoided it about call to begin with so
+
+631
+00:28:39,930 --> 00:28:41,550
+when you're doing like your event system
+
+632
+00:28:41,550 --> 00:28:43,230
+you could think oh maybe I don't need an
+
+633
+00:28:43,230 --> 00:28:44,490
+implicit this I could just add a
+
+634
+00:28:44,490 --> 00:28:46,380
+property to the event object that I'm
+
+635
+00:28:46,380 --> 00:28:49,470
+passing to every call back anyways so
+
+636
+00:28:49,470 --> 00:28:50,760
+that just kind of keep these things in
+
+637
+00:28:50,760 --> 00:28:53,060
+your head as you're developing your
+
+638
+00:28:53,060 --> 00:28:56,660
+libraries or your own code bases cool
+
+639
+00:28:56,660 --> 00:29:03,740
+yeah
+
+640
+00:29:03,750 --> 00:29:06,130
+so the question was have you looked at
+
+641
+00:29:06,130 --> 00:29:09,190
+any of these anti-patterns in
+
+642
+00:29:09,190 --> 00:29:14,410
+CoffeeScript I don't use coffee script
+
+643
+00:29:14,410 --> 00:29:17,620
+so no I haven't what's nice about copy
+
+644
+00:29:17,620 --> 00:29:20,110
+script is it just come boils down to
+
+645
+00:29:20,110 --> 00:29:25,420
+basic JavaScript and in many cases it's
+
+646
+00:29:25,420 --> 00:29:27,760
+sugar boils down to two for loops so
+
+647
+00:29:27,760 --> 00:29:29,410
+that's right up my alley like it doesn't
+
+648
+00:29:29,410 --> 00:29:31,240
+defer to native methods it turns it into
+
+649
+00:29:31,240 --> 00:29:33,190
+four loops and it has small utility
+
+650
+00:29:33,190 --> 00:29:37,120
+functions which are very nice also I'll
+
+651
+00:29:37,120 --> 00:29:38,920
+be positive about CoffeeScript and Sarah
+
+652
+00:29:38,920 --> 00:29:53,260
+like its class abstraction but yeah yes
+
+653
+00:29:53,270 --> 00:30:01,040
+I need to do more research there but I
+
+654
+00:30:01,040 --> 00:30:03,350
+do have a big function on line I only do
+
+655
+00:30:03,350 --> 00:30:05,270
+it once though for the future detect but
+
+656
+00:30:05,270 --> 00:30:07,250
+so far it's given perf games in the test
+
+657
+00:30:07,250 --> 00:30:11,000
+that I've done you could always do more
+
+658
+00:30:11,000 --> 00:30:12,560
+research dig into it I'm going to try it
+
+659
+00:30:12,560 --> 00:30:14,060
+I'm going to give it a shot because i
+
+660
+00:30:14,060 --> 00:30:16,280
+think it's relatively safe and stable
+
+661
+00:30:16,280 --> 00:30:18,380
+especially for modern builds so what I'm
+
+662
+00:30:18,380 --> 00:30:20,300
+doing is I'm opting that into just learn
+
+663
+00:30:20,300 --> 00:30:24,290
+so just ie9 up and modern modern
+
+664
+00:30:24,290 --> 00:30:26,720
+browsers will do this not old browsers
+
+665
+00:30:26,720 --> 00:30:28,700
+because if that just means bugs just
+
+666
+00:30:28,700 --> 00:30:31,850
+yeah man bugs get big but the idea is
+
+667
+00:30:31,850 --> 00:30:33,440
+that I'm doing that load that work
+
+668
+00:30:33,440 --> 00:30:36,020
+outside the loop so it's done once
+
+669
+00:30:36,020 --> 00:30:38,300
+outside the loop instead of like every
+
+670
+00:30:38,300 --> 00:30:39,740
+time inside the loop so it's again
+
+671
+00:30:39,740 --> 00:30:42,280
+hoisting things out of your loop cool
+
+672
+00:30:42,280 --> 00:30:51,100
+yes
+
+673
+00:30:51,110 --> 00:30:53,750
+yeah good good good good question so the
+
+674
+00:30:53,750 --> 00:30:57,140
+the the question was in create callback
+
+675
+00:30:57,140 --> 00:31:00,820
+which was the the code i have up here
+
+676
+00:31:00,820 --> 00:31:04,820
+and i'm going to get to it I can't speak
+
+677
+00:31:04,820 --> 00:31:10,160
+and move at the same time okay the
+
+678
+00:31:10,160 --> 00:31:11,750
+question was in create callback why not
+
+679
+00:31:11,750 --> 00:31:13,400
+use function dot prototype top bind
+
+680
+00:31:13,400 --> 00:31:16,690
+instead of wrapping and that's because
+
+681
+00:31:16,690 --> 00:31:19,970
+many times in most browser
+
+682
+00:31:19,970 --> 00:31:21,590
+implementations function dot prototype
+
+683
+00:31:21,590 --> 00:31:24,500
+that bind is actually slower especially
+
+684
+00:31:24,500 --> 00:31:27,410
+like in v8 it's considerably slower and
+
+685
+00:31:27,410 --> 00:31:29,990
+in lodash actually is aware of this and
+
+686
+00:31:29,990 --> 00:31:32,900
+will not use native bind in the eighth i
+
+687
+00:31:32,900 --> 00:31:35,419
+do an inference for its engine which is
+
+688
+00:31:35,419 --> 00:31:37,429
+really cool because i can detect the j s
+
+689
+00:31:37,429 --> 00:31:41,350
+engine through a little inference but
+
+690
+00:31:41,350 --> 00:31:43,400
+even in browsers where it's relatively
+
+691
+00:31:43,400 --> 00:31:48,590
+fast or faster than then then a fully
+
+692
+00:31:48,590 --> 00:31:52,250
+spec compliant buying alternative bind
+
+693
+00:31:52,250 --> 00:31:54,470
+is still slower than just wrapping it so
+
+694
+00:31:54,470 --> 00:31:55,580
+i thought i was going to get a perf
+
+695
+00:31:55,580 --> 00:31:56,840
+boost there too and i was really
+
+696
+00:31:56,840 --> 00:31:58,940
+surprised that it didn't it didn't do it
+
+697
+00:31:58,940 --> 00:32:00,190
+or else i would have yet done that
+
+698
+00:32:00,190 --> 00:32:07,720
+what's up yes
+
+699
+00:32:07,730 --> 00:32:11,670
+I for the purpose of this this
+
+700
+00:32:11,670 --> 00:32:12,990
+demonstration I kind of wanted it really
+
+701
+00:32:12,990 --> 00:32:14,700
+simple to just do word boundary this
+
+702
+00:32:14,700 --> 00:32:16,980
+word boundary you can experiment with
+
+703
+00:32:16,980 --> 00:32:20,220
+with other variations of it if you see
+
+704
+00:32:20,220 --> 00:32:21,390
+that as a problem I don't know if I'm
+
+705
+00:32:21,390 --> 00:32:24,540
+going to see a lot of people having that
+
+706
+00:32:24,540 --> 00:32:27,420
+issue but if it is and if it's a concern
+
+707
+00:32:27,420 --> 00:32:29,190
+I would I still kept it simple that way
+
+708
+00:32:29,190 --> 00:32:31,200
+it's just a quick reg ex that just finds
+
+709
+00:32:31,200 --> 00:32:33,870
+it or fails fast but yeah you could you
+
+710
+00:32:33,870 --> 00:32:37,190
+could modify the reg ex to detect
+
+711
+00:32:37,190 --> 00:32:39,390
+comments I don't know if I repeated the
+
+712
+00:32:39,390 --> 00:32:41,750
+question but it was could you modify the
+
+713
+00:32:41,750 --> 00:32:45,050
+this reg ex to look for comments instead
+
+714
+00:32:45,050 --> 00:33:05,500
+another any other questions yes
+
+715
+00:33:05,510 --> 00:33:11,389
+hit
+
+716
+00:33:11,399 --> 00:33:14,879
+yeah so I had a slide here that I
+
+717
+00:33:14,879 --> 00:33:19,499
+removed which was how to better how'd
+
+718
+00:33:19,499 --> 00:33:21,960
+the cab create call be better detected
+
+719
+00:33:21,960 --> 00:33:24,570
+for inlining because some engines have
+
+720
+00:33:24,570 --> 00:33:26,369
+an issue with that function call out
+
+721
+00:33:26,369 --> 00:33:29,940
+there and so what you would do is do a
+
+722
+00:33:29,940 --> 00:33:34,169
+check for if this is undefined don't do
+
+723
+00:33:34,169 --> 00:33:35,789
+the function call at all and just have
+
+724
+00:33:35,789 --> 00:33:38,489
+it do the habit do they have it be the
+
+725
+00:33:38,489 --> 00:33:42,469
+callback so a ternary operation of that
+
+726
+00:33:42,469 --> 00:33:45,089
+engines are tricky engines under the
+
+727
+00:33:45,089 --> 00:33:47,009
+hood are there doing all kinds of crazy
+
+728
+00:33:47,009 --> 00:33:49,229
+stuff to just get the result and get it
+
+729
+00:33:49,229 --> 00:33:53,309
+fast and jit and what what gets
+
+730
+00:33:53,309 --> 00:33:56,219
+optimized and what doesn't this is why I
+
+731
+00:33:56,219 --> 00:33:59,549
+said it's a balance of how deep you want
+
+732
+00:33:59,549 --> 00:34:01,979
+to go into it and I think this is a
+
+733
+00:34:01,979 --> 00:34:05,099
+decent trade off because it's not just
+
+734
+00:34:05,099 --> 00:34:07,379
+it's it's it's giving me win on top of
+
+735
+00:34:07,379 --> 00:34:09,839
+win here because it's optimizing for the
+
+736
+00:34:09,839 --> 00:34:12,059
+common case and allowing me to extend
+
+737
+00:34:12,059 --> 00:34:14,250
+functionality for each two and other
+
+738
+00:34:14,250 --> 00:34:15,750
+iteration methods to have like the
+
+739
+00:34:15,750 --> 00:34:18,149
+callback shorthand sugar of the property
+
+740
+00:34:18,149 --> 00:34:24,899
+access or partial object filtering so
+
+741
+00:34:24,899 --> 00:34:28,020
+that's that's what I dig a side note is
+
+742
+00:34:28,020 --> 00:34:29,730
+since we're talking about engines is
+
+743
+00:34:29,730 --> 00:34:32,569
+that I've noticed that minified code
+
+744
+00:34:32,569 --> 00:34:36,359
+will have different performance profiles
+
+745
+00:34:36,359 --> 00:34:38,549
+than your non minified code potentially
+
+746
+00:34:38,549 --> 00:34:40,559
+in different engines so if you're
+
+747
+00:34:40,559 --> 00:34:42,929
+developing a project and you have a
+
+748
+00:34:42,929 --> 00:34:44,909
+performance critical thing like an
+
+749
+00:34:44,909 --> 00:34:46,740
+animation lab or something you want to
+
+750
+00:34:46,740 --> 00:34:48,240
+test your men ified code in your
+
+751
+00:34:48,240 --> 00:34:50,700
+benchmarks as well as your non minify i
+
+752
+00:34:50,700 --> 00:34:53,609
+found issues with uglify j/s and closure
+
+753
+00:34:53,609 --> 00:34:56,730
+compiler where they because of their
+
+754
+00:34:56,730 --> 00:34:58,289
+patterns they're using when they minify
+
+755
+00:34:58,289 --> 00:35:00,660
+d optimize like safari and mobile safari
+
+756
+00:35:00,660 --> 00:35:04,279
+so again really really good to test that
+
+757
+00:35:04,279 --> 00:35:07,589
+and what I've done is in lodash I have a
+
+758
+00:35:07,589 --> 00:35:10,079
+min efficacious system where I run all
+
+759
+00:35:10,079 --> 00:35:11,339
+these many fires and then get the
+
+760
+00:35:11,339 --> 00:35:13,020
+smallest build but then I also go back
+
+761
+00:35:13,020 --> 00:35:16,230
+and I fix the the patterns that the
+
+762
+00:35:16,230 --> 00:35:17,549
+minnow fires are doing that slow down
+
+763
+00:35:17,549 --> 00:35:19,859
+the engine so I avoid the D ops but it's
+
+764
+00:35:19,859 --> 00:35:21,299
+something to do like if you're you don't
+
+765
+00:35:21,299 --> 00:35:23,940
+have a perf suite for your library you
+
+766
+00:35:23,940 --> 00:35:24,960
+should create one and
+
+767
+00:35:24,960 --> 00:35:26,820
+if you have a favorite library and they
+
+768
+00:35:26,820 --> 00:35:28,530
+don't have a perf sweet you should add
+
+769
+00:35:28,530 --> 00:35:30,330
+one and a perfect lib to do that is
+
+770
+00:35:30,330 --> 00:35:33,089
+benchmark Jas and you can look at low
+
+771
+00:35:33,089 --> 00:35:35,430
+dashes implementation of example of a
+
+772
+00:35:35,430 --> 00:35:51,549
+prick blood the other questions yes
+
+773
+00:35:51,559 --> 00:35:55,969
+no without you just had each engine is
+
+774
+00:35:55,969 --> 00:35:57,349
+different each engine has its own rules
+
+775
+00:35:57,349 --> 00:36:00,079
+with that minification issue what was
+
+776
+00:36:00,079 --> 00:36:01,849
+happening was I believe what was
+
+777
+00:36:01,849 --> 00:36:05,029
+happening was that the minified code was
+
+778
+00:36:05,029 --> 00:36:07,099
+not getting in line for some reason it
+
+779
+00:36:07,099 --> 00:36:10,039
+was passing some threshold of byte code
+
+780
+00:36:10,039 --> 00:36:12,709
+or whatever and it was missing the
+
+781
+00:36:12,709 --> 00:36:14,719
+inlining opportunity there and so it was
+
+782
+00:36:14,719 --> 00:36:17,029
+d it was reducing its performance by
+
+783
+00:36:17,029 --> 00:36:19,339
+thirty percent so it was pretty pretty
+
+784
+00:36:19,339 --> 00:36:22,309
+glaring but as to what gets in line and
+
+785
+00:36:22,309 --> 00:36:24,499
+what doesn't the the general rule is to
+
+786
+00:36:24,499 --> 00:36:26,959
+keep your functions small and then they
+
+787
+00:36:26,959 --> 00:36:28,630
+have a better chance of being in line
+
+788
+00:36:28,630 --> 00:36:32,989
+and that kind of goes at odds with my
+
+789
+00:36:32,989 --> 00:36:35,059
+other point which is reduce abstraction
+
+790
+00:36:35,059 --> 00:36:37,160
+because you're going to have all these
+
+791
+00:36:37,160 --> 00:36:39,680
+function calls so I would say profile
+
+792
+00:36:39,680 --> 00:36:42,380
+and then make your decision don't just
+
+793
+00:36:42,380 --> 00:36:43,969
+take my word for it that's why I also
+
+794
+00:36:43,969 --> 00:36:45,729
+didn't include a lot of performance
+
+795
+00:36:45,729 --> 00:36:48,349
+charts because all you see is these bars
+
+796
+00:36:48,349 --> 00:36:51,109
+with them being really big over here and
+
+797
+00:36:51,109 --> 00:36:53,150
+really small over there and I want you
+
+798
+00:36:53,150 --> 00:36:54,979
+to not take my word for it to actually
+
+799
+00:36:54,979 --> 00:36:56,660
+go out and use j/s perf and other
+
+800
+00:36:56,660 --> 00:36:58,819
+benchmarks in and verify that you get
+
+801
+00:36:58,819 --> 00:37:03,019
+these wins like don't don't if you do a
+
+802
+00:37:03,019 --> 00:37:04,579
+pull request back it up with a
+
+803
+00:37:04,579 --> 00:37:06,949
+performance benchmark so you can say hey
+
+804
+00:37:06,949 --> 00:37:08,749
+this actually does this and if it
+
+805
+00:37:08,749 --> 00:37:10,549
+doesn't then it's still good you've
+
+806
+00:37:10,549 --> 00:37:12,079
+learned something and you know not to do
+

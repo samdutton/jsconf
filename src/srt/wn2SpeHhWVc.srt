@@ -1,0 +1,2145 @@
+1
+00:00:18,560 --> 00:00:21,660
+
+all right yeah so I'm here today to talk
+
+2
+00:00:21,660 --> 00:00:24,540
+to you about JSON and P L v8 inside of
+
+3
+00:00:24,540 --> 00:00:27,630
+Postgres and I also want to mention I
+
+4
+00:00:27,630 --> 00:00:30,690
+like birds and so I've been touring
+
+5
+00:00:30,690 --> 00:00:33,810
+around Amelia Island with my husband and
+
+6
+00:00:33,810 --> 00:00:36,090
+so I included a lot of pictures of the
+
+7
+00:00:36,090 --> 00:00:37,920
+birds that we've seen in the past few
+
+8
+00:00:37,920 --> 00:00:39,870
+days that we've been here so pardon
+
+9
+00:00:39,870 --> 00:00:45,090
+pardon my my birding but I I ended up
+
+10
+00:00:45,090 --> 00:00:49,730
+titling this schema liberation and the
+
+11
+00:00:49,730 --> 00:00:53,790
+reason why I use that phrase is there's
+
+12
+00:00:53,790 --> 00:00:56,790
+a lot of tension between managing your
+
+13
+00:00:56,790 --> 00:01:00,450
+data with schema design and what DBA is
+
+14
+00:01:00,450 --> 00:01:04,350
+typically do and the flexibility of JSON
+
+15
+00:01:04,350 --> 00:01:07,140
+objects and documents and there's a
+
+16
+00:01:07,140 --> 00:01:09,390
+misconception I think that once you
+
+17
+00:01:09,390 --> 00:01:11,580
+enter the world of database schemas that
+
+18
+00:01:11,580 --> 00:01:14,790
+it's just all twisty maze mazes of
+
+19
+00:01:14,790 --> 00:01:18,509
+sequel and slow tests and really sad sad
+
+20
+00:01:18,509 --> 00:01:21,590
+developers doing database migrations but
+
+21
+00:01:21,590 --> 00:01:24,510
+Posterous actually has for a long time
+
+22
+00:01:24,510 --> 00:01:27,360
+supported key value stores inside the
+
+23
+00:01:27,360 --> 00:01:30,090
+database this thing's called H store is
+
+24
+00:01:30,090 --> 00:01:32,070
+something that some of you here may may
+
+25
+00:01:32,070 --> 00:01:35,790
+have seen or used before but even with H
+
+26
+00:01:35,790 --> 00:01:37,560
+store there's kind of a mismatch between
+
+27
+00:01:37,560 --> 00:01:40,890
+what developers actually want to use and
+
+28
+00:01:40,890 --> 00:01:44,250
+how the database demanded that you store
+
+29
+00:01:44,250 --> 00:01:47,909
+and manipulate that so there really is
+
+30
+00:01:47,909 --> 00:01:50,400
+this gap between what DBAs think that
+
+31
+00:01:50,400 --> 00:01:52,350
+you should do and what developers really
+
+32
+00:01:52,350 --> 00:01:56,189
+actually want to do and I I want to talk
+
+33
+00:01:56,189 --> 00:01:57,810
+about this idea of schema liberation
+
+34
+00:01:57,810 --> 00:02:01,860
+from and I base this on conversations
+
+35
+00:02:01,860 --> 00:02:05,610
+I've had with people about MongoDB and
+
+36
+00:02:05,610 --> 00:02:08,459
+no one ever said those words to me
+
+37
+00:02:08,459 --> 00:02:10,709
+exactly but what they really did talk a
+
+38
+00:02:10,709 --> 00:02:14,160
+lot about was freedom this is from the
+
+39
+00:02:14,160 --> 00:02:18,390
+MongoDB documentation it's just a sort
+
+40
+00:02:18,390 --> 00:02:20,430
+excerpt that I think sums up a lot of
+
+41
+00:02:20,430 --> 00:02:23,250
+what data developers really love about
+
+42
+00:02:23,250 --> 00:02:25,950
+document store databases I think it's
+
+43
+00:02:25,950 --> 00:02:28,470
+it's this flexibility it's making
+
+44
+00:02:28,470 --> 00:02:30,480
+database objects that very closely
+
+45
+00:02:30,480 --> 00:02:32,670
+resemble what it is that you're
+
+46
+00:02:32,670 --> 00:02:36,060
+in the application and I hear this from
+
+47
+00:02:36,060 --> 00:02:37,770
+developers a lot that they wish changing
+
+48
+00:02:37,770 --> 00:02:39,840
+their schemas wasn't so hard that they
+
+49
+00:02:39,840 --> 00:02:41,250
+had better working relationships with
+
+50
+00:02:41,250 --> 00:02:43,800
+their DBAs and that deploying these
+
+51
+00:02:43,800 --> 00:02:46,080
+features into the datastore was just way
+
+52
+00:02:46,080 --> 00:02:48,480
+easier than it is so I just want to show
+
+53
+00:02:48,480 --> 00:02:50,490
+you an example of what this you know
+
+54
+00:02:50,490 --> 00:02:52,320
+what what this typically looks like and
+
+55
+00:02:52,320 --> 00:02:54,930
+what it what it really would be better
+
+56
+00:02:54,930 --> 00:02:57,450
+as so let's say you were recording your
+
+57
+00:02:57,450 --> 00:03:01,560
+bird sightings just a bunch of sequel
+
+58
+00:03:01,560 --> 00:03:04,890
+here this is what it might look like if
+
+59
+00:03:04,890 --> 00:03:07,110
+you were trying to store these sightings
+
+60
+00:03:07,110 --> 00:03:08,910
+in a sequel database you'd create a
+
+61
+00:03:08,910 --> 00:03:11,010
+bunch of tables a bird table allocations
+
+62
+00:03:11,010 --> 00:03:14,970
+table sightings table put this data into
+
+63
+00:03:14,970 --> 00:03:16,680
+the database a bunch of inserts and then
+
+64
+00:03:16,680 --> 00:03:18,300
+you'd have a joint able to put that in
+
+65
+00:03:18,300 --> 00:03:21,450
+there or you know we could just store
+
+66
+00:03:21,450 --> 00:03:24,780
+the JSON and looking at this it's really
+
+67
+00:03:24,780 --> 00:03:26,459
+obvious to me which one is more friendly
+
+68
+00:03:26,459 --> 00:03:29,489
+to the developer and I think for a long
+
+69
+00:03:29,489 --> 00:03:30,150
+time
+
+70
+00:03:30,150 --> 00:03:32,790
+DBAs have been pushing this problem of
+
+71
+00:03:32,790 --> 00:03:35,100
+early optimization on to developers and
+
+72
+00:03:35,100 --> 00:03:38,880
+I'm hoping that having JSON in Postgres
+
+73
+00:03:38,880 --> 00:03:41,180
+is going to make this a lot easier and
+
+74
+00:03:41,180 --> 00:03:44,040
+we can you know we can just help
+
+75
+00:03:44,040 --> 00:03:46,410
+developers enjoy working with relational
+
+76
+00:03:46,410 --> 00:03:49,140
+databases a lot better so could Postgres
+
+77
+00:03:49,140 --> 00:03:50,820
+be as flexible as want going to be could
+
+78
+00:03:50,820 --> 00:03:53,070
+we make developers as happy using a
+
+79
+00:03:53,070 --> 00:03:55,049
+relational database as they are using
+
+80
+00:03:55,049 --> 00:03:57,630
+document store databases well the
+
+81
+00:03:57,630 --> 00:03:59,720
+ingredients to do this right now
+
+82
+00:03:59,720 --> 00:04:02,850
+9.3 Postgres which is out in beta
+
+83
+00:04:02,850 --> 00:04:04,739
+currently you can download this and try
+
+84
+00:04:04,739 --> 00:04:06,870
+it out today or Heroku is actually
+
+85
+00:04:06,870 --> 00:04:09,060
+loaded all of these tools that I'm going
+
+86
+00:04:09,060 --> 00:04:11,549
+to show you today in their in their
+
+87
+00:04:11,549 --> 00:04:13,290
+development databases so you could fire
+
+88
+00:04:13,290 --> 00:04:15,000
+up a Heroku database and test it out and
+
+89
+00:04:15,000 --> 00:04:18,510
+they have PL VA ready to use there you
+
+90
+00:04:18,510 --> 00:04:21,479
+can also use it with 9.2 Postgres but
+
+91
+00:04:21,479 --> 00:04:23,310
+you have to load an extension called
+
+92
+00:04:23,310 --> 00:04:25,350
+JSON enhancements in order to get all
+
+93
+00:04:25,350 --> 00:04:30,180
+this functionality so v8 I mean I have
+
+94
+00:04:30,180 --> 00:04:31,560
+this slide in here it's mostly for the
+
+95
+00:04:31,560 --> 00:04:33,060
+benefit of the people who aren't here
+
+96
+00:04:33,060 --> 00:04:35,820
+today but after Brendan's talk of course
+
+97
+00:04:35,820 --> 00:04:38,580
+you all know what v8 is and PL v8 is
+
+98
+00:04:38,580 --> 00:04:42,630
+embedding v8 inside of Postgres and you
+
+99
+00:04:42,630 --> 00:04:45,420
+can see a lot more about PL v8
+
+100
+00:04:45,420 --> 00:04:51,780
+in that link there so I'm sure many of
+
+101
+00:04:51,780 --> 00:04:54,180
+you deal with normalized tables in the
+
+102
+00:04:54,180 --> 00:04:56,400
+database so let's say we have a table
+
+103
+00:04:56,400 --> 00:04:57,870
+called reports let's look at what this
+
+104
+00:04:57,870 --> 00:05:01,800
+might what this might be like and this
+
+105
+00:05:01,800 --> 00:05:03,330
+is an actual table that I have to deal
+
+106
+00:05:03,330 --> 00:05:05,760
+with there's like 38 columns here you
+
+107
+00:05:05,760 --> 00:05:07,170
+see all these different data types and
+
+108
+00:05:07,170 --> 00:05:09,210
+things like that and it's just not very
+
+109
+00:05:09,210 --> 00:05:14,190
+fun to deal with so let's just convert
+
+110
+00:05:14,190 --> 00:05:17,220
+this to JSON so if you're gonna take an
+
+111
+00:05:17,220 --> 00:05:18,540
+existing scheme you today and you wanted
+
+112
+00:05:18,540 --> 00:05:20,280
+to pull all the data out of it very
+
+113
+00:05:20,280 --> 00:05:22,020
+simple thing you can do is just a select
+
+114
+00:05:22,020 --> 00:05:23,430
+star from reports right and that would
+
+115
+00:05:23,430 --> 00:05:25,710
+give you all the data but I want to
+
+116
+00:05:25,710 --> 00:05:27,450
+convert it to JSON so there's actually a
+
+117
+00:05:27,450 --> 00:05:29,220
+function in Postgres that enables you to
+
+118
+00:05:29,220 --> 00:05:33,180
+do this it's called row to JSON but this
+
+119
+00:05:33,180 --> 00:05:34,890
+this query won't actually work you would
+
+120
+00:05:34,890 --> 00:05:37,890
+have to use a sub select in order to
+
+121
+00:05:37,890 --> 00:05:40,230
+pass it to it so because wrote a JSON
+
+122
+00:05:40,230 --> 00:05:43,410
+expects a record type so with this right
+
+123
+00:05:43,410 --> 00:05:45,780
+here I would pull all of the data out of
+
+124
+00:05:45,780 --> 00:05:48,060
+that reports table convert it to JSON
+
+125
+00:05:48,060 --> 00:05:50,550
+and spit it out but what I really want
+
+126
+00:05:50,550 --> 00:05:51,690
+is a table
+
+127
+00:05:51,690 --> 00:05:53,610
+I just want to shove this all into a
+
+128
+00:05:53,610 --> 00:05:55,620
+table and Postgres supports this really
+
+129
+00:05:55,620 --> 00:05:59,340
+great syntax for taking the output from
+
+130
+00:05:59,340 --> 00:06:01,320
+a query and dumping it directly into a
+
+131
+00:06:01,320 --> 00:06:03,210
+table you don't have to specify any of
+
+132
+00:06:03,210 --> 00:06:04,470
+the column types because post Chris
+
+133
+00:06:04,470 --> 00:06:06,180
+already knows what it is
+
+134
+00:06:06,180 --> 00:06:09,840
+so you can just put your sequel query
+
+135
+00:06:09,840 --> 00:06:12,060
+right in there generate a table so
+
+136
+00:06:12,060 --> 00:06:15,600
+magically there we go this is what it
+
+137
+00:06:15,600 --> 00:06:17,550
+looks like in Postgres you end up with
+
+138
+00:06:17,550 --> 00:06:20,130
+this table I called it liberated feeling
+
+139
+00:06:20,130 --> 00:06:23,310
+liberated and then my my column name is
+
+140
+00:06:23,310 --> 00:06:24,570
+wrote a JSON you could change that if
+
+141
+00:06:24,570 --> 00:06:26,460
+you wanted but that's how it turned out
+
+142
+00:06:26,460 --> 00:06:31,080
+and so I did this on a development
+
+143
+00:06:31,080 --> 00:06:32,700
+database that I have that has a copy of
+
+144
+00:06:32,700 --> 00:06:36,150
+our production data it took about two
+
+145
+00:06:36,150 --> 00:06:38,220
+minutes it was an older dev system this
+
+146
+00:06:38,220 --> 00:06:40,100
+entire table fit and memory is about a
+
+147
+00:06:40,100 --> 00:06:43,230
+two gig table and there were 2.7 million
+
+148
+00:06:43,230 --> 00:06:45,390
+rows in it so you know it was it was
+
+149
+00:06:45,390 --> 00:06:46,620
+pretty fast it didn't take me very long
+
+150
+00:06:46,620 --> 00:06:51,030
+and you know there's there's a penalty
+
+151
+00:06:51,030 --> 00:06:53,940
+for denormalization right in terms of
+
+152
+00:06:53,940 --> 00:06:54,840
+the amount of disk that we're going to
+
+153
+00:06:54,840 --> 00:06:56,570
+consume so you can see here the first
+
+154
+00:06:56,570 --> 00:06:59,789
+table my original table was two gigs
+
+155
+00:06:59,789 --> 00:07:03,449
+the JSON table was about four so you
+
+156
+00:07:03,449 --> 00:07:05,460
+know right well we pay a little bit of a
+
+157
+00:07:05,460 --> 00:07:07,650
+price there but honestly I don't really
+
+158
+00:07:07,650 --> 00:07:10,710
+care I got just to burn let's just
+
+159
+00:07:10,710 --> 00:07:14,610
+liberate our entire database right so I
+
+160
+00:07:14,610 --> 00:07:18,270
+wrote a function using PL v8 to liberate
+
+161
+00:07:18,270 --> 00:07:20,189
+your entire database and some friends of
+
+162
+00:07:20,189 --> 00:07:21,150
+mine have tried this out so it actually
+
+163
+00:07:21,150 --> 00:07:21,839
+does work
+
+164
+00:07:21,839 --> 00:07:25,349
+it's terrible JavaScript I apologize not
+
+165
+00:07:25,349 --> 00:07:26,819
+a JavaScript developer I think my
+
+166
+00:07:26,819 --> 00:07:28,770
+JavaScript looks like sequel well
+
+167
+00:07:28,770 --> 00:07:29,669
+there's a lot of sequel in there but
+
+168
+00:07:29,669 --> 00:07:33,139
+anyway so you could use this today to
+
+169
+00:07:33,139 --> 00:07:37,229
+convert some existing database that you
+
+170
+00:07:37,229 --> 00:07:38,789
+had in Postgres and I was just gonna go
+
+171
+00:07:38,789 --> 00:07:40,050
+through this really quickly to show you
+
+172
+00:07:40,050 --> 00:07:44,849
+kind of how simple this really is so a
+
+173
+00:07:44,849 --> 00:07:46,649
+lot of this is is this ended up being
+
+174
+00:07:46,649 --> 00:07:48,960
+about 25 lines with all my pluses and
+
+175
+00:07:48,960 --> 00:07:50,520
+whatever's in there but it's really only
+
+176
+00:07:50,520 --> 00:07:52,589
+about four lines of JavaScript there's
+
+177
+00:07:52,589 --> 00:07:55,439
+quite a bit of boilerplate so the first
+
+178
+00:07:55,439 --> 00:07:56,999
+thing here is this create schema
+
+179
+00:07:56,999 --> 00:07:59,430
+liberated and all this is is a namespace
+
+180
+00:07:59,430 --> 00:08:01,620
+the terminology and Postgres is a little
+
+181
+00:08:01,620 --> 00:08:03,839
+different than like MySQL we call a
+
+182
+00:08:03,839 --> 00:08:05,909
+cluster a group of databases and that's
+
+183
+00:08:05,909 --> 00:08:08,669
+like an instance of Postgres a database
+
+184
+00:08:08,669 --> 00:08:10,529
+contains schemas which and then these
+
+185
+00:08:10,529 --> 00:08:11,999
+schemas are these namespaces that
+
+186
+00:08:11,999 --> 00:08:14,849
+contain tables because I wanted to shove
+
+187
+00:08:14,849 --> 00:08:15,990
+those all in there and be able to you
+
+188
+00:08:15,990 --> 00:08:19,589
+know drop them when I was done easily so
+
+189
+00:08:19,589 --> 00:08:21,180
+then the boilerplate around here is
+
+190
+00:08:21,180 --> 00:08:23,099
+again it's pretty simple to create a
+
+191
+00:08:23,099 --> 00:08:24,899
+replace function
+
+192
+00:08:24,899 --> 00:08:27,060
+I gave it a function name and I'm not
+
+193
+00:08:27,060 --> 00:08:28,680
+passing any arguments because I'm just
+
+194
+00:08:28,680 --> 00:08:30,599
+going to convert everything it's gonna
+
+195
+00:08:30,599 --> 00:08:32,899
+return a boolean and then the language
+
+196
+00:08:32,899 --> 00:08:36,839
+is POV 8 obviously and then we've got an
+
+197
+00:08:36,839 --> 00:08:38,760
+ask function that signals ok now we're
+
+198
+00:08:38,760 --> 00:08:40,050
+going to show some JavaScript in there
+
+199
+00:08:40,050 --> 00:08:44,039
+and then the end and I had to sequel
+
+200
+00:08:44,039 --> 00:08:45,329
+queries in here that were a little bit
+
+201
+00:08:45,329 --> 00:08:47,880
+you know a little bit complex not too
+
+202
+00:08:47,880 --> 00:08:49,829
+bad and this right here shows you
+
+203
+00:08:49,829 --> 00:08:52,199
+pulling out all of the table names from
+
+204
+00:08:52,199 --> 00:08:54,600
+Postgres so when you're looking at
+
+205
+00:08:54,600 --> 00:08:56,760
+objects inside inside there
+
+206
+00:08:56,760 --> 00:08:59,399
+Postgres comes with a internal schema
+
+207
+00:08:59,399 --> 00:09:02,550
+called PG catalog and you can query all
+
+208
+00:09:02,550 --> 00:09:04,380
+of that data in there just as though you
+
+209
+00:09:04,380 --> 00:09:06,750
+were looking at an ordinary table so
+
+210
+00:09:06,750 --> 00:09:07,890
+that's kind of convenient so now I've
+
+211
+00:09:07,890 --> 00:09:10,260
+got a list of all of my tables that I
+
+212
+00:09:10,260 --> 00:09:12,240
+want to convert and then I'm just going
+
+213
+00:09:12,240 --> 00:09:12,810
+to Ryu
+
+214
+00:09:12,810 --> 00:09:15,750
+this query that I wrote earlier to
+
+215
+00:09:15,750 --> 00:09:18,000
+create all the tables that I want
+
+216
+00:09:18,000 --> 00:09:19,980
+without having to specify anything about
+
+217
+00:09:19,980 --> 00:09:22,740
+the the the actual structure of those
+
+218
+00:09:22,740 --> 00:09:24,480
+other than the fact that there's there's
+
+219
+00:09:24,480 --> 00:09:28,080
+a report query so you go so that's it
+
+220
+00:09:28,080 --> 00:09:30,720
+pretty simple VAR tables I've got a for
+
+221
+00:09:30,720 --> 00:09:33,750
+loop I'm doing a little elog in to let
+
+222
+00:09:33,750 --> 00:09:36,570
+me know that you know as each table is
+
+223
+00:09:36,570 --> 00:09:40,560
+being processed and then I execute it my
+
+224
+00:09:40,560 --> 00:09:42,840
+friend Craig tried it out so yes it does
+
+225
+00:09:42,840 --> 00:09:43,860
+work
+
+226
+00:09:43,860 --> 00:09:46,110
+he was already using the JSON data type
+
+227
+00:09:46,110 --> 00:09:48,390
+so it was like JSON within JSON which
+
+228
+00:09:48,390 --> 00:09:51,090
+wasn't very good test but anyway he
+
+229
+00:09:51,090 --> 00:09:52,680
+tried it out and it definitely did work
+
+230
+00:09:52,680 --> 00:09:58,110
+on our first try so if you're thinking
+
+231
+00:09:58,110 --> 00:10:00,360
+about using this I want to let you know
+
+232
+00:10:00,360 --> 00:10:03,030
+that the JSON data type is a first-class
+
+233
+00:10:03,030 --> 00:10:06,120
+data type you can index it you can join
+
+234
+00:10:06,120 --> 00:10:08,370
+against it you can compare it there are
+
+235
+00:10:08,370 --> 00:10:10,800
+operators that are defined for it you
+
+236
+00:10:10,800 --> 00:10:12,390
+can write functions for it as I as I
+
+237
+00:10:12,390 --> 00:10:14,430
+just showed and you can return it the
+
+238
+00:10:14,430 --> 00:10:16,050
+same way you would return an integer or
+
+239
+00:10:16,050 --> 00:10:19,010
+a text type or any other typical
+
+240
+00:10:19,010 --> 00:10:22,620
+database type so you might have already
+
+241
+00:10:22,620 --> 00:10:25,590
+inferred that this would be the syntax
+
+242
+00:10:25,590 --> 00:10:26,670
+for this but you know you can just
+
+243
+00:10:26,670 --> 00:10:29,460
+create table give a name to the column
+
+244
+00:10:29,460 --> 00:10:31,860
+and then you call the column JSON and
+
+245
+00:10:31,860 --> 00:10:33,780
+that'll create a table for you and then
+
+246
+00:10:33,780 --> 00:10:35,640
+inserting data in there is very simple
+
+247
+00:10:35,640 --> 00:10:38,670
+just insert into table name values and
+
+248
+00:10:38,670 --> 00:10:40,440
+then a JSON object straight into there
+
+249
+00:10:40,440 --> 00:10:42,960
+and then down below I show a select when
+
+250
+00:10:42,960 --> 00:10:45,150
+you select from it it just outputs
+
+251
+00:10:45,150 --> 00:10:49,140
+straight up JSON there's quite a bit of
+
+252
+00:10:49,140 --> 00:10:51,840
+predefined functions that we've put in
+
+253
+00:10:51,840 --> 00:10:54,360
+there for for helping you look at this
+
+254
+00:10:54,360 --> 00:10:56,910
+stuff so they're not always the best
+
+255
+00:10:56,910 --> 00:10:57,960
+names
+
+256
+00:10:57,960 --> 00:11:01,590
+maybe it's hard for us but they're very
+
+257
+00:11:01,590 --> 00:11:03,540
+well documented so I've got three here
+
+258
+00:11:03,540 --> 00:11:05,520
+they're pretty common commonly use JSON
+
+259
+00:11:05,520 --> 00:11:09,380
+object field text return field of text
+
+260
+00:11:09,380 --> 00:11:11,730
+JSON object field which will return a
+
+261
+00:11:11,730 --> 00:11:13,920
+quoted value in the event that you're
+
+262
+00:11:13,920 --> 00:11:16,860
+looking at things that aren't text and
+
+263
+00:11:16,860 --> 00:11:19,080
+then JSON object keys will return all
+
+264
+00:11:19,080 --> 00:11:20,440
+the keys in there
+
+265
+00:11:20,440 --> 00:11:21,879
+and like I said you can use these
+
+266
+00:11:21,879 --> 00:11:25,089
+because Postgres supports functions as
+
+267
+00:11:25,089 --> 00:11:27,790
+indexes you can create any kind of index
+
+268
+00:11:27,790 --> 00:11:30,040
+you want against this compare it join it
+
+269
+00:11:30,040 --> 00:11:35,589
+and use it just like any other column v8
+
+270
+00:11:35,589 --> 00:11:38,199
+is also trusted so you don't have to be
+
+271
+00:11:38,199 --> 00:11:41,079
+a super user to create and run functions
+
+272
+00:11:41,079 --> 00:11:43,480
+using Peele via inside the database this
+
+273
+00:11:43,480 --> 00:11:45,160
+is not this is not true of something
+
+274
+00:11:45,160 --> 00:11:47,079
+like Python for example pythons and
+
+275
+00:11:47,079 --> 00:11:49,870
+untrusted language and same goes for a
+
+276
+00:11:49,870 --> 00:11:51,009
+lot of the other languages that we
+
+277
+00:11:51,009 --> 00:11:52,360
+support we actually support Lua
+
+278
+00:11:52,360 --> 00:11:55,120
+as well Louis trusted anyway so you can
+
+279
+00:11:55,120 --> 00:11:57,759
+you can create and and run these just as
+
+280
+00:11:57,759 --> 00:12:00,670
+a normal user peel v8 automatically
+
+281
+00:12:00,670 --> 00:12:02,889
+parses JSON input so if you're doing
+
+282
+00:12:02,889 --> 00:12:05,560
+something like this where you input JSON
+
+283
+00:12:05,560 --> 00:12:07,930
+column and you have key text you can see
+
+284
+00:12:07,930 --> 00:12:09,310
+right there that I just immediately was
+
+285
+00:12:09,310 --> 00:12:11,589
+able to use that object without running
+
+286
+00:12:11,589 --> 00:12:16,050
+json.parse on it
+
+287
+00:12:16,060 --> 00:12:18,250
+POV eight of course also supports
+
+288
+00:12:18,250 --> 00:12:20,350
+running raw sequel and prepared
+
+289
+00:12:20,350 --> 00:12:26,740
+statements you can so yeah here's just
+
+290
+00:12:26,740 --> 00:12:29,769
+some examples execute prepare execute we
+
+291
+00:12:29,769 --> 00:12:31,660
+also support cursors which is an
+
+292
+00:12:31,660 --> 00:12:33,130
+advantage if you've got a lot of data
+
+293
+00:12:33,130 --> 00:12:35,230
+and you just want to transfer you know
+
+294
+00:12:35,230 --> 00:12:37,870
+one one row at a time and your return
+
+295
+00:12:37,870 --> 00:12:43,990
+function and I just threw this up here
+
+296
+00:12:43,990 --> 00:12:47,259
+because it makes me laugh you know we
+
+297
+00:12:47,259 --> 00:12:48,600
+could not only have sequel engine CH
+
+298
+00:12:48,600 --> 00:12:50,259
+injection but we can also have
+
+299
+00:12:50,259 --> 00:12:52,269
+JavaScript injection directly in the
+
+300
+00:12:52,269 --> 00:12:54,880
+database now because of support for PL
+
+301
+00:12:54,880 --> 00:12:56,019
+v8
+
+302
+00:12:56,019 --> 00:12:57,250
+I don't know that you'd want to actually
+
+303
+00:12:57,250 --> 00:12:58,689
+run this in production I do know some
+
+304
+00:12:58,689 --> 00:12:59,829
+people that have written things like
+
+305
+00:12:59,829 --> 00:13:01,899
+this and then stored their JavaScript
+
+306
+00:13:01,899 --> 00:13:04,540
+directly in the database to avoid having
+
+307
+00:13:04,540 --> 00:13:06,939
+to load lots of functions
+
+308
+00:13:06,939 --> 00:13:08,680
+time after time but yeah I don't know if
+
+309
+00:13:08,680 --> 00:13:10,540
+this is really advisable it's kind of
+
+310
+00:13:10,540 --> 00:13:15,220
+hilarious though so all that stuff
+
+311
+00:13:15,220 --> 00:13:16,930
+that's cute you know I'm telling you the
+
+312
+00:13:16,930 --> 00:13:18,430
+theory of you know how you might use
+
+313
+00:13:18,430 --> 00:13:20,829
+this but you know what what about in
+
+314
+00:13:20,829 --> 00:13:22,209
+production what does this actually look
+
+315
+00:13:22,209 --> 00:13:25,870
+like so I to work at Mozilla although
+
+316
+00:13:25,870 --> 00:13:27,819
+not on anything really JavaScript
+
+317
+00:13:27,819 --> 00:13:31,329
+related and I helped run this thing
+
+318
+00:13:31,329 --> 00:13:32,470
+called crash
+
+319
+00:13:32,470 --> 00:13:34,870
+that's at mozilla.com and this is every
+
+320
+00:13:34,870 --> 00:13:37,900
+time firefox crashes which I'm sure is
+
+321
+00:13:37,900 --> 00:13:45,910
+very rare I we look at those and and so
+
+322
+00:13:45,910 --> 00:13:48,160
+we have this this tool this is basically
+
+323
+00:13:48,160 --> 00:13:51,280
+a data warehouse tool analyzing this and
+
+324
+00:13:51,280 --> 00:13:53,050
+here's a picture this was made by a
+
+325
+00:13:53,050 --> 00:13:57,430
+contributor it looks it shows you what
+
+326
+00:13:57,430 --> 00:14:00,910
+our our internal structure is like you
+
+327
+00:14:00,910 --> 00:14:02,350
+know all the systems that are running to
+
+328
+00:14:02,350 --> 00:14:05,200
+make this thing go and you can see
+
+329
+00:14:05,200 --> 00:14:07,150
+there's two main data stores here we've
+
+330
+00:14:07,150 --> 00:14:09,190
+got HBase up there in the corner and
+
+331
+00:14:09,190 --> 00:14:11,590
+then Postgres you know very looming
+
+332
+00:14:11,590 --> 00:14:13,480
+large in the middle as you can kind of
+
+333
+00:14:13,480 --> 00:14:15,850
+see the contributors preference for
+
+334
+00:14:15,850 --> 00:14:17,680
+Postgres here it's a little misleading
+
+335
+00:14:17,680 --> 00:14:19,570
+though because our HBase cluster is
+
+336
+00:14:19,570 --> 00:14:22,690
+actually about 150 terabytes and the
+
+337
+00:14:22,690 --> 00:14:24,390
+Postgres cluster is only about two
+
+338
+00:14:24,390 --> 00:14:26,500
+there's a lot more interaction you know
+
+339
+00:14:26,500 --> 00:14:29,800
+a lot more tools that are interacting
+
+340
+00:14:29,800 --> 00:14:31,630
+with Postgres than HBase but you know
+
+341
+00:14:31,630 --> 00:14:33,100
+anyway so I thought I'd point that out
+
+342
+00:14:33,100 --> 00:14:35,860
+so we've got all of this data in each
+
+343
+00:14:35,860 --> 00:14:37,870
+base that's about you know 70 to 75
+
+344
+00:14:37,870 --> 00:14:40,030
+machines there and then there's only you
+
+345
+00:14:40,030 --> 00:14:41,980
+know three or four systems running the
+
+346
+00:14:41,980 --> 00:14:44,830
+post rest database so if we go back to
+
+347
+00:14:44,830 --> 00:14:47,230
+this reports table which is sometimes
+
+348
+00:14:47,230 --> 00:14:49,690
+the bane of my existence it's you know
+
+349
+00:14:49,690 --> 00:14:53,050
+very large it's complex it's not very
+
+350
+00:14:53,050 --> 00:14:56,560
+well documented exactly and it becomes a
+
+351
+00:14:56,560 --> 00:14:59,560
+real pain to you know I it's it's not
+
+352
+00:14:59,560 --> 00:15:01,510
+too difficult for me to add columns to
+
+353
+00:15:01,510 --> 00:15:03,730
+this when we add new information to our
+
+354
+00:15:03,730 --> 00:15:06,640
+crashes but you know it's it's not it's
+
+355
+00:15:06,640 --> 00:15:09,370
+not the greatest either so we started
+
+356
+00:15:09,370 --> 00:15:11,470
+talking about this when 92 came out and
+
+357
+00:15:11,470 --> 00:15:14,680
+we ended up upgrading our systems last
+
+358
+00:15:14,680 --> 00:15:16,990
+fall to 92 and then we just created this
+
+359
+00:15:16,990 --> 00:15:20,650
+table has the crash UUID
+
+360
+00:15:20,650 --> 00:15:22,510
+which is how we identify uniquely
+
+361
+00:15:22,510 --> 00:15:23,890
+identify all our crashes it has the date
+
+362
+00:15:23,890 --> 00:15:25,930
+processed and then it just has this JSON
+
+363
+00:15:25,930 --> 00:15:29,920
+blob of everything in it and we put this
+
+364
+00:15:29,920 --> 00:15:32,700
+into production at the beginning of May
+
+365
+00:15:32,700 --> 00:15:36,250
+and here's a look at what this looks
+
+366
+00:15:36,250 --> 00:15:37,750
+like it's very similar to the depth
+
+367
+00:15:37,750 --> 00:15:39,790
+system that I just showed you actually
+
+368
+00:15:39,790 --> 00:15:42,100
+so our production reports table is about
+
+369
+00:15:42,100 --> 00:15:44,330
+2 gigs in size
+
+370
+00:15:44,330 --> 00:15:46,280
+the production raw crashes table
+
+371
+00:15:46,280 --> 00:15:49,940
+containing all the JSON is about five
+
+372
+00:15:49,940 --> 00:15:54,380
+gigs so you know we I actually had
+
+373
+00:15:54,380 --> 00:15:57,560
+forecasted this out that it potentially
+
+374
+00:15:57,560 --> 00:15:59,180
+could be quite a bit larger we don't
+
+375
+00:15:59,180 --> 00:16:02,420
+know what size the crash object is going
+
+376
+00:16:02,420 --> 00:16:03,650
+to be ahead of time there's no way to
+
+377
+00:16:03,650 --> 00:16:07,070
+tell but you know I had suspected it
+
+378
+00:16:07,070 --> 00:16:08,810
+would be somewhere you know some
+
+379
+00:16:08,810 --> 00:16:11,300
+somewhere around here and so anyway so
+
+380
+00:16:11,300 --> 00:16:12,560
+we had to upgrade all our just to
+
+381
+00:16:12,560 --> 00:16:14,390
+support this but now we're we're pushing
+
+382
+00:16:14,390 --> 00:16:17,360
+somewhere around five gigs of raw JSON
+
+383
+00:16:17,360 --> 00:16:19,100
+into the database and we're going to
+
+384
+00:16:19,100 --> 00:16:21,290
+probably double that very shortly
+
+385
+00:16:21,290 --> 00:16:23,240
+because we actually have in addition to
+
+386
+00:16:23,240 --> 00:16:25,130
+the Rock crashes we have a processed
+
+387
+00:16:25,130 --> 00:16:27,290
+crash that has a little more metadata in
+
+388
+00:16:27,290 --> 00:16:30,860
+it that we're going to shove in there so
+
+389
+00:16:30,860 --> 00:16:32,690
+if you look at this the the comparison
+
+390
+00:16:32,690 --> 00:16:37,130
+here is you know JSON at 2k per crash
+
+391
+00:16:37,130 --> 00:16:38,810
+and then a normalized table would be
+
+392
+00:16:38,810 --> 00:16:43,190
+somewhere about around 0.8 K so there's
+
+393
+00:16:43,190 --> 00:16:44,630
+there's a couple lessons from that like
+
+394
+00:16:44,630 --> 00:16:46,250
+one of course you know right we're we're
+
+395
+00:16:46,250 --> 00:16:47,570
+gonna burn some desk when we do this
+
+396
+00:16:47,570 --> 00:16:50,510
+it's also that you know good DBAs do you
+
+397
+00:16:50,510 --> 00:16:52,610
+actually save you some desk there's a
+
+398
+00:16:52,610 --> 00:16:55,670
+reason why we normalize the data but
+
+399
+00:16:55,670 --> 00:16:57,650
+when you're in a situation like we are
+
+400
+00:16:57,650 --> 00:16:59,510
+where we don't really know what kinds of
+
+401
+00:16:59,510 --> 00:17:01,790
+reports we want to run ahead of time
+
+402
+00:17:01,790 --> 00:17:04,700
+it's very useful to have immediate
+
+403
+00:17:04,700 --> 00:17:07,880
+access to that to that data which brings
+
+404
+00:17:07,880 --> 00:17:09,470
+me to what really is the killer
+
+405
+00:17:09,470 --> 00:17:11,210
+advantage of doing something like this
+
+406
+00:17:11,210 --> 00:17:17,110
+in Postgres as opposed to say HBase and
+
+407
+00:17:17,110 --> 00:17:24,010
+it really is this so I needed to look at
+
+408
+00:17:24,010 --> 00:17:26,810
+you know a single value we were we were
+
+409
+00:17:26,810 --> 00:17:28,310
+interested in the garbage collection and
+
+410
+00:17:28,310 --> 00:17:30,830
+you know is garbage collection running
+
+411
+00:17:30,830 --> 00:17:34,880
+when Firefox crashes and so I first
+
+412
+00:17:34,880 --> 00:17:37,780
+wrote a MapReduce you know we use a pig
+
+413
+00:17:37,780 --> 00:17:39,770
+and then there's another tool called
+
+414
+00:17:39,770 --> 00:17:41,570
+j-tube which is actually you can write
+
+415
+00:17:41,570 --> 00:17:43,700
+some Python and then run a MapReduce in
+
+416
+00:17:43,700 --> 00:17:45,890
+sage space so I so I wrote my initial
+
+417
+00:17:45,890 --> 00:17:47,060
+query and I was looking at about you
+
+418
+00:17:47,060 --> 00:17:48,740
+know a week to two weeks worth of data
+
+419
+00:17:48,740 --> 00:17:52,250
+and it literally took 30 minutes for me
+
+420
+00:17:52,250 --> 00:17:54,920
+to get all of that data transfer it you
+
+421
+00:17:54,920 --> 00:17:56,630
+know to the host system and then
+
+422
+00:17:56,630 --> 00:17:58,190
+process it into a report they would be
+
+423
+00:17:58,190 --> 00:18:02,570
+useful to somebody on Postgres took 24
+
+424
+00:18:02,570 --> 00:18:06,680
+seconds so that saves me you know my
+
+425
+00:18:06,680 --> 00:18:09,320
+time you know as a developer's finite
+
+426
+00:18:09,320 --> 00:18:11,930
+and if that's gonna save me 25 minutes
+
+427
+00:18:11,930 --> 00:18:13,130
+for every time I need to run an ad-hoc
+
+428
+00:18:13,130 --> 00:18:15,440
+report it's totally worth it to chew up
+
+429
+00:18:15,440 --> 00:18:17,780
+all the disk so that that's really been
+
+430
+00:18:17,780 --> 00:18:21,530
+my motivation to moving this into
+
+431
+00:18:21,530 --> 00:18:23,720
+Postgres we're still going to use HBase
+
+432
+00:18:23,720 --> 00:18:27,650
+for storing the we've got these these
+
+433
+00:18:27,650 --> 00:18:31,130
+dumps these binary dumps of data that
+
+434
+00:18:31,130 --> 00:18:32,960
+are a little bit large you know they can
+
+435
+00:18:32,960 --> 00:18:34,700
+be they can be quite large so we're not
+
+436
+00:18:34,700 --> 00:18:36,020
+going to store those and Postgres but
+
+437
+00:18:36,020 --> 00:18:37,580
+all the metadata all of the JSON that
+
+438
+00:18:37,580 --> 00:18:39,740
+we're storing we're just gonna pull pull
+
+439
+00:18:39,740 --> 00:18:46,360
+it all in in the in the coming weeks so
+
+440
+00:18:46,360 --> 00:18:49,730
+why would you use Postgres just to sum
+
+441
+00:18:49,730 --> 00:18:53,240
+up this stuff why would you use Postgres
+
+442
+00:18:53,240 --> 00:18:56,990
+to store your JSON and as opposed to a
+
+443
+00:18:56,990 --> 00:19:00,590
+new sequel system well I think the the
+
+444
+00:19:00,590 --> 00:19:02,570
+most compelling thing especially for
+
+445
+00:19:02,570 --> 00:19:05,120
+those of you who are running reporting
+
+446
+00:19:05,120 --> 00:19:07,550
+systems and doing visualizations of data
+
+447
+00:19:07,550 --> 00:19:09,020
+and I think there's you know there's
+
+448
+00:19:09,020 --> 00:19:12,320
+quite a bit of that going on right now I
+
+449
+00:19:12,320 --> 00:19:14,240
+like to call him I started calling this
+
+450
+00:19:14,240 --> 00:19:16,490
+bulk bag schema design it's something I
+
+451
+00:19:16,490 --> 00:19:18,740
+got from will lean Weber who got it from
+
+452
+00:19:18,740 --> 00:19:21,410
+some comedy podcasts but I think it it
+
+453
+00:19:21,410 --> 00:19:23,000
+really describes what you're trying to
+
+454
+00:19:23,000 --> 00:19:25,330
+do you just want to throw everything
+
+455
+00:19:25,330 --> 00:19:28,490
+into an unstructured data store
+
+456
+00:19:28,490 --> 00:19:30,440
+initially and then have the option to
+
+457
+00:19:30,440 --> 00:19:33,320
+optimize it over time initially
+
+458
+00:19:33,320 --> 00:19:34,910
+especially in the prototyping stage you
+
+459
+00:19:34,910 --> 00:19:37,010
+don't really know what your reports are
+
+460
+00:19:37,010 --> 00:19:38,180
+going to look like you don't really know
+
+461
+00:19:38,180 --> 00:19:40,250
+how you want the data to be stored and
+
+462
+00:19:40,250 --> 00:19:42,320
+that premature optimization I think is
+
+463
+00:19:42,320 --> 00:19:46,700
+is a silly and unnecessary hurdle to
+
+464
+00:19:46,700 --> 00:19:52,580
+develop it at this point in time
+
+465
+00:19:52,590 --> 00:19:54,870
+if you're using Postgres you're really
+
+466
+00:19:54,870 --> 00:19:56,910
+it's gonna be easy for you to scale to
+
+467
+00:19:56,910 --> 00:20:00,450
+multi terabyte database instances and
+
+468
+00:20:00,450 --> 00:20:02,370
+particularly for these these write and
+
+469
+00:20:02,370 --> 00:20:03,900
+read heavy loads having to do with
+
+470
+00:20:03,900 --> 00:20:06,780
+reporting like our workload is is mostly
+
+471
+00:20:06,780 --> 00:20:09,960
+right and Postgres does a really great
+
+472
+00:20:09,960 --> 00:20:13,770
+job of handling that my one caveat on
+
+473
+00:20:13,770 --> 00:20:15,780
+this is that if you're if you're scaling
+
+474
+00:20:15,780 --> 00:20:17,880
+to multi terabytes non cloud storage is
+
+475
+00:20:17,880 --> 00:20:19,710
+probably a better option particularly
+
+476
+00:20:19,710 --> 00:20:21,450
+for the reporting workloads there are
+
+477
+00:20:21,450 --> 00:20:23,160
+some great examples of people using the
+
+478
+00:20:23,160 --> 00:20:25,770
+cloud for with Postgres and I think
+
+479
+00:20:25,770 --> 00:20:27,720
+Instagram is probably the best example
+
+480
+00:20:27,720 --> 00:20:29,610
+of that and they've they've published a
+
+481
+00:20:29,610 --> 00:20:31,290
+few different talks about how they're
+
+482
+00:20:31,290 --> 00:20:34,050
+managing that but it is it is pretty
+
+483
+00:20:34,050 --> 00:20:35,940
+easy to scale these these individual
+
+484
+00:20:35,940 --> 00:20:40,080
+post rest instances to multiple
+
+485
+00:20:40,080 --> 00:20:42,270
+terabytes and finally I think
+
+486
+00:20:42,270 --> 00:20:43,980
+post-arrest is a really great option
+
+487
+00:20:43,980 --> 00:20:45,990
+because you can manage your data with
+
+488
+00:20:45,990 --> 00:20:47,220
+the language that you already know and
+
+489
+00:20:47,220 --> 00:20:52,440
+love which has not really always been an
+
+490
+00:20:52,440 --> 00:20:56,250
+option right previously people would you
+
+491
+00:20:56,250 --> 00:20:57,300
+know you'd either have to write raw
+
+492
+00:20:57,300 --> 00:20:59,370
+sequel or you would have to use a
+
+493
+00:20:59,370 --> 00:21:02,970
+language like peel PG SQL and I think
+
+494
+00:21:02,970 --> 00:21:05,700
+that being able to write JavaScript
+
+495
+00:21:05,700 --> 00:21:07,560
+inside the database makes it far more
+
+496
+00:21:07,560 --> 00:21:09,870
+maintainable I think it makes it a lot
+
+497
+00:21:09,870 --> 00:21:11,550
+more likely that the developers that I'm
+
+498
+00:21:11,550 --> 00:21:13,470
+working with will actually write data
+
+499
+00:21:13,470 --> 00:21:17,400
+processing code as opposed to leaving
+
+500
+00:21:17,400 --> 00:21:20,730
+that to the the database experts and
+
+501
+00:21:20,730 --> 00:21:22,740
+then also being able to put that code
+
+502
+00:21:22,740 --> 00:21:24,360
+right next to the data inside the
+
+503
+00:21:24,360 --> 00:21:25,980
+database makes it a lot more efficient
+
+504
+00:21:25,980 --> 00:21:27,450
+because you're not having to transfer it
+
+505
+00:21:27,450 --> 00:21:32,780
+over the network to process it
+
+506
+00:21:32,790 --> 00:21:38,640
+so like I said 9.3 beta it's out today
+
+507
+00:21:38,640 --> 00:21:41,490
+you can download it and play with it all
+
+508
+00:21:41,490 --> 00:21:42,780
+these tools that I was talking about
+
+509
+00:21:42,780 --> 00:21:45,540
+they're also available if if you want to
+
+510
+00:21:45,540 --> 00:21:47,130
+like create a developer instance in
+
+511
+00:21:47,130 --> 00:21:49,470
+Heroku you can play around with it and
+
+512
+00:21:49,470 --> 00:21:53,100
+it works really awesome and if you want
+
+513
+00:21:53,100 --> 00:21:55,410
+to know a little more about the types of
+
+514
+00:21:55,410 --> 00:21:57,480
+features I just listed like a bunch of
+
+515
+00:21:57,480 --> 00:21:59,820
+things here I'm not gonna like go into
+
+516
+00:21:59,820 --> 00:22:00,900
+you know all the cool things about
+
+517
+00:22:00,900 --> 00:22:03,900
+Postgres but I just ripped most of this
+
+518
+00:22:03,900 --> 00:22:07,260
+from a slide from from Craig there are
+
+519
+00:22:07,260 --> 00:22:09,150
+so many things about Postgres like I've
+
+520
+00:22:09,150 --> 00:22:11,370
+been talking with quite a few people
+
+521
+00:22:11,370 --> 00:22:14,670
+here at the conference about the JSON
+
+522
+00:22:14,670 --> 00:22:16,290
+data type and I've had more than one
+
+523
+00:22:16,290 --> 00:22:17,970
+person say why didn't you tell me about
+
+524
+00:22:17,970 --> 00:22:21,570
+this last year I have had to I've had to
+
+525
+00:22:21,570 --> 00:22:23,400
+I've had to build things in the last
+
+526
+00:22:23,400 --> 00:22:24,780
+year that really would have this this
+
+527
+00:22:24,780 --> 00:22:26,310
+really would have helped me out and I
+
+528
+00:22:26,310 --> 00:22:28,290
+think that Postgres actually has a lot
+
+529
+00:22:28,290 --> 00:22:29,820
+of those types of features where you're
+
+530
+00:22:29,820 --> 00:22:31,440
+like oh wow like that would be really
+
+531
+00:22:31,440 --> 00:22:34,700
+great but anyway I made a list here
+
+532
+00:22:34,700 --> 00:22:36,900
+definitely definitely check it out and
+
+533
+00:22:36,900 --> 00:22:38,280
+you know feel free to ask me questions
+
+534
+00:22:38,280 --> 00:22:45,090
+and so liberate your data let me let me
+
+535
+00:22:45,090 --> 00:22:47,000
+help you liberate your schema today
+
+536
+00:22:47,000 --> 00:23:02,760
+Thanks
+

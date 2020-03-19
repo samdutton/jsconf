@@ -1,0 +1,1301 @@
+1
+00:00:00,000 --> 00:00:02,040
+
+alright and weston y'all yes thank you
+
+2
+00:00:02,040 --> 00:00:06,839
+for making it out today I'm just going
+
+3
+00:00:06,839 --> 00:00:09,090
+to do a quick overview of authentication
+
+4
+00:00:09,090 --> 00:00:11,660
+and happy and what it takes to
+
+5
+00:00:11,660 --> 00:00:14,570
+authenticate users and protect your
+
+6
+00:00:14,570 --> 00:00:18,690
+resources so first slides will be
+
+7
+00:00:18,690 --> 00:00:22,470
+available on my github page and i also
+
+8
+00:00:22,470 --> 00:00:25,289
+have examples of the happy jas supported
+
+9
+00:00:25,289 --> 00:00:27,539
+plugins that are available in that
+
+10
+00:00:27,539 --> 00:00:32,189
+repository with authentication and happy
+
+11
+00:00:32,189 --> 00:00:35,070
+it starts with an object that every
+
+12
+00:00:35,070 --> 00:00:37,649
+server has that objects going to have to
+
+13
+00:00:37,649 --> 00:00:40,290
+registration methods ones for schemes
+
+14
+00:00:40,290 --> 00:00:43,530
+ones for strategies there's a method for
+
+15
+00:00:43,530 --> 00:00:46,829
+testing your strategy against the
+
+16
+00:00:46,829 --> 00:00:49,500
+request and then there is a method for
+
+17
+00:00:49,500 --> 00:00:53,160
+setting a default strategy first couple
+
+18
+00:00:53,160 --> 00:00:56,850
+points about schemes it's just a plan to
+
+19
+00:00:56,850 --> 00:00:59,480
+determine how a user is authenticated um
+
+20
+00:00:59,480 --> 00:01:02,160
+are you looking for specific headers are
+
+21
+00:01:02,160 --> 00:01:05,309
+you looking for a cookie or some other
+
+22
+00:01:05,309 --> 00:01:08,460
+way when you write a scheme it's going
+
+23
+00:01:08,460 --> 00:01:12,420
+to make a call to server off scheme but
+
+24
+00:01:12,420 --> 00:01:14,310
+most of us aren't going to have to worry
+
+25
+00:01:14,310 --> 00:01:16,380
+about that because there are plenty of
+
+26
+00:01:16,380 --> 00:01:19,700
+plugins that do this happy Jas has for
+
+27
+00:01:19,700 --> 00:01:22,470
+specific types of schemes that it
+
+28
+00:01:22,470 --> 00:01:23,970
+supports there's a basic authentication
+
+29
+00:01:23,970 --> 00:01:27,840
+which is just HTTP basic authentication
+
+30
+00:01:27,840 --> 00:01:31,229
+there's a an RFC out there with some
+
+31
+00:01:31,229 --> 00:01:33,270
+specific headers that you're going to
+
+32
+00:01:33,270 --> 00:01:35,070
+pass back and forth that are going to
+
+33
+00:01:35,070 --> 00:01:36,180
+determine whether the user is
+
+34
+00:01:36,180 --> 00:01:38,640
+authenticated I'll be stepping through
+
+35
+00:01:38,640 --> 00:01:41,100
+at the end of this presentation of some
+
+36
+00:01:41,100 --> 00:01:42,750
+specific examples of how to actually
+
+37
+00:01:42,750 --> 00:01:46,979
+implement these plugins happy off cookie
+
+38
+00:01:46,979 --> 00:01:51,960
+is a the plug-in which will use a cookie
+
+39
+00:01:51,960 --> 00:01:54,049
+to determine whether a user is
+
+40
+00:01:54,049 --> 00:01:56,670
+authenticated just the presence of that
+
+41
+00:01:56,670 --> 00:01:59,939
+cookie and it being valid will determine
+
+42
+00:01:59,939 --> 00:02:02,930
+if that user is authenticated bail is a
+
+43
+00:02:02,930 --> 00:02:05,670
+plug-in for third-party authentication
+
+44
+00:02:05,670 --> 00:02:09,179
+so if you want to use OAuth and you want
+
+45
+00:02:09,179 --> 00:02:11,250
+to have password list authentication let
+
+46
+00:02:11,250 --> 00:02:13,569
+users log in with Facebook Twitter
+
+47
+00:02:13,569 --> 00:02:17,019
+github and such and then happy off hawk
+
+48
+00:02:17,019 --> 00:02:20,590
+is a plug-in which allows you to specify
+
+49
+00:02:20,590 --> 00:02:23,519
+an authorization header and it's
+
+50
+00:02:23,519 --> 00:02:26,950
+probably more designed for different
+
+51
+00:02:26,950 --> 00:02:28,840
+applications to authenticate with one
+
+52
+00:02:28,840 --> 00:02:30,879
+another not necessarily authenticating
+
+53
+00:02:30,879 --> 00:02:33,969
+specific users hopefully we'll have
+
+54
+00:02:33,969 --> 00:02:35,319
+enough time to get through all the
+
+55
+00:02:35,319 --> 00:02:37,689
+different examples but with schemes it's
+
+56
+00:02:37,689 --> 00:02:39,280
+already been done for you you're going
+
+57
+00:02:39,280 --> 00:02:41,889
+to spend most of your time configuring
+
+58
+00:02:41,889 --> 00:02:46,599
+an authentication strategy so when you
+
+59
+00:02:46,599 --> 00:02:47,969
+are configuring that authentication
+
+60
+00:02:47,969 --> 00:02:51,060
+strategy you're going to give it a name
+
+61
+00:02:51,060 --> 00:02:53,829
+you're going to reference the scheme
+
+62
+00:02:53,829 --> 00:02:57,790
+that you're using you're going to be
+
+63
+00:02:57,790 --> 00:02:59,949
+able to specify a mode it's not required
+
+64
+00:02:59,949 --> 00:03:03,010
+you have a couple options there the
+
+65
+00:03:03,010 --> 00:03:08,560
+default is true you can set it to false
+
+66
+00:03:08,560 --> 00:03:11,829
+which will be equivalent to optional and
+
+67
+00:03:11,829 --> 00:03:13,569
+try I'm not sure if that's the case
+
+68
+00:03:13,569 --> 00:03:16,269
+actually I'm sorry but true and required
+
+69
+00:03:16,269 --> 00:03:18,849
+are the same optional and try are the
+
+70
+00:03:18,849 --> 00:03:22,930
+same with optional and try you don't
+
+71
+00:03:22,930 --> 00:03:25,540
+have to be authenticated in order for
+
+72
+00:03:25,540 --> 00:03:29,379
+your handler to reply you could do that
+
+73
+00:03:29,379 --> 00:03:32,769
+on your landing page if you want to have
+
+74
+00:03:32,769 --> 00:03:36,299
+mixed content and then each
+
+75
+00:03:36,299 --> 00:03:38,049
+authentication scheme is going to have
+
+76
+00:03:38,049 --> 00:03:39,879
+some very specific options that you
+
+77
+00:03:39,879 --> 00:03:42,250
+would specify when you're creating the
+
+78
+00:03:42,250 --> 00:03:46,629
+strategy with the different plugins they
+
+79
+00:03:46,629 --> 00:03:49,269
+each have their own name which are all
+
+80
+00:03:49,269 --> 00:03:52,329
+pretty straightforward with hawk it
+
+81
+00:03:52,329 --> 00:03:54,819
+actually registers two different schemes
+
+82
+00:03:54,819 --> 00:03:58,180
+depending on which flavor of
+
+83
+00:03:58,180 --> 00:04:02,400
+authentication you want to roll out so
+
+84
+00:04:02,400 --> 00:04:05,650
+after you have chosen an authentication
+
+85
+00:04:05,650 --> 00:04:07,719
+scheme after you've specified the
+
+86
+00:04:07,719 --> 00:04:09,489
+strategy that you want to use you're
+
+87
+00:04:09,489 --> 00:04:10,599
+going to want to have to secure your
+
+88
+00:04:10,599 --> 00:04:13,090
+routes you'll be spending a considerable
+
+89
+00:04:13,090 --> 00:04:15,849
+amount of time doing this so we're just
+
+90
+00:04:15,849 --> 00:04:16,989
+going to step through some of the
+
+91
+00:04:16,989 --> 00:04:19,509
+different ways that you can add the
+
+92
+00:04:19,509 --> 00:04:24,250
+authentication to your route this is the
+
+93
+00:04:24,250 --> 00:04:27,130
+basic idea in your config option
+
+94
+00:04:27,130 --> 00:04:28,840
+specify the name of your strategy and
+
+95
+00:04:28,840 --> 00:04:31,960
+that's you know the long and the short
+
+96
+00:04:31,960 --> 00:04:35,200
+of it not much more to talk about but
+
+97
+00:04:35,200 --> 00:04:38,470
+you do have the option to specify a
+
+98
+00:04:38,470 --> 00:04:41,830
+default strategy instead of going
+
+99
+00:04:41,830 --> 00:04:43,950
+through each individual route and
+
+100
+00:04:43,950 --> 00:04:46,180
+securing it so if you specify the
+
+101
+00:04:46,180 --> 00:04:48,070
+default strategy now all of your routes
+
+102
+00:04:48,070 --> 00:04:51,210
+are going to be using that strategy
+
+103
+00:04:51,210 --> 00:04:54,460
+however you may want to override some of
+
+104
+00:04:54,460 --> 00:04:56,830
+those settings or actually excuse me the
+
+105
+00:04:56,830 --> 00:04:59,920
+default strategy can actually take on a
+
+106
+00:04:59,920 --> 00:05:04,030
+couple different options but you may
+
+107
+00:05:04,030 --> 00:05:06,010
+want to override that so if you specify
+
+108
+00:05:06,010 --> 00:05:07,870
+the default you can go into individual
+
+109
+00:05:07,870 --> 00:05:09,910
+routes and you can turn off
+
+110
+00:05:09,910 --> 00:05:12,520
+authentication if you set off the false
+
+111
+00:05:12,520 --> 00:05:15,120
+you could change the mode or any other
+
+112
+00:05:15,120 --> 00:05:21,310
+configurable setting so that's pretty
+
+113
+00:05:21,310 --> 00:05:26,050
+much it actually implementing it like I
+
+114
+00:05:26,050 --> 00:05:28,030
+said these examples are all available in
+
+115
+00:05:28,030 --> 00:05:30,810
+this repository but implementing it is
+
+116
+00:05:30,810 --> 00:05:33,840
+not too much work you're going to load
+
+117
+00:05:33,840 --> 00:05:36,130
+the plug-in that you're going to want to
+
+118
+00:05:36,130 --> 00:05:41,680
+use as long as well with happy Oh with
+
+119
+00:05:41,680 --> 00:05:46,090
+basic auth you need to have some place
+
+120
+00:05:46,090 --> 00:05:47,110
+where you're snoring username and
+
+121
+00:05:47,110 --> 00:05:51,630
+passwords and then you're going to
+
+122
+00:05:51,630 --> 00:05:55,090
+create a function which will compare the
+
+123
+00:05:55,090 --> 00:05:56,680
+username and passwords with database
+
+124
+00:05:56,680 --> 00:05:58,720
+you're going to receive from the request
+
+125
+00:05:58,720 --> 00:06:01,720
+a username and a password and then
+
+126
+00:06:01,720 --> 00:06:03,870
+you're going to compare them and
+
+127
+00:06:03,870 --> 00:06:06,820
+determine whether that user is valid if
+
+128
+00:06:06,820 --> 00:06:10,990
+the user is valid let me just step
+
+129
+00:06:10,990 --> 00:06:12,550
+through this real quick so the
+
+130
+00:06:12,550 --> 00:06:14,860
+validation function takes a username and
+
+131
+00:06:14,860 --> 00:06:16,690
+a password and a call back in the
+
+132
+00:06:16,690 --> 00:06:20,650
+signature and you compare the user and
+
+133
+00:06:20,650 --> 00:06:22,540
+the password determine if it's valid and
+
+134
+00:06:22,540 --> 00:06:26,100
+then you specify a object known as
+
+135
+00:06:26,100 --> 00:06:28,360
+credentials which will be available
+
+136
+00:06:28,360 --> 00:06:32,020
+later on in your request through request
+
+137
+00:06:32,020 --> 00:06:34,360
+off that credential you can store any
+
+138
+00:06:34,360 --> 00:06:35,700
+information you want in there in this
+
+139
+00:06:35,700 --> 00:06:39,250
+example we just store the name then you
+
+140
+00:06:39,250 --> 00:06:40,710
+call the callback with an error
+
+141
+00:06:40,710 --> 00:06:43,990
+you specify whether the user is or is
+
+142
+00:06:43,990 --> 00:06:46,540
+not valid and you pass along the
+
+143
+00:06:46,540 --> 00:06:52,210
+credentials object um when you're
+
+144
+00:06:52,210 --> 00:06:53,350
+setting up your server you're going to
+
+145
+00:06:53,350 --> 00:06:55,240
+specify your different handlers you'll
+
+146
+00:06:55,240 --> 00:06:56,470
+have a public handle or you'll have
+
+147
+00:06:56,470 --> 00:06:58,990
+private handlers or whatever it is that
+
+148
+00:06:58,990 --> 00:07:02,310
+you happen to have in your application
+
+149
+00:07:02,310 --> 00:07:05,760
+create a server you register the plug-in
+
+150
+00:07:05,760 --> 00:07:10,000
+and you specify your off Val your auth
+
+151
+00:07:10,000 --> 00:07:14,560
+options for basic auth it's just the
+
+152
+00:07:14,560 --> 00:07:17,920
+validation function and with that
+
+153
+00:07:17,920 --> 00:07:23,340
+particular object validation function
+
+154
+00:07:23,340 --> 00:07:25,840
+then you call server da thought strategy
+
+155
+00:07:25,840 --> 00:07:28,300
+give your strategy a name specify the
+
+156
+00:07:28,300 --> 00:07:32,620
+scheme and the auth options then within
+
+157
+00:07:32,620 --> 00:07:34,930
+your routes you have your public route
+
+158
+00:07:34,930 --> 00:07:36,550
+which doesn't specify any authentication
+
+159
+00:07:36,550 --> 00:07:38,740
+you have your private route which you do
+
+160
+00:07:38,740 --> 00:07:43,450
+specify basic off um and that's it if
+
+161
+00:07:43,450 --> 00:07:45,850
+you were to go to the private page your
+
+162
+00:07:45,850 --> 00:07:48,100
+browser's going to prompt you for
+
+163
+00:07:48,100 --> 00:07:50,230
+username and password all browsers
+
+164
+00:07:50,230 --> 00:07:54,730
+support basic authentication with cookie
+
+165
+00:07:54,730 --> 00:07:58,960
+off a couple things change in this as I
+
+166
+00:07:58,960 --> 00:08:00,430
+step through this this is just going to
+
+167
+00:08:00,430 --> 00:08:03,010
+be highlighting the differences to get
+
+168
+00:08:03,010 --> 00:08:08,530
+from basic off to cookie off um we're
+
+169
+00:08:08,530 --> 00:08:10,540
+going to load the off cookie plugin
+
+170
+00:08:10,540 --> 00:08:12,220
+we're going to load joy as well because
+
+171
+00:08:12,220 --> 00:08:13,930
+we're going to actually have to accept
+
+172
+00:08:13,930 --> 00:08:15,640
+the username and the password through a
+
+173
+00:08:15,640 --> 00:08:22,360
+request so the validation function that
+
+174
+00:08:22,360 --> 00:08:24,490
+we use previously now becomes a handler
+
+175
+00:08:24,490 --> 00:08:28,240
+and the username in the password will be
+
+176
+00:08:28,240 --> 00:08:31,210
+found in the payload will step through
+
+177
+00:08:31,210 --> 00:08:33,430
+and compare the username and password
+
+178
+00:08:33,430 --> 00:08:37,000
+the same way we did previously if the
+
+179
+00:08:37,000 --> 00:08:38,260
+user is not valid we're going to
+
+180
+00:08:38,260 --> 00:08:42,490
+redirect them to the login page and if
+
+181
+00:08:42,490 --> 00:08:44,320
+they are valid we're going to get past
+
+182
+00:08:44,320 --> 00:08:46,450
+that point we'll set the credentials and
+
+183
+00:08:46,450 --> 00:08:49,060
+then we're going to set a session the
+
+184
+00:08:49,060 --> 00:08:50,920
+cookie that gets stored on the user
+
+185
+00:08:50,920 --> 00:08:53,540
+system will contain
+
+186
+00:08:53,540 --> 00:08:56,389
+everything that's within that object
+
+187
+00:08:56,389 --> 00:09:01,310
+credentials by setting a request off
+
+188
+00:09:01,310 --> 00:09:05,420
+session dot set which is specific to
+
+189
+00:09:05,420 --> 00:09:11,569
+cookie off the the session property and
+
+190
+00:09:11,569 --> 00:09:13,399
+then we'll just return reply the users
+
+191
+00:09:13,399 --> 00:09:17,089
+logged in this is just a handler for
+
+192
+00:09:17,089 --> 00:09:22,910
+serving up our HTML and when a user logs
+
+193
+00:09:22,910 --> 00:09:25,180
+out we just need to clear the cookie and
+
+194
+00:09:25,180 --> 00:09:28,459
+you can accomplish that with request off
+
+195
+00:09:28,459 --> 00:09:36,920
+session clear so now once we've started
+
+196
+00:09:36,920 --> 00:09:38,569
+up our server or excuse me once we've
+
+197
+00:09:38,569 --> 00:09:39,769
+created our server we're going to
+
+198
+00:09:39,769 --> 00:09:42,649
+register the off plug in the auth cookie
+
+199
+00:09:42,649 --> 00:09:44,269
+plugin and then we're going to specify
+
+200
+00:09:44,269 --> 00:09:47,269
+the different options for cookie off
+
+201
+00:09:47,269 --> 00:09:49,639
+which would be a password to encrypt the
+
+202
+00:09:49,639 --> 00:09:53,180
+cookie um the name of the cookie that
+
+203
+00:09:53,180 --> 00:09:55,910
+will be visible to anybody who's trying
+
+204
+00:09:55,910 --> 00:09:58,970
+to hack your system up a redirect page
+
+205
+00:09:58,970 --> 00:10:01,880
+so that whenever somebody does hit a
+
+206
+00:10:01,880 --> 00:10:04,040
+resource that is supposed to be private
+
+207
+00:10:04,040 --> 00:10:07,449
+it'll redirect them to that page and
+
+208
+00:10:07,449 --> 00:10:13,670
+then the is secure flag which doesn't
+
+209
+00:10:13,670 --> 00:10:16,250
+change anything anymore and I'm not sure
+
+210
+00:10:16,250 --> 00:10:20,149
+exactly what it used to change so um and
+
+211
+00:10:20,149 --> 00:10:22,490
+then we register the strategy the same
+
+212
+00:10:22,490 --> 00:10:25,850
+way you would any other strategy passing
+
+213
+00:10:25,850 --> 00:10:31,610
+those new options with our new login
+
+214
+00:10:31,610 --> 00:10:34,190
+page we need to specify a route log out
+
+215
+00:10:34,190 --> 00:10:37,550
+page needs a route and then our post to
+
+216
+00:10:37,550 --> 00:10:39,319
+the login page we're going to validate
+
+217
+00:10:39,319 --> 00:10:43,699
+the payload that should look straight
+
+218
+00:10:43,699 --> 00:10:46,579
+forward at some point and that's pretty
+
+219
+00:10:46,579 --> 00:10:51,170
+much it for cookie off once you have
+
+220
+00:10:51,170 --> 00:10:53,500
+implemented cookie off you can
+
+221
+00:10:53,500 --> 00:10:56,720
+incorporate that with third-party
+
+222
+00:10:56,720 --> 00:11:01,620
+authentication using bail
+
+223
+00:11:01,630 --> 00:11:05,320
+Bell has support for pretty much every
+
+224
+00:11:05,320 --> 00:11:07,480
+popular social network that you might
+
+225
+00:11:07,480 --> 00:11:10,390
+want to use to authenticate users all
+
+226
+00:11:10,390 --> 00:11:13,450
+the last slide and this stack will
+
+227
+00:11:13,450 --> 00:11:16,330
+highlight that but to get started you
+
+228
+00:11:16,330 --> 00:11:19,210
+include the bell plugin you include
+
+229
+00:11:19,210 --> 00:11:21,370
+happy auth cookie now we're going to
+
+230
+00:11:21,370 --> 00:11:23,740
+include happy off cookie as well because
+
+231
+00:11:23,740 --> 00:11:27,340
+with bell you need to use OAuth you need
+
+232
+00:11:27,340 --> 00:11:29,860
+to have a series of requests and
+
+233
+00:11:29,860 --> 00:11:33,970
+responses which will happen every single
+
+234
+00:11:33,970 --> 00:11:35,280
+time you try to authenticate the user
+
+235
+00:11:35,280 --> 00:11:37,750
+that's not going to maintain any type of
+
+236
+00:11:37,750 --> 00:11:40,350
+state so what we're going to do is
+
+237
+00:11:40,350 --> 00:11:44,620
+specify on our login page bell
+
+238
+00:11:44,620 --> 00:11:47,560
+authentication and when we validate the
+
+239
+00:11:47,560 --> 00:11:50,280
+user we're going to set a cookie and
+
+240
+00:11:50,280 --> 00:11:54,520
+then every other page will use the auth
+
+241
+00:11:54,520 --> 00:11:57,040
+cookie in order to know that the user is
+
+242
+00:11:57,040 --> 00:11:59,740
+validated if the user isn't validated
+
+243
+00:11:59,740 --> 00:12:01,360
+then you bounce them back to the the
+
+244
+00:12:01,360 --> 00:12:07,030
+page that uses though so now our login
+
+245
+00:12:07,030 --> 00:12:09,820
+handler will check to see if the user is
+
+246
+00:12:09,820 --> 00:12:16,560
+authenticated um if they're not then or
+
+247
+00:12:16,560 --> 00:12:19,960
+excuse me if they are authenticated
+
+248
+00:12:19,960 --> 00:12:24,760
+we're going to set the cookie and we
+
+249
+00:12:24,760 --> 00:12:27,370
+register both plugins off cookie and
+
+250
+00:12:27,370 --> 00:12:33,210
+bell and when we create the strategy for
+
+251
+00:12:33,210 --> 00:12:35,730
+cookie auth it's the same as what we
+
+252
+00:12:35,730 --> 00:12:39,460
+kind of hit on before and then with bell
+
+253
+00:12:39,460 --> 00:12:42,910
+if you're not familiar with OAuth um
+
+254
+00:12:42,910 --> 00:12:45,160
+you're going to have to go to the
+
+255
+00:12:45,160 --> 00:12:47,800
+provider that you're looking to work
+
+256
+00:12:47,800 --> 00:12:50,920
+with they'll have a developer program or
+
+257
+00:12:50,920 --> 00:12:55,690
+some type of option to get the client ID
+
+258
+00:12:55,690 --> 00:12:59,890
+and get the client secret um you specify
+
+259
+00:12:59,890 --> 00:13:03,430
+the provider you specify a password to
+
+260
+00:13:03,430 --> 00:13:06,120
+encrypt your third party off cookie and
+
+261
+00:13:06,120 --> 00:13:09,130
+then you specify the client settings you
+
+262
+00:13:09,130 --> 00:13:12,730
+register your strategy and then
+
+263
+00:13:12,730 --> 00:13:14,440
+this is just how you would go through
+
+264
+00:13:14,440 --> 00:13:19,630
+with github under your settings there is
+
+265
+00:13:19,630 --> 00:13:22,420
+an applications link you click on that
+
+266
+00:13:22,420 --> 00:13:24,220
+you have the option to register a new
+
+267
+00:13:24,220 --> 00:13:26,230
+application and when you register it
+
+268
+00:13:26,230 --> 00:13:29,260
+provides you with a client ID and a
+
+269
+00:13:29,260 --> 00:13:31,779
+client secret which you'll use when you
+
+270
+00:13:31,779 --> 00:13:34,110
+configure your authentication strategy
+
+271
+00:13:34,110 --> 00:13:37,120
+so when we're setting up our routes are
+
+272
+00:13:37,120 --> 00:13:40,209
+private handler our private page we're
+
+273
+00:13:40,209 --> 00:13:42,880
+going to use the auth cookie but on our
+
+274
+00:13:42,880 --> 00:13:46,600
+login page we're going to use the third
+
+275
+00:13:46,600 --> 00:13:51,610
+party off that we set up and that's uh
+
+276
+00:13:51,610 --> 00:13:53,680
+you know pretty much it you can see the
+
+277
+00:13:53,680 --> 00:13:55,510
+support for all the different social
+
+278
+00:13:55,510 --> 00:13:59,019
+networks and and others um now with
+
+279
+00:13:59,019 --> 00:14:02,829
+Belle you're not forced to use these
+
+280
+00:14:02,829 --> 00:14:04,779
+providers this is just what there's
+
+281
+00:14:04,779 --> 00:14:07,930
+existing support for the api api allows
+
+282
+00:14:07,930 --> 00:14:11,529
+for you to roll out any provider you
+
+283
+00:14:11,529 --> 00:14:13,630
+would like as long as it's with a
+
+284
+00:14:13,630 --> 00:14:19,510
+one-point OA or two um the last type of
+
+285
+00:14:19,510 --> 00:14:22,300
+authentication that we have from happy
+
+286
+00:14:22,300 --> 00:14:26,709
+Jas has it's called hawk it's for
+
+287
+00:14:26,709 --> 00:14:30,760
+passing tokens back and forth um what
+
+288
+00:14:30,760 --> 00:14:32,860
+we're going to hit on in a couple slides
+
+289
+00:14:32,860 --> 00:14:34,360
+you actually are going to need to roll
+
+290
+00:14:34,360 --> 00:14:36,760
+your own client that's going to use hawk
+
+291
+00:14:36,760 --> 00:14:41,440
+um but for using with your happy server
+
+292
+00:14:41,440 --> 00:14:43,300
+it's the same straightforward process
+
+293
+00:14:43,300 --> 00:14:47,709
+where you load the plug-in you need to
+
+294
+00:14:47,709 --> 00:14:50,529
+store the credentials somewhere this is
+
+295
+00:14:50,529 --> 00:14:52,360
+what a hawk credential would look like
+
+296
+00:14:52,360 --> 00:14:55,120
+with you have an ID you have a key and
+
+297
+00:14:55,120 --> 00:14:57,480
+an algorithm that you need to specify
+
+298
+00:14:57,480 --> 00:15:04,810
+and the options for that scheme require
+
+299
+00:15:04,810 --> 00:15:07,089
+you to have a function which will get
+
+300
+00:15:07,089 --> 00:15:09,250
+the credentials you pass that back to
+
+301
+00:15:09,250 --> 00:15:10,660
+the callback which will take care of
+
+302
+00:15:10,660 --> 00:15:14,850
+actually validating the credentials um
+
+303
+00:15:14,850 --> 00:15:20,709
+and this is excuse me I'm sorry so you
+
+304
+00:15:20,709 --> 00:15:23,230
+would have some type of resource that
+
+305
+00:15:23,230 --> 00:15:24,670
+you're protecting and you'll reference
+
+306
+00:15:24,670 --> 00:15:25,790
+that strategy
+
+307
+00:15:25,790 --> 00:15:28,040
+um and then you would have a client that
+
+308
+00:15:28,040 --> 00:15:30,260
+needs to go out and make a request to
+
+309
+00:15:30,260 --> 00:15:31,700
+that strategy so this is an example
+
+310
+00:15:31,700 --> 00:15:36,370
+using wreck you see we specify hawk um
+
+311
+00:15:36,370 --> 00:15:42,980
+which is not a happy j/s module it's
+
+312
+00:15:42,980 --> 00:15:46,160
+actually just under errands uh github or
+
+313
+00:15:46,160 --> 00:15:51,260
+npm but what that library will do is
+
+314
+00:15:51,260 --> 00:15:53,630
+allow you to generate a header that
+
+315
+00:15:53,630 --> 00:15:55,370
+header will then be passed in through
+
+316
+00:15:55,370 --> 00:16:01,040
+your request you need to pass the same
+
+317
+00:16:01,040 --> 00:16:02,930
+type of credential that you'd have on
+
+318
+00:16:02,930 --> 00:16:05,930
+the server side where it takes the ID
+
+319
+00:16:05,930 --> 00:16:08,810
+the key in the algorithm and then you
+
+320
+00:16:08,810 --> 00:16:11,090
+create that header using the URL the
+
+321
+00:16:11,090 --> 00:16:14,390
+method that you're using and the
+
+322
+00:16:14,390 --> 00:16:19,370
+credential options and then when you
+
+323
+00:16:19,370 --> 00:16:21,110
+generate your request you specify that
+
+324
+00:16:21,110 --> 00:16:24,320
+specific authentication header and then
+
+325
+00:16:24,320 --> 00:16:26,750
+the supported model will take care of
+

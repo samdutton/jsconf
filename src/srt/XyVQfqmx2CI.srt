@@ -1,0 +1,3441 @@
+1
+00:00:00,320 --> 00:00:02,070
+
+[Music]
+
+2
+00:00:02,070 --> 00:00:03,840
+[Applause]
+
+3
+00:00:03,840 --> 00:00:05,660
+[Music]
+
+4
+00:00:05,660 --> 00:00:07,410
+[Applause]
+
+5
+00:00:07,410 --> 00:00:09,280
+[Music]
+
+6
+00:00:09,280 --> 00:00:11,020
+[Applause]
+
+7
+00:00:11,020 --> 00:00:12,780
+[Music]
+
+8
+00:00:12,780 --> 00:00:16,860
+[Applause]
+
+9
+00:00:16,870 --> 00:00:23,080
+[Music]
+
+10
+00:00:23,080 --> 00:00:25,770
+[Applause]
+
+11
+00:00:25,770 --> 00:00:27,160
+well great
+
+12
+00:00:27,160 --> 00:00:29,079
+hello everyone I'm Christopher Baxter
+
+13
+00:00:29,079 --> 00:00:31,270
+and I'm multiple we're going to talk
+
+14
+00:00:31,270 --> 00:00:33,280
+about concurrency in JavaScript with a
+
+15
+00:00:33,280 --> 00:00:35,649
+particular focus on the Dom now
+
+16
+00:00:35,649 --> 00:00:37,420
+concurrency is a big topic it's maybe a
+
+17
+00:00:37,420 --> 00:00:39,460
+complicated topic so let's look at some
+
+18
+00:00:39,460 --> 00:00:43,000
+of the basics behind it currency is
+
+19
+00:00:43,000 --> 00:00:44,650
+really it's just a technical word for
+
+20
+00:00:44,650 --> 00:00:46,090
+multiple parts of a computer program
+
+21
+00:00:46,090 --> 00:00:49,780
+running at the same time now if your
+
+22
+00:00:49,780 --> 00:00:52,720
+computer or phone has more than one core
+
+23
+00:00:52,720 --> 00:00:55,030
+which it does or you have more than one
+
+24
+00:00:55,030 --> 00:00:57,399
+computer which the cloud does then this
+
+25
+00:00:57,399 --> 00:00:59,910
+can make things get done much faster
+
+26
+00:00:59,910 --> 00:01:02,380
+however it generally also makes things
+
+27
+00:01:02,380 --> 00:01:04,439
+way more complicated
+
+28
+00:01:04,439 --> 00:01:07,149
+speaking of concurrency you always kind
+
+29
+00:01:07,149 --> 00:01:08,259
+of have to talk about like the
+
+30
+00:01:08,259 --> 00:01:09,790
+difference between parallelism and
+
+31
+00:01:09,790 --> 00:01:12,189
+concurrency they're just the same thing
+
+32
+00:01:12,189 --> 00:01:14,500
+but someone in the 80s took away the
+
+33
+00:01:14,500 --> 00:01:16,470
+awesome word which is parallelism and
+
+34
+00:01:16,470 --> 00:01:18,460
+made it means something very specific
+
+35
+00:01:18,460 --> 00:01:20,409
+but that doesn't matter are we gonna say
+
+36
+00:01:20,409 --> 00:01:21,370
+parallelism and concurrency
+
+37
+00:01:21,370 --> 00:01:24,520
+interchangeable who cares so another
+
+38
+00:01:24,520 --> 00:01:27,729
+important concept are threats they're
+
+39
+00:01:27,729 --> 00:01:30,000
+just programs that run on a computer and
+
+40
+00:01:30,000 --> 00:01:33,070
+there can be more than one threat active
+
+41
+00:01:33,070 --> 00:01:34,750
+at any given time
+
+42
+00:01:34,750 --> 00:01:38,560
+now concurrency doesn't require multiple
+
+43
+00:01:38,560 --> 00:01:41,500
+threats for example network requests can
+
+44
+00:01:41,500 --> 00:01:44,409
+happen while your main thread is running
+
+45
+00:01:44,409 --> 00:01:47,530
+and so that's still a concurrent program
+
+46
+00:01:47,530 --> 00:01:50,110
+but if you have only one thread and your
+
+47
+00:01:50,110 --> 00:01:52,689
+program can only do one thing at a time
+
+48
+00:01:52,689 --> 00:01:55,420
+on a given device so we saw call such a
+
+49
+00:01:55,420 --> 00:01:55,930
+program
+
+50
+00:01:55,930 --> 00:01:57,549
+single threaded and that's an important
+
+51
+00:01:57,549 --> 00:01:59,619
+term because web browsers which we're
+
+52
+00:01:59,619 --> 00:02:01,270
+talking about today are traditionally
+
+53
+00:02:01,270 --> 00:02:03,430
+single threaded now today they're like
+
+54
+00:02:03,430 --> 00:02:05,590
+these complicated beasts and they do
+
+55
+00:02:05,590 --> 00:02:07,600
+many things at the same time but they
+
+56
+00:02:07,600 --> 00:02:09,759
+very much still behave as if there were
+
+57
+00:02:09,759 --> 00:02:11,769
+a single threaded so it's a good model
+
+58
+00:02:11,769 --> 00:02:14,290
+to have in your head the single thread
+
+59
+00:02:14,290 --> 00:02:16,420
+we call the main thread and very
+
+60
+00:02:16,420 --> 00:02:17,829
+important is this Jess confit your
+
+61
+00:02:17,829 --> 00:02:20,380
+JavaScript runs on the main threat by
+
+62
+00:02:20,380 --> 00:02:22,720
+default so if you write some JavaScript
+
+63
+00:02:22,720 --> 00:02:24,580
+and it's still running
+
+64
+00:02:24,580 --> 00:02:26,590
+your browser cannot do anything at the
+
+65
+00:02:26,590 --> 00:02:29,530
+same time which might be bad because oh
+
+66
+00:02:29,530 --> 00:02:32,260
+my god we have to achieve 60 frames per
+
+67
+00:02:32,260 --> 00:02:34,930
+second all the time where does his
+
+68
+00:02:34,930 --> 00:02:35,680
+number come from
+
+69
+00:02:35,680 --> 00:02:37,360
+that's basically the fundamental
+
+70
+00:02:37,360 --> 00:02:40,570
+constant of runtime performance
+
+71
+00:02:40,570 --> 00:02:44,470
+it's how often on a normal device your
+
+72
+00:02:44,470 --> 00:02:46,660
+graphics card would like to push pixels
+
+73
+00:02:46,660 --> 00:02:50,920
+to the screen now humans don't you know
+
+74
+00:02:50,920 --> 00:02:52,870
+bias to this particular framework frame
+
+75
+00:02:52,870 --> 00:02:55,270
+rate for example movies traditionally
+
+76
+00:02:55,270 --> 00:02:56,680
+run in the 24 frames per second
+
+77
+00:02:56,680 --> 00:02:58,960
+important is that they always run 24
+
+78
+00:02:58,960 --> 00:03:01,060
+frames per second humans are really good
+
+79
+00:03:01,060 --> 00:03:04,150
+at recognizing changes in frame rate if
+
+80
+00:03:04,150 --> 00:03:06,370
+frame rate isn't stable we call that
+
+81
+00:03:06,370 --> 00:03:09,670
+Jack and jank is really bad because it
+
+82
+00:03:09,670 --> 00:03:15,220
+makes our you know brains go wild now 60
+
+83
+00:03:15,220 --> 00:03:16,870
+frames per second leads to another magic
+
+84
+00:03:16,870 --> 00:03:18,790
+number which is 60 milliseconds that's
+
+85
+00:03:18,790 --> 00:03:21,250
+just 1,000 milliseconds in a second
+
+86
+00:03:21,250 --> 00:03:24,280
+divided by 60 which is what do you have
+
+87
+00:03:24,280 --> 00:03:26,700
+to update the screen right well
+
+88
+00:03:26,700 --> 00:03:28,690
+unfortunately it's more complicated so
+
+89
+00:03:28,690 --> 00:03:31,510
+there's you and then there is stuff the
+
+90
+00:03:31,510 --> 00:03:32,920
+browser does which is a layout style
+
+91
+00:03:32,920 --> 00:03:34,630
+calculation painting compositing
+
+92
+00:03:34,630 --> 00:03:37,510
+actually physically flipping the pixels
+
+93
+00:03:37,510 --> 00:03:40,780
+on the screen and everything in that 60
+
+94
+00:03:40,780 --> 00:03:43,090
+milliseconds has to fit into that kind
+
+95
+00:03:43,090 --> 00:03:46,330
+of budget great so let's break that down
+
+96
+00:03:46,330 --> 00:03:48,340
+a little bit because it's pretty darn
+
+97
+00:03:48,340 --> 00:03:50,680
+complicated you've got 16 milliseconds a
+
+98
+00:03:50,680 --> 00:03:52,420
+lot of code to execute and you're trying
+
+99
+00:03:52,420 --> 00:03:53,680
+to get it all done within this time
+
+100
+00:03:53,680 --> 00:03:55,510
+frame the important thing to remember
+
+101
+00:03:55,510 --> 00:03:58,030
+though is that's not just your code your
+
+102
+00:03:58,030 --> 00:03:59,410
+code runs for a certain amount of time
+
+103
+00:03:59,410 --> 00:04:01,090
+and the browser needs to respond to the
+
+104
+00:04:01,090 --> 00:04:03,370
+changes that you asked it to do as well
+
+105
+00:04:03,370 --> 00:04:06,130
+in that time frame and sometimes we
+
+106
+00:04:06,130 --> 00:04:07,780
+think about this as breaking it into two
+
+107
+00:04:07,780 --> 00:04:10,300
+eight millisecond segments the reason is
+
+108
+00:04:10,300 --> 00:04:12,370
+that the time that the browser needs is
+
+109
+00:04:12,370 --> 00:04:14,140
+kind of arbitrary we don't know that in
+
+110
+00:04:14,140 --> 00:04:16,269
+advance and so we shoot for pretty much
+
+111
+00:04:16,269 --> 00:04:19,419
+the worst case so what happens in this
+
+112
+00:04:19,419 --> 00:04:21,940
+eight milliseconds we have a lot of
+
+113
+00:04:21,940 --> 00:04:24,130
+stuff to do and let's hope it's not too
+
+114
+00:04:24,130 --> 00:04:26,440
+expensive we get a click event that
+
+115
+00:04:26,440 --> 00:04:29,080
+lands in our UI and after we get that
+
+116
+00:04:29,080 --> 00:04:30,720
+click event we need to process the event
+
+117
+00:04:30,720 --> 00:04:33,280
+now many traditional water and
+
+118
+00:04:33,280 --> 00:04:35,410
+frameworks will then do a state change
+
+119
+00:04:35,410 --> 00:04:38,110
+at this point so we need to determine
+
+120
+00:04:38,110 --> 00:04:40,420
+what that new state is going to be that
+
+121
+00:04:40,420 --> 00:04:43,180
+takes some time after we've created a
+
+122
+00:04:43,180 --> 00:04:45,250
+new state you need to respond to that
+
+123
+00:04:45,250 --> 00:04:48,130
+state so this response may be a virtual
+
+124
+00:04:48,130 --> 00:04:50,800
+Dom diff in some libraries or it may be
+
+125
+00:04:50,800 --> 00:04:53,400
+a direct mutation of elements and others
+
+126
+00:04:53,400 --> 00:04:56,710
+later we have to issue the direct Dom
+
+127
+00:04:56,710 --> 00:04:59,770
+updates it's a lot of work to fit in 8
+
+128
+00:04:59,770 --> 00:05:01,870
+milliseconds and we don't always make it
+
+129
+00:05:01,870 --> 00:05:04,840
+so what happens when we don't well we
+
+130
+00:05:04,840 --> 00:05:07,600
+push everything out so now instead of
+
+131
+00:05:07,600 --> 00:05:09,160
+being 8 milliseconds we're at 10
+
+132
+00:05:09,160 --> 00:05:10,870
+milliseconds in this example because my
+
+133
+00:05:10,870 --> 00:05:12,940
+state change process took two
+
+134
+00:05:12,940 --> 00:05:15,730
+milliseconds longer what does this mean
+
+135
+00:05:15,730 --> 00:05:17,440
+for the end user it's not that big of a
+
+136
+00:05:17,440 --> 00:05:20,440
+deal right what means that we went past
+
+137
+00:05:20,440 --> 00:05:22,570
+our frame budget because we took 10
+
+138
+00:05:22,570 --> 00:05:24,730
+milliseconds the browser really needs 8
+
+139
+00:05:24,730 --> 00:05:28,360
+we're now at 18 congratulations we've
+
+140
+00:05:28,360 --> 00:05:30,400
+unintentionally and produced a little
+
+141
+00:05:30,400 --> 00:05:34,210
+bit jank now don't feel bad we all do
+
+142
+00:05:34,210 --> 00:05:36,250
+this it's common it happens to all of
+
+143
+00:05:36,250 --> 00:05:38,020
+our applications just don't let it
+
+144
+00:05:38,020 --> 00:05:41,140
+happen too much right however it's hard
+
+145
+00:05:41,140 --> 00:05:43,300
+to keep this going and hard to make this
+
+146
+00:05:43,300 --> 00:05:45,730
+work well across all devices because you
+
+147
+00:05:45,730 --> 00:05:47,620
+can target the devices that you know but
+
+148
+00:05:47,620 --> 00:05:48,970
+you don't know the performance of your
+
+149
+00:05:48,970 --> 00:05:53,350
+application on unknown devices why well
+
+150
+00:05:53,350 --> 00:05:55,480
+because not all mobile devices are
+
+151
+00:05:55,480 --> 00:05:56,350
+created equal
+
+152
+00:05:56,350 --> 00:05:58,360
+we've got a plethora of devices that are
+
+153
+00:05:58,360 --> 00:06:00,400
+out in the world things from low-end
+
+154
+00:06:00,400 --> 00:06:03,700
+devices that are sold for $80 brand-new
+
+155
+00:06:03,700 --> 00:06:06,850
+to high-end devices at $1,000 per unit
+
+156
+00:06:06,850 --> 00:06:09,550
+and sometimes people hold on devices for
+
+157
+00:06:09,550 --> 00:06:11,170
+way longer than you would expect a
+
+158
+00:06:11,170 --> 00:06:14,110
+person buying a phone in 2016 is
+
+159
+00:06:14,110 --> 00:06:15,550
+probably still holding on to that phone
+
+160
+00:06:15,550 --> 00:06:17,350
+and the performance of that device has
+
+161
+00:06:17,350 --> 00:06:19,650
+not improved in fact it's gotten worse
+
+162
+00:06:19,650 --> 00:06:22,000
+so it's important to remember that the
+
+163
+00:06:22,000 --> 00:06:23,440
+things that you see are not everything
+
+164
+00:06:23,440 --> 00:06:25,630
+is not everything that a person using
+
+165
+00:06:25,630 --> 00:06:29,680
+your application sees so let's go into
+
+166
+00:06:29,680 --> 00:06:32,560
+this a little bit more in depth pretend
+
+167
+00:06:32,560 --> 00:06:34,660
+we're walking into a brand new big store
+
+168
+00:06:34,660 --> 00:06:36,220
+like a Best Buy and we're gonna buy a
+
+169
+00:06:36,220 --> 00:06:39,310
+new device today it's helpful to think
+
+170
+00:06:39,310 --> 00:06:41,050
+about a device that you're purchasing as
+
+171
+00:06:41,050 --> 00:06:43,120
+breaking down into one of three segments
+
+172
+00:06:43,120 --> 00:06:45,580
+the first segment the first the 15th
+
+173
+00:06:45,580 --> 00:06:48,730
+percentile is roughly around $80 so if
+
+174
+00:06:48,730 --> 00:06:50,170
+you were walking in today and you wanted
+
+175
+00:06:50,170 --> 00:06:51,150
+to spend around 80
+
+176
+00:06:51,150 --> 00:06:52,740
+you could afford a device in this
+
+177
+00:06:52,740 --> 00:06:55,890
+specific segment of the market the
+
+178
+00:06:55,890 --> 00:06:58,110
+second segment is around 75th percentile
+
+179
+00:06:58,110 --> 00:06:59,610
+where you're looking at spending close
+
+180
+00:06:59,610 --> 00:07:02,520
+to $600 that's a really large increase
+
+181
+00:07:02,520 --> 00:07:05,760
+and the third segment is the special
+
+182
+00:07:05,760 --> 00:07:08,730
+segment I would say because you're able
+
+183
+00:07:08,730 --> 00:07:10,470
+to spend a thousand dollars on this
+
+184
+00:07:10,470 --> 00:07:12,720
+device one device a thousand dollars
+
+185
+00:07:12,720 --> 00:07:15,360
+now this gamut of price is not normally
+
+186
+00:07:15,360 --> 00:07:17,070
+reflected in our metrics we tend to look
+
+187
+00:07:17,070 --> 00:07:19,590
+at things as a whole however if you
+
+188
+00:07:19,590 --> 00:07:21,270
+break things down into these segments
+
+189
+00:07:21,270 --> 00:07:25,230
+patterns start to emerge so let's look
+
+190
+00:07:25,230 --> 00:07:26,840
+at single core performance over time
+
+191
+00:07:26,840 --> 00:07:29,250
+this is a chart of all single core
+
+192
+00:07:29,250 --> 00:07:31,950
+performance of modern devices from 2011
+
+193
+00:07:31,950 --> 00:07:33,000
+to 2018
+
+194
+00:07:33,000 --> 00:07:35,760
+now the segment's are again highlighted
+
+195
+00:07:35,760 --> 00:07:38,820
+here so blue is the 15th percentile you
+
+196
+00:07:38,820 --> 00:07:40,590
+might notice that this trend line is not
+
+197
+00:07:40,590 --> 00:07:42,990
+going up and there's a reason for that
+
+198
+00:07:42,990 --> 00:07:45,510
+these devices are not becoming faster
+
+199
+00:07:45,510 --> 00:07:47,310
+they're becoming cheaper and more
+
+200
+00:07:47,310 --> 00:07:49,830
+accessible and more prolific across the
+
+201
+00:07:49,830 --> 00:07:53,040
+world these devices are not improving at
+
+202
+00:07:53,040 --> 00:07:54,450
+the rate that you would expect with
+
+203
+00:07:54,450 --> 00:07:59,070
+Moore's law the second category is that
+
+204
+00:07:59,070 --> 00:08:01,410
+75th percentile and this is a pretty
+
+205
+00:08:01,410 --> 00:08:03,120
+close approximation to what you would
+
+206
+00:08:03,120 --> 00:08:05,340
+expect from Moore's Law we're seeing an
+
+207
+00:08:05,340 --> 00:08:07,320
+improvement in performance over time and
+
+208
+00:08:07,320 --> 00:08:09,660
+these devices can even have specialized
+
+209
+00:08:09,660 --> 00:08:11,940
+hardware like a pixel does that allows
+
+210
+00:08:11,940 --> 00:08:13,500
+you to do say machine learning on the
+
+211
+00:08:13,500 --> 00:08:17,520
+device our third category is worth
+
+212
+00:08:17,520 --> 00:08:19,620
+talking about as well credit where
+
+213
+00:08:19,620 --> 00:08:21,600
+credit is due the a-series processors
+
+214
+00:08:21,600 --> 00:08:25,110
+are fantastic these things outperform
+
+215
+00:08:25,110 --> 00:08:28,110
+Moore's law by a dramatic amount but it
+
+216
+00:08:28,110 --> 00:08:30,360
+creates a very large problem for our
+
+217
+00:08:30,360 --> 00:08:32,760
+industry as a whole the problem is that
+
+218
+00:08:32,760 --> 00:08:34,530
+we take out the devices that we have in
+
+219
+00:08:34,530 --> 00:08:37,050
+our pockets and we test the things that
+
+220
+00:08:37,050 --> 00:08:39,780
+we build on these devices these devices
+
+221
+00:08:39,780 --> 00:08:41,760
+are not representation are not an
+
+222
+00:08:41,760 --> 00:08:43,170
+accurate representation of what's
+
+223
+00:08:43,170 --> 00:08:45,270
+available in the world or what many
+
+224
+00:08:45,270 --> 00:08:48,840
+people have so this particular gap hurts
+
+225
+00:08:48,840 --> 00:08:51,450
+end-users significantly and it's
+
+226
+00:08:51,450 --> 00:08:53,610
+important to remember this very large
+
+227
+00:08:53,610 --> 00:08:56,150
+performance gap this gap is increasing
+
+228
+00:08:56,150 --> 00:09:00,140
+not decreasing
+
+229
+00:09:00,150 --> 00:09:02,940
+there's to be some good news right we
+
+230
+00:09:02,940 --> 00:09:04,440
+wouldn't be talking about concurrency if
+
+231
+00:09:04,440 --> 00:09:06,960
+there wasn't some very small light at
+
+232
+00:09:06,960 --> 00:09:08,850
+the tunnel maybe at the end of the
+
+233
+00:09:08,850 --> 00:09:09,270
+tunnel
+
+234
+00:09:09,270 --> 00:09:11,070
+so what's multi-core performance look
+
+235
+00:09:11,070 --> 00:09:13,020
+like let's look at those same devices in
+
+236
+00:09:13,020 --> 00:09:15,090
+this first category the 15th percentile
+
+237
+00:09:15,090 --> 00:09:17,190
+you can see that the green trend line is
+
+238
+00:09:17,190 --> 00:09:19,680
+slightly improving compared to single
+
+239
+00:09:19,680 --> 00:09:22,290
+core performance there is one noticeable
+
+240
+00:09:22,290 --> 00:09:24,120
+exception at the very end of this line
+
+241
+00:09:24,120 --> 00:09:26,550
+the nokia - it's worth calling out
+
+242
+00:09:26,550 --> 00:09:28,170
+because there's a very popular phone
+
+243
+00:09:28,170 --> 00:09:30,840
+that you can buy for $80 in the United
+
+244
+00:09:30,840 --> 00:09:34,740
+States and it is selling like crazy but
+
+245
+00:09:34,740 --> 00:09:39,360
+it can't be that bad right I want you to
+
+246
+00:09:39,360 --> 00:09:41,490
+bear with me we're about to watch a very
+
+247
+00:09:41,490 --> 00:09:46,230
+long video but it's worth the time here
+
+248
+00:09:46,230 --> 00:09:48,990
+I have two devices an iPhone on the left
+
+249
+00:09:48,990 --> 00:09:51,720
+and an unnamed device on the right you
+
+250
+00:09:51,720 --> 00:09:56,010
+name it it's a Nokia - this test the
+
+251
+00:09:56,010 --> 00:09:58,920
+Ares 6 test tests modern JavaScript
+
+252
+00:09:58,920 --> 00:10:00,840
+features for instance one of the things
+
+253
+00:10:00,840 --> 00:10:02,730
+that it runs is a Babel transpilation on
+
+254
+00:10:02,730 --> 00:10:06,180
+the device you might criticize that test
+
+255
+00:10:06,180 --> 00:10:07,710
+by saying no one will run Babel on a
+
+256
+00:10:07,710 --> 00:10:09,120
+mobile phone and you're right for
+
+257
+00:10:09,120 --> 00:10:11,580
+criticizing it however it is a good
+
+258
+00:10:11,580 --> 00:10:13,740
+representation of what runtime
+
+259
+00:10:13,740 --> 00:10:15,780
+performance is like there's no load
+
+260
+00:10:15,780 --> 00:10:18,000
+involved there's no network involved
+
+261
+00:10:18,000 --> 00:10:20,610
+it's pure capabilities of the local
+
+262
+00:10:20,610 --> 00:10:23,730
+device and it's entirely single core
+
+263
+00:10:23,730 --> 00:10:27,060
+focused so we've got the iPhone here on
+
+264
+00:10:27,060 --> 00:10:28,620
+the Left it's gonna finish this test
+
+265
+00:10:28,620 --> 00:10:31,230
+pretty soon all six passes of the test
+
+266
+00:10:31,230 --> 00:10:33,530
+are gonna finish at roughly 48 seconds
+
+267
+00:10:33,530 --> 00:10:36,120
+now I'm going to speed it up a little
+
+268
+00:10:36,120 --> 00:10:38,730
+bit because it's a bit painful the nokia
+
+269
+00:10:38,730 --> 00:10:40,770
+2 is gonna be running this test for a
+
+270
+00:10:40,770 --> 00:10:43,020
+while longer and we're just gonna wait a
+
+271
+00:10:43,020 --> 00:10:50,550
+couple minutes okay now sped it up eight
+
+272
+00:10:50,550 --> 00:10:56,250
+times we still haven't finished one pass
+
+273
+00:10:56,250 --> 00:11:01,890
+of six or six classes
+
+274
+00:11:01,900 --> 00:11:12,790
+it hasn't crashed I promise a-alright
+
+275
+00:11:12,790 --> 00:11:16,510
+five minutes and 19 seconds for one of
+
+276
+00:11:16,510 --> 00:11:20,770
+six passes that's pretty bad
+
+277
+00:11:20,770 --> 00:11:22,330
+but that's what a lot of people's
+
+278
+00:11:22,330 --> 00:11:23,980
+devices are like and that's all what a
+
+279
+00:11:23,980 --> 00:11:26,020
+lot of people are entering the internet
+
+280
+00:11:26,020 --> 00:11:29,830
+using for the first time all right so
+
+281
+00:11:29,830 --> 00:11:32,140
+what I kind of took out of these graphs
+
+282
+00:11:32,140 --> 00:11:35,380
+is performance is not evenly distributed
+
+283
+00:11:35,380 --> 00:11:37,870
+but there is a chance to get a little
+
+284
+00:11:37,870 --> 00:11:39,670
+bit more of the devices but taking
+
+285
+00:11:39,670 --> 00:11:42,310
+advantage of their multiple cores so how
+
+286
+00:11:42,310 --> 00:11:45,130
+do we do that in JavaScript well super
+
+287
+00:11:45,130 --> 00:11:47,050
+excited to announce super amazing new
+
+288
+00:11:47,050 --> 00:11:49,780
+API on it called the web worker which
+
+289
+00:11:49,780 --> 00:11:54,610
+has actually been around since 2009 do
+
+290
+00:11:54,610 --> 00:12:00,590
+folks remember Ajax Ian
+
+291
+00:12:00,600 --> 00:12:03,400
+if the Ajax iam wrote about something
+
+292
+00:12:03,400 --> 00:12:04,690
+you have to check whether it's still
+
+293
+00:12:04,690 --> 00:12:06,250
+supported not where the browser supports
+
+294
+00:12:06,250 --> 00:12:08,980
+it this is this API is in every browser
+
+295
+00:12:08,980 --> 00:12:10,030
+it's in ie8
+
+296
+00:12:10,030 --> 00:12:12,100
+it's not a 96 all right so it's not in
+
+297
+00:12:12,100 --> 00:12:14,020
+every browser but it is in every browser
+
+298
+00:12:14,020 --> 00:12:15,880
+you care about we can really take
+
+299
+00:12:15,880 --> 00:12:18,100
+advantage of it so what are they they
+
+300
+00:12:18,100 --> 00:12:20,680
+are a way to write multivariate
+
+301
+00:12:20,680 --> 00:12:23,050
+JavaScript in web browsers now you've
+
+302
+00:12:23,050 --> 00:12:24,340
+probably heard that multi-threading can
+
+303
+00:12:24,340 --> 00:12:26,680
+be like dangerous and memory unsafe so
+
+304
+00:12:26,680 --> 00:12:28,690
+this is not the case here workers share
+
+305
+00:12:28,690 --> 00:12:32,080
+no state at all with each other or the
+
+306
+00:12:32,080 --> 00:12:36,370
+main threat they have only access to
+
+307
+00:12:36,370 --> 00:12:38,950
+very limited set of API so they can't do
+
+308
+00:12:38,950 --> 00:12:40,570
+everything you can do on the main thread
+
+309
+00:12:40,570 --> 00:12:43,060
+and and it's very important for this
+
+310
+00:12:43,060 --> 00:12:45,460
+presentation they do not have access to
+
+311
+00:12:45,460 --> 00:12:47,260
+the Dom and we're talking about
+
+312
+00:12:47,260 --> 00:12:51,100
+concurrency in the Dom so sad face let's
+
+313
+00:12:51,100 --> 00:12:53,140
+take a look at how that API looks like
+
+314
+00:12:53,140 --> 00:12:55,120
+the worker you know you just make a
+
+315
+00:12:55,120 --> 00:12:56,740
+worker or you give it a Java file and
+
+316
+00:12:56,740 --> 00:12:59,140
+then it runs and you can send it
+
+317
+00:12:59,140 --> 00:13:02,050
+messages this post message this kind of
+
+318
+00:13:02,050 --> 00:13:03,310
+usually looks like this you know you get
+
+319
+00:13:03,310 --> 00:13:04,960
+some event you send a message to the
+
+320
+00:13:04,960 --> 00:13:06,820
+worker the worker receives a message
+
+321
+00:13:06,820 --> 00:13:09,280
+does some computation sense us back we
+
+322
+00:13:09,280 --> 00:13:11,410
+receive it back we have to compute it I
+
+323
+00:13:11,410 --> 00:13:14,770
+think one of the main things here is we
+
+324
+00:13:14,770 --> 00:13:15,630
+have to
+
+325
+00:13:15,630 --> 00:13:18,090
+be very conscience the right coat like
+
+326
+00:13:18,090 --> 00:13:20,190
+this we have to measure that we have to
+
+327
+00:13:20,190 --> 00:13:24,090
+we have to you know do the work ten
+
+328
+00:13:24,090 --> 00:13:25,950
+years of adoption have shown that this
+
+329
+00:13:25,950 --> 00:13:27,660
+is not something we do very often right
+
+330
+00:13:27,660 --> 00:13:28,800
+so there's a problem with this
+
+331
+00:13:28,800 --> 00:13:32,310
+programming model so the primitives to
+
+332
+00:13:32,310 --> 00:13:34,470
+low level is there something a bit more
+
+333
+00:13:34,470 --> 00:13:37,230
+abstracted perhaps usable in comparison
+
+334
+00:13:37,230 --> 00:13:39,210
+I'd like to go over a few things that
+
+335
+00:13:39,210 --> 00:13:41,180
+are showing some progress in this space
+
+336
+00:13:41,180 --> 00:13:43,740
+first ones called Cluny it's made by the
+
+337
+00:13:43,740 --> 00:13:46,800
+chrome team the way that it works is the
+
+338
+00:13:46,800 --> 00:13:48,540
+JavaScript you want to run in a separate
+
+339
+00:13:48,540 --> 00:13:50,670
+thread is actually loaded with your main
+
+340
+00:13:50,670 --> 00:13:53,220
+thread JavaScript so in this case we
+
+341
+00:13:53,220 --> 00:13:55,020
+have a class that exists within the main
+
+342
+00:13:55,020 --> 00:13:57,150
+thread but using Cluny were able to
+
+343
+00:13:57,150 --> 00:13:59,910
+spawn an instance of that that class
+
+344
+00:13:59,910 --> 00:14:02,670
+that runs entirely in the worker so what
+
+345
+00:14:02,670 --> 00:14:04,320
+happens is Cluny underneath the hood
+
+346
+00:14:04,320 --> 00:14:06,960
+creates a web worker for you sends over
+
+347
+00:14:06,960 --> 00:14:08,460
+the JavaScript that it needs to be able
+
+348
+00:14:08,460 --> 00:14:09,870
+to execute in the worker and you can
+
+349
+00:14:09,870 --> 00:14:14,310
+just await its response but it would be
+
+350
+00:14:14,310 --> 00:14:16,230
+great if this was actually in the
+
+351
+00:14:16,230 --> 00:14:18,480
+browser itself right this is something
+
+352
+00:14:18,480 --> 00:14:19,620
+that feels like it should be an echo
+
+353
+00:14:19,620 --> 00:14:22,020
+echo script level spec so there's a few
+
+354
+00:14:22,020 --> 00:14:23,550
+specification outs that are that are
+
+355
+00:14:23,550 --> 00:14:26,100
+trying to bring this to Ahmed script the
+
+356
+00:14:26,100 --> 00:14:27,570
+one that I think is the most interesting
+
+357
+00:14:27,570 --> 00:14:30,330
+is called Jas blocks but it has an M lot
+
+358
+00:14:30,330 --> 00:14:32,280
+above the O so I don't know how to guess
+
+359
+00:14:32,280 --> 00:14:37,830
+blex ducts whatever he said so the way
+
+360
+00:14:37,830 --> 00:14:39,630
+that this one works is very similar to
+
+361
+00:14:39,630 --> 00:14:41,880
+the last example in the sense that the
+
+362
+00:14:41,880 --> 00:14:43,800
+block that we're defining here that has
+
+363
+00:14:43,800 --> 00:14:46,370
+this additional straight lines is
+
+364
+00:14:46,370 --> 00:14:48,870
+indicates that this piece specific piece
+
+365
+00:14:48,870 --> 00:14:51,780
+of code can run in any thread it may run
+
+366
+00:14:51,780 --> 00:14:53,190
+in the main thread and may run in a
+
+367
+00:14:53,190 --> 00:14:54,570
+different thread it's up to the browser
+
+368
+00:14:54,570 --> 00:14:56,520
+runtime or the JavaScript runtime in
+
+369
+00:14:56,520 --> 00:14:58,950
+this case to determine based on system
+
+370
+00:14:58,950 --> 00:15:01,650
+resources where this should run but this
+
+371
+00:15:01,650 --> 00:15:03,120
+presents a pretty big problem in
+
+372
+00:15:03,120 --> 00:15:05,310
+JavaScript because this thing wouldn't
+
+373
+00:15:05,310 --> 00:15:07,830
+have access to lexical scope it only
+
+374
+00:15:07,830 --> 00:15:09,870
+knows about the scope of its current
+
+375
+00:15:09,870 --> 00:15:11,370
+block it can't know about anything
+
+376
+00:15:11,370 --> 00:15:13,080
+outside of it because it may not run in
+
+377
+00:15:13,080 --> 00:15:15,630
+the same thread well the proposal
+
+378
+00:15:15,630 --> 00:15:17,640
+provides some syntax to allow you to
+
+379
+00:15:17,640 --> 00:15:19,350
+specify the things that you would like
+
+380
+00:15:19,350 --> 00:15:21,330
+to ensure are available in that within
+
+381
+00:15:21,330 --> 00:15:23,370
+that specific block in this case
+
+382
+00:15:23,370 --> 00:15:24,930
+something that looks a little bit like
+
+383
+00:15:24,930 --> 00:15:28,390
+typescript is included so you can say
+
+384
+00:15:28,390 --> 00:15:30,130
+for this specific worker instance I'd
+
+385
+00:15:30,130 --> 00:15:32,170
+like to make sure the end point dogs are
+
+386
+00:15:32,170 --> 00:15:36,519
+best is passed along let's look at
+
+387
+00:15:36,519 --> 00:15:38,620
+something a little bit more easy to use
+
+388
+00:15:38,620 --> 00:15:40,540
+straightforward applies to many of our
+
+389
+00:15:40,540 --> 00:15:43,120
+applications today many of us use redux
+
+390
+00:15:43,120 --> 00:15:45,010
+in this room and many of us across the
+
+391
+00:15:45,010 --> 00:15:47,050
+globe use it from really great earlier
+
+392
+00:15:47,050 --> 00:15:51,370
+talk today so redux is pretty powerful
+
+393
+00:15:51,370 --> 00:15:53,800
+but it runs in the main thread so what
+
+394
+00:15:53,800 --> 00:15:55,480
+happens in that earlier model is we
+
+395
+00:15:55,480 --> 00:15:57,370
+would need to run our entire Redux store
+
+396
+00:15:57,370 --> 00:15:59,709
+and reducers for all of those actions in
+
+397
+00:15:59,709 --> 00:16:02,019
+the main thread stockroom from Jason
+
+398
+00:16:02,019 --> 00:16:04,120
+Miller is very similar to redux except
+
+399
+00:16:04,120 --> 00:16:06,790
+that it runs in a worker so your main
+
+400
+00:16:06,790 --> 00:16:09,250
+thread code subscribes to updates that
+
+401
+00:16:09,250 --> 00:16:11,230
+come from your Redux store but your
+
+402
+00:16:11,230 --> 00:16:14,769
+networking requests and your redux kind
+
+403
+00:16:14,769 --> 00:16:16,839
+of massaging of data happens entirely
+
+404
+00:16:16,839 --> 00:16:19,240
+off the main thread this can free up a
+
+405
+00:16:19,240 --> 00:16:20,860
+significant amount of your time and a
+
+406
+00:16:20,860 --> 00:16:25,029
+web app that uses redux heavily but I
+
+407
+00:16:25,029 --> 00:16:27,190
+thought this talk was about the Dom you
+
+408
+00:16:27,190 --> 00:16:29,350
+are absolutely right
+
+409
+00:16:29,350 --> 00:16:33,430
+so Malta yeah so as I said earlier the
+
+410
+00:16:33,430 --> 00:16:35,850
+workers cannot have access to the Dom
+
+411
+00:16:35,850 --> 00:16:38,050
+which is said and so I'm super excited
+
+412
+00:16:38,050 --> 00:16:39,459
+to announce that we're releasing a
+
+413
+00:16:39,459 --> 00:16:42,820
+library called worker Dom which exposed
+
+414
+00:16:42,820 --> 00:16:44,829
+the same Dom API that you know love to
+
+415
+00:16:44,829 --> 00:16:47,490
+you and the frameworks in a web worker
+
+416
+00:16:47,490 --> 00:16:49,899
+let's take a look at the original
+
+417
+00:16:49,899 --> 00:16:53,170
+requirements when we went about kind of
+
+418
+00:16:53,170 --> 00:16:54,820
+building this library I was like hey
+
+419
+00:16:54,820 --> 00:16:56,949
+Chris can you make it said react works
+
+420
+00:16:56,949 --> 00:16:58,810
+in the web worker and that was really
+
+421
+00:16:58,810 --> 00:17:04,209
+all I wanted but I think grace was yeah
+
+422
+00:17:04,209 --> 00:17:06,790
+you know first the fun of that let's do
+
+423
+00:17:06,790 --> 00:17:08,199
+something more abstract let's do
+
+424
+00:17:08,199 --> 00:17:09,910
+something that supports the whole
+
+425
+00:17:09,910 --> 00:17:12,549
+variety of web programming so what is
+
+426
+00:17:12,549 --> 00:17:16,110
+worker DOM and makes the full Dom API
+
+427
+00:17:16,110 --> 00:17:19,209
+available to what worker effectively
+
+428
+00:17:19,209 --> 00:17:20,709
+this means that you can use your
+
+429
+00:17:20,709 --> 00:17:23,049
+existing web app and run in the web
+
+430
+00:17:23,049 --> 00:17:26,470
+worker and it just works with some terms
+
+431
+00:17:26,470 --> 00:17:28,990
+and conditions obviously
+
+432
+00:17:28,990 --> 00:17:31,970
+but you know we'll go in there let's
+
+433
+00:17:31,970 --> 00:17:33,350
+look at the use cases you can use this
+
+434
+00:17:33,350 --> 00:17:36,400
+to speed up your existing yep app yay
+
+435
+00:17:36,400 --> 00:17:39,200
+framework authors can use it to speed up
+
+436
+00:17:39,200 --> 00:17:40,940
+their existing framework with making
+
+437
+00:17:40,940 --> 00:17:44,090
+minor changes and one particular use
+
+438
+00:17:44,090 --> 00:17:46,010
+case done I'm very excited about you've
+
+439
+00:17:46,010 --> 00:17:47,600
+probably heard that third-party
+
+440
+00:17:47,600 --> 00:17:49,880
+JavaScript other people JavaScript like
+
+441
+00:17:49,880 --> 00:17:52,460
+your analytics framework that's you know
+
+442
+00:17:52,460 --> 00:17:53,960
+they're a problem for your site because
+
+443
+00:17:53,960 --> 00:17:55,520
+you can control them and they might do
+
+444
+00:17:55,520 --> 00:17:57,530
+bad things wouldn't be nice if you just
+
+445
+00:17:57,530 --> 00:17:59,420
+ran them on a worker and they kind of
+
+446
+00:17:59,420 --> 00:18:01,070
+did their own thing but they couldn't
+
+447
+00:18:01,070 --> 00:18:03,200
+touch your code I think this is an
+
+448
+00:18:03,200 --> 00:18:05,120
+amazing use case where this library
+
+449
+00:18:05,120 --> 00:18:07,610
+could be super powerful all right let's
+
+450
+00:18:07,610 --> 00:18:09,970
+take a look what it does to your program
+
+451
+00:18:09,970 --> 00:18:12,860
+coming back to this example that Chris
+
+452
+00:18:12,860 --> 00:18:15,650
+introduced earlier so you know we have
+
+453
+00:18:15,650 --> 00:18:17,180
+this main thread and we're doing event
+
+454
+00:18:17,180 --> 00:18:18,770
+processing state determination
+
+455
+00:18:18,770 --> 00:18:20,990
+processing dumb issues the browser
+
+456
+00:18:20,990 --> 00:18:23,780
+doesn't work and those things they added
+
+457
+00:18:23,780 --> 00:18:26,630
+up to 18 milliseconds there's a second
+
+458
+00:18:26,630 --> 00:18:28,130
+number there it was just the latency
+
+459
+00:18:28,130 --> 00:18:30,530
+which is 80 milliseconds took 18
+
+460
+00:18:30,530 --> 00:18:32,510
+milliseconds to react to a user action
+
+461
+00:18:32,510 --> 00:18:34,850
+that's yellow because that is actually
+
+462
+00:18:34,850 --> 00:18:36,560
+okay if you're familiar with the rails
+
+463
+00:18:36,560 --> 00:18:38,300
+model for example actually gives us 50
+
+464
+00:18:38,300 --> 00:18:40,490
+milliseconds to react to the user so
+
+465
+00:18:40,490 --> 00:18:43,670
+that's kind of cool right so but we're
+
+466
+00:18:43,670 --> 00:18:47,390
+janky so let's introduce worker Dom the
+
+467
+00:18:47,390 --> 00:18:48,650
+first three steps a free application
+
+468
+00:18:48,650 --> 00:18:50,690
+without changing them go into a
+
+469
+00:18:50,690 --> 00:18:53,000
+background thread now the whole thing
+
+470
+00:18:53,000 --> 00:18:55,250
+still takes 18 milliseconds no change
+
+471
+00:18:55,250 --> 00:18:58,520
+there but the stuff that actually is on
+
+472
+00:18:58,520 --> 00:19:00,860
+the main thread is now massively reduced
+
+473
+00:19:00,860 --> 00:19:02,990
+we're now at 10 milliseconds which is
+
+474
+00:19:02,990 --> 00:19:05,810
+silky smooth and I think the important
+
+475
+00:19:05,810 --> 00:19:08,570
+part here is that we're now far away
+
+476
+00:19:08,570 --> 00:19:12,200
+from breaking through the barrier of 60
+
+477
+00:19:12,200 --> 00:19:14,420
+milliseconds right so now we can run on
+
+478
+00:19:14,420 --> 00:19:16,250
+a slower device and we still have a lot
+
+479
+00:19:16,250 --> 00:19:18,500
+of budget to go to make it there right
+
+480
+00:19:18,500 --> 00:19:20,090
+if we're if we're just about like
+
+481
+00:19:20,090 --> 00:19:22,280
+scraping against that 16 m/s on an
+
+482
+00:19:22,280 --> 00:19:25,820
+iPhone X it's not gonna go well and then
+
+483
+00:19:25,820 --> 00:19:27,440
+in the wild so I think this is really
+
+484
+00:19:27,440 --> 00:19:29,810
+like a very promising way of building up
+
+485
+00:19:29,810 --> 00:19:31,190
+vacation I'm excited to see how that's
+
+486
+00:19:31,190 --> 00:19:35,090
+going to go out let's look at those
+
+487
+00:19:35,090 --> 00:19:38,450
+terms and conditions really quick now
+
+488
+00:19:38,450 --> 00:19:40,040
+the library isn't like hundreds and done
+
+489
+00:19:40,040 --> 00:19:42,440
+so some Dom API design implement
+
+490
+00:19:42,440 --> 00:19:44,570
+that's cool because you know we can just
+
+491
+00:19:44,570 --> 00:19:47,960
+do it there are a small number of dumb
+
+492
+00:19:47,960 --> 00:19:50,330
+API is that cannot be implemented but
+
+493
+00:19:50,330 --> 00:19:51,800
+there are there are alternatives
+
+494
+00:19:51,800 --> 00:19:54,530
+provided and then there's a smaller
+
+495
+00:19:54,530 --> 00:19:56,090
+number of Dom API which can't be
+
+496
+00:19:56,090 --> 00:19:58,730
+implemented and worker Dom can't really
+
+497
+00:19:58,730 --> 00:20:01,010
+work with them at all so let's take a
+
+498
+00:20:01,010 --> 00:20:02,650
+quick look at those last two categories
+
+499
+00:20:02,650 --> 00:20:05,990
+first of all there unimplemented but
+
+500
+00:20:05,990 --> 00:20:07,730
+there is an alternative these are
+
+501
+00:20:07,730 --> 00:20:09,980
+primarily dumb api's that provide
+
+502
+00:20:09,980 --> 00:20:11,930
+synchronous access to stuff like
+
+503
+00:20:11,930 --> 00:20:13,940
+completed layout of a page so for
+
+504
+00:20:13,940 --> 00:20:16,460
+example API many of you will be familiar
+
+505
+00:20:16,460 --> 00:20:19,010
+with it compounding client rekt so like
+
+506
+00:20:19,010 --> 00:20:21,260
+hey browser how big is this diff right
+
+507
+00:20:21,260 --> 00:20:24,320
+when you call that function in the main
+
+508
+00:20:24,320 --> 00:20:25,940
+thread what the browser will do is will
+
+509
+00:20:25,940 --> 00:20:28,430
+go run its entire layout pipeline if
+
+510
+00:20:28,430 --> 00:20:30,980
+that's necessary and it's good like full
+
+511
+00:20:30,980 --> 00:20:32,180
+in the browser go all the way back and
+
+512
+00:20:32,180 --> 00:20:35,390
+that's all synchronous that's not
+
+513
+00:20:35,390 --> 00:20:36,830
+implementable in a worker because
+
+514
+00:20:36,830 --> 00:20:39,770
+there's no sink access to the Dom so
+
+515
+00:20:39,770 --> 00:20:41,780
+what we do instead we provide
+
+516
+00:20:41,780 --> 00:20:43,490
+alternatives they all have a async
+
+517
+00:20:43,490 --> 00:20:45,770
+suffix so like get burning client direct
+
+518
+00:20:45,770 --> 00:20:48,380
+async and the returns a promise now you
+
+519
+00:20:48,380 --> 00:20:49,580
+don't have to change your program much
+
+520
+00:20:49,580 --> 00:20:52,010
+you just at the async suffix add an
+
+521
+00:20:52,010 --> 00:20:54,500
+evade before you're using a single way
+
+522
+00:20:54,500 --> 00:20:57,050
+you should and your program works again
+
+523
+00:20:57,050 --> 00:20:58,910
+all right so it's a minor change and
+
+524
+00:20:58,910 --> 00:21:01,820
+there's an important side benefit if you
+
+525
+00:21:01,820 --> 00:21:04,040
+go and optimize the application one of
+
+526
+00:21:04,040 --> 00:21:05,330
+the things you're looking out for is
+
+527
+00:21:05,330 --> 00:21:07,880
+that you don't make these sync layout
+
+528
+00:21:07,880 --> 00:21:10,310
+calls more than once in a given frame
+
+529
+00:21:10,310 --> 00:21:12,950
+see if you've make that call it changed
+
+530
+00:21:12,950 --> 00:21:14,030
+something make a call again you pay a
+
+531
+00:21:14,030 --> 00:21:16,730
+choice if you order syncs the right way
+
+532
+00:21:16,730 --> 00:21:19,550
+you only pay it once so by switching to
+
+533
+00:21:19,550 --> 00:21:21,590
+this async model the framework can
+
+534
+00:21:21,590 --> 00:21:23,000
+actually schedule stuff at the right
+
+535
+00:21:23,000 --> 00:21:24,740
+time without you having to worry about
+
+536
+00:21:24,740 --> 00:21:26,540
+it which is a much more scalable problem
+
+537
+00:21:26,540 --> 00:21:27,530
+so I think this is the right direction
+
+538
+00:21:27,530 --> 00:21:30,590
+for the Dom to go anyway these old
+
+539
+00:21:30,590 --> 00:21:32,780
+synchronous API is from in 1990 it's
+
+540
+00:21:32,780 --> 00:21:35,360
+just not the right way to do it all
+
+541
+00:21:35,360 --> 00:21:35,570
+right
+
+542
+00:21:35,570 --> 00:21:38,110
+I'm implementable without an alternative
+
+543
+00:21:38,110 --> 00:21:40,730
+these are primarily synchronous methods
+
+544
+00:21:40,730 --> 00:21:42,680
+on the event like prevent default and
+
+545
+00:21:42,680 --> 00:21:45,380
+stop propagation now the browser's event
+
+546
+00:21:45,380 --> 00:21:47,090
+processing model is inherently
+
+547
+00:21:47,090 --> 00:21:49,820
+synchronous and that means by the time
+
+548
+00:21:49,820 --> 00:21:51,310
+the worker learns about the click event
+
+549
+00:21:51,310 --> 00:21:53,730
+entire browser eventually
+
+550
+00:21:53,730 --> 00:21:56,039
+and that means that you you know you
+
+551
+00:21:56,039 --> 00:21:57,779
+might call stop propagation but that
+
+552
+00:21:57,779 --> 00:21:59,279
+doesn't do anything because you know
+
+553
+00:21:59,279 --> 00:22:00,899
+event processing already rents mean
+
+554
+00:22:00,899 --> 00:22:03,210
+nothing you can do there's actually
+
+555
+00:22:03,210 --> 00:22:04,110
+light at the end of the tunnel
+
+556
+00:22:04,110 --> 00:22:05,880
+transferable events are a thing that
+
+557
+00:22:05,880 --> 00:22:07,950
+might come to browser soon and that
+
+558
+00:22:07,950 --> 00:22:09,929
+would kind of fix this situation but for
+
+559
+00:22:09,929 --> 00:22:11,730
+now basically what it means if you need
+
+560
+00:22:11,730 --> 00:22:13,769
+these api's and think you know about
+
+561
+00:22:13,769 --> 00:22:15,419
+your last application how often you
+
+562
+00:22:15,419 --> 00:22:16,529
+actually call them it's not that much
+
+563
+00:22:16,529 --> 00:22:18,360
+you have to run that a little bit of a
+
+564
+00:22:18,360 --> 00:22:20,850
+code on the main thread to make sure
+
+565
+00:22:20,850 --> 00:22:24,029
+it's the work speaking of working how
+
+566
+00:22:24,029 --> 00:22:26,610
+does this library actually work so we
+
+567
+00:22:26,610 --> 00:22:27,960
+don't need to understand all of the guts
+
+568
+00:22:27,960 --> 00:22:29,370
+of this thing but I thought it'd be
+
+569
+00:22:29,370 --> 00:22:30,659
+helpful to go over the kind of the
+
+570
+00:22:30,659 --> 00:22:32,130
+high-level as well as some of the
+
+571
+00:22:32,130 --> 00:22:33,570
+details that I thought were particularly
+
+572
+00:22:33,570 --> 00:22:36,149
+interesting during the implementation so
+
+573
+00:22:36,149 --> 00:22:38,490
+let's start with a high-level we start
+
+574
+00:22:38,490 --> 00:22:39,720
+off with a main thread in a worker
+
+575
+00:22:39,720 --> 00:22:41,460
+thread on the main thread we have a
+
+576
+00:22:41,460 --> 00:22:43,289
+runtime roughly one kilobyte of
+
+577
+00:22:43,289 --> 00:22:45,809
+JavaScript and this runtime is able to
+
+578
+00:22:45,809 --> 00:22:47,850
+look at what the DOM is on the current
+
+579
+00:22:47,850 --> 00:22:50,070
+page in this case we have an element an
+
+580
+00:22:50,070 --> 00:22:51,389
+HTML element that we would like to
+
+581
+00:22:51,389 --> 00:22:53,549
+upgrade to run in within the worker
+
+582
+00:22:53,549 --> 00:22:55,559
+context and inside of that just a single
+
+583
+00:22:55,559 --> 00:22:58,289
+dip just to make things simple so the
+
+584
+00:22:58,289 --> 00:23:00,330
+first thing that happens is the runtime
+
+585
+00:23:00,330 --> 00:23:03,450
+will create a worker for you and load
+
+586
+00:23:03,450 --> 00:23:06,570
+your JavaScript within that worker now
+
+587
+00:23:06,570 --> 00:23:08,669
+worker Dom exists within the worker
+
+588
+00:23:08,669 --> 00:23:10,529
+thread and is able to start processing
+
+589
+00:23:10,529 --> 00:23:13,830
+your code at this point your code will
+
+590
+00:23:13,830 --> 00:23:15,480
+create the Dom structure that it would
+
+591
+00:23:15,480 --> 00:23:17,700
+like to have in the document so we have
+
+592
+00:23:17,700 --> 00:23:20,190
+a document with our HTML div element and
+
+593
+00:23:20,190 --> 00:23:22,740
+then there's a lull your code is
+
+594
+00:23:22,740 --> 00:23:25,380
+finished performing an update to the Dom
+
+595
+00:23:25,380 --> 00:23:28,350
+in this case we consider hydration so we
+
+596
+00:23:28,350 --> 00:23:29,820
+might we make sure that that message is
+
+597
+00:23:29,820 --> 00:23:31,590
+passed along over and applied to the
+
+598
+00:23:31,590 --> 00:23:34,110
+main thread later as you have input
+
+599
+00:23:34,110 --> 00:23:36,090
+events or things that need to you take
+
+600
+00:23:36,090 --> 00:23:38,909
+the Dom like click handlers you will
+
+601
+00:23:38,909 --> 00:23:41,820
+allow mutations to occur this is very
+
+602
+00:23:41,820 --> 00:23:43,649
+simple high level and kind of explains
+
+603
+00:23:43,649 --> 00:23:45,440
+what worker Dom does and how it operates
+
+604
+00:23:45,440 --> 00:23:47,669
+but let's dive in a little bit more on
+
+605
+00:23:47,669 --> 00:23:50,760
+hydration so what is hydration hydration
+
+606
+00:23:50,760 --> 00:23:53,730
+is the conversion of string markup into
+
+607
+00:23:53,730 --> 00:23:55,830
+usable Dom nodes a helpful way to
+
+608
+00:23:55,830 --> 00:23:57,240
+understand this is to look at how the
+
+609
+00:23:57,240 --> 00:23:59,159
+browser actually does this with its
+
+610
+00:23:59,159 --> 00:24:00,950
+tokenizer
+
+611
+00:24:00,950 --> 00:24:03,240
+pretend that we have a section element
+
+612
+00:24:03,240 --> 00:24:05,010
+and in this case because we're using
+
+613
+00:24:05,010 --> 00:24:07,650
+worker Dom it has an attribute source
+
+614
+00:24:07,650 --> 00:24:09,450
+that points to the javascript file of
+
+615
+00:24:09,450 --> 00:24:12,330
+your JavaScript that is actually
+
+616
+00:24:12,330 --> 00:24:13,920
+represented in the Dom as an HTML
+
+617
+00:24:13,920 --> 00:24:17,100
+section element inside that we have a
+
+618
+00:24:17,100 --> 00:24:19,260
+HTML div element because I'm pretty bad
+
+619
+00:24:19,260 --> 00:24:21,930
+at semantic markup and inside of here
+
+620
+00:24:21,930 --> 00:24:24,060
+we'll have three child nodes a text node
+
+621
+00:24:24,060 --> 00:24:27,300
+that says hello world followed by a span
+
+622
+00:24:27,300 --> 00:24:29,610
+HTML span element with some text inside
+
+623
+00:24:29,610 --> 00:24:33,110
+of it that says spanner and lastly an
+
+624
+00:24:33,110 --> 00:24:37,020
+HTML input element so this is how the
+
+625
+00:24:37,020 --> 00:24:38,880
+browser would tokenize these specific
+
+626
+00:24:38,880 --> 00:24:41,250
+elements into Dom structures worker Dom
+
+627
+00:24:41,250 --> 00:24:44,460
+does roughly the same thing however we
+
+628
+00:24:44,460 --> 00:24:45,690
+need to be able to transmit these
+
+629
+00:24:45,690 --> 00:24:47,820
+objects between threads so we need a
+
+630
+00:24:47,820 --> 00:24:50,070
+single interface that makes it easy to
+
+631
+00:24:50,070 --> 00:24:52,260
+transmit this information that we so we
+
+632
+00:24:52,260 --> 00:24:53,370
+don't have to have all of these
+
+633
+00:24:53,370 --> 00:24:55,740
+different class types to understand
+
+634
+00:24:55,740 --> 00:24:58,020
+between threads so in this case our div
+
+635
+00:24:58,020 --> 00:25:00,000
+can be represented as a hydrate Abul
+
+636
+00:25:00,000 --> 00:25:02,280
+node it's got an element type of note
+
+637
+00:25:02,280 --> 00:25:05,340
+the node type is an element node the tag
+
+638
+00:25:05,340 --> 00:25:07,830
+name is div we need a unique identifier
+
+639
+00:25:07,830 --> 00:25:09,600
+so we can reference that node on both
+
+640
+00:25:09,600 --> 00:25:11,490
+sides of the bridge and whether or not
+
+641
+00:25:11,490 --> 00:25:12,780
+it's been transferred is actually
+
+642
+00:25:12,780 --> 00:25:14,880
+incredibly important because once it's
+
+643
+00:25:14,880 --> 00:25:17,040
+been transferred the format doesn't need
+
+644
+00:25:17,040 --> 00:25:19,170
+to be as verbose we only need to send a
+
+645
+00:25:19,170 --> 00:25:20,730
+very small amount of information once
+
+646
+00:25:20,730 --> 00:25:25,650
+we've transferred it once so we are able
+
+647
+00:25:25,650 --> 00:25:27,240
+to convert that div element over to a
+
+648
+00:25:27,240 --> 00:25:29,010
+hydrate able node and you can see how we
+
+649
+00:25:29,010 --> 00:25:30,630
+could take the same pattern and apply it
+
+650
+00:25:30,630 --> 00:25:33,090
+to the rest of this Dom structure so now
+
+651
+00:25:33,090 --> 00:25:34,740
+we're looking at a tree of entirely
+
+652
+00:25:34,740 --> 00:25:37,440
+hydrate Abul nodes this structure is
+
+653
+00:25:37,440 --> 00:25:39,480
+transferable between threads and allows
+
+654
+00:25:39,480 --> 00:25:41,070
+us to send the information in an
+
+655
+00:25:41,070 --> 00:25:45,660
+efficient way so let's look at an actual
+
+656
+00:25:45,660 --> 00:25:47,940
+example here's a JSON representation of
+
+657
+00:25:47,940 --> 00:25:50,280
+that interface I've got the node type
+
+658
+00:25:50,280 --> 00:25:52,650
+here the node name child nodes that
+
+659
+00:25:52,650 --> 00:25:54,590
+there's only a single child in this case
+
+660
+00:25:54,590 --> 00:25:57,480
+and that unique identifier our index and
+
+661
+00:25:57,480 --> 00:25:59,910
+transferred false so something we've
+
+662
+00:25:59,910 --> 00:26:01,950
+learned about web workers in this is
+
+663
+00:26:01,950 --> 00:26:03,990
+that given the same complexity of your
+
+664
+00:26:03,990 --> 00:26:07,020
+messages a smaller size transmits faster
+
+665
+00:26:07,020 --> 00:26:09,150
+and is more responsive to end user input
+
+666
+00:26:09,150 --> 00:26:11,580
+so we need to do some work too this
+
+667
+00:26:11,580 --> 00:26:13,290
+means this format to ensure that it
+
+668
+00:26:13,290 --> 00:26:15,270
+remains small independent of the number
+
+669
+00:26:15,270 --> 00:26:18,090
+of nodes that you give it so we apply a
+
+670
+00:26:18,090 --> 00:26:20,220
+substitution cipher which is just a
+
+671
+00:26:20,220 --> 00:26:20,980
+fancy term for
+
+672
+00:26:20,980 --> 00:26:24,340
+replacement to no name node the node
+
+673
+00:26:24,340 --> 00:26:26,919
+type child nodes index and transferred
+
+674
+00:26:26,919 --> 00:26:28,990
+these are all static keys that we
+
+675
+00:26:28,990 --> 00:26:31,720
+restore and allow us to trim to convert
+
+676
+00:26:31,720 --> 00:26:34,059
+over our object structure into keys
+
+677
+00:26:34,059 --> 00:26:38,980
+based on the index of those strings next
+
+678
+00:26:38,980 --> 00:26:40,630
+we have some false and throughs as
+
+679
+00:26:40,630 --> 00:26:43,030
+values well those can be represented as
+
+680
+00:26:43,030 --> 00:26:45,220
+zeros and ones so let's go ahead and do
+
+681
+00:26:45,220 --> 00:26:49,210
+that and lastly we have now something we
+
+682
+00:26:49,210 --> 00:26:51,160
+can't do at build time so all those
+
+683
+00:26:51,160 --> 00:26:52,840
+other transformations could be done at
+
+684
+00:26:52,840 --> 00:26:54,820
+build time because we know both sides of
+
+685
+00:26:54,820 --> 00:26:58,450
+the equation at all times but your
+
+686
+00:26:58,450 --> 00:27:00,760
+markup has different text in it your
+
+687
+00:27:00,760 --> 00:27:02,410
+markup has different Dom nodes in it
+
+688
+00:27:02,410 --> 00:27:04,210
+we can't bake in all of the possible
+
+689
+00:27:04,210 --> 00:27:06,010
+string permutations that your code use
+
+690
+00:27:06,010 --> 00:27:08,500
+so we create a string pool that will
+
+691
+00:27:08,500 --> 00:27:09,910
+contain all of the strings that are
+
+692
+00:27:09,910 --> 00:27:11,950
+needed for your application as you use
+
+693
+00:27:11,950 --> 00:27:13,780
+them and we only transmit the parts of
+
+694
+00:27:13,780 --> 00:27:15,760
+the pool that have not yet been received
+
+695
+00:27:15,760 --> 00:27:17,620
+on both sides of the thread both sides
+
+696
+00:27:17,620 --> 00:27:22,030
+of the threads so now we're able to
+
+697
+00:27:22,030 --> 00:27:24,040
+represent this format in a fairly
+
+698
+00:27:24,040 --> 00:27:26,559
+succinct way and you can see that we're
+
+699
+00:27:26,559 --> 00:27:28,390
+getting closer and closer and closer to
+
+700
+00:27:28,390 --> 00:27:30,549
+a pure integer representation of this
+
+701
+00:27:30,549 --> 00:27:32,950
+structure in the future we'll be able to
+
+702
+00:27:32,950 --> 00:27:35,110
+move this entirely to a typed array and
+
+703
+00:27:35,110 --> 00:27:37,630
+that's where we will end up but for now
+
+704
+00:27:37,630 --> 00:27:39,700
+we've got a fairly efficient format that
+
+705
+00:27:39,700 --> 00:27:45,070
+has been very little overhead so now
+
+706
+00:27:45,070 --> 00:27:46,090
+that we've got this format for
+
+707
+00:27:46,090 --> 00:27:48,220
+individual hydrator we'll nodes we need
+
+708
+00:27:48,220 --> 00:27:49,929
+to be able to look at what the interface
+
+709
+00:27:49,929 --> 00:27:53,020
+for hydration itself looks like a little
+
+710
+00:27:53,020 --> 00:27:54,520
+bit more complex and that we have to
+
+711
+00:27:54,520 --> 00:27:59,040
+pass that string pull over next mutation
+
+712
+00:27:59,040 --> 00:28:01,450
+static document would be extremely
+
+713
+00:28:01,450 --> 00:28:03,940
+boring if that was all we could do we
+
+714
+00:28:03,940 --> 00:28:05,110
+need to be able to respond to those
+
+715
+00:28:05,110 --> 00:28:10,840
+input events here we have a span that we
+
+716
+00:28:10,840 --> 00:28:12,700
+created and a click event listener
+
+717
+00:28:12,700 --> 00:28:13,570
+that's attached to it
+
+718
+00:28:13,570 --> 00:28:15,640
+when that happens we were able to then
+
+719
+00:28:15,640 --> 00:28:17,919
+use the classlist Dom token list method
+
+720
+00:28:17,919 --> 00:28:21,669
+to toggle a class name as well as change
+
+721
+00:28:21,669 --> 00:28:23,679
+the style of a different div that is not
+
+722
+00:28:23,679 --> 00:28:26,650
+defined in this example how does this
+
+723
+00:28:26,650 --> 00:28:29,220
+work well we use a mutation observer and
+
+724
+00:28:29,220 --> 00:28:31,659
+because we built the Dom implementation
+
+725
+00:28:31,659 --> 00:28:33,190
+we could build our own mutation observer
+
+726
+00:28:33,190 --> 00:28:34,670
+which has super powers
+
+727
+00:28:34,670 --> 00:28:36,500
+so instead of just being able to modify
+
+728
+00:28:36,500 --> 00:28:39,140
+things like attribute changes or changes
+
+729
+00:28:39,140 --> 00:28:40,730
+to the tree structure we can also
+
+730
+00:28:40,730 --> 00:28:44,480
+observe things like value changes so we
+
+731
+00:28:44,480 --> 00:28:45,950
+know property changes not just
+
+732
+00:28:45,950 --> 00:28:50,300
+attributes there was a lot of
+
+733
+00:28:50,300 --> 00:28:52,040
+information so we had to steal Laurie's
+
+734
+00:28:52,040 --> 00:28:57,710
+joke we're not actually gonna do it
+
+735
+00:28:57,710 --> 00:28:59,840
+because Laurie did it I just wanted to
+
+736
+00:28:59,840 --> 00:29:03,490
+emphasize I just want to emphasize that
+
+737
+00:29:03,490 --> 00:29:05,480
+we talked about how it works because
+
+738
+00:29:05,480 --> 00:29:07,880
+it's interesting but one of the magical
+
+739
+00:29:07,880 --> 00:29:09,260
+things about work Radames I was like
+
+740
+00:29:09,260 --> 00:29:10,490
+looking at the readme and like where's
+
+741
+00:29:10,490 --> 00:29:13,250
+the usage statement and it doesn't have
+
+742
+00:29:13,250 --> 00:29:17,000
+one right like the you just make a
+
+743
+00:29:17,000 --> 00:29:18,110
+worker and then you say like
+
+744
+00:29:18,110 --> 00:29:19,820
+document.getelementbyid e or you make
+
+745
+00:29:19,820 --> 00:29:21,680
+your react component right like it's it
+
+746
+00:29:21,680 --> 00:29:23,300
+doesn't have an API because it's just
+
+747
+00:29:23,300 --> 00:29:25,310
+the Dom API and the web worker so I
+
+748
+00:29:25,310 --> 00:29:26,980
+think that's actually kind of cool
+
+749
+00:29:26,980 --> 00:29:29,600
+speaking of which do we want to like
+
+750
+00:29:29,600 --> 00:29:37,310
+show a demo so we're kind of short on
+
+751
+00:29:37,310 --> 00:29:40,780
+time and so what I'm gonna do is
+
+752
+00:29:40,780 --> 00:29:43,910
+something akin to this meme I love this
+
+753
+00:29:43,910 --> 00:29:46,040
+one we're gonna start with the left and
+
+754
+00:29:46,040 --> 00:29:49,910
+we're gonna move to the owl quickly all
+
+755
+00:29:49,910 --> 00:29:51,620
+right I've got some demos here so the
+
+756
+00:29:51,620 --> 00:29:53,540
+first one that we'll go into is a
+
+757
+00:29:53,540 --> 00:29:56,060
+vanilla Dom implementation so this is
+
+758
+00:29:56,060 --> 00:29:57,290
+actually the example we talked about
+
+759
+00:29:57,290 --> 00:29:59,390
+during the slides so we've got hello
+
+760
+00:29:59,390 --> 00:30:01,400
+world as a text node a span with some
+
+761
+00:30:01,400 --> 00:30:02,690
+text inside of it and an input element
+
+762
+00:30:02,690 --> 00:30:05,300
+as I click here you can see changes
+
+763
+00:30:05,300 --> 00:30:06,860
+occurring this is the least glamorous
+
+764
+00:30:06,860 --> 00:30:09,410
+demo ever however believe me all of this
+
+765
+00:30:09,410 --> 00:30:12,350
+is happening in a worker now if I come
+
+766
+00:30:12,350 --> 00:30:14,690
+here I can type remove and we'll remove
+
+767
+00:30:14,690 --> 00:30:19,520
+a node next demo that wasn't very
+
+768
+00:30:19,520 --> 00:30:22,640
+impressive this can't possibly be fast
+
+769
+00:30:22,640 --> 00:30:24,530
+right we're having to serialize up a
+
+770
+00:30:24,530 --> 00:30:26,210
+bunch of information transfer between
+
+771
+00:30:26,210 --> 00:30:26,780
+threads
+
+772
+00:30:26,780 --> 00:30:28,850
+I thought we'd show something that kind
+
+773
+00:30:28,850 --> 00:30:30,500
+of pushes the boundaries of what right
+
+774
+00:30:30,500 --> 00:30:32,630
+performance of the web would be like so
+
+775
+00:30:32,630 --> 00:30:35,030
+we built a DB Mon implementation if
+
+776
+00:30:35,030 --> 00:30:37,130
+you're familiar with like which'll Dom
+
+777
+00:30:37,130 --> 00:30:39,500
+frameworks they all implement DB Mon to
+
+778
+00:30:39,500 --> 00:30:40,930
+like show how awesome and fast they are
+
+779
+00:30:40,930 --> 00:30:43,610
+I don't know if this is fast or not
+
+780
+00:30:43,610 --> 00:30:45,590
+compared to some other frameworks but it
+
+781
+00:30:45,590 --> 00:30:47,180
+certainly seems to work well on low-end
+
+782
+00:30:47,180 --> 00:30:48,000
+devices
+
+783
+00:30:48,000 --> 00:30:50,280
+and just to show that this is not
+
+784
+00:30:50,280 --> 00:30:53,300
+cheating we'll do a little record and
+
+785
+00:30:53,300 --> 00:30:56,070
+let's sneak in at the actual snapshot at
+
+786
+00:30:56,070 --> 00:30:58,290
+work you can see we're fairly close to
+
+787
+00:30:58,290 --> 00:31:00,120
+60 frames per second across the board
+
+788
+00:31:00,120 --> 00:31:02,820
+and the code is split directly across
+
+789
+00:31:02,820 --> 00:31:05,190
+the main thread here and the worker
+
+790
+00:31:05,190 --> 00:31:06,660
+thread the worker thread is running the
+
+791
+00:31:06,660 --> 00:31:08,520
+entirety of our JavaScript framework in
+
+792
+00:31:08,520 --> 00:31:10,260
+this case and that's highlighted by
+
+793
+00:31:10,260 --> 00:31:13,140
+these kind of light pink categorizations
+
+794
+00:31:13,140 --> 00:31:15,300
+and the browser is doing its work in the
+
+795
+00:31:15,300 --> 00:31:16,470
+main thread and you can see that by
+
+796
+00:31:16,470 --> 00:31:22,330
+these large purple and green streaks
+
+797
+00:31:22,340 --> 00:31:25,620
+fantastic so we wanted to ensure that
+
+798
+00:31:25,620 --> 00:31:26,790
+this framework earned that this
+
+799
+00:31:26,790 --> 00:31:28,140
+technology would work with many
+
+800
+00:31:28,140 --> 00:31:29,760
+different frameworks not just one or the
+
+801
+00:31:29,760 --> 00:31:31,950
+other so we implemented the exact same
+
+802
+00:31:31,950 --> 00:31:33,930
+application and both pre act and react
+
+803
+00:31:33,930 --> 00:31:37,860
+this is a fake mapping diagram from some
+
+804
+00:31:37,860 --> 00:31:39,720
+data that I found on the internet a very
+
+805
+00:31:39,720 --> 00:31:43,950
+abstract map and this is an SVG so as we
+
+806
+00:31:43,950 --> 00:31:46,740
+modify this we're able to make mutations
+
+807
+00:31:46,740 --> 00:31:50,070
+to the to the SVG graphic across the
+
+808
+00:31:50,070 --> 00:31:51,810
+bridge and that example is running
+
+809
+00:31:51,810 --> 00:31:52,380
+pre-act
+
+810
+00:31:52,380 --> 00:31:54,750
+let's do the same example but in react
+
+811
+00:31:54,750 --> 00:31:57,750
+and everything seems to still work by
+
+812
+00:31:57,750 --> 00:31:58,560
+the way this is running the latest
+
+813
+00:31:58,560 --> 00:32:01,980
+version of react I'm certain there's
+
+814
+00:32:01,980 --> 00:32:03,270
+some new things there that I were
+
+815
+00:32:03,270 --> 00:32:06,390
+supposed to be pretty cool lastly I
+
+816
+00:32:06,390 --> 00:32:08,430
+thought I'd do an example of to do MVC
+
+817
+00:32:08,430 --> 00:32:09,870
+since that seems to be the canonical
+
+818
+00:32:09,870 --> 00:32:11,520
+thing people show when they are
+
+819
+00:32:11,520 --> 00:32:14,040
+demonstrating a new technology this to
+
+820
+00:32:14,040 --> 00:32:16,680
+do MVC implementation works pretty well
+
+821
+00:32:16,680 --> 00:32:21,900
+if I can actually type and this is like
+
+822
+00:32:21,900 --> 00:32:24,570
+not to video to do MVC written for
+
+823
+00:32:24,570 --> 00:32:27,660
+worker Dom is just to do MVC running
+
+824
+00:32:27,660 --> 00:32:30,090
+inside a worker Dom and I can go ahead
+
+825
+00:32:30,090 --> 00:32:32,400
+and remove an item and you very barely
+
+826
+00:32:32,400 --> 00:32:34,620
+see that there is the item count is
+
+827
+00:32:34,620 --> 00:32:37,790
+updating and Dom nodes are being removed
+
+828
+00:32:37,790 --> 00:32:44,760
+okay great all right so can can you try
+
+829
+00:32:44,760 --> 00:32:45,320
+this
+
+830
+00:32:45,320 --> 00:32:48,900
+yes worker Dom we just became available
+
+831
+00:32:48,900 --> 00:32:58,420
+on github and NPM a few minutes ago
+
+832
+00:32:58,430 --> 00:33:03,630
+it is still very alpha s software he
+
+833
+00:33:03,630 --> 00:33:06,660
+goes I think our main goal is not so
+
+834
+00:33:06,660 --> 00:33:09,600
+like all of you go run and use this in
+
+835
+00:33:09,600 --> 00:33:11,210
+your production application please don't
+
+836
+00:33:11,210 --> 00:33:15,060
+eventually do especially and I know lots
+
+837
+00:33:15,060 --> 00:33:16,350
+of you are here if you maintain a
+
+838
+00:33:16,350 --> 00:33:17,850
+framework of build tool we really want
+
+839
+00:33:17,850 --> 00:33:19,980
+to make sure that they work together
+
+840
+00:33:19,980 --> 00:33:21,480
+with worker Dom that there's no missing
+
+841
+00:33:21,480 --> 00:33:23,160
+features and but you know some of the
+
+842
+00:33:23,160 --> 00:33:26,460
+problems might be might be solved I also
+
+843
+00:33:26,460 --> 00:33:27,720
+want to talk about the quick I still
+
+844
+00:33:27,720 --> 00:33:30,120
+like why we like personally building
+
+845
+00:33:30,120 --> 00:33:34,260
+this so we are working on project or
+
+846
+00:33:34,260 --> 00:33:37,350
+vocal amp and our goal with worker Dom
+
+847
+00:33:37,350 --> 00:33:39,930
+is to allow authors of M documents to
+
+848
+00:33:39,930 --> 00:33:42,150
+run their own JavaScript in amp
+
+849
+00:33:42,150 --> 00:33:43,890
+documents which he currently can't and
+
+850
+00:33:43,890 --> 00:33:46,380
+that's terrible it's not like JavaScript
+
+851
+00:33:46,380 --> 00:33:49,230
+and so we all use worker down to do this
+
+852
+00:33:49,230 --> 00:33:50,850
+and I think this is important for an
+
+853
+00:33:50,850 --> 00:33:52,620
+open source project so because it's
+
+854
+00:33:52,620 --> 00:33:54,930
+alpha today but we will make it rock
+
+855
+00:33:54,930 --> 00:33:58,020
+solid for this use case and so it's
+
+856
+00:33:58,020 --> 00:34:00,270
+usable for everyone else's and there are
+
+857
+00:34:00,270 --> 00:34:02,910
+non amp webpages as well yeah and that's
+
+858
+00:34:02,910 --> 00:34:04,170
+really all we had thank you very much
+
+859
+00:34:04,170 --> 00:34:06,690
+here's the link to github the slides a
+
+860
+00:34:06,690 --> 00:34:08,360
+blog post the Christopher
+

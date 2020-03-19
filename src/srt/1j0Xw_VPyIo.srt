@@ -1,0 +1,1753 @@
+1
+00:00:17,170 --> 00:00:19,960
+
+my name is John David Dalton and I'm
+
+2
+00:00:19,960 --> 00:00:22,450
+doing a presentation over benchmarking
+
+3
+00:00:22,450 --> 00:00:27,580
+and so I'll get into that all right I
+
+4
+00:00:27,580 --> 00:00:29,680
+wanted to do a talk about benchmarking
+
+5
+00:00:29,680 --> 00:00:32,879
+because right after jay is comfy you I
+
+6
+00:00:32,879 --> 00:00:35,470
+got into trying to benchmark my own
+
+7
+00:00:35,470 --> 00:00:37,870
+framework and I noticed I noticed there
+
+8
+00:00:37,870 --> 00:00:41,860
+was a lack of good quality JavaScript
+
+9
+00:00:41,860 --> 00:00:44,800
+benchmarks for framework code or for
+
+10
+00:00:44,800 --> 00:00:48,070
+just snippets in general and so I
+
+11
+00:00:48,070 --> 00:00:52,330
+started looking at task speed slick
+
+12
+00:00:52,330 --> 00:00:56,500
+speed and the the popular benchmarks
+
+13
+00:00:56,500 --> 00:01:01,269
+like v8 sweet son spider and Kraken and
+
+14
+00:01:01,269 --> 00:01:03,309
+looking to see you know how they
+
+15
+00:01:03,309 --> 00:01:07,360
+measured JavaScript performance and what
+
+16
+00:01:07,360 --> 00:01:09,970
+I found along the way was that there's a
+
+17
+00:01:09,970 --> 00:01:11,979
+lot of inconsistencies and a lot of
+
+18
+00:01:11,979 --> 00:01:15,340
+problems with measuring JavaScript
+
+19
+00:01:15,340 --> 00:01:18,190
+performance and getting a good idea of
+
+20
+00:01:18,190 --> 00:01:23,140
+the the actual performance so let's get
+
+21
+00:01:23,140 --> 00:01:26,770
+into it the the main ones i looked at
+
+22
+00:01:26,770 --> 00:01:30,369
+where sunspider cracking and v8 I also
+
+23
+00:01:30,369 --> 00:01:32,979
+looked at Dromio which is I'll cover in
+
+24
+00:01:32,979 --> 00:01:35,490
+the next one these benchmarks are
+
+25
+00:01:35,490 --> 00:01:39,280
+running synthetic bench synthetic speed
+
+26
+00:01:39,280 --> 00:01:42,609
+tests so they're they're doing tasks
+
+27
+00:01:42,609 --> 00:01:45,130
+like looking at like a 3d matrix or
+
+28
+00:01:45,130 --> 00:01:48,130
+doing some string manipulation and
+
+29
+00:01:48,130 --> 00:01:49,630
+they're they're saying that that is
+
+30
+00:01:49,630 --> 00:01:51,640
+representative of what applications
+
+31
+00:01:51,640 --> 00:01:55,869
+might be doing and will will gauge the
+
+32
+00:01:55,869 --> 00:01:58,469
+speed of your your browsers in this case
+
+33
+00:01:58,469 --> 00:02:01,359
+but
+
+34
+00:02:01,359 --> 00:02:04,280
+Dromio yo on the other hand is is a
+
+35
+00:02:04,280 --> 00:02:07,189
+different one and it measures not only
+
+36
+00:02:07,189 --> 00:02:10,540
+the same benchmarks of sunspider and and
+
+37
+00:02:10,540 --> 00:02:14,959
+v8 sweet but also has dom tests dom
+
+38
+00:02:14,959 --> 00:02:17,090
+tests are important because for example
+
+39
+00:02:17,090 --> 00:02:21,140
+ie8 or ie9 performs very well in some of
+
+40
+00:02:21,140 --> 00:02:23,480
+the synthetic benchmarks like SunSpider
+
+41
+00:02:23,480 --> 00:02:27,170
+but is is one of the worst performance
+
+42
+00:02:27,170 --> 00:02:30,590
+wise on dom manipulation and so having
+
+43
+00:02:30,590 --> 00:02:32,709
+relevant meaningful benchmarks
+
+44
+00:02:32,709 --> 00:02:35,360
+accessible to those guys the developers
+
+45
+00:02:35,360 --> 00:02:37,130
+for IE would it would have helped them
+
+46
+00:02:37,130 --> 00:02:39,560
+maybe pinpoint to narrow down more
+
+47
+00:02:39,560 --> 00:02:41,110
+meaningful benchmarks in their own
+
+48
+00:02:41,110 --> 00:02:48,230
+browser tests so i'm a co-developer on
+
+49
+00:02:48,230 --> 00:02:50,989
+Jas perf calm how many people have used
+
+50
+00:02:50,989 --> 00:02:54,560
+Jas perf awesome great so I make the
+
+51
+00:02:54,560 --> 00:02:57,440
+thing that makes this work which is a
+
+52
+00:02:57,440 --> 00:03:00,049
+benchmark framework called benchmark Jas
+
+53
+00:03:00,049 --> 00:03:05,500
+so i'll write their benchmark j/s calm
+
+54
+00:03:05,500 --> 00:03:08,420
+what I as I was looking at those other
+
+55
+00:03:08,420 --> 00:03:12,650
+solutions I took it apart rewrote the
+
+56
+00:03:12,650 --> 00:03:16,040
+the underlying code from Jas perf from
+
+57
+00:03:16,040 --> 00:03:18,889
+scratch and I wanted to make like the
+
+58
+00:03:18,889 --> 00:03:22,130
+most thorough benchmarking framework for
+
+59
+00:03:22,130 --> 00:03:23,569
+JavaScript and this runs and almost
+
+60
+00:03:23,569 --> 00:03:26,329
+anything it should support Safari 2.00
+
+61
+00:03:26,329 --> 00:03:32,120
+to IE 10 preview to node norwall ringo
+
+62
+00:03:32,120 --> 00:03:34,639
+rhino all of your bases should be
+
+63
+00:03:34,639 --> 00:03:39,079
+covered so let's get to this there's
+
+64
+00:03:39,079 --> 00:03:41,420
+also a small project i started working
+
+65
+00:03:41,420 --> 00:03:45,970
+on called x stats j/s which is j s /
+
+66
+00:03:45,970 --> 00:03:49,940
+tests a little snippets of JavaScript
+
+67
+00:03:49,940 --> 00:03:52,430
+and usually it's you start the timer you
+
+68
+00:03:52,430 --> 00:03:54,669
+do the snippet then you you in the timer
+
+69
+00:03:54,669 --> 00:03:56,780
+but this is more of a passive
+
+70
+00:03:56,780 --> 00:03:59,599
+benchmarking tool this allows you to to
+
+71
+00:03:59,599 --> 00:04:01,489
+monitor the frames per second the memory
+
+72
+00:04:01,489 --> 00:04:03,130
+usage and certain browsers that support
+
+73
+00:04:03,130 --> 00:04:04,590
+monitoring the memory
+
+74
+00:04:04,590 --> 00:04:07,319
+and and a little millisecond timer that
+
+75
+00:04:07,319 --> 00:04:09,750
+too and this is a rewrite of something
+
+76
+00:04:09,750 --> 00:04:13,709
+that mr. du bid but he used a Candace
+
+77
+00:04:13,709 --> 00:04:16,380
+element minds using just raw HTML to
+
+78
+00:04:16,380 --> 00:04:19,739
+like their Li Oh is there to dren der
+
+79
+00:04:19,739 --> 00:04:21,600
+that so it's taking away less from the
+
+80
+00:04:21,600 --> 00:04:23,250
+actual application or trying to
+
+81
+00:04:23,250 --> 00:04:25,710
+benchmark in mobile devices especially
+
+82
+00:04:25,710 --> 00:04:28,830
+if you've got canvas on the page you're
+
+83
+00:04:28,830 --> 00:04:30,270
+eating away at the performance that
+
+84
+00:04:30,270 --> 00:04:31,680
+you're actually trying to measure so
+
+85
+00:04:31,680 --> 00:04:36,530
+that's a passive approach there and
+
+86
+00:04:36,530 --> 00:04:39,210
+there's there's basically there's a few
+
+87
+00:04:39,210 --> 00:04:40,800
+patterns when you when you benchmark
+
+88
+00:04:40,800 --> 00:04:44,880
+things the most common one is you have a
+
+89
+00:04:44,880 --> 00:04:47,010
+while loop you start a timer you have
+
+90
+00:04:47,010 --> 00:04:48,690
+let's say you're counting down 100
+
+91
+00:04:48,690 --> 00:04:51,540
+executions and then you you end your
+
+92
+00:04:51,540 --> 00:04:52,710
+timer and then you subtract the
+
+93
+00:04:52,710 --> 00:04:54,419
+difference and get get a millisecond
+
+94
+00:04:54,419 --> 00:04:58,490
+count and that's done in things like
+
+95
+00:04:58,490 --> 00:05:03,870
+slick speed test speed sunspider nodes
+
+96
+00:05:03,870 --> 00:05:06,930
+benchmarks basically it's the most
+
+97
+00:05:06,930 --> 00:05:10,620
+common and probably the worst kind of
+
+98
+00:05:10,620 --> 00:05:14,100
+benchmark to do because because if
+
+99
+00:05:14,100 --> 00:05:15,780
+they're fixed iterations it means as
+
+100
+00:05:15,780 --> 00:05:17,910
+hardware and as your environments are
+
+101
+00:05:17,910 --> 00:05:19,770
+getting faster eventually you're going
+
+102
+00:05:19,770 --> 00:05:22,070
+to get a lot of zero millisecond record
+
+103
+00:05:22,070 --> 00:05:25,229
+readings and zero milliseconds you can't
+
+104
+00:05:25,229 --> 00:05:26,580
+do anything with that I mean there's no
+
+105
+00:05:26,580 --> 00:05:29,490
+way to compare 0 to 0 so that is the
+
+106
+00:05:29,490 --> 00:05:33,820
+major flaw with with doing it this way
+
+107
+00:05:33,830 --> 00:05:36,210
+but there's another pattern and this is
+
+108
+00:05:36,210 --> 00:05:38,520
+the one that Dromio uses and this is
+
+109
+00:05:38,520 --> 00:05:41,729
+also what v8 sweet uses they basically
+
+110
+00:05:41,729 --> 00:05:46,410
+run a test for one second repeatedly for
+
+111
+00:05:46,410 --> 00:05:48,960
+one second and then calculate the
+
+112
+00:05:48,960 --> 00:05:51,780
+operations per second and do it that way
+
+113
+00:05:51,780 --> 00:05:53,520
+and that gives you a better read but
+
+114
+00:05:53,520 --> 00:05:56,700
+it's still not quite there because
+
+115
+00:05:56,700 --> 00:05:59,789
+they're forcing all browsers to run this
+
+116
+00:05:59,789 --> 00:06:02,639
+this test for one second and if you're
+
+117
+00:06:02,639 --> 00:06:05,840
+doing especially small tests that are
+
+118
+00:06:05,840 --> 00:06:08,010
+your testing something that executes a
+
+119
+00:06:08,010 --> 00:06:09,720
+lot of times you're going to end up
+
+120
+00:06:09,720 --> 00:06:12,289
+choking up the browser and law
+
+121
+00:06:12,289 --> 00:06:14,509
+you know when you're running this and so
+
+122
+00:06:14,509 --> 00:06:16,069
+what I one of the things I learned
+
+123
+00:06:16,069 --> 00:06:17,960
+whatever I was developing benchmark Jas
+
+124
+00:06:17,960 --> 00:06:21,619
+is that you actually don't need to run a
+
+125
+00:06:21,619 --> 00:06:24,050
+test for one second one second was was
+
+126
+00:06:24,050 --> 00:06:26,930
+something that they added for IES poor
+
+127
+00:06:26,930 --> 00:06:28,879
+timer resolution which I'll get into in
+
+128
+00:06:28,879 --> 00:06:31,669
+another slide but basically it can only
+
+129
+00:06:31,669 --> 00:06:34,669
+it can only measure 15 about 15
+
+130
+00:06:34,669 --> 00:06:38,349
+milliseconds for the older I ease and
+
+131
+00:06:38,349 --> 00:06:40,309
+the newer ones like what four
+
+132
+00:06:40,309 --> 00:06:44,990
+milliseconds the ie9 and so whenever you
+
+133
+00:06:44,990 --> 00:06:46,699
+put that into a formula to figure out
+
+134
+00:06:46,699 --> 00:06:49,849
+the crispy how long you need to run a
+
+135
+00:06:49,849 --> 00:06:51,559
+test to get a percentage uncertainty of
+
+136
+00:06:51,559 --> 00:06:54,249
+like one percent it ends up being about
+
+137
+00:06:54,249 --> 00:06:57,199
+750 milliseconds and so most most of
+
+138
+00:06:57,199 --> 00:06:59,809
+these things just run for one second but
+
+139
+00:06:59,809 --> 00:07:01,789
+if you if you apply that to working
+
+140
+00:07:01,789 --> 00:07:03,680
+browsers normal browsers that have a one
+
+141
+00:07:03,680 --> 00:07:06,589
+millisecond resolution you bet a you
+
+142
+00:07:06,589 --> 00:07:08,389
+only really need to run a test for 50
+
+143
+00:07:08,389 --> 00:07:10,729
+milliseconds and so what what that
+
+144
+00:07:10,729 --> 00:07:12,949
+allows you to do is that with with tests
+
+145
+00:07:12,949 --> 00:07:17,269
+like v8 sweet and even SunSpider they
+
+146
+00:07:17,269 --> 00:07:19,039
+run these tests multiple times and then
+
+147
+00:07:19,039 --> 00:07:21,740
+they perform statistical analysis on
+
+148
+00:07:21,740 --> 00:07:23,930
+them and what what this allows you to do
+
+149
+00:07:23,930 --> 00:07:26,659
+is because I run the test for a smaller
+
+150
+00:07:26,659 --> 00:07:28,969
+amount of time only 50 milliseconds I'm
+
+151
+00:07:28,969 --> 00:07:32,990
+able to run more samples of that test
+
+152
+00:07:32,990 --> 00:07:35,029
+and then that will help me reduce the
+
+153
+00:07:35,029 --> 00:07:37,370
+margin of error of the end result so
+
+154
+00:07:37,370 --> 00:07:38,930
+that's that's something that they could
+
+155
+00:07:38,930 --> 00:07:44,209
+make it actually tweak there so a big
+
+156
+00:07:44,209 --> 00:07:46,159
+problem I see with or something I've
+
+157
+00:07:46,159 --> 00:07:48,349
+seen with and these these are actual
+
+158
+00:07:48,349 --> 00:07:51,229
+URLs you can visit there to see this
+
+159
+00:07:51,229 --> 00:07:55,610
+this test is context a lot of times
+
+160
+00:07:55,610 --> 00:07:58,369
+those developers will see the the green
+
+161
+00:07:58,369 --> 00:08:01,099
+result or the red result and make like
+
+162
+00:08:01,099 --> 00:08:03,379
+an instant snap decision Wow one is
+
+163
+00:08:03,379 --> 00:08:05,959
+totally better than the other and I hope
+
+164
+00:08:05,959 --> 00:08:08,980
+that you guys take some
+
+165
+00:08:08,980 --> 00:08:11,860
+just step back and go well wait a minute
+
+166
+00:08:11,860 --> 00:08:16,960
+that's you know that's 538 million per
+
+167
+00:08:16,960 --> 00:08:18,850
+second I mean that's crazy fast and the
+
+168
+00:08:18,850 --> 00:08:22,690
+slowest is 12 million operations a
+
+169
+00:08:22,690 --> 00:08:25,930
+second that's still crazy fast you're
+
+170
+00:08:25,930 --> 00:08:27,670
+not going to be bad either way if you
+
+171
+00:08:27,670 --> 00:08:29,320
+use either one of them so just kind of
+
+172
+00:08:29,320 --> 00:08:31,150
+pay attention to the operations per
+
+173
+00:08:31,150 --> 00:08:34,000
+second and and not necessarily just
+
+174
+00:08:34,000 --> 00:08:36,220
+which one is being you're being told is
+
+175
+00:08:36,220 --> 00:08:38,650
+the fastest so there's another thing
+
+176
+00:08:38,650 --> 00:08:40,950
+that goes into context and that is
+
+177
+00:08:40,950 --> 00:08:43,840
+consistency and reproducible being able
+
+178
+00:08:43,840 --> 00:08:47,500
+to reproduce results consistently in
+
+179
+00:08:47,500 --> 00:08:49,780
+this case you'll notice it's the exact
+
+180
+00:08:49,780 --> 00:08:54,010
+same test done three times and the end
+
+181
+00:08:54,010 --> 00:08:57,640
+result they vary a little but the system
+
+182
+00:08:57,640 --> 00:08:59,710
+is able to detect that and say hey these
+
+183
+00:08:59,710 --> 00:09:00,940
+are all statistically indistinguishable
+
+184
+00:09:00,940 --> 00:09:03,910
+from each other and so it says hey
+
+185
+00:09:03,910 --> 00:09:06,280
+they're all the fastest and that's
+
+186
+00:09:06,280 --> 00:09:07,660
+another reason why you don't necessarily
+
+187
+00:09:07,660 --> 00:09:09,540
+need to get hung up on the actual
+
+188
+00:09:09,540 --> 00:09:11,800
+operations per second because they'll
+
+189
+00:09:11,800 --> 00:09:15,850
+bury about five percent from test to
+
+190
+00:09:15,850 --> 00:09:17,500
+retest and I that's been pretty
+
+191
+00:09:17,500 --> 00:09:20,080
+consistent even into like mobile
+
+192
+00:09:20,080 --> 00:09:23,410
+browsing on mobile safari it's and then
+
+193
+00:09:23,410 --> 00:09:25,990
+on IE i noticed that if i increased it
+
+194
+00:09:25,990 --> 00:09:30,130
+from three times two let's see two more
+
+195
+00:09:30,130 --> 00:09:31,660
+than that even like this is an empty
+
+196
+00:09:31,660 --> 00:09:33,590
+test so that's dead code removal
+
+197
+00:09:33,590 --> 00:09:36,050
+but you can see that the result still
+
+198
+00:09:36,050 --> 00:09:38,600
+says it's they're very close and that's
+
+199
+00:09:38,600 --> 00:09:42,560
+because it's it's got a larger sample
+
+200
+00:09:42,560 --> 00:09:44,870
+size a lower margin of error and you can
+
+201
+00:09:44,870 --> 00:09:46,370
+see the margin of error there's a point
+
+202
+00:09:46,370 --> 00:09:52,400
+for 4.7 3.06 or point 46 and so using a
+
+203
+00:09:52,400 --> 00:09:54,680
+formula to be able to detect the
+
+204
+00:09:54,680 --> 00:09:56,810
+statistical significance between results
+
+205
+00:09:56,810 --> 00:09:59,000
+you're able to get a consistent read
+
+206
+00:09:59,000 --> 00:10:01,760
+every time and that's important there's
+
+207
+00:10:01,760 --> 00:10:03,800
+one issue I'll back up one slide here
+
+208
+00:10:03,800 --> 00:10:07,220
+there's actually a Firefox trace monkey
+
+209
+00:10:07,220 --> 00:10:08,870
+bug that has an issue with repeating
+
+210
+00:10:08,870 --> 00:10:11,950
+code blocks in getting gradually slower
+
+211
+00:10:11,950 --> 00:10:15,170
+results so there was a nice work around
+
+212
+00:10:15,170 --> 00:10:16,430
+with that where I have to access the
+
+213
+00:10:16,430 --> 00:10:18,500
+window object manipulate a variable
+
+214
+00:10:18,500 --> 00:10:21,650
+between each test so far Firefox has
+
+215
+00:10:21,650 --> 00:10:24,170
+been the one that's had the most engine
+
+216
+00:10:24,170 --> 00:10:25,850
+problems trying to get a bead on
+
+217
+00:10:25,850 --> 00:10:29,720
+performance so why is reproducing
+
+218
+00:10:29,720 --> 00:10:31,850
+results important well this is this is
+
+219
+00:10:31,850 --> 00:10:36,140
+Sun spiders result here and you can see
+
+220
+00:10:36,140 --> 00:10:38,000
+this is what I took this in my mobile
+
+221
+00:10:38,000 --> 00:10:40,580
+phone and I ran it I ran the same test
+
+222
+00:10:40,580 --> 00:10:43,340
+twice for the browser and you can see
+
+223
+00:10:43,340 --> 00:10:45,770
+there it says my browser is there's a
+
+224
+00:10:45,770 --> 00:10:47,270
+significant difference between my
+
+225
+00:10:47,270 --> 00:10:49,700
+browser and my browser and that's that's
+
+226
+00:10:49,700 --> 00:10:52,910
+incorrect and this is what browser
+
+227
+00:10:52,910 --> 00:10:56,660
+vendors are using to to to tweak their
+
+228
+00:10:56,660 --> 00:11:00,980
+stuff I mean this is this is so bad if
+
+229
+00:11:00,980 --> 00:11:02,330
+we go in here you'll actually notice
+
+230
+00:11:02,330 --> 00:11:03,830
+there's code there's there's there's
+
+231
+00:11:03,830 --> 00:11:05,780
+bugs and their actual formula for
+
+232
+00:11:05,780 --> 00:11:08,120
+calculating significance of results
+
+233
+00:11:08,120 --> 00:11:10,670
+you'll see there there's a typo there
+
+234
+00:11:10,670 --> 00:11:12,680
+and they're actually using an incorrect
+
+235
+00:11:12,680 --> 00:11:17,120
+formula whenever I was investigating how
+
+236
+00:11:17,120 --> 00:11:19,340
+to do benchmarking the hardest part was
+
+237
+00:11:19,340 --> 00:11:21,320
+finding formulas and finding accurate
+
+238
+00:11:21,320 --> 00:11:24,590
+formulas and I don't know statistics
+
+239
+00:11:24,590 --> 00:11:26,600
+naturally I mean I'm came from a
+
+240
+00:11:26,600 --> 00:11:28,340
+multimedia background so I had to do a
+
+241
+00:11:28,340 --> 00:11:31,040
+lot of research and trying to figure out
+
+242
+00:11:31,040 --> 00:11:34,190
+how this is done and it was surprising
+
+243
+00:11:34,190 --> 00:11:34,930
+you get into
+
+244
+00:11:34,930 --> 00:11:39,370
+little things like for example when
+
+245
+00:11:39,370 --> 00:11:41,920
+you're comparing rates there's there's a
+
+246
+00:11:41,920 --> 00:11:45,220
+there's a thing called a geometric mean
+
+247
+00:11:45,220 --> 00:11:47,950
+which is something that VA sweet uses
+
+248
+00:11:47,950 --> 00:11:51,029
+for theirs and then there's there's a
+
+249
+00:11:51,029 --> 00:11:53,800
+there's a harmonic mean and when you're
+
+250
+00:11:53,800 --> 00:11:55,420
+dealing with rates in this case
+
+251
+00:11:55,420 --> 00:11:57,940
+operations per second the harmonic mean
+
+252
+00:11:57,940 --> 00:12:01,480
+is preferred but Dromio it deals with
+
+253
+00:12:01,480 --> 00:12:03,730
+rates but it uses the geometric mean so
+
+254
+00:12:03,730 --> 00:12:06,339
+you get these slightly slanted views of
+
+255
+00:12:06,339 --> 00:12:09,580
+performance because their formulas
+
+256
+00:12:09,580 --> 00:12:15,310
+aren't quite correct so getting down to
+
+257
+00:12:15,310 --> 00:12:18,220
+the issue back where it was I ease timer
+
+258
+00:12:18,220 --> 00:12:19,660
+resolution where it's 15 milliseconds
+
+259
+00:12:19,660 --> 00:12:22,060
+versus one millisecond vs 4 milliseconds
+
+260
+00:12:22,060 --> 00:12:24,970
+on different environments how do you get
+
+261
+00:12:24,970 --> 00:12:27,700
+a consistent resolution and what I found
+
+262
+00:12:27,700 --> 00:12:29,860
+was that you can you can actually expose
+
+263
+00:12:29,860 --> 00:12:33,640
+the Javas nanosecond timer so you can
+
+264
+00:12:33,640 --> 00:12:36,490
+get nanosecond ish resolution in the
+
+265
+00:12:36,490 --> 00:12:38,470
+browser just by doing this tiny little
+
+266
+00:12:38,470 --> 00:12:41,110
+java basically I'm just exposing the
+
+267
+00:12:41,110 --> 00:12:44,110
+method and so now all browsers that
+
+268
+00:12:44,110 --> 00:12:46,839
+support java and this is yjs perf you'll
+
+269
+00:12:46,839 --> 00:12:49,300
+see your little java icon power up there
+
+270
+00:12:49,300 --> 00:12:51,850
+if you're using JSP and it's because we
+
+271
+00:12:51,850 --> 00:12:55,260
+by default if this is in the page
+
+272
+00:12:55,260 --> 00:12:58,540
+benchmark j/s will use the nano second
+
+273
+00:12:58,540 --> 00:13:01,120
+timer and it's not quite nanosecond
+
+274
+00:13:01,120 --> 00:13:03,970
+resolution because there's there's a
+
+275
+00:13:03,970 --> 00:13:05,800
+cost of communicating between JavaScript
+
+276
+00:13:05,800 --> 00:13:07,990
+and Java but it's still better than the
+
+277
+00:13:07,990 --> 00:13:10,690
+15 millisecond issue of IE and it's
+
+278
+00:13:10,690 --> 00:13:12,459
+still better it's still better than a
+
+279
+00:13:12,459 --> 00:13:15,730
+millisecond resolution so it gives you a
+
+280
+00:13:15,730 --> 00:13:18,310
+better more consistent way to do that
+
+281
+00:13:18,310 --> 00:13:20,920
+and it keeps the tests fast in different
+
+282
+00:13:20,920 --> 00:13:23,680
+environments like for IE if without this
+
+283
+00:13:23,680 --> 00:13:25,810
+we would detect the default time and it
+
+284
+00:13:25,810 --> 00:13:28,120
+would say 750 milliseconds and that just
+
+285
+00:13:28,120 --> 00:13:32,730
+plugs along on your bench marks so I
+
+286
+00:13:32,730 --> 00:13:37,050
+mentioned formulas and this is gross and
+
+287
+00:13:37,050 --> 00:13:40,600
+really boring but there's there's all
+
+288
+00:13:40,600 --> 00:13:44,620
+kinds of formulas that go into figuring
+
+289
+00:13:44,620 --> 00:13:47,760
+out statistical significance and and
+
+290
+00:13:47,760 --> 00:13:49,990
+meaningful information to your
+
+291
+00:13:49,990 --> 00:13:51,880
+benchmarks and data and so for example
+
+292
+00:13:51,880 --> 00:13:53,890
+there's the mean there's the variance
+
+293
+00:13:53,890 --> 00:13:57,820
+there is the sample a DV standard
+
+294
+00:13:57,820 --> 00:14:00,250
+deviation there's the standard error of
+
+295
+00:14:00,250 --> 00:14:03,040
+the mean I mean all of this stuff is is
+
+296
+00:14:03,040 --> 00:14:05,529
+is useful and you can you end up getting
+
+297
+00:14:05,529 --> 00:14:07,900
+that that nice display on Jasper where
+
+298
+00:14:07,900 --> 00:14:10,060
+it shows you the operations per second
+
+299
+00:14:10,060 --> 00:14:12,550
+your margin of error and then it's able
+
+300
+00:14:12,550 --> 00:14:14,589
+based with all these formulas be able to
+
+301
+00:14:14,589 --> 00:14:17,260
+tell the statistical significance of one
+
+302
+00:14:17,260 --> 00:14:20,589
+result versus another and this is where
+
+303
+00:14:20,589 --> 00:14:24,520
+it goes here for the statistical
+
+304
+00:14:24,520 --> 00:14:26,680
+significance and what was interesting is
+
+305
+00:14:26,680 --> 00:14:28,510
+now I mentioned before the formula i'm
+
+306
+00:14:28,510 --> 00:14:30,640
+using is something called a two-sample
+
+307
+00:14:30,640 --> 00:14:35,170
+t-test and it's great on paper and it's
+
+308
+00:14:35,170 --> 00:14:39,100
+something that sunspider uses i'm sure
+
+309
+00:14:39,100 --> 00:14:41,650
+some other ones use but i noticed that
+
+310
+00:14:41,650 --> 00:14:43,510
+in real life whenever you're comparing
+
+311
+00:14:43,510 --> 00:14:45,970
+javascript performance that it was way
+
+312
+00:14:45,970 --> 00:14:47,830
+too sensitive and as you saw with the
+
+313
+00:14:47,830 --> 00:14:49,660
+the SunSpider result where it said i was
+
+314
+00:14:49,660 --> 00:14:52,959
+significantly faster than myself that's
+
+315
+00:14:52,959 --> 00:14:55,660
+because this this formula is is really
+
+316
+00:14:55,660 --> 00:14:58,450
+sensitive and so I threw in a five
+
+317
+00:14:58,450 --> 00:15:00,610
+percent wiggle room there and that that
+
+318
+00:15:00,610 --> 00:15:02,800
+seems to be very consistent across
+
+319
+00:15:02,800 --> 00:15:05,410
+browsers so that's that's something to
+
+320
+00:15:05,410 --> 00:15:08,620
+consider um like I said I don't learn I
+
+321
+00:15:08,620 --> 00:15:12,070
+I didn't learn a lot of this stuff like
+
+322
+00:15:12,070 --> 00:15:14,709
+naturally I mean I had to to do a lot of
+
+323
+00:15:14,709 --> 00:15:20,070
+research and I really dug the videos on
+
+324
+00:15:20,070 --> 00:15:22,480
+Khan Academy like if you need to learn
+
+325
+00:15:22,480 --> 00:15:24,130
+something and this is the standard error
+
+326
+00:15:24,130 --> 00:15:25,379
+of the mean
+
+327
+00:15:25,379 --> 00:15:27,839
+and he just spells it out really nice
+
+328
+00:15:27,839 --> 00:15:30,869
+and so that was I use that I recommend
+
+329
+00:15:30,869 --> 00:15:34,709
+that you guys could check that out so
+
+330
+00:15:34,709 --> 00:15:38,299
+what are the gotchas of benchmarking and
+
+331
+00:15:38,299 --> 00:15:42,449
+so there was a lot of drama with ie9 and
+
+332
+00:15:42,449 --> 00:15:46,679
+SunSpider there's accusations going back
+
+333
+00:15:46,679 --> 00:15:48,299
+and forth and are they cheating or not
+
+334
+00:15:48,299 --> 00:15:49,679
+it just turned out to be dead code
+
+335
+00:15:49,679 --> 00:15:53,069
+removal and that's something you have to
+
+336
+00:15:53,069 --> 00:15:55,379
+consider like I would say the majority
+
+337
+00:15:55,379 --> 00:15:57,299
+of the benchmark Sanjay Esper are
+
+338
+00:15:57,299 --> 00:16:00,409
+probably bad benchmarks and it's because
+
+339
+00:16:00,409 --> 00:16:04,229
+making good benchmarks is hard and I
+
+340
+00:16:04,229 --> 00:16:06,239
+took care of the the part of measuring
+
+341
+00:16:06,239 --> 00:16:08,369
+the actual performance but now it's up
+
+342
+00:16:08,369 --> 00:16:10,859
+to developers and everyone else to kind
+
+343
+00:16:10,859 --> 00:16:12,989
+of make really good benchmarks so some
+
+344
+00:16:12,989 --> 00:16:15,989
+of the issues you can have our dead code
+
+345
+00:16:15,989 --> 00:16:18,019
+removal so like before where I had that
+
+346
+00:16:18,019 --> 00:16:22,109
+that empty block here that's dead that
+
+347
+00:16:22,109 --> 00:16:23,639
+could be dead pogrom well I mean that's
+
+348
+00:16:23,639 --> 00:16:26,879
+basically just running nothing and so
+
+349
+00:16:26,879 --> 00:16:28,379
+that you have to be careful of
+
+350
+00:16:28,379 --> 00:16:29,729
+benchmarking stuff like that because
+
+351
+00:16:29,729 --> 00:16:31,829
+then if your if your engine is optimized
+
+352
+00:16:31,829 --> 00:16:33,479
+to remove that stuff and it's going to
+
+353
+00:16:33,479 --> 00:16:35,220
+perform faster than something that's not
+
+354
+00:16:35,220 --> 00:16:37,559
+optimized to remove that then there's
+
+355
+00:16:37,559 --> 00:16:39,299
+other issues where you have like
+
+356
+00:16:39,299 --> 00:16:41,939
+long-running tasks like crank crankshaft
+
+357
+00:16:41,939 --> 00:16:43,859
+can kick in and you'll see the the
+
+358
+00:16:43,859 --> 00:16:46,769
+performance results change there or for
+
+359
+00:16:46,769 --> 00:16:48,749
+example opera has query schlechter all
+
+360
+00:16:48,749 --> 00:16:50,699
+but it caches its result and so since
+
+361
+00:16:50,699 --> 00:16:52,769
+this benchmark is based on repeating
+
+362
+00:16:52,769 --> 00:16:54,899
+things to get operations for a second
+
+363
+00:16:54,899 --> 00:16:57,239
+it's you're getting a cached result so
+
+364
+00:16:57,239 --> 00:17:00,509
+there's there's considerations there and
+
+365
+00:17:00,509 --> 00:17:02,039
+you just need to be aware of your actual
+
+366
+00:17:02,039 --> 00:17:05,189
+environment there's also reasons why for
+
+367
+00:17:05,189 --> 00:17:08,039
+example drumeo isn't as preferred as
+
+368
+00:17:08,039 --> 00:17:12,120
+cracking is because it does it has all
+
+369
+00:17:12,120 --> 00:17:13,740
+of its tests in a closure and then it
+
+370
+00:17:13,740 --> 00:17:16,250
+accesses variables on the global and
+
+371
+00:17:16,250 --> 00:17:18,720
+when it does that there's a performance
+
+372
+00:17:18,720 --> 00:17:21,899
+hit with Firefox and so they don't
+
+373
+00:17:21,899 --> 00:17:23,070
+prefer that test they want
+
+374
+00:17:23,070 --> 00:17:25,350
+show it on local variables because it
+
+375
+00:17:25,350 --> 00:17:28,470
+makes them you know look better so this
+
+376
+00:17:28,470 --> 00:17:30,720
+you have to keep that in mind with this
+
+377
+00:17:30,720 --> 00:17:33,660
+this kind of testing two I provide API
+
+378
+00:17:33,660 --> 00:17:35,760
+so you can do local test but by default
+
+379
+00:17:35,760 --> 00:17:38,400
+you're you're going from a closure to
+
+380
+00:17:38,400 --> 00:17:41,550
+the local the global variables so keep
+
+381
+00:17:41,550 --> 00:17:43,410
+that mind to whatever your you're doing
+
+382
+00:17:43,410 --> 00:17:48,860
+that it affects your your stuff okay and
+
+383
+00:17:48,860 --> 00:18:03,070
+so questions anyone nothing you yeah
+
+384
+00:18:03,080 --> 00:18:07,830
+does that affect
+
+385
+00:18:07,840 --> 00:18:12,010
+I i missed the actual talk on that there
+
+386
+00:18:12,010 --> 00:18:14,409
+they this has to deal with the timer
+
+387
+00:18:14,409 --> 00:18:19,450
+resolution and basically if you run the
+
+388
+00:18:19,450 --> 00:18:21,340
+new date and the new date what's the
+
+389
+00:18:21,340 --> 00:18:23,169
+smallest amount of time in there that
+
+390
+00:18:23,169 --> 00:18:25,450
+you can that you can read and that's how
+
+391
+00:18:25,450 --> 00:18:27,070
+I find the minimum the minimum
+
+392
+00:18:27,070 --> 00:18:29,380
+resolution and in this case I do it in
+
+393
+00:18:29,380 --> 00:18:30,909
+the for loop until you get a difference
+
+394
+00:18:30,909 --> 00:18:36,070
+in time and with ie9 i'm told it's it's
+
+395
+00:18:36,070 --> 00:18:38,260
+four milliseconds now and i actually
+
+396
+00:18:38,260 --> 00:18:39,400
+don't have to worry about it because my
+
+397
+00:18:39,400 --> 00:18:41,740
+script detects that the minimum time so
+
+398
+00:18:41,740 --> 00:18:43,270
+that that's really what it would detect
+
+399
+00:18:43,270 --> 00:18:47,830
+on the run speed the the long running
+
+400
+00:18:47,830 --> 00:18:50,440
+tests i run on Jas / if I run them for
+
+401
+00:18:50,440 --> 00:18:53,140
+five seconds just so I can get more of a
+
+402
+00:18:53,140 --> 00:18:55,419
+sample size so it usually ends up being
+
+403
+00:18:55,419 --> 00:18:57,250
+about a hundred which is above and
+
+404
+00:18:57,250 --> 00:19:00,789
+beyond most benchmarks I think Dromio
+
+405
+00:19:00,789 --> 00:19:04,480
+does five and sunspider does 10 so
+
+406
+00:19:04,480 --> 00:19:06,580
+having that bigger size just reduces the
+
+407
+00:19:06,580 --> 00:19:08,169
+margin of error but i don't know if that
+
+408
+00:19:08,169 --> 00:19:10,510
+that would that should not affect the
+
+409
+00:19:10,510 --> 00:19:13,659
+the length the benchmark runs it'll
+
+410
+00:19:13,659 --> 00:19:15,690
+affect the overall performance though
+
+411
+00:19:15,690 --> 00:19:28,520
+cool yes
+
+412
+00:19:28,530 --> 00:19:32,310
+yeah that I I did i used it i went into
+
+413
+00:19:32,310 --> 00:19:35,580
+all of that nano and micro benchmarking
+
+414
+00:19:35,580 --> 00:19:37,320
+on should i use new date should i use
+
+415
+00:19:37,320 --> 00:19:40,680
+date now should i use get time all in it
+
+416
+00:19:40,680 --> 00:19:42,930
+doesn't matter it's it's so tiny that
+
+417
+00:19:42,930 --> 00:19:46,560
+it's they're using one versus the other
+
+418
+00:19:46,560 --> 00:19:49,110
+is statistically indistinguishable from
+
+419
+00:19:49,110 --> 00:19:51,450
+them in fact there is there some
+
+420
+00:19:51,450 --> 00:19:52,650
+benchmarks that you know try to
+
+421
+00:19:52,650 --> 00:19:56,610
+calibrate out the cost and the overhead
+
+422
+00:19:56,610 --> 00:19:58,650
+of the the iteration like the while loop
+
+423
+00:19:58,650 --> 00:19:59,790
+you're actually having to do in the
+
+424
+00:19:59,790 --> 00:20:01,920
+function clunk and getting and entering
+
+425
+00:20:01,920 --> 00:20:04,460
+the execution context but i found that
+
+426
+00:20:04,460 --> 00:20:07,500
+whenever you subtract that calibration
+
+427
+00:20:07,500 --> 00:20:10,080
+cost from your end result you actually
+
+428
+00:20:10,080 --> 00:20:11,760
+get a higher margin of error so it
+
+429
+00:20:11,760 --> 00:20:13,740
+swallows any of the accuracy you were
+
+430
+00:20:13,740 --> 00:20:17,040
+hoping to gain by calibrating out that
+
+431
+00:20:17,040 --> 00:20:19,740
+stuff so in the end it's it's better to
+
+432
+00:20:19,740 --> 00:20:21,420
+just leave it in it's not a noticeable
+
+433
+00:20:21,420 --> 00:20:34,050
+difference oh
+
+434
+00:20:34,060 --> 00:20:37,780
+the that's Matthias's is the the main
+
+435
+00:20:37,780 --> 00:20:40,750
+drive behind me maintaining that and
+
+436
+00:20:40,750 --> 00:20:42,430
+that's just his design choice that's
+
+437
+00:20:42,430 --> 00:20:45,370
+simple it's really just he'd want it to
+
+438
+00:20:45,370 --> 00:20:49,540
+be very very simple to do so cool all
+

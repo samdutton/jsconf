@@ -1,0 +1,3041 @@
+1
+00:00:08,540 --> 00:00:13,620
+
+so my name is Phillip I'm gonna talk to
+
+2
+00:00:13,620 --> 00:00:16,049
+you about messing around with the
+
+3
+00:00:16,049 --> 00:00:17,640
+netbook well messing around with
+
+4
+00:00:17,640 --> 00:00:19,830
+javascript in the Dom to figure out
+
+5
+00:00:19,830 --> 00:00:22,080
+different network characteristics the
+
+6
+00:00:22,080 --> 00:00:24,080
+title here is smaller than what's on the
+
+7
+00:00:24,080 --> 00:00:26,460
+on the website because that wouldn't
+
+8
+00:00:26,460 --> 00:00:30,869
+actually fit in my slides so I'm gonna
+
+9
+00:00:30,869 --> 00:00:34,520
+get started everyone here web developer
+
+10
+00:00:34,520 --> 00:00:38,790
+yeah alright so the web basically runs
+
+11
+00:00:38,790 --> 00:00:41,129
+on three protocols HTTP at the top
+
+12
+00:00:41,129 --> 00:00:43,980
+running on tcp and that override be
+
+13
+00:00:43,980 --> 00:00:45,719
+below that it couldn't really be
+
+14
+00:00:45,719 --> 00:00:48,420
+anything but we have this dry of
+
+15
+00:00:48,420 --> 00:00:51,719
+protocols made by three guys over the
+
+16
+00:00:51,719 --> 00:00:54,600
+course of maybe 20 years starting from
+
+17
+00:00:54,600 --> 00:00:57,600
+1974 on incidentally they have just one
+
+18
+00:00:57,600 --> 00:01:00,480
+beard between them so we'll surf bargain
+
+19
+00:01:00,480 --> 00:01:04,080
+and Tim berners-lee windsurf see anyone
+
+20
+00:01:04,080 --> 00:01:08,100
+at the beard later on we got JavaScript
+
+21
+00:01:08,100 --> 00:01:11,189
+and one one guy with one beard and
+
+22
+00:01:11,189 --> 00:01:13,439
+discovered the good parts so we're gonna
+
+23
+00:01:13,439 --> 00:01:15,390
+throw all of that out of the window and
+
+24
+00:01:15,390 --> 00:01:21,799
+play with the nasty parts all right so
+
+25
+00:01:21,799 --> 00:01:24,240
+number one latency who knows what
+
+26
+00:01:24,240 --> 00:01:29,159
+network latency is great so I have 30
+
+27
+00:01:29,159 --> 00:01:32,729
+minutes and I have a lot to cover who
+
+28
+00:01:32,729 --> 00:01:36,180
+wants to time me 71 I've got six
+
+29
+00:01:36,180 --> 00:01:38,850
+different topics to go through so let's
+
+30
+00:01:38,850 --> 00:01:41,340
+hope five minutes per topic right so
+
+31
+00:01:41,340 --> 00:01:42,960
+let's do latency and let's see if I can
+
+32
+00:01:42,960 --> 00:01:49,320
+keep it under five minutes so this this
+
+33
+00:01:49,320 --> 00:01:51,149
+is an image from cable map that info
+
+34
+00:01:51,149 --> 00:01:53,850
+it's looking at one of the undersea
+
+35
+00:01:53,850 --> 00:01:56,820
+cables between that goes between Germany
+
+36
+00:01:56,820 --> 00:01:59,610
+and the u.s. typically it takes light
+
+37
+00:01:59,610 --> 00:02:02,399
+about 23 milliseconds to go from Berlin
+
+38
+00:02:02,399 --> 00:02:05,670
+to New York if you put that through
+
+39
+00:02:05,670 --> 00:02:07,770
+fiber takes 35 milliseconds because
+
+40
+00:02:07,770 --> 00:02:10,920
+light travels at sixty-six percent of
+
+41
+00:02:10,920 --> 00:02:14,010
+its speed within 50 now if you actually
+
+42
+00:02:14,010 --> 00:02:16,590
+need to go send a network signal you
+
+43
+00:02:16,590 --> 00:02:18,810
+need to send light there send it back
+
+44
+00:02:18,810 --> 00:02:20,640
+and actually do it two more times
+
+45
+00:02:20,640 --> 00:02:24,450
+because of losses within different
+
+46
+00:02:24,450 --> 00:02:26,610
+devices so that 35 milliseconds actually
+
+47
+00:02:26,610 --> 00:02:28,440
+becomes something like 70 milliseconds
+
+48
+00:02:28,440 --> 00:02:31,080
+so if we try to ping from one end to the
+
+49
+00:02:31,080 --> 00:02:33,030
+other that's more or less what you'd see
+
+50
+00:02:33,030 --> 00:02:38,160
+70 to 80 milliseconds this is fine we
+
+51
+00:02:38,160 --> 00:02:39,450
+know this because of physics we know
+
+52
+00:02:39,450 --> 00:02:42,180
+this if we actually see two cities we
+
+53
+00:02:42,180 --> 00:02:45,060
+know how long it's going to take but
+
+54
+00:02:45,060 --> 00:02:46,470
+what happens if you're sitting on your
+
+55
+00:02:46,470 --> 00:02:47,940
+web server you have no idea where your
+
+56
+00:02:47,940 --> 00:02:49,440
+users coming from all you know where
+
+57
+00:02:49,440 --> 00:02:50,610
+they're coming from based on the IP
+
+58
+00:02:50,610 --> 00:02:54,000
+address but you don't know what route
+
+59
+00:02:54,000 --> 00:02:56,129
+they taking to get to your box so you
+
+60
+00:02:56,129 --> 00:02:58,260
+want to do some other something else to
+
+61
+00:02:58,260 --> 00:03:00,599
+measure the actual latency and that's
+
+62
+00:03:00,599 --> 00:03:03,090
+what we're going to look at so latency
+
+63
+00:03:03,090 --> 00:03:05,940
+of round trip time which is what we
+
+64
+00:03:05,940 --> 00:03:07,800
+really care about is the time it takes
+
+65
+00:03:07,800 --> 00:03:10,140
+to send a packet and get a response back
+
+66
+00:03:10,140 --> 00:03:13,650
+from the user so we look at an HTTP
+
+67
+00:03:13,650 --> 00:03:16,110
+request it looks like this the client
+
+68
+00:03:16,110 --> 00:03:19,319
+sends a get request and the server
+
+69
+00:03:19,319 --> 00:03:21,989
+handles that request and sends back a
+
+70
+00:03:21,989 --> 00:03:24,810
+response now if your get request is
+
+71
+00:03:24,810 --> 00:03:26,730
+small enough it should fit within a
+
+72
+00:03:26,730 --> 00:03:30,120
+single DCP packet so one HTTP request is
+
+73
+00:03:30,120 --> 00:03:32,250
+actually one tcp package and if your
+
+74
+00:03:32,250 --> 00:03:34,349
+response is small enough as well it
+
+75
+00:03:34,349 --> 00:03:36,180
+should fit within another TCP packet so
+
+76
+00:03:36,180 --> 00:03:37,470
+you'll get back a response and you'll
+
+77
+00:03:37,470 --> 00:03:39,390
+get back an acknowledgement as well with
+
+78
+00:03:39,390 --> 00:03:43,890
+that everyone okay so far so how would
+
+79
+00:03:43,890 --> 00:03:46,560
+we measure this time any guesses using
+
+80
+00:03:46,560 --> 00:03:56,860
+only javascript within the browser
+
+81
+00:03:56,870 --> 00:04:05,040
+bread
+
+82
+00:04:05,050 --> 00:04:08,330
+right so that's actually exactly what my
+
+83
+00:04:08,330 --> 00:04:15,440
+code does so I take the start date set a
+
+84
+00:04:15,440 --> 00:04:17,329
+timer that measures the male's
+
+85
+00:04:17,329 --> 00:04:19,910
+milliseconds of the current time then
+
+86
+00:04:19,910 --> 00:04:22,580
+load an image from wherever my server is
+
+87
+00:04:22,580 --> 00:04:25,130
+and on the onload I measure the end time
+
+88
+00:04:25,130 --> 00:04:27,199
+take the difference and that should be
+
+89
+00:04:27,199 --> 00:04:29,419
+the round-trip time right who thinks
+
+90
+00:04:29,419 --> 00:04:34,010
+that's right anyone else everyone else
+
+91
+00:04:34,010 --> 00:04:37,220
+thinks it's wrong why do you think it's
+
+92
+00:04:37,220 --> 00:04:42,740
+wrong
+
+93
+00:04:42,750 --> 00:04:45,390
+browser needs processing time we so that
+
+94
+00:04:45,390 --> 00:04:47,250
+the browser's going to file the onload
+
+95
+00:04:47,250 --> 00:04:49,530
+as soon as the the image is available
+
+96
+00:04:49,530 --> 00:04:51,750
+this is not being displayed on screen so
+
+97
+00:04:51,750 --> 00:04:54,960
+it's it's just as long as it's available
+
+98
+00:04:54,960 --> 00:04:56,610
+there the browser is going to fire the
+
+99
+00:04:56,610 --> 00:04:57,810
+armlet so it's not a problem with
+
+100
+00:04:57,810 --> 00:05:00,600
+browser processing time the server could
+
+101
+00:05:00,600 --> 00:05:02,070
+require some processing time to actually
+
+102
+00:05:02,070 --> 00:05:04,950
+load that image from disk but let's say
+
+103
+00:05:04,950 --> 00:05:07,350
+we do this for every single user we do
+
+104
+00:05:07,350 --> 00:05:09,240
+it more than once that image is going to
+
+105
+00:05:09,240 --> 00:05:11,310
+be cached in ram so we don't even worry
+
+106
+00:05:11,310 --> 00:05:20,130
+about that anyone else so that's right
+
+107
+00:05:20,130 --> 00:05:21,690
+the time it would take to download the
+
+108
+00:05:21,690 --> 00:05:23,190
+image we can make our image small enough
+
+109
+00:05:23,190 --> 00:05:25,890
+so I typically use a 1 by 1 GF which is
+
+110
+00:05:25,890 --> 00:05:29,850
+35 bytes in size 35 by x + ahead of 312
+
+111
+00:05:29,850 --> 00:05:32,880
+bytes is totally less than thousand 24
+
+112
+00:05:32,880 --> 00:05:35,910
+bytes which is more or less what a TCP
+
+113
+00:05:35,910 --> 00:05:39,480
+packet is so even with downloading image
+
+114
+00:05:39,480 --> 00:05:40,950
+it should still fit in a single TCP
+
+115
+00:05:40,950 --> 00:05:42,720
+packet and we can't get smaller than
+
+116
+00:05:42,720 --> 00:05:50,160
+that perfect so a problem is a TCP
+
+117
+00:05:50,160 --> 00:05:52,890
+handshake right so we're not really
+
+118
+00:05:52,890 --> 00:05:54,810
+measuring just a round-trip time we are
+
+119
+00:05:54,810 --> 00:05:56,670
+measuring TCP handshake plus round-trip
+
+120
+00:05:56,670 --> 00:05:59,010
+time so whenever you make a first
+
+121
+00:05:59,010 --> 00:06:01,620
+request to a server what happens is your
+
+122
+00:06:01,620 --> 00:06:03,720
+client sends a syn packet that's one tcp
+
+123
+00:06:03,720 --> 00:06:05,490
+packet the only thing it has a flag
+
+124
+00:06:05,490 --> 00:06:09,360
+that's a sin saying synchronized and the
+
+125
+00:06:09,360 --> 00:06:11,130
+server response saying I acknowledge
+
+126
+00:06:11,130 --> 00:06:13,470
+your sin and I send you my own sin and
+
+127
+00:06:13,470 --> 00:06:15,990
+then the client has to respond saying I
+
+128
+00:06:15,990 --> 00:06:18,900
+acknowledge Austin so now we've come
+
+129
+00:06:18,900 --> 00:06:21,210
+come pleated this three-way handshake
+
+130
+00:06:21,210 --> 00:06:23,430
+and our connection is established and
+
+131
+00:06:23,430 --> 00:06:24,780
+that's when you can start sending data
+
+132
+00:06:24,780 --> 00:06:27,480
+so we actually sent three packets to and
+
+133
+00:06:27,480 --> 00:06:29,550
+fro before we send up first get requests
+
+134
+00:06:29,550 --> 00:06:32,610
+so what we're doing in this case is
+
+135
+00:06:32,610 --> 00:06:34,980
+actually measuring the time of five
+
+136
+00:06:34,980 --> 00:06:39,060
+packets right and not two packets so how
+
+137
+00:06:39,060 --> 00:06:43,210
+do we get around that any guesses
+
+138
+00:06:43,210 --> 00:06:47,410
+sorry handshake first how do I measure
+
+139
+00:06:47,410 --> 00:06:50,169
+when my hand shakes dance how do how do
+
+140
+00:06:50,169 --> 00:06:58,909
+I measure when the handshake is done
+
+141
+00:06:58,919 --> 00:07:03,069
+alright pretty good keep-alive so let's
+
+142
+00:07:03,069 --> 00:07:07,139
+keep that in mind keep alive anyone else
+
+143
+00:07:07,139 --> 00:07:09,849
+fetching two images right so fetch two
+
+144
+00:07:09,849 --> 00:07:14,710
+images with keep alive so you guys are
+
+145
+00:07:14,710 --> 00:07:18,529
+actually have you seen my slides before
+
+146
+00:07:18,539 --> 00:07:21,250
+alright so basically that's what we do
+
+147
+00:07:21,250 --> 00:07:24,430
+we we rely on the fact that HTTP 1.1 by
+
+148
+00:07:24,430 --> 00:07:27,180
+default has connection keep-alive so
+
+149
+00:07:27,180 --> 00:07:30,099
+what that means is when a client makes a
+
+150
+00:07:30,099 --> 00:07:32,620
+request to a server it'll keep that TCP
+
+151
+00:07:32,620 --> 00:07:34,990
+connection open for a certain amount of
+
+152
+00:07:34,990 --> 00:07:37,090
+time typically defined by the default
+
+153
+00:07:37,090 --> 00:07:41,199
+keep-alive time I think that's between
+
+154
+00:07:41,199 --> 00:07:43,180
+15 and 30 seconds depending on your web
+
+155
+00:07:43,180 --> 00:07:46,210
+server so this client makes a connection
+
+156
+00:07:46,210 --> 00:07:48,250
+to a TCP connection so it does the
+
+157
+00:07:48,250 --> 00:07:50,139
+handshake and once that handshake is
+
+158
+00:07:50,139 --> 00:07:51,820
+done it'll keep that connection open for
+
+159
+00:07:51,820 --> 00:07:54,400
+15 seconds and make as many requests as
+
+160
+00:07:54,400 --> 00:07:56,590
+are necessary on that same TCP
+
+161
+00:07:56,590 --> 00:07:59,050
+connection so what we do is we do one
+
+162
+00:07:59,050 --> 00:08:02,440
+request do I get that that would
+
+163
+00:08:02,440 --> 00:08:04,750
+initiate the first handshake the onload
+
+164
+00:08:04,750 --> 00:08:06,520
+would file after the image is downloaded
+
+165
+00:08:06,520 --> 00:08:09,150
+and then do another request right and
+
+166
+00:08:09,150 --> 00:08:11,380
+that second request does not need a
+
+167
+00:08:11,380 --> 00:08:12,729
+handshake because it's going over the
+
+168
+00:08:12,729 --> 00:08:15,219
+same TCP connection as long as we start
+
+169
+00:08:15,219 --> 00:08:17,710
+that request after the first image was
+
+170
+00:08:17,710 --> 00:08:20,860
+downloaded so the code to do that is
+
+171
+00:08:20,860 --> 00:08:23,050
+slightly more complicated but not too
+
+172
+00:08:23,050 --> 00:08:26,349
+much we go through two images on the
+
+173
+00:08:26,349 --> 00:08:28,030
+onload event of the first one we
+
+174
+00:08:28,030 --> 00:08:31,090
+download the second one is the code
+
+175
+00:08:31,090 --> 00:08:35,349
+clear to everyone if you have any
+
+176
+00:08:35,349 --> 00:08:39,430
+questions with the code can ask me but
+
+177
+00:08:39,430 --> 00:08:41,890
+basically that what it's doing is it
+
+178
+00:08:41,890 --> 00:08:44,529
+loads an image and the onload event
+
+179
+00:08:44,529 --> 00:08:46,329
+measures the time and then loads the
+
+180
+00:08:46,329 --> 00:08:48,250
+image again we throw in some cash
+
+181
+00:08:48,250 --> 00:08:49,899
+busting code in there because we don't
+
+182
+00:08:49,899 --> 00:08:51,670
+want the second load to come up from
+
+183
+00:08:51,670 --> 00:08:53,460
+cash we wanted to always come from
+
+184
+00:08:53,460 --> 00:08:56,460
+server so now we have to the same image
+
+185
+00:08:56,460 --> 00:08:59,790
+loaded twice from the same server the
+
+186
+00:08:59,790 --> 00:09:02,130
+round-trip time is really the or rather
+
+187
+00:09:02,130 --> 00:09:04,230
+the latency is the time it took the
+
+188
+00:09:04,230 --> 00:09:06,090
+second image to load and then now that
+
+189
+00:09:06,090 --> 00:09:08,580
+we know the latency if we subtract that
+
+190
+00:09:08,580 --> 00:09:10,110
+from the time it took the first image to
+
+191
+00:09:10,110 --> 00:09:12,150
+load we also know how long it takes the
+
+192
+00:09:12,150 --> 00:09:16,470
+TCP handshake to happen right any
+
+193
+00:09:16,470 --> 00:09:19,290
+questions about that so now we can
+
+194
+00:09:19,290 --> 00:09:20,880
+compare because now we know it takes
+
+195
+00:09:20,880 --> 00:09:23,250
+three packets to do a TCP handshake and
+
+196
+00:09:23,250 --> 00:09:25,820
+two packets to download an image
+
+197
+00:09:25,820 --> 00:09:28,320
+typically that image should be
+
+198
+00:09:28,320 --> 00:09:31,440
+two-thirds of the so RTP should be
+
+199
+00:09:31,440 --> 00:09:36,590
+two-thirds of TCP so that makes sense
+
+200
+00:09:36,590 --> 00:09:40,470
+any questions so far how am i doing on
+
+201
+00:09:40,470 --> 00:09:44,580
+time nine minutes so i'm good i finished
+
+202
+00:09:44,580 --> 00:09:47,700
+two parts in nine minutes the third part
+
+203
+00:09:47,700 --> 00:09:51,270
+is going to be tough so you'll notice
+
+204
+00:09:51,270 --> 00:09:53,640
+that we ignored dns lookup time here
+
+205
+00:09:53,640 --> 00:09:56,010
+alright the first connection was
+
+206
+00:09:56,010 --> 00:09:58,230
+actually it doesn't just do a TCP
+
+207
+00:09:58,230 --> 00:10:00,660
+handshake it also needs to do a DNS
+
+208
+00:10:00,660 --> 00:10:02,340
+lookup and we're going to ignore that
+
+209
+00:10:02,340 --> 00:10:04,830
+for now all right we'll assume DNS has
+
+210
+00:10:04,830 --> 00:10:06,240
+been cached but we'll deal with that
+
+211
+00:10:06,240 --> 00:10:10,440
+later assuming a half time so if you
+
+212
+00:10:10,440 --> 00:10:14,640
+notes on this I use a 1 by 1 jiff 35
+
+213
+00:10:14,640 --> 00:10:16,680
+bytes in size and experimented with
+
+214
+00:10:16,680 --> 00:10:18,150
+different types of images the first
+
+215
+00:10:18,150 --> 00:10:20,580
+thing i tried was just in a 204 head up
+
+216
+00:10:20,580 --> 00:10:23,730
+back 204 is no content so I don't
+
+217
+00:10:23,730 --> 00:10:26,280
+actually send any data the problem with
+
+218
+00:10:26,280 --> 00:10:28,470
+that is it will fire an on error event
+
+219
+00:10:28,470 --> 00:10:31,800
+and not an onload event does anyone see
+
+220
+00:10:31,800 --> 00:10:34,050
+a problem with an on-air event I could
+
+221
+00:10:34,050 --> 00:10:35,790
+still measure the time when the ordinary
+
+222
+00:10:35,790 --> 00:10:39,760
+files right
+
+223
+00:10:39,770 --> 00:10:41,700
+exactly I might get a different error
+
+224
+00:10:41,700 --> 00:10:43,530
+right what happens with me users network
+
+225
+00:10:43,530 --> 00:10:46,080
+isn't connected the network drops after
+
+226
+00:10:46,080 --> 00:10:48,150
+he loads my first page so I'm going to
+
+227
+00:10:48,150 --> 00:10:50,070
+get an on error simply because you
+
+228
+00:10:50,070 --> 00:10:52,530
+couldn't connect to the server or there
+
+229
+00:10:52,530 --> 00:10:54,120
+could be a DNS outage or any other
+
+230
+00:10:54,120 --> 00:10:55,530
+outage that's going to cause that error
+
+231
+00:10:55,530 --> 00:10:57,330
+which won't actually measure the latency
+
+232
+00:10:57,330 --> 00:11:00,510
+so I definitely want an onload event I
+
+233
+00:11:00,510 --> 00:11:04,110
+then tried a PNG with which was zero
+
+234
+00:11:04,110 --> 00:11:07,320
+bytes in size then also doesn't work it
+
+235
+00:11:07,320 --> 00:11:11,700
+also fires a non era another interesting
+
+236
+00:11:11,700 --> 00:11:14,250
+with thing with a 2-0 for is uncertain
+
+237
+00:11:14,250 --> 00:11:16,590
+mobile devices it doesn't fire any
+
+238
+00:11:16,590 --> 00:11:19,530
+events so there's no one error no unload
+
+239
+00:11:19,530 --> 00:11:21,750
+nothing it might it'll actually loads up
+
+240
+00:11:21,750 --> 00:11:24,780
+but it doesn't doesn't fly any months so
+
+241
+00:11:24,780 --> 00:11:26,160
+this was the smallest image I could
+
+242
+00:11:26,160 --> 00:11:28,710
+possibly get that actually fits within a
+
+243
+00:11:28,710 --> 00:11:30,720
+TCP packet and also fires an onload
+
+244
+00:11:30,720 --> 00:11:38,370
+event files on all right so third one
+
+245
+00:11:38,370 --> 00:11:41,030
+I'm gonna do now is network throughput
+
+246
+00:11:41,030 --> 00:11:43,050
+does everyone know what network
+
+247
+00:11:43,050 --> 00:11:46,740
+throughput is how does it differ from
+
+248
+00:11:46,740 --> 00:11:52,730
+bandwidth
+
+249
+00:11:52,740 --> 00:11:57,420
+after an hour and bites a dog right
+
+250
+00:11:57,420 --> 00:12:02,350
+right right so you think of it like the
+
+251
+00:12:02,350 --> 00:12:04,980
+station wagon thing right you can put
+
+252
+00:12:04,980 --> 00:12:07,420
+hundreds of magnetic tapes or other data
+
+253
+00:12:07,420 --> 00:12:09,010
+in a station wagon and drive from one
+
+254
+00:12:09,010 --> 00:12:10,720
+place to another and you'll have really
+
+255
+00:12:10,720 --> 00:12:13,390
+high bandwidth right because you get so
+
+256
+00:12:13,390 --> 00:12:16,600
+many petabytes of data across but the
+
+257
+00:12:16,600 --> 00:12:18,460
+latency is so bad so yeah effective
+
+258
+00:12:18,460 --> 00:12:21,460
+throughput is not very good if you take
+
+259
+00:12:21,460 --> 00:12:23,320
+the whole amount of time that it takes
+
+260
+00:12:23,320 --> 00:12:26,200
+to get the data across what we're
+
+261
+00:12:26,200 --> 00:12:28,800
+actually going to measure is how much
+
+262
+00:12:28,800 --> 00:12:31,960
+how much effective use of a network
+
+263
+00:12:31,960 --> 00:12:34,390
+connection we can use so even if i have
+
+264
+00:12:34,390 --> 00:12:37,720
+3 mech data connection i might only be
+
+265
+00:12:37,720 --> 00:12:39,610
+able to use one megabit to actually
+
+266
+00:12:39,610 --> 00:12:42,640
+download data because of various reasons
+
+267
+00:12:42,640 --> 00:12:44,320
+so it should be fairly simple to
+
+268
+00:12:44,320 --> 00:12:46,330
+calculate right download something large
+
+269
+00:12:46,330 --> 00:12:48,340
+and measure how long it takes to
+
+270
+00:12:48,340 --> 00:12:52,000
+download that this is everyone okay with
+
+271
+00:12:52,000 --> 00:12:54,790
+that oh do you see holes in this
+
+272
+00:12:54,790 --> 00:13:00,800
+approach
+
+273
+00:13:00,810 --> 00:13:03,930
+alright so looking at that it should be
+
+274
+00:13:03,930 --> 00:13:05,550
+fairly simple we take the same code that
+
+275
+00:13:05,550 --> 00:13:07,529
+we used before just use a larger image
+
+276
+00:13:07,529 --> 00:13:10,470
+and instead of just taking the time we
+
+277
+00:13:10,470 --> 00:13:12,540
+take the size so we use an image of
+
+278
+00:13:12,540 --> 00:13:15,660
+known size divided by the time I also
+
+279
+00:13:15,660 --> 00:13:17,640
+multiply by 1000 here because time is in
+
+280
+00:13:17,640 --> 00:13:19,440
+milliseconds and I want kilobits
+
+281
+00:13:19,440 --> 00:13:21,420
+kilobytes per second or kilo bits per
+
+282
+00:13:21,420 --> 00:13:24,800
+second depending on how I store the size
+
+283
+00:13:24,800 --> 00:13:27,930
+so does this make sense the do you think
+
+284
+00:13:27,930 --> 00:13:36,030
+this will work in all cases
+
+285
+00:13:36,040 --> 00:13:39,140
+tcp or IP packets overhead yeah there is
+
+286
+00:13:39,140 --> 00:13:43,550
+going to be some overhead do we care is
+
+287
+00:13:43,550 --> 00:13:47,180
+it who here is a network engineer not a
+
+288
+00:13:47,180 --> 00:13:50,810
+web developer right so as web developers
+
+289
+00:13:50,810 --> 00:13:54,170
+we don't care about TCP overhead we care
+
+290
+00:13:54,170 --> 00:13:56,120
+specifically how long does it take if I
+
+291
+00:13:56,120 --> 00:13:59,660
+have an image that's 200 kilobytes how
+
+292
+00:13:59,660 --> 00:14:01,430
+long is it going to take for my user to
+
+293
+00:14:01,430 --> 00:14:03,860
+download that so I don't really care
+
+294
+00:14:03,860 --> 00:14:06,650
+about tcp / even though yeah I know it's
+
+295
+00:14:06,650 --> 00:14:09,020
+going to be there and my throughput for
+
+296
+00:14:09,020 --> 00:14:11,840
+me as a web developer is how how much
+
+297
+00:14:11,840 --> 00:14:15,260
+usage my HTTP data is going to make off
+
+298
+00:14:15,260 --> 00:14:17,840
+the network connection so the problem
+
+299
+00:14:17,840 --> 00:14:20,450
+with this it works in some cases it
+
+300
+00:14:20,450 --> 00:14:23,060
+works as long as your image is small
+
+301
+00:14:23,060 --> 00:14:27,410
+enough so naturally I would have
+
+302
+00:14:27,410 --> 00:14:29,060
+finished the talk now if it were that
+
+303
+00:14:29,060 --> 00:14:31,730
+simple the problem is something called
+
+304
+00:14:31,730 --> 00:14:34,910
+TCP slow start who's familiar with TCP
+
+305
+00:14:34,910 --> 00:14:38,660
+slow start you want to tell us what it
+
+306
+00:14:38,660 --> 00:14:42,520
+is yeah start to the lower rate right
+
+307
+00:14:42,520 --> 00:14:47,800
+the client accepts the highway right
+
+308
+00:14:47,800 --> 00:14:51,140
+until the client drops again ready these
+
+309
+00:14:51,140 --> 00:14:54,279
+people we start the connection and
+
+310
+00:14:54,279 --> 00:14:58,160
+alright so yeah DCP slow start was
+
+311
+00:14:58,160 --> 00:15:00,320
+basically created to avoid network
+
+312
+00:15:00,320 --> 00:15:02,690
+congestion let's assume that a server
+
+313
+00:15:02,690 --> 00:15:05,320
+sends data as fast as it possibly can
+
+314
+00:15:05,320 --> 00:15:07,790
+now typically servers are way faster
+
+315
+00:15:07,790 --> 00:15:09,980
+than service network connections are way
+
+316
+00:15:09,980 --> 00:15:12,339
+faster than a home users network
+
+317
+00:15:12,339 --> 00:15:14,630
+connections so if they just throw out
+
+318
+00:15:14,630 --> 00:15:17,600
+data as fast as they possibly can the
+
+319
+00:15:17,600 --> 00:15:18,560
+network is going to get clogged
+
+320
+00:15:18,560 --> 00:15:20,660
+somewhere in between and everything else
+
+321
+00:15:20,660 --> 00:15:23,060
+is going to slow down so what servers do
+
+322
+00:15:23,060 --> 00:15:25,040
+is they'll send two packets first and
+
+323
+00:15:25,040 --> 00:15:27,380
+then wait oh well any end of a TCP
+
+324
+00:15:27,380 --> 00:15:29,420
+connection will send two packets and
+
+325
+00:15:29,420 --> 00:15:30,770
+then wait for an acknowledgement and
+
+326
+00:15:30,770 --> 00:15:32,210
+when it gets the acknowledgement it says
+
+327
+00:15:32,210 --> 00:15:34,220
+if it gets the acknowledgement within a
+
+328
+00:15:34,220 --> 00:15:35,900
+certain amount of time it says okay this
+
+329
+00:15:35,900 --> 00:15:38,660
+client can actually handle that speed so
+
+330
+00:15:38,660 --> 00:15:40,820
+let's try increasing the speed so it'll
+
+331
+00:15:40,820 --> 00:15:44,120
+double it and keep keep increasing it as
+
+332
+00:15:44,120 --> 00:15:45,529
+as long as it keeps getting
+
+333
+00:15:45,529 --> 00:15:46,910
+acknowledgments within the amount of
+
+334
+00:15:46,910 --> 00:15:49,370
+time now if any acknowledgement actually
+
+335
+00:15:49,370 --> 00:15:51,200
+doesn't come through in the amount of
+
+336
+00:15:51,200 --> 00:15:54,470
+time the the other end will assume that
+
+337
+00:15:54,470 --> 00:15:56,990
+all right the send is congested it's
+
+338
+00:15:56,990 --> 00:15:59,120
+buffers are full it can accept more data
+
+339
+00:15:59,120 --> 00:16:01,810
+so I'm going to back down and reduce the
+
+340
+00:16:01,810 --> 00:16:05,060
+reduce the number of packets i can send
+
+341
+00:16:05,060 --> 00:16:08,000
+so by default the window size is set to
+
+342
+00:16:08,000 --> 00:16:09,800
+2 which means i'm going to send two
+
+343
+00:16:09,800 --> 00:16:10,910
+packets and then wait for an
+
+344
+00:16:10,910 --> 00:16:12,230
+acknowledgement and when i get the
+
+345
+00:16:12,230 --> 00:16:13,760
+acknowledgement and then going to send
+
+346
+00:16:13,760 --> 00:16:15,020
+four packets and wait for an
+
+347
+00:16:15,020 --> 00:16:17,450
+acknowledgement and so on so the problem
+
+348
+00:16:17,450 --> 00:16:19,100
+is we have all this dead time right
+
+349
+00:16:19,100 --> 00:16:21,470
+between sending the second packet and
+
+350
+00:16:21,470 --> 00:16:23,750
+second sending the third packet we're
+
+351
+00:16:23,750 --> 00:16:25,430
+doing nothing the network's not being
+
+352
+00:16:25,430 --> 00:16:27,200
+used at all and so we're not really
+
+353
+00:16:27,200 --> 00:16:29,870
+measuring how good that network
+
+354
+00:16:29,870 --> 00:16:33,620
+connection is we are measuring for just
+
+355
+00:16:33,620 --> 00:16:35,060
+opening a connection at that point of
+
+356
+00:16:35,060 --> 00:16:37,670
+time how good it is not how how good
+
+357
+00:16:37,670 --> 00:16:39,860
+it's going to be going forward so we
+
+358
+00:16:39,860 --> 00:16:43,640
+need to do something else a simple thing
+
+359
+00:16:43,640 --> 00:16:46,670
+is use a resource that fits within a
+
+360
+00:16:46,670 --> 00:16:49,730
+window right so something that fits
+
+361
+00:16:49,730 --> 00:16:52,790
+within two packets is that going to work
+
+362
+00:16:52,790 --> 00:16:57,110
+any guesses can we use maybe a 2
+
+363
+00:16:57,110 --> 00:16:59,420
+kilobyte image and say I'll measure the
+
+364
+00:16:59,420 --> 00:17:01,130
+time it took a two kilobyte image to
+
+365
+00:17:01,130 --> 00:17:03,310
+download
+
+366
+00:17:03,320 --> 00:17:06,230
+the problem is we have a wide variety of
+
+367
+00:17:06,230 --> 00:17:09,680
+network connection types that vary in
+
+368
+00:17:09,680 --> 00:17:11,780
+the effective bandwidth they provide to
+
+369
+00:17:11,780 --> 00:17:15,079
+users so you use a 2 kilobyte image on a
+
+370
+00:17:15,079 --> 00:17:17,270
+3 megabit connection it's going to
+
+371
+00:17:17,270 --> 00:17:18,680
+download really fast it's not going to
+
+372
+00:17:18,680 --> 00:17:21,290
+use up any of the bandwidth at all you
+
+373
+00:17:21,290 --> 00:17:23,480
+want to use a large image for some
+
+374
+00:17:23,480 --> 00:17:26,420
+network connection that fast but what
+
+375
+00:17:26,420 --> 00:17:32,400
+happens if you use a net large image and
+
+376
+00:17:32,410 --> 00:17:36,110
+does that it yeah that's it so try and
+
+377
+00:17:36,110 --> 00:17:40,070
+use a different image so start off with
+
+378
+00:17:40,070 --> 00:17:42,140
+a small image that's going to fit within
+
+379
+00:17:42,140 --> 00:17:44,720
+that to packet size and then once that
+
+380
+00:17:44,720 --> 00:17:46,700
+is downloaded I'll say ok now my window
+
+381
+00:17:46,700 --> 00:17:48,530
+size is going to be increased so let's
+
+382
+00:17:48,530 --> 00:17:50,090
+now put in an image that's going to fit
+
+383
+00:17:50,090 --> 00:17:52,550
+within 4 packets and once that downloads
+
+384
+00:17:52,550 --> 00:17:54,470
+then try loading an image that's going
+
+385
+00:17:54,470 --> 00:17:56,120
+to fit within eight packets and so on
+
+386
+00:17:56,120 --> 00:17:58,610
+alright so keep increasing it until I
+
+387
+00:17:58,610 --> 00:18:01,720
+reach a level that I'm comfortable with
+
+388
+00:18:01,720 --> 00:18:04,820
+so this is more or less the code that
+
+389
+00:18:04,820 --> 00:18:07,250
+would do that it goes from multiple
+
+390
+00:18:07,250 --> 00:18:10,220
+images and calculates the time it would
+
+391
+00:18:10,220 --> 00:18:12,710
+take to download each of them and then
+
+392
+00:18:12,710 --> 00:18:14,270
+says okay that's my effective bandwidth
+
+393
+00:18:14,270 --> 00:18:16,580
+looking at the largest image the problem
+
+394
+00:18:16,580 --> 00:18:19,160
+with this is slow Network really large
+
+395
+00:18:19,160 --> 00:18:22,790
+image say 100 megabyte image on a 64
+
+396
+00:18:22,790 --> 00:18:24,560
+kbps connection how long is that going
+
+397
+00:18:24,560 --> 00:18:28,160
+to take to download even with a full
+
+398
+00:18:28,160 --> 00:18:30,020
+window size it's going to take a long
+
+399
+00:18:30,020 --> 00:18:31,370
+time the users just going to be waiting
+
+400
+00:18:31,370 --> 00:18:34,040
+for you to do your measurement so not a
+
+401
+00:18:34,040 --> 00:18:37,480
+good idea so what we end up doing is
+
+402
+00:18:37,480 --> 00:18:40,070
+let's say we we throw in a time out and
+
+403
+00:18:40,070 --> 00:18:41,810
+say alright I'm going to download it
+
+404
+00:18:41,810 --> 00:18:43,670
+still download images in ascending or
+
+405
+00:18:43,670 --> 00:18:46,700
+size but I'm going to set it timeout
+
+406
+00:18:46,700 --> 00:18:48,890
+value for each of them so if an image
+
+407
+00:18:48,890 --> 00:18:50,750
+times out if it takes longer than say
+
+408
+00:18:50,750 --> 00:18:53,420
+point eight seconds or one second to
+
+409
+00:18:53,420 --> 00:18:55,070
+download I'm going to say ok this
+
+410
+00:18:55,070 --> 00:18:56,750
+network connection cannot handle an
+
+411
+00:18:56,750 --> 00:18:58,670
+image larger than the size and that's
+
+412
+00:18:58,670 --> 00:19:02,480
+where I'm going to stop so we go from we
+
+413
+00:19:02,480 --> 00:19:04,340
+actually tested with images starting
+
+414
+00:19:04,340 --> 00:19:06,290
+from 11 kilobytes going all the way up
+
+415
+00:19:06,290 --> 00:19:10,190
+to six hundred megabytes so we have
+
+416
+00:19:10,190 --> 00:19:11,990
+images of those sizes and we set a time
+
+417
+00:19:11,990 --> 00:19:14,750
+upset between 800 milliseconds and
+
+418
+00:19:14,750 --> 00:19:16,470
+twelve hundred milliseconds
+
+419
+00:19:16,470 --> 00:19:18,419
+so if an image times out we say that's
+
+420
+00:19:18,419 --> 00:19:20,039
+the last image we're going to download
+
+421
+00:19:20,039 --> 00:19:21,840
+measure the time it takes that image to
+
+422
+00:19:21,840 --> 00:19:24,419
+load and this is what we're doing here
+
+423
+00:19:24,419 --> 00:19:27,000
+so we have a set time out there when the
+
+424
+00:19:27,000 --> 00:19:29,520
+time out files we just set say that this
+
+425
+00:19:29,520 --> 00:19:34,020
+image expired the time out if the images
+
+426
+00:19:34,020 --> 00:19:35,610
+on load actually files clear the time
+
+427
+00:19:35,610 --> 00:19:38,280
+outs so that we don't we don't fail it
+
+428
+00:19:38,280 --> 00:19:42,870
+and then we end the test if any of the
+
+429
+00:19:42,870 --> 00:19:44,520
+images time up so when an image time's
+
+430
+00:19:44,520 --> 00:19:46,080
+up we say that's the end of the test
+
+431
+00:19:46,080 --> 00:19:48,330
+let's go ahead and start measurement at
+
+432
+00:19:48,330 --> 00:19:50,039
+that point of time so do our
+
+433
+00:19:50,039 --> 00:19:52,230
+calculations at that point the
+
+434
+00:19:52,230 --> 00:19:54,450
+calculation code is actually this pretty
+
+435
+00:19:54,450 --> 00:19:55,770
+much the same as what we saw in the
+
+436
+00:19:55,770 --> 00:19:57,840
+first case just take the size of the
+
+437
+00:19:57,840 --> 00:19:59,309
+largest image and the time it took to
+
+438
+00:19:59,309 --> 00:20:01,980
+download and do either to get the
+
+439
+00:20:01,980 --> 00:20:06,960
+bandwidth so you think that's good
+
+440
+00:20:06,960 --> 00:20:16,679
+enough right all right how would we deal
+
+441
+00:20:16,679 --> 00:20:24,870
+with that checksum the image
+
+442
+00:20:24,880 --> 00:20:26,960
+how do you check someone image on the
+
+443
+00:20:26,960 --> 00:20:31,370
+client-side canvas I guess throw it into
+
+444
+00:20:31,370 --> 00:20:34,160
+canvas get the image data and check some
+
+445
+00:20:34,160 --> 00:20:38,390
+all right I've never tried that so I've
+
+446
+00:20:38,390 --> 00:20:39,920
+never tried that so I don't know but
+
+447
+00:20:39,920 --> 00:20:42,140
+actually thinking about mobile networks
+
+448
+00:20:42,140 --> 00:20:44,600
+we actually saw a problem not just with
+
+449
+00:20:44,600 --> 00:20:47,210
+mobile networks but mm different kinds
+
+450
+00:20:47,210 --> 00:20:49,370
+of networks if you run the same
+
+451
+00:20:49,370 --> 00:20:51,290
+bandwidth test multiple times you're
+
+452
+00:20:51,290 --> 00:20:53,030
+going to get different results all
+
+453
+00:20:53,030 --> 00:20:54,500
+rights simply because there's network
+
+454
+00:20:54,500 --> 00:20:55,940
+jitter there's other things happening on
+
+455
+00:20:55,940 --> 00:21:01,070
+the network so you can't really rely
+
+456
+00:21:01,070 --> 00:21:03,740
+just do a single test and say that's my
+
+457
+00:21:03,740 --> 00:21:05,300
+users network throughput I'm going to
+
+458
+00:21:05,300 --> 00:21:06,920
+store it in a cookie and assume that
+
+459
+00:21:06,920 --> 00:21:08,720
+that's how fast the network is every
+
+460
+00:21:08,720 --> 00:21:12,620
+time they come to us so I'm not going to
+
+461
+00:21:12,620 --> 00:21:14,000
+show you the code here but what we end
+
+462
+00:21:14,000 --> 00:21:16,340
+up doing is statistical sampling we run
+
+463
+00:21:16,340 --> 00:21:18,320
+it the same test multiple times at
+
+464
+00:21:18,320 --> 00:21:20,870
+different times and then take the median
+
+465
+00:21:20,870 --> 00:21:22,280
+of all of them so we don't take the
+
+466
+00:21:22,280 --> 00:21:24,200
+fastest we don't take the slowest we
+
+467
+00:21:24,200 --> 00:21:26,660
+take a median and say that's more or
+
+468
+00:21:26,660 --> 00:21:29,480
+less an order of magnitude of the users
+
+469
+00:21:29,480 --> 00:21:32,660
+network throughput so typical error
+
+470
+00:21:32,660 --> 00:21:34,790
+rates we've seen is actually twenty-five
+
+471
+00:21:34,790 --> 00:21:37,070
+to thirty percent in actually getting
+
+472
+00:21:37,070 --> 00:21:40,010
+the network throughput whereas in terms
+
+473
+00:21:40,010 --> 00:21:42,890
+of latency we see an error 4.5 to one
+
+474
+00:21:42,890 --> 00:21:45,500
+percent so you can see the difference in
+
+475
+00:21:45,500 --> 00:21:48,560
+mesh in accuracy of the two different
+
+476
+00:21:48,560 --> 00:21:53,600
+measurements right yeah so the code is
+
+477
+00:21:53,600 --> 00:21:55,640
+actually fairly big if you do want to
+
+478
+00:21:55,640 --> 00:21:57,560
+see the code for this it's in boomerang
+
+479
+00:21:57,560 --> 00:22:00,770
+project which is on github and have a
+
+480
+00:22:00,770 --> 00:22:02,360
+link to that at the end of my slides
+
+481
+00:22:02,360 --> 00:22:07,070
+right so number for DNS how am i doing
+
+482
+00:22:07,070 --> 00:22:12,620
+on time eight minutes to go so we spoke
+
+483
+00:22:12,620 --> 00:22:14,150
+about DNS briefly in the beginning
+
+484
+00:22:14,150 --> 00:22:16,520
+anyone know how we're going to calculate
+
+485
+00:22:16,520 --> 00:22:23,150
+the NS time
+
+486
+00:22:23,160 --> 00:22:28,340
+no one
+
+487
+00:22:28,350 --> 00:22:31,149
+right so yeah that's that's more or less
+
+488
+00:22:31,149 --> 00:22:32,950
+what you do is make to request one with
+
+489
+00:22:32,950 --> 00:22:34,779
+the post name and the second with the IP
+
+490
+00:22:34,779 --> 00:22:37,090
+address or the other way around and take
+
+491
+00:22:37,090 --> 00:22:40,029
+the difference between the two so time
+
+492
+00:22:40,029 --> 00:22:43,659
+with DNS minus time without DNS which is
+
+493
+00:22:43,659 --> 00:22:45,309
+the same code again that we've used
+
+494
+00:22:45,309 --> 00:22:47,070
+except we have different host names
+
+495
+00:22:47,070 --> 00:22:51,629
+right so this works in many cases except
+
+496
+00:22:51,629 --> 00:22:54,669
+what happens if the DNS the host name
+
+497
+00:22:54,669 --> 00:22:58,980
+was already cashed in browsers DNS is
+
+498
+00:22:58,980 --> 00:23:04,019
+there some way to flush the cache
+
+499
+00:23:04,029 --> 00:23:07,429
+you can do it is that gonna happen
+
+500
+00:23:07,429 --> 00:23:13,220
+immediately yeah someone else I have
+
+501
+00:23:13,220 --> 00:23:16,760
+they Hannah look up an invalid hostname
+
+502
+00:23:16,760 --> 00:23:18,919
+which will return a non era and you
+
+503
+00:23:18,919 --> 00:23:21,110
+that'll that'll have written an on-air
+
+504
+00:23:21,110 --> 00:23:23,510
+oh right and you can't tell the
+
+505
+00:23:23,510 --> 00:23:26,690
+difference between a non era because DNS
+
+506
+00:23:26,690 --> 00:23:28,669
+was wrong or because something else
+
+507
+00:23:28,669 --> 00:23:36,559
+failed yep right so pretty much that's
+
+508
+00:23:36,559 --> 00:23:38,570
+that's what you do i'm i'm not putting
+
+509
+00:23:38,570 --> 00:23:40,850
+the code here but dns is already cashed
+
+510
+00:23:40,850 --> 00:23:42,830
+what you do is set up a wild-card dns
+
+511
+00:23:42,830 --> 00:23:46,330
+entry on your server say anything dot
+
+512
+00:23:46,330 --> 00:23:49,070
+hostname com maps to this one IP address
+
+513
+00:23:49,070 --> 00:23:51,350
+and then generate a random hostname on
+
+514
+00:23:51,350 --> 00:23:55,250
+the client side just pay 64 encode a a
+
+515
+00:23:55,250 --> 00:23:58,250
+random number and look up that hostname
+
+516
+00:23:58,250 --> 00:24:00,200
+so the probability of it being cached is
+
+517
+00:24:00,200 --> 00:24:02,570
+pretty low right there's still a chance
+
+518
+00:24:02,570 --> 00:24:05,000
+that that random host name was already
+
+519
+00:24:05,000 --> 00:24:07,159
+cash but it's fairly low so you do a
+
+520
+00:24:07,159 --> 00:24:11,870
+lookup for a random host name there's
+
+521
+00:24:11,870 --> 00:24:13,399
+another problem so we're looking at
+
+522
+00:24:13,399 --> 00:24:15,529
+hostname and IP address what happens if
+
+523
+00:24:15,529 --> 00:24:19,580
+we're doing we are assigning IP lookups
+
+524
+00:24:19,580 --> 00:24:22,220
+based on geolocation so you can't just
+
+525
+00:24:22,220 --> 00:24:24,080
+use a static hope and static IP address
+
+526
+00:24:24,080 --> 00:24:29,270
+in that case
+
+527
+00:24:29,280 --> 00:24:36,600
+any guesses yeah well you may or may not
+
+528
+00:24:36,600 --> 00:24:43,710
+be controlling the DNS so so okay if you
+
+529
+00:24:43,710 --> 00:24:45,960
+do control the DNS yeah you know exactly
+
+530
+00:24:45,960 --> 00:24:47,340
+where they're coming from when they make
+
+531
+00:24:47,340 --> 00:24:49,260
+the request so you can set the IP at
+
+532
+00:24:49,260 --> 00:24:50,910
+that point of time again you might be
+
+533
+00:24:50,910 --> 00:24:53,160
+route around robbing going round robin
+
+534
+00:24:53,160 --> 00:24:54,510
+between host names with the nursing
+
+535
+00:24:54,510 --> 00:24:57,240
+between IPS within a single zone so
+
+536
+00:24:57,240 --> 00:25:00,480
+another way to do that is you do a one
+
+537
+00:25:00,480 --> 00:25:03,990
+look up with the host name then do
+
+538
+00:25:03,990 --> 00:25:06,240
+another look up after you finish the
+
+539
+00:25:06,240 --> 00:25:08,250
+first look up to two lookups in parallel
+
+540
+00:25:08,250 --> 00:25:10,890
+so do to image loads in parallel right
+
+541
+00:25:10,890 --> 00:25:13,140
+so the first one is going to do a DNS
+
+542
+00:25:13,140 --> 00:25:16,920
+lookup plus a TCP handshake the second
+
+543
+00:25:16,920 --> 00:25:19,860
+one is going to use the connection
+
+544
+00:25:19,860 --> 00:25:21,750
+that's already open so there's no dns
+
+545
+00:25:21,750 --> 00:25:25,340
+lookup but it does just as a round-trip
+
+546
+00:25:25,340 --> 00:25:28,200
+using those two you get dns plus tcp and
+
+547
+00:25:28,200 --> 00:25:30,090
+then the second one that's running in
+
+548
+00:25:30,090 --> 00:25:31,710
+third one that's running in parallel
+
+549
+00:25:31,710 --> 00:25:34,320
+there's a TCP handshake plus a roundtrip
+
+550
+00:25:34,320 --> 00:25:36,510
+so you take the difference of the first
+
+551
+00:25:36,510 --> 00:25:38,370
+and a third one and that gives you the
+
+552
+00:25:38,370 --> 00:25:41,700
+DNS lookup time so I haven't put code
+
+553
+00:25:41,700 --> 00:25:44,730
+here for that because again it gets way
+
+554
+00:25:44,730 --> 00:25:46,350
+too complicated but you can look it up
+
+555
+00:25:46,350 --> 00:25:51,360
+in the DNS plugin in boomerang right so
+
+556
+00:25:51,360 --> 00:25:54,810
+boomerang has various plugins for doing
+
+557
+00:25:54,810 --> 00:25:57,150
+Network lookups and this is in DNS
+
+558
+00:25:57,150 --> 00:26:00,390
+plugin how am i doing on time five
+
+559
+00:26:00,390 --> 00:26:07,940
+minutes to go two parts to go so ipv6
+
+560
+00:26:07,940 --> 00:26:10,350
+what we really want to measure with ipv6
+
+561
+00:26:10,350 --> 00:26:13,440
+well ipv6 is still not very widely
+
+562
+00:26:13,440 --> 00:26:15,570
+spread so the main thing we really want
+
+563
+00:26:15,570 --> 00:26:17,820
+to know is is ipv6 supported by this
+
+564
+00:26:17,820 --> 00:26:20,640
+user or this user's network connection
+
+565
+00:26:20,640 --> 00:26:23,360
+and if it is supported how fast is it
+
+566
+00:26:23,360 --> 00:26:26,280
+not just how fast is it but how fast is
+
+567
+00:26:26,280 --> 00:26:31,200
+it to do a DNS lookup for a qua da for a
+
+568
+00:26:31,200 --> 00:26:34,140
+record and how fast is it to just load
+
+569
+00:26:34,140 --> 00:26:38,460
+an image from there so we do two
+
+570
+00:26:38,460 --> 00:26:40,260
+different things first try to load an
+
+571
+00:26:40,260 --> 00:26:42,340
+image from an ipv6
+
+572
+00:26:42,340 --> 00:26:44,620
+so host using the ipv6 address not using
+
+573
+00:26:44,620 --> 00:26:46,870
+a hostname by using the ipv6 address
+
+574
+00:26:46,870 --> 00:26:50,200
+itself if that times out and we set a
+
+575
+00:26:50,200 --> 00:26:52,090
+reasonable time out that either times
+
+576
+00:26:52,090 --> 00:26:55,029
+out our gives us an on error then we say
+
+577
+00:26:55,029 --> 00:26:57,340
+ipv6 is not supported by the source so
+
+578
+00:26:57,340 --> 00:26:59,320
+we'll just stop at that point of time if
+
+579
+00:26:59,320 --> 00:27:01,480
+it does go through and we do get a
+
+580
+00:27:01,480 --> 00:27:03,580
+response then we measure the latency of
+
+581
+00:27:03,580 --> 00:27:06,070
+that and go through the next step which
+
+582
+00:27:06,070 --> 00:27:08,110
+is try to load the same image using a
+
+583
+00:27:08,110 --> 00:27:11,679
+hostname so the first test first test
+
+584
+00:27:11,679 --> 00:27:13,870
+checks of ipv6 is supported the second
+
+585
+00:27:13,870 --> 00:27:17,679
+test checks if dns lookup of ipv6 hosts
+
+586
+00:27:17,679 --> 00:27:19,630
+works so it's important that this
+
+587
+00:27:19,630 --> 00:27:21,429
+hostname only resolved to an ipv6
+
+588
+00:27:21,429 --> 00:27:25,750
+address and not to an ipv4 address I've
+
+589
+00:27:25,750 --> 00:27:27,789
+had trouble finding some hosting
+
+590
+00:27:27,789 --> 00:27:29,409
+providers don't actually let you do that
+
+591
+00:27:29,409 --> 00:27:31,149
+they'll always give you an ipv4 address
+
+592
+00:27:31,149 --> 00:27:34,270
+and let you add an ipv6 address to it so
+
+593
+00:27:34,270 --> 00:27:35,890
+if you have that kind of a provider you
+
+594
+00:27:35,890 --> 00:27:38,440
+can't really do this test things likely
+
+595
+00:27:38,440 --> 00:27:42,070
+note will allow you to do that ec2 if
+
+596
+00:27:42,070 --> 00:27:45,640
+you use there and the load balancer it
+
+597
+00:27:45,640 --> 00:27:47,529
+allows you to assign only an ipv6
+
+598
+00:27:47,529 --> 00:27:50,740
+address so using that you can tell
+
+599
+00:27:50,740 --> 00:27:55,970
+whether DNS lookup works for ipv6 or not
+
+600
+00:27:55,980 --> 00:27:58,630
+so again the full code for this is in
+
+601
+00:27:58,630 --> 00:28:01,870
+boomerangs ipv6 plugin it's too big to
+
+602
+00:28:01,870 --> 00:28:04,149
+fit on a slide so I not put it here does
+
+603
+00:28:04,149 --> 00:28:05,679
+anyone want to see it I can open it up
+
+604
+00:28:05,679 --> 00:28:12,480
+in a text editor no all right so finally
+
+605
+00:28:12,480 --> 00:28:16,029
+network scanning using javascript how
+
+606
+00:28:16,029 --> 00:28:19,380
+would you go about this in two minutes
+
+607
+00:28:19,380 --> 00:28:22,419
+so where network scanning is actually
+
+608
+00:28:22,419 --> 00:28:24,880
+quite a wide topic but what we care
+
+609
+00:28:24,880 --> 00:28:26,919
+about is a few different things first
+
+610
+00:28:26,919 --> 00:28:29,260
+find out what kind of network the users
+
+611
+00:28:29,260 --> 00:28:31,510
+on and secondly do they have anything
+
+612
+00:28:31,510 --> 00:28:33,010
+interesting running on their private
+
+613
+00:28:33,010 --> 00:28:37,570
+network right so the interesting thing
+
+614
+00:28:37,570 --> 00:28:39,010
+about JavaScript running within a
+
+615
+00:28:39,010 --> 00:28:40,659
+browser that's different from a port
+
+616
+00:28:40,659 --> 00:28:43,299
+scanner or something running on my host
+
+617
+00:28:43,299 --> 00:28:45,640
+is that javascript has access to the
+
+618
+00:28:45,640 --> 00:28:48,250
+users private network so if the users on
+
+619
+00:28:48,250 --> 00:28:50,559
+a lan connecting by a gateway to the
+
+620
+00:28:50,559 --> 00:28:52,870
+internet i can get javascript in there
+
+621
+00:28:52,870 --> 00:28:54,520
+onto their browser that's then going to
+
+622
+00:28:54,520 --> 00:28:54,880
+run
+
+623
+00:28:54,880 --> 00:28:56,950
+privileges of their browser so it has
+
+624
+00:28:56,950 --> 00:28:58,810
+access to the internal network that I
+
+625
+00:28:58,810 --> 00:29:02,650
+don't have access to from outside so you
+
+626
+00:29:02,650 --> 00:29:04,720
+can scan the users private land how
+
+627
+00:29:04,720 --> 00:29:06,880
+would you do that I'll try and load
+
+628
+00:29:06,880 --> 00:29:09,610
+something from 192.168 point 1 point 1
+
+629
+00:29:09,610 --> 00:29:12,190
+or 0 point 0.1 or 10 point zero point
+
+630
+00:29:12,190 --> 00:29:14,080
+zero point one you can hydrate through
+
+631
+00:29:14,080 --> 00:29:15,520
+these pretty quickly run them all in
+
+632
+00:29:15,520 --> 00:29:21,280
+parallel and find out what loads once
+
+633
+00:29:21,280 --> 00:29:23,320
+you find out which network they're on
+
+634
+00:29:23,320 --> 00:29:25,620
+whether they on 192 or gender or point 0
+
+635
+00:29:25,620 --> 00:29:28,200
+then you'll start looking for common
+
+636
+00:29:28,200 --> 00:29:31,480
+look for standard routers so every
+
+637
+00:29:31,480 --> 00:29:34,540
+single router words and linksys or net
+
+638
+00:29:34,540 --> 00:29:37,090
+here something they have a logo right
+
+639
+00:29:37,090 --> 00:29:40,660
+and that logo is not protected by an
+
+640
+00:29:40,660 --> 00:29:42,250
+admin username and password so try to
+
+641
+00:29:42,250 --> 00:29:44,890
+low load that logo image if the lower
+
+642
+00:29:44,890 --> 00:29:46,660
+logo image loads if you get an onload
+
+643
+00:29:46,660 --> 00:29:48,550
+event firing you know that's the kind of
+
+644
+00:29:48,550 --> 00:29:51,580
+router they using then you basically try
+
+645
+00:29:51,580 --> 00:29:52,990
+standard exploits for that particular
+
+646
+00:29:52,990 --> 00:29:56,620
+router try and gain access to it most
+
+647
+00:29:56,620 --> 00:29:58,150
+people don't change default user names
+
+648
+00:29:58,150 --> 00:30:01,210
+and passwords so you can actually try
+
+649
+00:30:01,210 --> 00:30:03,340
+and login it is assuming they're already
+
+650
+00:30:03,340 --> 00:30:05,500
+on the private network they can actually
+
+651
+00:30:05,500 --> 00:30:07,570
+get admin access so they don't allow
+
+652
+00:30:07,570 --> 00:30:09,400
+admin access from the external interface
+
+653
+00:30:09,400 --> 00:30:10,780
+but the allow admin access from the
+
+654
+00:30:10,780 --> 00:30:13,000
+internal interface except Java scripts
+
+655
+00:30:13,000 --> 00:30:15,870
+going in from the internal interface so
+
+656
+00:30:15,870 --> 00:30:18,940
+yeah you can get admin access if you're
+
+657
+00:30:18,940 --> 00:30:20,560
+lucky and they've recently logged in the
+
+658
+00:30:20,560 --> 00:30:22,120
+cookies are still in their browser and
+
+659
+00:30:22,120 --> 00:30:24,700
+the Brazil happily log you in without
+
+660
+00:30:24,700 --> 00:30:26,980
+you having to pass username and password
+
+661
+00:30:26,980 --> 00:30:32,620
+in using a 401 auth so that's that's one
+
+662
+00:30:32,620 --> 00:30:33,820
+thing to do and there's actually an
+
+663
+00:30:33,820 --> 00:30:36,490
+example this guy named Sammy come car
+
+664
+00:30:36,490 --> 00:30:39,760
+built a script that will actually do all
+
+665
+00:30:39,760 --> 00:30:42,040
+of this go into your router get your mac
+
+666
+00:30:42,040 --> 00:30:44,920
+address do a google location look up and
+
+667
+00:30:44,920 --> 00:30:47,590
+figure out your home address just by you
+
+668
+00:30:47,590 --> 00:30:51,810
+visiting a website
+
+669
+00:30:51,820 --> 00:30:54,280
+the other thing you can do is then scan
+
+670
+00:30:54,280 --> 00:30:56,800
+the internal network so it instils once
+
+671
+00:30:56,800 --> 00:30:58,540
+you know which network they were which
+
+672
+00:30:58,540 --> 00:31:00,160
+subnet they're on you start scanning
+
+673
+00:31:00,160 --> 00:31:02,320
+that for interesting ports so look for
+
+674
+00:31:02,320 --> 00:31:06,060
+port 80 look for port 22 oh look for 43
+
+675
+00:31:06,060 --> 00:31:09,910
+3306 you could look for the admin ports
+
+676
+00:31:09,910 --> 00:31:12,840
+of different database services and
+
+677
+00:31:12,840 --> 00:31:15,820
+measure how long it takes to respond so
+
+678
+00:31:15,820 --> 00:31:17,920
+in most cases you'll always get a non
+
+679
+00:31:17,920 --> 00:31:21,040
+error for these things because let's say
+
+680
+00:31:21,040 --> 00:31:22,600
+a mysql server is not going to respond
+
+681
+00:31:22,600 --> 00:31:25,240
+to an HTTP request so you'll get it well
+
+682
+00:31:25,240 --> 00:31:26,770
+it's not going to respond with HTTP
+
+683
+00:31:26,770 --> 00:31:28,840
+you're going to get mysql protocol back
+
+684
+00:31:28,840 --> 00:31:30,850
+so you'll get a non error for most of
+
+685
+00:31:30,850 --> 00:31:34,240
+them but you'll get some error so if
+
+686
+00:31:34,240 --> 00:31:36,160
+it's a short time out that means you
+
+687
+00:31:36,160 --> 00:31:37,810
+make a request there's nothing there you
+
+688
+00:31:37,810 --> 00:31:40,300
+get a connection refused error that
+
+689
+00:31:40,300 --> 00:31:42,100
+times out really quickly remember it's
+
+690
+00:31:42,100 --> 00:31:43,930
+on their local network it's not going
+
+691
+00:31:43,930 --> 00:31:45,460
+over the internet so it times out
+
+692
+00:31:45,460 --> 00:31:47,650
+quickly if it takes a little longer time
+
+693
+00:31:47,650 --> 00:31:49,120
+to time out and you'll actually have to
+
+694
+00:31:49,120 --> 00:31:50,980
+test this out on your own network to
+
+695
+00:31:50,980 --> 00:31:52,990
+find out what it is so a little longer
+
+696
+00:31:52,990 --> 00:31:54,670
+to timeout it means something's
+
+697
+00:31:54,670 --> 00:31:57,070
+listening there but it's not HTTP and if
+
+698
+00:31:57,070 --> 00:31:59,590
+it takes a fairly reasonably a long time
+
+699
+00:31:59,590 --> 00:32:02,080
+to time out it's probably HTTP you've
+
+700
+00:32:02,080 --> 00:32:03,910
+got a response from an HTTP server but
+
+701
+00:32:03,910 --> 00:32:06,100
+it's not an image so it timed out
+
+702
+00:32:06,100 --> 00:32:10,540
+actually you got an error at the at the
+
+703
+00:32:10,540 --> 00:32:12,460
+passer level within the browser rather
+
+704
+00:32:12,460 --> 00:32:15,550
+than at the connection level then you
+
+705
+00:32:15,550 --> 00:32:17,650
+try an iframe so an iframe can load any
+
+706
+00:32:17,650 --> 00:32:20,140
+HTTP content and it will return an
+
+707
+00:32:20,140 --> 00:32:22,930
+onload if HTTP loads and then on error
+
+708
+00:32:22,930 --> 00:32:25,990
+if non HD be loads so those are the
+
+709
+00:32:25,990 --> 00:32:29,620
+different things you try and that
+
+710
+00:32:29,620 --> 00:32:33,670
+basically concludes my top two minutes
+
+711
+00:32:33,670 --> 00:32:37,270
+over right so source code for most of
+
+712
+00:32:37,270 --> 00:32:39,490
+this stuff is either at the boomerang
+
+713
+00:32:39,490 --> 00:32:43,480
+project yep or the last one the network
+
+714
+00:32:43,480 --> 00:32:49,380
+scanning stuff is Sameera PL / map xss
+
+715
+00:32:49,380 --> 00:33:04,050
+any questions
+
+716
+00:33:04,060 --> 00:33:08,760
+alright
+
+717
+00:33:08,770 --> 00:33:12,820
+oh so
+
+718
+00:33:12,830 --> 00:33:15,440
+so let me repeat the question says by
+
+719
+00:33:15,440 --> 00:33:17,090
+scanning internal ports can we figure
+
+720
+00:33:17,090 --> 00:33:19,220
+out what the business of that particular
+
+721
+00:33:19,220 --> 00:33:24,890
+person is right I don't know anyone just
+
+722
+00:33:24,890 --> 00:33:26,330
+by knowing what services they're running
+
+723
+00:33:26,330 --> 00:33:27,590
+internally would you be able to tell
+
+724
+00:33:27,590 --> 00:33:37,580
+what all right assuming it's running
+
+725
+00:33:37,580 --> 00:33:46,940
+HTTP because but but would you would you
+
+726
+00:33:46,940 --> 00:33:49,490
+get that back using javascript that can
+
+727
+00:33:49,490 --> 00:33:55,580
+only read HTTP well no you can get into
+
+728
+00:33:55,580 --> 00:33:57,260
+connect so you know that it can connect
+
+729
+00:33:57,260 --> 00:33:59,269
+but you'll always get an error you won't
+
+730
+00:33:59,269 --> 00:34:07,210
+get actually get a responsible
+
+731
+00:34:07,220 --> 00:34:13,590
+like it but you'll always have an HTTP
+
+732
+00:34:13,590 --> 00:34:21,750
+header other all right all right so i
+
+733
+00:34:21,750 --> 00:34:22,980
+don't know you can do various things
+
+734
+00:34:22,980 --> 00:34:25,590
+i've also tried doing a soap so doing
+
+735
+00:34:25,590 --> 00:34:27,840
+posting to a soap service if you can
+
+736
+00:34:27,840 --> 00:34:30,180
+send a crafted soap request and find out
+
+737
+00:34:30,180 --> 00:34:32,130
+what servers running there you can do
+
+738
+00:34:32,130 --> 00:34:33,810
+interesting things sometimes again if
+
+739
+00:34:33,810 --> 00:34:36,750
+there's in securely configured services
+
+740
+00:34:36,750 --> 00:34:39,120
+you can actually get that service to
+
+741
+00:34:39,120 --> 00:34:41,040
+post a response back to your external
+
+742
+00:34:41,040 --> 00:34:43,140
+web service so you can get it to do like
+
+743
+00:34:43,140 --> 00:34:47,040
+an LS or do whatever and send data so
+
+744
+00:34:47,040 --> 00:34:48,930
+actually post data to your external web
+
+745
+00:34:48,930 --> 00:34:50,910
+service where you then see what's
+
+746
+00:34:50,910 --> 00:34:52,530
+running there all right any other
+
+747
+00:34:52,530 --> 00:34:56,960
+questions
+
+748
+00:34:56,970 --> 00:35:14,640
+I sorry I can okay all right so we're
+
+749
+00:35:14,640 --> 00:35:15,780
+not really reading anything we're just
+
+750
+00:35:15,780 --> 00:35:17,520
+testing to see if something's there or
+
+751
+00:35:17,520 --> 00:35:21,150
+not you can't you can't really read
+
+752
+00:35:21,150 --> 00:35:22,590
+what's there because it's cross-domain
+
+753
+00:35:22,590 --> 00:35:24,420
+although it's running as a script node
+
+754
+00:35:24,420 --> 00:35:28,650
+within your with in New York or within
+
+755
+00:35:28,650 --> 00:35:31,410
+your page and it's loading an image so
+
+756
+00:35:31,410 --> 00:35:32,970
+you can make a cross-domain request your
+
+757
+00:35:32,970 --> 00:35:36,650
+car just can't read the response okay
+
+758
+00:35:36,650 --> 00:35:41,220
+anything else any other questions but so
+
+759
+00:35:41,220 --> 00:35:43,320
+I'm gonna stop here and let the next
+
+760
+00:35:43,320 --> 00:35:45,690
+speaker Jago right if you have more
+

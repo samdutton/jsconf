@@ -1,0 +1,2949 @@
+1
+00:00:10,910 --> 00:00:13,410
+
+I've been the working on a framework for
+
+2
+00:00:13,410 --> 00:00:16,770
+the last year and a half called fuse Jas
+
+3
+00:00:16,770 --> 00:00:20,580
+and over the course of that time I've
+
+4
+00:00:20,580 --> 00:00:22,470
+learned several things and so my
+
+5
+00:00:22,470 --> 00:00:23,820
+presentation today is basically what I
+
+6
+00:00:23,820 --> 00:00:26,880
+learned creating fuse Jas and so I'm
+
+7
+00:00:26,880 --> 00:00:29,610
+going to go into performance selector
+
+8
+00:00:29,610 --> 00:00:31,170
+engines and then a thing called sandbox
+
+9
+00:00:31,170 --> 00:00:38,670
+natives so let's get into it alright so
+
+10
+00:00:38,670 --> 00:00:41,720
+the first part of performance is
+
+11
+00:00:41,720 --> 00:00:44,820
+reducing abstraction basically
+
+12
+00:00:44,820 --> 00:00:46,370
+simplifying things down to vanilla
+
+13
+00:00:46,370 --> 00:00:50,040
+JavaScript so things run faster so in
+
+14
+00:00:50,040 --> 00:00:52,290
+this example here we have a function
+
+15
+00:00:52,290 --> 00:00:55,560
+called times that takes a method and a
+
+16
+00:00:55,560 --> 00:00:57,829
+context and executed a number of times
+
+17
+00:00:57,829 --> 00:01:00,239
+and in this example you see that there's
+
+18
+00:01:00,239 --> 00:01:03,660
+the the range and then a dot each and so
+
+19
+00:01:03,660 --> 00:01:05,100
+that's that's where it's getting
+
+20
+00:01:05,100 --> 00:01:10,680
+abstracted so we're going to go and just
+
+21
+00:01:10,680 --> 00:01:12,600
+remove that and just use a regular while
+
+22
+00:01:12,600 --> 00:01:14,520
+loop here and it does cost a little bit
+
+23
+00:01:14,520 --> 00:01:16,440
+of extra code but what you end up
+
+24
+00:01:16,440 --> 00:01:18,600
+getting is better performance and so if
+
+25
+00:01:18,600 --> 00:01:20,540
+you do this in like say your entire
+
+26
+00:01:20,540 --> 00:01:22,770
+framework you end up getting better
+
+27
+00:01:22,770 --> 00:01:24,210
+performance overall because there's less
+
+28
+00:01:24,210 --> 00:01:26,700
+of less complexity and less function
+
+29
+00:01:26,700 --> 00:01:31,159
+calls so there's reducing abstraction
+
+30
+00:01:31,159 --> 00:01:38,040
+the next one is method forking method
+
+31
+00:01:38,040 --> 00:01:40,790
+forking basically whenever you have
+
+32
+00:01:40,790 --> 00:01:43,740
+browser capabilities you want to do some
+
+33
+00:01:43,740 --> 00:01:45,600
+kind of feature detection for them in
+
+34
+00:01:45,600 --> 00:01:46,979
+this case this is a weak object
+
+35
+00:01:46,979 --> 00:01:49,110
+inference basically saying that if this
+
+36
+00:01:49,110 --> 00:01:51,840
+is true the-- then it assumes it can do
+
+37
+00:01:51,840 --> 00:01:53,159
+all of these things and same for this
+
+38
+00:01:53,159 --> 00:01:55,229
+one than that one but what this is doing
+
+39
+00:01:55,229 --> 00:01:56,970
+is this is for every execution it's
+
+40
+00:01:56,970 --> 00:01:58,740
+going through and checking it every
+
+41
+00:01:58,740 --> 00:02:00,750
+single time and so what method forking
+
+42
+00:02:00,750 --> 00:02:02,850
+does is is instead of checking it every
+
+43
+00:02:02,850 --> 00:02:05,100
+time you check it at the definition of
+
+44
+00:02:05,100 --> 00:02:08,189
+the the function so you save on these
+
+45
+00:02:08,189 --> 00:02:09,319
+checks every
+
+46
+00:02:09,319 --> 00:02:15,290
+so I'm going to walk through that okay
+
+47
+00:02:15,290 --> 00:02:19,760
+so first we need a way to do a feature
+
+48
+00:02:19,760 --> 00:02:23,359
+test for the various methods and because
+
+49
+00:02:23,359 --> 00:02:25,909
+these are host objects host objects are
+
+50
+00:02:25,909 --> 00:02:29,269
+things that aren't native and so dom is
+
+51
+00:02:29,269 --> 00:02:33,379
+a host object so what we do is when you
+
+52
+00:02:33,379 --> 00:02:35,180
+access these these properties and these
+
+53
+00:02:35,180 --> 00:02:37,459
+methods on host objects their
+
+54
+00:02:37,459 --> 00:02:40,760
+implementation dependent so they can
+
+55
+00:02:40,760 --> 00:02:43,400
+throw errors for example element that
+
+56
+00:02:43,400 --> 00:02:46,549
+offset parent on a detached element will
+
+57
+00:02:46,549 --> 00:02:49,310
+throw an error so the best way to do
+
+58
+00:02:49,310 --> 00:02:51,019
+that is by a type of check and so
+
+59
+00:02:51,019 --> 00:02:52,879
+basically what this is is this is host
+
+60
+00:02:52,879 --> 00:02:54,829
+object just checks to see that it's not
+
+61
+00:02:54,829 --> 00:02:57,049
+a boolean it's not a number of string or
+
+62
+00:02:57,049 --> 00:03:00,650
+an undefined value and not know and it
+
+63
+00:03:00,650 --> 00:03:03,049
+does so without doing like a 4 in or
+
+64
+00:03:03,049 --> 00:03:05,419
+just a regular property access so it
+
+65
+00:03:05,419 --> 00:03:07,879
+avoids throwing errors when checking for
+
+66
+00:03:07,879 --> 00:03:16,699
+da melt so that's that okay so this is
+
+67
+00:03:16,699 --> 00:03:18,199
+just stepping down through the code
+
+68
+00:03:18,199 --> 00:03:20,840
+alright so this is the the fall back for
+
+69
+00:03:20,840 --> 00:03:23,989
+the contains method basically just
+
+70
+00:03:23,989 --> 00:03:26,540
+straight j/s without without having to
+
+71
+00:03:26,540 --> 00:03:29,269
+use any particular Dom API so this is
+
+72
+00:03:29,269 --> 00:03:30,590
+what you always want to have as a
+
+73
+00:03:30,590 --> 00:03:32,239
+fallback method whenever you do method
+
+74
+00:03:32,239 --> 00:03:33,889
+forking so in case the browser doesn't
+
+75
+00:03:33,889 --> 00:03:35,959
+have any of these new fancy methods you
+
+76
+00:03:35,959 --> 00:03:38,629
+can at least fall back on a on a regular
+
+77
+00:03:38,629 --> 00:03:41,329
+j/s approach so there's that one and you
+
+78
+00:03:41,329 --> 00:03:43,639
+notice it's when it's checking it its
+
+79
+00:03:43,639 --> 00:03:46,669
+defining the method here you can see
+
+80
+00:03:46,669 --> 00:03:51,030
+that
+
+81
+00:03:51,040 --> 00:03:55,100
+okay and now this is basically checking
+
+82
+00:03:55,100 --> 00:03:56,480
+to see that it's got the compare
+
+83
+00:03:56,480 --> 00:03:59,690
+document position method and it's it's
+
+84
+00:03:59,690 --> 00:04:02,570
+it's using it now for this instead and
+
+85
+00:04:02,570 --> 00:04:04,100
+that's the only thing it is doing so now
+
+86
+00:04:04,100 --> 00:04:05,360
+whenever you execute it it's not
+
+87
+00:04:05,360 --> 00:04:06,680
+checking every single line it's just
+
+88
+00:04:06,680 --> 00:04:08,920
+going straight to the meat of the
+
+89
+00:04:08,920 --> 00:04:12,970
+functionality and then the last one
+
+90
+00:04:12,970 --> 00:04:17,030
+there it does it for if the method
+
+91
+00:04:17,030 --> 00:04:20,840
+element contains exists so that's that's
+
+92
+00:04:20,840 --> 00:04:23,420
+a method for you can also take it a step
+
+93
+00:04:23,420 --> 00:04:26,180
+further and do things like lacy
+
+94
+00:04:26,180 --> 00:04:28,340
+definition and what that means is
+
+95
+00:04:28,340 --> 00:04:32,030
+whenever you define a method you don't
+
+96
+00:04:32,030 --> 00:04:33,710
+actually fork until the first execution
+
+97
+00:04:33,710 --> 00:04:35,510
+of that method and that's good for
+
+98
+00:04:35,510 --> 00:04:37,940
+things like event wrappers because you
+
+99
+00:04:37,940 --> 00:04:39,770
+don't have an event object to start off
+
+100
+00:04:39,770 --> 00:04:42,800
+with and does the spin up for all of
+
+101
+00:04:42,800 --> 00:04:44,540
+that just requires even more testing so
+
+102
+00:04:44,540 --> 00:04:46,130
+it's best to do it for something like
+
+103
+00:04:46,130 --> 00:04:48,170
+that so what that would do is for lazy
+
+104
+00:04:48,170 --> 00:04:49,970
+definition is on the first execution it
+
+105
+00:04:49,970 --> 00:04:52,970
+then it then defines it rewrites the
+
+106
+00:04:52,970 --> 00:04:57,270
+method and defines it again so that's
+
+107
+00:04:57,280 --> 00:05:03,110
+Method forking all right the next one is
+
+108
+00:05:03,110 --> 00:05:07,220
+memorizing and basically it's just fancy
+
+109
+00:05:07,220 --> 00:05:09,530
+word for caching and what this is is you
+
+110
+00:05:09,530 --> 00:05:12,110
+just create a closure create yourself a
+
+111
+00:05:12,110 --> 00:05:15,080
+private variable and use that as your
+
+112
+00:05:15,080 --> 00:05:16,910
+cash and so for example in this camel
+
+113
+00:05:16,910 --> 00:05:20,390
+case method you can then this is a weak
+
+114
+00:05:20,390 --> 00:05:21,950
+example but you can then use it to
+
+115
+00:05:21,950 --> 00:05:24,940
+instead of having to calculate and
+
+116
+00:05:24,940 --> 00:05:27,230
+create the camel case every time for a
+
+117
+00:05:27,230 --> 00:05:29,270
+given strength you can cash that so the
+
+118
+00:05:29,270 --> 00:05:31,130
+next time it comes through you can then
+
+119
+00:05:31,130 --> 00:05:33,370
+access the cash instead of doing the
+
+120
+00:05:33,370 --> 00:05:36,580
+computation on that so that would be
+
+121
+00:05:36,580 --> 00:05:39,919
+cashing I wanted to just do a little bit
+
+122
+00:05:39,919 --> 00:05:41,990
+on the performance the rest of it is on
+
+123
+00:05:41,990 --> 00:05:44,600
+selectors and sandbox natives but I
+
+124
+00:05:44,600 --> 00:05:48,590
+wanted to at least get that through all
+
+125
+00:05:48,590 --> 00:05:53,600
+right so my next talk is on CSS selector
+
+126
+00:05:53,600 --> 00:05:55,850
+engines you know everyone knows if
+
+127
+00:05:55,850 --> 00:05:58,370
+sizzle it's part of jQuery prototypes
+
+128
+00:05:58,370 --> 00:06:02,479
+using it now machi kid and there's
+
+129
+00:06:02,479 --> 00:06:03,930
+there's various other engines
+
+130
+00:06:03,930 --> 00:06:06,330
+to it gets into some of the obscure ones
+
+131
+00:06:06,330 --> 00:06:08,940
+over here but today I'm going to talk
+
+132
+00:06:08,940 --> 00:06:13,380
+about two of them and compare it to an
+
+133
+00:06:13,380 --> 00:06:14,639
+original one and this is because
+
+134
+00:06:14,639 --> 00:06:17,310
+whenever I was creating fuse Jas I had
+
+135
+00:06:17,310 --> 00:06:18,690
+to choose a selector engine because I
+
+136
+00:06:18,690 --> 00:06:21,270
+didn't want to create my own and I kind
+
+137
+00:06:21,270 --> 00:06:23,699
+of wanted a black box solution to throw
+
+138
+00:06:23,699 --> 00:06:27,810
+in there unfortunately as I started
+
+139
+00:06:27,810 --> 00:06:29,580
+going along I got sucked into it and so
+
+140
+00:06:29,580 --> 00:06:31,139
+now I know more than I ever wanted to
+
+141
+00:06:31,139 --> 00:06:33,180
+about selector engines so I'm going to
+
+142
+00:06:33,180 --> 00:06:36,840
+go ahead and narrow it down so we're
+
+143
+00:06:36,840 --> 00:06:39,030
+going to narrow it down to NW matter
+
+144
+00:06:39,030 --> 00:06:40,919
+which is used by my framework as a
+
+145
+00:06:40,919 --> 00:06:44,039
+default and prototype as a secondary and
+
+146
+00:06:44,039 --> 00:06:45,930
+then sizzle which is used by the other
+
+147
+00:06:45,930 --> 00:06:54,180
+ones so here we go ok so when looking
+
+148
+00:06:54,180 --> 00:06:56,460
+for support i'm using prototype as an
+
+149
+00:06:56,460 --> 00:06:57,660
+example because it had to make the
+
+150
+00:06:57,660 --> 00:06:59,610
+similar decision whenever it was
+
+151
+00:06:59,610 --> 00:07:02,400
+choosing which selector engine to to use
+
+152
+00:07:02,400 --> 00:07:04,259
+and so a big thing to do is look at
+
+153
+00:07:04,259 --> 00:07:05,870
+browser support and browser
+
+154
+00:07:05,870 --> 00:07:11,039
+compatibility and so you can see its
+
+155
+00:07:11,039 --> 00:07:13,889
+prototype one point six point one this
+
+156
+00:07:13,889 --> 00:07:16,889
+is its browser supported browsers and
+
+157
+00:07:16,889 --> 00:07:19,370
+then you can see that NW matter supports
+
+158
+00:07:19,370 --> 00:07:22,169
+as far back as fire 2 point 0 plus and
+
+159
+00:07:22,169 --> 00:07:25,550
+then sizzle supports Safari 3 which is
+
+160
+00:07:25,550 --> 00:07:28,440
+inconsistent with prototypes previous
+
+161
+00:07:28,440 --> 00:07:29,820
+support so that means when they upgrade
+
+162
+00:07:29,820 --> 00:07:32,340
+they're going to lose compatibility and
+
+163
+00:07:32,340 --> 00:07:34,110
+so so that's that's a that's an
+
+164
+00:07:34,110 --> 00:07:36,750
+important thing to know firefox to i
+
+165
+00:07:36,750 --> 00:07:39,570
+tested it it worked but it's it's it's a
+
+166
+00:07:39,570 --> 00:07:42,180
+it's a difference between firefox 1.5 so
+
+167
+00:07:42,180 --> 00:07:43,409
+it may be something to be aware of
+
+168
+00:07:43,409 --> 00:07:45,030
+whenever you're making decisions about
+
+169
+00:07:45,030 --> 00:07:50,900
+select your engines
+
+170
+00:07:50,910 --> 00:07:53,050
+okay another thing to look at is the
+
+171
+00:07:53,050 --> 00:07:56,140
+supported selectors per engine you can
+
+172
+00:07:56,140 --> 00:07:59,830
+see that the legacy has has quite a lot
+
+173
+00:07:59,830 --> 00:08:03,130
+of supported selectors the the gray here
+
+174
+00:08:03,130 --> 00:08:05,680
+means it's not supported and then sizzle
+
+175
+00:08:05,680 --> 00:08:07,720
+you see loses support for some of these
+
+176
+00:08:07,720 --> 00:08:09,310
+so when users upgrade they're going to
+
+177
+00:08:09,310 --> 00:08:11,530
+lose support for these selectors and if
+
+178
+00:08:11,530 --> 00:08:13,600
+they had applications built off of them
+
+179
+00:08:13,600 --> 00:08:15,520
+their applications are going to break so
+
+180
+00:08:15,520 --> 00:08:19,750
+that is something to note and it gets
+
+181
+00:08:19,750 --> 00:08:20,830
+really important whenever you go into
+
+182
+00:08:20,830 --> 00:08:22,510
+browsers that don't have query selector
+
+183
+00:08:22,510 --> 00:08:25,240
+all because those are the ones that need
+
+184
+00:08:25,240 --> 00:08:27,010
+support for these query selector all
+
+185
+00:08:27,010 --> 00:08:29,260
+likes kind of even things up there and
+
+186
+00:08:29,260 --> 00:08:31,780
+then you can see NW match or has all of
+
+187
+00:08:31,780 --> 00:08:37,030
+those plus some all right speaking of
+
+188
+00:08:37,030 --> 00:08:39,190
+query selector all there's some bugs in
+
+189
+00:08:39,190 --> 00:08:42,160
+query selector all and this is important
+
+190
+00:08:42,160 --> 00:08:43,900
+because some frameworks we'll just dump
+
+191
+00:08:43,900 --> 00:08:46,480
+to query selector all as a as a quick go
+
+192
+00:08:46,480 --> 00:08:49,420
+to because they assume it's it's working
+
+193
+00:08:49,420 --> 00:08:51,580
+and consistent across browsers and that
+
+194
+00:08:51,580 --> 00:08:54,120
+isn't the case there's there's lots of
+
+195
+00:08:54,120 --> 00:08:56,650
+query selector all bugs and there's
+
+196
+00:08:56,650 --> 00:08:58,450
+actually more than is covered here
+
+197
+00:08:58,450 --> 00:09:01,120
+there's there's a lot more ie bugs out
+
+198
+00:09:01,120 --> 00:09:03,250
+there too so this is just an overview of
+
+199
+00:09:03,250 --> 00:09:06,690
+which bugs each engine supports and
+
+200
+00:09:06,690 --> 00:09:10,720
+fixes and so you can see that they both
+
+201
+00:09:10,720 --> 00:09:12,730
+have some kind of class name case
+
+202
+00:09:12,730 --> 00:09:14,470
+sensitivity bug and then there's these
+
+203
+00:09:14,470 --> 00:09:16,510
+all these other bugs that are covered
+
+204
+00:09:16,510 --> 00:09:21,760
+under NW measure
+
+205
+00:09:21,770 --> 00:09:26,940
+okay now this is testing for CSS
+
+206
+00:09:26,940 --> 00:09:29,370
+selector css3 select your test basically
+
+207
+00:09:29,370 --> 00:09:35,010
+rules that the spec defines on tests and
+
+208
+00:09:35,010 --> 00:09:37,950
+or this test is test the rules for that
+
+209
+00:09:37,950 --> 00:09:40,050
+for those and so basically it's an
+
+210
+00:09:40,050 --> 00:09:41,340
+unimportant I'll give you links to the
+
+211
+00:09:41,340 --> 00:09:43,020
+examples of these but as you mouse over
+
+212
+00:09:43,020 --> 00:09:44,970
+it tells you what's failing from the
+
+213
+00:09:44,970 --> 00:09:47,490
+spec and so you can see here there's a
+
+214
+00:09:47,490 --> 00:09:51,360
+few inconsistencies between browsers but
+
+215
+00:09:51,360 --> 00:09:54,090
+not not many and so this is right now
+
+216
+00:09:54,090 --> 00:09:57,770
+this is the legacy so this is ie8
+
+217
+00:09:57,770 --> 00:10:01,440
+compatibility mode IE eight safari three
+
+218
+00:10:01,440 --> 00:10:08,610
+our safari for chrome for firefox 3.6
+
+219
+00:10:08,610 --> 00:10:13,470
+and opera 10.5 plus so so that's the
+
+220
+00:10:13,470 --> 00:10:17,990
+compatibility for prototypes old engine
+
+221
+00:10:17,990 --> 00:10:24,280
+so now
+
+222
+00:10:24,290 --> 00:10:29,750
+now I'll do sizzle okay so here's sizzle
+
+223
+00:10:29,750 --> 00:10:32,209
+and here's the you can see the tests
+
+224
+00:10:32,209 --> 00:10:33,620
+that it's failing its failing quite a
+
+225
+00:10:33,620 --> 00:10:35,750
+few more but to be fair it doesn't have
+
+226
+00:10:35,750 --> 00:10:37,519
+support for a lot of those those other
+
+227
+00:10:37,519 --> 00:10:39,410
+selectors that I'm sure this thing is
+
+228
+00:10:39,410 --> 00:10:40,850
+testing so keep that in mind whenever
+
+229
+00:10:40,850 --> 00:10:43,310
+you're looking at this that this could
+
+230
+00:10:43,310 --> 00:10:46,220
+be quite a lot of the selectors a dozen
+
+231
+00:10:46,220 --> 00:10:48,410
+some point so that's this is sizzle
+
+232
+00:10:48,410 --> 00:10:52,089
+through the same browser range there and
+
+233
+00:10:52,089 --> 00:10:54,500
+there's there's slightly different
+
+234
+00:10:54,500 --> 00:10:56,990
+results from mode to mode but you can
+
+235
+00:10:56,990 --> 00:10:59,660
+test this out to whenever you go to the
+
+236
+00:10:59,660 --> 00:11:04,519
+test looks and then here is NW matter so
+
+237
+00:11:04,519 --> 00:11:07,399
+in css3 compliance and so this is this
+
+238
+00:11:07,399 --> 00:11:09,050
+is its engine basically the only problem
+
+239
+00:11:09,050 --> 00:11:13,610
+it has is ie bugs with one where ie
+
+240
+00:11:13,610 --> 00:11:15,529
+strips out certain attributes that they
+
+241
+00:11:15,529 --> 00:11:18,319
+have default values or empty values so
+
+242
+00:11:18,319 --> 00:11:20,269
+it actually removes it from the source
+
+243
+00:11:20,269 --> 00:11:24,019
+it removes it from the attribute method
+
+244
+00:11:24,019 --> 00:11:25,850
+so there's no way to detect it the other
+
+245
+00:11:25,850 --> 00:11:30,170
+one is text nodes and how it strips out
+
+246
+00:11:30,170 --> 00:11:32,449
+new lines and things like that and that
+
+247
+00:11:32,449 --> 00:11:36,019
+will cause issues with like the empty
+
+248
+00:11:36,019 --> 00:11:39,620
+selector so this is NW match through all
+
+249
+00:11:39,620 --> 00:11:47,949
+this now I'm going to get to let's see
+
+250
+00:11:47,949 --> 00:11:50,649
+now I'm going to get to matching
+
+251
+00:11:50,649 --> 00:11:54,500
+basically selector engines can be used
+
+252
+00:11:54,500 --> 00:11:56,660
+in matching can be used for event
+
+253
+00:11:56,660 --> 00:11:58,579
+delegation so whenever you trigger an
+
+254
+00:11:58,579 --> 00:12:00,529
+event you check to see if an element
+
+255
+00:12:00,529 --> 00:12:02,720
+matches the selector and then you're
+
+256
+00:12:02,720 --> 00:12:05,600
+able to proceed on and so the speed of
+
+257
+00:12:05,600 --> 00:12:07,189
+your match method is important because
+
+258
+00:12:07,189 --> 00:12:08,360
+that affects the speed of a bit
+
+259
+00:12:08,360 --> 00:12:11,449
+delegation so this is a charge to show
+
+260
+00:12:11,449 --> 00:12:15,019
+the matching speed of the various
+
+261
+00:12:15,019 --> 00:12:17,779
+engines and so you can see the further
+
+262
+00:12:17,779 --> 00:12:20,569
+over the faster it is and so you have
+
+263
+00:12:20,569 --> 00:12:23,300
+prototype and sizzle and then NW matcher
+
+264
+00:12:23,300 --> 00:12:25,600
+this also test some of the native
+
+265
+00:12:25,600 --> 00:12:27,439
+methods that have been introduced in
+
+266
+00:12:27,439 --> 00:12:28,970
+late in the the newest versions of
+
+267
+00:12:28,970 --> 00:12:33,889
+WebKit and and Firefox that because they
+
+268
+00:12:33,889 --> 00:12:35,360
+have their own matching methods now too
+
+269
+00:12:35,360 --> 00:12:37,430
+and so you can see like Firefox is
+
+270
+00:12:37,430 --> 00:12:37,830
+native
+
+271
+00:12:37,830 --> 00:12:40,200
+matching method is insanely fast but web
+
+272
+00:12:40,200 --> 00:12:42,750
+kits you know isn't isn't as fast in
+
+273
+00:12:42,750 --> 00:12:46,640
+fact regular jjs engines can can beat it
+
+274
+00:12:46,640 --> 00:12:48,900
+so that's the breakdown here I don't
+
+275
+00:12:48,900 --> 00:12:51,600
+know if you can see this is uh this is
+
+276
+00:12:51,600 --> 00:12:54,540
+opera that's actually 10.5 for some
+
+277
+00:12:54,540 --> 00:12:56,220
+reason that the browser string says nine
+
+278
+00:12:56,220 --> 00:13:00,210
+and then it that's 3.6 for Firefox this
+
+279
+00:13:00,210 --> 00:13:07,290
+is IE 8 this is ie6 this is safari 4 and
+
+280
+00:13:07,290 --> 00:13:17,130
+chrome for now for regular performance
+
+281
+00:13:17,130 --> 00:13:19,860
+this is a modified form of slick speed
+
+282
+00:13:19,860 --> 00:13:23,130
+that talents executions in a given
+
+283
+00:13:23,130 --> 00:13:25,350
+amount of time instead of just three or
+
+284
+00:13:25,350 --> 00:13:27,000
+four executions so the higher the number
+
+285
+00:13:27,000 --> 00:13:31,080
+the better and the number isn't
+
+286
+00:13:31,080 --> 00:13:32,880
+representative of the executions it's
+
+287
+00:13:32,880 --> 00:13:35,760
+actually divided by 100 or so just to
+
+288
+00:13:35,760 --> 00:13:37,080
+make it a pretty number else it would
+
+289
+00:13:37,080 --> 00:13:40,110
+they would all be thousands of execution
+
+290
+00:13:40,110 --> 00:13:42,240
+so we don't want to see that all right
+
+291
+00:13:42,240 --> 00:13:47,400
+and so zoomed in view you can see NW
+
+292
+00:13:47,400 --> 00:13:54,360
+matter has 914 sizzle has to 96 and then
+
+293
+00:13:54,360 --> 00:13:59,130
+prototype has to 92 for their old engine
+
+294
+00:13:59,130 --> 00:14:01,230
+and then you can see because prototype
+
+295
+00:14:01,230 --> 00:14:03,330
+supports both NW match your and sizzle
+
+296
+00:14:03,330 --> 00:14:05,730
+you can see that what there's new speeds
+
+297
+00:14:05,730 --> 00:14:07,770
+are whenever they're running under the
+
+298
+00:14:07,770 --> 00:14:16,690
+new engines which is 917 and 293
+
+299
+00:14:16,700 --> 00:14:19,260
+okay so if you're if you're running
+
+300
+00:14:19,260 --> 00:14:21,420
+prototype and you want to switch to NW
+
+301
+00:14:21,420 --> 00:14:24,930
+matcher you have to rake it and select
+
+302
+00:14:24,930 --> 00:14:26,850
+your engine and so this will allow you
+
+303
+00:14:26,850 --> 00:14:34,950
+to choose NW metric ok the next talk is
+
+304
+00:14:34,950 --> 00:14:39,510
+on sandbox natives basically sandbox
+
+305
+00:14:39,510 --> 00:14:44,850
+natives our way to grab array string
+
+306
+00:14:44,850 --> 00:14:47,280
+number all of these Native objects and
+
+307
+00:14:47,280 --> 00:14:49,380
+constructors off of a different
+
+308
+00:14:49,380 --> 00:14:50,970
+environment and import them in and this
+
+309
+00:14:50,970 --> 00:14:53,940
+is because you have issues with for
+
+310
+00:14:53,940 --> 00:14:56,550
+example when you extend an array and you
+
+311
+00:14:56,550 --> 00:14:59,100
+then do a 4 in on that array you end up
+
+312
+00:14:59,100 --> 00:15:02,040
+getting the contents of the array plus
+
+313
+00:15:02,040 --> 00:15:03,510
+the new method that you've added to
+
+314
+00:15:03,510 --> 00:15:06,030
+prototype of that array and then this
+
+315
+00:15:06,030 --> 00:15:07,830
+this goes into explaining but in
+
+316
+00:15:07,830 --> 00:15:11,820
+technical jargon what it's doing but you
+
+317
+00:15:11,820 --> 00:15:18,090
+also have problems with frameworks for
+
+318
+00:15:18,090 --> 00:15:20,130
+example framework X defines a method and
+
+319
+00:15:20,130 --> 00:15:22,080
+then later framework why it defines
+
+320
+00:15:22,080 --> 00:15:23,910
+their own method paving over them and so
+
+321
+00:15:23,910 --> 00:15:25,920
+when you define when you extend natives
+
+322
+00:15:25,920 --> 00:15:27,570
+like a ray and string and function and
+
+323
+00:15:27,570 --> 00:15:29,190
+all of these you run the risk of
+
+324
+00:15:29,190 --> 00:15:30,960
+colliding into other frameworks and
+
+325
+00:15:30,960 --> 00:15:32,370
+other projects that extend the same
+
+326
+00:15:32,370 --> 00:15:35,910
+natives so that's that's a problem and
+
+327
+00:15:35,910 --> 00:15:38,190
+for example this is this is a real world
+
+328
+00:15:38,190 --> 00:15:41,040
+case where this is prototype and this is
+
+329
+00:15:41,040 --> 00:15:44,160
+EXT j/s they both do this they really
+
+330
+00:15:44,160 --> 00:15:50,220
+extend the same thing all right in this
+
+331
+00:15:50,220 --> 00:15:51,810
+case we have a problem where a framework
+
+332
+00:15:51,810 --> 00:15:54,090
+defines a method or let's say your own
+
+333
+00:15:54,090 --> 00:15:57,300
+code defines a method extending the
+
+334
+00:15:57,300 --> 00:15:59,670
+array and then later on a different
+
+335
+00:15:59,670 --> 00:16:01,290
+method if the same name gets added to
+
+336
+00:16:01,290 --> 00:16:04,020
+the spec ECMAScript and so then you get
+
+337
+00:16:04,020 --> 00:16:06,480
+issues where your implementation which
+
+338
+00:16:06,480 --> 00:16:09,270
+paves the other or may not is different
+
+339
+00:16:09,270 --> 00:16:11,880
+than the official one and so you get
+
+340
+00:16:11,880 --> 00:16:13,230
+different results and so this is an
+
+341
+00:16:13,230 --> 00:16:15,960
+example of what else can happen wrong if
+
+342
+00:16:15,960 --> 00:16:18,960
+you are extending natives directly on
+
+343
+00:16:18,960 --> 00:16:22,880
+the window
+
+344
+00:16:22,890 --> 00:16:26,620
+okay the solution is sandbox natives I'm
+
+345
+00:16:26,620 --> 00:16:28,090
+going to go into a just a brief example
+
+346
+00:16:28,090 --> 00:16:30,760
+of sandbox natives and talk a little bit
+
+347
+00:16:30,760 --> 00:16:34,360
+of how they're created I have a series
+
+348
+00:16:34,360 --> 00:16:38,350
+of video casts that talk about the the
+
+349
+00:16:38,350 --> 00:16:40,000
+whole process of sandbox natives and
+
+350
+00:16:40,000 --> 00:16:42,160
+things and all the link to it was in the
+
+351
+00:16:42,160 --> 00:16:44,680
+beginning and I'll probably court back
+
+352
+00:16:44,680 --> 00:16:46,450
+to it at the end basically I create
+
+353
+00:16:46,450 --> 00:16:48,430
+sandbox natives in three ways I use
+
+354
+00:16:48,430 --> 00:16:51,730
+either an iframe I use an activex object
+
+355
+00:16:51,730 --> 00:16:55,630
+called activex or HTML file or I use the
+
+356
+00:16:55,630 --> 00:16:57,850
+the proto property which is the
+
+357
+00:16:57,850 --> 00:16:59,860
+underscore underscore proto underscore
+
+358
+00:16:59,860 --> 00:17:02,650
+underscore property and using those
+
+359
+00:17:02,650 --> 00:17:04,360
+three ways and I feed your test for them
+
+360
+00:17:04,360 --> 00:17:05,680
+so they don't there's no browser
+
+361
+00:17:05,680 --> 00:17:07,420
+sniffing they're using those three
+
+362
+00:17:07,420 --> 00:17:10,240
+things I'm able to grab the Constructors
+
+363
+00:17:10,240 --> 00:17:13,300
+or modify their their prototype
+
+364
+00:17:13,300 --> 00:17:16,449
+prototypical inheritance to 22 new
+
+365
+00:17:16,449 --> 00:17:19,720
+objects so therefore you're able to
+
+366
+00:17:19,720 --> 00:17:21,640
+extend these and create real number
+
+367
+00:17:21,640 --> 00:17:24,130
+objects real real array objects real
+
+368
+00:17:24,130 --> 00:17:26,199
+string objects and you're able to extend
+
+369
+00:17:26,199 --> 00:17:29,200
+them without affecting the global array
+
+370
+00:17:29,200 --> 00:17:32,470
+or a number or string or object or any
+
+371
+00:17:32,470 --> 00:17:34,270
+of those and so this is an example of
+
+372
+00:17:34,270 --> 00:17:36,400
+doing that you can see we're fused array
+
+373
+00:17:36,400 --> 00:17:39,340
+dot prototype sighs I'm extending a real
+
+374
+00:17:39,340 --> 00:17:42,280
+array and then I'm returning a real
+
+375
+00:17:42,280 --> 00:17:43,690
+array and it has that method but then
+
+376
+00:17:43,690 --> 00:17:45,880
+the window does not have that because it
+
+377
+00:17:45,880 --> 00:17:48,610
+doesn't touch the window so that means I
+
+378
+00:17:48,610 --> 00:17:50,200
+can then play with other third-party
+
+379
+00:17:50,200 --> 00:17:51,940
+code that does and it's not going to
+
+380
+00:17:51,940 --> 00:17:57,880
+affect you okay the browser's tested for
+
+381
+00:17:57,880 --> 00:18:00,130
+this these techniques are listed here
+
+382
+00:18:00,130 --> 00:18:02,710
+it's quite a lot of browsers and also
+
+383
+00:18:02,710 --> 00:18:06,430
+the various JavaScript engines because
+
+384
+00:18:06,430 --> 00:18:08,380
+it supports the proto property a lot of
+
+385
+00:18:08,380 --> 00:18:10,090
+these engines also support that property
+
+386
+00:18:10,090 --> 00:18:12,520
+and so you can actually run sandbox
+
+387
+00:18:12,520 --> 00:18:14,680
+natives on the server side as well so
+
+388
+00:18:14,680 --> 00:18:16,750
+you can avoid extending the natives
+
+389
+00:18:16,750 --> 00:18:18,820
+there as well so this is the browser
+
+390
+00:18:18,820 --> 00:18:26,950
+supported there
+
+391
+00:18:26,960 --> 00:18:29,240
+okay and this is the list of supported
+
+392
+00:18:29,240 --> 00:18:31,760
+natives that I'm able to sandbox I could
+
+393
+00:18:31,760 --> 00:18:33,770
+probably do others but this seemed to be
+
+394
+00:18:33,770 --> 00:18:36,529
+a good number of them so its array
+
+395
+00:18:36,529 --> 00:18:39,380
+boolean date function number object reg
+
+396
+00:18:39,380 --> 00:18:41,390
+ex and string and so that means you can
+
+397
+00:18:41,390 --> 00:18:46,980
+extend these all and it won't affecting
+
+398
+00:18:46,990 --> 00:18:49,279
+all right so here's some usage of
+
+399
+00:18:49,279 --> 00:18:52,850
+sandbox natives you can create the
+
+400
+00:18:52,850 --> 00:18:55,309
+string but you notice that the string is
+
+401
+00:18:55,309 --> 00:18:58,159
+not type of string its type of object
+
+402
+00:18:58,159 --> 00:19:00,980
+because it's not a primitive because if
+
+403
+00:19:00,980 --> 00:19:02,029
+it was a primitive it would be a
+
+404
+00:19:02,029 --> 00:19:04,370
+primitive of primary document and then
+
+405
+00:19:04,370 --> 00:19:05,750
+it you wouldn't be able to have the
+
+406
+00:19:05,750 --> 00:19:08,029
+sugar associated with the method so what
+
+407
+00:19:08,029 --> 00:19:09,950
+it is is it's just like calling new
+
+408
+00:19:09,950 --> 00:19:11,929
+string it returns the string instance
+
+409
+00:19:11,929 --> 00:19:15,409
+and so type of is object and you can say
+
+410
+00:19:15,409 --> 00:19:17,840
+it's just like the new string where the
+
+411
+00:19:17,840 --> 00:19:19,549
+instance is an object but what's neat is
+
+412
+00:19:19,549 --> 00:19:21,770
+that it still has the internal class of
+
+413
+00:19:21,770 --> 00:19:24,529
+string so all the the frameworks that do
+
+414
+00:19:24,529 --> 00:19:27,529
+is string or is array they all check the
+
+415
+00:19:27,529 --> 00:19:29,270
+class property and so it's always going
+
+416
+00:19:29,270 --> 00:19:34,590
+to return string or array or function
+
+417
+00:19:34,600 --> 00:19:39,110
+and then you can also chain because
+
+418
+00:19:39,110 --> 00:19:41,120
+chaining works which which required a
+
+419
+00:19:41,120 --> 00:19:43,730
+little bit of tweaking so you can you
+
+420
+00:19:43,730 --> 00:19:46,090
+can use it just like you use your normal
+
+421
+00:19:46,090 --> 00:19:47,840
+natives whenever you're extending
+
+422
+00:19:47,840 --> 00:19:52,450
+natives okay so what's cool about this
+
+423
+00:19:52,450 --> 00:19:55,399
+most people when they think of sandbox
+
+424
+00:19:55,399 --> 00:19:57,049
+natives or something will think wow I
+
+425
+00:19:57,049 --> 00:19:58,909
+can use this for a raise subclassing
+
+426
+00:19:58,909 --> 00:20:01,399
+arrays because that's that's a pretty
+
+427
+00:20:01,399 --> 00:20:04,130
+hot thing so this shows an example of
+
+428
+00:20:04,130 --> 00:20:06,049
+creating multiple fuse multiple sand
+
+429
+00:20:06,049 --> 00:20:08,390
+boxes or fuse boxes as as it's called on
+
+430
+00:20:08,390 --> 00:20:11,059
+the name space to do different things
+
+431
+00:20:11,059 --> 00:20:13,399
+one has just regular array methods but
+
+432
+00:20:13,399 --> 00:20:15,260
+the other ones used for like a jQuery
+
+433
+00:20:15,260 --> 00:20:18,049
+syntax and you can see where querying
+
+434
+00:20:18,049 --> 00:20:20,299
+returns an instance of node list which
+
+435
+00:20:20,299 --> 00:20:23,419
+has methods on it like AG class name or
+
+436
+00:20:23,419 --> 00:20:26,000
+show and so you can just chain all the
+
+437
+00:20:26,000 --> 00:20:31,750
+way through
+
+438
+00:20:31,760 --> 00:20:34,620
+okay so now I'm going to talk a little
+
+439
+00:20:34,620 --> 00:20:37,770
+bit about fuse Jas and what it has to
+
+440
+00:20:37,770 --> 00:20:41,520
+offer fuse Jas is a fork of prototype
+
+441
+00:20:41,520 --> 00:20:43,530
+JSI started with prototype and have been
+
+442
+00:20:43,530 --> 00:20:45,870
+shifting it over for the last year and a
+
+443
+00:20:45,870 --> 00:20:48,690
+half so I'm going to just point out some
+
+444
+00:20:48,690 --> 00:20:52,990
+of the unique things that views Jas has
+
+445
+00:20:53,000 --> 00:20:57,630
+all right fuse Jas is tested in ie6 plus
+
+446
+00:20:57,630 --> 00:21:02,130
+Firefox 1.5 plus chrome Conqueror opera
+
+447
+00:21:02,130 --> 00:21:06,390
+and Safari 2.00 so it supports the older
+
+448
+00:21:06,390 --> 00:21:08,130
+set of browsers that prototype used to
+
+449
+00:21:08,130 --> 00:21:15,180
+support in their previous version some
+
+450
+00:21:15,180 --> 00:21:17,670
+of the neat things our sandbox natives
+
+451
+00:21:17,670 --> 00:21:20,030
+which allow for better third party and
+
+452
+00:21:20,030 --> 00:21:22,140
+browser support because of the issues
+
+453
+00:21:22,140 --> 00:21:23,880
+that I described I don't have any of
+
+454
+00:21:23,880 --> 00:21:26,610
+those issues because I run run them in
+
+455
+00:21:26,610 --> 00:21:29,880
+their own sandbox performance what I've
+
+456
+00:21:29,880 --> 00:21:31,500
+done is I've reduced the abstraction
+
+457
+00:21:31,500 --> 00:21:34,260
+I've used method forking by browser
+
+458
+00:21:34,260 --> 00:21:36,690
+features to boost the performance of the
+
+459
+00:21:36,690 --> 00:21:37,860
+engine because it's not having to go
+
+460
+00:21:37,860 --> 00:21:40,410
+through everything another big thing is
+
+461
+00:21:40,410 --> 00:21:42,180
+zero browser sniffs I use feature
+
+462
+00:21:42,180 --> 00:21:44,130
+detection feature testing an object
+
+463
+00:21:44,130 --> 00:21:46,440
+inference to to do this and basically
+
+464
+00:21:46,440 --> 00:21:47,940
+the difference between feature testing
+
+465
+00:21:47,940 --> 00:21:51,120
+and feature detection is feature testing
+
+466
+00:21:51,120 --> 00:21:55,140
+is like is sorry feature detection is
+
+467
+00:21:55,140 --> 00:21:58,590
+like a proper object inference object
+
+468
+00:21:58,590 --> 00:22:00,540
+inference usually implies that you're
+
+469
+00:22:00,540 --> 00:22:03,450
+testing for a property X in assuming
+
+470
+00:22:03,450 --> 00:22:06,450
+function y so feature testing is is
+
+471
+00:22:06,450 --> 00:22:09,030
+testing for the existence of property or
+
+472
+00:22:09,030 --> 00:22:11,760
+method X because you're about to use
+
+473
+00:22:11,760 --> 00:22:14,250
+method X so and then feature testing is
+
+474
+00:22:14,250 --> 00:22:16,050
+actually executing the method trying it
+
+475
+00:22:16,050 --> 00:22:17,730
+seeing if you get the outcome that you
+
+476
+00:22:17,730 --> 00:22:21,090
+would expect and then another neat thing
+
+477
+00:22:21,090 --> 00:22:24,060
+is that fuse jas will support framework
+
+478
+00:22:24,060 --> 00:22:27,720
+emulation which means that few GS will
+
+479
+00:22:27,720 --> 00:22:30,270
+be able to run as for example prototype
+
+480
+00:22:30,270 --> 00:22:33,060
+so all you would do is delete prototype
+
+481
+00:22:33,060 --> 00:22:36,570
+jas from your project then drop infuse
+
+482
+00:22:36,570 --> 00:22:41,460
+jas then plus the emulation j/s and it
+
+483
+00:22:41,460 --> 00:22:43,159
+will run as if it is
+
+484
+00:22:43,159 --> 00:22:45,330
+prototype so your code doesn't have to
+
+485
+00:22:45,330 --> 00:22:47,690
+change but you get the benefit of
+
+486
+00:22:47,690 --> 00:22:50,309
+increased performance increased browser
+
+487
+00:22:50,309 --> 00:22:54,330
+support feature testing and new features
+
+488
+00:22:54,330 --> 00:22:57,240
+so so that's that's a pretty neat thing
+
+489
+00:22:57,240 --> 00:22:58,740
+and then as we go along will support
+
+490
+00:22:58,740 --> 00:23:00,990
+other frameworks and then another neat
+
+491
+00:23:00,990 --> 00:23:02,789
+thing is that it's it's debug friendly
+
+492
+00:23:02,789 --> 00:23:06,330
+which means i use function expressions
+
+493
+00:23:06,330 --> 00:23:12,240
+or yeah function expressions to create
+
+494
+00:23:12,240 --> 00:23:14,399
+readable names whenever you debug into
+
+495
+00:23:14,399 --> 00:23:16,799
+console so whenever you for example put
+
+496
+00:23:16,799 --> 00:23:18,120
+this method in the console it's going to
+
+497
+00:23:18,120 --> 00:23:20,429
+spit back the name of the method and the
+
+498
+00:23:20,429 --> 00:23:22,980
+arguments accepts and so whenever you do
+
+499
+00:23:22,980 --> 00:23:25,350
+things like profile on your site or use
+
+500
+00:23:25,350 --> 00:23:26,850
+the Firebug profile instead of having
+
+501
+00:23:26,850 --> 00:23:29,010
+like anonymous function pop up all over
+
+502
+00:23:29,010 --> 00:23:30,360
+the place you're going to actually have
+
+503
+00:23:30,360 --> 00:23:32,340
+the full method there so you can see
+
+504
+00:23:32,340 --> 00:23:38,610
+them other features are its going to be
+
+505
+00:23:38,610 --> 00:23:41,309
+modular so because there's less
+
+506
+00:23:41,309 --> 00:23:43,409
+abstraction there's less dependency
+
+507
+00:23:43,409 --> 00:23:45,630
+between files and functionality so you
+
+508
+00:23:45,630 --> 00:23:47,279
+can build because you can create custom
+
+509
+00:23:47,279 --> 00:23:49,919
+builds that say don't have array
+
+510
+00:23:49,919 --> 00:23:51,690
+extensions or don't have the template or
+
+511
+00:23:51,690 --> 00:23:53,840
+the range or the Ajax or any of these
+
+512
+00:23:53,840 --> 00:23:55,880
+things because there's there's no
+
+513
+00:23:55,880 --> 00:23:58,529
+dependency on either one for the other
+
+514
+00:23:58,529 --> 00:24:01,799
+to operate and then select your engines
+
+515
+00:24:01,799 --> 00:24:04,200
+I support seven selector engines because
+
+516
+00:24:04,200 --> 00:24:07,500
+i like giving developers a choice and so
+
+517
+00:24:07,500 --> 00:24:11,639
+I support dojos acne EXT jss Dom query
+
+518
+00:24:11,639 --> 00:24:15,409
+NW matcher peppy sizzle slick which is
+
+519
+00:24:15,409 --> 00:24:18,600
+mootools new selector engine and then
+
+520
+00:24:18,600 --> 00:24:22,769
+sly which is a variation of that i'll
+
+521
+00:24:22,769 --> 00:24:24,299
+also be supporting quirks mode for
+
+522
+00:24:24,299 --> 00:24:26,340
+dimensions and positioning code which is
+
+523
+00:24:26,340 --> 00:24:29,250
+something that some browsers are some
+
+524
+00:24:29,250 --> 00:24:30,899
+frameworks actually don't support so
+
+525
+00:24:30,899 --> 00:24:34,620
+like jQuery I think dropped dropped it
+
+526
+00:24:34,620 --> 00:24:37,769
+recently prototypes had problems with it
+
+527
+00:24:37,769 --> 00:24:39,450
+so I'm going to make sure that I support
+
+528
+00:24:39,450 --> 00:24:42,179
+some quirks mode there other things is
+
+529
+00:24:42,179 --> 00:24:46,139
+our I up I do dham wrappers and I do
+
+530
+00:24:46,139 --> 00:24:49,590
+event wrappers for things so I'm not
+
+531
+00:24:49,590 --> 00:24:51,480
+extending the Dom either so I don't run
+
+532
+00:24:51,480 --> 00:24:55,490
+into the conflicts of names or
+
+533
+00:24:55,490 --> 00:24:58,820
+issues where things aren't being
+
+534
+00:24:58,820 --> 00:25:01,600
+extended properly because of ie bug X or
+
+535
+00:25:01,600 --> 00:25:04,550
+Firefox bug why so I have that and
+
+536
+00:25:04,550 --> 00:25:06,080
+another another neat thing is that when
+
+537
+00:25:06,080 --> 00:25:08,210
+I have Dom rappers you can still have
+
+538
+00:25:08,210 --> 00:25:10,190
+the functionality of extending things
+
+539
+00:25:10,190 --> 00:25:13,010
+per element so like in prototype you
+
+540
+00:25:13,010 --> 00:25:15,110
+could give just input elements a method
+
+541
+00:25:15,110 --> 00:25:17,720
+like get value and then this way too
+
+542
+00:25:17,720 --> 00:25:20,990
+because this mimics the the Dom classes
+
+543
+00:25:20,990 --> 00:25:24,170
+you can just give input elements a
+
+544
+00:25:24,170 --> 00:25:26,600
+method or just give image is a method to
+
+545
+00:25:26,600 --> 00:25:28,790
+refresh or something like that so that's
+
+546
+00:25:28,790 --> 00:25:31,910
+neat I also support cross frame or cross
+
+547
+00:25:31,910 --> 00:25:35,780
+iframe communication so the method will
+
+548
+00:25:35,780 --> 00:25:38,420
+still work on the iframe document even
+
+549
+00:25:38,420 --> 00:25:40,040
+though the iframe document does not have
+
+550
+00:25:40,040 --> 00:25:42,380
+the framework loaded in it and that's
+
+551
+00:25:42,380 --> 00:25:44,390
+because I avoid references to document
+
+552
+00:25:44,390 --> 00:25:47,240
+or the global and I resolve it by the
+
+553
+00:25:47,240 --> 00:25:49,640
+element owner document and so I'm able
+
+554
+00:25:49,640 --> 00:25:52,940
+to resolve the the iframes document in
+
+555
+00:25:52,940 --> 00:25:57,380
+these methods something else I do
+
+556
+00:25:57,380 --> 00:26:01,429
+differently is I in first I enforce
+
+557
+00:26:01,429 --> 00:26:04,070
+first in first out of in order when
+
+558
+00:26:04,070 --> 00:26:06,320
+you're observing events and a lot of
+
+559
+00:26:06,320 --> 00:26:07,670
+frameworks are doing this now and it
+
+560
+00:26:07,670 --> 00:26:10,610
+makes sense because I e is the only one
+
+561
+00:26:10,610 --> 00:26:12,080
+that really goes against the grain and
+
+562
+00:26:12,080 --> 00:26:14,210
+has a random event order execution but
+
+563
+00:26:14,210 --> 00:26:15,710
+whenever you're absorbing events a lot
+
+564
+00:26:15,710 --> 00:26:17,840
+of times you want you want your first
+
+565
+00:26:17,840 --> 00:26:19,550
+observer to execute before your second
+
+566
+00:26:19,550 --> 00:26:21,590
+and so on it so you expect that order
+
+567
+00:26:21,590 --> 00:26:25,220
+and so I make that consistent something
+
+568
+00:26:25,220 --> 00:26:27,350
+else I do is I preserve backward forward
+
+569
+00:26:27,350 --> 00:26:29,300
+cash which means I don't have a non
+
+570
+00:26:29,300 --> 00:26:32,870
+unload handler to clean up the memory
+
+571
+00:26:32,870 --> 00:26:35,179
+issues with ie because I avoid the
+
+572
+00:26:35,179 --> 00:26:36,730
+memory issues with ie in the first place
+
+573
+00:26:36,730 --> 00:26:39,650
+and so because of that I don't have to
+
+574
+00:26:39,650 --> 00:26:42,020
+break backward forward cash and so
+
+575
+00:26:42,020 --> 00:26:44,170
+whenever you flip between pages the
+
+576
+00:26:44,170 --> 00:26:48,110
+framework will continue to the state of
+
+577
+00:26:48,110 --> 00:26:50,900
+the page will still be preserved and so
+
+578
+00:26:50,900 --> 00:26:52,250
+that's that's what that's actually a
+
+579
+00:26:52,250 --> 00:26:54,350
+pretty pretty cool thing there something
+
+580
+00:26:54,350 --> 00:26:56,150
+else I do is I don't have any expand
+
+581
+00:26:56,150 --> 00:26:59,420
+owes on IE elements expand those effects
+
+582
+00:26:59,420 --> 00:27:02,150
+screen redraw and things like that and I
+
+583
+00:27:02,150 --> 00:27:04,760
+found a way to avoid any of them on IE
+
+584
+00:27:04,760 --> 00:27:06,380
+so you don't get that performance
+
+585
+00:27:06,380 --> 00:27:07,230
+penalty
+
+586
+00:27:07,230 --> 00:27:11,669
+on ie or other issues like whenever you
+
+587
+00:27:11,669 --> 00:27:13,250
+clone nodes and things like that
+
+588
+00:27:13,250 --> 00:27:15,360
+something else need is I have method
+
+589
+00:27:15,360 --> 00:27:17,549
+generics which means if any of you have
+
+590
+00:27:17,549 --> 00:27:22,679
+used or gone to mozillas MDC site you'll
+
+591
+00:27:22,679 --> 00:27:24,150
+you'll see that they have like a ray
+
+592
+00:27:24,150 --> 00:27:27,030
+slice or a push or these generics that
+
+593
+00:27:27,030 --> 00:27:28,919
+are on the constructor instead of on the
+
+594
+00:27:28,919 --> 00:27:31,679
+instance and so I have all of my methods
+
+595
+00:27:31,679 --> 00:27:34,410
+support generics as well so anything
+
+596
+00:27:34,410 --> 00:27:37,590
+that's on like the element prototype is
+
+597
+00:27:37,590 --> 00:27:40,760
+also on the elements generic form too
+
+598
+00:27:40,760 --> 00:27:42,900
+and then something else I do is I do
+
+599
+00:27:42,900 --> 00:27:44,820
+separation of Dom properties and
+
+600
+00:27:44,820 --> 00:27:46,230
+attributes and this is this is an
+
+601
+00:27:46,230 --> 00:27:47,760
+interesting thing as you get into a
+
+602
+00:27:47,760 --> 00:27:49,650
+framework you'll see that a lot of times
+
+603
+00:27:49,650 --> 00:27:53,160
+they mix up Dom properties like element
+
+604
+00:27:53,160 --> 00:27:55,650
+da checked and Dom attributes like
+
+605
+00:27:55,650 --> 00:27:59,280
+element get attribute checked and which
+
+606
+00:27:59,280 --> 00:28:01,490
+is there's a difference there because
+
+607
+00:28:01,490 --> 00:28:04,110
+attributes are source attributes which
+
+608
+00:28:04,110 --> 00:28:05,880
+means how they are when the page is
+
+609
+00:28:05,880 --> 00:28:09,900
+rendered their properties are live so
+
+610
+00:28:09,900 --> 00:28:12,000
+like the attribute value of an input
+
+611
+00:28:12,000 --> 00:28:13,530
+element is what it originally was
+
+612
+00:28:13,530 --> 00:28:16,650
+whenever the page loaded the live value
+
+613
+00:28:16,650 --> 00:28:18,059
+is the element value which is the
+
+614
+00:28:18,059 --> 00:28:19,980
+current input and so I make a kippah
+
+615
+00:28:19,980 --> 00:28:21,179
+separation there and I keep it
+
+616
+00:28:21,179 --> 00:28:23,460
+consistent in the end the method so
+
+617
+00:28:23,460 --> 00:28:25,679
+there's none of the confusion that goes
+
+618
+00:28:25,679 --> 00:28:31,980
+along with okay this is going to be some
+
+619
+00:28:31,980 --> 00:28:35,480
+performance tests with fuse j s alpha
+
+620
+00:28:35,480 --> 00:28:38,160
+you can see right now in its early stage
+
+621
+00:28:38,160 --> 00:28:43,640
+it runs about as fast as jquery 1.4 2
+
+622
+00:28:43,640 --> 00:28:49,350
+and is right around what dojo 1.4 is as
+
+623
+00:28:49,350 --> 00:28:53,540
+well or 1.4 or maybe one there so that
+
+624
+00:28:53,540 --> 00:28:56,040
+it's doing pretty good for itself at the
+
+625
+00:28:56,040 --> 00:28:58,220
+time you can see prototypes is is a
+
+626
+00:28:58,220 --> 00:29:02,370
+little slower there so that's fuse JSE's
+
+627
+00:29:02,370 --> 00:29:06,909
+performance
+
+628
+00:29:06,919 --> 00:29:09,239
+now i'm going to show you fuse jss
+
+629
+00:29:09,239 --> 00:29:12,479
+performance in ie8 and compared two
+
+630
+00:29:12,479 --> 00:29:15,090
+prototypes performance in ie8 and in
+
+631
+00:29:15,090 --> 00:29:21,299
+this case less is more because this is
+
+632
+00:29:21,299 --> 00:29:24,149
+task speed so you can see here that this
+
+633
+00:29:24,149 --> 00:29:26,909
+is 2,000 something and this is 11,000
+
+634
+00:29:26,909 --> 00:29:28,590
+something so the speed difference is
+
+635
+00:29:28,590 --> 00:29:34,200
+pretty big for ie8 and then last but not
+
+636
+00:29:34,200 --> 00:29:37,249
+least i mentioned that fuse will support
+
+637
+00:29:37,249 --> 00:29:39,929
+framework emulation and i wanted to show
+
+638
+00:29:39,929 --> 00:29:44,039
+that i'm closer to prototype support now
+
+639
+00:29:44,039 --> 00:29:48,089
+because you can see i'm getting proto
+
+640
+00:29:48,089 --> 00:29:51,330
+used to yes to run as prototype and you
+
+641
+00:29:51,330 --> 00:29:53,219
+can see the performance differences
+
+642
+00:29:53,219 --> 00:29:58,830
+right there this is a 2180 and this is
+
+643
+00:29:58,830 --> 00:30:04,080
+almost almost 3000 so the the difference
+
+644
+00:30:04,080 --> 00:30:07,289
+in speed is quite noticeable you'll have
+
+645
+00:30:07,289 --> 00:30:13,129
+additional features and that is fuse j/s
+
+646
+00:30:13,129 --> 00:30:19,769
+cool any questions yes i just want to
+
+647
+00:30:19,769 --> 00:30:20,940
+make sure i understand if you're saying
+
+648
+00:30:20,940 --> 00:30:24,080
+you emulate for the text messages
+
+649
+00:30:24,080 --> 00:30:30,840
+okay yes anything else there's got to be
+
+650
+00:30:30,840 --> 00:30:34,110
+a drama well the the the issue is on
+
+651
+00:30:34,110 --> 00:30:37,140
+performance is how they're designed
+
+652
+00:30:37,140 --> 00:30:39,510
+prototype has a lot of abstraction in
+
+653
+00:30:39,510 --> 00:30:40,680
+there because they like to use their own
+
+654
+00:30:40,680 --> 00:30:42,390
+methods over and over and at the
+
+655
+00:30:42,390 --> 00:30:44,550
+beginning I showed reducing abstraction
+
+656
+00:30:44,550 --> 00:30:46,620
+and so what I do is infuse I have
+
+657
+00:30:46,620 --> 00:30:48,750
+everything as vanilla Jas and so
+
+658
+00:30:48,750 --> 00:30:50,670
+everything is stripped down to the gist
+
+659
+00:30:50,670 --> 00:30:52,560
+the fundamentals so that's what runs
+
+660
+00:30:52,560 --> 00:30:56,430
+faster also I do things like forking the
+
+661
+00:30:56,430 --> 00:30:58,440
+methods to create faster execution and
+
+662
+00:30:58,440 --> 00:31:00,960
+so when all of that's combined you get
+
+663
+00:31:00,960 --> 00:31:03,090
+faster an entirely faster framework
+
+664
+00:31:03,090 --> 00:31:05,430
+another benefit is is because I don't
+
+665
+00:31:05,430 --> 00:31:10,380
+extend the elements I don't have a
+
+666
+00:31:10,380 --> 00:31:13,530
+penalty for let's say ie6 or ie7 that
+
+667
+00:31:13,530 --> 00:31:14,960
+doesn't have the element that prototype
+
+668
+00:31:14,960 --> 00:31:17,310
+and so that's another way to be faster
+
+669
+00:31:17,310 --> 00:31:20,880
+and so might the idea is is that as I go
+
+670
+00:31:20,880 --> 00:31:23,370
+along I'll keep optimizing and then when
+
+671
+00:31:23,370 --> 00:31:24,960
+I support other frameworks I'll still be
+
+672
+00:31:24,960 --> 00:31:27,300
+able to run as fast as them the reason
+
+673
+00:31:27,300 --> 00:31:29,280
+I'm able to run its prototype is because
+
+674
+00:31:29,280 --> 00:31:31,890
+I have all of my dom methods are this
+
+675
+00:31:31,890 --> 00:31:34,740
+generic the little this keyword generic
+
+676
+00:31:34,740 --> 00:31:38,640
+and that allows me to run as a node list
+
+677
+00:31:38,640 --> 00:31:41,460
+like jQuery syntax or I can then run as
+
+678
+00:31:41,460 --> 00:31:44,370
+as just a single element rapper like
+
+679
+00:31:44,370 --> 00:31:46,410
+they get the element by ID and then it
+
+680
+00:31:46,410 --> 00:31:48,600
+has the rapper or I can then dump that
+
+681
+00:31:48,600 --> 00:31:51,660
+back on to the element dot prototype to
+
+682
+00:31:51,660 --> 00:31:54,030
+run as prototype and the method still
+
+683
+00:31:54,030 --> 00:31:55,410
+works because it's this generic it
+
+684
+00:31:55,410 --> 00:31:57,180
+doesn't care that it's a rapper or an
+
+685
+00:31:57,180 --> 00:31:58,950
+element it just works and so it makes
+
+686
+00:31:58,950 --> 00:32:00,990
+the very little overhead to actually
+
+687
+00:32:00,990 --> 00:32:04,380
+create the emulation layer yes so huge
+
+688
+00:32:04,380 --> 00:32:08,120
+is including the default NW masters
+
+689
+00:32:08,120 --> 00:32:12,260
+ah how big is that compared to some of
+
+690
+00:32:12,260 --> 00:32:14,150
+the other popular frameworks like jQuery
+
+691
+00:32:14,150 --> 00:32:17,450
+there the goal is to get it to be around
+
+692
+00:32:17,450 --> 00:32:20,390
+30 kilobytes currently in the alpha
+
+693
+00:32:20,390 --> 00:32:22,480
+stage everything is inflated because
+
+694
+00:32:22,480 --> 00:32:24,950
+I've got the debug code in there and
+
+695
+00:32:24,950 --> 00:32:26,660
+I've got other things but the goal is to
+
+696
+00:32:26,660 --> 00:32:30,020
+be right around 30 kilobytes or so and
+
+697
+00:32:30,020 --> 00:32:32,210
+the size can actually change because you
+
+698
+00:32:32,210 --> 00:32:34,220
+can create custom builds so you can take
+
+699
+00:32:34,220 --> 00:32:35,360
+out the things you don't want like
+
+700
+00:32:35,360 --> 00:32:37,280
+template or range if you never use those
+
+701
+00:32:37,280 --> 00:32:39,350
+and just throw them out and so it allows
+
+702
+00:32:39,350 --> 00:32:40,820
+you to create a smaller more focused
+
+703
+00:32:40,820 --> 00:32:44,750
+file size also i have debugging built
+
+704
+00:32:44,750 --> 00:32:47,150
+the debug friendly function names those
+
+705
+00:32:47,150 --> 00:32:48,650
+those debug friendly function names
+
+706
+00:32:48,650 --> 00:32:50,360
+actually create an increase in file size
+
+707
+00:32:50,360 --> 00:32:53,270
+and so before you minify there's going
+
+708
+00:32:53,270 --> 00:32:55,730
+to be a pre process that you can run on
+
+709
+00:32:55,730 --> 00:32:58,310
+the custom build thing and it will strip
+
+710
+00:32:58,310 --> 00:32:59,810
+out the named expressions and cleanup
+
+711
+00:32:59,810 --> 00:33:01,310
+and so that helps reduce the size and
+
+712
+00:33:01,310 --> 00:33:05,630
+keep it at a manageable limit anything
+
+713
+00:33:05,630 --> 00:33:19,600
+else yes
+
+714
+00:33:19,610 --> 00:33:21,840
+okay in the optimal condition I either
+
+715
+00:33:21,840 --> 00:33:25,230
+use the ActiveX object or the proto
+
+716
+00:33:25,230 --> 00:33:27,270
+because proto supported by everything
+
+717
+00:33:27,270 --> 00:33:29,820
+almost and the ActiveX object avoids
+
+718
+00:33:29,820 --> 00:33:31,860
+issues with like domain a document
+
+719
+00:33:31,860 --> 00:33:34,440
+domain settings with iframes and it also
+
+720
+00:33:34,440 --> 00:33:37,590
+avoids issues in Firefox with some
+
+721
+00:33:37,590 --> 00:33:39,270
+iframe issues I had by removing and
+
+722
+00:33:39,270 --> 00:33:41,490
+inserting and then the I fall back to
+
+723
+00:33:41,490 --> 00:33:43,740
+the last resort is the iframe now in the
+
+724
+00:33:43,740 --> 00:33:46,050
+iframe I should mention that Dean
+
+725
+00:33:46,050 --> 00:33:48,540
+Edwards created a technique in 2006 to
+
+726
+00:33:48,540 --> 00:33:50,100
+do basically the same thing with the
+
+727
+00:33:50,100 --> 00:33:51,990
+iframe but what he did was he left the
+
+728
+00:33:51,990 --> 00:33:53,640
+iframe in the document and that affects
+
+729
+00:33:53,640 --> 00:33:55,560
+your window dot frames collection and so
+
+730
+00:33:55,560 --> 00:33:58,290
+I found a way to to insert the iframe
+
+731
+00:33:58,290 --> 00:34:00,750
+grab the natives and take the iframe out
+
+732
+00:34:00,750 --> 00:34:02,850
+and cash it so it doesn't get garbage
+
+733
+00:34:02,850 --> 00:34:05,460
+collected and so that allows me to use
+
+734
+00:34:05,460 --> 00:34:07,140
+it without affecting the window frames
+
+735
+00:34:07,140 --> 00:34:10,840
+collection so I guess the order would be
+
+736
+00:34:10,850 --> 00:34:16,320
+proto activex then I fer cool anything
+
+737
+00:34:16,320 --> 00:34:22,360
+else I'm getting the clap alright
+

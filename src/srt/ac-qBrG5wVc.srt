@@ -1,0 +1,3425 @@
+1
+00:00:09,349 --> 00:00:13,469
+
+hello hello everybody my name is Matthew
+
+2
+00:00:13,469 --> 00:00:15,360
+foul I'm here to give you a talk on web
+
+3
+00:00:15,360 --> 00:00:17,940
+push away this talk features htb to
+
+4
+00:00:17,940 --> 00:00:20,279
+using push and there's a fantastic
+
+5
+00:00:20,279 --> 00:00:22,350
+protocol that is kind of the reciprocal
+
+6
+00:00:22,350 --> 00:00:24,660
+dual to there's a new push API for
+
+7
+00:00:24,660 --> 00:00:27,090
+getting content to the browser in an
+
+8
+00:00:27,090 --> 00:00:28,859
+asynchronous manner and this is kind of
+
+9
+00:00:28,859 --> 00:00:30,869
+the dual back-end technology that backs
+
+10
+00:00:30,869 --> 00:00:33,690
+that up so welcome to web push away this
+
+11
+00:00:33,690 --> 00:00:36,000
+is web push generic event delivery using
+
+12
+00:00:36,000 --> 00:00:40,950
+HTTP push it's pretty rad this talk is
+
+13
+00:00:40,950 --> 00:00:46,289
+pretty rad I think that I excuse me it
+
+14
+00:00:46,289 --> 00:00:49,200
+is rad because uh web pushes itself a
+
+15
+00:00:49,200 --> 00:00:50,789
+web q something that we haven't really
+
+16
+00:00:50,789 --> 00:00:54,000
+had before in this capability Hugh's
+
+17
+00:00:54,000 --> 00:00:55,920
+themselves are a pretty great technology
+
+18
+00:00:55,920 --> 00:00:57,719
+we seek Hughes getting use throughout
+
+19
+00:00:57,719 --> 00:00:59,309
+the industry in the back end and it's
+
+20
+00:00:59,309 --> 00:01:00,300
+something that we haven't really been
+
+21
+00:01:00,300 --> 00:01:02,489
+able to use as a resourceful construct
+
+22
+00:01:02,489 --> 00:01:05,159
+on the web we have technologies like
+
+23
+00:01:05,159 --> 00:01:07,710
+Kafka and RabbitMQ which significantly
+
+24
+00:01:07,710 --> 00:01:10,100
+power a lot of our infrastructure and
+
+25
+00:01:10,100 --> 00:01:12,510
+web push really begins to open that
+
+26
+00:01:12,510 --> 00:01:13,830
+capability to something that we can
+
+27
+00:01:13,830 --> 00:01:15,720
+begin to use on the web and that we can
+
+28
+00:01:15,720 --> 00:01:18,090
+exchange as a resource and trade amongst
+
+29
+00:01:18,090 --> 00:01:20,970
+our resources a trade amongst our
+
+30
+00:01:20,970 --> 00:01:23,369
+systems the web is great and one of the
+
+31
+00:01:23,369 --> 00:01:24,600
+main things that I really think makes
+
+32
+00:01:24,600 --> 00:01:26,070
+the web great is the fact that it has
+
+33
+00:01:26,070 --> 00:01:29,189
+that there are resources that the things
+
+34
+00:01:29,189 --> 00:01:31,049
+on the web exists tangibly because they
+
+35
+00:01:31,049 --> 00:01:35,070
+have URLs associated with them there's
+
+36
+00:01:35,070 --> 00:01:38,130
+Tim berners-lee's paper axiomatic sub
+
+37
+00:01:38,130 --> 00:01:40,290
+the web or actually I don't have the
+
+38
+00:01:40,290 --> 00:01:42,180
+name off the top of my head but his
+
+39
+00:01:42,180 --> 00:01:44,189
+axiomatic sub the URL where he discusses
+
+40
+00:01:44,189 --> 00:01:49,200
+the how valuable URL is so a web q a web
+
+41
+00:01:49,200 --> 00:01:50,340
+q is something that should be pretty
+
+42
+00:01:50,340 --> 00:01:54,240
+great web push as a web q has some
+
+43
+00:01:54,240 --> 00:01:57,930
+capabilities it has magic it has HTTP to
+
+44
+00:01:57,930 --> 00:02:00,630
+magic it has push magic it has really
+
+45
+00:02:00,630 --> 00:02:04,560
+great magic it's not actually magic it
+
+46
+00:02:04,560 --> 00:02:07,950
+is actually push and it's probably still
+
+47
+00:02:07,950 --> 00:02:10,110
+great I do think it's definitely
+
+48
+00:02:10,110 --> 00:02:11,870
+something that is worth talking about
+
+49
+00:02:11,870 --> 00:02:13,500
+probably great
+
+50
+00:02:13,500 --> 00:02:16,050
+probably great it's a solid model for a
+
+51
+00:02:16,050 --> 00:02:17,940
+cue it's the first time that I've seen
+
+52
+00:02:17,940 --> 00:02:19,620
+somebody has really stamped out and said
+
+53
+00:02:19,620 --> 00:02:21,570
+what kind of URLs you should be hitting
+
+54
+00:02:21,570 --> 00:02:24,900
+to use a queue and that's really that is
+
+55
+00:02:24,900 --> 00:02:26,730
+the fundamental of like what resourceful
+
+56
+00:02:26,730 --> 00:02:29,190
+means to me it has interesting
+
+57
+00:02:29,190 --> 00:02:31,740
+innovative techniques the push not magic
+
+58
+00:02:31,740 --> 00:02:34,500
+it has an interesting application for
+
+59
+00:02:34,500 --> 00:02:36,959
+getting data into the client whether or
+
+60
+00:02:36,959 --> 00:02:38,730
+not that client is connected to the
+
+61
+00:02:38,730 --> 00:02:41,820
+Internet at that time or not that a
+
+62
+00:02:41,820 --> 00:02:44,459
+queue part of a queue is that you push
+
+63
+00:02:44,459 --> 00:02:46,140
+stuff into a queue and you get stuff out
+
+64
+00:02:46,140 --> 00:02:48,360
+and we'll look at how that can happen in
+
+65
+00:02:48,360 --> 00:02:50,630
+different fashions then online real-time
+
+66
+00:02:50,630 --> 00:02:53,430
+and it is making itself nicely through
+
+67
+00:02:53,430 --> 00:02:56,100
+standardization it was an effort formed
+
+68
+00:02:56,100 --> 00:02:58,410
+by Mozilla and it's now being
+
+69
+00:02:58,410 --> 00:03:00,660
+implemented and the spec is co-authored
+
+70
+00:03:00,660 --> 00:03:02,370
+by Microsoft who's doing some they're
+
+71
+00:03:02,370 --> 00:03:03,180
+doing some very interesting
+
+72
+00:03:03,180 --> 00:03:05,820
+optimizations to really allow a huge
+
+73
+00:03:05,820 --> 00:03:08,430
+number of concurrent push subscriptions
+
+74
+00:03:08,430 --> 00:03:11,190
+to exist all at the same time pardon my
+
+75
+00:03:11,190 --> 00:03:13,050
+formatting here on this one Oh looks
+
+76
+00:03:13,050 --> 00:03:15,750
+great over there I do please pardon the
+
+77
+00:03:15,750 --> 00:03:17,940
+extra bar at the top that's that's where
+
+78
+00:03:17,940 --> 00:03:19,530
+we're at right now I thank you for your
+
+79
+00:03:19,530 --> 00:03:21,690
+forbearance 'as looks a little different
+
+80
+00:03:21,690 --> 00:03:24,690
+on the screen right now related transfer
+
+81
+00:03:24,690 --> 00:03:26,610
+technologies the web's used web hooks
+
+82
+00:03:26,610 --> 00:03:28,350
+for a long time if you want to push to
+
+83
+00:03:28,350 --> 00:03:30,420
+something you just send whoever needs to
+
+84
+00:03:30,420 --> 00:03:32,130
+do the pushing a URL and then you just
+
+85
+00:03:32,130 --> 00:03:34,170
+post the content and that's kind of an
+
+86
+00:03:34,170 --> 00:03:36,140
+implicit construct there's no real
+
+87
+00:03:36,140 --> 00:03:38,519
+reception out of that system there's no
+
+88
+00:03:38,519 --> 00:03:40,799
+no way to withdraw from that it's like a
+
+89
+00:03:40,799 --> 00:03:43,350
+single ingestion acceptance way of
+
+90
+00:03:43,350 --> 00:03:45,600
+getting data in and it there's not
+
+91
+00:03:45,600 --> 00:03:47,519
+really like a well-defined content type
+
+92
+00:03:47,519 --> 00:03:49,530
+for that web hooks been very valuable
+
+93
+00:03:49,530 --> 00:03:52,350
+but it has some severe limitations also
+
+94
+00:03:52,350 --> 00:03:55,340
+notably you cannot web you cannot push
+
+95
+00:03:55,340 --> 00:03:58,200
+using web hooks to a browser there's no
+
+96
+00:03:58,200 --> 00:04:00,930
+URL for you to hit to send data to a
+
+97
+00:04:00,930 --> 00:04:02,579
+browser there have been some very
+
+98
+00:04:02,579 --> 00:04:04,980
+interesting experiments opera had a
+
+99
+00:04:04,980 --> 00:04:07,950
+program opera unite which really was
+
+100
+00:04:07,950 --> 00:04:10,230
+about trying to give a web identity to
+
+101
+00:04:10,230 --> 00:04:12,150
+the browser and that kind of flipped the
+
+102
+00:04:12,150 --> 00:04:13,380
+table and would have made something like
+
+103
+00:04:13,380 --> 00:04:15,570
+web puffs web hooks more viable for the
+
+104
+00:04:15,570 --> 00:04:18,870
+client this talk outline this is the
+
+105
+00:04:18,870 --> 00:04:20,250
+opening thank you very much for being on
+
+106
+00:04:20,250 --> 00:04:21,209
+the opening thank you very much for
+
+107
+00:04:21,209 --> 00:04:23,160
+being at web push away we're going to
+
+108
+00:04:23,160 --> 00:04:24,360
+talk a little bit about the model of
+
+109
+00:04:24,360 --> 00:04:27,280
+what web push protocol protocol is
+
+110
+00:04:27,280 --> 00:04:28,620
+we're going to talk about the technique
+
+111
+00:04:28,620 --> 00:04:31,720
+HTTP to push that powers this all we're
+
+112
+00:04:31,720 --> 00:04:33,250
+going to look at an application which is
+
+113
+00:04:33,250 --> 00:04:35,650
+the push API the front end application
+
+114
+00:04:35,650 --> 00:04:38,200
+that consumes this and binds to it we're
+
+115
+00:04:38,200 --> 00:04:39,370
+going to look at my little
+
+116
+00:04:39,370 --> 00:04:41,590
+implementation just a couple glossy
+
+117
+00:04:41,590 --> 00:04:43,270
+highlights of things that happen when I
+
+118
+00:04:43,270 --> 00:04:45,310
+was making a node server and then we're
+
+119
+00:04:45,310 --> 00:04:46,840
+just going to end up with a little bit
+
+120
+00:04:46,840 --> 00:04:48,639
+of talk on a synchronous bidirectional
+
+121
+00:04:48,639 --> 00:04:50,770
+web and how great web push is going to
+
+122
+00:04:50,770 --> 00:04:54,610
+be so please enjoy it learn a lot please
+
+123
+00:04:54,610 --> 00:04:56,410
+take away and enjoy the resourceful
+
+124
+00:04:56,410 --> 00:04:59,050
+model come and enjoy the asynchronous
+
+125
+00:04:59,050 --> 00:05:01,210
+HTTP two world that we're entering into
+
+126
+00:05:01,210 --> 00:05:05,980
+yes application please this is going to
+
+127
+00:05:05,980 --> 00:05:07,419
+be like a little bit of the reason for
+
+128
+00:05:07,419 --> 00:05:09,280
+like why this all came about and should
+
+129
+00:05:09,280 --> 00:05:11,919
+help really solidify the idea of what
+
+130
+00:05:11,919 --> 00:05:14,290
+this Q can kind of do and then the
+
+131
+00:05:14,290 --> 00:05:16,270
+implementation is my own and this should
+
+132
+00:05:16,270 --> 00:05:21,070
+be pretty epic the model web push is a
+
+133
+00:05:21,070 --> 00:05:25,990
+queue so what is a queue stuff goes in
+
+134
+00:05:25,990 --> 00:05:29,200
+stuff comes out we kind of have an
+
+135
+00:05:29,200 --> 00:05:31,330
+existing model for you if i can get my
+
+136
+00:05:31,330 --> 00:05:34,140
+mouse scroll working or inverse scroll
+
+137
+00:05:34,140 --> 00:05:36,220
+so this is kind of what i think of as a
+
+138
+00:05:36,220 --> 00:05:39,070
+cue stuff goes in stuff comes out of q
+
+139
+00:05:39,070 --> 00:05:41,890
+and in this particular case it happens
+
+140
+00:05:41,890 --> 00:05:44,919
+eventually in the portal and that's kind
+
+141
+00:05:44,919 --> 00:05:46,720
+of an instantaneous effect but a queue
+
+142
+00:05:46,720 --> 00:05:48,940
+often has to hold data for some amount
+
+143
+00:05:48,940 --> 00:05:51,729
+of time as well great so what about a
+
+144
+00:05:51,729 --> 00:05:54,160
+web push q it's just resources it's
+
+145
+00:05:54,160 --> 00:05:55,539
+things with URLs that are running
+
+146
+00:05:55,539 --> 00:05:57,610
+somewhere this q exists on some server
+
+147
+00:05:57,610 --> 00:06:00,690
+or set of servers and it has endpoints a
+
+148
+00:06:00,690 --> 00:06:03,100
+subscription resource is the first kind
+
+149
+00:06:03,100 --> 00:06:06,520
+of is the overarching concept that
+
+150
+00:06:06,520 --> 00:06:08,710
+encapsulates the sub resources that make
+
+151
+00:06:08,710 --> 00:06:10,660
+up a queue you're going to ask for a
+
+152
+00:06:10,660 --> 00:06:13,030
+subscription resource you're going to
+
+153
+00:06:13,030 --> 00:06:14,470
+get back a bunch of different sub
+
+154
+00:06:14,470 --> 00:06:16,840
+resources for that subscription that are
+
+155
+00:06:16,840 --> 00:06:18,729
+the capabilities that you can work do
+
+156
+00:06:18,729 --> 00:06:22,630
+with that subscription and then the push
+
+157
+00:06:22,630 --> 00:06:24,370
+resource is what you use is that sub
+
+158
+00:06:24,370 --> 00:06:25,840
+resource that you use to actually send
+
+159
+00:06:25,840 --> 00:06:30,520
+in to send into the queue it seems
+
+160
+00:06:30,520 --> 00:06:32,979
+pretty simple a pretty basic concept
+
+161
+00:06:32,979 --> 00:06:34,539
+with only a little bit of not magic
+
+162
+00:06:34,539 --> 00:06:38,229
+involved in the middle not magic again
+
+163
+00:06:38,229 --> 00:06:40,350
+push
+
+164
+00:06:40,350 --> 00:06:46,430
+uh oh sorry um please forgive me I
+
+165
+00:06:46,430 --> 00:06:48,390
+didn't catch myself going through that
+
+166
+00:06:48,390 --> 00:06:50,160
+the subscription resource is actually
+
+167
+00:06:50,160 --> 00:06:51,630
+the service that you use to withdraw out
+
+168
+00:06:51,630 --> 00:06:53,280
+of it and the push resource is actually
+
+169
+00:06:53,280 --> 00:06:55,350
+the resource that you use to send into
+
+170
+00:06:55,350 --> 00:06:58,860
+it so that's the pushing and getting the
+
+171
+00:06:58,860 --> 00:07:00,600
+overarching resource that I was speaking
+
+172
+00:07:00,600 --> 00:07:02,970
+of is the push service or no not even
+
+173
+00:07:02,970 --> 00:07:05,010
+note we're not there yet the push
+
+174
+00:07:05,010 --> 00:07:07,260
+message subscription is the actual q
+
+175
+00:07:07,260 --> 00:07:09,870
+constant construct and you get your push
+
+176
+00:07:09,870 --> 00:07:12,360
+message subscription from a push service
+
+177
+00:07:12,360 --> 00:07:14,580
+which is a service that gives you push
+
+178
+00:07:14,580 --> 00:07:19,380
+message subscriptions AKA cues but now
+
+179
+00:07:19,380 --> 00:07:26,990
+on to the we were there forgive me i
+
+180
+00:07:26,990 --> 00:07:30,000
+guess we're going to note we're still
+
+181
+00:07:30,000 --> 00:07:33,030
+going into models again step one we need
+
+182
+00:07:33,030 --> 00:07:34,170
+to create the cue we're just going to
+
+183
+00:07:34,170 --> 00:07:36,600
+push to the queue pushing this is per
+
+184
+00:07:36,600 --> 00:07:38,370
+the api contract all you do is push to
+
+185
+00:07:38,370 --> 00:07:41,520
+the via push service and the push
+
+186
+00:07:41,520 --> 00:07:45,180
+service returns you the three different
+
+187
+00:07:45,180 --> 00:07:47,160
+three different resources that you get
+
+188
+00:07:47,160 --> 00:07:49,560
+three different resources to use it you
+
+189
+00:07:49,560 --> 00:07:52,770
+get a push resource you get a receipt
+
+190
+00:07:52,770 --> 00:07:55,860
+resource and you get the actual push
+
+191
+00:07:55,860 --> 00:07:59,790
+message subscription resource and those
+
+192
+00:07:59,790 --> 00:08:01,800
+three different resources are ways of
+
+193
+00:08:01,800 --> 00:08:04,020
+putting stuff in hearing that the data
+
+194
+00:08:04,020 --> 00:08:05,810
+got sent and then getting the data out
+
+195
+00:08:05,810 --> 00:08:10,140
+this contract should be it but the
+
+196
+00:08:10,140 --> 00:08:11,670
+different links are different tools that
+
+197
+00:08:11,670 --> 00:08:13,800
+are used for pushing for the person
+
+198
+00:08:13,800 --> 00:08:15,750
+pushing data in and then the final
+
+199
+00:08:15,750 --> 00:08:18,330
+resource that you get out is what you
+
+200
+00:08:18,330 --> 00:08:20,400
+need to listen to to get messages out of
+
+201
+00:08:20,400 --> 00:08:23,160
+the queue with these are these all
+
+202
+00:08:23,160 --> 00:08:25,860
+created we have a queue and it's kind of
+
+203
+00:08:25,860 --> 00:08:27,480
+up to us to decide what we want to do
+
+204
+00:08:27,480 --> 00:08:29,100
+with that queue there's not really any
+
+205
+00:08:29,100 --> 00:08:30,480
+specified order at this point in the
+
+206
+00:08:30,480 --> 00:08:31,890
+protocol ordering even though you're
+
+207
+00:08:31,890 --> 00:08:33,479
+going to see sequence diagrams that show
+
+208
+00:08:33,479 --> 00:08:35,849
+ordering you can kind of start doing
+
+209
+00:08:35,849 --> 00:08:37,560
+whatever you want with the queue we're
+
+210
+00:08:37,560 --> 00:08:41,039
+just going to pick push and then these
+
+211
+00:08:41,039 --> 00:08:44,250
+are these quotes come from the web push
+
+212
+00:08:44,250 --> 00:08:46,440
+protocol spec so this is requesting
+
+213
+00:08:46,440 --> 00:08:49,290
+message delivery and this is just kind
+
+214
+00:08:49,290 --> 00:08:50,490
+of the words that they give the words
+
+215
+00:08:50,490 --> 00:08:53,850
+are fairly technical and they correspond
+
+216
+00:08:53,850 --> 00:08:57,750
+closely to the glossary but in short
+
+217
+00:08:57,750 --> 00:09:00,829
+it's pretty simple we just push to the
+
+218
+00:09:00,829 --> 00:09:04,709
+resource that we just got back from when
+
+219
+00:09:04,709 --> 00:09:07,670
+we made the subscription message service
+
+220
+00:09:07,670 --> 00:09:10,670
+and we push the content that we want in
+
+221
+00:09:10,670 --> 00:09:14,790
+in reply we get back a success created
+
+222
+00:09:14,790 --> 00:09:16,949
+response and it has a location for that
+
+223
+00:09:16,949 --> 00:09:20,190
+response and so later on we're going to
+
+224
+00:09:20,190 --> 00:09:22,980
+be asking has this message gone through
+
+225
+00:09:22,980 --> 00:09:25,019
+have what messages have gone through and
+
+226
+00:09:25,019 --> 00:09:26,639
+we want to know the messages the stream
+
+227
+00:09:26,639 --> 00:09:28,470
+of messages that are gone through this
+
+228
+00:09:28,470 --> 00:09:30,029
+location is really going to be that key
+
+229
+00:09:30,029 --> 00:09:32,220
+it's going to tell us okay this is that
+
+230
+00:09:32,220 --> 00:09:34,350
+we're going to see this URL come back at
+
+231
+00:09:34,350 --> 00:09:39,930
+us us the pusher a in the receipt stream
+
+232
+00:09:39,930 --> 00:09:42,449
+saying this has gotten to the client the
+
+233
+00:09:42,449 --> 00:09:44,190
+the intermediating server where we've
+
+234
+00:09:44,190 --> 00:09:46,709
+just posted to is going to we're going
+
+235
+00:09:46,709 --> 00:09:48,240
+to be listening to it and it's going to
+
+236
+00:09:48,240 --> 00:09:51,120
+tell us this URL is found and
+
+237
+00:09:51,120 --> 00:09:52,920
+reciprocally also the clients is also
+
+238
+00:09:52,920 --> 00:09:54,300
+going to be seeing this whoever is
+
+239
+00:09:54,300 --> 00:09:55,649
+consuming is also going to be seeing
+
+240
+00:09:55,649 --> 00:09:58,589
+this URL and is going to be using that
+
+241
+00:09:58,589 --> 00:10:01,529
+that same URL to talk about that message
+
+242
+00:10:01,529 --> 00:10:05,189
+that message is server generated so like
+
+243
+00:10:05,189 --> 00:10:06,600
+that's something that we've gotten back
+
+244
+00:10:06,600 --> 00:10:09,509
+as a location from doing this post all
+
+245
+00:10:09,509 --> 00:10:11,910
+we've had to post ourselves into this
+
+246
+00:10:11,910 --> 00:10:15,329
+single post resource with the content
+
+247
+00:10:15,329 --> 00:10:17,970
+and then we've gotten back the location
+
+248
+00:10:17,970 --> 00:10:22,139
+of that content after we posted it this
+
+249
+00:10:22,139 --> 00:10:24,480
+is just more about this is more out of
+
+250
+00:10:24,480 --> 00:10:28,980
+the spec these are two optional fields
+
+251
+00:10:28,980 --> 00:10:30,569
+that can be used when we're pushing data
+
+252
+00:10:30,569 --> 00:10:32,519
+in we've been talking a little bit about
+
+253
+00:10:32,519 --> 00:10:33,990
+the resource about asking for
+
+254
+00:10:33,990 --> 00:10:36,449
+acknowledgement and so the bush receipt
+
+255
+00:10:36,449 --> 00:10:38,880
+header field says when I do get the
+
+256
+00:10:38,880 --> 00:10:41,819
+receipt back when I do get noticed that
+
+257
+00:10:41,819 --> 00:10:43,560
+this resource is successfully made it to
+
+258
+00:10:43,560 --> 00:10:46,019
+a destination the first header the push
+
+259
+00:10:46,019 --> 00:10:48,509
+receipt just says this is who I want you
+
+260
+00:10:48,509 --> 00:10:50,699
+to notify this is like a different Q
+
+261
+00:10:50,699 --> 00:10:53,009
+it's it really is practically a cue that
+
+262
+00:10:53,009 --> 00:10:57,509
+you're sending the push receipt q this /
+
+263
+00:10:57,509 --> 00:11:00,029
+or the bottom header that's who that's
+
+264
+00:11:00,029 --> 00:11:03,029
+going to be the Q that is going to
+
+265
+00:11:03,029 --> 00:11:04,439
+provide that receipt that
+
+266
+00:11:04,439 --> 00:11:06,660
+acknowledgement and then secondarily we
+
+267
+00:11:06,660 --> 00:11:07,610
+have a time to live
+
+268
+00:11:07,610 --> 00:11:09,410
+better if you're pushing stock quotes
+
+269
+00:11:09,410 --> 00:11:10,640
+you don't want to be pushing stock
+
+270
+00:11:10,640 --> 00:11:12,260
+quotes minute after minute after minute
+
+271
+00:11:12,260 --> 00:11:14,420
+after minute at while your client is
+
+272
+00:11:14,420 --> 00:11:16,390
+disconnected for four days in Florida
+
+273
+00:11:16,390 --> 00:11:19,010
+that you're going to have a huge buildup
+
+274
+00:11:19,010 --> 00:11:21,290
+of data and so TTL is an optional field
+
+275
+00:11:21,290 --> 00:11:22,490
+which gives you the parameter to say
+
+276
+00:11:22,490 --> 00:11:33,470
+this Q should only last for this long to
+
+277
+00:11:33,470 --> 00:11:35,769
+be able to really subscribe to the
+
+278
+00:11:35,769 --> 00:11:38,029
+there's a little bit of indirection we
+
+279
+00:11:38,029 --> 00:11:40,790
+just saw in the previous that the push
+
+280
+00:11:40,790 --> 00:11:43,010
+receipt has this / our endpoint and
+
+281
+00:11:43,010 --> 00:11:48,200
+that's a very specific or that's a broad
+
+282
+00:11:48,200 --> 00:11:51,170
+scale Q here we see it we're going to
+
+283
+00:11:51,170 --> 00:11:53,990
+post to / receipts and that's something
+
+284
+00:11:53,990 --> 00:11:55,579
+that we got back when we made the push
+
+285
+00:11:55,579 --> 00:11:57,560
+message subscription that's a like
+
+286
+00:11:57,560 --> 00:11:59,540
+top-level construct that's specific to
+
+287
+00:11:59,540 --> 00:12:01,490
+this subscription there's a little bit
+
+288
+00:12:01,490 --> 00:12:03,350
+of indirection here where we're getting
+
+289
+00:12:03,350 --> 00:12:06,019
+back a we have to push to that and then
+
+290
+00:12:06,019 --> 00:12:08,660
+we get back this /r and that allows a
+
+291
+00:12:08,660 --> 00:12:10,190
+bunch of different push message
+
+292
+00:12:10,190 --> 00:12:13,519
+subscriptions to share this same /r and
+
+293
+00:12:13,519 --> 00:12:15,050
+that way when we want to listen to the
+
+294
+00:12:15,050 --> 00:12:16,550
+receipts we can have a whole bunch of
+
+295
+00:12:16,550 --> 00:12:18,140
+different listens that are all listening
+
+296
+00:12:18,140 --> 00:12:20,630
+to the same receipt and it kind of it
+
+297
+00:12:20,630 --> 00:12:22,670
+it's another level of the resourceful
+
+298
+00:12:22,670 --> 00:12:26,540
+system it's kind of complex it really is
+
+299
+00:12:26,540 --> 00:12:30,529
+for that late binding concept it it
+
+300
+00:12:30,529 --> 00:12:32,329
+really just is a scalability factor
+
+301
+00:12:32,329 --> 00:12:35,420
+that's been added so this is kind of the
+
+302
+00:12:35,420 --> 00:12:37,579
+recap this is what we did to be able to
+
+303
+00:12:37,579 --> 00:12:39,500
+create the queue in the first place and
+
+304
+00:12:39,500 --> 00:12:41,570
+we can see the put the how we put stuff
+
+305
+00:12:41,570 --> 00:12:43,130
+in how we get stuff out and we can see
+
+306
+00:12:43,130 --> 00:12:44,269
+the resource that we're going to use to
+
+307
+00:12:44,269 --> 00:12:48,170
+get receipts another recap this is how
+
+308
+00:12:48,170 --> 00:12:53,089
+we actually create this is how we get
+
+309
+00:12:53,089 --> 00:12:55,579
+back how we like figure out what channel
+
+310
+00:12:55,579 --> 00:12:56,990
+we're going to use to be listening for
+
+311
+00:12:56,990 --> 00:12:59,899
+resources what our particular bind is
+
+312
+00:12:59,899 --> 00:13:02,360
+going to be and then this is how we
+
+313
+00:13:02,360 --> 00:13:04,399
+actually push which is again just a post
+
+314
+00:13:04,399 --> 00:13:13,130
+and that wasn't really that was how we
+
+315
+00:13:13,130 --> 00:13:14,930
+got data in getting data in didn't
+
+316
+00:13:14,930 --> 00:13:16,339
+really we didn't have to talk about HTTP
+
+317
+00:13:16,339 --> 00:13:18,800
+to at all receiving on the other hand is
+
+318
+00:13:18,800 --> 00:13:20,480
+the pole sequence that we have to do
+
+319
+00:13:20,480 --> 00:13:21,980
+to be able to really talk about this we
+
+320
+00:13:21,980 --> 00:13:23,600
+have to talk a little bit about HTTP too
+
+321
+00:13:23,600 --> 00:13:25,339
+we have to talk a little bit about push
+
+322
+00:13:25,339 --> 00:13:27,350
+and it's totally cool if you're not
+
+323
+00:13:27,350 --> 00:13:29,180
+familiar with any of this stuff it's
+
+324
+00:13:29,180 --> 00:13:30,579
+going to be a pretty high level but
+
+325
+00:13:30,579 --> 00:13:32,750
+understanding the concepts and starting
+
+326
+00:13:32,750 --> 00:13:35,360
+to get conversent and familiar with HTTP
+
+327
+00:13:35,360 --> 00:13:36,889
+two is something that I think we should
+
+328
+00:13:36,889 --> 00:13:40,339
+get a good job of here to pull to a
+
+329
+00:13:40,339 --> 00:13:43,850
+queue data we get from it and on the
+
+330
+00:13:43,850 --> 00:13:48,500
+location we have that subscriber excuse
+
+331
+00:13:48,500 --> 00:13:50,149
+me it's from that location that we got
+
+332
+00:13:50,149 --> 00:13:52,339
+from the subscribe response and when we
+
+333
+00:13:52,339 --> 00:13:57,649
+fire this when we fire this off the
+
+334
+00:13:57,649 --> 00:13:59,930
+server never replies to that response we
+
+335
+00:13:59,930 --> 00:14:02,480
+make this get and nothing happens the
+
+336
+00:14:02,480 --> 00:14:06,560
+server leaves that reply unanswered and
+
+337
+00:14:06,560 --> 00:14:11,209
+instead in a normal HTTP scenario that
+
+338
+00:14:11,209 --> 00:14:12,949
+would consume a TCP connection that
+
+339
+00:14:12,949 --> 00:14:14,930
+would consume there would be like this
+
+340
+00:14:14,930 --> 00:14:18,170
+connection open that is keeping that
+
+341
+00:14:18,170 --> 00:14:20,959
+that is preventing any other use of that
+
+342
+00:14:20,959 --> 00:14:23,600
+connection but because this is HTTP too
+
+343
+00:14:23,600 --> 00:14:25,639
+it's a non-blocking environment and
+
+344
+00:14:25,639 --> 00:14:26,660
+we're going to talk a little bit about
+
+345
+00:14:26,660 --> 00:14:38,420
+that so we're going into HTTP to HTTPS
+
+346
+00:14:38,420 --> 00:14:40,459
+about frames it is a messaging protocol
+
+347
+00:14:40,459 --> 00:14:44,269
+for http and HTTP is a respect request
+
+348
+00:14:44,269 --> 00:14:47,959
+response message protocol so what is the
+
+349
+00:14:47,959 --> 00:14:51,829
+message protocol what our frames it HTTP
+
+350
+00:14:51,829 --> 00:14:54,199
+two is kind of encapsulating the
+
+351
+00:14:54,199 --> 00:14:56,720
+individual things that the protocol of
+
+352
+00:14:56,720 --> 00:14:58,940
+HTTP would say but it's giving them
+
+353
+00:14:58,940 --> 00:15:00,500
+containment boundaries it's giving them
+
+354
+00:15:00,500 --> 00:15:02,959
+isolated little chunks that somebody
+
+355
+00:15:02,959 --> 00:15:04,399
+else on the other side of that wire is
+
+356
+00:15:04,399 --> 00:15:05,779
+going to know how to process and know
+
+357
+00:15:05,779 --> 00:15:08,480
+what the means are and this is kind of
+
+358
+00:15:08,480 --> 00:15:09,920
+another more reference this is really
+
+359
+00:15:09,920 --> 00:15:11,569
+good like reading and material into the
+
+360
+00:15:11,569 --> 00:15:14,810
+HTTP to spec this will really like help
+
+361
+00:15:14,810 --> 00:15:18,079
+immerse but like these these components
+
+362
+00:15:18,079 --> 00:15:20,540
+are the frames that we're sending are
+
+363
+00:15:20,540 --> 00:15:22,519
+things that make up normal HTTP traffic
+
+364
+00:15:22,519 --> 00:15:25,459
+so the headers frame is something that
+
+365
+00:15:25,459 --> 00:15:26,720
+you probably already kind of
+
+366
+00:15:26,720 --> 00:15:28,550
+conceptually have an idea of headers
+
+367
+00:15:28,550 --> 00:15:30,560
+frame is just the headers part of the
+
+368
+00:15:30,560 --> 00:15:33,620
+HTTP transmission and as a client
+
+369
+00:15:33,620 --> 00:15:34,370
+talking to
+
+370
+00:15:34,370 --> 00:15:36,170
+server I can just start sending header
+
+371
+00:15:36,170 --> 00:15:39,140
+frames for numerous numerous requests to
+
+372
+00:15:39,140 --> 00:15:40,640
+the server the server is going to be
+
+373
+00:15:40,640 --> 00:15:42,170
+able to understand that these different
+
+374
+00:15:42,170 --> 00:15:43,970
+header frames that it's getting our part
+
+375
+00:15:43,970 --> 00:15:45,710
+of different conversations each of these
+
+376
+00:15:45,710 --> 00:15:48,140
+header frames is the prequel to a stream
+
+377
+00:15:48,140 --> 00:15:50,210
+and then that stream of data the things
+
+378
+00:15:50,210 --> 00:15:51,830
+that happen after the header after the
+
+379
+00:15:51,830 --> 00:15:56,810
+you know get / subscribe like after and
+
+380
+00:15:56,810 --> 00:15:58,970
+then the headers that follow that that
+
+381
+00:15:58,970 --> 00:16:01,970
+is something that conceptually like the
+
+382
+00:16:01,970 --> 00:16:04,040
+server understands as a request and it's
+
+383
+00:16:04,040 --> 00:16:05,390
+going to use the same frames to be able
+
+384
+00:16:05,390 --> 00:16:08,060
+to reply back to the client when it has
+
+385
+00:16:08,060 --> 00:16:13,610
+data to send back it's a pretty big
+
+386
+00:16:13,610 --> 00:16:17,060
+hefty specification HTTP two has a lot
+
+387
+00:16:17,060 --> 00:16:18,890
+of things about how to deal with and
+
+388
+00:16:18,890 --> 00:16:21,290
+manage streams you have to figure out
+
+389
+00:16:21,290 --> 00:16:23,029
+how to be able to set streams and tell
+
+390
+00:16:23,029 --> 00:16:27,890
+streams to cancel how to be able to do
+
+391
+00:16:27,890 --> 00:16:30,290
+priority to decide what to send there's
+
+392
+00:16:30,290 --> 00:16:32,990
+a lot of things going on but it really
+
+393
+00:16:32,990 --> 00:16:35,029
+is messaging in eight it's about being
+
+394
+00:16:35,029 --> 00:16:36,410
+able to launch multiple streams of
+
+395
+00:16:36,410 --> 00:16:38,150
+conversation and that's what this pushes
+
+396
+00:16:38,150 --> 00:16:40,040
+really has the amazing power to take
+
+397
+00:16:40,040 --> 00:16:44,230
+advantage of its a great problem to have
+
+398
+00:16:44,230 --> 00:16:46,130
+when you can have these different
+
+399
+00:16:46,130 --> 00:16:47,750
+conversations on going at the same time
+
+400
+00:16:47,750 --> 00:16:49,610
+when they're you sharing the same
+
+401
+00:16:49,610 --> 00:16:53,089
+channel and push promise is one of those
+
+402
+00:16:53,089 --> 00:16:55,580
+new frame types that says I'm going to
+
+403
+00:16:55,580 --> 00:16:58,610
+send you a stream it's a frame it's kind
+
+404
+00:16:58,610 --> 00:17:00,140
+of a parallel to the header frame the
+
+405
+00:17:00,140 --> 00:17:02,089
+header frame is what the client says to
+
+406
+00:17:02,089 --> 00:17:05,270
+get data I guess the parallel is a
+
+407
+00:17:05,270 --> 00:17:07,790
+little bit weak the push promise is I'm
+
+408
+00:17:07,790 --> 00:17:11,000
+going to send or a resource to you and
+
+409
+00:17:11,000 --> 00:17:12,890
+inside of this is going to be normal
+
+410
+00:17:12,890 --> 00:17:15,530
+content like this is it really is just
+
+411
+00:17:15,530 --> 00:17:17,630
+like the server is sending a reply
+
+412
+00:17:17,630 --> 00:17:19,579
+although the client has never made a
+
+413
+00:17:19,579 --> 00:17:28,010
+request oh sorry oh I'm so sorry I may
+
+414
+00:17:28,010 --> 00:17:41,910
+have been off on my frame count here
+
+415
+00:17:41,920 --> 00:17:46,700
+back to our example we've just issued
+
+416
+00:17:46,700 --> 00:17:49,220
+this get request to the server it's not
+
+417
+00:17:49,220 --> 00:17:50,930
+going to send anything back we've talked
+
+418
+00:17:50,930 --> 00:17:51,980
+about how it's just going to leave this
+
+419
+00:17:51,980 --> 00:17:53,300
+request open and that's going to make
+
+420
+00:17:53,300 --> 00:17:55,070
+sure that the TCP connection stays open
+
+421
+00:17:55,070 --> 00:17:57,230
+nothing the the server and the client
+
+422
+00:17:57,230 --> 00:17:59,360
+are still engaged with each other by
+
+423
+00:17:59,360 --> 00:18:01,460
+leaving this request open however the
+
+424
+00:18:01,460 --> 00:18:02,810
+server is going to now have the
+
+425
+00:18:02,810 --> 00:18:04,340
+information it needs to know that it can
+
+426
+00:18:04,340 --> 00:18:06,320
+start issuing these push promises back
+
+427
+00:18:06,320 --> 00:18:08,330
+to the client but it's free to start
+
+428
+00:18:08,330 --> 00:18:12,830
+sending data and from there this is just
+
+429
+00:18:12,830 --> 00:18:18,200
+kind of more of the specification this
+
+430
+00:18:18,200 --> 00:18:21,140
+is we've changed form this is kind of
+
+431
+00:18:21,140 --> 00:18:23,920
+the same HTTP diagrams this is the
+
+432
+00:18:23,920 --> 00:18:26,600
+factor the layout factor of record the
+
+433
+00:18:26,600 --> 00:18:29,270
+common way that people show HTTP two
+
+434
+00:18:29,270 --> 00:18:33,560
+frames whereas like we've been using the
+
+435
+00:18:33,560 --> 00:18:36,230
+HTTP 1.1 nomenclature to kind of show
+
+436
+00:18:36,230 --> 00:18:38,150
+the data and familiarize how request and
+
+437
+00:18:38,150 --> 00:18:39,980
+response work this is the same like
+
+438
+00:18:39,980 --> 00:18:41,390
+request and response thing and we can
+
+439
+00:18:41,390 --> 00:18:44,030
+kind of see the structure here the push
+
+440
+00:18:44,030 --> 00:18:46,760
+promise has the method path and
+
+441
+00:18:46,760 --> 00:18:49,220
+authority Authority is really it's like
+
+442
+00:18:49,220 --> 00:18:53,240
+host more or less and so that's really
+
+443
+00:18:53,240 --> 00:18:55,400
+just saying that it is initiating a push
+
+444
+00:18:55,400 --> 00:18:57,620
+for this particular resource and we can
+
+445
+00:18:57,620 --> 00:18:59,420
+see it's a / D which is going to be one
+
+446
+00:18:59,420 --> 00:19:01,520
+of those message resources so the server
+
+447
+00:19:01,520 --> 00:19:03,740
+is sending a message and then it has
+
+448
+00:19:03,740 --> 00:19:05,090
+some headers that it's going to send
+
+449
+00:19:05,090 --> 00:19:07,010
+along with that message and then it has
+
+450
+00:19:07,010 --> 00:19:09,350
+the data of actual message so the client
+
+451
+00:19:09,350 --> 00:19:12,290
+the the server has pushed data and then
+
+452
+00:19:12,290 --> 00:19:14,180
+the client has come back around and is
+
+453
+00:19:14,180 --> 00:19:15,920
+now going to receive this push promise
+
+454
+00:19:15,920 --> 00:19:18,010
+frame from the server and see this data
+
+455
+00:19:18,010 --> 00:19:20,960
+content in and content out and that's
+
+456
+00:19:20,960 --> 00:19:25,720
+really the win due to its totally worth
+
+457
+00:19:25,720 --> 00:19:29,360
+this is this is exactly how web push
+
+458
+00:19:29,360 --> 00:19:37,940
+works this is cues there is also
+
+459
+00:19:37,940 --> 00:19:39,650
+receipts we want to be able to know that
+
+460
+00:19:39,650 --> 00:19:41,540
+messages got there received add this
+
+461
+00:19:41,540 --> 00:19:45,350
+additional slightly of complexity but we
+
+462
+00:19:45,350 --> 00:19:48,080
+kind of do the same thing we've just
+
+463
+00:19:48,080 --> 00:19:49,700
+pushed the push promise
+
+464
+00:19:49,700 --> 00:19:53,630
+the next step is a there's kind of a
+
+465
+00:19:53,630 --> 00:19:55,909
+two-step process once the client gets a
+
+466
+00:19:55,909 --> 00:19:57,740
+push promise once it starts seeing this
+
+467
+00:19:57,740 --> 00:20:00,110
+content it has this address it needs to
+
+468
+00:20:00,110 --> 00:20:03,409
+be able to issue a delete on that
+
+469
+00:20:03,409 --> 00:20:05,779
+resource once it gets it and that delete
+
+470
+00:20:05,779 --> 00:20:07,340
+is just telling the server okay I've
+
+471
+00:20:07,340 --> 00:20:09,200
+gotten this thing you can like delete
+
+472
+00:20:09,200 --> 00:20:10,940
+this message resource and that's the
+
+473
+00:20:10,940 --> 00:20:12,500
+information that the server needs to
+
+474
+00:20:12,500 --> 00:20:14,990
+know to be able to say okay like
+
+475
+00:20:14,990 --> 00:20:16,309
+somebody's seen this I can acknowledge
+
+476
+00:20:16,309 --> 00:20:18,620
+this it's going to assume that nobody
+
+477
+00:20:18,620 --> 00:20:20,330
+has seen this message until the client
+
+478
+00:20:20,330 --> 00:20:22,130
+turns around and issues this delete on
+
+479
+00:20:22,130 --> 00:20:24,260
+the message resource and then once it's
+
+480
+00:20:24,260 --> 00:20:29,000
+done that once it's done that then the
+
+481
+00:20:29,000 --> 00:20:32,269
+server the pusher is also listening on
+
+482
+00:20:32,269 --> 00:20:35,090
+the receipt on the / our endpoint and
+
+483
+00:20:35,090 --> 00:20:37,639
+the now the pusher the person who's push
+
+484
+00:20:37,639 --> 00:20:39,409
+this data out is also going to be
+
+485
+00:20:39,409 --> 00:20:41,720
+awaiting more push promises it's going
+
+486
+00:20:41,720 --> 00:20:43,970
+to be awaiting its own stream where it
+
+487
+00:20:43,970 --> 00:20:48,950
+starts seeing push promises itself again
+
+488
+00:20:48,950 --> 00:20:51,649
+for this delete resource and that its
+
+489
+00:20:51,649 --> 00:20:53,840
+cue that okay this message is made it
+
+490
+00:20:53,840 --> 00:20:55,159
+across the wire this message is
+
+491
+00:20:55,159 --> 00:20:57,230
+successfully sent and this is kind of
+
+492
+00:20:57,230 --> 00:20:59,539
+cool there's a symmetry here because we
+
+493
+00:20:59,539 --> 00:21:00,950
+have two different people using push
+
+494
+00:21:00,950 --> 00:21:02,210
+promises we have the people who are
+
+495
+00:21:02,210 --> 00:21:04,580
+sending using push promises to hear the
+
+496
+00:21:04,580 --> 00:21:05,779
+acknowledgments of the things they've
+
+497
+00:21:05,779 --> 00:21:08,419
+sent we also have the people listening
+
+498
+00:21:08,419 --> 00:21:09,980
+for the messages in the first place
+
+499
+00:21:09,980 --> 00:21:12,500
+using asynchronous HTTP to push
+
+500
+00:21:12,500 --> 00:21:15,980
+technology to get these messages and so
+
+501
+00:21:15,980 --> 00:21:17,899
+that's really like that those are the
+
+502
+00:21:17,899 --> 00:21:19,570
+components of the web push protocol
+
+503
+00:21:19,570 --> 00:21:21,380
+we're going to look a little bit about
+
+504
+00:21:21,380 --> 00:21:24,940
+very briefly at the push API which is
+
+505
+00:21:24,940 --> 00:21:29,120
+it's the client API it's what you as a
+
+506
+00:21:29,120 --> 00:21:31,250
+web developer are going to be using to
+
+507
+00:21:31,250 --> 00:21:34,519
+be able to create a new cue to be able
+
+508
+00:21:34,519 --> 00:21:37,130
+to have a server if you have an
+
+509
+00:21:37,130 --> 00:21:38,570
+application server it's what you're
+
+510
+00:21:38,570 --> 00:21:40,070
+going to be using on your application
+
+511
+00:21:40,070 --> 00:21:42,470
+server to push data to the client it's
+
+512
+00:21:42,470 --> 00:21:43,789
+what you're going to be using in the
+
+513
+00:21:43,789 --> 00:21:46,340
+client to get the data out of this it
+
+514
+00:21:46,340 --> 00:21:48,019
+doesn't specify anything about
+
+515
+00:21:48,019 --> 00:21:49,970
+implementation technology there's no
+
+516
+00:21:49,970 --> 00:21:52,370
+it's a it's only a front-end to
+
+517
+00:21:52,370 --> 00:21:54,470
+interface a well specified front-end to
+
+518
+00:21:54,470 --> 00:21:56,659
+interface for how to access this push
+
+519
+00:21:56,659 --> 00:21:58,850
+technology and so web push is really
+
+520
+00:21:58,850 --> 00:22:01,700
+this backing component that gets used to
+
+521
+00:22:01,700 --> 00:22:02,809
+make this happen
+
+522
+00:22:02,809 --> 00:22:05,509
+this is a pretty this is a great
+
+523
+00:22:05,509 --> 00:22:10,279
+sequence diagram and it it models we're
+
+524
+00:22:10,279 --> 00:22:11,929
+going to see a lot of these components
+
+525
+00:22:11,929 --> 00:22:15,860
+if we look at the double view this is
+
+526
+00:22:15,860 --> 00:22:17,749
+the web push protocol on the left and
+
+527
+00:22:17,749 --> 00:22:20,210
+this is the push API on the right and
+
+528
+00:22:20,210 --> 00:22:21,980
+there's a lot of symmetry here in both
+
+529
+00:22:21,980 --> 00:22:23,990
+cases well we'll take it from the web
+
+530
+00:22:23,990 --> 00:22:27,139
+push protocol side we're creating that
+
+531
+00:22:27,139 --> 00:22:29,210
+we're issuing a subscribe to create this
+
+532
+00:22:29,210 --> 00:22:30,950
+queue resource and then there's this
+
+533
+00:22:30,950 --> 00:22:35,840
+monitoring monitoring open cute that's
+
+534
+00:22:35,840 --> 00:22:37,190
+happening that's allowing the push
+
+535
+00:22:37,190 --> 00:22:40,190
+service and the UA the user agent to be
+
+536
+00:22:40,190 --> 00:22:41,869
+able to exchange for the user agent to
+
+537
+00:22:41,869 --> 00:22:47,059
+be able to get this data out the user
+
+538
+00:22:47,059 --> 00:22:49,509
+agent has to take responsibility for
+
+539
+00:22:49,509 --> 00:22:53,119
+sending that push resource the user
+
+540
+00:22:53,119 --> 00:22:54,769
+agent has just gotten this queue all
+
+541
+00:22:54,769 --> 00:22:56,350
+this information all these endpoints
+
+542
+00:22:56,350 --> 00:22:59,299
+about this queue it has to send some of
+
+543
+00:22:59,299 --> 00:23:01,159
+those data across the wire to your
+
+544
+00:23:01,159 --> 00:23:02,480
+application server so that your
+
+545
+00:23:02,480 --> 00:23:05,539
+application server can then know who to
+
+546
+00:23:05,539 --> 00:23:09,350
+do the push message to so it has once
+
+547
+00:23:09,350 --> 00:23:11,360
+you send the URL across then the
+
+548
+00:23:11,360 --> 00:23:13,369
+application server is free to open the
+
+549
+00:23:13,369 --> 00:23:15,320
+push endpoint and begin to push data and
+
+550
+00:23:15,320 --> 00:23:19,549
+it's up to the push service and the user
+
+551
+00:23:19,549 --> 00:23:22,580
+agent who's listening to be able to hear
+
+552
+00:23:22,580 --> 00:23:24,529
+and listen and get that data from the
+
+553
+00:23:24,529 --> 00:23:26,360
+push service so the push service is
+
+554
+00:23:26,360 --> 00:23:28,580
+acting as an intermediary for all of the
+
+555
+00:23:28,580 --> 00:23:30,080
+data going through it and that's the
+
+556
+00:23:30,080 --> 00:23:32,269
+decoupling that allows the client to be
+
+557
+00:23:32,269 --> 00:23:33,919
+disconnected for long extensive time
+
+558
+00:23:33,919 --> 00:23:35,960
+while the application server has already
+
+559
+00:23:35,960 --> 00:23:38,269
+pushed the data to the push service so
+
+560
+00:23:38,269 --> 00:23:39,769
+the push service can hold on to the data
+
+561
+00:23:39,769 --> 00:23:42,320
+and then much later down the road way
+
+562
+00:23:42,320 --> 00:23:44,419
+more asynchronous this push message can
+
+563
+00:23:44,419 --> 00:23:48,169
+go through so we see the exact same
+
+564
+00:23:48,169 --> 00:23:50,720
+pattern here this is the push API we
+
+565
+00:23:50,720 --> 00:23:53,179
+create the queue we have to subscribe to
+
+566
+00:23:53,179 --> 00:23:54,889
+the queue in this case to create the
+
+567
+00:23:54,889 --> 00:23:56,600
+subscription we have to distribute the
+
+568
+00:23:56,600 --> 00:23:58,369
+resource back to the application server
+
+569
+00:23:58,369 --> 00:24:00,559
+and then the push message goes from
+
+570
+00:24:00,559 --> 00:24:02,269
+application server to the push resource
+
+571
+00:24:02,269 --> 00:24:04,279
+and now we add a little bit more depth
+
+572
+00:24:04,279 --> 00:24:06,200
+as we start really modeling how this Q
+
+573
+00:24:06,200 --> 00:24:08,809
+gets consumed the user agent takes this
+
+574
+00:24:08,809 --> 00:24:11,419
+message the user agent has to send it to
+
+575
+00:24:11,419 --> 00:24:13,460
+a service worker and then the service
+
+576
+00:24:13,460 --> 00:24:15,270
+worker is has runs
+
+577
+00:24:15,270 --> 00:24:16,800
+i encode which is what you have to do
+
+578
+00:24:16,800 --> 00:24:18,630
+like it which is where you finally get
+
+579
+00:24:18,630 --> 00:24:20,610
+the data so it's a very similar
+
+580
+00:24:20,610 --> 00:24:21,750
+structure there's a little bit more
+
+581
+00:24:21,750 --> 00:24:23,250
+depth to it just because there's more
+
+582
+00:24:23,250 --> 00:24:27,570
+more agents in play but they are like
+
+583
+00:24:27,570 --> 00:24:29,970
+identical flows these two were made hand
+
+584
+00:24:29,970 --> 00:24:33,530
+in glove to fit one another and that's
+
+585
+00:24:33,530 --> 00:24:37,980
+that's what it is as for using the push
+
+586
+00:24:37,980 --> 00:24:40,650
+API this is how the push API works in
+
+587
+00:24:40,650 --> 00:24:42,300
+the browser this is pretty simple right
+
+588
+00:24:42,300 --> 00:24:44,550
+like you're you're inside a
+
+589
+00:24:44,550 --> 00:24:47,130
+serviceworker somewhere oh yeah there's
+
+590
+00:24:47,130 --> 00:24:49,170
+a little bit of connection establishment
+
+591
+00:24:49,170 --> 00:24:51,720
+once your service workers created but
+
+592
+00:24:51,720 --> 00:24:53,430
+after you say that you need a
+
+593
+00:24:53,430 --> 00:24:56,520
+subscription from that point on all your
+
+594
+00:24:56,520 --> 00:24:59,010
+service workers global scope context has
+
+595
+00:24:59,010 --> 00:25:00,690
+an on push event that you can bind to
+
+596
+00:25:00,690 --> 00:25:03,330
+and you get data out and that event is
+
+597
+00:25:03,330 --> 00:25:05,010
+just you're just going to find the data
+
+598
+00:25:05,010 --> 00:25:08,520
+inside of event data and this is copied
+
+599
+00:25:08,520 --> 00:25:10,260
+verbatim I'm sorry I the hyperlink is
+
+600
+00:25:10,260 --> 00:25:11,610
+missing on this one but this is copied
+
+601
+00:25:11,610 --> 00:25:14,910
+directly out of the push api
+
+602
+00:25:14,910 --> 00:25:17,670
+specification we're going to talk just
+
+603
+00:25:17,670 --> 00:25:20,640
+briefly about my implementation web push
+
+604
+00:25:20,640 --> 00:25:23,760
+pump this is a node app that I wrote I
+
+605
+00:25:23,760 --> 00:25:25,830
+wanted to be able to in the first case
+
+606
+00:25:25,830 --> 00:25:29,130
+bridge from IRC to HTTP to push I just
+
+607
+00:25:29,130 --> 00:25:32,550
+wanted a way to keep sending IRC into my
+
+608
+00:25:32,550 --> 00:25:34,740
+browser on a real-time basis so this is
+
+609
+00:25:34,740 --> 00:25:37,770
+a standalone server that I wrote and it
+
+610
+00:25:37,770 --> 00:25:41,040
+has separate bridge client applications
+
+611
+00:25:41,040 --> 00:25:43,230
+that actually push the IRC data into it
+
+612
+00:25:43,230 --> 00:25:45,600
+but there were some really really really
+
+613
+00:25:45,600 --> 00:25:48,210
+fun things I really liked how web push
+
+614
+00:25:48,210 --> 00:25:50,610
+is so resource oriented that it really
+
+615
+00:25:50,610 --> 00:25:53,220
+explicitly calls out the resources for
+
+616
+00:25:53,220 --> 00:25:55,020
+pushing and for getting out and I really
+
+617
+00:25:55,020 --> 00:25:58,260
+felt very influenced by the URLs that
+
+618
+00:25:58,260 --> 00:26:01,070
+were specified in the web push protocol
+
+619
+00:26:01,070 --> 00:26:04,890
+and to that effect I kind of created a
+
+620
+00:26:04,890 --> 00:26:06,630
+top-level construct for the application
+
+621
+00:26:06,630 --> 00:26:09,180
+that just builds collections of these
+
+622
+00:26:09,180 --> 00:26:11,430
+base resources and this is something
+
+623
+00:26:11,430 --> 00:26:13,530
+that just really simplified my
+
+624
+00:26:13,530 --> 00:26:15,720
+application development to conceptually
+
+625
+00:26:15,720 --> 00:26:18,600
+have a domain model that's so explicitly
+
+626
+00:26:18,600 --> 00:26:20,730
+and tightly matched exactly what my
+
+627
+00:26:20,730 --> 00:26:23,760
+protocols model was and so when a user
+
+628
+00:26:23,760 --> 00:26:25,440
+doesn't subscribe at the very first
+
+629
+00:26:25,440 --> 00:26:27,330
+thing I'm going to add a new subscribe
+
+630
+00:26:27,330 --> 00:26:28,010
+object
+
+631
+00:26:28,010 --> 00:26:30,500
+into into the very first object and
+
+632
+00:26:30,500 --> 00:26:32,210
+subscribe is going to have a push
+
+633
+00:26:32,210 --> 00:26:34,130
+elements associated with it and I want
+
+634
+00:26:34,130 --> 00:26:38,390
+to push that that /p element into the /
+
+635
+00:26:38,390 --> 00:26:41,540
+PQ the the push receipt elements are
+
+636
+00:26:41,540 --> 00:26:44,210
+going to go in the push recede element
+
+637
+00:26:44,210 --> 00:26:49,610
+etc etc and then from there it made
+
+638
+00:26:49,610 --> 00:26:52,160
+things like for this subscriber quest it
+
+639
+00:26:52,160 --> 00:26:54,200
+made this very easy for me to to kind of
+
+640
+00:26:54,200 --> 00:26:57,350
+build the structure I created there's a
+
+641
+00:26:57,350 --> 00:26:59,960
+request i'm using khoa for this i made a
+
+642
+00:26:59,960 --> 00:27:04,670
+request context just off of in khoa this
+
+643
+00:27:04,670 --> 00:27:11,180
+object this is a node this is a method
+
+644
+00:27:11,180 --> 00:27:12,530
+handler like this is what you're going
+
+645
+00:27:12,530 --> 00:27:15,020
+to tell khoa like run this code when
+
+646
+00:27:15,020 --> 00:27:17,090
+somebody sees to subscribe and this is
+
+647
+00:27:17,090 --> 00:27:18,800
+going to be like heavily used by a lot
+
+648
+00:27:18,800 --> 00:27:21,890
+of different constructs anyway I the the
+
+649
+00:27:21,890 --> 00:27:23,390
+request context is going to be the
+
+650
+00:27:23,390 --> 00:27:25,400
+specific like where I start aggregating
+
+651
+00:27:25,400 --> 00:27:27,650
+and building the information pertaining
+
+652
+00:27:27,650 --> 00:27:29,810
+to this request and on that I've already
+
+653
+00:27:29,810 --> 00:27:34,160
+pulled in this context as the context
+
+654
+00:27:34,160 --> 00:27:39,900
+here and then I can just kind of well I
+
+655
+00:27:39,910 --> 00:27:42,620
+for creating the subscribe I just create
+
+656
+00:27:42,620 --> 00:27:44,180
+a new subscribe object I passed in the
+
+657
+00:27:44,180 --> 00:27:46,880
+request ctx it's mostly empty it has a
+
+658
+00:27:46,880 --> 00:27:52,860
+little bit of metadata the time of the
+
+659
+00:27:52,870 --> 00:27:55,370
+this will have like a time stamp on it
+
+660
+00:27:55,370 --> 00:27:56,930
+at this point but other than that like
+
+661
+00:27:56,930 --> 00:27:59,180
+this is like basically empty it creates
+
+662
+00:27:59,180 --> 00:28:01,490
+the subscribe object and I add it to the
+
+663
+00:28:01,490 --> 00:28:03,890
+request context and then there's other
+
+664
+00:28:03,890 --> 00:28:05,270
+things that I have to create like when
+
+665
+00:28:05,270 --> 00:28:06,920
+you're issuing this post to subscribe
+
+666
+00:28:06,920 --> 00:28:09,080
+you also have to create the push
+
+667
+00:28:09,080 --> 00:28:10,280
+resource and you have to create the
+
+668
+00:28:10,280 --> 00:28:12,590
+receipt or source and so I create those
+
+669
+00:28:12,590 --> 00:28:14,270
+and those get passed in this request
+
+670
+00:28:14,270 --> 00:28:16,460
+context which now has the subscribe
+
+671
+00:28:16,460 --> 00:28:19,220
+context and so it's it I can just
+
+672
+00:28:19,220 --> 00:28:21,200
+continually pass the same piece of
+
+673
+00:28:21,200 --> 00:28:23,630
+context into these constructors and end
+
+674
+00:28:23,630 --> 00:28:25,040
+up with these new resources that I'm
+
+675
+00:28:25,040 --> 00:28:27,470
+getting out and this was just a pattern
+
+676
+00:28:27,470 --> 00:28:29,330
+that took me a lot of like iteration to
+
+677
+00:28:29,330 --> 00:28:31,160
+kind of winnow down and get rid of as
+
+678
+00:28:31,160 --> 00:28:32,600
+much code as I could until I kind of
+
+679
+00:28:32,600 --> 00:28:34,700
+ended with this base core and it really
+
+680
+00:28:34,700 --> 00:28:36,200
+made things like really simple and it
+
+681
+00:28:36,200 --> 00:28:39,950
+was a really cool pattern for me the
+
+682
+00:28:39,950 --> 00:28:42,020
+next kind of capability that I added
+
+683
+00:28:42,020 --> 00:28:44,060
+was a created of projection view system
+
+684
+00:28:44,060 --> 00:28:46,580
+using mutation observers which r.i.p
+
+685
+00:28:46,580 --> 00:28:49,490
+rest in peace are no more but they're
+
+686
+00:28:49,490 --> 00:28:51,200
+pretty easy to you re implement with
+
+687
+00:28:51,200 --> 00:28:54,860
+proxies and this is really this was a
+
+688
+00:28:54,860 --> 00:28:57,110
+really cool concept so I you're going to
+
+689
+00:28:57,110 --> 00:28:59,840
+have all these /s resources that i have
+
+690
+00:28:59,840 --> 00:29:01,820
+to like deal with and manage and look up
+
+691
+00:29:01,820 --> 00:29:03,560
+and rather than kind of like maintain
+
+692
+00:29:03,560 --> 00:29:05,630
+the indexes for this myself manually i
+
+693
+00:29:05,630 --> 00:29:08,060
+created this projection tool which
+
+694
+00:29:08,060 --> 00:29:11,360
+allows me to just uh if this is that the
+
+695
+00:29:11,360 --> 00:29:20,720
+it's vista ass the contexts s but so for
+
+696
+00:29:20,720 --> 00:29:23,270
+this list of /s azure for this object of
+
+697
+00:29:23,270 --> 00:29:26,390
+/s is this will create a mapping from
+
+698
+00:29:26,390 --> 00:29:30,350
+the S will have the dot s will
+
+699
+00:29:30,350 --> 00:29:32,330
+understand and have a link to the parent
+
+700
+00:29:32,330 --> 00:29:35,660
+subscribe the the main queue and so it's
+
+701
+00:29:35,660 --> 00:29:37,400
+going to pull out the mapping is going
+
+702
+00:29:37,400 --> 00:29:40,820
+to be so I'm creating a mapping from to
+
+703
+00:29:40,820 --> 00:29:42,470
+something so it's creating the mapping
+
+704
+00:29:42,470 --> 00:29:44,570
+from the s dot subscribe from the
+
+705
+00:29:44,570 --> 00:29:46,370
+mapping from that like subscribe
+
+706
+00:29:46,370 --> 00:29:50,660
+property of this s collection out to the
+
+707
+00:29:50,660 --> 00:29:55,580
+primary key for this s object s symbol
+
+708
+00:29:55,580 --> 00:30:00,830
+is like a primary key that so that this
+
+709
+00:30:00,830 --> 00:30:03,380
+becomes a functional mapping where I can
+
+710
+00:30:03,380 --> 00:30:05,510
+if I need to figure out what s is do I
+
+711
+00:30:05,510 --> 00:30:07,970
+have the tie to a subscribe I can just
+
+712
+00:30:07,970 --> 00:30:10,850
+ask for that subscribe ID and it will
+
+713
+00:30:10,850 --> 00:30:12,800
+get back all of these esas and this this
+
+714
+00:30:12,800 --> 00:30:14,570
+is like an index that because of
+
+715
+00:30:14,570 --> 00:30:16,250
+mutation observers keeps itself up to
+
+716
+00:30:16,250 --> 00:30:18,050
+date I found that this really like cut
+
+717
+00:30:18,050 --> 00:30:19,880
+down on the amount of code that I had to
+
+718
+00:30:19,880 --> 00:30:23,270
+maintain and keep going all the link
+
+719
+00:30:23,270 --> 00:30:24,620
+relationships that I needed to keep
+
+720
+00:30:24,620 --> 00:30:27,010
+having I also just kind of as a
+
+721
+00:30:27,010 --> 00:30:29,480
+premature optimization opted to use
+
+722
+00:30:29,480 --> 00:30:32,060
+symbols as all of my primary keys in
+
+723
+00:30:32,060 --> 00:30:35,060
+JavaScript symbols are a new es dot star
+
+724
+00:30:35,060 --> 00:30:38,660
+feature that rather than kind of look up
+
+725
+00:30:38,660 --> 00:30:41,360
+objects with string based identifiers
+
+726
+00:30:41,360 --> 00:30:44,230
+there's a new symbol identifier which
+
+727
+00:30:44,230 --> 00:30:47,630
+supposedly perhaps maybe frees you from
+
+728
+00:30:47,630 --> 00:30:51,560
+some of the kind of task of like having
+
+729
+00:30:51,560 --> 00:30:53,630
+to look up and hash or string to figure
+
+730
+00:30:53,630 --> 00:30:55,520
+out where in the object you have to go
+
+731
+00:30:55,520 --> 00:30:55,810
+look
+
+732
+00:30:55,810 --> 00:30:57,970
+it up it's kind of like a somewhat of a
+
+733
+00:30:57,970 --> 00:30:59,710
+performant it's a potential performance
+
+734
+00:30:59,710 --> 00:31:01,600
+optimization that just allows things to
+
+735
+00:31:01,600 --> 00:31:03,610
+go simpler it also just kind of kept me
+
+736
+00:31:03,610 --> 00:31:05,370
+honest it made sure that I wasn't using
+
+737
+00:31:05,370 --> 00:31:07,630
+passing around string data and that I
+
+738
+00:31:07,630 --> 00:31:11,410
+did that since i can't really like look
+
+739
+00:31:11,410 --> 00:31:14,530
+at symbols it just made sure that the
+
+740
+00:31:14,530 --> 00:31:18,070
+links all had to it it's hard for me to
+
+741
+00:31:18,070 --> 00:31:19,330
+I guess to equivocate that one but it
+
+742
+00:31:19,330 --> 00:31:22,450
+gave me some additional checks that I
+
+743
+00:31:22,450 --> 00:31:23,860
+had to look at when I was developing it
+
+744
+00:31:23,860 --> 00:31:26,650
+um that's most of the like really cool
+
+745
+00:31:26,650 --> 00:31:28,750
+things with a web push pump protocol the
+
+746
+00:31:28,750 --> 00:31:30,310
+rest of it is a pretty regular khoa
+
+747
+00:31:30,310 --> 00:31:31,750
+application but I thought those were
+
+748
+00:31:31,750 --> 00:31:33,100
+some pretty awesome gems that kind of
+
+749
+00:31:33,100 --> 00:31:36,610
+shook out from developing this overall I
+
+750
+00:31:36,610 --> 00:31:38,290
+see web Porsche is really an advancement
+
+751
+00:31:38,290 --> 00:31:39,670
+towards an asynchronous and
+
+752
+00:31:39,670 --> 00:31:42,850
+bi-directional web it has some small
+
+753
+00:31:42,850 --> 00:31:45,160
+bits to it we noted that the pushes were
+
+754
+00:31:45,160 --> 00:31:46,990
+hope ache when we pushed in the server
+
+755
+00:31:46,990 --> 00:31:50,050
+kind of replied to us with the URL for
+
+756
+00:31:50,050 --> 00:31:51,730
+what we had just pushed in and told us
+
+757
+00:31:51,730 --> 00:31:55,510
+what that receive that resource the
+
+758
+00:31:55,510 --> 00:31:57,610
+identity after it was pushed in and so
+
+759
+00:31:57,610 --> 00:32:00,280
+that that kind of explicitly means that
+
+760
+00:32:00,280 --> 00:32:02,590
+we can't be pushing resources we have to
+
+761
+00:32:02,590 --> 00:32:04,480
+like if we wanted to push a resource
+
+762
+00:32:04,480 --> 00:32:06,130
+we'd have to come up with like some JSON
+
+763
+00:32:06,130 --> 00:32:08,770
+or a message pack encoding for what an
+
+764
+00:32:08,770 --> 00:32:11,590
+HTTP resource might look like and push
+
+765
+00:32:11,590 --> 00:32:15,010
+that like encoded resource out if we
+
+766
+00:32:15,010 --> 00:32:16,960
+wanted to like be web full if we wanted
+
+767
+00:32:16,960 --> 00:32:18,730
+to be resourceful with the things that
+
+768
+00:32:18,730 --> 00:32:20,890
+we are sending we can't explicitly say
+
+769
+00:32:20,890 --> 00:32:22,780
+what it is that we're sending and so
+
+770
+00:32:22,780 --> 00:32:24,670
+that's that's a constraint that's
+
+771
+00:32:24,670 --> 00:32:26,020
+something that was kind of designed into
+
+772
+00:32:26,020 --> 00:32:27,700
+the web push protocol that's how it's
+
+773
+00:32:27,700 --> 00:32:29,530
+supposed to work but it's it still kind
+
+774
+00:32:29,530 --> 00:32:30,550
+of keeps us a little bit away from
+
+775
+00:32:30,550 --> 00:32:33,100
+really a web where we have like a fully
+
+776
+00:32:33,100 --> 00:32:35,380
+asynchronous web or where we can really
+
+777
+00:32:35,380 --> 00:32:36,970
+begin to talk about sending data in
+
+778
+00:32:36,970 --> 00:32:41,110
+really different ways and second this is
+
+779
+00:32:41,110 --> 00:32:42,970
+really the only way this is not a
+
+780
+00:32:42,970 --> 00:32:46,420
+critique on web push per se but it was a
+
+781
+00:32:46,420 --> 00:32:52,620
+really extensive chart of activity that
+
+782
+00:32:52,620 --> 00:32:55,750
+like this diagram is what it took for us
+
+783
+00:32:55,750 --> 00:32:57,220
+to be able to start pushing data to the
+
+784
+00:32:57,220 --> 00:32:58,900
+browser there's like a lot of different
+
+785
+00:32:58,900 --> 00:33:00,160
+agencies at play there's a lot of
+
+786
+00:33:00,160 --> 00:33:01,900
+different work at play and this is all
+
+787
+00:33:01,900 --> 00:33:04,720
+just so that wet HTTP to push could get
+
+788
+00:33:04,720 --> 00:33:06,250
+used so that we could start pushing
+
+789
+00:33:06,250 --> 00:33:08,170
+resources and that the client could get
+
+790
+00:33:08,170 --> 00:33:09,520
+notified when these resource
+
+791
+00:33:09,520 --> 00:33:11,200
+were pushed to it we've talked a little
+
+792
+00:33:11,200 --> 00:33:12,640
+bit about how it's asynchronous and
+
+793
+00:33:12,640 --> 00:33:15,160
+decoupled and how like the client might
+
+794
+00:33:15,160 --> 00:33:16,840
+not be connected but when the client is
+
+795
+00:33:16,840 --> 00:33:18,760
+connected and sitting there it's still
+
+796
+00:33:18,760 --> 00:33:20,410
+like a very important use case that the
+
+797
+00:33:20,410 --> 00:33:21,580
+client wants to be able to get real-time
+
+798
+00:33:21,580 --> 00:33:23,200
+data to it and that's something that we
+
+799
+00:33:23,200 --> 00:33:24,820
+spent a lot of effort and work doing
+
+800
+00:33:24,820 --> 00:33:27,250
+we've built server server sent events we
+
+801
+00:33:27,250 --> 00:33:30,970
+built web sockets and this is web HTTP
+
+802
+00:33:30,970 --> 00:33:33,250
+to push kind of proposes something a
+
+803
+00:33:33,250 --> 00:33:34,870
+little bit different for what HTTP do
+
+804
+00:33:34,870 --> 00:33:36,820
+you can do and this is a really very
+
+805
+00:33:36,820 --> 00:33:40,120
+complex set of technologies web push is
+
+806
+00:33:40,120 --> 00:33:42,850
+a complex set of technologies that have
+
+807
+00:33:42,850 --> 00:33:44,440
+to kind of work very carefully together
+
+808
+00:33:44,440 --> 00:33:47,890
+to make that possible but it doesn't
+
+809
+00:33:47,890 --> 00:33:52,780
+tell us it's still there is kind of a
+
+810
+00:33:52,780 --> 00:33:54,520
+little bit of a workaround like if you
+
+811
+00:33:54,520 --> 00:33:56,200
+do really want to be able to just push
+
+812
+00:33:56,200 --> 00:33:59,710
+the client you can push to the client
+
+813
+00:33:59,710 --> 00:34:01,360
+and then have the client via some out of
+
+814
+00:34:01,360 --> 00:34:03,370
+bands method just ask the server
+
+815
+00:34:03,370 --> 00:34:06,490
+directly very straightforwardly have you
+
+816
+00:34:06,490 --> 00:34:09,040
+pushed any resources to me we can use
+
+817
+00:34:09,040 --> 00:34:11,320
+server sent events for example so you
+
+818
+00:34:11,320 --> 00:34:13,030
+can use HTTP to push and then
+
+819
+00:34:13,030 --> 00:34:16,330
+out-of-band say by the way I've pushed
+
+820
+00:34:16,330 --> 00:34:18,399
+you all of this data so that's kind of a
+
+821
+00:34:18,399 --> 00:34:20,710
+workaround that an alternative path that
+
+822
+00:34:20,710 --> 00:34:22,450
+you might Forge if you wanted to do push
+
+823
+00:34:22,450 --> 00:34:24,610
+in a way outside of web push without
+
+824
+00:34:24,610 --> 00:34:26,679
+these very specific browser imposed
+
+825
+00:34:26,679 --> 00:34:28,510
+constraints in this very specific
+
+826
+00:34:28,510 --> 00:34:30,550
+formulation if you just want to have an
+
+827
+00:34:30,550 --> 00:34:32,350
+open push connection and see data out of
+
+828
+00:34:32,350 --> 00:34:35,679
+it you there's no ways that the there's
+
+829
+00:34:35,679 --> 00:34:37,390
+no way as the client to explicitly be
+
+830
+00:34:37,390 --> 00:34:38,770
+told that you're getting these pushes
+
+831
+00:34:38,770 --> 00:34:41,020
+happening to you if you're not using web
+
+832
+00:34:41,020 --> 00:34:43,990
+push but you can open a connection and
+
+833
+00:34:43,990 --> 00:34:46,090
+start creating your own protocols to say
+
+834
+00:34:46,090 --> 00:34:47,740
+by the way I've pushed you some data you
+
+835
+00:34:47,740 --> 00:34:52,960
+should look I'm really excited for web
+
+836
+00:34:52,960 --> 00:34:54,490
+push I really think this is like a new
+
+837
+00:34:54,490 --> 00:34:58,360
+era in web development that htb to
+
+838
+00:34:58,360 --> 00:35:00,340
+really begins to open up a new set of
+
+839
+00:35:00,340 --> 00:35:01,890
+capabilities I think push is
+
+840
+00:35:01,890 --> 00:35:05,920
+fantastically interesting and like web
+
+841
+00:35:05,920 --> 00:35:07,630
+push is a great demonstration I think
+
+842
+00:35:07,630 --> 00:35:09,640
+we're also going to see HTTP to push
+
+843
+00:35:09,640 --> 00:35:12,160
+used within the data center to start
+
+844
+00:35:12,160 --> 00:35:14,380
+replacing some of the existing means
+
+845
+00:35:14,380 --> 00:35:16,600
+that we have like Kafka and RabbitMQ
+
+846
+00:35:16,600 --> 00:35:20,320
+those are more like larger technologies
+
+847
+00:35:20,320 --> 00:35:23,140
+HTTP two is really just a protocol but I
+
+848
+00:35:23,140 --> 00:35:24,730
+I think it serves a great basis to kind
+
+849
+00:35:24,730 --> 00:35:26,109
+of do a lot of things that we've been
+
+850
+00:35:26,109 --> 00:35:28,420
+doing while doing it in a more web way
+
+851
+00:35:28,420 --> 00:35:30,309
+without having to have outside paths
+
+852
+00:35:30,309 --> 00:35:33,460
+doing that I'm super excited to talk to
+
+853
+00:35:33,460 --> 00:35:35,349
+you about web push away I think the
+
+854
+00:35:35,349 --> 00:35:37,059
+future is very exciting and I look
+
+855
+00:35:37,059 --> 00:35:38,799
+forward to seeing all the great things
+
+856
+00:35:38,799 --> 00:35:39,880
+that everyone goes out there and does
+

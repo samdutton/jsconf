@@ -1,0 +1,1949 @@
+1
+00:00:09,019 --> 00:00:11,700
+
+my name is Guillermo ouch i'm the
+
+2
+00:00:11,700 --> 00:00:14,910
+creator of socket i/o also co-founder
+
+3
+00:00:14,910 --> 00:00:17,359
+and CTO of a startup called Lauren boost
+
+4
+00:00:17,359 --> 00:00:24,029
+in the education space so I assume as
+
+5
+00:00:24,029 --> 00:00:26,580
+many of you might be aware of socket i/o
+
+6
+00:00:26,580 --> 00:00:28,470
+is a way of doing real-time applications
+
+7
+00:00:28,470 --> 00:00:33,000
+on every browser also a server now with
+
+8
+00:00:33,000 --> 00:00:35,070
+a simple API that resembles WebSocket a
+
+9
+00:00:35,070 --> 00:00:38,040
+lot so so far we've seen a lot of
+
+10
+00:00:38,040 --> 00:00:41,010
+adoption and many applications deployed
+
+11
+00:00:41,010 --> 00:00:42,899
+to production with it and many projects
+
+12
+00:00:42,899 --> 00:00:45,000
+created with it and with that we've
+
+13
+00:00:45,000 --> 00:00:50,879
+learned some lessons and we've finally
+
+14
+00:00:50,879 --> 00:00:53,340
+come up with a speck of how other people
+
+15
+00:00:53,340 --> 00:00:55,050
+that might want Sokka Dale and the saga
+
+16
+00:00:55,050 --> 00:00:58,289
+do protocol on other servers and other
+
+17
+00:00:58,289 --> 00:01:01,230
+languages might go about creating it so
+
+18
+00:01:01,230 --> 00:01:04,619
+they go for the next release of socket
+
+19
+00:01:04,619 --> 00:01:08,070
+i/o that has been already pushed to get
+
+20
+00:01:08,070 --> 00:01:11,220
+having an alpha State is sort of
+
+21
+00:01:11,220 --> 00:01:14,040
+implementing this spec implementing sort
+
+22
+00:01:14,040 --> 00:01:15,330
+of new features that are going to be the
+
+23
+00:01:15,330 --> 00:01:19,350
+foundation of socket i/o and so that's
+
+24
+00:01:19,350 --> 00:01:23,340
+what I'm going to talk about today first
+
+25
+00:01:23,340 --> 00:01:27,590
+of all I made some architectural changes
+
+26
+00:01:27,590 --> 00:01:30,540
+the like I said the prodigal the socket
+
+27
+00:01:30,540 --> 00:01:32,670
+a protocol which is what we need
+
+28
+00:01:32,670 --> 00:01:35,430
+essentially to make web socket and long
+
+29
+00:01:35,430 --> 00:01:38,070
+polling or other transports converge and
+
+30
+00:01:38,070 --> 00:01:41,430
+maintain sessions for users so they we
+
+31
+00:01:41,430 --> 00:01:43,829
+can for example buffer messages from the
+
+32
+00:01:43,829 --> 00:01:47,970
+server and the client we have we have
+
+33
+00:01:47,970 --> 00:01:50,490
+made some API changes so that it's
+
+34
+00:01:50,490 --> 00:01:53,700
+easier to get up and running we haven't
+
+35
+00:01:53,700 --> 00:01:56,460
+a new way of doing tests which basically
+
+36
+00:01:56,460 --> 00:02:00,840
+is I created on node client that I'm
+
+37
+00:02:00,840 --> 00:02:02,490
+going to use to test the node server and
+
+38
+00:02:02,490 --> 00:02:07,979
+vice versa so before each time you would
+
+39
+00:02:07,979 --> 00:02:09,619
+run socket i/o you were limited to
+
+40
+00:02:09,619 --> 00:02:12,390
+storing every message and every user and
+
+41
+00:02:12,390 --> 00:02:13,460
+every session ID
+
+42
+00:02:13,460 --> 00:02:17,240
+on one process of one computer so if
+
+43
+00:02:17,240 --> 00:02:19,280
+that process were to die or you wanted
+
+44
+00:02:19,280 --> 00:02:21,380
+to use two computers to handle a number
+
+45
+00:02:21,380 --> 00:02:23,420
+a higher number of messages per second
+
+46
+00:02:23,420 --> 00:02:26,500
+or a higher number of connected users
+
+47
+00:02:26,500 --> 00:02:30,260
+you basically had to create a message
+
+48
+00:02:30,260 --> 00:02:31,730
+you basically implement a message
+
+49
+00:02:31,730 --> 00:02:33,710
+dispatcher yourself you would subscribe
+
+50
+00:02:33,710 --> 00:02:37,700
+clients to a Redis set or pops up or you
+
+51
+00:02:37,700 --> 00:02:41,870
+would use RabbitMQ so today so k is
+
+52
+00:02:41,870 --> 00:02:44,590
+going to take care of that for you and
+
+53
+00:02:44,590 --> 00:02:49,070
+also another important thing is many
+
+54
+00:02:49,070 --> 00:02:51,040
+people have different needs as far as
+
+55
+00:02:51,040 --> 00:02:54,140
+how much latency they can afford for
+
+56
+00:02:54,140 --> 00:02:55,790
+their applications so some people might
+
+57
+00:02:55,790 --> 00:02:58,550
+want to just completely ditch the flash
+
+58
+00:02:58,550 --> 00:03:00,380
+transport because it adds a lot of bloat
+
+59
+00:03:00,380 --> 00:03:03,380
+and they can afford to use long polling
+
+60
+00:03:03,380 --> 00:03:07,130
+and said fallback transport so I've made
+
+61
+00:03:07,130 --> 00:03:08,900
+the hell shake process and it made the
+
+62
+00:03:08,900 --> 00:03:10,760
+socket interface is more configurable so
+
+63
+00:03:10,760 --> 00:03:13,010
+that you can easily decide what
+
+64
+00:03:13,010 --> 00:03:14,780
+transports you want to use and other
+
+65
+00:03:14,780 --> 00:03:17,120
+options I'm going to talk a little bit
+
+66
+00:03:17,120 --> 00:03:23,450
+about the new API so I we made some we
+
+67
+00:03:23,450 --> 00:03:25,610
+made it easier to run a socket server
+
+68
+00:03:25,610 --> 00:03:28,040
+that is not tied to a particular HTTP
+
+69
+00:03:28,040 --> 00:03:29,630
+server so before you have to instantiate
+
+70
+00:03:29,630 --> 00:03:33,320
+it yourself now you can simply call I oh
+
+71
+00:03:33,320 --> 00:03:35,810
+listen or pass it a port and you'll have
+
+72
+00:03:35,810 --> 00:03:38,620
+your own standalone socket i/o server
+
+73
+00:03:38,620 --> 00:03:41,780
+before you would have to pass this huge
+
+74
+00:03:41,780 --> 00:03:45,260
+object of options with nested objects of
+
+75
+00:03:45,260 --> 00:03:48,820
+options and now we have expressed like
+
+76
+00:03:48,820 --> 00:03:51,590
+configuration so we can have you can
+
+77
+00:03:51,590 --> 00:03:53,600
+have different settings for development
+
+78
+00:03:53,600 --> 00:03:55,820
+and production which for a project like
+
+79
+00:03:55,820 --> 00:03:57,850
+Sokka do is extremely important
+
+80
+00:03:57,850 --> 00:04:00,380
+sometimes your clients might be dropping
+
+81
+00:04:00,380 --> 00:04:02,420
+because of network latency or you're
+
+82
+00:04:02,420 --> 00:04:04,850
+testing a mobile device so you want to
+
+83
+00:04:04,850 --> 00:04:07,220
+make sure you know why a certain clients
+
+84
+00:04:07,220 --> 00:04:09,140
+dropping is it because a heartbeat
+
+85
+00:04:09,140 --> 00:04:12,620
+wasn't received or is it because the
+
+86
+00:04:12,620 --> 00:04:14,960
+client is too slow for this for your
+
+87
+00:04:14,960 --> 00:04:17,780
+settings so you can customize things as
+
+88
+00:04:17,780 --> 00:04:21,240
+the logger the log level
+
+89
+00:04:21,250 --> 00:04:25,240
+so like I said up until today you were
+
+90
+00:04:25,240 --> 00:04:30,400
+constructed to one process in one server
+
+91
+00:04:30,400 --> 00:04:34,400
+we made some changes to make that more
+
+92
+00:04:34,400 --> 00:04:37,040
+flexible so by default you'll still it
+
+93
+00:04:37,040 --> 00:04:38,540
+is going to continue to store everything
+
+94
+00:04:38,540 --> 00:04:40,640
+in memory the main reasons that not
+
+95
+00:04:40,640 --> 00:04:42,830
+everyone has requirements to set up
+
+96
+00:04:42,830 --> 00:04:46,100
+Sokka do in a cluster or perform worker
+
+97
+00:04:46,100 --> 00:04:48,590
+process replacements with tools like
+
+98
+00:04:48,590 --> 00:04:54,380
+cluster or multi-node like like I said
+
+99
+00:04:54,380 --> 00:04:55,940
+it defaults to memory and one thing that
+
+100
+00:04:55,940 --> 00:04:57,650
+we have to change in order to make this
+
+101
+00:04:57,650 --> 00:05:00,500
+two modes of operating compatible is
+
+102
+00:05:00,500 --> 00:05:05,500
+that every signature that before was
+
+103
+00:05:05,500 --> 00:05:09,200
+chance accessing memory now is an async
+
+104
+00:05:09,200 --> 00:05:11,180
+call back so from your socket i/o
+
+105
+00:05:11,180 --> 00:05:12,710
+instance if you needed to access a
+
+106
+00:05:12,710 --> 00:05:15,260
+client list before you would go sacate
+
+107
+00:05:15,260 --> 00:05:17,090
+other clients and now you're going to go
+
+108
+00:05:17,090 --> 00:05:18,530
+suck at a the clients and positive
+
+109
+00:05:18,530 --> 00:05:23,330
+function something really useful as well
+
+110
+00:05:23,330 --> 00:05:25,970
+is the ability to associate data with a
+
+111
+00:05:25,970 --> 00:05:27,830
+particular client so when someone
+
+112
+00:05:27,830 --> 00:05:31,520
+connects we can for example set and
+
+113
+00:05:31,520 --> 00:05:33,140
+nickname and that's going to leverage
+
+114
+00:05:33,140 --> 00:05:34,880
+the same existing storage that you're
+
+115
+00:05:34,880 --> 00:05:37,520
+using for your messages and for your
+
+116
+00:05:37,520 --> 00:05:40,100
+message queues so if someone connects
+
+117
+00:05:40,100 --> 00:05:41,120
+and you want to sort the nickname
+
+118
+00:05:41,120 --> 00:05:42,290
+they're going to have for the session
+
+119
+00:05:42,290 --> 00:05:44,570
+you can do that directly from Sokka do
+
+120
+00:05:44,570 --> 00:05:50,000
+as well another thing that is really
+
+121
+00:05:50,000 --> 00:05:53,480
+important is the ability to send
+
+122
+00:05:53,480 --> 00:05:57,260
+messages that can be dropped and should
+
+123
+00:05:57,260 --> 00:05:59,120
+not be buffered so for example if you
+
+124
+00:05:59,120 --> 00:06:00,260
+are creating an application that
+
+125
+00:06:00,260 --> 00:06:02,900
+displays tweets or you're creating an
+
+126
+00:06:02,900 --> 00:06:05,300
+application that you want to show the
+
+127
+00:06:05,300 --> 00:06:07,610
+latest stock prices to the users you
+
+128
+00:06:07,610 --> 00:06:08,810
+don't want it and you're retrieving
+
+129
+00:06:08,810 --> 00:06:11,150
+stock prices every second but you have a
+
+130
+00:06:11,150 --> 00:06:12,440
+client that is only taking messages
+
+131
+00:06:12,440 --> 00:06:14,780
+every five seconds or so you don't want
+
+132
+00:06:14,780 --> 00:06:16,970
+to buffer every single message you you
+
+133
+00:06:16,970 --> 00:06:19,280
+want Sokka do to drop some of them so
+
+134
+00:06:19,280 --> 00:06:22,100
+that you always receive the latest so
+
+135
+00:06:22,100 --> 00:06:25,070
+that's what the volatile flag does and
+
+136
+00:06:25,070 --> 00:06:27,140
+it's really easy to use so before you
+
+137
+00:06:27,140 --> 00:06:31,070
+would you would say sockets and and you
+
+138
+00:06:31,070 --> 00:06:31,400
+would send
+
+139
+00:06:31,400 --> 00:06:34,580
+message to the user so now by simply for
+
+140
+00:06:34,580 --> 00:06:36,620
+fixing it with volatile you can make
+
+141
+00:06:36,620 --> 00:06:40,400
+that message forgettable so if Sokka do
+
+142
+00:06:40,400 --> 00:06:42,910
+cannot write it to the user which is
+
+143
+00:06:42,910 --> 00:06:45,100
+important for example for long polling
+
+144
+00:06:45,100 --> 00:06:47,780
+where the client is opening request and
+
+145
+00:06:47,780 --> 00:06:49,940
+response cycles and we're only able to
+
+146
+00:06:49,940 --> 00:06:51,800
+write data to the user whenever they
+
+147
+00:06:51,800 --> 00:06:54,259
+open their request but between between
+
+148
+00:06:54,259 --> 00:06:56,810
+two requests and sorry between a request
+
+149
+00:06:56,810 --> 00:06:58,970
+and response we cannot write to the user
+
+150
+00:06:58,970 --> 00:07:02,060
+because it's not server push so those
+
+151
+00:07:02,060 --> 00:07:03,770
+messages would be dropped while the user
+
+152
+00:07:03,770 --> 00:07:09,560
+is temporarily not connected another
+
+153
+00:07:09,560 --> 00:07:12,289
+flag that i'm adding is called Jason so
+
+154
+00:07:12,289 --> 00:07:14,690
+before Sokka do was smart enough to
+
+155
+00:07:14,690 --> 00:07:17,030
+detect that you were sending something
+
+156
+00:07:17,030 --> 00:07:19,520
+that was not a string and serialized it
+
+157
+00:07:19,520 --> 00:07:23,030
+into Jason so the problem is that even
+
+158
+00:07:23,030 --> 00:07:25,250
+strings can be serialized in to Jayson
+
+159
+00:07:25,250 --> 00:07:28,070
+so if you want to force one hundred
+
+160
+00:07:28,070 --> 00:07:29,570
+percent Jason encoding you can also use
+
+161
+00:07:29,570 --> 00:07:32,300
+the Jason flag and you can combine them
+
+162
+00:07:32,300 --> 00:07:34,759
+so if you want to send Jason as a
+
+163
+00:07:34,759 --> 00:07:37,280
+volatile message you just concatenate
+
+164
+00:07:37,280 --> 00:07:42,500
+them and I really useful thing is
+
+165
+00:07:42,500 --> 00:07:45,229
+acknowledgments so sometime so the way
+
+166
+00:07:45,229 --> 00:07:46,760
+that WebSocket works you write a message
+
+167
+00:07:46,760 --> 00:07:49,099
+you never get a call back unless you
+
+168
+00:07:49,099 --> 00:07:51,169
+implement it yourself so you can send a
+
+169
+00:07:51,169 --> 00:07:53,479
+message that is prefixed by an ID and
+
+170
+00:07:53,479 --> 00:07:55,880
+then have your server respond with that
+
+171
+00:07:55,880 --> 00:07:57,729
+particular ID so you would get an
+
+172
+00:07:57,729 --> 00:07:59,360
+acknowledgement that your message has
+
+173
+00:07:59,360 --> 00:08:02,570
+been received by the server so i built
+
+174
+00:08:02,570 --> 00:08:05,120
+the machinery for acknowledgments into
+
+175
+00:08:05,120 --> 00:08:07,669
+the socket 80 protocol and implementing
+
+176
+00:08:07,669 --> 00:08:09,560
+it as a developer as a user of the
+
+177
+00:08:09,560 --> 00:08:12,440
+library is extremely easy so every time
+
+178
+00:08:12,440 --> 00:08:14,150
+you send a message if you pass a
+
+179
+00:08:14,150 --> 00:08:17,180
+function as the last parameter that's
+
+180
+00:08:17,180 --> 00:08:18,590
+going to send that that's going to
+
+181
+00:08:18,590 --> 00:08:21,080
+append an ID to the to the message that
+
+182
+00:08:21,080 --> 00:08:24,860
+is being sent through the wire and the
+
+183
+00:08:24,860 --> 00:08:27,080
+client will respond and it's also
+
+184
+00:08:27,080 --> 00:08:29,330
+symmetrical so a client can send a
+
+185
+00:08:29,330 --> 00:08:31,460
+message that has a callback associated
+
+186
+00:08:31,460 --> 00:08:33,620
+with it and the server will respond with
+
+187
+00:08:33,620 --> 00:08:39,320
+an acknowledgement another thing that it
+
+188
+00:08:39,320 --> 00:08:43,320
+was actually requested many times
+
+189
+00:08:43,320 --> 00:08:46,270
+it really doesn't add any blow to the
+
+190
+00:08:46,270 --> 00:08:47,980
+prodigal and that's the main reason that
+
+191
+00:08:47,980 --> 00:08:50,020
+it's been added is the ability to define
+
+192
+00:08:50,020 --> 00:08:53,110
+your custom events so you can still use
+
+193
+00:08:53,110 --> 00:08:56,290
+Sokka do as a unconnect on message and
+
+194
+00:08:56,290 --> 00:08:59,260
+on disconnect but certain applications
+
+195
+00:08:59,260 --> 00:09:01,630
+will fit other semantics better so if
+
+196
+00:09:01,630 --> 00:09:03,730
+you're creating a chat application you
+
+197
+00:09:03,730 --> 00:09:06,460
+might want user connected user joined
+
+198
+00:09:06,460 --> 00:09:09,400
+Rome user sending private messages so
+
+199
+00:09:09,400 --> 00:09:11,950
+now you can define these events and they
+
+200
+00:09:11,950 --> 00:09:13,450
+are sent through the socket a prodigal
+
+201
+00:09:13,450 --> 00:09:16,570
+in a very lightweight way so instead of
+
+202
+00:09:16,570 --> 00:09:22,330
+going sorry here is not io on chat
+
+203
+00:09:22,330 --> 00:09:24,960
+messages socket dot on chat message
+
+204
+00:09:24,960 --> 00:09:28,240
+essentially you can define chasm the
+
+205
+00:09:28,240 --> 00:09:30,220
+event emitter is overridden for sacate
+
+206
+00:09:30,220 --> 00:09:31,810
+oh so you can define your custom events
+
+207
+00:09:31,810 --> 00:09:36,820
+and omit custom events for events that
+
+208
+00:09:36,820 --> 00:09:40,480
+are user defined the parameters that you
+
+209
+00:09:40,480 --> 00:09:43,300
+send our JSON encoded that means that
+
+210
+00:09:43,300 --> 00:09:45,100
+you can send objects you can send
+
+211
+00:09:45,100 --> 00:09:48,520
+strings dates on it or any other in co
+
+212
+00:09:48,520 --> 00:09:52,810
+double entity so like I said events have
+
+213
+00:09:52,810 --> 00:09:55,300
+no protocol overhead they are optional
+
+214
+00:09:55,300 --> 00:09:57,220
+you can still use socket i/o as a cross
+
+215
+00:09:57,220 --> 00:09:59,529
+browser web socket if you like constrain
+
+216
+00:09:59,529 --> 00:10:01,540
+yourself to like the three basic events
+
+217
+00:10:01,540 --> 00:10:05,380
+and again it's compatible with flags and
+
+218
+00:10:05,380 --> 00:10:08,500
+acknowledgments so like I said it's
+
+219
+00:10:08,500 --> 00:10:10,930
+always events always use JSON but if you
+
+220
+00:10:10,930 --> 00:10:13,300
+want to send that volatile event so if
+
+221
+00:10:13,300 --> 00:10:15,339
+you're listening on a Twitter stream and
+
+222
+00:10:15,339 --> 00:10:17,650
+you want to send a tweet event and you
+
+223
+00:10:17,650 --> 00:10:19,420
+might want to drop some of them you can
+
+224
+00:10:19,420 --> 00:10:22,930
+do that by prefixing the emit by with a
+
+225
+00:10:22,930 --> 00:10:26,470
+volatile flag and something interesting
+
+226
+00:10:26,470 --> 00:10:28,660
+is that an acknowledgment from an
+
+227
+00:10:28,660 --> 00:10:30,160
+implementation point of view is just the
+
+228
+00:10:30,160 --> 00:10:33,190
+server sending us a packet back that is
+
+229
+00:10:33,190 --> 00:10:35,980
+basically an empty string but sometimes
+
+230
+00:10:35,980 --> 00:10:37,330
+you might want to acknowledge with
+
+231
+00:10:37,330 --> 00:10:40,000
+actual data so you might want to you
+
+232
+00:10:40,000 --> 00:10:42,310
+might want to say amid a nickname event
+
+233
+00:10:42,310 --> 00:10:46,029
+and as as part of the result get get a
+
+234
+00:10:46,029 --> 00:10:48,130
+response of whether the nickname could
+
+235
+00:10:48,130 --> 00:10:49,690
+be said or not or if it was being used
+
+236
+00:10:49,690 --> 00:10:52,030
+by another user in the case of a chat
+
+237
+00:10:52,030 --> 00:10:55,870
+application and that's also something
+
+238
+00:10:55,870 --> 00:10:56,590
+that is
+
+239
+00:10:56,590 --> 00:11:01,180
+empower essentially when you when you
+
+240
+00:11:01,180 --> 00:11:06,090
+emit an event if the function arity
+
+241
+00:11:06,090 --> 00:11:08,950
+meaning the number of arguments that are
+
+242
+00:11:08,950 --> 00:11:10,570
+defining the function that you pass it
+
+243
+00:11:10,570 --> 00:11:12,700
+as a callback for the acknowledgement is
+
+244
+00:11:12,700 --> 00:11:15,070
+greater than zero so in this case I'm
+
+245
+00:11:15,070 --> 00:11:16,780
+setting and emitting a nickname event
+
+246
+00:11:16,780 --> 00:11:20,320
+and the function expects at response
+
+247
+00:11:20,320 --> 00:11:23,860
+object so Sokka do will know that your
+
+248
+00:11:23,860 --> 00:11:25,750
+function the server side has responded
+
+249
+00:11:25,750 --> 00:11:27,850
+with data so in this case I'm performing
+
+250
+00:11:27,850 --> 00:11:29,680
+in a synchronous task which is checking
+
+251
+00:11:29,680 --> 00:11:31,350
+for the availability of that nickname
+
+252
+00:11:31,350 --> 00:11:33,660
+and this is really powerful because
+
+253
+00:11:33,660 --> 00:11:36,040
+there's many semantics that do not
+
+254
+00:11:36,040 --> 00:11:37,600
+require acknowledgement and do not
+
+255
+00:11:37,600 --> 00:11:39,610
+require data back from the server so for
+
+256
+00:11:39,610 --> 00:11:41,530
+example publishing a message to a stream
+
+257
+00:11:41,530 --> 00:11:44,740
+but there's many that do and events give
+
+258
+00:11:44,740 --> 00:11:50,640
+you this functionality now so finally
+
+259
+00:11:50,640 --> 00:11:53,500
+moving forward with the project one
+
+260
+00:11:53,500 --> 00:11:54,670
+thing I would like to see is people
+
+261
+00:11:54,670 --> 00:11:57,580
+creating reusable applications and not
+
+262
+00:11:57,580 --> 00:12:00,120
+just frameworks so today we have
+
+263
+00:12:00,120 --> 00:12:03,670
+frameworks like D node and juggernaut
+
+264
+00:12:03,670 --> 00:12:08,170
+which are awesome but if if we want this
+
+265
+00:12:08,170 --> 00:12:09,640
+to become mainstream and we want to
+
+266
+00:12:09,640 --> 00:12:12,160
+really enable people that are creating
+
+267
+00:12:12,160 --> 00:12:14,260
+web two point O applications doing start
+
+268
+00:12:14,260 --> 00:12:16,360
+inserting components of the real time
+
+269
+00:12:16,360 --> 00:12:19,000
+web we need to make sure that we can
+
+270
+00:12:19,000 --> 00:12:22,690
+distribute pre packaged applications and
+
+271
+00:12:22,690 --> 00:12:25,090
+to that end we need to solve to
+
+272
+00:12:25,090 --> 00:12:26,800
+basically one problem which is
+
+273
+00:12:26,800 --> 00:12:29,710
+preventing collisions and if you have a
+
+274
+00:12:29,710 --> 00:12:32,620
+particular eye socket AO instance you
+
+275
+00:12:32,620 --> 00:12:35,590
+need some machinery for two different
+
+276
+00:12:35,590 --> 00:12:37,390
+applications to share that without
+
+277
+00:12:37,390 --> 00:12:39,250
+having to initialize two different ones
+
+278
+00:12:39,250 --> 00:12:43,360
+so if two particular parts of your
+
+279
+00:12:43,360 --> 00:12:45,580
+website depend on web socket that's fine
+
+280
+00:12:45,580 --> 00:12:48,040
+you have two connections but if they
+
+281
+00:12:48,040 --> 00:12:50,650
+depend on long polling depending on the
+
+282
+00:12:50,650 --> 00:12:52,510
+browser and how many resources are being
+
+283
+00:12:52,510 --> 00:12:54,280
+loaded and how many people I've sockets
+
+284
+00:12:54,280 --> 00:12:56,470
+are open you might end up with like four
+
+285
+00:12:56,470 --> 00:12:58,390
+different connections just for your two
+
+286
+00:12:58,390 --> 00:13:01,000
+sockets so the idea is that we want to
+
+287
+00:13:01,000 --> 00:13:03,280
+be able to reuse a particular sicario
+
+288
+00:13:03,280 --> 00:13:07,880
+instance but be able to namespace it
+
+289
+00:13:07,890 --> 00:13:12,280
+and to that end I added the ability to
+
+290
+00:13:12,280 --> 00:13:15,310
+like sockets subscribe to channels
+
+291
+00:13:15,310 --> 00:13:18,520
+without the user knowing or having to
+
+292
+00:13:18,520 --> 00:13:21,430
+particularly subscribe or understand the
+
+293
+00:13:21,430 --> 00:13:27,280
+pops of kind of mechanism and the way it
+
+294
+00:13:27,280 --> 00:13:30,130
+works is really simple so by default the
+
+295
+00:13:30,130 --> 00:13:32,610
+when you define a socket it's going to
+
+296
+00:13:32,610 --> 00:13:37,210
+subscribe to the empty namespace that's
+
+297
+00:13:37,210 --> 00:13:39,370
+the default again you can continue use
+
+298
+00:13:39,370 --> 00:13:42,880
+Sokka do with as basically a WebSocket
+
+299
+00:13:42,880 --> 00:13:45,130
+it all the messages go through the same
+
+300
+00:13:45,130 --> 00:13:48,460
+stream but you can also define a
+
+301
+00:13:48,460 --> 00:13:51,580
+namespace just by prefixing your event
+
+302
+00:13:51,580 --> 00:13:54,550
+listeners with four so that part to your
+
+303
+00:13:54,550 --> 00:13:57,100
+socket for the news endpoint is going to
+
+304
+00:13:57,100 --> 00:13:59,410
+act as a standalone socket even though
+
+305
+00:13:59,410 --> 00:14:00,760
+it's going to go through the through the
+
+306
+00:14:00,760 --> 00:14:05,680
+same TCP connections a multiplexing is
+
+307
+00:14:05,680 --> 00:14:09,040
+automatic even on the client side if on
+
+308
+00:14:09,040 --> 00:14:10,750
+the clients that you define the same
+
+309
+00:14:10,750 --> 00:14:12,520
+hostname the same port and the same
+
+310
+00:14:12,520 --> 00:14:14,290
+protocol but you only change this
+
+311
+00:14:14,290 --> 00:14:16,540
+resource part of the URL then
+
+312
+00:14:16,540 --> 00:14:18,750
+multiplexing will be enabled for you and
+
+313
+00:14:18,750 --> 00:14:21,010
+packets that signal connection in this
+
+314
+00:14:21,010 --> 00:14:23,770
+connection of events of this socket will
+
+315
+00:14:23,770 --> 00:14:26,040
+be sent which means you can actually
+
+316
+00:14:26,040 --> 00:14:28,839
+disconnect the chat socket and keep the
+
+317
+00:14:28,839 --> 00:14:34,480
+new socket connected and that means that
+
+318
+00:14:34,480 --> 00:14:36,160
+every single event or every single
+
+319
+00:14:36,160 --> 00:14:38,170
+message that you send is constrained to
+
+320
+00:14:38,170 --> 00:14:40,540
+that particular namespace so this also
+
+321
+00:14:40,540 --> 00:14:43,330
+fits really well into how you could make
+
+322
+00:14:43,330 --> 00:14:45,310
+your own applications even if you're not
+
+323
+00:14:45,310 --> 00:14:48,580
+reusing third-party code so you might
+
+324
+00:14:48,580 --> 00:14:50,650
+have an event called item or an event
+
+325
+00:14:50,650 --> 00:14:52,510
+called message but they are actually two
+
+326
+00:14:52,510 --> 00:14:54,040
+different things in two different
+
+327
+00:14:54,040 --> 00:15:01,510
+namespaces and as far as where what
+
+328
+00:15:01,510 --> 00:15:02,980
+we're working on right now and what's
+
+329
+00:15:02,980 --> 00:15:07,960
+coming for the project so it it's
+
+330
+00:15:07,960 --> 00:15:10,140
+obvious that expresses the mainstream
+
+331
+00:15:10,140 --> 00:15:13,390
+web framework for node is the framework
+
+332
+00:15:13,390 --> 00:15:16,060
+that the community chose and we need
+
+333
+00:15:16,060 --> 00:15:17,620
+that really easy way to leverage and
+
+334
+00:15:17,620 --> 00:15:21,040
+connect session data with sockets so I
+
+335
+00:15:21,040 --> 00:15:21,670
+really
+
+336
+00:15:21,670 --> 00:15:24,480
+need is like okay so someone connected
+
+337
+00:15:24,480 --> 00:15:26,710
+through a socket and a particular page
+
+338
+00:15:26,710 --> 00:15:29,110
+but I want to retrieve what's his
+
+339
+00:15:29,110 --> 00:15:31,210
+username or what's his email from the
+
+340
+00:15:31,210 --> 00:15:34,720
+database and to this end the solution is
+
+341
+00:15:34,720 --> 00:15:38,710
+really simple by having a token of
+
+342
+00:15:38,710 --> 00:15:41,500
+authentication that expressed and Sokka
+
+343
+00:15:41,500 --> 00:15:44,740
+do can enter exchange they you can know
+
+344
+00:15:44,740 --> 00:15:47,140
+on what page the user is when what part
+
+345
+00:15:47,140 --> 00:15:49,560
+what particular out and who the user is
+
+346
+00:15:49,560 --> 00:15:51,820
+so this is a separate project that's
+
+347
+00:15:51,820 --> 00:16:01,390
+coming for express users another thing
+
+348
+00:16:01,390 --> 00:16:04,000
+that is challenging right now is testing
+
+349
+00:16:04,000 --> 00:16:06,970
+different browsers so every time you
+
+350
+00:16:06,970 --> 00:16:08,470
+make a change to the client in the order
+
+351
+00:16:08,470 --> 00:16:12,010
+server we need to see if I six works and
+
+352
+00:16:12,010 --> 00:16:15,190
+today to till today it's been largely a
+
+353
+00:16:15,190 --> 00:16:17,620
+manual process combined with really
+
+354
+00:16:17,620 --> 00:16:20,200
+simple unit testing and obviously unit
+
+355
+00:16:20,200 --> 00:16:22,360
+testing is not enough considering the
+
+356
+00:16:22,360 --> 00:16:27,100
+many quirks that browsers have so one
+
+357
+00:16:27,100 --> 00:16:28,440
+thing I'm going to do is set up
+
+358
+00:16:28,440 --> 00:16:32,980
+automatic cloud testing on selenium so
+
+359
+00:16:32,980 --> 00:16:35,950
+that we're going to be able to as soon
+
+360
+00:16:35,950 --> 00:16:37,630
+as we push to github we're going to be
+
+361
+00:16:37,630 --> 00:16:38,980
+able to test on all the browsers who
+
+362
+00:16:38,980 --> 00:16:43,630
+want to support there's been also many
+
+363
+00:16:43,630 --> 00:16:45,630
+problems related to the flash fallback
+
+364
+00:16:45,630 --> 00:16:49,450
+that range from sometimes increasing the
+
+365
+00:16:49,450 --> 00:16:51,970
+latency to a really high memory
+
+366
+00:16:51,970 --> 00:16:58,000
+consumption to RIT slowness when HTTPS
+
+367
+00:16:58,000 --> 00:17:02,440
+and ssl are used and also the fact that
+
+368
+00:17:02,440 --> 00:17:06,370
+Sokka do without flash is around 8
+
+369
+00:17:06,370 --> 00:17:09,460
+kilobytes and with flash is like I know
+
+370
+00:17:09,460 --> 00:17:12,490
+like 200 kilobytes and that's a problem
+
+371
+00:17:12,490 --> 00:17:17,020
+so we're going to be working on our own
+
+372
+00:17:17,020 --> 00:17:19,810
+flash fall back and we're probably not
+
+373
+00:17:19,810 --> 00:17:21,610
+going to be supporting as a cell with it
+
+374
+00:17:21,610 --> 00:17:24,130
+because that's what adds the most bloat
+
+375
+00:17:24,130 --> 00:17:28,570
+to to the Flash movie is the fact that
+
+376
+00:17:28,570 --> 00:17:31,480
+the ssl crypto libraries are not built
+
+377
+00:17:31,480 --> 00:17:34,369
+in into action script
+
+378
+00:17:34,369 --> 00:17:37,080
+there is also an upcoming WebSockets
+
+379
+00:17:37,080 --> 00:17:40,349
+back that browsers will be supporting
+
+380
+00:17:40,349 --> 00:17:44,309
+soon including Firefox 4 and as soon as
+
+381
+00:17:44,309 --> 00:17:46,979
+a major stable browser supports it we
+
+382
+00:17:46,979 --> 00:17:52,049
+want to support it and so that's it you
+
+383
+00:17:52,049 --> 00:17:53,940
+can check out the repo for the latest
+
+384
+00:17:53,940 --> 00:17:58,619
+code and if you have any questions so
+
+385
+00:17:58,619 --> 00:18:01,080
+you're asking if it should be connect al
+
+386
+00:18:01,080 --> 00:18:03,919
+or so yeah that's a great question and
+
+387
+00:18:03,919 --> 00:18:08,219
+so the session middleware which is one
+
+388
+00:18:08,219 --> 00:18:09,269
+of the things that we want to connect
+
+389
+00:18:09,269 --> 00:18:12,719
+with Sokka do is basically connect it's
+
+390
+00:18:12,719 --> 00:18:16,710
+not expressed so to that end we yeah and
+
+391
+00:18:16,710 --> 00:18:19,109
+there is a project already for that but
+
+392
+00:18:19,109 --> 00:18:22,559
+my other thing is the ability to create
+
+393
+00:18:22,559 --> 00:18:25,229
+to connect the templates to real-time
+
+394
+00:18:25,229 --> 00:18:27,899
+events and to that end we need to make
+
+395
+00:18:27,899 --> 00:18:29,820
+it express and there's also the fact
+
+396
+00:18:29,820 --> 00:18:31,820
+that not many people use connect without
+
+397
+00:18:31,820 --> 00:18:35,009
+express while leveraging the session
+
+398
+00:18:35,009 --> 00:18:36,659
+middleware you might want to use Kinect
+
+399
+00:18:36,659 --> 00:18:38,580
+if you're like just serving static files
+
+400
+00:18:38,580 --> 00:18:42,719
+or static pages like HTML and some
+
+401
+00:18:42,719 --> 00:18:44,339
+images you might just want to use
+
+402
+00:18:44,339 --> 00:18:46,019
+connect but when you're actually
+
+403
+00:18:46,019 --> 00:18:48,389
+leveraging the session middleware you're
+
+404
+00:18:48,389 --> 00:18:52,769
+probably using Express so I just went
+
+405
+00:18:52,769 --> 00:18:56,609
+with express today oh so he's asking
+
+406
+00:18:56,609 --> 00:18:57,539
+about how we're going to do
+
+407
+00:18:57,539 --> 00:19:01,549
+cross-browser cross-platform testing so
+
+408
+00:19:01,549 --> 00:19:03,899
+for a company we also have the problem
+
+409
+00:19:03,899 --> 00:19:06,479
+of supporting multiple browsers and we
+
+410
+00:19:06,479 --> 00:19:08,429
+want to have acceptance testing that
+
+411
+00:19:08,429 --> 00:19:11,129
+where that makes sure that things work
+
+412
+00:19:11,129 --> 00:19:13,019
+on WebKit which is the presser we
+
+413
+00:19:13,019 --> 00:19:15,989
+develop on but also Isaac's so we
+
+414
+00:19:15,989 --> 00:19:19,159
+created an adapter for node called soda
+
+415
+00:19:19,159 --> 00:19:23,719
+what soda does is implement selenium and
+
+416
+00:19:23,719 --> 00:19:26,399
+potentially if you want to use sauce
+
+417
+00:19:26,399 --> 00:19:28,409
+labs sauce labs is a starter that
+
+418
+00:19:28,409 --> 00:19:31,169
+provides a service for automating
+
+419
+00:19:31,169 --> 00:19:33,539
+testing with selenium on the cloud in
+
+420
+00:19:33,539 --> 00:19:36,869
+the cloud so instead of you setting up
+
+421
+00:19:36,869 --> 00:19:38,999
+your own cluster and you're like set of
+
+422
+00:19:38,999 --> 00:19:43,649
+computers running Windows and ie and all
+
+423
+00:19:43,649 --> 00:19:45,960
+the different variations of combinations
+
+424
+00:19:45,960 --> 00:19:47,640
+you can use sauce labs
+
+425
+00:19:47,640 --> 00:19:50,160
+and you pay per minute and it's also
+
+426
+00:19:50,160 --> 00:19:53,130
+free for linux and firefox so you can
+
+427
+00:19:53,130 --> 00:19:54,930
+get started doing acceptance testing
+
+428
+00:19:54,930 --> 00:19:57,480
+with that way and that's what we're
+
+429
+00:19:57,480 --> 00:19:58,710
+going to leverage so we're going to
+
+430
+00:19:58,710 --> 00:20:02,130
+write unit tests and we're also going to
+
+431
+00:20:02,130 --> 00:20:04,770
+connect to like a fixed socket i/o
+
+432
+00:20:04,770 --> 00:20:06,540
+server and we're going to just basically
+
+433
+00:20:06,540 --> 00:20:09,350
+produce output to the add page then
+
+434
+00:20:09,350 --> 00:20:11,370
+selenium will connect to that page and
+
+435
+00:20:11,370 --> 00:20:13,890
+check for a number of positives and
+
+436
+00:20:13,890 --> 00:20:17,400
+negatives and if it fails sauce labs
+
+437
+00:20:17,400 --> 00:20:18,990
+will give you a video of what happened
+
+438
+00:20:18,990 --> 00:20:21,420
+so you can know exactly like okay what
+
+439
+00:20:21,420 --> 00:20:23,520
+test failed or what's the output or
+
+440
+00:20:23,520 --> 00:20:26,720
+what's the JavaScript console saying
+
+441
+00:20:26,720 --> 00:20:29,610
+he's asking if it's been difficult to
+
+442
+00:20:29,610 --> 00:20:33,960
+keep up with the WebSockets back and the
+
+443
+00:20:33,960 --> 00:20:36,750
+answer is actually no because at first
+
+444
+00:20:36,750 --> 00:20:41,370
+we had up so in the very first node days
+
+445
+00:20:41,370 --> 00:20:45,720
+we there was no HTTP upgrade event so we
+
+446
+00:20:45,720 --> 00:20:48,390
+had to implement WebSocket as net server
+
+447
+00:20:48,390 --> 00:20:51,630
+so the HTTP parser and the HTTP note
+
+448
+00:20:51,630 --> 00:20:53,640
+implementation didn't give us the hooks
+
+449
+00:20:53,640 --> 00:20:57,000
+to have a WebSocket server without a
+
+450
+00:20:57,000 --> 00:20:59,430
+patch so initially saucony you had to
+
+451
+00:20:59,430 --> 00:21:03,330
+like patch node to have a WebSocket
+
+452
+00:21:03,330 --> 00:21:05,090
+server on top of the HTTP server
+
+453
+00:21:05,090 --> 00:21:07,020
+otherwise you would have to run it in a
+
+454
+00:21:07,020 --> 00:21:09,750
+different port so then we had to support
+
+455
+00:21:09,750 --> 00:21:12,800
+the initial spec which was draft 75 and
+
+456
+00:21:12,800 --> 00:21:15,300
+after that shortly after we had to
+
+457
+00:21:15,300 --> 00:21:18,870
+support draft draft 76 and since then
+
+458
+00:21:18,870 --> 00:21:22,050
+the spec hasn't changed at all now it's
+
+459
+00:21:22,050 --> 00:21:23,430
+going to change and it's going to change
+
+460
+00:21:23,430 --> 00:21:26,880
+in some pretty major ways but the
+
+461
+00:21:26,880 --> 00:21:29,630
+struggles with WebSocket have not been
+
+462
+00:21:29,630 --> 00:21:32,550
+mostly implementing this back it's been
+
+463
+00:21:32,550 --> 00:21:33,900
+for example the fact that they are
+
+464
+00:21:33,900 --> 00:21:36,420
+supposed to bypass proxies that's one of
+
+465
+00:21:36,420 --> 00:21:37,860
+the design goals of the WebSocket
+
+466
+00:21:37,860 --> 00:21:40,560
+protocol was what we need to make this
+
+467
+00:21:40,560 --> 00:21:43,530
+thing bypass proxies that are in on the
+
+468
+00:21:43,530 --> 00:21:45,680
+Internet today which is not the case so
+
+469
+00:21:45,680 --> 00:21:48,930
+WebSocket fails so socket i/o needed the
+
+470
+00:21:48,930 --> 00:21:52,050
+machinery to determine oh I couldn't
+
+471
+00:21:52,050 --> 00:21:53,370
+connect with WebSocket i'm going to try
+
+472
+00:21:53,370 --> 00:21:56,040
+something else so on that end it's been
+
+473
+00:21:56,040 --> 00:21:57,840
+a difficult decision to make WebSocket
+
+474
+00:21:57,840 --> 00:22:01,260
+the first choice because long polling
+
+475
+00:22:01,260 --> 00:22:03,570
+ends up being more reliable for most use
+
+476
+00:22:03,570 --> 00:22:06,930
+cases but hopefully that's going to
+
+477
+00:22:06,930 --> 00:22:10,890
+change now with a new spec and it and
+
+478
+00:22:10,890 --> 00:22:12,540
+that should be a definite one that
+
+479
+00:22:12,540 --> 00:22:15,150
+Firefox expressed interest in
+
+480
+00:22:15,150 --> 00:22:17,520
+implementing and so that's Chrome and
+
+481
+00:22:17,520 --> 00:22:21,230
+Safari and ie9 so I nine has the same
+
+482
+00:22:21,230 --> 00:22:23,490
+ambition to implement this aspect and
+
+483
+00:22:23,490 --> 00:22:27,630
+today they are doing it with silverlight
+
+484
+00:22:27,630 --> 00:22:31,890
+or through like labs plugins but
+
+485
+00:22:31,890 --> 00:22:33,720
+hopefully it's also going to be part of
+
+486
+00:22:33,720 --> 00:22:45,060
+by nine alright thank you so much yeah
+
+487
+00:22:45,060 --> 00:22:47,100
+I'm going to post the slides to Twitter
+

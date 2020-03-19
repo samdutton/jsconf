@@ -1,0 +1,2489 @@
+1
+00:00:18,920 --> 00:00:21,480
+
+blessed be talking about mastering the
+
+2
+00:00:21,480 --> 00:00:24,689
+command line with nodejs so without
+
+3
+00:00:24,689 --> 00:00:30,860
+further ado I'm Phil that's Mike and
+
+4
+00:00:30,860 --> 00:00:34,530
+both of us work at Adobe and we mostly
+
+5
+00:00:34,530 --> 00:00:37,559
+work on web stuff but generally we work
+
+6
+00:00:37,559 --> 00:00:39,989
+on project called phonegap and it's
+
+7
+00:00:39,989 --> 00:00:44,680
+Apache sibling called Apache Cordova and
+
+8
+00:00:44,690 --> 00:00:47,699
+we just want to share a few points with
+
+9
+00:00:47,699 --> 00:00:50,879
+you guys about how we've converged on
+
+10
+00:00:50,879 --> 00:00:57,150
+building command line tools we converged
+
+11
+00:00:57,150 --> 00:00:59,549
+on these patterns the hard way which is
+
+12
+00:00:59,549 --> 00:01:01,619
+basically a nice way of saying we've
+
+13
+00:01:01,619 --> 00:01:04,140
+failed several times and want to share
+
+14
+00:01:04,140 --> 00:01:06,360
+the failures with you we think shrank
+
+15
+00:01:06,360 --> 00:01:08,130
+failures is just as important as sharing
+
+16
+00:01:08,130 --> 00:01:12,240
+successes and for about four years now
+
+17
+00:01:12,240 --> 00:01:14,850
+we've been building these tools to
+
+18
+00:01:14,850 --> 00:01:19,409
+assist a project phonegap and not
+
+19
+00:01:19,409 --> 00:01:21,330
+surprisingly most of the tools are used
+
+20
+00:01:21,330 --> 00:01:23,759
+generally by people you download
+
+21
+00:01:23,759 --> 00:01:25,409
+something you want to interface it with
+
+22
+00:01:25,409 --> 00:01:28,200
+it right away but I guess to our
+
+23
+00:01:28,200 --> 00:01:31,170
+surprise some people started integrating
+
+24
+00:01:31,170 --> 00:01:33,719
+the tools with other tools into larger
+
+25
+00:01:33,719 --> 00:01:36,929
+programs build automations whatever it
+
+26
+00:01:36,929 --> 00:01:41,429
+is so while building these tools and
+
+27
+00:01:41,429 --> 00:01:43,649
+interacting with our community to evolve
+
+28
+00:01:43,649 --> 00:01:46,560
+them we've kind of found a few qualities
+
+29
+00:01:46,560 --> 00:01:48,030
+I guess you thought you could call them
+
+30
+00:01:48,030 --> 00:01:52,020
+of command line tools that we think are
+
+31
+00:01:52,020 --> 00:01:53,100
+useful when we want to share with you
+
+32
+00:01:53,100 --> 00:01:55,799
+guys so we've chosen four of these
+
+33
+00:01:55,799 --> 00:01:58,649
+points and we'll walk through them one
+
+34
+00:01:58,649 --> 00:02:01,950
+by one and since we've written these
+
+35
+00:02:01,950 --> 00:02:04,139
+tools in nodejs we love javascript and
+
+36
+00:02:04,139 --> 00:02:05,880
+we're at JS con we might as well show
+
+37
+00:02:05,880 --> 00:02:08,700
+you some node.js based code to go along
+
+38
+00:02:08,700 --> 00:02:12,750
+with it but of course I mean these are
+
+39
+00:02:12,750 --> 00:02:15,660
+just kind of suggestions just what these
+
+40
+00:02:15,660 --> 00:02:18,170
+two dudes converged on might be wrong
+
+41
+00:02:18,170 --> 00:02:22,650
+don't take them as absolutes
+
+42
+00:02:22,660 --> 00:02:26,629
+cool all right let's kick it off with
+
+43
+00:02:26,629 --> 00:02:29,720
+the command-line interface with respect
+
+44
+00:02:29,720 --> 00:02:33,260
+to testing it in the node community it's
+
+45
+00:02:33,260 --> 00:02:34,670
+really interesting that we're very
+
+46
+00:02:34,670 --> 00:02:37,340
+diligent for testing our modules will do
+
+47
+00:02:37,340 --> 00:02:39,260
+unit tests or will do behavior driven
+
+48
+00:02:39,260 --> 00:02:42,440
+tests for the public interface to our
+
+49
+00:02:42,440 --> 00:02:44,349
+module that we're providing to our users
+
+50
+00:02:44,349 --> 00:02:47,030
+but we rarely do that when it comes to
+
+51
+00:02:47,030 --> 00:02:49,209
+the command line interface we dumped
+
+52
+00:02:49,209 --> 00:02:53,000
+dozens or hundreds of lines of code into
+
+53
+00:02:53,000 --> 00:02:57,290
+a file and we release it and that is
+
+54
+00:02:57,290 --> 00:03:00,769
+often the public interface to your
+
+55
+00:03:00,769 --> 00:03:02,870
+library for most of your users if
+
+56
+00:03:02,870 --> 00:03:04,160
+they're actually using your command line
+
+57
+00:03:04,160 --> 00:03:05,810
+interface and your command line
+
+58
+00:03:05,810 --> 00:03:09,079
+interface has a bug you have no test to
+
+59
+00:03:09,079 --> 00:03:10,610
+cover it and your users will be seeing
+
+60
+00:03:10,610 --> 00:03:12,920
+that as a bug towards your library not
+
+61
+00:03:12,920 --> 00:03:14,360
+necessarily the command-line interface
+
+62
+00:03:14,360 --> 00:03:17,090
+and this is something that we've really
+
+63
+00:03:17,090 --> 00:03:20,510
+struggled with Phil and I for both the
+
+64
+00:03:20,510 --> 00:03:25,280
+past year or so we have no idea really
+
+65
+00:03:25,280 --> 00:03:26,690
+released for the past year we had no
+
+66
+00:03:26,690 --> 00:03:29,329
+idea how to write good test for a
+
+67
+00:03:29,329 --> 00:03:30,620
+command-line interface we really
+
+68
+00:03:30,620 --> 00:03:33,799
+struggled with this originally we were
+
+69
+00:03:33,799 --> 00:03:35,569
+going about by testing through shell
+
+70
+00:03:35,569 --> 00:03:37,849
+execution so we would write unit tests
+
+71
+00:03:37,849 --> 00:03:40,160
+or behavior driven tests we would
+
+72
+00:03:40,160 --> 00:03:42,709
+execute a given script and then we kind
+
+73
+00:03:42,709 --> 00:03:45,290
+of like poke and prod inspect what the
+
+74
+00:03:45,290 --> 00:03:47,690
+results were but the end result is that
+
+75
+00:03:47,690 --> 00:03:49,310
+things weren't really slow you're doing
+
+76
+00:03:49,310 --> 00:03:51,290
+a ton of file i/o and you're actually
+
+77
+00:03:51,290 --> 00:03:53,720
+executing a lot of code and your tests
+
+78
+00:03:53,720 --> 00:03:56,299
+end up being extremely vague so if you
+
+79
+00:03:56,299 --> 00:03:59,510
+dive into just this one example here
+
+80
+00:03:59,510 --> 00:04:01,579
+this is just a simple behavior driven
+
+81
+00:04:01,579 --> 00:04:03,560
+test where we're running the command
+
+82
+00:04:03,560 --> 00:04:07,060
+jazz conf create with a given path and
+
+83
+00:04:07,060 --> 00:04:09,709
+the test itself should create a project
+
+84
+00:04:09,709 --> 00:04:12,769
+so on line 7 you can see we shall exec
+
+85
+00:04:12,769 --> 00:04:14,959
+to a given command that command is jazz
+
+86
+00:04:14,959 --> 00:04:17,989
+conf create with a path and then
+
+87
+00:04:17,989 --> 00:04:19,789
+afterwards we're kind of going to poke
+
+88
+00:04:19,789 --> 00:04:22,190
+and prod and see if maybe the result was
+
+89
+00:04:22,190 --> 00:04:24,560
+what we wanted so first off we expect
+
+90
+00:04:24,560 --> 00:04:27,440
+that the result status code is 0 0 means
+
+91
+00:04:27,440 --> 00:04:30,169
+things probably went okay assuming that
+
+92
+00:04:30,169 --> 00:04:32,729
+we actually use status codes
+
+93
+00:04:32,729 --> 00:04:34,669
+command-line tool and that's not broken
+
+94
+00:04:34,669 --> 00:04:37,349
+we inspect the output the console output
+
+95
+00:04:37,349 --> 00:04:40,020
+so we can match a couple words and see
+
+96
+00:04:40,020 --> 00:04:41,849
+if maybe the word created and not err
+
+97
+00:04:41,849 --> 00:04:44,189
+appeared but that's again or extremely
+
+98
+00:04:44,189 --> 00:04:46,020
+weak what if we have just a conditional
+
+99
+00:04:46,020 --> 00:04:47,189
+bug and we're always saying the
+
+100
+00:04:47,189 --> 00:04:48,719
+project's been created when it actually
+
+101
+00:04:48,719 --> 00:04:51,509
+hasn't and so then we can also go even
+
+102
+00:04:51,509 --> 00:04:53,610
+deeper and we can start checking whether
+
+103
+00:04:53,610 --> 00:04:56,009
+or not certain files certain folders
+
+104
+00:04:56,009 --> 00:04:58,409
+were created and so this is where the FS
+
+105
+00:04:58,409 --> 00:05:01,710
+exists Inc is and equals true downside
+
+106
+00:05:01,710 --> 00:05:04,169
+there is that what if the file existed
+
+107
+00:05:04,169 --> 00:05:06,839
+before the test ran or you would
+
+108
+00:05:06,839 --> 00:05:08,189
+actually have to have before and after
+
+109
+00:05:08,189 --> 00:05:09,689
+tests to do clean up each time which
+
+110
+00:05:09,689 --> 00:05:11,460
+means you're doing a ton of file i/o and
+
+111
+00:05:11,460 --> 00:05:12,990
+people who don't have a solid state
+
+112
+00:05:12,990 --> 00:05:15,599
+drive results in tests the run extremely
+
+113
+00:05:15,599 --> 00:05:17,699
+extremely slow and in the end it's still
+
+114
+00:05:17,699 --> 00:05:21,899
+not a very deep test ideally what we
+
+115
+00:05:21,899 --> 00:05:24,599
+want is to programmatically test deep
+
+116
+00:05:24,599 --> 00:05:26,819
+CLI the same way we programmatically
+
+117
+00:05:26,819 --> 00:05:29,009
+test the rest of our library we can do
+
+118
+00:05:29,009 --> 00:05:31,289
+very deep and very intimate test that
+
+119
+00:05:31,289 --> 00:05:33,509
+way so we want something such as this
+
+120
+00:05:33,509 --> 00:05:36,569
+which is on line 7 we would simply say
+
+121
+00:05:36,569 --> 00:05:39,060
+we expect some function to have been
+
+122
+00:05:39,060 --> 00:05:41,069
+called with some argument at least now
+
+123
+00:05:41,069 --> 00:05:44,009
+we have a much deeper test running at
+
+124
+00:05:44,009 --> 00:05:46,169
+that specific time well it turns out
+
+125
+00:05:46,169 --> 00:05:47,699
+that we can actually do this and we can
+
+126
+00:05:47,699 --> 00:05:49,469
+do it very easily by simply treating the
+
+127
+00:05:49,469 --> 00:05:52,529
+CLI as a module instead of as an
+
+128
+00:05:52,529 --> 00:05:56,699
+executable script and to actually go
+
+129
+00:05:56,699 --> 00:05:58,259
+about doing that the first step you have
+
+130
+00:05:58,259 --> 00:06:00,810
+to do is just simply slim down your bin
+
+131
+00:06:00,810 --> 00:06:02,870
+script instead think of it as a proxy
+
+132
+00:06:02,870 --> 00:06:05,550
+into your CLI module or an interface
+
+133
+00:06:05,550 --> 00:06:07,830
+into your CLI module so what we're going
+
+134
+00:06:07,830 --> 00:06:09,569
+to do is actually go into the bin
+
+135
+00:06:09,569 --> 00:06:12,870
+directory we have the J's conf Chason
+
+136
+00:06:12,870 --> 00:06:14,759
+typically here i mentioned people would
+
+137
+00:06:14,759 --> 00:06:16,740
+be dumping dozens or hundreds of lines
+
+138
+00:06:16,740 --> 00:06:19,289
+of code where they parse argument
+
+139
+00:06:19,289 --> 00:06:20,580
+parameters and decide what they're going
+
+140
+00:06:20,580 --> 00:06:24,149
+to do but instead let's just get rid of
+
+141
+00:06:24,149 --> 00:06:27,719
+all of that and instead require a CLI
+
+142
+00:06:27,719 --> 00:06:29,999
+module that we've declared on line 8 i'm
+
+143
+00:06:29,999 --> 00:06:33,059
+actually parsing the process argument
+
+144
+00:06:33,059 --> 00:06:35,550
+values i'm using optimist but you guys
+
+145
+00:06:35,550 --> 00:06:37,770
+don't have to if you like the raw
+
+146
+00:06:37,770 --> 00:06:41,099
+process args then go nuts line 14 is the
+
+147
+00:06:41,099 --> 00:06:43,560
+key right there with our CLI module we
+
+148
+00:06:43,560 --> 00:06:45,509
+call an entry point and we pass those
+
+149
+00:06:45,509 --> 00:06:46,620
+process args so
+
+150
+00:06:46,620 --> 00:06:50,160
+my entry point is RV and pass arc V and
+
+151
+00:06:50,160 --> 00:06:53,070
+so that is all that this would do you
+
+152
+00:06:53,070 --> 00:06:55,020
+could write three simple script tests if
+
+153
+00:06:55,020 --> 00:06:57,000
+you really want to know that this entry
+
+154
+00:06:57,000 --> 00:06:59,280
+point works but after that at least
+
+155
+00:06:59,280 --> 00:07:02,850
+we're moving into real code now the
+
+156
+00:07:02,850 --> 00:07:04,949
+second step is actually the CLI module
+
+157
+00:07:04,949 --> 00:07:06,419
+which is going to consume our main
+
+158
+00:07:06,419 --> 00:07:08,790
+library and so if we go into lib an easy
+
+159
+00:07:08,790 --> 00:07:10,440
+way to organize this as silly as it
+
+160
+00:07:10,440 --> 00:07:12,600
+sounds is just create a CLI directory
+
+161
+00:07:12,600 --> 00:07:15,750
+with an index like Jas and size nice and
+
+162
+00:07:15,750 --> 00:07:19,470
+clean that lot that modules of course
+
+163
+00:07:19,470 --> 00:07:21,000
+going to consume your main module in
+
+164
+00:07:21,000 --> 00:07:23,160
+this case we're calling it Jas conf and
+
+165
+00:07:23,160 --> 00:07:25,080
+from there you can actually treat it
+
+166
+00:07:25,080 --> 00:07:26,610
+like a real module so you don't need to
+
+167
+00:07:26,610 --> 00:07:29,580
+have this gigantic bin script instead
+
+168
+00:07:29,580 --> 00:07:31,050
+you can actually start to abstract and
+
+169
+00:07:31,050 --> 00:07:33,150
+move things into different files and it
+
+170
+00:07:33,150 --> 00:07:38,070
+looks a lot cleaner to work with and the
+
+171
+00:07:38,070 --> 00:07:39,720
+benefit of all of this is that now we
+
+172
+00:07:39,720 --> 00:07:42,510
+can actually test that CLI as a module
+
+173
+00:07:42,510 --> 00:07:44,430
+and we're binding really close to the
+
+174
+00:07:44,430 --> 00:07:46,410
+metal of the actual command line
+
+175
+00:07:46,410 --> 00:07:48,720
+terminal because we can just fake the
+
+176
+00:07:48,720 --> 00:07:51,389
+process arg v value but everything else
+
+177
+00:07:51,389 --> 00:07:53,099
+is going to run the same so we have high
+
+178
+00:07:53,099 --> 00:07:55,830
+confidence that our programmatic tests
+
+179
+00:07:55,830 --> 00:07:57,599
+are actually testing the same interface
+
+180
+00:07:57,599 --> 00:07:59,780
+that our users are actually going to use
+
+181
+00:07:59,780 --> 00:08:02,340
+so if you jump into the spec and you
+
+182
+00:08:02,340 --> 00:08:04,020
+jumped into the CLI if we want to
+
+183
+00:08:04,020 --> 00:08:05,639
+actually write a test for the create
+
+184
+00:08:05,639 --> 00:08:07,770
+spec we can actually now accomplished
+
+185
+00:08:07,770 --> 00:08:09,360
+something much more detailed we can
+
+186
+00:08:09,360 --> 00:08:12,870
+again include our CLI module and we can
+
+187
+00:08:12,870 --> 00:08:15,570
+again still test the the J's conf create
+
+188
+00:08:15,570 --> 00:08:18,510
+paths we can still say it should be able
+
+189
+00:08:18,510 --> 00:08:20,300
+to create a project but on line fourteen
+
+190
+00:08:20,300 --> 00:08:23,430
+we actually call CLI dark B and we pass
+
+191
+00:08:23,430 --> 00:08:25,139
+in the exact same command that the user
+
+192
+00:08:25,139 --> 00:08:27,599
+would have ran on their system so create
+
+193
+00:08:27,599 --> 00:08:31,050
+space path to the project the benefit
+
+194
+00:08:31,050 --> 00:08:32,430
+those and now we can actually test
+
+195
+00:08:32,430 --> 00:08:34,800
+details so we can actually say what's
+
+196
+00:08:34,800 --> 00:08:36,570
+the entry point to remain library JS
+
+197
+00:08:36,570 --> 00:08:38,760
+conf with the create function was it
+
+198
+00:08:38,760 --> 00:08:40,709
+actually called yes awesome was it
+
+199
+00:08:40,709 --> 00:08:43,200
+called with the correct path yes awesome
+
+200
+00:08:43,200 --> 00:08:45,330
+so at least we know that the CLI is now
+
+201
+00:08:45,330 --> 00:08:47,940
+parsing things correctly and of course
+
+202
+00:08:47,940 --> 00:08:49,680
+we can take it even a step further and
+
+203
+00:08:49,680 --> 00:08:51,420
+this is always important is to keep the
+
+204
+00:08:51,420 --> 00:08:54,480
+CLI as silly as it sounds doing the CLI
+
+205
+00:08:54,480 --> 00:08:57,030
+logic only but the benefit there isn't
+
+206
+00:08:57,030 --> 00:08:58,530
+now we can actually use mocking so we
+
+207
+00:08:58,530 --> 00:08:59,970
+can mark out that mean lie
+
+208
+00:08:59,970 --> 00:09:05,459
+the J's conf la creme Lee fast so we can
+
+209
+00:09:05,459 --> 00:09:08,610
+jump into the spec the CLI to create
+
+210
+00:09:08,610 --> 00:09:11,129
+again and now on line 7 we're actually
+
+211
+00:09:11,129 --> 00:09:15,240
+mocking up the Jazz conf create so very
+
+212
+00:09:15,240 --> 00:09:17,639
+basic for testing but now these tests
+
+213
+00:09:17,639 --> 00:09:19,230
+are running lightning fast and are not
+
+214
+00:09:19,230 --> 00:09:20,730
+altering the file system they're not
+
+215
+00:09:20,730 --> 00:09:22,379
+doing anything but testing that CLI
+
+216
+00:09:22,379 --> 00:09:23,970
+interface and ensuring that things are
+
+217
+00:09:23,970 --> 00:09:26,009
+being parsed correctly we've already got
+
+218
+00:09:26,009 --> 00:09:28,290
+rock-solid tests for the Jays conf
+
+219
+00:09:28,290 --> 00:09:30,839
+create function so things are now tests
+
+220
+00:09:30,839 --> 00:09:34,230
+on both ends and with that we actually
+
+221
+00:09:34,230 --> 00:09:36,779
+have a testable CLI so without doing
+
+222
+00:09:36,779 --> 00:09:39,600
+anything fancy again it sounds trivial
+
+223
+00:09:39,600 --> 00:09:41,730
+but it's taken us well over a year to
+
+224
+00:09:41,730 --> 00:09:43,410
+converge on actually this using this
+
+225
+00:09:43,410 --> 00:09:46,139
+pattern and works fine a ruby or node it
+
+226
+00:09:46,139 --> 00:09:49,689
+doesn't really matter what you're doing
+
+227
+00:09:49,699 --> 00:09:53,129
+so point two is command line interface
+
+228
+00:09:53,129 --> 00:09:55,470
+should be helpful and it does actually
+
+229
+00:09:55,470 --> 00:09:59,970
+sound like a silly point but it's people
+
+230
+00:09:59,970 --> 00:10:02,850
+that are using a tool mostly not i'm
+
+231
+00:10:02,850 --> 00:10:05,100
+missing gods so people generally need a
+
+232
+00:10:05,100 --> 00:10:06,509
+little bit of hand-holding especially
+
+233
+00:10:06,509 --> 00:10:08,639
+early on to kind of figure out how to do
+
+234
+00:10:08,639 --> 00:10:12,600
+anything and so having meaningful help
+
+235
+00:10:12,600 --> 00:10:15,019
+output you know actual usage
+
+236
+00:10:15,019 --> 00:10:18,420
+documentation to help people out is a
+
+237
+00:10:18,420 --> 00:10:21,600
+big win and unfortunately that's not the
+
+238
+00:10:21,600 --> 00:10:23,220
+case for a lot of tools out there
+
+239
+00:10:23,220 --> 00:10:26,300
+documentation seems to be generally
+
+240
+00:10:26,300 --> 00:10:31,680
+neglected by developer community and so
+
+241
+00:10:31,680 --> 00:10:33,959
+at least what I've found trying to dive
+
+242
+00:10:33,959 --> 00:10:35,579
+through code for a lot of modules out
+
+243
+00:10:35,579 --> 00:10:38,550
+there is that usage documentation or
+
+244
+00:10:38,550 --> 00:10:40,110
+documentation in general is hard-coded
+
+245
+00:10:40,110 --> 00:10:45,089
+straight into logic so you get end up
+
+246
+00:10:45,089 --> 00:10:47,699
+getting these massive ugly strings in
+
+247
+00:10:47,699 --> 00:10:51,059
+the middle of your code and they're hard
+
+248
+00:10:51,059 --> 00:10:53,100
+to find hard to contribute to hard to
+
+249
+00:10:53,100 --> 00:10:56,639
+fix and also you forget you just forget
+
+250
+00:10:56,639 --> 00:10:58,860
+to update them a lot of the time so
+
+251
+00:10:58,860 --> 00:11:02,790
+let's take a look at one back to our Jas
+
+252
+00:11:02,790 --> 00:11:07,439
+conf tool I I see this kind of pattern
+
+253
+00:11:07,439 --> 00:11:09,300
+if you're lucky enough it'll be in its
+
+254
+00:11:09,300 --> 00:11:11,100
+own module sometimes it'll just be
+
+255
+00:11:11,100 --> 00:11:11,880
+randomly
+
+256
+00:11:11,880 --> 00:11:14,690
+kind of sprinkled all over the codebase
+
+257
+00:11:14,690 --> 00:11:17,370
+but you see something like this so a
+
+258
+00:11:17,370 --> 00:11:20,070
+giant array of strings that are then
+
+259
+00:11:20,070 --> 00:11:24,170
+joined with a new line pretty clever but
+
+260
+00:11:24,170 --> 00:11:26,430
+say you add a new command and you have
+
+261
+00:11:26,430 --> 00:11:27,930
+to update this and you forget a comma
+
+262
+00:11:27,930 --> 00:11:32,520
+that'll break so instead we found a
+
+263
+00:11:32,520 --> 00:11:34,740
+better way of doing documentation an
+
+264
+00:11:34,740 --> 00:11:38,070
+easier way a way that is much simpler to
+
+265
+00:11:38,070 --> 00:11:42,150
+contribute to and it's pretty obvious
+
+266
+00:11:42,150 --> 00:11:45,480
+how to do it we just use plain text most
+
+267
+00:11:45,480 --> 00:11:50,190
+of the time individual files that map to
+
+268
+00:11:50,190 --> 00:11:53,430
+specific commands our overall usage and
+
+269
+00:11:53,430 --> 00:11:56,130
+it's easy to find them it's easy to
+
+270
+00:11:56,130 --> 00:11:57,570
+contribute to even straight in github
+
+271
+00:11:57,570 --> 00:12:00,270
+since it's just plain text and it's
+
+272
+00:12:00,270 --> 00:12:04,380
+worked for us so in our imaginary j s
+
+273
+00:12:04,380 --> 00:12:06,570
+conf tool we actually have a top-level
+
+274
+00:12:06,570 --> 00:12:09,210
+folder for documentation which again
+
+275
+00:12:09,210 --> 00:12:12,960
+isn't the norm i would say in there we
+
+276
+00:12:12,960 --> 00:12:15,960
+have a CLI folder and we have individual
+
+277
+00:12:15,960 --> 00:12:18,990
+files for different aspects of using the
+
+278
+00:12:18,990 --> 00:12:23,190
+tool here's an example of the top-level
+
+279
+00:12:23,190 --> 00:12:26,610
+usage the help text standard usage
+
+280
+00:12:26,610 --> 00:12:28,500
+documentation nothing you wouldn't
+
+281
+00:12:28,500 --> 00:12:30,510
+expect when you run the command from the
+
+282
+00:12:30,510 --> 00:12:32,520
+tool with help flag or something like
+
+283
+00:12:32,520 --> 00:12:36,720
+that and by setting up a structure in
+
+284
+00:12:36,720 --> 00:12:39,660
+this way all we have to do to kind of
+
+285
+00:12:39,660 --> 00:12:42,240
+wire it all up appropriately is righted
+
+286
+00:12:42,240 --> 00:12:44,610
+a little bit of logic that will find
+
+287
+00:12:44,610 --> 00:12:47,460
+read the perfect file and spew it up for
+
+288
+00:12:47,460 --> 00:12:52,100
+a user so this logic is fairly simple
+
+289
+00:12:52,100 --> 00:12:54,960
+let's take a look at one example that we
+
+290
+00:12:54,960 --> 00:13:00,030
+wrote up so in our help module here it's
+
+291
+00:13:00,030 --> 00:13:03,180
+probably the biggest code slide we have
+
+292
+00:13:03,180 --> 00:13:05,210
+but essentially what's going on is we
+
+293
+00:13:05,210 --> 00:13:09,000
+just take the arguments that are passed
+
+294
+00:13:09,000 --> 00:13:11,610
+into the command using the pattern that
+
+295
+00:13:11,610 --> 00:13:15,090
+Mike touched on earlier between lines 25
+
+296
+00:13:15,090 --> 00:13:19,230
+and 28 there we append a txt extension
+
+297
+00:13:19,230 --> 00:13:23,160
+onto it join it up with dots and then we
+
+298
+00:13:23,160 --> 00:13:25,529
+try to read that file if it exists so if
+
+299
+00:13:25,529 --> 00:13:30,540
+typed GS com helped create it will put
+
+300
+00:13:30,540 --> 00:13:34,019
+together a file path that ends in help
+
+301
+00:13:34,019 --> 00:13:38,009
+create text for example probably need to
+
+302
+00:13:38,009 --> 00:13:40,410
+do a little more than this like air
+
+303
+00:13:40,410 --> 00:13:42,509
+checking making sure the file exists
+
+304
+00:13:42,509 --> 00:13:45,649
+that kind of stuff but it's simple and
+
+305
+00:13:45,649 --> 00:13:49,680
+really it's it's very similar to routing
+
+306
+00:13:49,680 --> 00:13:51,870
+in a web server kind of the same idea a
+
+307
+00:13:51,870 --> 00:13:53,519
+request comes in with a bunch of
+
+308
+00:13:53,519 --> 00:13:55,980
+parameters and you end up your web
+
+309
+00:13:55,980 --> 00:13:57,389
+server does all the work to route it to
+
+310
+00:13:57,389 --> 00:13:59,639
+the appropriate view and put in all the
+
+311
+00:13:59,639 --> 00:14:00,899
+data appropriately and that kind of
+
+312
+00:14:00,899 --> 00:14:02,970
+stuff so it's the same idea except the
+
+313
+00:14:02,970 --> 00:14:04,709
+parameters are a lot simpler just based
+
+314
+00:14:04,709 --> 00:14:07,170
+on the commands you type into your
+
+315
+00:14:07,170 --> 00:14:11,069
+console and I mean you can get fancy
+
+316
+00:14:11,069 --> 00:14:13,439
+with this too if you really want you
+
+317
+00:14:13,439 --> 00:14:16,559
+could use templating or actually the guy
+
+318
+00:14:16,559 --> 00:14:18,839
+who came up with this general pattern of
+
+319
+00:14:18,839 --> 00:14:22,139
+documentation Gord Tanner from ex
+
+320
+00:14:22,139 --> 00:14:25,350
+blackberry ex tiny hippos now at thalmic
+
+321
+00:14:25,350 --> 00:14:28,860
+I believe he he was the first one that I
+
+322
+00:14:28,860 --> 00:14:30,660
+saw that used this pattern but he ended
+
+323
+00:14:30,660 --> 00:14:32,189
+up going one step further and using
+
+324
+00:14:32,189 --> 00:14:34,769
+markup for his documentation so he sorry
+
+325
+00:14:34,769 --> 00:14:39,750
+I marked down and you know so he has to
+
+326
+00:14:39,750 --> 00:14:42,300
+include a markdown parser and all that
+
+327
+00:14:42,300 --> 00:14:47,040
+good stuff but it worked point number
+
+328
+00:14:47,040 --> 00:14:50,519
+three so a bit of backstory between Phil
+
+329
+00:14:50,519 --> 00:14:52,410
+and I oh that we're part of the Apache
+
+330
+00:14:52,410 --> 00:14:55,500
+Cordova phonegap project for the past
+
+331
+00:14:55,500 --> 00:14:57,689
+year the tooling has been starting to
+
+332
+00:14:57,689 --> 00:14:59,220
+develop in that project that's a huge
+
+333
+00:14:59,220 --> 00:15:01,589
+pain point right now and in the past
+
+334
+00:15:01,589 --> 00:15:03,990
+year we've had to build a number of
+
+335
+00:15:03,990 --> 00:15:05,670
+tools but we've also been consuming a
+
+336
+00:15:05,670 --> 00:15:08,220
+lot of command line tools provided by
+
+337
+00:15:08,220 --> 00:15:11,519
+SDKs and one thing that we've quickly
+
+338
+00:15:11,519 --> 00:15:12,720
+realized in the past year is that
+
+339
+00:15:12,720 --> 00:15:14,250
+command line interfaces should be
+
+340
+00:15:14,250 --> 00:15:17,519
+bipolar and what we mean by bipolar is
+
+341
+00:15:17,519 --> 00:15:19,350
+that sometimes it's nice to have a
+
+342
+00:15:19,350 --> 00:15:22,110
+verbose tool when something goes wrong
+
+343
+00:15:22,110 --> 00:15:26,309
+so you run j/s comp create with my comp
+
+344
+00:15:26,309 --> 00:15:27,990
+as your path but you provide the verbose
+
+345
+00:15:27,990 --> 00:15:31,079
+flag it's really helpful to see what
+
+346
+00:15:31,079 --> 00:15:33,089
+files what directories have been created
+
+347
+00:15:33,089 --> 00:15:35,459
+when an air goes wrong it's going to
+
+348
+00:15:35,459 --> 00:15:37,620
+just flip out and print as much as
+
+349
+00:15:37,620 --> 00:15:39,000
+possible which in
+
+350
+00:15:39,000 --> 00:15:40,710
+in the end actually is incredibly
+
+351
+00:15:40,710 --> 00:15:42,720
+helpful for your tools that you're
+
+352
+00:15:42,720 --> 00:15:44,370
+building on they're consuming these but
+
+353
+00:15:44,370 --> 00:15:47,670
+also just as a user but at the same time
+
+354
+00:15:47,670 --> 00:15:49,200
+sometimes it's nice have a quiet tool
+
+355
+00:15:49,200 --> 00:15:50,880
+actually most of the time it's nice just
+
+356
+00:15:50,880 --> 00:15:53,160
+to have a quiet tool when everything
+
+357
+00:15:53,160 --> 00:15:55,440
+goes right so in this case we can do the
+
+358
+00:15:55,440 --> 00:15:57,210
+same thing but with the quiet flag and
+
+359
+00:15:57,210 --> 00:16:00,990
+it spews out nothing that's awesome but
+
+360
+00:16:00,990 --> 00:16:03,150
+how do we implement that into our own
+
+361
+00:16:03,150 --> 00:16:05,520
+CLI tools that's kind of something that
+
+362
+00:16:05,520 --> 00:16:07,920
+we struggled with the command-line
+
+363
+00:16:07,920 --> 00:16:10,650
+interface module doesn't really know
+
+364
+00:16:10,650 --> 00:16:13,620
+much it knows how to call jayus conf
+
+365
+00:16:13,620 --> 00:16:15,600
+create who knows it's about to create a
+
+366
+00:16:15,600 --> 00:16:17,340
+project and these are going to succeed
+
+367
+00:16:17,340 --> 00:16:19,740
+or fail but it really has no clue what's
+
+368
+00:16:19,740 --> 00:16:22,080
+happening in between and if we start to
+
+369
+00:16:22,080 --> 00:16:24,180
+put a lot of those messages into the
+
+370
+00:16:24,180 --> 00:16:26,490
+actual module then we're going to result
+
+371
+00:16:26,490 --> 00:16:28,290
+in a bunch of console logs hanging out
+
+372
+00:16:28,290 --> 00:16:31,290
+inside a library that other users might
+
+373
+00:16:31,290 --> 00:16:33,660
+be consuming not from the command line
+
+374
+00:16:33,660 --> 00:16:34,890
+interface they might have to deal with
+
+375
+00:16:34,890 --> 00:16:37,530
+these ugly console messages in some form
+
+376
+00:16:37,530 --> 00:16:40,680
+so we thought about this quite a bit and
+
+377
+00:16:40,680 --> 00:16:43,080
+we've converged on event meters they
+
+378
+00:16:43,080 --> 00:16:45,750
+actually work incredibly well and they
+
+379
+00:16:45,750 --> 00:16:48,330
+provide all the functionality you need
+
+380
+00:16:48,330 --> 00:16:49,830
+without any additional dependencies
+
+381
+00:16:49,830 --> 00:16:53,550
+which we like a lot and the idea is that
+
+382
+00:16:53,550 --> 00:16:55,410
+the main libraries is verbose as
+
+383
+00:16:55,410 --> 00:16:57,000
+possible it's a chatty kid always
+
+384
+00:16:57,000 --> 00:16:58,860
+talking telling you absolutely
+
+385
+00:16:58,860 --> 00:17:01,560
+everything that's doing but the catch is
+
+386
+00:17:01,560 --> 00:17:03,810
+that you don't actually have to listen
+
+387
+00:17:03,810 --> 00:17:06,329
+if you don't want to so inside the lib
+
+388
+00:17:06,329 --> 00:17:08,939
+directory inside our J's comp directory
+
+389
+00:17:08,939 --> 00:17:11,730
+for our create command we can actually
+
+390
+00:17:11,730 --> 00:17:14,670
+have a global emitter so inside the util
+
+391
+00:17:14,670 --> 00:17:16,890
+I've created this emitter module and
+
+392
+00:17:16,890 --> 00:17:19,260
+we've instantiated a single singleton
+
+393
+00:17:19,260 --> 00:17:21,600
+actually of the event emitter provided
+
+394
+00:17:21,600 --> 00:17:24,420
+by node and then any command can
+
+395
+00:17:24,420 --> 00:17:26,490
+actually require that and constantly
+
+396
+00:17:26,490 --> 00:17:29,100
+chat about what's happening so it can
+
+397
+00:17:29,100 --> 00:17:32,460
+emit a log event and give a message it
+
+398
+00:17:32,460 --> 00:17:35,070
+can even MIT and a warren event if maybe
+
+399
+00:17:35,070 --> 00:17:37,050
+some folder already exists but it's just
+
+400
+00:17:37,050 --> 00:17:38,910
+going to plow through and use it annoys
+
+401
+00:17:38,910 --> 00:17:41,760
+and it can emit an air event if if
+
+402
+00:17:41,760 --> 00:17:45,420
+goes wrong and so these are incredibly
+
+403
+00:17:45,420 --> 00:17:49,050
+useful because now the CLI module can
+
+404
+00:17:49,050 --> 00:17:51,810
+subscribe to these events or choose to
+
+405
+00:17:51,810 --> 00:17:52,410
+unsubscribe
+
+406
+00:17:52,410 --> 00:17:54,960
+from that chatty kid and also
+
+407
+00:17:54,960 --> 00:17:57,660
+third-party libraries who are depending
+
+408
+00:17:57,660 --> 00:17:59,610
+on you can actually choose to subscribe
+
+409
+00:17:59,610 --> 00:18:01,980
+to you if they happen to be integrating
+
+410
+00:18:01,980 --> 00:18:03,390
+you into their their continuous
+
+411
+00:18:03,390 --> 00:18:04,740
+integration service or something like
+
+412
+00:18:04,740 --> 00:18:07,230
+that they may want to know what the hell
+
+413
+00:18:07,230 --> 00:18:10,590
+is going on so implementation wise we
+
+414
+00:18:10,590 --> 00:18:13,500
+can go into the lib the CLI in this case
+
+415
+00:18:13,500 --> 00:18:15,300
+I'm going to my argument parser so I
+
+416
+00:18:15,300 --> 00:18:18,600
+called it the arg v and at the very top
+
+417
+00:18:18,600 --> 00:18:20,640
+I'm just inspecting what were the switch
+
+418
+00:18:20,640 --> 00:18:23,880
+is provided so what's silent or quiet or
+
+419
+00:18:23,880 --> 00:18:27,030
+q provided if so let's set our V dot
+
+420
+00:18:27,030 --> 00:18:29,940
+silent to true and for verbose if
+
+421
+00:18:29,940 --> 00:18:32,040
+verbose or V were provided let's set
+
+422
+00:18:32,040 --> 00:18:34,920
+verbose the true and if verbose is true
+
+423
+00:18:34,920 --> 00:18:38,760
+let's bind to the log the warren and the
+
+424
+00:18:38,760 --> 00:18:41,880
+air events and just route those into the
+
+425
+00:18:41,880 --> 00:18:43,770
+console belt law console dot warrant or
+
+426
+00:18:43,770 --> 00:18:45,810
+console the air and of course is more
+
+427
+00:18:45,810 --> 00:18:48,420
+elegant ways to write this code but to
+
+428
+00:18:48,420 --> 00:18:49,770
+appease everyone in the crowd this is
+
+429
+00:18:49,770 --> 00:18:52,380
+the most obvious way and so now we're
+
+430
+00:18:52,380 --> 00:18:54,360
+able to actually subscribe to all the
+
+431
+00:18:54,360 --> 00:18:56,040
+details the nitty-gritty details are
+
+432
+00:18:56,040 --> 00:18:57,930
+going on inside our library only if we
+
+433
+00:18:57,930 --> 00:18:59,760
+want to and we can unsubscribe at any
+
+434
+00:18:59,760 --> 00:19:03,600
+time too so so it's just a beautiful
+
+435
+00:19:03,600 --> 00:19:08,350
+little approach that we've came up with
+
+436
+00:19:08,360 --> 00:19:11,010
+and finally the last point we wanted to
+
+437
+00:19:11,010 --> 00:19:13,800
+touch on was that a command line
+
+438
+00:19:13,800 --> 00:19:18,480
+interface should be interoperable so we
+
+439
+00:19:18,480 --> 00:19:20,880
+were all taught hopefully to play nice
+
+440
+00:19:20,880 --> 00:19:23,790
+on the playground with other kids and if
+
+441
+00:19:23,790 --> 00:19:25,920
+you're building software the story is
+
+442
+00:19:25,920 --> 00:19:30,240
+the same be nice so like I mentioned the
+
+443
+00:19:30,240 --> 00:19:32,430
+very start we might have been surprised
+
+444
+00:19:32,430 --> 00:19:34,770
+by it but in hindsight other tools
+
+445
+00:19:34,770 --> 00:19:37,130
+consuming our tools seems pretty natural
+
+446
+00:19:37,130 --> 00:19:40,650
+when these programs really evolved the
+
+447
+00:19:40,650 --> 00:19:41,880
+kind of build on each other and
+
+448
+00:19:41,880 --> 00:19:43,560
+eventually you get to something that's
+
+449
+00:19:43,560 --> 00:19:48,120
+really useful or really good and the
+
+450
+00:19:48,120 --> 00:19:51,210
+only possible way to have this kind of
+
+451
+00:19:51,210 --> 00:19:54,030
+tower of programs that are authored by
+
+452
+00:19:54,030 --> 00:19:55,950
+different people are different groups to
+
+453
+00:19:55,950 --> 00:19:59,280
+work well together is conventions and
+
+454
+00:19:59,280 --> 00:20:01,730
+good communication between all of them
+
+455
+00:20:01,730 --> 00:20:04,170
+so essentially when I'm getting into is
+
+456
+00:20:04,170 --> 00:20:05,480
+that exit codes are
+
+457
+00:20:05,480 --> 00:20:09,559
+ortant don't ignore them let's take a
+
+458
+00:20:09,559 --> 00:20:12,230
+look so to build on Mike's previous
+
+459
+00:20:12,230 --> 00:20:14,840
+point let's go into that argument parser
+
+460
+00:20:14,840 --> 00:20:18,520
+that's part of our magical program and
+
+461
+00:20:18,520 --> 00:20:23,470
+say that in verbose mode we wanted to
+
+462
+00:20:23,470 --> 00:20:27,470
+halt the program's process immediately
+
+463
+00:20:27,470 --> 00:20:29,990
+if there is ever an error message
+
+464
+00:20:29,990 --> 00:20:33,200
+emitted so dropping a simple process
+
+465
+00:20:33,200 --> 00:20:36,020
+that exit with a nonzero exit code does
+
+466
+00:20:36,020 --> 00:20:38,780
+the trick here whether someone's
+
+467
+00:20:38,780 --> 00:20:41,419
+consuming your tool at the command line
+
+468
+00:20:41,419 --> 00:20:45,620
+level or as a node module it'll still
+
+469
+00:20:45,620 --> 00:20:49,040
+work out the same way sometimes you also
+
+470
+00:20:49,040 --> 00:20:52,120
+want to be able to talk in ways that
+
+471
+00:20:52,120 --> 00:20:54,860
+other tools can understand at least
+
+472
+00:20:54,860 --> 00:21:00,340
+easily so perhaps we want JSON output
+
+473
+00:21:00,340 --> 00:21:06,650
+like so or we just want tabs and we can
+
+474
+00:21:06,650 --> 00:21:08,990
+do that too so just thinking about these
+
+475
+00:21:08,990 --> 00:21:12,320
+sorts of ideas allows us to create tools
+
+476
+00:21:12,320 --> 00:21:15,980
+that work well with each other and I
+
+477
+00:21:15,980 --> 00:21:17,929
+talked about interoperability would not
+
+478
+00:21:17,929 --> 00:21:19,640
+be complete without mentioning windows
+
+479
+00:21:19,640 --> 00:21:23,830
+the kid that's always picked last so
+
+480
+00:21:23,830 --> 00:21:27,020
+these sorts of problems there's really
+
+481
+00:21:27,020 --> 00:21:30,440
+two or three major points here bit us
+
+482
+00:21:30,440 --> 00:21:32,600
+early on where we iterate riddick really
+
+483
+00:21:32,600 --> 00:21:35,570
+quickly on our tools and it worked great
+
+484
+00:21:35,570 --> 00:21:38,360
+on mac and linux and then we're about to
+
+485
+00:21:38,360 --> 00:21:40,160
+release some and someone's like hey
+
+486
+00:21:40,160 --> 00:21:41,480
+let's check them out on windows and
+
+487
+00:21:41,480 --> 00:21:45,020
+everything's broken so simple rule to
+
+488
+00:21:45,020 --> 00:21:48,049
+follow is don't hardcode paths let's
+
+489
+00:21:48,049 --> 00:21:52,520
+take a look in this create function that
+
+490
+00:21:52,520 --> 00:21:55,400
+we have in our J's comic program you
+
+491
+00:21:55,400 --> 00:21:57,470
+might need to shell out just just an
+
+492
+00:21:57,470 --> 00:21:59,270
+example but at least in our project
+
+493
+00:21:59,270 --> 00:22:02,620
+happens a lot so the top example there
+
+494
+00:22:02,620 --> 00:22:06,350
+has a dot and a forward slash both of
+
+495
+00:22:06,350 --> 00:22:08,210
+which will blow up a Windows machine so
+
+496
+00:22:08,210 --> 00:22:10,910
+you don't want to do those instead you
+
+497
+00:22:10,910 --> 00:22:13,730
+should use your trusty friend path the
+
+498
+00:22:13,730 --> 00:22:16,340
+standard lib or the node standard module
+
+499
+00:22:16,340 --> 00:22:18,740
+to join it all together and then execute
+
+500
+00:22:18,740 --> 00:22:20,350
+that instead
+
+501
+00:22:20,350 --> 00:22:23,330
+simple tip but it saves us a lot of
+
+502
+00:22:23,330 --> 00:22:27,170
+hassle environment variables are a good
+
+503
+00:22:27,170 --> 00:22:29,480
+way to kind of figure out a few details
+
+504
+00:22:29,480 --> 00:22:31,340
+that are sometimes necessary to work
+
+505
+00:22:31,340 --> 00:22:33,020
+with when you're building command-line
+
+506
+00:22:33,020 --> 00:22:36,800
+tools so I'm going to show an example of
+
+507
+00:22:36,800 --> 00:22:41,960
+a technique to get to the user's home
+
+508
+00:22:41,960 --> 00:22:45,020
+directory which is sometimes useful if
+
+509
+00:22:45,020 --> 00:22:47,000
+you need to download stuff on the fly or
+
+510
+00:22:47,000 --> 00:22:50,420
+save stuff you need to get to that
+
+511
+00:22:50,420 --> 00:22:51,500
+director because you know you can write
+
+512
+00:22:51,500 --> 00:22:57,110
+to it so here we use the environment
+
+513
+00:22:57,110 --> 00:22:59,660
+variable one of two environment
+
+514
+00:22:59,660 --> 00:23:01,700
+variables depending on the platform that
+
+515
+00:23:01,700 --> 00:23:04,970
+the program is executing in and it will
+
+516
+00:23:04,970 --> 00:23:08,690
+return a proper path on that environment
+
+517
+00:23:08,690 --> 00:23:12,350
+and so this line actually works well and
+
+518
+00:23:12,350 --> 00:23:14,780
+takes into account the latest switch and
+
+519
+00:23:14,780 --> 00:23:18,050
+windows is that right so from windows 95
+
+520
+00:23:18,050 --> 00:23:20,720
+to windows 7 your home directory was
+
+521
+00:23:20,720 --> 00:23:23,960
+located in a user profile direct your
+
+522
+00:23:23,960 --> 00:23:25,610
+environment variable but in the latest
+
+523
+00:23:25,610 --> 00:23:27,140
+version of Windows it switches back to
+
+524
+00:23:27,140 --> 00:23:29,540
+home as every other st. operating system
+
+525
+00:23:29,540 --> 00:23:32,570
+does so this conditional least handles
+
+526
+00:23:32,570 --> 00:23:34,820
+that case but it's like very simple kind
+
+527
+00:23:34,820 --> 00:23:36,830
+of patterns that help you build
+
+528
+00:23:36,830 --> 00:23:40,830
+compatible tools everywhere and
+
+529
+00:23:40,840 --> 00:23:44,210
+thankfully node uses NP m and n p.m. is
+
+530
+00:23:44,210 --> 00:23:47,780
+awesome and windows friendly and one
+
+531
+00:23:47,780 --> 00:23:50,330
+interesting thing that took a little bit
+
+532
+00:23:50,330 --> 00:23:53,030
+of documentation hunting to find out was
+
+533
+00:23:53,030 --> 00:23:55,700
+that any dependencies that you have in
+
+534
+00:23:55,700 --> 00:23:58,870
+your package.json if they have binary
+
+535
+00:23:58,870 --> 00:24:01,490
+interfaces or command faces for their
+
+536
+00:24:01,490 --> 00:24:06,440
+modules NPM will add all of those
+
+537
+00:24:06,440 --> 00:24:09,170
+binaries to the executive search paths
+
+538
+00:24:09,170 --> 00:24:11,860
+before you fire any of the npm scripts
+
+539
+00:24:11,860 --> 00:24:16,180
+so let's take a look an example this
+
+540
+00:24:16,180 --> 00:24:19,040
+will die on windows because you're using
+
+541
+00:24:19,040 --> 00:24:21,490
+a dot and using forward slashes
+
+542
+00:24:21,490 --> 00:24:23,660
+essentially the situation here is say
+
+543
+00:24:23,660 --> 00:24:26,240
+you have some awesome test framework
+
+544
+00:24:26,240 --> 00:24:28,430
+like jasmine node and you want to use it
+
+545
+00:24:28,430 --> 00:24:31,730
+to execute respects usually you want to
+
+546
+00:24:31,730 --> 00:24:33,320
+type npm test in a node
+
+547
+00:24:33,320 --> 00:24:35,860
+jewel in a way goes your test execution
+
+548
+00:24:35,860 --> 00:24:39,409
+but you don't have to do that you can
+
+549
+00:24:39,409 --> 00:24:41,330
+just refer to Jasmine node the binary
+
+550
+00:24:41,330 --> 00:24:43,639
+name on its own and NPM figures out the
+
+551
+00:24:43,639 --> 00:24:45,230
+rest because jasmine has this binary
+
+552
+00:24:45,230 --> 00:24:48,470
+executive bowlin so it's it's a neat
+
+553
+00:24:48,470 --> 00:24:51,759
+little tip to kind of ease development
+
+554
+00:24:51,759 --> 00:24:54,620
+and that's it those are four major
+
+555
+00:24:54,620 --> 00:24:56,120
+points that we want to share with you
+
+556
+00:24:56,120 --> 00:24:59,269
+guys and hopefully it will improve your
+
+557
+00:24:59,269 --> 00:25:02,720
+command line tool authoring and thank
+
+558
+00:25:02,720 --> 00:25:13,190
+you very much we have a five minutes if
+
+559
+00:25:13,190 --> 00:25:58,750
+you guys have any questions yeah awesome
+
+560
+00:25:58,760 --> 00:26:05,220
+hey that's good yeah for the video he
+
+561
+00:26:05,220 --> 00:26:06,930
+was just pointing out that if you want
+
+562
+00:26:06,930 --> 00:26:10,290
+live input extending that initial proxy
+
+563
+00:26:10,290 --> 00:26:12,000
+interface the support streams of
+
+564
+00:26:12,000 --> 00:26:14,490
+standard in standard out that kind of
+
+565
+00:26:14,490 --> 00:26:16,830
+thing you can achieve the same
+
+566
+00:26:16,830 --> 00:26:20,100
+testability with more advanced CLI
+
+567
+00:26:20,100 --> 00:26:27,690
+Thanks yep no we were debating if you
+
+568
+00:26:27,690 --> 00:26:30,900
+guys want us to push that up we're cool
+
+569
+00:26:30,900 --> 00:26:32,970
+with it there's been like requests over
+
+570
+00:26:32,970 --> 00:26:38,280
+the past not not the base of project off
+
+571
+00:26:38,280 --> 00:26:40,800
+of but just purely as a reference we
+
+572
+00:26:40,800 --> 00:26:44,040
+actually used it for a co-op that we got
+
+573
+00:26:44,040 --> 00:26:45,660
+in the office and it got him off the
+
+574
+00:26:45,660 --> 00:26:48,180
+ground pretty fast but yeah if you guys
+
+575
+00:26:48,180 --> 00:26:49,860
+want it we can provide it I'll update
+
+576
+00:26:49,860 --> 00:26:51,900
+the slide deck and tweet out about it
+
+577
+00:26:51,900 --> 00:26:54,840
+with the link but it would be just up on
+
+578
+00:26:54,840 --> 00:27:03,030
+github yeah yeah front row yeah well
+
+579
+00:27:03,030 --> 00:27:04,620
+let's came up when we were making this
+
+580
+00:27:04,620 --> 00:27:06,390
+talk why aren't we talking about
+
+581
+00:27:06,390 --> 00:27:07,950
+libraries and libraries come and go
+
+582
+00:27:07,950 --> 00:27:11,040
+there's commander there's CL ijs there's
+
+583
+00:27:11,040 --> 00:27:14,340
+a bunch of others we've tried a lot of
+
+584
+00:27:14,340 --> 00:27:16,530
+them and you neva get to the point where
+
+585
+00:27:16,530 --> 00:27:17,760
+you want to do something slightly
+
+586
+00:27:17,760 --> 00:27:19,260
+different than what they're doing and
+
+587
+00:27:19,260 --> 00:27:20,940
+then you end up going right to the very
+
+588
+00:27:20,940 --> 00:27:23,970
+beginning so commanders awesome oh and
+
+589
+00:27:23,970 --> 00:27:26,040
+any of those other ones are really nice
+
+590
+00:27:26,040 --> 00:27:27,930
+but you have to buy into it 100%
+
+591
+00:27:27,930 --> 00:27:29,880
+otherwise you're going to start from
+
+592
+00:27:29,880 --> 00:27:32,610
+scratch again but even simple things
+
+593
+00:27:32,610 --> 00:27:34,290
+like when you want your help dialog to
+
+594
+00:27:34,290 --> 00:27:36,840
+appear they're very restrictive with it
+
+595
+00:27:36,840 --> 00:27:39,900
+so just spend an hour two hours like
+
+596
+00:27:39,900 --> 00:27:41,370
+hacking with and seeing if it does what
+
+597
+00:27:41,370 --> 00:27:43,860
+you want but I think a lot of what we
+
+598
+00:27:43,860 --> 00:27:45,120
+point out here would apply regardless
+
+599
+00:27:45,120 --> 00:27:47,520
+because too many people right there
+
+600
+00:27:47,520 --> 00:27:49,080
+higher code in that bin script and they
+
+601
+00:27:49,080 --> 00:27:50,520
+can't test that will commander can be
+
+602
+00:27:50,520 --> 00:27:52,380
+tested if you just treat it like a
+
+603
+00:27:52,380 --> 00:27:55,440
+module yeah there's someone a little
+
+604
+00:27:55,440 --> 00:27:56,970
+further back we had a question as well
+
+605
+00:27:56,970 --> 00:28:02,070
+Oh awesome okay got another question
+
+606
+00:28:02,070 --> 00:28:17,020
+over there
+
+607
+00:28:17,030 --> 00:28:20,250
+yeah so the question was if we have
+
+608
+00:28:20,250 --> 00:28:22,260
+deeper hierarchy and more dependencies
+
+609
+00:28:22,260 --> 00:28:24,000
+how do we deal with that event emitter
+
+610
+00:28:24,000 --> 00:28:28,410
+message with verbose and quiet for now
+
+611
+00:28:28,410 --> 00:28:31,110
+I've settled on just the singleton which
+
+612
+00:28:31,110 --> 00:28:35,610
+actually works the best if you're for
+
+613
+00:28:35,610 --> 00:28:37,440
+some reason your library needs instances
+
+614
+00:28:37,440 --> 00:28:39,120
+then it gets a little bit more
+
+615
+00:28:39,120 --> 00:28:43,860
+complicated but yeah so far it hasn't
+
+616
+00:28:43,860 --> 00:28:45,630
+been a problem at all but I definitely
+
+617
+00:28:45,630 --> 00:28:47,940
+could be if you start to deal with
+
+618
+00:28:47,940 --> 00:28:53,400
+instant space one's cool I think we're
+
+619
+00:28:53,400 --> 00:28:55,380
+out of time so we'll publish these
+
+620
+00:28:55,380 --> 00:28:56,880
+slides on this link and then shortly
+
+621
+00:28:56,880 --> 00:28:59,340
+you'll see a github URL with a template
+
+622
+00:28:59,340 --> 00:29:14,019
+as well thanks guys
+

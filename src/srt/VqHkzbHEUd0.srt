@@ -1,0 +1,1873 @@
+1
+00:00:10,010 --> 00:00:18,010
+
+how is everybody i got in at 6am and
+
+2
+00:00:18,010 --> 00:00:20,330
+then I still came here and I'm talking
+
+3
+00:00:20,330 --> 00:00:22,520
+to you and that was the best you can do
+
+4
+00:00:22,520 --> 00:00:28,940
+how is everybody there you go so I've
+
+5
+00:00:28,940 --> 00:00:31,039
+seen Jed present before he's pretty
+
+6
+00:00:31,039 --> 00:00:35,120
+slick right so instead of actually doing
+
+7
+00:00:35,120 --> 00:00:37,610
+anything with keynote I draw my sights
+
+8
+00:00:37,610 --> 00:00:40,040
+on my iPad because that way I don't have
+
+9
+00:00:40,040 --> 00:00:42,080
+to compete with dead because he would
+
+10
+00:00:42,080 --> 00:00:46,760
+win so yeah this is I talked to a lot of
+
+11
+00:00:46,760 --> 00:00:49,059
+people I write a lot of node code and
+
+12
+00:00:49,059 --> 00:00:51,140
+one of the things that seems to be a
+
+13
+00:00:51,140 --> 00:00:53,210
+reoccurring problem for people is that
+
+14
+00:00:53,210 --> 00:00:55,010
+we're exploring this whole new paradigm
+
+15
+00:00:55,010 --> 00:00:57,620
+with server-side JavaScript any in
+
+16
+00:00:57,620 --> 00:01:00,530
+particular node I think really when we
+
+17
+00:01:00,530 --> 00:01:02,059
+talk about server-side JavaScript at the
+
+18
+00:01:02,059 --> 00:01:04,580
+moment most people think of node and the
+
+19
+00:01:04,580 --> 00:01:08,030
+event loop has a really specific set of
+
+20
+00:01:08,030 --> 00:01:12,260
+problems that people aren't used to we
+
+21
+00:01:12,260 --> 00:01:14,330
+program a particular way from the from
+
+22
+00:01:14,330 --> 00:01:18,140
+the browser but it's not exactly the
+
+23
+00:01:18,140 --> 00:01:21,370
+same so I thought I'd write this this is
+
+24
+00:01:21,370 --> 00:01:24,950
+how do we how do we really stop writing
+
+25
+00:01:24,950 --> 00:01:27,710
+code that just looks like ass and how do
+
+26
+00:01:27,710 --> 00:01:30,200
+we do something with that so there's a
+
+27
+00:01:30,200 --> 00:01:32,060
+warning i'm going to use a lot of
+
+28
+00:01:32,060 --> 00:01:34,790
+metaphors so i don't know i have some i
+
+29
+00:01:34,790 --> 00:01:36,860
+probably have a total of twenty lines of
+
+30
+00:01:36,860 --> 00:01:39,830
+code in this whole presentation but
+
+31
+00:01:39,830 --> 00:01:41,510
+there's going to be some extremely bad
+
+32
+00:01:41,510 --> 00:01:44,000
+metaphor so be warned but what i really
+
+33
+00:01:44,000 --> 00:01:47,090
+want to do is explain how this works
+
+34
+00:01:47,090 --> 00:01:50,330
+rather than dazzle you with code Tim did
+
+35
+00:01:50,330 --> 00:01:54,500
+an amazing job yesterday of explaining
+
+36
+00:01:54,500 --> 00:01:57,680
+this stuff anything his slide deck is is
+
+37
+00:01:57,680 --> 00:01:59,780
+great reference material go and read his
+
+38
+00:01:59,780 --> 00:02:05,810
+code go and sit and digest it I'm a
+
+39
+00:02:05,810 --> 00:02:09,860
+little bit less smarten Tim right I sit
+
+40
+00:02:09,860 --> 00:02:11,629
+I sit with ryan and i kind of i watch
+
+41
+00:02:11,629 --> 00:02:14,269
+these guys that I'm like ah so instead
+
+42
+00:02:14,269 --> 00:02:16,819
+of trying to do it that way for me I try
+
+43
+00:02:16,819 --> 00:02:18,499
+and tell myself a story I try and figure
+
+44
+00:02:18,499 --> 00:02:20,689
+out what's the simplest way that in my
+
+45
+00:02:20,689 --> 00:02:20,970
+head
+
+46
+00:02:20,970 --> 00:02:22,320
+I can understand how this stuff works
+
+47
+00:02:22,320 --> 00:02:25,830
+and the thing that we really need to
+
+48
+00:02:25,830 --> 00:02:27,390
+understand is this event loop thing
+
+49
+00:02:27,390 --> 00:02:29,640
+right and everybody has talked about it
+
+50
+00:02:29,640 --> 00:02:31,380
+this week everybody's been going on on
+
+51
+00:02:31,380 --> 00:02:33,630
+and on about the event loop but I have
+
+52
+00:02:33,630 --> 00:02:37,200
+this theory I believe that people really
+
+53
+00:02:37,200 --> 00:02:40,710
+get event-driven programming so I cook
+
+54
+00:02:40,710 --> 00:02:43,890
+hands up people that cook right hands up
+
+55
+00:02:43,890 --> 00:02:45,030
+people that can cook more than just
+
+56
+00:02:45,030 --> 00:02:48,630
+ramen noodles hello your geeks I have to
+
+57
+00:02:48,630 --> 00:02:51,780
+ask that right so if you really cook if
+
+58
+00:02:51,780 --> 00:02:53,880
+you actually you know have a kitchen and
+
+59
+00:02:53,880 --> 00:02:55,170
+you have chefs knives and all of this
+
+60
+00:02:55,170 --> 00:02:56,880
+stuff you know that people intuitively
+
+61
+00:02:56,880 --> 00:03:00,180
+get event-driven right you sit in your
+
+62
+00:03:00,180 --> 00:03:01,860
+cooking and your chopping something and
+
+63
+00:03:01,860 --> 00:03:05,190
+a pot starts boiling over you know you
+
+64
+00:03:05,190 --> 00:03:07,290
+know finish chopping you stop and you
+
+65
+00:03:07,290 --> 00:03:09,600
+deal with the pot and you turn the heat
+
+66
+00:03:09,600 --> 00:03:12,300
+down and and you know you're used to
+
+67
+00:03:12,300 --> 00:03:16,320
+that that idea that simultaneous things
+
+68
+00:03:16,320 --> 00:03:19,470
+happen and we can deal with that and yet
+
+69
+00:03:19,470 --> 00:03:22,709
+where did this fallacy come from that
+
+70
+00:03:22,709 --> 00:03:25,920
+our programmers can't think you know in
+
+71
+00:03:25,920 --> 00:03:28,800
+multiple multiple things they can only
+
+72
+00:03:28,800 --> 00:03:31,800
+think in the single you know you do this
+
+73
+00:03:31,800 --> 00:03:33,330
+then you do this then you do this then
+
+74
+00:03:33,330 --> 00:03:35,489
+you do this then you do this in our
+
+75
+00:03:35,489 --> 00:03:37,560
+everyday lives we're constantly
+
+76
+00:03:37,560 --> 00:03:39,690
+interrupted with things and we deal with
+
+77
+00:03:39,690 --> 00:03:41,730
+them and then we carry on and we do
+
+78
+00:03:41,730 --> 00:03:44,280
+something else this is this is just a
+
+79
+00:03:44,280 --> 00:03:46,230
+normal human behavior and it's something
+
+80
+00:03:46,230 --> 00:03:49,080
+you intuitively get so how do we get to
+
+81
+00:03:49,080 --> 00:03:52,200
+a place where we're trying to write code
+
+82
+00:03:52,200 --> 00:03:53,959
+and we don't understand what we're doing
+
+83
+00:03:53,959 --> 00:03:57,450
+so here's his made second increasingly
+
+84
+00:03:57,450 --> 00:04:01,160
+bad metaphor and the event loop postman
+
+85
+00:04:01,160 --> 00:04:04,470
+right this is kind of silly but this is
+
+86
+00:04:04,470 --> 00:04:06,690
+the event loop postman he's a happy
+
+87
+00:04:06,690 --> 00:04:09,450
+postman he's delivering lattice and his
+
+88
+00:04:09,450 --> 00:04:11,970
+letters are the event stack so he's got
+
+89
+00:04:11,970 --> 00:04:14,489
+his stack of letters he takes a letter
+
+90
+00:04:14,489 --> 00:04:16,769
+one at a time and he walks to the house
+
+91
+00:04:16,769 --> 00:04:22,169
+right his route the sort of red squiggly
+
+92
+00:04:22,169 --> 00:04:25,470
+lines or the callbacks I've got a letter
+
+93
+00:04:25,470 --> 00:04:27,990
+and I walked through my callback did he
+
+94
+00:04:27,990 --> 00:04:31,800
+do and I deliver the thing and that's
+
+95
+00:04:31,800 --> 00:04:33,520
+the end of the call back and I'm done
+
+96
+00:04:33,520 --> 00:04:35,139
+I then go and get the next letter when I
+
+97
+00:04:35,139 --> 00:04:37,960
+walk and deliver it you know obviously
+
+98
+00:04:37,960 --> 00:04:39,520
+he's not a very good post when he can
+
+99
+00:04:39,520 --> 00:04:41,440
+only carry one thing at a time but you
+
+100
+00:04:41,440 --> 00:04:43,780
+know Arian I did explain they were a bad
+
+101
+00:04:43,780 --> 00:04:48,250
+metaphors right so this is this is you
+
+102
+00:04:48,250 --> 00:04:52,090
+know this really interesting thing that
+
+103
+00:04:52,090 --> 00:04:55,360
+we're using but the problem is for a
+
+104
+00:04:55,360 --> 00:04:58,990
+poor postman I'm a real bastard and I
+
+105
+00:04:58,990 --> 00:05:01,659
+have a gate so the postman walks up and
+
+106
+00:05:01,659 --> 00:05:02,830
+he's like great i'm going to dealer the
+
+107
+00:05:02,830 --> 00:05:05,500
+letter oh there's a gate and he walks
+
+108
+00:05:05,500 --> 00:05:09,699
+around and it's like oh there's gate and
+
+109
+00:05:09,699 --> 00:05:12,940
+he walked around ki guess oh there's a
+
+110
+00:05:12,940 --> 00:05:17,199
+gate so our postman is stuck in this
+
+111
+00:05:17,199 --> 00:05:19,270
+situation where the only thing that he
+
+112
+00:05:19,270 --> 00:05:21,849
+knows how to do is deliver his event and
+
+113
+00:05:21,849 --> 00:05:25,090
+he's trying to do that but the gates not
+
+114
+00:05:25,090 --> 00:05:27,699
+open and you say well okay to vent
+
+115
+00:05:27,699 --> 00:05:30,430
+driven what if we have something that's
+
+116
+00:05:30,430 --> 00:05:32,020
+going to open that gate and it's waiting
+
+117
+00:05:32,020 --> 00:05:34,210
+on the stack it's it's another event and
+
+118
+00:05:34,210 --> 00:05:37,060
+we're okay because it's gonna fix it for
+
+119
+00:05:37,060 --> 00:05:38,830
+the postman well the problem is is the
+
+120
+00:05:38,830 --> 00:05:40,479
+postman's never going to deliver the
+
+121
+00:05:40,479 --> 00:05:43,090
+letter that opens the gate because he's
+
+122
+00:05:43,090 --> 00:05:45,969
+stuck trying to deliver the data that
+
+123
+00:05:45,969 --> 00:05:51,460
+requires the gate to be over ow so this
+
+124
+00:05:51,460 --> 00:05:54,009
+is this is what's really weird and
+
+125
+00:05:54,009 --> 00:05:56,680
+interesting about the event loop and I
+
+126
+00:05:56,680 --> 00:05:57,969
+think this is one of the things that I
+
+127
+00:05:57,969 --> 00:06:03,060
+really wanted to communicate is that
+
+128
+00:06:03,060 --> 00:06:06,099
+things only happen one at a time you
+
+129
+00:06:06,099 --> 00:06:08,680
+have to finish a call back before you
+
+130
+00:06:08,680 --> 00:06:10,960
+can actually continue and start getting
+
+131
+00:06:10,960 --> 00:06:12,819
+events i'm going to show some code in a
+
+132
+00:06:12,819 --> 00:06:15,909
+minute but the this is a really
+
+133
+00:06:15,909 --> 00:06:18,279
+interesting problem about how do we how
+
+134
+00:06:18,279 --> 00:06:21,069
+do we this do these things notice
+
+135
+00:06:21,069 --> 00:06:23,169
+incredibly fast it's incredibly scalable
+
+136
+00:06:23,169 --> 00:06:25,300
+you can have thousands of connections at
+
+137
+00:06:25,300 --> 00:06:28,300
+once but all of that relies on having an
+
+138
+00:06:28,300 --> 00:06:30,789
+event loop that's working all of that
+
+139
+00:06:30,789 --> 00:06:33,460
+relies on the fact that that each of the
+
+140
+00:06:33,460 --> 00:06:36,219
+events happen very fast and then they go
+
+141
+00:06:36,219 --> 00:06:40,180
+away so we can take away things we can
+
+142
+00:06:40,180 --> 00:06:43,839
+use not go to the file system there's a
+
+143
+00:06:43,839 --> 00:06:45,969
+separate process it's non blocking you
+
+144
+00:06:45,969 --> 00:06:46,810
+get the call back
+
+145
+00:06:46,810 --> 00:06:47,880
+so you don't have to deal with that
+
+146
+00:06:47,880 --> 00:06:50,470
+great you know if you want to read from
+
+147
+00:06:50,470 --> 00:06:52,270
+a database if you want to do something
+
+148
+00:06:52,270 --> 00:06:54,580
+over the network all of these things are
+
+149
+00:06:54,580 --> 00:06:56,110
+non blocking you you don't have to deal
+
+150
+00:06:56,110 --> 00:06:58,060
+with that but you can still block your
+
+151
+00:06:58,060 --> 00:07:00,340
+own event stack and until you really
+
+152
+00:07:00,340 --> 00:07:02,530
+understand the fact that you have to
+
+153
+00:07:02,530 --> 00:07:06,760
+finish execution then you're going to be
+
+154
+00:07:06,760 --> 00:07:11,560
+in trouble so this is a piece of code
+
+155
+00:07:11,560 --> 00:07:13,870
+that will tie up the node event loop
+
+156
+00:07:13,870 --> 00:07:15,970
+forever and it's and it's really simply
+
+157
+00:07:15,970 --> 00:07:17,770
+obvious how it works but what we're
+
+158
+00:07:17,770 --> 00:07:19,210
+going to do is we're going to include
+
+159
+00:07:19,210 --> 00:07:20,919
+the event emitter so we've included
+
+160
+00:07:20,919 --> 00:07:24,400
+nodes event system we've created a new
+
+161
+00:07:24,400 --> 00:07:27,940
+event emitter I've created a simple
+
+162
+00:07:27,940 --> 00:07:31,990
+variable die and then we have a function
+
+163
+00:07:31,990 --> 00:07:38,700
+so we want to omit on the die event
+
+164
+00:07:38,700 --> 00:07:41,830
+we're just going to set data true right
+
+165
+00:07:41,830 --> 00:07:43,780
+and we're going to set a time out and
+
+166
+00:07:43,780 --> 00:07:47,430
+the timeout emits that event so after
+
+167
+00:07:47,430 --> 00:07:50,820
+100 milliseconds not very long really
+
+168
+00:07:50,820 --> 00:07:53,260
+we're going to omit the event die and
+
+169
+00:07:53,260 --> 00:07:55,360
+then we have a while loop so while not
+
+170
+00:07:55,360 --> 00:07:58,690
+equals die loop and then finally console
+
+171
+00:07:58,690 --> 00:08:03,039
+dot log done if you run this code node
+
+172
+00:08:03,039 --> 00:08:06,300
+will just run until the stack crashes
+
+173
+00:08:06,300 --> 00:08:10,810
+because it sits there and set timeout in
+
+174
+00:08:10,810 --> 00:08:12,970
+order to fire that event will never
+
+175
+00:08:12,970 --> 00:08:15,850
+happen because it's stuck in a loop it's
+
+176
+00:08:15,850 --> 00:08:18,940
+it's and more than that so this is this
+
+177
+00:08:18,940 --> 00:08:21,639
+is fits on a side really well but if you
+
+178
+00:08:21,639 --> 00:08:24,460
+start having other things the that our
+
+179
+00:08:24,460 --> 00:08:27,250
+event driven and you're expecting those
+
+180
+00:08:27,250 --> 00:08:30,460
+events the fire that would you know make
+
+181
+00:08:30,460 --> 00:08:33,209
+this loop quit they will never fire
+
+182
+00:08:33,209 --> 00:08:36,219
+because the loops busy doing stuff the
+
+183
+00:08:36,219 --> 00:08:38,800
+postman's walking down his path and he's
+
+184
+00:08:38,800 --> 00:08:40,510
+walking down his path and he's walking
+
+185
+00:08:40,510 --> 00:08:42,849
+down his path and your event is never
+
+186
+00:08:42,849 --> 00:08:44,169
+going to fire until he's finished
+
+187
+00:08:44,169 --> 00:08:46,360
+walking down this path and that's a
+
+188
+00:08:46,360 --> 00:08:49,000
+really significant piece of information
+
+189
+00:08:49,000 --> 00:08:52,360
+because if you write code that box
+
+190
+00:08:52,360 --> 00:08:54,250
+yourself nobody else is going to help
+
+191
+00:08:54,250 --> 00:08:55,560
+you now
+
+192
+00:08:55,560 --> 00:08:57,779
+this is kind of facetious right nobody's
+
+193
+00:08:57,779 --> 00:08:59,520
+really going to you know having like big
+
+194
+00:08:59,520 --> 00:09:01,890
+while loops encode that rely on events
+
+195
+00:09:01,890 --> 00:09:03,930
+to fix them is kind of it's a strange
+
+196
+00:09:03,930 --> 00:09:06,000
+use case but it's completely possible
+
+197
+00:09:06,000 --> 00:09:08,160
+for you to write extremely long running
+
+198
+00:09:08,160 --> 00:09:11,340
+code that maybe won't block your event
+
+199
+00:09:11,340 --> 00:09:13,140
+loop forever but it will block your
+
+200
+00:09:13,140 --> 00:09:16,440
+event loop for long enough that it will
+
+201
+00:09:16,440 --> 00:09:19,470
+cause you some pain and one thing I
+
+202
+00:09:19,470 --> 00:09:21,060
+would mention is that things like so
+
+203
+00:09:21,060 --> 00:09:24,390
+things like TCP connections when you get
+
+204
+00:09:24,390 --> 00:09:26,460
+a new TCP connection to node that's a
+
+205
+00:09:26,460 --> 00:09:28,430
+separate process is handled by the
+
+206
+00:09:28,430 --> 00:09:31,290
+colonel the colonel will stack up the
+
+207
+00:09:31,290 --> 00:09:33,750
+TCP requests so no it's not going to
+
+208
+00:09:33,750 --> 00:09:35,400
+randomly drop them because you've been
+
+209
+00:09:35,400 --> 00:09:38,150
+busy you know for 100 milliseconds or a
+
+210
+00:09:38,150 --> 00:09:40,410
+thousand or whatever it's going to stack
+
+211
+00:09:40,410 --> 00:09:41,730
+up in the kernel and you can still
+
+212
+00:09:41,730 --> 00:09:44,070
+accept them but if you tie yourself up
+
+213
+00:09:44,070 --> 00:09:48,560
+that's a problem unicorn break yeah
+
+214
+00:09:48,560 --> 00:09:51,270
+unicorns crack rainbows it's on my
+
+215
+00:09:51,270 --> 00:09:54,050
+t-shirt must be true I just wanted to
+
+216
+00:09:54,050 --> 00:09:56,940
+inject we haven't had any intercont in
+
+217
+00:09:56,940 --> 00:09:59,490
+the conference or hardly any so it's not
+
+218
+00:09:59,490 --> 00:10:04,580
+jazz comp velasquez unicorns no waiver
+
+219
+00:10:04,580 --> 00:10:13,380
+fais pas yeah so how what we doing with
+
+220
+00:10:13,380 --> 00:10:15,420
+this stuff what we actually building
+
+221
+00:10:15,420 --> 00:10:17,160
+with node and what the patterns that we
+
+222
+00:10:17,160 --> 00:10:19,200
+can sort of use by really knowing how
+
+223
+00:10:19,200 --> 00:10:20,880
+the event loop works what are the things
+
+224
+00:10:20,880 --> 00:10:23,070
+that we can do to make this useful and
+
+225
+00:10:23,070 --> 00:10:25,470
+to not write things that hurt us so the
+
+226
+00:10:25,470 --> 00:10:27,420
+the kind of cases the common cases that
+
+227
+00:10:27,420 --> 00:10:30,300
+people have web servers come command
+
+228
+00:10:30,300 --> 00:10:32,910
+line stuff and then maybe peer-to-peer
+
+229
+00:10:32,910 --> 00:10:36,780
+so like these are the kind of cases it's
+
+230
+00:10:36,780 --> 00:10:39,510
+actually web servers I personally have
+
+231
+00:10:39,510 --> 00:10:41,580
+written a DNS server it's not great it's
+
+232
+00:10:41,580 --> 00:10:42,990
+going to get better hopefully in the
+
+233
+00:10:42,990 --> 00:10:45,150
+future but we have a dns server written
+
+234
+00:10:45,150 --> 00:10:47,220
+a note it's kind of scary and wrong
+
+235
+00:10:47,220 --> 00:10:50,150
+really too bright dns and javascript but
+
+236
+00:10:50,150 --> 00:10:52,650
+scary and wrong things are kind of hot
+
+237
+00:10:52,650 --> 00:10:58,620
+aren't they no so you know it's any sort
+
+238
+00:10:58,620 --> 00:11:01,709
+of server that has you know some kind of
+
+239
+00:11:01,709 --> 00:11:05,850
+client response model and these for me I
+
+240
+00:11:05,850 --> 00:11:07,980
+like the three more or less than three
+
+241
+00:11:07,980 --> 00:11:08,270
+kind
+
+242
+00:11:08,270 --> 00:11:13,520
+of actual writing so the the CLI pipes
+
+243
+00:11:13,520 --> 00:11:16,220
+this is this is really simple this is a
+
+244
+00:11:16,220 --> 00:11:17,810
+use case that we can more or less throw
+
+245
+00:11:17,810 --> 00:11:19,580
+away because if you're writing stuff for
+
+246
+00:11:19,580 --> 00:11:22,190
+the command line it's pipe n pipe out
+
+247
+00:11:22,190 --> 00:11:24,260
+right you have something that's standard
+
+248
+00:11:24,260 --> 00:11:26,630
+ieee standard in and then stand it out
+
+249
+00:11:26,630 --> 00:11:27,800
+it doesn't have to be asynchronous
+
+250
+00:11:27,800 --> 00:11:30,050
+because the command line is never going
+
+251
+00:11:30,050 --> 00:11:32,450
+to treat it asynchronously anyway so who
+
+252
+00:11:32,450 --> 00:11:34,580
+cares this is not a case that I really
+
+253
+00:11:34,580 --> 00:11:36,440
+care about it's not it's not interesting
+
+254
+00:11:36,440 --> 00:11:39,920
+you won't get tied up writing node code
+
+255
+00:11:39,920 --> 00:11:42,910
+you won't get confused writing code for
+
+256
+00:11:42,910 --> 00:11:45,530
+the command line stuff because it's just
+
+257
+00:11:45,530 --> 00:11:48,530
+in and then straight at the cases where
+
+258
+00:11:48,530 --> 00:11:50,630
+it's more interesting at these ones so
+
+259
+00:11:50,630 --> 00:11:53,810
+if you look at this stuff essentially we
+
+260
+00:11:53,810 --> 00:11:55,790
+have two cases we have things with
+
+261
+00:11:55,790 --> 00:11:59,060
+streams such as TCP you know and there's
+
+262
+00:11:59,060 --> 00:12:01,060
+lots of things but things like PTP
+
+263
+00:12:01,060 --> 00:12:05,180
+anything were it's not discreet
+
+264
+00:12:05,180 --> 00:12:06,530
+connections and then we have this
+
+265
+00:12:06,530 --> 00:12:08,930
+discreet stuff so I receive an HTTP
+
+266
+00:12:08,930 --> 00:12:11,180
+request and they send it responds I
+
+267
+00:12:11,180 --> 00:12:13,820
+receive a UDP request I send a response
+
+268
+00:12:13,820 --> 00:12:17,000
+right and the fact that these things go
+
+269
+00:12:17,000 --> 00:12:20,600
+over HTTP over TCP as a protocol doesn't
+
+270
+00:12:20,600 --> 00:12:22,550
+really matter what the server is doing
+
+271
+00:12:22,550 --> 00:12:24,530
+is the street requests and this is
+
+272
+00:12:24,530 --> 00:12:26,600
+actually our biggest use case so I have
+
+273
+00:12:26,600 --> 00:12:28,640
+a request and they give a response its
+
+274
+00:12:28,640 --> 00:12:31,340
+request driven you know our server
+
+275
+00:12:31,340 --> 00:12:33,230
+receive something and it's expected to
+
+276
+00:12:33,230 --> 00:12:34,850
+give something back so how do we
+
+277
+00:12:34,850 --> 00:12:38,060
+architect that in a way that that work
+
+278
+00:12:38,060 --> 00:12:41,180
+so his some code hands up people that
+
+279
+00:12:41,180 --> 00:12:43,820
+have used this code or run it yeah this
+
+280
+00:12:43,820 --> 00:12:45,110
+is the code from the front of the
+
+281
+00:12:45,110 --> 00:12:49,460
+node.js page so what I can't it like six
+
+282
+00:12:49,460 --> 00:12:52,880
+hands six people have run node really
+
+283
+00:12:52,880 --> 00:12:54,140
+come on hands up people that have really
+
+284
+00:12:54,140 --> 00:12:56,480
+done this thank you right so you've all
+
+285
+00:12:56,480 --> 00:12:58,670
+run this code so this is this is sort of
+
+286
+00:12:58,670 --> 00:13:01,460
+the one on one example and what we
+
+287
+00:13:01,460 --> 00:13:03,320
+actually doing with it well we're
+
+288
+00:13:03,320 --> 00:13:05,720
+getting a request and we fire a callback
+
+289
+00:13:05,720 --> 00:13:08,810
+and that callback is an anonymous
+
+290
+00:13:08,810 --> 00:13:11,810
+function right it were just you know
+
+291
+00:13:11,810 --> 00:13:14,960
+doing a really simple example but the
+
+292
+00:13:14,960 --> 00:13:17,660
+problem is that people start to do this
+
+293
+00:13:17,660 --> 00:13:19,310
+and you know judge right i call this
+
+294
+00:13:19,310 --> 00:13:19,820
+pyramid
+
+295
+00:13:19,820 --> 00:13:21,740
+but it basically it looks like that and
+
+296
+00:13:21,740 --> 00:13:23,090
+I think actually Tim probably coined
+
+297
+00:13:23,090 --> 00:13:26,810
+that yeah you know but you end up you
+
+298
+00:13:26,810 --> 00:13:27,800
+have like all of these anonymous
+
+299
+00:13:27,800 --> 00:13:30,320
+callbacks that nest together and you end
+
+300
+00:13:30,320 --> 00:13:32,390
+up with this giant pyramid of code that
+
+301
+00:13:32,390 --> 00:13:34,310
+just sticks out at a weird angle and
+
+302
+00:13:34,310 --> 00:13:37,850
+it's really ugly it really there
+
+303
+00:13:37,850 --> 00:13:39,770
+and it and it's hard to maintain you
+
+304
+00:13:39,770 --> 00:13:42,440
+can't read it and you know you create
+
+305
+00:13:42,440 --> 00:13:43,820
+all kinds of race conditions in your
+
+306
+00:13:43,820 --> 00:13:47,390
+like why does my brain hurt so my
+
+307
+00:13:47,390 --> 00:13:50,270
+suggestion to you is that if you have
+
+308
+00:13:50,270 --> 00:13:52,580
+this model this is a pattern this is a
+
+309
+00:13:52,580 --> 00:13:56,270
+really simple pattern have a server the
+
+310
+00:13:56,270 --> 00:13:58,040
+server has a prototype this is a pattern
+
+311
+00:13:58,040 --> 00:14:00,710
+that Ryan users for HTTP it's a pattern
+
+312
+00:14:00,710 --> 00:14:02,720
+that Tim users for connect lots of
+
+313
+00:14:02,720 --> 00:14:06,110
+people use it but inside that have a
+
+314
+00:14:06,110 --> 00:14:08,900
+request object have an object that just
+
+315
+00:14:08,900 --> 00:14:11,180
+has a new requests and just make these
+
+316
+00:14:11,180 --> 00:14:13,160
+all into factory methods so we have a
+
+317
+00:14:13,160 --> 00:14:15,200
+server so this could be HTTP I've used
+
+318
+00:14:15,200 --> 00:14:18,560
+capital uppercase server because it's a
+
+319
+00:14:18,560 --> 00:14:21,170
+class crate server its factory method
+
+320
+00:14:21,170 --> 00:14:23,840
+gives us a new server and then we pass
+
+321
+00:14:23,840 --> 00:14:27,700
+to that a callback server crate request
+
+322
+00:14:27,700 --> 00:14:30,200
+and then we give it the request
+
+323
+00:14:30,200 --> 00:14:32,660
+restaurant so we create a new request
+
+324
+00:14:32,660 --> 00:14:34,640
+whenever there's a connection and we
+
+325
+00:14:34,640 --> 00:14:36,350
+encapsulate everything in that request
+
+326
+00:14:36,350 --> 00:14:38,600
+object but here's what's different it's
+
+327
+00:14:38,600 --> 00:14:41,030
+not an anonymous call back it's a
+
+328
+00:14:41,030 --> 00:14:44,000
+specific named object that lives within
+
+329
+00:14:44,000 --> 00:14:45,980
+our server but it lives within the
+
+330
+00:14:45,980 --> 00:14:48,320
+instance of that specific server but
+
+331
+00:14:48,320 --> 00:14:49,970
+more than that is because we've nested
+
+332
+00:14:49,970 --> 00:14:52,310
+it this way is we can decorate all of
+
+333
+00:14:52,310 --> 00:14:54,020
+the functions into one beautiful
+
+334
+00:14:54,020 --> 00:14:56,210
+encapsulated object and then you can
+
+335
+00:14:56,210 --> 00:14:57,980
+start to map them in you and all of that
+
+336
+00:14:57,980 --> 00:14:59,840
+everything belongs in its right place
+
+337
+00:14:59,840 --> 00:15:02,480
+all of the requests associated with a
+
+338
+00:15:02,480 --> 00:15:05,180
+specific server belong to that server
+
+339
+00:15:05,180 --> 00:15:07,550
+but it means that you can create six of
+
+340
+00:15:07,550 --> 00:15:10,550
+those servers and everything sharing its
+
+341
+00:15:10,550 --> 00:15:13,130
+methods really nicely and it's easy to
+
+342
+00:15:13,130 --> 00:15:14,270
+understand so then you can draw a
+
+343
+00:15:14,270 --> 00:15:16,190
+diagram like this so for the DNS server
+
+344
+00:15:16,190 --> 00:15:18,500
+this is more or less what it does take
+
+345
+00:15:18,500 --> 00:15:20,900
+to request it passes the request it
+
+346
+00:15:20,900 --> 00:15:23,620
+iterates through resolve and then it
+
+347
+00:15:23,620 --> 00:15:26,450
+responds and this is the point is once
+
+348
+00:15:26,450 --> 00:15:28,610
+you can start naming what you're doing
+
+349
+00:15:28,610 --> 00:15:29,870
+instead of having all of these crazy
+
+350
+00:15:29,870 --> 00:15:31,700
+anonymous call backs you can actually
+
+351
+00:15:31,700 --> 00:15:32,400
+start
+
+352
+00:15:32,400 --> 00:15:34,380
+a really simple diagram does anybody can
+
+353
+00:15:34,380 --> 00:15:36,300
+anybody not does anybody look at that
+
+354
+00:15:36,300 --> 00:15:38,160
+and not have a good guess of what the
+
+355
+00:15:38,160 --> 00:15:43,110
+DNS server does know so this is really
+
+356
+00:15:43,110 --> 00:15:45,360
+simple and easy to understand but if you
+
+357
+00:15:45,360 --> 00:15:46,920
+don't name your functions if you just
+
+358
+00:15:46,920 --> 00:15:48,630
+have all this anonymous stuff that's
+
+359
+00:15:48,630 --> 00:15:50,610
+layering on top of each other it gets
+
+360
+00:15:50,610 --> 00:15:52,890
+really hard to do and all of these are
+
+361
+00:15:52,890 --> 00:15:54,750
+just call backs all of these are we emit
+
+362
+00:15:54,750 --> 00:15:57,990
+an event and I just attach them back to
+
+363
+00:15:57,990 --> 00:16:00,830
+back it's really easy to understand um
+
+364
+00:16:00,830 --> 00:16:05,400
+so the second case is streams and helmet
+
+365
+00:16:05,400 --> 00:16:07,020
+down for time where I think I'm going
+
+366
+00:16:07,020 --> 00:16:10,710
+really fast whoops so the second case is
+
+367
+00:16:10,710 --> 00:16:14,640
+streams and this is a slightly different
+
+368
+00:16:14,640 --> 00:16:17,070
+case so you have a socket of some kind
+
+369
+00:16:17,070 --> 00:16:21,840
+so probably TCP and you know you have
+
+370
+00:16:21,840 --> 00:16:24,660
+events that come off the socket so its
+
+371
+00:16:24,660 --> 00:16:26,820
+socket driven it's doing stuff you know
+
+372
+00:16:26,820 --> 00:16:30,570
+here's some data or you get external
+
+373
+00:16:30,570 --> 00:16:31,860
+events which you then push up through
+
+374
+00:16:31,860 --> 00:16:34,080
+the socket what's easy about this this
+
+375
+00:16:34,080 --> 00:16:37,830
+is this is a similar but but different
+
+376
+00:16:37,830 --> 00:16:39,800
+problem there's nothing to encapsulate
+
+377
+00:16:39,800 --> 00:16:43,080
+the socket owns itself and everything
+
+378
+00:16:43,080 --> 00:16:46,080
+that are event-driven outside the socket
+
+379
+00:16:46,080 --> 00:16:48,450
+maybe it's a filehandle you know it can
+
+380
+00:16:48,450 --> 00:16:50,130
+call the socket but you don't actually
+
+381
+00:16:50,130 --> 00:16:51,780
+need to encapsulate anything there's no
+
+382
+00:16:51,780 --> 00:16:55,580
+state it's not like it's it's not like
+
+383
+00:16:55,580 --> 00:16:58,110
+where's my side it's not like this
+
+384
+00:16:58,110 --> 00:17:01,410
+you're not having to run on that one
+
+385
+00:17:01,410 --> 00:17:03,360
+you're not having to encapsulate these
+
+386
+00:17:03,360 --> 00:17:05,640
+requests and save them you're simply
+
+387
+00:17:05,640 --> 00:17:09,570
+responding to events as they come so it
+
+388
+00:17:09,570 --> 00:17:11,370
+turns out that there's only one real
+
+389
+00:17:11,370 --> 00:17:13,410
+case where people are getting horribly
+
+390
+00:17:13,410 --> 00:17:16,709
+tied up and that's the case of dealing
+
+391
+00:17:16,709 --> 00:17:18,360
+with these and it's actually the most
+
+392
+00:17:18,360 --> 00:17:20,040
+popular case right I mean hands up
+
+393
+00:17:20,040 --> 00:17:21,870
+people that are planning to write paid
+
+394
+00:17:21,870 --> 00:17:23,670
+to piss drinking servers with mode right
+
+395
+00:17:23,670 --> 00:17:26,850
+now that guy yawn and Tim three people
+
+396
+00:17:26,850 --> 00:17:29,400
+so it's you know the most common use
+
+397
+00:17:29,400 --> 00:17:31,650
+case that people have is some kind of
+
+398
+00:17:31,650 --> 00:17:33,990
+request response and that's the one that
+
+399
+00:17:33,990 --> 00:17:35,490
+we need to focus on so I think that this
+
+400
+00:17:35,490 --> 00:17:38,010
+is actually an easy problem so
+
+401
+00:17:38,010 --> 00:17:39,420
+apparently I went incredibly first and
+
+402
+00:17:39,420 --> 00:17:41,940
+did it in 20 minutes but my summer is
+
+403
+00:17:41,940 --> 00:17:44,340
+this so don't talked about iteration
+
+404
+00:17:44,340 --> 00:17:45,650
+which I look that up on
+
+405
+00:17:45,650 --> 00:17:48,410
+kapiti i think you made that up wait
+
+406
+00:17:48,410 --> 00:17:50,860
+wait don't where do you find that from
+
+407
+00:17:50,860 --> 00:17:54,530
+he made out he did make it up something
+
+408
+00:17:54,530 --> 00:17:55,640
+if somebody else you'd gone create a
+
+409
+00:17:55,640 --> 00:17:58,550
+Wikipedia article for a now but don't
+
+410
+00:17:58,550 --> 00:18:00,290
+block the event loop this is this is
+
+411
+00:18:00,290 --> 00:18:01,760
+really critical if you block the event
+
+412
+00:18:01,760 --> 00:18:04,970
+loop everything will fail and until you
+
+413
+00:18:04,970 --> 00:18:07,130
+you know understand the fact that all of
+
+414
+00:18:07,130 --> 00:18:08,990
+all of the event loop has to finish
+
+415
+00:18:08,990 --> 00:18:11,900
+executing what it's executing that's
+
+416
+00:18:11,900 --> 00:18:13,910
+that's really critical and the next
+
+417
+00:18:13,910 --> 00:18:16,640
+thing is encapsulate so stay save the
+
+418
+00:18:16,640 --> 00:18:19,070
+the data that you want in a closure so
+
+419
+00:18:19,070 --> 00:18:23,960
+encapsulate all of that stuff down and
+
+420
+00:18:23,960 --> 00:18:27,220
+use name functions so start creating
+
+421
+00:18:27,220 --> 00:18:29,870
+request objects within your server
+
+422
+00:18:29,870 --> 00:18:32,030
+objects and decorate them decorate all
+
+423
+00:18:32,030 --> 00:18:36,230
+of them with with the kinds of state
+
+424
+00:18:36,230 --> 00:18:37,640
+that you want and why this is really
+
+425
+00:18:37,640 --> 00:18:40,250
+interesting for me is if you start to
+
+426
+00:18:40,250 --> 00:18:42,500
+think about not blocking the the event
+
+427
+00:18:42,500 --> 00:18:44,150
+loop if you start to think about the
+
+428
+00:18:44,150 --> 00:18:45,830
+fact that we have shared memory if you
+
+429
+00:18:45,830 --> 00:18:49,160
+can trace and draw the the outline of
+
+430
+00:18:49,160 --> 00:18:50,900
+your call backs then you can start to
+
+431
+00:18:50,900 --> 00:18:53,120
+remove pieces of memory that you no
+
+432
+00:18:53,120 --> 00:18:55,130
+longer need you can say I don't actually
+
+433
+00:18:55,130 --> 00:18:57,110
+need this part of the state at this part
+
+434
+00:18:57,110 --> 00:18:59,000
+of the request process I can throw it
+
+435
+00:18:59,000 --> 00:19:00,650
+away and now I can handle more
+
+436
+00:19:00,650 --> 00:19:02,660
+connections because my server has more
+
+437
+00:19:02,660 --> 00:19:04,070
+memory available and I can start
+
+438
+00:19:04,070 --> 00:19:06,500
+clearing that stuff off and having it
+
+439
+00:19:06,500 --> 00:19:08,120
+garbage collected and I don't have to
+
+440
+00:19:08,120 --> 00:19:11,030
+wait for the entire for the entire
+
+441
+00:19:11,030 --> 00:19:15,140
+closure to be closed so use name
+
+442
+00:19:15,140 --> 00:19:16,970
+functions and use factories factories
+
+443
+00:19:16,970 --> 00:19:19,580
+are great and then document your flow
+
+444
+00:19:19,580 --> 00:19:21,290
+callbacks this is something I've not
+
+445
+00:19:21,290 --> 00:19:25,070
+seen anybody do right we sort of we're
+
+446
+00:19:25,070 --> 00:19:27,020
+building all of these servers where's
+
+447
+00:19:27,020 --> 00:19:29,060
+the documentation where do people draw
+
+448
+00:19:29,060 --> 00:19:31,250
+this cause this and then this calls this
+
+449
+00:19:31,250 --> 00:19:32,600
+and then this cause this this is
+
+450
+00:19:32,600 --> 00:19:34,010
+something as a community we're not doing
+
+451
+00:19:34,010 --> 00:19:37,430
+and it's it's really hard to follow Ryan
+
+452
+00:19:37,430 --> 00:19:39,110
+was talking about how do we debunk the
+
+453
+00:19:39,110 --> 00:19:41,930
+stack you know and one of the problems
+
+454
+00:19:41,930 --> 00:19:43,700
+of you have is that we lose context
+
+455
+00:19:43,700 --> 00:19:46,730
+right well it's easy to know context if
+
+456
+00:19:46,730 --> 00:19:49,640
+you've explicitly written it down but if
+
+457
+00:19:49,640 --> 00:19:51,080
+you if you're calling everything through
+
+458
+00:19:51,080 --> 00:19:53,000
+anonymous functions it's really hard to
+
+459
+00:19:53,000 --> 00:19:54,440
+write down what's calling what which
+
+460
+00:19:54,440 --> 00:19:56,540
+comes back to using name functions so
+
+461
+00:19:56,540 --> 00:19:58,670
+that was really quick i guess i'm going
+
+462
+00:19:58,670 --> 00:19:59,100
+to take
+
+463
+00:19:59,100 --> 00:20:03,600
+lessons hopefully it was useful to
+
+464
+00:20:03,600 --> 00:20:11,010
+people questions Brian where was i five
+
+465
+00:20:11,010 --> 00:20:16,710
+this morning swing dancing so to some
+
+466
+00:20:16,710 --> 00:20:19,590
+weird music edgy that place played yeah
+
+467
+00:20:19,590 --> 00:20:24,570
+any questions about JavaScript all my
+
+468
+00:20:24,570 --> 00:20:27,840
+social life i guess that's fine too they
+

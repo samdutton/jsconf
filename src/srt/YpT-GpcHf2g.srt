@@ -1,0 +1,1669 @@
+1
+00:00:10,530 --> 00:00:15,070
+
+so my talk is about building your own
+
+2
+00:00:15,070 --> 00:00:18,160
+programming language and using
+
+3
+00:00:18,160 --> 00:00:21,640
+javascript traditionally most language
+
+4
+00:00:21,640 --> 00:00:25,949
+building tools are saying C or C++ or
+
+5
+00:00:25,949 --> 00:00:28,769
+some other type of language that's more
+
+6
+00:00:28,769 --> 00:00:31,810
+you know in the operating system you
+
+7
+00:00:31,810 --> 00:00:34,180
+know one of those kind of languages
+
+8
+00:00:34,180 --> 00:00:36,130
+JavaScript is usually been used in the
+
+9
+00:00:36,130 --> 00:00:38,289
+browser but now we have environments
+
+10
+00:00:38,289 --> 00:00:41,379
+like common Jas node you can do these
+
+11
+00:00:41,379 --> 00:00:43,329
+kind of things just on your command line
+
+12
+00:00:43,329 --> 00:00:49,300
+without using a browser and the basic
+
+13
+00:00:49,300 --> 00:00:51,190
+idea I want to get across before we dive
+
+14
+00:00:51,190 --> 00:00:53,530
+into it is you know every program we
+
+15
+00:00:53,530 --> 00:00:56,289
+write is basically an interpreter we we
+
+16
+00:00:56,289 --> 00:00:59,859
+get data as input we execute based on
+
+17
+00:00:59,859 --> 00:01:04,120
+the rules of the program but some inter
+
+18
+00:01:04,120 --> 00:01:07,180
+are some programs take other programs as
+
+19
+00:01:07,180 --> 00:01:10,090
+input and so the other program is
+
+20
+00:01:10,090 --> 00:01:13,180
+transfer transformative data and the
+
+21
+00:01:13,180 --> 00:01:15,280
+program our compiler or our interpreter
+
+22
+00:01:15,280 --> 00:01:17,920
+executes rules based on how we want
+
+23
+00:01:17,920 --> 00:01:20,229
+those Chuck that structure to be
+
+24
+00:01:20,229 --> 00:01:27,009
+interpreted so program equals death and
+
+25
+00:01:27,009 --> 00:01:30,970
+basically compiler is you know just a
+
+26
+00:01:30,970 --> 00:01:34,509
+translator so you take one language you
+
+27
+00:01:34,509 --> 00:01:36,939
+figure out what the meanings are of the
+
+28
+00:01:36,939 --> 00:01:38,950
+symbols the words in the language and
+
+29
+00:01:38,950 --> 00:01:42,189
+you output another language so you know
+
+30
+00:01:42,189 --> 00:01:45,040
+Google Translate is a compiler of you
+
+31
+00:01:45,040 --> 00:01:46,869
+know say English to Spanish or something
+
+32
+00:01:46,869 --> 00:01:52,880
+like that so same basic idea
+
+33
+00:01:52,890 --> 00:01:58,050
+and this is a just a basic ordering of
+
+34
+00:01:58,050 --> 00:02:00,390
+how things go first you have your parser
+
+35
+00:02:00,390 --> 00:02:02,520
+which handles the syntax of the language
+
+36
+00:02:02,520 --> 00:02:04,530
+it figures out what the characters mean
+
+37
+00:02:04,530 --> 00:02:06,480
+what the words are and like what
+
+38
+00:02:06,480 --> 00:02:09,030
+sentences are valid in the language and
+
+39
+00:02:09,030 --> 00:02:11,970
+if you do a syntax error that's like you
+
+40
+00:02:11,970 --> 00:02:13,950
+know a malformed sentence in your
+
+41
+00:02:13,950 --> 00:02:16,620
+language semantic analysis we won't do
+
+42
+00:02:16,620 --> 00:02:18,690
+much of that we'll just that stuff like
+
+43
+00:02:18,690 --> 00:02:20,940
+if you want to do type checking make
+
+44
+00:02:20,940 --> 00:02:23,190
+sure things are you know correct but
+
+45
+00:02:23,190 --> 00:02:25,140
+we'll just basically just print out what
+
+46
+00:02:25,140 --> 00:02:28,140
+we get in in a dull language and that's
+
+47
+00:02:28,140 --> 00:02:31,470
+at the bottom code generation and your
+
+48
+00:02:31,470 --> 00:02:35,459
+interpreter and of course all this is
+
+49
+00:02:35,459 --> 00:02:38,220
+gonna be done in JavaScript so it's
+
+50
+00:02:38,220 --> 00:02:41,090
+easier for all of us to hack on and
+
+51
+00:02:41,090 --> 00:02:43,670
+maybe you come up with some new ideas
+
+52
+00:02:43,670 --> 00:02:47,130
+since JavaScript programmers are come in
+
+53
+00:02:47,130 --> 00:02:50,310
+lots of different varieties so the first
+
+54
+00:02:50,310 --> 00:02:53,570
+thing we need to handle the syntax is a
+
+55
+00:02:53,570 --> 00:02:56,459
+we're gonna use a parser generator you
+
+56
+00:02:56,459 --> 00:02:58,170
+could of course you don't do some ad hoc
+
+57
+00:02:58,170 --> 00:03:00,750
+form of you know reading each character
+
+58
+00:03:00,750 --> 00:03:03,120
+and a string input or something in you
+
+59
+00:03:03,120 --> 00:03:04,830
+know do your a roll your own way to
+
+60
+00:03:04,830 --> 00:03:07,620
+interpret or parse the language but
+
+61
+00:03:07,620 --> 00:03:09,650
+we're gonna use a partial generator
+
+62
+00:03:09,650 --> 00:03:12,780
+which sort of makes things easier and
+
+63
+00:03:12,780 --> 00:03:15,330
+these are a few available ones in
+
+64
+00:03:15,330 --> 00:03:22,350
+JavaScript Oh Maddy Jas Jason and PEG
+
+65
+00:03:22,350 --> 00:03:28,500
+Jas and Jay SCC and those two are kind
+
+66
+00:03:28,500 --> 00:03:33,950
+of newer I like those ones a lot but
+
+67
+00:03:33,950 --> 00:03:38,100
+Jason is the one I wrote so we're gonna
+
+68
+00:03:38,100 --> 00:03:41,310
+be using that one today and Jeremy who
+
+69
+00:03:41,310 --> 00:03:43,680
+did a talk on CoffeeScript earlier today
+
+70
+00:03:43,680 --> 00:03:48,510
+he used Jason for that language to do
+
+71
+00:03:48,510 --> 00:03:51,030
+the parsing phase with it and he said
+
+72
+00:03:51,030 --> 00:03:54,060
+it's it's a lot faster right now then
+
+73
+00:03:54,060 --> 00:03:56,489
+the other ones which ok you know I'll
+
+74
+00:03:56,489 --> 00:04:02,130
+take that so first we need a grammar a
+
+75
+00:04:02,130 --> 00:04:05,510
+grammar describes you know what valid
+
+76
+00:04:05,510 --> 00:04:08,879
+character what valid tokens are and the
+
+77
+00:04:08,879 --> 00:04:12,720
+structure so I don't know if you guys
+
+78
+00:04:12,720 --> 00:04:14,519
+have ever checked out a language
+
+79
+00:04:14,519 --> 00:04:16,650
+specification before if you've you know
+
+80
+00:04:16,650 --> 00:04:20,850
+this is snippet from the ACMA script
+
+81
+00:04:20,850 --> 00:04:22,620
+specification the fifth edition so it
+
+82
+00:04:22,620 --> 00:04:26,580
+just came out and this is the JSON since
+
+83
+00:04:26,580 --> 00:04:28,560
+JSON was added to the language they have
+
+84
+00:04:28,560 --> 00:04:30,449
+a grammar describing JSON right there
+
+85
+00:04:30,449 --> 00:04:33,780
+and our parser generator takes in a
+
+86
+00:04:33,780 --> 00:04:38,150
+description basically just like that and
+
+87
+00:04:38,150 --> 00:04:51,210
+oh so I got to kind of move the window
+
+88
+00:04:51,210 --> 00:05:08,699
+from this view to where did it go
+
+89
+00:05:08,709 --> 00:05:31,520
+and window kind of ran away
+
+90
+00:05:31,530 --> 00:05:36,050
+hmm
+
+91
+00:05:36,060 --> 00:05:39,920
+well if I can't find this window soon
+
+92
+00:05:39,920 --> 00:05:48,820
+well let me
+
+93
+00:05:48,830 --> 00:05:54,930
+actually there's a mouse
+
+94
+00:05:54,940 --> 00:06:02,080
+I'll just open up a new window
+
+95
+00:06:02,090 --> 00:06:07,410
+and or is it yeah this is when I figure
+
+96
+00:06:07,410 --> 00:06:11,850
+out the command line and this started
+
+97
+00:06:11,850 --> 00:06:39,280
+out mostly like all live demos do so
+
+98
+00:06:39,290 --> 00:06:41,900
+well I can show you the command line
+
+99
+00:06:41,900 --> 00:06:43,910
+version I wasn't to show you the website
+
+100
+00:06:43,910 --> 00:06:47,870
+but that's alright let me just bring
+
+101
+00:06:47,870 --> 00:07:05,340
+over a show and
+
+102
+00:07:05,350 --> 00:07:11,530
+that's not the right one so the grammar
+
+103
+00:07:11,530 --> 00:07:15,690
+file is as a extension of Jason which is
+
+104
+00:07:15,690 --> 00:07:18,490
+the grammar format and it's has ever
+
+105
+00:07:18,490 --> 00:07:22,450
+anyone ever heard of bison okay yeah so
+
+106
+00:07:22,450 --> 00:07:23,500
+we have some language people in here
+
+107
+00:07:23,500 --> 00:07:27,220
+it's basically the syntax of the actual
+
+108
+00:07:27,220 --> 00:07:29,920
+grammar form is almost basically the
+
+109
+00:07:29,920 --> 00:07:32,200
+same as bison syntax so it makes it easy
+
+110
+00:07:32,200 --> 00:07:34,030
+to port grammars that are already
+
+111
+00:07:34,030 --> 00:07:35,860
+written for bison which is are a lot
+
+112
+00:07:35,860 --> 00:07:38,170
+because you know bison and yak have been
+
+113
+00:07:38,170 --> 00:07:41,530
+around you know how are you however many
+
+114
+00:07:41,530 --> 00:07:50,020
+years so and what I've defined here is
+
+115
+00:07:50,020 --> 00:07:53,280
+basically a simple language it only has
+
+116
+00:07:53,280 --> 00:07:56,800
+variables that you can assign a value to
+
+117
+00:07:56,800 --> 00:08:01,330
+and then B plus expression so you can
+
+118
+00:08:01,330 --> 00:08:04,300
+add add variables together and assign it
+
+119
+00:08:04,300 --> 00:08:05,080
+to another variable
+
+120
+00:08:05,080 --> 00:08:10,360
+so very simple syntax in the first line
+
+121
+00:08:10,360 --> 00:08:21,770
+is basically saying ignore whitespace
+
+122
+00:08:21,780 --> 00:08:34,110
+zoom in a little bit
+
+123
+00:08:34,120 --> 00:08:50,470
+yeah it's hard on this screen
+
+124
+00:08:50,480 --> 00:08:55,940
+all right yes that's better
+
+125
+00:08:55,940 --> 00:09:00,090
+so the first line basically says ignore
+
+126
+00:09:00,090 --> 00:09:02,010
+white space so we don't care how much
+
+127
+00:09:02,010 --> 00:09:04,140
+white space is between two tokens and
+
+128
+00:09:04,140 --> 00:09:06,690
+language so you can have a variable
+
+129
+00:09:06,690 --> 00:09:09,450
+equals and like a long line of white
+
+130
+00:09:09,450 --> 00:09:11,460
+space you know a number or something
+
+131
+00:09:11,460 --> 00:09:17,279
+like that actually let me show you this
+
+132
+00:09:17,279 --> 00:09:57,010
+is an example of
+
+133
+00:09:57,020 --> 00:10:01,400
+yeah I'm not sure
+
+134
+00:10:01,410 --> 00:10:08,499
+all right so an example of the language
+
+135
+00:10:08,509 --> 00:10:10,709
+so our language is actually just going
+
+136
+00:10:10,709 --> 00:10:15,329
+to look like this x equals five or it's
+
+137
+00:10:15,329 --> 00:10:16,439
+not ugly using the equal sign that's
+
+138
+00:10:16,439 --> 00:10:21,059
+kind of boring we'll use X is five let's
+
+139
+00:10:21,059 --> 00:10:31,970
+say Y is 6 and Z is y all right so
+
+140
+00:10:31,970 --> 00:10:34,529
+that's gonna be the syntax for you know
+
+141
+00:10:34,529 --> 00:10:35,789
+the basics of our language then I don't
+
+142
+00:10:35,789 --> 00:10:40,829
+have a sort of a method to a built-in
+
+143
+00:10:40,829 --> 00:10:49,379
+method to show the value of that and all
+
+144
+00:10:49,379 --> 00:10:55,390
+right so keep that in mind
+
+145
+00:10:55,400 --> 00:11:04,850
+all right so back to the grammar all
+
+146
+00:11:04,850 --> 00:11:07,160
+right so that's how you you can make
+
+147
+00:11:07,160 --> 00:11:08,870
+sense of what these mean a little better
+
+148
+00:11:08,870 --> 00:11:11,950
+now the right there you're saying is and
+
+149
+00:11:11,950 --> 00:11:14,930
+you're returning what is the token so
+
+150
+00:11:14,930 --> 00:11:17,029
+you're basically saying match these this
+
+151
+00:11:17,029 --> 00:11:18,290
+is a regular expression on this side
+
+152
+00:11:18,290 --> 00:11:22,700
+match the exact characters is and then
+
+153
+00:11:22,700 --> 00:11:26,480
+return a token which is the is token and
+
+154
+00:11:26,480 --> 00:11:28,040
+for show it's the same thing you're
+
+155
+00:11:28,040 --> 00:11:29,270
+matching that those are like key words
+
+156
+00:11:29,270 --> 00:11:31,580
+so you're match that key word you return
+
+157
+00:11:31,580 --> 00:11:34,460
+show the show token and you can see a
+
+158
+00:11:34,460 --> 00:11:36,520
+number is just a regular expression
+
+159
+00:11:36,520 --> 00:11:39,860
+returning the number token and this this
+
+160
+00:11:39,860 --> 00:11:41,779
+is also if you're familiar of bison
+
+161
+00:11:41,779 --> 00:11:43,850
+you're probably familiar with Flex which
+
+162
+00:11:43,850 --> 00:11:46,850
+this syntax tries to mimic the Flex
+
+163
+00:11:46,850 --> 00:11:49,550
+syntax so it's easier to port existing
+
+164
+00:11:49,550 --> 00:11:52,490
+grammars and then so and the rest of
+
+165
+00:11:52,490 --> 00:11:54,020
+them you can kind of see and there's a
+
+166
+00:11:54,020 --> 00:11:56,920
+special one for the end of the file
+
+167
+00:11:56,920 --> 00:12:02,540
+right and then and so this is an unlike
+
+168
+00:12:02,540 --> 00:12:06,080
+bison flex we actually have the the
+
+169
+00:12:06,080 --> 00:12:08,300
+lexical scanner stuff inside of the
+
+170
+00:12:08,300 --> 00:12:10,880
+bison file so it's easier to just
+
+171
+00:12:10,880 --> 00:12:13,660
+combine it and not have two files
+
+172
+00:12:13,660 --> 00:12:15,589
+basically I did that so you can do it on
+
+173
+00:12:15,589 --> 00:12:17,150
+the website without having like two
+
+174
+00:12:17,150 --> 00:12:18,560
+boxes you can just have it all in one
+
+175
+00:12:18,560 --> 00:12:22,010
+text field and compile it and it's a
+
+176
+00:12:22,010 --> 00:12:25,190
+website as JSON org and I mean that the
+
+177
+00:12:25,190 --> 00:12:27,560
+way to try it is actually on the website
+
+178
+00:12:27,560 --> 00:12:30,770
+so you can experiment with it and
+
+179
+00:12:30,770 --> 00:12:32,750
+there's examples that load up on the try
+
+180
+00:12:32,750 --> 00:12:38,930
+page but moving down past the the taupe
+
+181
+00:12:38,930 --> 00:12:40,120
+the tokenizer
+
+182
+00:12:40,120 --> 00:12:43,040
+so we have the tokens they're sort of
+
+183
+00:12:43,040 --> 00:12:45,470
+like words we have a sort of a higher
+
+184
+00:12:45,470 --> 00:12:47,360
+conceptual level now not just characters
+
+185
+00:12:47,360 --> 00:12:50,360
+we have tokens so we move down to the
+
+186
+00:12:50,360 --> 00:12:53,740
+actual defining what are valid
+
+187
+00:12:53,740 --> 00:12:57,340
+combinations of those words so
+
+188
+00:12:57,340 --> 00:13:08,380
+a program you see the first one so a
+
+189
+00:13:08,380 --> 00:13:14,950
+program is a statement list and followed
+
+190
+00:13:14,950 --> 00:13:18,430
+by an end-of-file so a statement list
+
+191
+00:13:18,430 --> 00:13:20,080
+you jump down to that one a statement
+
+192
+00:13:20,080 --> 00:13:23,260
+list can be a statement followed by a
+
+193
+00:13:23,260 --> 00:13:28,780
+period and a statement list the
+
+194
+00:13:28,780 --> 00:13:30,700
+statement list rule is also cursive
+
+195
+00:13:30,700 --> 00:13:32,620
+that's how you get sort of like a list
+
+196
+00:13:32,620 --> 00:13:35,170
+it recursively calls itself so you can
+
+197
+00:13:35,170 --> 00:13:43,000
+get a series of those statements and the
+
+198
+00:13:43,000 --> 00:13:46,870
+statement rule is either an identifier
+
+199
+00:13:46,870 --> 00:13:54,670
+followed by is and an expression and the
+
+200
+00:13:54,670 --> 00:13:57,190
+you'll see those mustache lines between
+
+201
+00:13:57,190 --> 00:13:59,710
+the actual rule definitions and those
+
+202
+00:13:59,710 --> 00:14:01,150
+are the actions that are sort of
+
+203
+00:14:01,150 --> 00:14:03,910
+building up the AST because we want to
+
+204
+00:14:03,910 --> 00:14:05,890
+get transform the DES characters and the
+
+205
+00:14:05,890 --> 00:14:07,840
+tokens into something a data structure
+
+206
+00:14:07,840 --> 00:14:10,840
+we can work with the compiler and or the
+
+207
+00:14:10,840 --> 00:14:14,530
+interpreter so you'll see those action
+
+208
+00:14:14,530 --> 00:14:16,630
+lines are just building up sort of an
+
+209
+00:14:16,630 --> 00:14:18,640
+array that has you know what the the
+
+210
+00:14:18,640 --> 00:14:22,450
+token type is and somewhat extra
+
+211
+00:14:22,450 --> 00:14:24,130
+metadata about it and we'll get into
+
+212
+00:14:24,130 --> 00:14:28,060
+that little bit later but so a statement
+
+213
+00:14:28,060 --> 00:14:30,370
+can be an identifier with the is token
+
+214
+00:14:30,370 --> 00:14:31,870
+and an expression so that's the
+
+215
+00:14:31,870 --> 00:14:35,230
+assignment and then show which is our
+
+216
+00:14:35,230 --> 00:14:36,760
+special built-in function to show the
+
+217
+00:14:36,760 --> 00:14:40,660
+value with an expression and then of
+
+218
+00:14:40,660 --> 00:14:42,310
+course an expression can be an
+
+219
+00:14:42,310 --> 00:14:46,240
+identifier a number or an expression
+
+220
+00:14:46,240 --> 00:14:48,730
+plus another expression so that's also
+
+221
+00:14:48,730 --> 00:14:51,760
+kind of recursive that you can define an
+
+222
+00:14:51,760 --> 00:14:54,850
+expression to be defined within itself
+
+223
+00:14:54,850 --> 00:14:58,840
+so these will get expanded into either a
+
+224
+00:14:58,840 --> 00:15:04,079
+number or an identify
+
+225
+00:15:04,089 --> 00:15:09,619
+and that is the whole grammar right
+
+226
+00:15:09,619 --> 00:15:12,679
+there and talking about the actions a
+
+227
+00:15:12,679 --> 00:15:14,809
+little bit more the thought the double
+
+228
+00:15:14,809 --> 00:15:16,670
+dollar sign is actually sort of like a
+
+229
+00:15:16,670 --> 00:15:18,889
+return value so what are you going to
+
+230
+00:15:18,889 --> 00:15:22,009
+return from that that action and
+
+231
+00:15:22,009 --> 00:15:25,069
+whenever it it and whenever the parser
+
+232
+00:15:25,069 --> 00:15:27,259
+matches say an identifier it's going to
+
+233
+00:15:27,259 --> 00:15:29,839
+run that action and return it and then
+
+234
+00:15:29,839 --> 00:15:33,129
+say this expression X plus expression
+
+235
+00:15:33,129 --> 00:15:35,149
+these expressions are going to be
+
+236
+00:15:35,149 --> 00:15:38,720
+whatever is returned by they identifier
+
+237
+00:15:38,720 --> 00:15:41,419
+so this action for the expression plus
+
+238
+00:15:41,419 --> 00:15:44,839
+expression is is going to be combined
+
+239
+00:15:44,839 --> 00:15:46,759
+combining the result of one of these
+
+240
+00:15:46,759 --> 00:15:49,579
+actions and so there so it's it's
+
+241
+00:15:49,579 --> 00:16:02,179
+building up so the AST that way yeah not
+
+242
+00:16:02,179 --> 00:16:03,559
+exactly the regular expressions but
+
+243
+00:16:03,559 --> 00:16:07,549
+whatever position the the token is and
+
+244
+00:16:07,549 --> 00:16:09,679
+this the rule there whatever positioned
+
+245
+00:16:09,679 --> 00:16:11,239
+offset of the position of that token is
+
+246
+00:16:11,239 --> 00:16:13,459
+what that dollar assigned number is
+
+247
+00:16:13,459 --> 00:16:18,860
+going to reference to so yep and then
+
+248
+00:16:18,860 --> 00:16:21,339
+you'll notice that that the top
+
+249
+00:16:21,339 --> 00:16:23,689
+actually has a return statement and
+
+250
+00:16:23,689 --> 00:16:26,449
+that's returning the value of whatever
+
+251
+00:16:26,449 --> 00:16:28,279
+the program is at that point and so all
+
+252
+00:16:28,279 --> 00:16:30,470
+of these it it's a bottom-up parsing
+
+253
+00:16:30,470 --> 00:16:34,069
+algorithm so all the nodes sort of start
+
+254
+00:16:34,069 --> 00:16:35,809
+at the bottom and then it works away all
+
+255
+00:16:35,809 --> 00:16:38,600
+the way up to the program at the top and
+
+256
+00:16:38,600 --> 00:16:40,309
+then it returns that but you could have
+
+257
+00:16:40,309 --> 00:16:42,319
+a return statement like anywhere in the
+
+258
+00:16:42,319 --> 00:16:43,850
+rules that would it could exit out of
+
+259
+00:16:43,850 --> 00:16:47,869
+the parser early so and inside of these
+
+260
+00:16:47,869 --> 00:16:49,249
+actions is well it's all just JavaScript
+
+261
+00:16:49,249 --> 00:16:51,350
+code so
+
+262
+00:16:51,350 --> 00:16:52,759
+those actions are just a regular
+
+263
+00:16:52,759 --> 00:16:55,519
+JavaScript code you can put whatever you
+
+264
+00:16:55,519 --> 00:17:01,850
+want in there right okay so at that
+
+265
+00:17:01,850 --> 00:17:09,340
+point we have a grammar we can work with
+
+266
+00:17:09,350 --> 00:17:15,089
+and I'm going to show you a little bit
+
+267
+00:17:15,089 --> 00:17:19,169
+of the the code generation phase so once
+
+268
+00:17:19,169 --> 00:17:21,480
+you have your program parsed and you
+
+269
+00:17:21,480 --> 00:17:24,659
+have a ast so we just have like a array
+
+270
+00:17:24,659 --> 00:17:27,000
+with sub arrays nested arrays inside of
+
+271
+00:17:27,000 --> 00:17:27,240
+them
+
+272
+00:17:27,240 --> 00:17:29,580
+that's our ast representation you could
+
+273
+00:17:29,580 --> 00:17:32,279
+also do create an object instead of just
+
+274
+00:17:32,279 --> 00:17:34,140
+an array you can you would you probably
+
+275
+00:17:34,140 --> 00:17:35,669
+want to create an object in CoffeeScript
+
+276
+00:17:35,669 --> 00:17:39,120
+does that because I'll show you how it
+
+277
+00:17:39,120 --> 00:17:52,500
+looks here yeah so we see our program
+
+278
+00:17:52,500 --> 00:17:55,370
+again and actually this first line is
+
+279
+00:17:55,370 --> 00:17:57,659
+you'll notice that it's come and Jas
+
+280
+00:17:57,659 --> 00:18:00,539
+requires statement so I'm using actually
+
+281
+00:18:00,539 --> 00:18:03,269
+normal on the command line to run the
+
+282
+00:18:03,269 --> 00:18:07,080
+parser so that's just requiring the
+
+283
+00:18:07,080 --> 00:18:11,940
+parser Oh actually yeah the way to I
+
+284
+00:18:11,940 --> 00:18:14,880
+should so the way to generate the actual
+
+285
+00:18:14,880 --> 00:18:17,299
+parser script so you have your grammar
+
+286
+00:18:17,299 --> 00:18:20,460
+defined in that grammar JSON file and if
+
+287
+00:18:20,460 --> 00:18:22,220
+you want to actually create the script
+
+288
+00:18:22,220 --> 00:18:24,899
+of the parser because this is a partial
+
+289
+00:18:24,899 --> 00:18:26,789
+generator so it generates the parser
+
+290
+00:18:26,789 --> 00:18:32,000
+you'll use narwall grammar to jason and
+
+291
+00:18:32,000 --> 00:18:34,230
+that's what actually creates an a
+
+292
+00:18:34,230 --> 00:18:36,149
+JavaScript parser that you can include
+
+293
+00:18:36,149 --> 00:18:37,590
+it doesn't have any dependencies you
+
+294
+00:18:37,590 --> 00:18:39,149
+just include that javascript file and
+
+295
+00:18:39,149 --> 00:18:47,860
+send it your input it outputs the ast so
+
+296
+00:18:47,870 --> 00:19:02,000
+oh and I think I have it
+
+297
+00:19:02,010 --> 00:19:04,500
+well I already have a generated one
+
+298
+00:19:04,500 --> 00:19:07,880
+already so we'll just ignore that and
+
+299
+00:19:07,880 --> 00:19:13,169
+get into the the cogeneration file so
+
+300
+00:19:13,169 --> 00:19:19,559
+we've created our parser module and
+
+301
+00:19:19,559 --> 00:19:23,040
+anyway so we require our parser at the
+
+302
+00:19:23,040 --> 00:19:26,640
+top and again the fine is our simple
+
+303
+00:19:26,640 --> 00:19:32,040
+program X is 5 y is 6 Z is X plus y and
+
+304
+00:19:32,040 --> 00:19:35,940
+then it shows E and then this is just
+
+305
+00:19:35,940 --> 00:19:39,270
+some you know our ast is what we
+
+306
+00:19:39,270 --> 00:19:42,330
+returned from our parse function so the
+
+307
+00:19:42,330 --> 00:19:43,620
+person we generate has a parse function
+
+308
+00:19:43,620 --> 00:19:46,110
+that you send in the input so a string
+
+309
+00:19:46,110 --> 00:19:49,110
+program it returns the ast which is in
+
+310
+00:19:49,110 --> 00:19:53,330
+our case is a arrays nested arrays and
+
+311
+00:19:53,330 --> 00:19:56,090
+then we have a code generation function
+
+312
+00:19:56,090 --> 00:20:00,330
+that we send the AST to and at the end
+
+313
+00:20:00,330 --> 00:20:02,730
+we'll print the source of but this code
+
+314
+00:20:02,730 --> 00:20:04,410
+generation function is just you know a
+
+315
+00:20:04,410 --> 00:20:07,380
+big switch statement and that's why this
+
+316
+00:20:07,380 --> 00:20:08,790
+probably will scale very well if you
+
+317
+00:20:08,790 --> 00:20:09,720
+want to do something like CoffeeScript
+
+318
+00:20:09,720 --> 00:20:12,690
+you create actual objects for each one
+
+319
+00:20:12,690 --> 00:20:14,160
+of these nodes and have it have its own
+
+320
+00:20:14,160 --> 00:20:16,290
+cogeneration function that you can just
+
+321
+00:20:16,290 --> 00:20:19,919
+call on on the object so that more
+
+322
+00:20:19,919 --> 00:20:22,200
+object-oriented approach but for this
+
+323
+00:20:22,200 --> 00:20:25,020
+this is what simple I did this last
+
+324
+00:20:25,020 --> 00:20:30,150
+night or something so so it's basically
+
+325
+00:20:30,150 --> 00:20:32,880
+just a big switch statement and so you
+
+326
+00:20:32,880 --> 00:20:35,700
+send it the ast in the top the top array
+
+327
+00:20:35,700 --> 00:20:37,200
+and the ast is going to be that program
+
+328
+00:20:37,200 --> 00:20:39,840
+note so it's the first part of the ACE
+
+329
+00:20:39,840 --> 00:20:42,419
+of the array is going to be program it's
+
+330
+00:20:42,419 --> 00:20:44,910
+gonna call a helper function code
+
+331
+00:20:44,910 --> 00:20:49,080
+generate on a list which is here in this
+
+332
+00:20:49,080 --> 00:20:52,860
+case just a reduce a array reduce so it
+
+333
+00:20:52,860 --> 00:20:54,660
+it starts out with a blank string and
+
+334
+00:20:54,660 --> 00:20:58,790
+keeps a pending on the next value in the
+
+335
+00:20:58,790 --> 00:21:01,500
+so yeah it basically just Co generates
+
+336
+00:21:01,500 --> 00:21:04,440
+each each of item in the list and then
+
+337
+00:21:04,440 --> 00:21:08,370
+returns that and that's that's that's
+
+338
+00:21:08,370 --> 00:21:09,419
+going to be the last one that actually
+
+339
+00:21:09,419 --> 00:21:13,230
+runs so basically it's recursive you
+
+340
+00:21:13,230 --> 00:21:15,310
+know all the
+
+341
+00:21:15,310 --> 00:21:17,530
+children of the node get code generated
+
+342
+00:21:17,530 --> 00:21:19,330
+and then that gets included in that
+
+343
+00:21:19,330 --> 00:21:22,870
+nodes full text representation so you
+
+344
+00:21:22,870 --> 00:21:24,490
+can see a number is just gonna return
+
+345
+00:21:24,490 --> 00:21:27,850
+the value of the number and an identity
+
+346
+00:21:27,850 --> 00:21:29,800
+just gonna return the string that was
+
+347
+00:21:29,800 --> 00:21:33,250
+the name the identifier is name add
+
+348
+00:21:33,250 --> 00:21:37,920
+expression code generates the the first
+
+349
+00:21:37,920 --> 00:21:42,060
+operand and then the second operand and
+
+350
+00:21:42,060 --> 00:21:46,180
+the is statement the assignment is just
+
+351
+00:21:46,180 --> 00:21:47,890
+setting a name equal to so this is
+
+352
+00:21:47,890 --> 00:21:49,570
+generating JavaScript code I should say
+
+353
+00:21:49,570 --> 00:21:52,240
+so even though it's a is statement our
+
+354
+00:21:52,240 --> 00:21:54,820
+assignment was is used is when we're
+
+355
+00:21:54,820 --> 00:21:56,290
+generating it we're using the JavaScript
+
+356
+00:21:56,290 --> 00:21:58,450
+syntax so it's equal sign here and then
+
+357
+00:21:58,450 --> 00:22:02,260
+at the end you can see the semicolon and
+
+358
+00:22:02,260 --> 00:22:06,580
+then the show statement is a print so a
+
+359
+00:22:06,580 --> 00:22:08,890
+show is just we're just gonna print out
+
+360
+00:22:08,890 --> 00:22:10,630
+what that value is if you're doing in
+
+361
+00:22:10,630 --> 00:22:12,340
+the browser you do alert or some a
+
+362
+00:22:12,340 --> 00:22:15,970
+council that log and then if somehow
+
+363
+00:22:15,970 --> 00:22:19,780
+some unknown node gets in there you can
+
+364
+00:22:19,780 --> 00:22:22,960
+through Ryton so that's the whole
+
+365
+00:22:22,960 --> 00:22:34,670
+program and if we run it
+
+366
+00:22:34,680 --> 00:22:38,260
+all right so we ran the the program and
+
+367
+00:22:38,260 --> 00:22:42,280
+you can see the JavaScript oh if you
+
+368
+00:22:42,280 --> 00:22:44,890
+guys can see it back there the
+
+369
+00:22:44,890 --> 00:22:46,990
+JavaScript program is what gets printed
+
+370
+00:22:46,990 --> 00:22:50,110
+out so we that's those are the strings
+
+371
+00:22:50,110 --> 00:22:51,370
+that we were building up in the Coach n
+
+372
+00:22:51,370 --> 00:22:54,940
+function so it translated it from our
+
+373
+00:22:54,940 --> 00:22:56,740
+our syntax that we made up we first
+
+374
+00:22:56,740 --> 00:22:58,990
+defined in our our grammar format and
+
+375
+00:22:58,990 --> 00:23:01,510
+then you know went through and actually
+
+376
+00:23:01,510 --> 00:23:15,340
+code generated this code here all right
+
+377
+00:23:15,340 --> 00:23:18,460
+demo code generation and instead of just
+
+378
+00:23:18,460 --> 00:23:21,880
+compiling doing this translation you can
+
+379
+00:23:21,880 --> 00:23:26,350
+also do meta circular evaluator which is
+
+380
+00:23:26,350 --> 00:23:29,470
+basically an interpreter that instead of
+
+381
+00:23:29,470 --> 00:23:31,810
+just translating this ast into text code
+
+382
+00:23:31,810 --> 00:23:36,400
+it does so a read eval print loop kind
+
+383
+00:23:36,400 --> 00:23:38,830
+of thing and if you want to if you want
+
+384
+00:23:38,830 --> 00:23:41,920
+to know about all that stuff yeah you
+
+385
+00:23:41,920 --> 00:23:45,430
+know it's a good a good book especially
+
+386
+00:23:45,430 --> 00:23:47,410
+if you're interested in programming
+
+387
+00:23:47,410 --> 00:23:52,810
+languages so and I actually I'm working
+
+388
+00:23:52,810 --> 00:23:56,680
+on something called Jay sonic it
+
+389
+00:23:56,680 --> 00:23:58,930
+basically looks kind of like Lisp but
+
+390
+00:23:58,930 --> 00:24:01,660
+instead of s expressions it's JSON so
+
+391
+00:24:01,660 --> 00:24:04,030
+and it pretty much looks just like the
+
+392
+00:24:04,030 --> 00:24:06,640
+the arrays we were building up arrays
+
+393
+00:24:06,640 --> 00:24:08,170
+with notes and that's what Lisp
+
+394
+00:24:08,170 --> 00:24:09,760
+basically looks like this looks like an
+
+395
+00:24:09,760 --> 00:24:12,730
+AST so you know it's sort of the same
+
+396
+00:24:12,730 --> 00:24:15,490
+idea with JSON ik but it it's not really
+
+397
+00:24:15,490 --> 00:24:16,870
+practical to write in because it's so
+
+398
+00:24:16,870 --> 00:24:18,310
+verbose you know you don't really want
+
+399
+00:24:18,310 --> 00:24:19,990
+to you wouldn't really want it writing
+
+400
+00:24:19,990 --> 00:24:22,240
+in it for real but it's great for
+
+401
+00:24:22,240 --> 00:24:24,160
+experiment experimenting with language
+
+402
+00:24:24,160 --> 00:24:26,200
+ideas because if you have your own
+
+403
+00:24:26,200 --> 00:24:28,090
+interpreter you can do whatever you want
+
+404
+00:24:28,090 --> 00:24:30,400
+if you want to create a closure and then
+
+405
+00:24:30,400 --> 00:24:32,410
+have a way to inspect the context of the
+
+406
+00:24:32,410 --> 00:24:34,060
+closure while you're inside executing
+
+407
+00:24:34,060 --> 00:24:35,680
+code you can do that if you wanted to
+
+408
+00:24:35,680 --> 00:24:38,170
+you basically any kind of introspection
+
+409
+00:24:38,170 --> 00:24:40,330
+technique you can do or anything you
+
+410
+00:24:40,330 --> 00:24:40,990
+want it at all
+
+411
+00:24:40,990 --> 00:24:46,220
+so interpreters are fun so
+
+412
+00:24:46,230 --> 00:24:53,380
+and that is the end of the top I just
+
+413
+00:24:53,380 --> 00:24:56,980
+like that picture so and there's a bunch
+
+414
+00:24:56,980 --> 00:25:00,820
+of links this gets posted somewhere and
+
+415
+00:25:00,820 --> 00:25:02,830
+I don't have that Jay sonic on github
+
+416
+00:25:02,830 --> 00:25:03,820
+yet but I'll probably put that up there
+
+417
+00:25:03,820 --> 00:25:07,690
+and up and then yeah in the demo or that
+

@@ -1,0 +1,4445 @@
+1
+00:00:14,759 --> 00:00:17,529
+
+well good afternoon everyone um
+
+2
+00:00:17,529 --> 00:00:19,509
+today's been amazing it's so good to be
+
+3
+00:00:19,509 --> 00:00:21,369
+here the quality of the talks has been
+
+4
+00:00:21,369 --> 00:00:24,369
+absolutely astounding which puts a lot
+
+5
+00:00:24,369 --> 00:00:25,900
+of pressure on my shoulders for the last
+
+6
+00:00:25,900 --> 00:00:29,740
+talk yeah it's quite a long talk it's
+
+7
+00:00:29,740 --> 00:00:31,810
+quite a lot slide so I'll try not to run
+
+8
+00:00:31,810 --> 00:00:35,559
+over refactoring CSS without losing your
+
+9
+00:00:35,559 --> 00:00:39,339
+mind quite a scary topic refactoring any
+
+10
+00:00:39,339 --> 00:00:41,800
+kind of code kind of scary CSS is
+
+11
+00:00:41,800 --> 00:00:44,079
+particularly difficult so in this talk
+
+12
+00:00:44,079 --> 00:00:46,149
+we're gonna look at some fairly
+
+13
+00:00:46,149 --> 00:00:48,760
+philosophical stuff how do we prove the
+
+14
+00:00:48,760 --> 00:00:50,980
+business case for refactoring CSS how do
+
+15
+00:00:50,980 --> 00:00:52,449
+we go to our product owners that were
+
+16
+00:00:52,449 --> 00:00:55,030
+project managers and get the time to
+
+17
+00:00:55,030 --> 00:00:57,910
+refactor stuff what should we refactor
+
+18
+00:00:57,910 --> 00:00:59,920
+what do we decide to refactor what can
+
+19
+00:00:59,920 --> 00:01:01,440
+we leave alone for a bit longer
+
+20
+00:01:01,440 --> 00:01:03,550
+that's gonna be the philosophical stuff
+
+21
+00:01:03,550 --> 00:01:04,449
+and then we're gonna move on to some
+
+22
+00:01:04,449 --> 00:01:06,850
+fairly practical tips and tricks and
+
+23
+00:01:06,850 --> 00:01:08,979
+some weird stuff to help us actually
+
+24
+00:01:08,979 --> 00:01:13,479
+refactor our CSS yeah so hello again
+
+25
+00:01:13,479 --> 00:01:15,640
+from me it's my first time ever in
+
+26
+00:01:15,640 --> 00:01:17,830
+Argentina so obviously my first time
+
+27
+00:01:17,830 --> 00:01:20,349
+when Azhar is such a cool city having so
+
+28
+00:01:20,349 --> 00:01:23,920
+much fun um I'm Harry I'm from the north
+
+29
+00:01:23,920 --> 00:01:26,500
+of England which is probably why I'm
+
+30
+00:01:26,500 --> 00:01:29,890
+really hard to understand very specific
+
+31
+00:01:29,890 --> 00:01:33,190
+weird accent I am CSS wizardry online
+
+32
+00:01:33,190 --> 00:01:36,819
+get Herbeck cetera but my job is I'm a
+
+33
+00:01:36,819 --> 00:01:39,550
+consultant front-end architect so I deal
+
+34
+00:01:39,550 --> 00:01:42,340
+with CSS architecture uh performance and
+
+35
+00:01:42,340 --> 00:01:44,530
+I usually tend to do this at scale I
+
+36
+00:01:44,530 --> 00:01:46,000
+tend to work with fairly large companies
+
+37
+00:01:46,000 --> 00:01:48,069
+which means bigger code bases more
+
+38
+00:01:48,069 --> 00:01:49,539
+developers bigger teams
+
+39
+00:01:49,539 --> 00:01:52,360
+long-running projects which also means
+
+40
+00:01:52,360 --> 00:01:55,030
+that there's more reason for requirement
+
+41
+00:01:55,030 --> 00:01:56,950
+or a necessity to refactor things and
+
+42
+00:01:56,950 --> 00:02:00,060
+unfortunately I hate refactoring CSS
+
+43
+00:02:00,060 --> 00:02:03,239
+anybody here refactored some CSS before
+
+44
+00:02:03,239 --> 00:02:06,550
+yeah most of us keep your hands up hands
+
+45
+00:02:06,550 --> 00:02:08,259
+back up keep your hands up if you
+
+46
+00:02:08,259 --> 00:02:11,379
+enjoyed that experience yeah exactly I
+
+47
+00:02:11,379 --> 00:02:13,660
+don't trust you one person in this room
+
+48
+00:02:13,660 --> 00:02:17,680
+enjoys refactoring CSS so yeah it's
+
+49
+00:02:17,680 --> 00:02:19,390
+awful it's a horrible job because CSS
+
+50
+00:02:19,390 --> 00:02:21,609
+you can't really write tests for it so
+
+51
+00:02:21,609 --> 00:02:23,349
+if you modify one thing you don't even
+
+52
+00:02:23,349 --> 00:02:24,860
+gonna break everything else
+
+53
+00:02:24,860 --> 00:02:26,480
+so hopefully in this talk we'll look at
+
+54
+00:02:26,480 --> 00:02:28,550
+some ways of making the refactoring
+
+55
+00:02:28,550 --> 00:02:30,680
+process a little bit simpler a little
+
+56
+00:02:30,680 --> 00:02:33,350
+bit safer I'm not gonna promise you
+
+57
+00:02:33,350 --> 00:02:35,810
+it'll be an enjoyable experience but it
+
+58
+00:02:35,810 --> 00:02:39,470
+will at least be a little easier let's
+
+59
+00:02:39,470 --> 00:02:41,390
+start off then what do we talk about
+
+60
+00:02:41,390 --> 00:02:44,120
+when we talk about refactoring there's a
+
+61
+00:02:44,120 --> 00:02:46,130
+really nice definition from a very very
+
+62
+00:02:46,130 --> 00:02:48,020
+clever man called Martin Fowler and he
+
+63
+00:02:48,020 --> 00:02:50,330
+says that refactoring is the process of
+
+64
+00:02:50,330 --> 00:02:52,370
+changing a software system in such a way
+
+65
+00:02:52,370 --> 00:02:54,230
+that it does not alter the external
+
+66
+00:02:54,230 --> 00:02:56,959
+behavior of the code yet improve the
+
+67
+00:02:56,959 --> 00:03:00,080
+internal structure so right away what
+
+68
+00:03:00,080 --> 00:03:00,890
+I'm getting from this is that
+
+69
+00:03:00,890 --> 00:03:02,989
+refactoring doesn't benefit our users
+
+70
+00:03:02,989 --> 00:03:04,670
+it's not for them it's for us it's a
+
+71
+00:03:04,670 --> 00:03:06,890
+business decision it's a decision that
+
+72
+00:03:06,890 --> 00:03:09,739
+developers product owners they make it
+
+73
+00:03:09,739 --> 00:03:11,600
+so that we can have a nicer environment
+
+74
+00:03:11,600 --> 00:03:13,940
+to work in so it's not initially for our
+
+75
+00:03:13,940 --> 00:03:17,030
+users however I would argue that given
+
+76
+00:03:17,030 --> 00:03:20,150
+enough time it will ultimately benefit
+
+77
+00:03:20,150 --> 00:03:22,130
+our users because we'll be delivering
+
+78
+00:03:22,130 --> 00:03:23,989
+better quality software we'll be
+
+79
+00:03:23,989 --> 00:03:25,730
+delivering software with hopefully fewer
+
+80
+00:03:25,730 --> 00:03:28,640
+bugs or errors we'll be able to add
+
+81
+00:03:28,640 --> 00:03:30,230
+features quicker so we'll be able to
+
+82
+00:03:30,230 --> 00:03:31,880
+deliver features to our customers now it
+
+83
+00:03:31,880 --> 00:03:34,340
+uses much more quickly so refactoring
+
+84
+00:03:34,340 --> 00:03:35,780
+starts off as a business decision that
+
+85
+00:03:35,780 --> 00:03:38,180
+ultimately will benefit our users as
+
+86
+00:03:38,180 --> 00:03:42,739
+well to my mind and at least for the
+
+87
+00:03:42,739 --> 00:03:45,260
+purposes of this talk I consider kind of
+
+88
+00:03:45,260 --> 00:03:47,570
+three separate types of refactoring
+
+89
+00:03:47,570 --> 00:03:49,430
+there's a kind of as you go refactoring
+
+90
+00:03:49,430 --> 00:03:52,160
+which everybody in this room every
+
+91
+00:03:52,160 --> 00:03:54,200
+developer in the world should be doing
+
+92
+00:03:54,200 --> 00:03:56,750
+this one all the time this is like when
+
+93
+00:03:56,750 --> 00:03:58,340
+you need to build a new feature so you
+
+94
+00:03:58,340 --> 00:03:59,959
+chilled a prototype you hack it together
+
+95
+00:03:59,959 --> 00:04:02,150
+and it works now of course you're not
+
+96
+00:04:02,150 --> 00:04:03,320
+going to leave it in that kind of
+
+97
+00:04:03,320 --> 00:04:05,000
+condition you would go back and add
+
+98
+00:04:05,000 --> 00:04:07,010
+comments you add documentation you dry
+
+99
+00:04:07,010 --> 00:04:09,380
+it out you perhaps start using variables
+
+100
+00:04:09,380 --> 00:04:11,239
+from the wider project to kind of make
+
+101
+00:04:11,239 --> 00:04:14,630
+this code or more lean we should be
+
+102
+00:04:14,630 --> 00:04:15,860
+doing this all the time but if we don't
+
+103
+00:04:15,860 --> 00:04:17,390
+manage to do this if we don't manage to
+
+104
+00:04:17,390 --> 00:04:18,919
+capture everything at this point we
+
+105
+00:04:18,919 --> 00:04:21,049
+might end up with refactoring our
+
+106
+00:04:21,049 --> 00:04:23,419
+technical debt technical debt I'm
+
+107
+00:04:23,419 --> 00:04:25,070
+finding really interesting at the moment
+
+108
+00:04:25,070 --> 00:04:26,060
+because I'm working with clients who
+
+109
+00:04:26,060 --> 00:04:28,000
+have got quite a lot of it
+
+110
+00:04:28,000 --> 00:04:30,380
+technical debt is kind of when you do
+
+111
+00:04:30,380 --> 00:04:33,200
+what you can right now when you do you
+
+112
+00:04:33,200 --> 00:04:35,300
+build a feature given a certain of
+
+113
+00:04:35,300 --> 00:04:36,990
+limited time on knowledge
+
+114
+00:04:36,990 --> 00:04:39,180
+information but you know that you need
+
+115
+00:04:39,180 --> 00:04:40,560
+to go back and tidy up later so you
+
+116
+00:04:40,560 --> 00:04:42,180
+built something with all the available
+
+117
+00:04:42,180 --> 00:04:44,100
+information but you need to go back in
+
+118
+00:04:44,100 --> 00:04:46,950
+future and tidy things up if we don't
+
+119
+00:04:46,950 --> 00:04:48,750
+capture things at this point we end up
+
+120
+00:04:48,750 --> 00:04:49,710
+getting on to the third type of
+
+121
+00:04:49,710 --> 00:04:51,240
+refactoring which is actually more like
+
+122
+00:04:51,240 --> 00:04:53,790
+a rewrite this is where you've ignored
+
+123
+00:04:53,790 --> 00:04:55,740
+your technical debt for long enough that
+
+124
+00:04:55,740 --> 00:04:57,600
+you can't refactor anymore it's too
+
+125
+00:04:57,600 --> 00:04:59,340
+messy to start refactoring it's going to
+
+126
+00:04:59,340 --> 00:05:02,190
+be cheaper to actually just tear it all
+
+127
+00:05:02,190 --> 00:05:03,110
+down and start again
+
+128
+00:05:03,110 --> 00:05:06,500
+anyone ended up in this situation before
+
+129
+00:05:06,500 --> 00:05:09,270
+okay a few of us yeah it happens many on
+
+130
+00:05:09,270 --> 00:05:11,220
+big projects and the rewrite takes two
+
+131
+00:05:11,220 --> 00:05:13,260
+years and it's still not as good as when
+
+132
+00:05:13,260 --> 00:05:14,910
+you started and it all goes wrong and
+
+133
+00:05:14,910 --> 00:05:17,460
+it's a very expensive error-prone ever
+
+134
+00:05:17,460 --> 00:05:21,600
+of pronet process unfortunately as you
+
+135
+00:05:21,600 --> 00:05:23,790
+get further into a project the type of
+
+136
+00:05:23,790 --> 00:05:26,610
+refactoring is likely to change right
+
+137
+00:05:26,610 --> 00:05:28,050
+the longer you spend on a project the
+
+138
+00:05:28,050 --> 00:05:29,760
+type of refactoring you need to do is
+
+139
+00:05:29,760 --> 00:05:31,320
+probably going to change and
+
+140
+00:05:31,320 --> 00:05:33,420
+unfortunately it gets progressively more
+
+141
+00:05:33,420 --> 00:05:36,390
+expensive more costly it becomes a much
+
+142
+00:05:36,390 --> 00:05:39,270
+bigger operation this talk is mainly
+
+143
+00:05:39,270 --> 00:05:42,060
+going to discuss technical debt and the
+
+144
+00:05:42,060 --> 00:05:44,640
+rewrites and overhauls it's all going
+
+145
+00:05:44,640 --> 00:05:46,320
+it's also going to discuss that kind of
+
+146
+00:05:46,320 --> 00:05:48,660
+bit in the middle how can we capture a
+
+147
+00:05:48,660 --> 00:05:50,190
+technical debt before it becomes a
+
+148
+00:05:50,190 --> 00:05:51,900
+rewrite or how do we rewrite something
+
+149
+00:05:51,900 --> 00:05:54,510
+before it becomes a complete overhaul so
+
+150
+00:05:54,510 --> 00:05:56,280
+we'll look at that kind of thin seam in
+
+151
+00:05:56,280 --> 00:06:00,570
+the middle a quick aside on technical
+
+152
+00:06:00,570 --> 00:06:02,610
+Batman have you all heard of the phrase
+
+153
+00:06:02,610 --> 00:06:04,680
+technical debt you heard of technical
+
+154
+00:06:04,680 --> 00:06:07,470
+debt oh cool half of us maybe for
+
+155
+00:06:07,470 --> 00:06:08,880
+anybody who hasn't heard the phrase
+
+156
+00:06:08,880 --> 00:06:11,670
+technical debt the URL on this slide is
+
+157
+00:06:11,670 --> 00:06:13,170
+definitely worth checking out I will
+
+158
+00:06:13,170 --> 00:06:14,910
+share the slides at the end of the talk
+
+159
+00:06:14,910 --> 00:06:17,820
+but a technical debt is when you decide
+
+160
+00:06:17,820 --> 00:06:20,610
+to do something right now to kind of
+
+161
+00:06:20,610 --> 00:06:21,840
+take a shortcut so you do something
+
+162
+00:06:21,840 --> 00:06:23,970
+right now to take a shortcut but you
+
+163
+00:06:23,970 --> 00:06:25,530
+have to understand that that's like
+
+164
+00:06:25,530 --> 00:06:27,780
+taking a loan that shortcut isn't free
+
+165
+00:06:27,780 --> 00:06:29,670
+that shortcut will cost you something in
+
+166
+00:06:29,670 --> 00:06:31,590
+the future except it won't just cost you
+
+167
+00:06:31,590 --> 00:06:34,430
+the shortcut it will incur some interest
+
+168
+00:06:34,430 --> 00:06:37,650
+probably the quickest most succinctly of
+
+169
+00:06:37,650 --> 00:06:39,750
+technical debt is when you're working on
+
+170
+00:06:39,750 --> 00:06:42,050
+a product and there's a problem and
+
+171
+00:06:42,050 --> 00:06:44,550
+using important we'll fix that problem
+
+172
+00:06:44,550 --> 00:06:48,330
+now typing important takes about four
+
+173
+00:06:48,330 --> 00:06:50,490
+seconds right so four four second
+
+174
+00:06:50,490 --> 00:06:52,650
+you can fix a problem that's really
+
+175
+00:06:52,650 --> 00:06:55,080
+cheap but that's alone right that is
+
+176
+00:06:55,080 --> 00:06:56,520
+technical debt because fixing the
+
+177
+00:06:56,520 --> 00:06:57,990
+important in six months time isn't going
+
+178
+00:06:57,990 --> 00:06:59,759
+to take four seconds it's gonna take you
+
+179
+00:06:59,759 --> 00:07:02,759
+four days so four seconds now is
+
+180
+00:07:02,759 --> 00:07:04,710
+technical debt you're getting a loan
+
+181
+00:07:04,710 --> 00:07:06,539
+you're fixing the problem immediately
+
+182
+00:07:06,539 --> 00:07:09,090
+but the repayment of four days in six
+
+183
+00:07:09,090 --> 00:07:13,009
+months time is what technical debt is
+
+184
+00:07:13,009 --> 00:07:15,300
+it's going to happen though technical
+
+185
+00:07:15,300 --> 00:07:17,370
+that happens on nearly every project you
+
+186
+00:07:17,370 --> 00:07:19,139
+work on you will need to get a release
+
+187
+00:07:19,139 --> 00:07:20,819
+out of the door you'll have a bug that
+
+188
+00:07:20,819 --> 00:07:22,410
+is on the live site you'll have to do
+
+189
+00:07:22,410 --> 00:07:24,659
+something right now to get a quick win
+
+190
+00:07:24,659 --> 00:07:26,460
+so technical debt is guaranteed to
+
+191
+00:07:26,460 --> 00:07:29,300
+happen on any project of sufficient size
+
+192
+00:07:29,300 --> 00:07:31,620
+the thing is we need to make sure we
+
+193
+00:07:31,620 --> 00:07:33,210
+keep up our repayment so if you ignore
+
+194
+00:07:33,210 --> 00:07:35,190
+the debt you end up going bankrupt your
+
+195
+00:07:35,190 --> 00:07:36,419
+interest increases you end up going
+
+196
+00:07:36,419 --> 00:07:38,370
+bankrupt so what you need to do is
+
+197
+00:07:38,370 --> 00:07:42,000
+schedule in constant bug fixing every
+
+198
+00:07:42,000 --> 00:07:43,560
+sprint you have you need to guarantee
+
+199
+00:07:43,560 --> 00:07:45,720
+that you can get some time to fix bugs
+
+200
+00:07:45,720 --> 00:07:47,849
+tidy up the codebase and sort of fix up
+
+201
+00:07:47,849 --> 00:07:50,789
+your technical debt but that means
+
+202
+00:07:50,789 --> 00:07:52,800
+bigger problems that brings problems you
+
+203
+00:07:52,800 --> 00:07:54,810
+know what do we refactor when do we do
+
+204
+00:07:54,810 --> 00:07:56,550
+it how long can we wait before we
+
+205
+00:07:56,550 --> 00:07:58,740
+refactor something now the easy answer
+
+206
+00:07:58,740 --> 00:07:59,759
+here is that we should always be
+
+207
+00:07:59,759 --> 00:08:03,560
+refactoring something but in more detail
+
+208
+00:08:03,560 --> 00:08:05,669
+we should refactor things if the
+
+209
+00:08:05,669 --> 00:08:09,960
+projected cost of maintenance or the
+
+210
+00:08:09,960 --> 00:08:11,550
+projected cost of maintaining a feature
+
+211
+00:08:11,550 --> 00:08:13,789
+is higher than refactoring it
+
+212
+00:08:13,789 --> 00:08:16,560
+the problem is tech debt and refactoring
+
+213
+00:08:16,560 --> 00:08:18,300
+is that you have to be very good at your
+
+214
+00:08:18,300 --> 00:08:20,099
+estimates and developers hate giving
+
+215
+00:08:20,099 --> 00:08:22,770
+estimates you have to project the cost
+
+216
+00:08:22,770 --> 00:08:24,060
+of maintaining a feature and if you
+
+217
+00:08:24,060 --> 00:08:26,280
+think it's going to cost you 20 weeks
+
+218
+00:08:26,280 --> 00:08:28,409
+over the next four years to maintain
+
+219
+00:08:28,409 --> 00:08:30,750
+something but maybe 15 weeks to rewrite
+
+220
+00:08:30,750 --> 00:08:33,209
+it those are the kind of numbers you
+
+221
+00:08:33,209 --> 00:08:34,649
+have to work out and take back to the
+
+222
+00:08:34,649 --> 00:08:38,099
+business you should only refactor things
+
+223
+00:08:38,099 --> 00:08:39,599
+if the current version is actually
+
+224
+00:08:39,599 --> 00:08:41,909
+slowing you down if the current codebase
+
+225
+00:08:41,909 --> 00:08:44,790
+isn't actually causing any problems even
+
+226
+00:08:44,790 --> 00:08:46,740
+if it might be ugly like their update if
+
+227
+00:08:46,740 --> 00:08:49,110
+if it's not actually slowing you down or
+
+228
+00:08:49,110 --> 00:08:50,040
+causing you problems you probably
+
+229
+00:08:50,040 --> 00:08:51,899
+shouldn't refactor it you try and leave
+
+230
+00:08:51,899 --> 00:08:54,329
+alone a little bit longer and from the
+
+231
+00:08:54,329 --> 00:08:55,890
+flip side you should refactor something
+
+232
+00:08:55,890 --> 00:08:57,540
+if the new version gives you actual
+
+233
+00:08:57,540 --> 00:08:58,160
+actual
+
+234
+00:08:58,160 --> 00:09:00,170
+tangible benefits if the new version is
+
+235
+00:09:00,170 --> 00:09:02,029
+going to be measurably better than the
+
+236
+00:09:02,029 --> 00:09:02,750
+old version
+
+237
+00:09:02,750 --> 00:09:06,290
+perhaps you should refactor a minor kind
+
+238
+00:09:06,290 --> 00:09:08,120
+of change in naming convention might not
+
+239
+00:09:08,120 --> 00:09:10,129
+change the way you work upgrading to a
+
+240
+00:09:10,129 --> 00:09:11,870
+new version of a framework might have
+
+241
+00:09:11,870 --> 00:09:13,579
+huge impact so you need to make sure
+
+242
+00:09:13,579 --> 00:09:17,240
+you've got measurable benefit looking at
+
+243
+00:09:17,240 --> 00:09:19,279
+an example of kind of proving the
+
+244
+00:09:19,279 --> 00:09:20,949
+business case or going to the business
+
+245
+00:09:20,949 --> 00:09:23,449
+let's imagine we've got a project right
+
+246
+00:09:23,449 --> 00:09:27,259
+now and a client rings up and they want
+
+247
+00:09:27,259 --> 00:09:28,910
+to add a theme they want to add a theme
+
+248
+00:09:28,910 --> 00:09:30,649
+to this website and the site was never
+
+249
+00:09:30,649 --> 00:09:32,600
+built to have theming involved at all on
+
+250
+00:09:32,600 --> 00:09:33,980
+the left hand side we've got the
+
+251
+00:09:33,980 --> 00:09:35,600
+existing code base and the cost of
+
+252
+00:09:35,600 --> 00:09:37,610
+hacking a theme into the existing code
+
+253
+00:09:37,610 --> 00:09:40,910
+base might be two days then in a month's
+
+254
+00:09:40,910 --> 00:09:42,860
+time another client rings up and says oh
+
+255
+00:09:42,860 --> 00:09:44,540
+we saw that they had a theme and we want
+
+256
+00:09:44,540 --> 00:09:46,220
+that and you've said to your product
+
+257
+00:09:46,220 --> 00:09:47,689
+owner well it'll take two days again
+
+258
+00:09:47,689 --> 00:09:49,069
+we'll hack a theme in and just make it
+
+259
+00:09:49,069 --> 00:09:51,529
+work out across two days and three
+
+260
+00:09:51,529 --> 00:09:53,540
+months time maybe hacking it in costs
+
+261
+00:09:53,540 --> 00:09:55,399
+two and a half days because we created
+
+262
+00:09:55,399 --> 00:09:56,870
+enough mess that it's actually taking
+
+263
+00:09:56,870 --> 00:09:59,240
+progressively longer by the time we've
+
+264
+00:09:59,240 --> 00:10:01,189
+added these sort of themes these four
+
+265
+00:10:01,189 --> 00:10:02,630
+themes they overall cost within nine
+
+266
+00:10:02,630 --> 00:10:06,199
+days the way of making a business case
+
+267
+00:10:06,199 --> 00:10:09,110
+for refactoring or kind of deciding when
+
+268
+00:10:09,110 --> 00:10:10,490
+to refactor is if you can make the
+
+269
+00:10:10,490 --> 00:10:12,709
+projections that you can make it cheaper
+
+270
+00:10:12,709 --> 00:10:15,199
+in the long run if we were to add the
+
+271
+00:10:15,199 --> 00:10:17,329
+theme and refactor the CSS to have
+
+272
+00:10:17,329 --> 00:10:19,160
+theming involved as a first-class
+
+273
+00:10:19,160 --> 00:10:21,199
+citizen it might cost us seven days
+
+274
+00:10:21,199 --> 00:10:22,550
+which to the business looks more
+
+275
+00:10:22,550 --> 00:10:24,769
+expensive they've got an option you can
+
+276
+00:10:24,769 --> 00:10:26,600
+spend seven days on it or two days on it
+
+277
+00:10:26,600 --> 00:10:28,339
+the business wants to pick the two day
+
+278
+00:10:28,339 --> 00:10:30,529
+version but what we can see is if we
+
+279
+00:10:30,529 --> 00:10:31,819
+actually build theming in as a
+
+280
+00:10:31,819 --> 00:10:33,259
+first-class citizen it might cost us a
+
+281
+00:10:33,259 --> 00:10:35,269
+quarter of a day every single time it
+
+282
+00:10:35,269 --> 00:10:37,819
+might become really really quick to add
+
+283
+00:10:37,819 --> 00:10:40,100
+that feature so in the long run
+
+284
+00:10:40,100 --> 00:10:41,870
+refactoring now actually works out
+
+285
+00:10:41,870 --> 00:10:43,459
+cheaper but you don't get that return on
+
+286
+00:10:43,459 --> 00:10:45,920
+investment until the features being
+
+287
+00:10:45,920 --> 00:10:48,470
+asked for a number of times so if you
+
+288
+00:10:48,470 --> 00:10:49,519
+think there's something might be asked
+
+289
+00:10:49,519 --> 00:10:51,800
+for just once perhaps don't refactor if
+
+290
+00:10:51,800 --> 00:10:53,089
+you think something might get Rieff
+
+291
+00:10:53,089 --> 00:10:56,180
+asked for several times refactor and
+
+292
+00:10:56,180 --> 00:10:59,839
+invest the opposite of debt is
+
+293
+00:10:59,839 --> 00:11:01,279
+investment so you can have technical
+
+294
+00:11:01,279 --> 00:11:02,449
+investment where you actually invest
+
+295
+00:11:02,449 --> 00:11:04,610
+more time than you need right now in
+
+296
+00:11:04,610 --> 00:11:06,110
+order to make things very very quick in
+
+297
+00:11:06,110 --> 00:11:08,300
+the future
+
+298
+00:11:08,300 --> 00:11:11,270
+okay when shouldn't we refactor this is
+
+299
+00:11:11,270 --> 00:11:12,740
+an interesting one I have clients who
+
+300
+00:11:12,740 --> 00:11:15,620
+ask me a lot about you know we need to
+
+301
+00:11:15,620 --> 00:11:17,630
+refactor this or we want to rewrite this
+
+302
+00:11:17,630 --> 00:11:19,070
+part of the project and a lot of the
+
+303
+00:11:19,070 --> 00:11:21,460
+time I end up telling them not to bother
+
+304
+00:11:21,460 --> 00:11:24,200
+if a part of the project isn't actually
+
+305
+00:11:24,200 --> 00:11:26,210
+slowing you down perhaps it didn't need
+
+306
+00:11:26,210 --> 00:11:28,310
+refactoring if it's just ugly or nasty
+
+307
+00:11:28,310 --> 00:11:31,370
+code or not nice to look at I have to
+
+308
+00:11:31,370 --> 00:11:32,060
+leave it alone
+
+309
+00:11:32,060 --> 00:11:34,100
+only refactor if it's actually causing
+
+310
+00:11:34,100 --> 00:11:37,280
+you problems if it can be ignored or
+
+311
+00:11:37,280 --> 00:11:38,900
+avoided this sounds like terrible advice
+
+312
+00:11:38,900 --> 00:11:40,730
+now I'm saying out loud but if you can
+
+313
+00:11:40,730 --> 00:11:44,090
+ignore it or avoid it do so leave it as
+
+314
+00:11:44,090 --> 00:11:45,740
+long as it works just leave it alone for
+
+315
+00:11:45,740 --> 00:11:48,560
+as long as you can if you have to work
+
+316
+00:11:48,560 --> 00:11:49,760
+with it every single day and it's really
+
+317
+00:11:49,760 --> 00:11:51,800
+hard to work with that is causing you a
+
+318
+00:11:51,800 --> 00:11:53,870
+problem you need to refactor it I've got
+
+319
+00:11:53,870 --> 00:11:55,310
+a couple of examples of when not to reef
+
+320
+00:11:55,310 --> 00:11:59,480
+like some specific examples if something
+
+321
+00:11:59,480 --> 00:12:01,670
+is gonna be captured by a rewrite later
+
+322
+00:12:01,670 --> 00:12:03,830
+on so I've had clients who've said you
+
+323
+00:12:03,830 --> 00:12:05,180
+know we're gonna rebuild the entire
+
+324
+00:12:05,180 --> 00:12:06,740
+platform next year but we want to
+
+325
+00:12:06,740 --> 00:12:09,350
+refactor it now what well why do it
+
+326
+00:12:09,350 --> 00:12:11,060
+twice just leave it a bit shitty for a
+
+327
+00:12:11,060 --> 00:12:13,310
+year and like you know just rebuild it
+
+328
+00:12:13,310 --> 00:12:16,160
+next year so unless you actually need to
+
+329
+00:12:16,160 --> 00:12:18,680
+immediately leave it alone refactoring
+
+330
+00:12:18,680 --> 00:12:21,290
+is largely a business kind of case right
+
+331
+00:12:21,290 --> 00:12:23,410
+and it's cheaper to leave it alone so
+
+332
+00:12:23,410 --> 00:12:26,840
+one example um a client asked me we want
+
+333
+00:12:26,840 --> 00:12:28,970
+to rewrite all of our CSS onto the BEM
+
+334
+00:12:28,970 --> 00:12:32,120
+naming convention now I love them I
+
+335
+00:12:32,120 --> 00:12:34,580
+really really love them but I don't
+
+336
+00:12:34,580 --> 00:12:36,380
+think taking two weeks out of product
+
+337
+00:12:36,380 --> 00:12:38,420
+work to refactor your CSS onto the BEM
+
+338
+00:12:38,420 --> 00:12:40,400
+naming convention is going to pay itself
+
+339
+00:12:40,400 --> 00:12:43,310
+back very quickly rewrite in your entire
+
+340
+00:12:43,310 --> 00:12:45,050
+CSS architecture is a very costly
+
+341
+00:12:45,050 --> 00:12:47,030
+refactor it kind of it could potentially
+
+342
+00:12:47,030 --> 00:12:49,400
+introduce a lot of bugs I don't think
+
+343
+00:12:49,400 --> 00:12:51,290
+that just rewriting your CSS on to a
+
+344
+00:12:51,290 --> 00:12:53,030
+certain naming convention is gonna be
+
+345
+00:12:53,030 --> 00:12:56,390
+worth perhaps two weeks of your time if
+
+346
+00:12:56,390 --> 00:12:57,860
+you disagree or if you can prove that
+
+347
+00:12:57,860 --> 00:12:59,390
+you know having a better naming
+
+348
+00:12:59,390 --> 00:13:01,400
+convention will speed you up by more
+
+349
+00:13:01,400 --> 00:13:03,050
+than two weeks over the life of the
+
+350
+00:13:03,050 --> 00:13:04,730
+project and perhaps is the correct thing
+
+351
+00:13:04,730 --> 00:13:06,170
+to do but if the numbers don't agree
+
+352
+00:13:06,170 --> 00:13:07,790
+with you you need to hold off
+
+353
+00:13:07,790 --> 00:13:13,400
+refactoring another example I got a
+
+354
+00:13:13,400 --> 00:13:15,920
+client so me we think that code for this
+
+355
+00:13:15,920 --> 00:13:18,620
+nav is pretty ugly and I took a look at
+
+356
+00:13:18,620 --> 00:13:20,030
+the code and it was pretty ugly it was
+
+357
+00:13:20,030 --> 00:13:20,980
+awful
+
+358
+00:13:20,980 --> 00:13:24,579
+disgusting um so I said to the client
+
+359
+00:13:24,579 --> 00:13:26,709
+well do you actually need to refactor at
+
+360
+00:13:26,709 --> 00:13:28,570
+how many times do you actually open up
+
+361
+00:13:28,570 --> 00:13:31,600
+the nav like CSS JavaScript APIs you
+
+362
+00:13:31,600 --> 00:13:32,829
+know how often do you actually work with
+
+363
+00:13:32,829 --> 00:13:35,980
+it and they said well we don't if a user
+
+364
+00:13:35,980 --> 00:13:37,810
+adds a new page in the CMS it just
+
+365
+00:13:37,810 --> 00:13:39,730
+appears in the page and I said well so
+
+366
+00:13:39,730 --> 00:13:40,959
+you don't actually have to edit any of
+
+367
+00:13:40,959 --> 00:13:42,399
+this code like no we don't we don't
+
+368
+00:13:42,399 --> 00:13:45,970
+really edit it at all okay what problems
+
+369
+00:13:45,970 --> 00:13:47,649
+is it causing you right now is it not
+
+370
+00:13:47,649 --> 00:13:49,240
+working in certain browsers is it
+
+371
+00:13:49,240 --> 00:13:51,130
+inaccessible and like what's accessible
+
+372
+00:13:51,130 --> 00:13:53,589
+it works but why spend time and money
+
+373
+00:13:53,589 --> 00:13:55,540
+refactoring it leave it alone until you
+
+374
+00:13:55,540 --> 00:13:57,550
+need to redesign the nav completely if
+
+375
+00:13:57,550 --> 00:13:58,870
+you could ignore parts of the codebase
+
+376
+00:13:58,870 --> 00:14:00,399
+to save the time save the money and
+
+377
+00:14:00,399 --> 00:14:06,430
+don't refactor them okay right I want to
+
+378
+00:14:06,430 --> 00:14:07,779
+talk to you about a concept that I came
+
+379
+00:14:07,779 --> 00:14:10,839
+up with earlier this year this concept
+
+380
+00:14:10,839 --> 00:14:13,500
+is called the refactoring tunnel a
+
+381
+00:14:13,500 --> 00:14:17,649
+refactoring tunnel represents like the
+
+382
+00:14:17,649 --> 00:14:19,930
+tunnel itself represents the workload of
+
+383
+00:14:19,930 --> 00:14:22,630
+refactoring something if you pick a
+
+384
+00:14:22,630 --> 00:14:24,850
+thing a part of your project project to
+
+385
+00:14:24,850 --> 00:14:27,130
+refactor you should see that piece of
+
+386
+00:14:27,130 --> 00:14:29,019
+work as being a tunnel and on day one
+
+387
+00:14:29,019 --> 00:14:30,610
+when you start refactoring you step into
+
+388
+00:14:30,610 --> 00:14:32,740
+the tunnel you can't see the end of a
+
+389
+00:14:32,740 --> 00:14:34,000
+tunnel you don't know where the light is
+
+390
+00:14:34,000 --> 00:14:35,769
+at the end you can see the light where
+
+391
+00:14:35,769 --> 00:14:38,260
+you just came in and day two day three
+
+392
+00:14:38,260 --> 00:14:40,060
+you progress further into the tunnel now
+
+393
+00:14:40,060 --> 00:14:42,730
+the problem is we can pick tunnels that
+
+394
+00:14:42,730 --> 00:14:44,680
+are way too long we could pick a tunnel
+
+395
+00:14:44,680 --> 00:14:47,079
+on day four we can't see the light at
+
+396
+00:14:47,079 --> 00:14:48,459
+the end of the tunnel but we can't see
+
+397
+00:14:48,459 --> 00:14:51,250
+the light at the entrance either hasn't
+
+398
+00:14:51,250 --> 00:14:52,329
+he only had that before when you've
+
+399
+00:14:52,329 --> 00:14:53,860
+started refactoring something like I
+
+400
+00:14:53,860 --> 00:14:55,149
+don't know where I am anymore
+
+401
+00:14:55,149 --> 00:14:56,649
+I don't know how much more work there is
+
+402
+00:14:56,649 --> 00:14:59,380
+to do this I call these refactoring
+
+403
+00:14:59,380 --> 00:15:02,470
+tunnels a long refactoring tunnel is
+
+404
+00:15:02,470 --> 00:15:04,630
+basically a refactoring project that is
+
+405
+00:15:04,630 --> 00:15:07,089
+too big it had too much surface area it
+
+406
+00:15:07,089 --> 00:15:09,699
+touched too much of the project and it
+
+407
+00:15:09,699 --> 00:15:11,079
+leaves you really confused
+
+408
+00:15:11,079 --> 00:15:13,180
+you stepped into the tunnel with good
+
+409
+00:15:13,180 --> 00:15:15,339
+intentions but you got lost and after
+
+410
+00:15:15,339 --> 00:15:17,769
+three four five days maybe even a couple
+
+411
+00:15:17,769 --> 00:15:20,440
+of weeks you're so lost that you end up
+
+412
+00:15:20,440 --> 00:15:22,510
+doing something like this and just
+
+413
+00:15:22,510 --> 00:15:25,029
+saying just forget it just undo
+
+414
+00:15:25,029 --> 00:15:27,730
+everything the navs broken the foot has
+
+415
+00:15:27,730 --> 00:15:29,589
+disappeared on three pages people got
+
+416
+00:15:29,589 --> 00:15:31,880
+login anymore everything's
+
+417
+00:15:31,880 --> 00:15:35,090
+Giroud broken and you just throw it all
+
+418
+00:15:35,090 --> 00:15:37,400
+in the bin how expensive is that you may
+
+419
+00:15:37,400 --> 00:15:39,440
+have just lost five days of time and
+
+420
+00:15:39,440 --> 00:15:42,470
+money by picking off a part of your
+
+421
+00:15:42,470 --> 00:15:43,970
+refactoring or part of your project was
+
+422
+00:15:43,970 --> 00:15:44,830
+too big
+
+423
+00:15:44,830 --> 00:15:48,110
+always avoid long refactoring tunnels a
+
+424
+00:15:48,110 --> 00:15:50,870
+long refactoring tunnel is basically any
+
+425
+00:15:50,870 --> 00:15:53,450
+bit of work with a large surface area
+
+426
+00:15:53,450 --> 00:15:55,700
+and what I mean by a large surface area
+
+427
+00:15:55,700 --> 00:15:58,540
+is does it touch a lot of the project
+
+428
+00:15:58,540 --> 00:16:03,200
+so perhaps refactoring your nav has a
+
+429
+00:16:03,200 --> 00:16:06,530
+tiny surface area affects the nav but
+
+430
+00:16:06,530 --> 00:16:08,720
+upgrading from bootstrap 3 to bootstrap
+
+431
+00:16:08,720 --> 00:16:10,460
+4 have an enormous surface area that
+
+432
+00:16:10,460 --> 00:16:12,350
+touches your entire project so try and
+
+433
+00:16:12,350 --> 00:16:14,660
+avoid refactoring anything that has a
+
+434
+00:16:14,660 --> 00:16:16,640
+surface area that big avoid long
+
+435
+00:16:16,640 --> 00:16:21,080
+refactoring tunnels long refactoring
+
+436
+00:16:21,080 --> 00:16:23,270
+tunnels as well as just being a bit
+
+437
+00:16:23,270 --> 00:16:25,460
+scary and a bit confusing and a bit
+
+438
+00:16:25,460 --> 00:16:26,900
+difficult to work with have some very
+
+439
+00:16:26,900 --> 00:16:29,600
+specific problems if you try refactor
+
+440
+00:16:29,600 --> 00:16:31,310
+all of your site from bootstrap 3 to
+
+441
+00:16:31,310 --> 00:16:33,580
+bootstrap 4 there's gonna be a lot of
+
+442
+00:16:33,580 --> 00:16:35,990
+stuff to merge back into master that
+
+443
+00:16:35,990 --> 00:16:37,970
+huge deltas of things you need to merge
+
+444
+00:16:37,970 --> 00:16:40,070
+back into your master or trunk branch
+
+445
+00:16:40,070 --> 00:16:42,200
+the chance of naming conflicts is
+
+446
+00:16:42,200 --> 00:16:44,030
+enormous the front of sorry not naming
+
+447
+00:16:44,030 --> 00:16:45,230
+conflicts but just getting merge
+
+448
+00:16:45,230 --> 00:16:48,080
+conflicts when you do a huge refactoring
+
+449
+00:16:48,080 --> 00:16:50,000
+job getting it back into trunk is really
+
+450
+00:16:50,000 --> 00:16:52,040
+really difficult and there's also the
+
+451
+00:16:52,040 --> 00:16:53,750
+problem that if you're taking down a lot
+
+452
+00:16:53,750 --> 00:16:55,670
+of the sites there's a chance that
+
+453
+00:16:55,670 --> 00:16:57,710
+you're gonna break some of the things by
+
+454
+00:16:57,710 --> 00:16:59,930
+accident introduce new bugs if anyone's
+
+455
+00:16:59,930 --> 00:17:02,450
+ever taken a bike or a car apart and you
+
+456
+00:17:02,450 --> 00:17:03,380
+put it back together and you've got a
+
+457
+00:17:03,380 --> 00:17:06,470
+suspicious pile of screws like they
+
+458
+00:17:06,470 --> 00:17:07,910
+should be in that car somewhere right
+
+459
+00:17:07,910 --> 00:17:09,110
+that's exactly what happens when you try
+
+460
+00:17:09,110 --> 00:17:11,060
+and take down your entire site and
+
+461
+00:17:11,060 --> 00:17:14,720
+rebuild it instead we should pick off
+
+462
+00:17:14,720 --> 00:17:16,310
+things with a limited and clear scope
+
+463
+00:17:16,310 --> 00:17:17,870
+find something that you know will be a
+
+464
+00:17:17,870 --> 00:17:19,699
+short refactoring tunnel for example
+
+465
+00:17:19,699 --> 00:17:21,199
+just pick the now for right today I'm
+
+466
+00:17:21,199 --> 00:17:24,079
+gonna refactor the nav get that work
+
+467
+00:17:24,079 --> 00:17:25,579
+done make sure it's correct get it
+
+468
+00:17:25,579 --> 00:17:26,900
+merged back in and then you've got two
+
+469
+00:17:26,900 --> 00:17:29,030
+choices you can get back onto product
+
+470
+00:17:29,030 --> 00:17:30,560
+work and start building features again
+
+471
+00:17:30,560 --> 00:17:32,150
+or you could pick another refactoring
+
+472
+00:17:32,150 --> 00:17:33,440
+turn off you could today well now I'll
+
+473
+00:17:33,440 --> 00:17:35,930
+just do the buttons and rinse and repeat
+
+474
+00:17:35,930 --> 00:17:37,250
+and keep doing this and before you know
+
+475
+00:17:37,250 --> 00:17:38,660
+it the site has kind of refactored
+
+476
+00:17:38,660 --> 00:17:39,170
+itself
+
+477
+00:17:39,170 --> 00:17:41,120
+you didn't refactor your entire project
+
+478
+00:17:41,120 --> 00:17:43,340
+onto a naming convention you reflected
+
+479
+00:17:43,340 --> 00:17:44,809
+the buttons onto a naming convention
+
+480
+00:17:44,809 --> 00:17:46,399
+then the nav onto a naming convention
+
+481
+00:17:46,399 --> 00:17:49,100
+the carousel and it kind of reef actors
+
+482
+00:17:49,100 --> 00:17:50,659
+itself by virtue of doing these small
+
+483
+00:17:50,659 --> 00:17:57,289
+bits constantly these small bits we need
+
+484
+00:17:57,289 --> 00:17:58,999
+to make sure we refactor these in
+
+485
+00:17:58,999 --> 00:18:02,659
+isolation I've seen a lot of people
+
+486
+00:18:02,659 --> 00:18:04,340
+struggle with refactoring projects
+
+487
+00:18:04,340 --> 00:18:06,799
+because they try to rebuild the same
+
+488
+00:18:06,799 --> 00:18:10,580
+feature back into the same project you
+
+489
+00:18:10,580 --> 00:18:12,169
+need to get a completely fresh start
+
+490
+00:18:12,169 --> 00:18:13,700
+pick the feature you're going to
+
+491
+00:18:13,700 --> 00:18:16,549
+refactor open jsfiddle or copán and
+
+492
+00:18:16,549 --> 00:18:19,789
+rebuild it there if you try and refactor
+
+493
+00:18:19,789 --> 00:18:21,619
+a feature back into the same codebase
+
+494
+00:18:21,619 --> 00:18:23,720
+you're going to taking advantage of
+
+495
+00:18:23,720 --> 00:18:25,940
+legacy CSS right you'll be using the
+
+496
+00:18:25,940 --> 00:18:27,679
+Cascade from CSS that might get
+
+497
+00:18:27,679 --> 00:18:30,230
+reflected in future you need to start
+
+498
+00:18:30,230 --> 00:18:31,970
+with a completely blank slate and build
+
+499
+00:18:31,970 --> 00:18:34,549
+it as perfect as you can don't try and
+
+500
+00:18:34,549 --> 00:18:38,529
+recycle already out-of-date environments
+
+501
+00:18:38,529 --> 00:18:40,669
+then once you've refactored that in
+
+502
+00:18:40,669 --> 00:18:42,499
+jsfiddle or code and copy and paste it
+
+503
+00:18:42,499 --> 00:18:44,029
+back into your project and fix any
+
+504
+00:18:44,029 --> 00:18:47,330
+problems at that point there let's say
+
+505
+00:18:47,330 --> 00:18:48,950
+the Guardian want to refactor something
+
+506
+00:18:48,950 --> 00:18:50,779
+and they pick the header in a refactor
+
+507
+00:18:50,779 --> 00:18:52,879
+the header today and then they finish it
+
+508
+00:18:52,879 --> 00:18:54,019
+they go to jsfiddle they get it
+
+509
+00:18:54,019 --> 00:18:56,899
+completed as you can imagine as soon as
+
+510
+00:18:56,899 --> 00:18:58,669
+you try and pull this header back into
+
+511
+00:18:58,669 --> 00:19:00,409
+the project things are gonna go wrong
+
+512
+00:19:00,409 --> 00:19:01,820
+there's gonna be some things will go
+
+513
+00:19:01,820 --> 00:19:04,549
+wrong they'll be a leaky selector that
+
+514
+00:19:04,549 --> 00:19:06,590
+breaks the link in the cut other colors
+
+515
+00:19:06,590 --> 00:19:08,119
+of the links right or they'll be a high
+
+516
+00:19:08,119 --> 00:19:09,860
+specificity selector that does something
+
+517
+00:19:09,860 --> 00:19:12,590
+weird with the display we will get some
+
+518
+00:19:12,590 --> 00:19:16,309
+breakages there's really nifty quite new
+
+519
+00:19:16,309 --> 00:19:18,649
+technique or tip I guess for dealing
+
+520
+00:19:18,649 --> 00:19:20,749
+with this and that's all initial who's
+
+521
+00:19:20,749 --> 00:19:24,350
+heard of all initial like three people
+
+522
+00:19:24,350 --> 00:19:26,149
+let's get a beer later where the cool
+
+523
+00:19:26,149 --> 00:19:28,549
+kids write all initial oh this is
+
+524
+00:19:28,549 --> 00:19:30,649
+amazing and all initial it effectively
+
+525
+00:19:30,649 --> 00:19:33,860
+stops inheritance all initial sets every
+
+526
+00:19:33,860 --> 00:19:35,659
+single CSS property back to its initial
+
+527
+00:19:35,659 --> 00:19:38,899
+value this means that things don't leak
+
+528
+00:19:38,899 --> 00:19:41,149
+into the Dom right you Styles don't leak
+
+529
+00:19:41,149 --> 00:19:43,039
+into any other part of the project if it
+
+530
+00:19:43,039 --> 00:19:46,129
+has all initials somewhere in there this
+
+531
+00:19:46,129 --> 00:19:48,110
+is a very progressive way of defending
+
+532
+00:19:48,110 --> 00:19:49,639
+against legacy now the reason I
+
+533
+00:19:49,639 --> 00:19:51,350
+mentioned progressive is because we will
+
+534
+00:19:51,350 --> 00:19:52,909
+need to discuss browser support in two
+
+535
+00:19:52,909 --> 00:19:55,940
+slides time there is a very nice way of
+
+536
+00:19:55,940 --> 00:19:57,980
+preventing I'm sorry protecting
+
+537
+00:19:57,980 --> 00:20:00,410
+your newly refracted work against the
+
+538
+00:20:00,410 --> 00:20:03,890
+effect of legacy hopefully we can see
+
+539
+00:20:03,890 --> 00:20:06,590
+this not hmm yeah not really um here
+
+540
+00:20:06,590 --> 00:20:08,299
+we've got a paragraph that's red and
+
+541
+00:20:08,299 --> 00:20:11,150
+bold it's red and bold because the HTML
+
+542
+00:20:11,150 --> 00:20:14,360
+and the div elements have got red and
+
+543
+00:20:14,360 --> 00:20:16,580
+bold applied to them the paragraph
+
+544
+00:20:16,580 --> 00:20:18,440
+itself has no styles directly applied
+
+545
+00:20:18,440 --> 00:20:20,660
+but because of inheritance it turns red
+
+546
+00:20:20,660 --> 00:20:23,419
+and it goes bold as soon as we put all
+
+547
+00:20:23,419 --> 00:20:26,000
+initials on that paragraph it goes back
+
+548
+00:20:26,000 --> 00:20:29,240
+to being black and font-weight:normal so
+
+549
+00:20:29,240 --> 00:20:30,860
+we can stop things leaking into parts of
+
+550
+00:20:30,860 --> 00:20:33,950
+the dom by using all initial there are
+
+551
+00:20:33,950 --> 00:20:36,380
+some weird caveats with all initial so
+
+552
+00:20:36,380 --> 00:20:37,940
+let us say we are refactoring our nav
+
+553
+00:20:37,940 --> 00:20:39,320
+and we want to make sure that nothing
+
+554
+00:20:39,320 --> 00:20:42,830
+from the outside project gets in if we
+
+555
+00:20:42,830 --> 00:20:44,900
+were to write our CSS like this the font
+
+556
+00:20:44,900 --> 00:20:46,820
+size and the font family rules here
+
+557
+00:20:46,820 --> 00:20:49,070
+wouldn't actually cascade down into the
+
+558
+00:20:49,070 --> 00:20:51,860
+link because the link also has all
+
+559
+00:20:51,860 --> 00:20:53,690
+initial on it it will stop inheriting
+
+560
+00:20:53,690 --> 00:20:56,570
+from its own parent the simple way
+
+561
+00:20:56,570 --> 00:20:58,400
+around this we just have to write those
+
+562
+00:20:58,400 --> 00:21:00,500
+style rules those declarations on the
+
+563
+00:21:00,500 --> 00:21:01,970
+leaf node we have to move them down to
+
+564
+00:21:01,970 --> 00:21:04,130
+here because they will not inherit from
+
+565
+00:21:04,130 --> 00:21:08,900
+an ancestor ya browser support it's
+
+566
+00:21:08,900 --> 00:21:11,600
+actually not terrible but it is still a
+
+567
+00:21:11,600 --> 00:21:13,100
+kind of a progressive way of dealing
+
+568
+00:21:13,100 --> 00:21:17,299
+with legacy all all that all initial
+
+569
+00:21:17,299 --> 00:21:19,610
+will do is buy you a bit more time it
+
+570
+00:21:19,610 --> 00:21:22,190
+will stop legacy styles appearing for
+
+571
+00:21:22,190 --> 00:21:25,250
+all chrome users or Firefox users and it
+
+572
+00:21:25,250 --> 00:21:26,990
+will stop the leakages for that for
+
+573
+00:21:26,990 --> 00:21:29,120
+those people if you're still go back and
+
+574
+00:21:29,120 --> 00:21:30,830
+fix anything that is broken so all
+
+575
+00:21:30,830 --> 00:21:32,360
+initial just buys you a little bit more
+
+576
+00:21:32,360 --> 00:21:34,669
+time but I do a little bit more time to
+
+577
+00:21:34,669 --> 00:21:36,559
+fix these leaky Styles so it's quite a
+
+578
+00:21:36,559 --> 00:21:38,030
+progressive way of defending against
+
+579
+00:21:38,030 --> 00:21:42,380
+legacy now the next tip I want to share
+
+580
+00:21:42,380 --> 00:21:44,809
+with you I actually implemented with a
+
+581
+00:21:44,809 --> 00:21:47,960
+specific client earlier this year the
+
+582
+00:21:47,960 --> 00:21:50,360
+defense CSS is like an internal open
+
+583
+00:21:50,360 --> 00:21:52,910
+source project for any company or any
+
+584
+00:21:52,910 --> 00:21:54,890
+team that is transitioning from old code
+
+585
+00:21:54,890 --> 00:21:57,200
+to new code
+
+586
+00:21:57,200 --> 00:21:59,059
+it basically answers the question what
+
+587
+00:21:59,059 --> 00:22:01,220
+happens when you need to run reflected
+
+588
+00:22:01,220 --> 00:22:03,350
+code and legacy code side by side and
+
+589
+00:22:03,350 --> 00:22:05,090
+that question was asked of me by a
+
+590
+00:22:05,090 --> 00:22:08,059
+company called Skype I actually used to
+
+591
+00:22:08,059 --> 00:22:09,470
+work for sky about three years ago
+
+592
+00:22:09,470 --> 00:22:10,170
+thought
+
+593
+00:22:10,170 --> 00:22:12,000
+and they got back in touch with me at
+
+594
+00:22:12,000 --> 00:22:13,950
+the end of last year because they wanted
+
+595
+00:22:13,950 --> 00:22:16,950
+to modernize their UI toolkit they had
+
+596
+00:22:16,950 --> 00:22:19,140
+an existing toolkit but the design
+
+597
+00:22:19,140 --> 00:22:21,630
+language had it dated they wanted to
+
+598
+00:22:21,630 --> 00:22:23,700
+change the architecture a little bit so
+
+599
+00:22:23,700 --> 00:22:26,370
+I kind of went back in to help them we
+
+600
+00:22:26,370 --> 00:22:28,560
+developed a new toolkit but sky is
+
+601
+00:22:28,560 --> 00:22:31,890
+pretty enormous sky has about 30,000
+
+602
+00:22:31,890 --> 00:22:34,320
+people working for them they're a big
+
+603
+00:22:34,320 --> 00:22:36,300
+broadcast company in the UK so they deal
+
+604
+00:22:36,300 --> 00:22:38,280
+with television ISP you know your
+
+605
+00:22:38,280 --> 00:22:41,550
+internet service so this is a very very
+
+606
+00:22:41,550 --> 00:22:42,900
+big project so what we have to do is
+
+607
+00:22:42,900 --> 00:22:45,480
+pick a candidates that kind of prove the
+
+608
+00:22:45,480 --> 00:22:47,070
+business value of this this bit of work
+
+609
+00:22:47,070 --> 00:22:49,260
+so we picked the homepage itself run
+
+610
+00:22:49,260 --> 00:22:50,730
+roll it out everywhere we started off by
+
+611
+00:22:50,730 --> 00:22:52,920
+implementing the new toolkit on the home
+
+612
+00:22:52,920 --> 00:22:55,290
+page then after that what the teams
+
+613
+00:22:55,290 --> 00:22:56,490
+could start rolling out on their
+
+614
+00:22:56,490 --> 00:22:58,050
+products and they could start adopting
+
+615
+00:22:58,050 --> 00:23:00,750
+the new look and feel I had the problem
+
+616
+00:23:00,750 --> 00:23:02,910
+is we had to run old and new in tandem
+
+617
+00:23:02,910 --> 00:23:05,040
+certain sites were using an old toolkit
+
+618
+00:23:05,040 --> 00:23:07,020
+and a new tool a new toolkit at the same
+
+619
+00:23:07,020 --> 00:23:08,970
+time and as you can imagine trying to
+
+620
+00:23:08,970 --> 00:23:10,950
+put two different CSS frameworks
+
+621
+00:23:10,950 --> 00:23:13,170
+together in the same project leads to a
+
+622
+00:23:13,170 --> 00:23:14,940
+bit of a mess things just weren't
+
+623
+00:23:14,940 --> 00:23:16,770
+sitting right things just weren't really
+
+624
+00:23:16,770 --> 00:23:19,080
+working well at all we've got these two
+
+625
+00:23:19,080 --> 00:23:20,670
+projects that were kind of in conflict
+
+626
+00:23:20,670 --> 00:23:22,530
+and they just would not meld together we
+
+627
+00:23:22,530 --> 00:23:25,590
+couldn't get them to work nicely so what
+
+628
+00:23:25,590 --> 00:23:27,120
+I end up doing is introduce this kind of
+
+629
+00:23:27,120 --> 00:23:29,460
+internal open source project just called
+
+630
+00:23:29,460 --> 00:23:32,130
+defense dot CSS and defense dot CSS was
+
+631
+00:23:32,130 --> 00:23:34,380
+a polyfill that would tidy up all the
+
+632
+00:23:34,380 --> 00:23:36,720
+mess between old and new and allowed
+
+633
+00:23:36,720 --> 00:23:38,070
+them to sort of sit together a bit more
+
+634
+00:23:38,070 --> 00:23:42,000
+nicely defense dr. CSS was an entirely
+
+635
+00:23:42,000 --> 00:23:44,040
+new project it's a new dependency
+
+636
+00:23:44,040 --> 00:23:45,510
+so the reason we run it like an open
+
+637
+00:23:45,510 --> 00:23:46,980
+source project is because other teams
+
+638
+00:23:46,980 --> 00:23:49,980
+needed to consume it and contribute to
+
+639
+00:23:49,980 --> 00:23:52,500
+it if another team wanted to run the new
+
+640
+00:23:52,500 --> 00:23:53,940
+toolkit as well they would need to
+
+641
+00:23:53,940 --> 00:23:56,940
+install defensive CSS to fix the kind of
+
+642
+00:23:56,940 --> 00:23:59,700
+problems between old and new the reason
+
+643
+00:23:59,700 --> 00:24:01,620
+we wanted it in a third project or a
+
+644
+00:24:01,620 --> 00:24:03,990
+separate file or so that when we
+
+645
+00:24:03,990 --> 00:24:06,090
+transition completely to the new toolkit
+
+646
+00:24:06,090 --> 00:24:07,470
+we can just hit delete right we don't
+
+647
+00:24:07,470 --> 00:24:09,180
+want to leave any legacy stuff behind
+
+648
+00:24:09,180 --> 00:24:11,100
+which want to remove the dependency
+
+649
+00:24:11,100 --> 00:24:15,230
+advanced CSS and have all greenfield CSS
+
+650
+00:24:15,230 --> 00:24:18,690
+and the stuff inside this file is
+
+651
+00:24:18,690 --> 00:24:20,460
+horrible it's just horrible horrible
+
+652
+00:24:20,460 --> 00:24:23,160
+stuff it's just typing until things look
+
+653
+00:24:23,160 --> 00:24:24,600
+right
+
+654
+00:24:24,600 --> 00:24:26,820
+it's full of hacked it's full of really
+
+655
+00:24:26,820 --> 00:24:28,769
+nasty stuff it will be important in that
+
+656
+00:24:28,769 --> 00:24:30,570
+this is the worst CSS you will ever
+
+657
+00:24:30,570 --> 00:24:32,490
+write but that's completely fine it's
+
+658
+00:24:32,490 --> 00:24:33,330
+temporary
+
+659
+00:24:33,330 --> 00:24:39,480
+it is designed to be deleted I I want to
+
+660
+00:24:39,480 --> 00:24:41,519
+show you what's in this file but um I
+
+661
+00:24:41,519 --> 00:24:42,539
+can't
+
+662
+00:24:42,539 --> 00:24:44,909
+I had to pixelate is that bad it's that
+
+663
+00:24:44,909 --> 00:24:47,490
+offensive it probably violates the Code
+
+664
+00:24:47,490 --> 00:24:51,510
+of Conduct it's really that bad but I
+
+665
+00:24:51,510 --> 00:24:52,889
+hopefully you can see it is quite
+
+666
+00:24:52,889 --> 00:24:55,139
+pixelated all these red bits they're
+
+667
+00:24:55,139 --> 00:25:03,360
+important yeah defense CSS if you need
+
+668
+00:25:03,360 --> 00:25:06,870
+to transition from old to new kind of in
+
+669
+00:25:06,870 --> 00:25:09,120
+a very layered manner or if you're going
+
+670
+00:25:09,120 --> 00:25:10,320
+to be running old and new at the same
+
+671
+00:25:10,320 --> 00:25:13,019
+time consider moving all the fixers to a
+
+672
+00:25:13,019 --> 00:25:15,179
+third project that can be rolled out to
+
+673
+00:25:15,179 --> 00:25:17,039
+other teams it can be versioned it can
+
+674
+00:25:17,039 --> 00:25:18,779
+be it could track your kind of your
+
+675
+00:25:18,779 --> 00:25:20,130
+version of your old toolkit your version
+
+676
+00:25:20,130 --> 00:25:22,230
+of your new toolkit and you can run it
+
+677
+00:25:22,230 --> 00:25:24,299
+like a proper sort of dependency managed
+
+678
+00:25:24,299 --> 00:25:28,559
+project oh the next tip I want to talk
+
+679
+00:25:28,559 --> 00:25:31,649
+to you about is RF classes RF classes
+
+680
+00:25:31,649 --> 00:25:34,500
+this is a really simple tip basically RF
+
+681
+00:25:34,500 --> 00:25:37,889
+classes any refactored class just put an
+
+682
+00:25:37,889 --> 00:25:40,889
+RF - in front of it this is just so that
+
+683
+00:25:40,889 --> 00:25:42,990
+the net developers can see that alright
+
+684
+00:25:42,990 --> 00:25:44,970
+RF nav has been reflected I don't need
+
+685
+00:25:44,970 --> 00:25:47,789
+to touch this is new code but would also
+
+686
+00:25:47,789 --> 00:25:49,440
+do some pretty clever stuff with this
+
+687
+00:25:49,440 --> 00:25:51,630
+like we could write a selector like this
+
+688
+00:25:51,630 --> 00:25:54,990
+I mean say if a class has RF - in it
+
+689
+00:25:54,990 --> 00:25:56,909
+just put a green box around it that
+
+690
+00:25:56,909 --> 00:25:59,130
+means it or me you look at our dev site
+
+691
+00:25:59,130 --> 00:26:01,409
+we might see this we can see that the
+
+692
+00:26:01,409 --> 00:26:02,880
+nav and the content blocks have been
+
+693
+00:26:02,880 --> 00:26:05,100
+reflected right this is this is work
+
+694
+00:26:05,100 --> 00:26:06,480
+that we've done this is work that has
+
+695
+00:26:06,480 --> 00:26:08,730
+been completed this is new greenfield
+
+696
+00:26:08,730 --> 00:26:13,559
+CSS on the flip side we could say find
+
+697
+00:26:13,559 --> 00:26:16,110
+me a class but is a class that doesn't
+
+698
+00:26:16,110 --> 00:26:18,990
+contain RF - put a red box around that
+
+699
+00:26:18,990 --> 00:26:20,519
+and you can just hide these behind a
+
+700
+00:26:20,519 --> 00:26:23,399
+config switch in your sass somewhere if
+
+701
+00:26:23,399 --> 00:26:25,350
+we turn this selector on we can see that
+
+702
+00:26:25,350 --> 00:26:27,299
+okay write anything with a red border
+
+703
+00:26:27,299 --> 00:26:29,940
+around it is not refactored here we can
+
+704
+00:26:29,940 --> 00:26:32,700
+see that the the temperature in London
+
+705
+00:26:32,700 --> 00:26:34,230
+all that information that little masked
+
+706
+00:26:34,230 --> 00:26:35,760
+head has been refactored we can see
+
+707
+00:26:35,760 --> 00:26:36,880
+that's clean
+
+708
+00:26:36,880 --> 00:26:38,650
+all the other red stuff is our to-do
+
+709
+00:26:38,650 --> 00:26:40,570
+list this represents the worker it's
+
+710
+00:26:40,570 --> 00:26:43,450
+still left to do that's just a really
+
+711
+00:26:43,450 --> 00:26:46,450
+simple tiny tip just put our F - in
+
+712
+00:26:46,450 --> 00:26:48,490
+front of refactored classes once you've
+
+713
+00:26:48,490 --> 00:26:50,260
+finished the refactoring project if you
+
+714
+00:26:50,260 --> 00:26:52,240
+can just kind of run a global find and
+
+715
+00:26:52,240 --> 00:26:54,700
+replace there's a strip RF - back off of
+
+716
+00:26:54,700 --> 00:26:56,110
+those classes and you've got a
+
+717
+00:26:56,110 --> 00:27:01,210
+Greenfield codebase the net tip this is
+
+718
+00:27:01,210 --> 00:27:02,380
+one of my party tricks
+
+719
+00:27:02,380 --> 00:27:04,510
+I actually don't come to one of my
+
+720
+00:27:04,510 --> 00:27:06,700
+parties have boring with this b-but
+
+721
+00:27:06,700 --> 00:27:10,260
+refactoring specificity right if you're
+
+722
+00:27:10,260 --> 00:27:12,610
+refactoring old CSS there is every
+
+723
+00:27:12,610 --> 00:27:14,500
+chance you're trying to remove IDs you
+
+724
+00:27:14,500 --> 00:27:16,590
+can I remove overly nested selectors
+
+725
+00:27:16,590 --> 00:27:20,110
+this often means that any new CSS you
+
+726
+00:27:20,110 --> 00:27:22,050
+introduced to the project might have
+
+727
+00:27:22,050 --> 00:27:24,100
+collisions with specificity old
+
+728
+00:27:24,100 --> 00:27:27,340
+selectors might be using IDs that might
+
+729
+00:27:27,340 --> 00:27:30,790
+accidentally override your new work so
+
+730
+00:27:30,790 --> 00:27:32,110
+dealing with specificity and legacy
+
+731
+00:27:32,110 --> 00:27:35,440
+project is not fun we could just start
+
+732
+00:27:35,440 --> 00:27:37,030
+throwing importance in there but we
+
+733
+00:27:37,030 --> 00:27:38,560
+really really don't want to start
+
+734
+00:27:38,560 --> 00:27:40,360
+putting importance into brand new
+
+735
+00:27:40,360 --> 00:27:43,180
+greenfield CSS we're instantly accruing
+
+736
+00:27:43,180 --> 00:27:47,290
+tech debt on a brand new project it's
+
+737
+00:27:47,290 --> 00:27:48,190
+what we can do is we can hack
+
+738
+00:27:48,190 --> 00:27:50,140
+specificity with minimal side effects
+
+739
+00:27:50,140 --> 00:27:51,970
+there's some kind of funky things we can
+
+740
+00:27:51,970 --> 00:27:55,150
+do to hack specificity around if we take
+
+741
+00:27:55,150 --> 00:27:57,400
+a real simple snippet of HTML a link
+
+742
+00:27:57,400 --> 00:27:59,080
+with a class of foo and an idea of bar
+
+743
+00:27:59,080 --> 00:28:03,460
+and throw this CSS at it we've got three
+
+744
+00:28:03,460 --> 00:28:05,200
+very different selectors here but we can
+
+745
+00:28:05,200 --> 00:28:07,930
+probably all work out that hash bar is
+
+746
+00:28:07,930 --> 00:28:09,460
+what's gonna win it's an ID it's
+
+747
+00:28:09,460 --> 00:28:11,200
+infinitely more specific than a class
+
+748
+00:28:11,200 --> 00:28:13,600
+who is infinitely more specific than an
+
+749
+00:28:13,600 --> 00:28:15,880
+element so even though we've got these
+
+750
+00:28:15,880 --> 00:28:18,160
+written in a certain sauce order they
+
+751
+00:28:18,160 --> 00:28:20,020
+will be applied in the opposite order to
+
+752
+00:28:20,020 --> 00:28:22,330
+what we kind of expect well not expect
+
+753
+00:28:22,330 --> 00:28:24,910
+but the last one is the least likely to
+
+754
+00:28:24,910 --> 00:28:27,820
+get applied so all of these selectors
+
+755
+00:28:27,820 --> 00:28:29,230
+are working against their sauce order
+
+756
+00:28:29,230 --> 00:28:31,270
+this is gonna be a definite definite
+
+757
+00:28:31,270 --> 00:28:33,280
+problem when we are refactoring at our
+
+758
+00:28:33,280 --> 00:28:35,530
+CSS so what we can do is be hacked our
+
+759
+00:28:35,530 --> 00:28:37,720
+specificity around without changing the
+
+760
+00:28:37,720 --> 00:28:39,400
+selector at all or rottweiler without
+
+761
+00:28:39,400 --> 00:28:41,080
+changing what we are binding on to
+
+762
+00:28:41,080 --> 00:28:43,960
+without changing the HTML we can rewrite
+
+763
+00:28:43,960 --> 00:28:46,250
+all of that CSS so that every
+
+764
+00:28:46,250 --> 00:28:49,080
+element has of every story every single
+
+765
+00:28:49,080 --> 00:28:51,320
+selector has the exact same specificity
+
+766
+00:28:51,320 --> 00:28:55,500
+if we were to write ID equals bar as an
+
+767
+00:28:55,500 --> 00:28:57,570
+attribute that's a class equivalent of
+
+768
+00:28:57,570 --> 00:29:00,000
+specificity we need to prefix that with
+
+769
+00:29:00,000 --> 00:29:02,159
+an element so we can have an element and
+
+770
+00:29:02,159 --> 00:29:05,250
+class equivalent specificity there the
+
+771
+00:29:05,250 --> 00:29:07,380
+second one the class just stays as it is
+
+772
+00:29:07,380 --> 00:29:09,390
+we put an element in front of that so
+
+773
+00:29:09,390 --> 00:29:10,830
+that's got an element and a class worth
+
+774
+00:29:10,830 --> 00:29:13,529
+of specificity and the final one staff
+
+775
+00:29:13,529 --> 00:29:14,760
+that offers an element it was just an
+
+776
+00:29:14,760 --> 00:29:16,770
+element we need to get that to have a
+
+777
+00:29:16,770 --> 00:29:18,960
+class as well what we can do is we can
+
+778
+00:29:18,960 --> 00:29:21,299
+just use the root pseudo element the
+
+779
+00:29:21,299 --> 00:29:23,429
+root pseudo selector which just
+
+780
+00:29:23,429 --> 00:29:26,250
+represents the HTML element in an HTML
+
+781
+00:29:26,250 --> 00:29:28,380
+document or the SVG element in an SVG
+
+782
+00:29:28,380 --> 00:29:30,840
+document and this also carries a class
+
+783
+00:29:30,840 --> 00:29:32,640
+worth of specificity so now all of a
+
+784
+00:29:32,640 --> 00:29:35,070
+sudden the last selector wins it can
+
+785
+00:29:35,070 --> 00:29:37,980
+beat the ID I just pull this out into a
+
+786
+00:29:37,980 --> 00:29:41,760
+more kind of digestible slide rewriting
+
+787
+00:29:41,760 --> 00:29:43,710
+IDs as attribute selectors who will
+
+788
+00:29:43,710 --> 00:29:46,220
+bring their specificity down to a class
+
+789
+00:29:46,220 --> 00:29:48,779
+we've actually chained the same class
+
+790
+00:29:48,779 --> 00:29:51,240
+with itself to increase its specificity
+
+791
+00:29:51,240 --> 00:29:54,539
+by doubling it if we had got food food
+
+792
+00:29:54,539 --> 00:29:54,899
+food
+
+793
+00:29:54,899 --> 00:29:56,610
+it would triple the specificity we can
+
+794
+00:29:56,610 --> 00:29:58,320
+do that for forever it'll just keep on
+
+795
+00:29:58,320 --> 00:30:02,490
+going and we can also use the root
+
+796
+00:30:02,490 --> 00:30:04,649
+element to introduce a class worth of
+
+797
+00:30:04,649 --> 00:30:06,990
+specificity without ever having to worry
+
+798
+00:30:06,990 --> 00:30:09,919
+about where the Dom node actually lives
+
+799
+00:30:09,919 --> 00:30:12,149
+it's really important to remember that
+
+800
+00:30:12,149 --> 00:30:13,980
+these are hacks these are disgusting
+
+801
+00:30:13,980 --> 00:30:16,649
+these are horrible ideally we would
+
+802
+00:30:16,649 --> 00:30:19,380
+refactor our CSS so that there wasn't a
+
+803
+00:30:19,380 --> 00:30:22,799
+problem at all realistically we might
+
+804
+00:30:22,799 --> 00:30:24,450
+have to use a few of these hacks I've
+
+805
+00:30:24,450 --> 00:30:26,820
+used the double class one quite a lot of
+
+806
+00:30:26,820 --> 00:30:30,299
+times we should never lean on things
+
+807
+00:30:30,299 --> 00:30:33,120
+like important we can use things before
+
+808
+00:30:33,120 --> 00:30:36,330
+things get that bad I'm not saying never
+
+809
+00:30:36,330 --> 00:30:38,340
+use important what I said in the first
+
+810
+00:30:38,340 --> 00:30:40,950
+talk and Twitter kind of set on fire
+
+811
+00:30:40,950 --> 00:30:43,980
+with that one but yeah we can avoid
+
+812
+00:30:43,980 --> 00:30:45,659
+using important for a lot longer by
+
+813
+00:30:45,659 --> 00:30:47,760
+learning how to hack specificity around
+
+814
+00:30:47,760 --> 00:30:49,260
+so if your legacy code is causing
+
+815
+00:30:49,260 --> 00:30:51,059
+problems perhaps you use one of these
+
+816
+00:30:51,059 --> 00:30:54,300
+techniques
+
+817
+00:30:54,310 --> 00:30:57,160
+the next thing I wanna talk about is
+
+818
+00:30:57,160 --> 00:31:00,550
+Shane CSS as an unheard of Shane CSS
+
+819
+00:31:00,550 --> 00:31:02,890
+yeah a few of you I wrote about this a
+
+820
+00:31:02,890 --> 00:31:04,450
+few years ago and I still really enjoy
+
+821
+00:31:04,450 --> 00:31:06,790
+it because I just like making people
+
+822
+00:31:06,790 --> 00:31:10,390
+write code in a file called shame the
+
+823
+00:31:10,390 --> 00:31:12,520
+idea of shame dot CSS is that you have a
+
+824
+00:31:12,520 --> 00:31:14,680
+totally new style sheet reserved just
+
+825
+00:31:14,680 --> 00:31:17,680
+for your hockey code code that you have
+
+826
+00:31:17,680 --> 00:31:19,600
+to write to get a release out on time
+
+827
+00:31:19,600 --> 00:31:21,640
+but code that makes you feel a bit bad
+
+828
+00:31:21,640 --> 00:31:23,080
+right because you just kind of
+
+829
+00:31:23,080 --> 00:31:24,820
+disappointed with yourself hang your
+
+830
+00:31:24,820 --> 00:31:28,270
+head in shame you could call it bugs CSS
+
+831
+00:31:28,270 --> 00:31:31,810
+or like hacked CSS died of shame dot CSS
+
+832
+00:31:31,810 --> 00:31:33,550
+is so that people see it and they're
+
+833
+00:31:33,550 --> 00:31:36,390
+kind of intrigued like what's in here
+
+834
+00:31:36,390 --> 00:31:38,710
+but it's just a dumping ground for all
+
+835
+00:31:38,710 --> 00:31:40,270
+the nasty bits of CSS that you're a
+
+836
+00:31:40,270 --> 00:31:43,000
+little bit ashamed of there are several
+
+837
+00:31:43,000 --> 00:31:45,520
+benefits to having all your hacks in a
+
+838
+00:31:45,520 --> 00:31:47,710
+separate file it's important to isolate
+
+839
+00:31:47,710 --> 00:31:51,340
+our hacks I'm not naive enough to think
+
+840
+00:31:51,340 --> 00:31:54,130
+that I don't write any hacky CSS ever
+
+841
+00:31:54,130 --> 00:31:56,590
+we're all good developers we all have to
+
+842
+00:31:56,590 --> 00:31:58,240
+write hacked at some point in our
+
+843
+00:31:58,240 --> 00:32:00,040
+careers we have to hack something around
+
+844
+00:32:00,040 --> 00:32:03,010
+because a deadline is looming this is
+
+845
+00:32:03,010 --> 00:32:04,810
+technical debt right I writing a hack to
+
+846
+00:32:04,810 --> 00:32:06,760
+fulfill a deadline is exactly what
+
+847
+00:32:06,760 --> 00:32:09,430
+technical debt is that's kind of a loan
+
+848
+00:32:09,430 --> 00:32:11,070
+that we take that we have to repay later
+
+849
+00:32:11,070 --> 00:32:13,420
+what we need to do is keep a balance of
+
+850
+00:32:13,420 --> 00:32:15,640
+our debt right we keep shamed up CSS as
+
+851
+00:32:15,640 --> 00:32:17,560
+a file to reminders of what we need to
+
+852
+00:32:17,560 --> 00:32:20,440
+refactor later so it makes it very easy
+
+853
+00:32:20,440 --> 00:32:23,680
+to find and fix things that are wrong an
+
+854
+00:32:23,680 --> 00:32:26,950
+example like chunk from i ashamed CSS
+
+855
+00:32:26,950 --> 00:32:30,160
+file every bit of CSS in shame doc CSS
+
+856
+00:32:30,160 --> 00:32:31,930
+should have the hack itself but should
+
+857
+00:32:31,930 --> 00:32:34,030
+have a comment explaining what the
+
+858
+00:32:34,030 --> 00:32:36,640
+problem is that you're fixing why you
+
+859
+00:32:36,640 --> 00:32:39,280
+had to fix it and what you would do to
+
+860
+00:32:39,280 --> 00:32:41,230
+fix it properly if you had enough time
+
+861
+00:32:41,230 --> 00:32:43,030
+and then you can optionally leave kind
+
+862
+00:32:43,030 --> 00:32:44,710
+of details that people can get in touch
+
+863
+00:32:44,710 --> 00:32:46,110
+with if they need to ask you about it
+
+864
+00:32:46,110 --> 00:32:48,460
+here you can see that I'm using the dot
+
+865
+00:32:48,460 --> 00:32:51,610
+BTN BTN trick to force the button class
+
+866
+00:32:51,610 --> 00:32:53,560
+just to have a higher specificity to
+
+867
+00:32:53,560 --> 00:32:55,900
+override dot promo right it's a nasty
+
+868
+00:32:55,900 --> 00:33:00,340
+hack but I had to do it so the benefits
+
+869
+00:33:00,340 --> 00:33:01,960
+of having this this file is this is a
+
+870
+00:33:01,960 --> 00:33:04,420
+self writing to-do list all of your
+
+871
+00:33:04,420 --> 00:33:05,580
+to-do zarnow exist
+
+872
+00:33:05,580 --> 00:33:07,140
+one foil he don't have to chase them
+
+873
+00:33:07,140 --> 00:33:09,090
+around the project when you have a
+
+874
+00:33:09,090 --> 00:33:11,910
+refactoring task or a sprint dedicated
+
+875
+00:33:11,910 --> 00:33:14,010
+to refactoring open this file and start
+
+876
+00:33:14,010 --> 00:33:17,460
+there it keeps your good code nice and
+
+877
+00:33:17,460 --> 00:33:19,080
+clean it keeps all the messy stuff away
+
+878
+00:33:19,080 --> 00:33:20,970
+from people who are working on
+
+879
+00:33:20,970 --> 00:33:22,800
+Greenfield code this is actually really
+
+880
+00:33:22,800 --> 00:33:24,960
+important has anybody heard of the
+
+881
+00:33:24,960 --> 00:33:28,170
+broken windows theory oh cool a few of
+
+882
+00:33:28,170 --> 00:33:30,720
+us right the broken windows theory kind
+
+883
+00:33:30,720 --> 00:33:34,020
+of loosely suggests that um it's like
+
+884
+00:33:34,020 --> 00:33:36,390
+her the example uses a New York kind of
+
+885
+00:33:36,390 --> 00:33:41,250
+state like council if there's an
+
+886
+00:33:41,250 --> 00:33:43,890
+abandoned or like vacant public building
+
+887
+00:33:43,890 --> 00:33:46,710
+and somebody smashes a window New York
+
+888
+00:33:46,710 --> 00:33:48,210
+Council sends someone around immediately
+
+889
+00:33:48,210 --> 00:33:50,460
+to fix that window even if that building
+
+890
+00:33:50,460 --> 00:33:51,780
+is going to be vacant for the next ten
+
+891
+00:33:51,780 --> 00:33:53,220
+years they will fix the broken window
+
+892
+00:33:53,220 --> 00:33:55,290
+immediately because as soon as there's
+
+893
+00:33:55,290 --> 00:33:57,300
+one broken window someone else will
+
+894
+00:33:57,300 --> 00:33:58,410
+throw a rock through another window
+
+895
+00:33:58,410 --> 00:34:00,210
+another one until the building falls
+
+896
+00:34:00,210 --> 00:34:02,220
+into disrepair it's kind of this this
+
+897
+00:34:02,220 --> 00:34:04,650
+social kind of theory about snowballing
+
+898
+00:34:04,650 --> 00:34:07,620
+effect the exact same thing happens in
+
+899
+00:34:07,620 --> 00:34:11,280
+in software projects someone will use
+
+900
+00:34:11,280 --> 00:34:13,470
+the first important and if they leave it
+
+901
+00:34:13,470 --> 00:34:14,970
+in at the next developer comes along and
+
+902
+00:34:14,970 --> 00:34:17,580
+sees an important and thinks wife they
+
+903
+00:34:17,580 --> 00:34:18,750
+did it I'm gonna do it
+
+904
+00:34:18,750 --> 00:34:20,730
+and before you know it you've gotten
+
+905
+00:34:20,730 --> 00:34:23,100
+messy spiraling codebase so what we need
+
+906
+00:34:23,100 --> 00:34:25,110
+to do is if we do need to add any
+
+907
+00:34:25,110 --> 00:34:27,180
+importance if we need to add any hockey
+
+908
+00:34:27,180 --> 00:34:30,180
+CSS took it away to one side so that for
+
+909
+00:34:30,180 --> 00:34:31,590
+90 percent of the time when you're
+
+910
+00:34:31,590 --> 00:34:33,270
+working on good clean code you're not
+
+911
+00:34:33,270 --> 00:34:34,590
+reminded of all the bad stuff that's
+
+912
+00:34:34,590 --> 00:34:36,180
+going on it just keeps you with a nice
+
+913
+00:34:36,180 --> 00:34:40,950
+view of your project this is an
+
+914
+00:34:40,950 --> 00:34:42,030
+interesting but you can see which parts
+
+915
+00:34:42,030 --> 00:34:45,590
+of the codebase are problematic
+
+916
+00:34:45,590 --> 00:34:49,590
+there's anybody being given a design to
+
+917
+00:34:49,590 --> 00:34:51,540
+build or being given a feature request
+
+918
+00:34:51,540 --> 00:34:55,260
+and you immediately think this is going
+
+919
+00:34:55,260 --> 00:34:56,640
+to be awful right this is going to be
+
+920
+00:34:56,640 --> 00:34:58,080
+really hard to build this is gonna be
+
+921
+00:34:58,080 --> 00:35:00,060
+really happy yeah all of us with CSS
+
+922
+00:35:00,060 --> 00:35:01,650
+developers of course that is basically
+
+923
+00:35:01,650 --> 00:35:04,200
+what our job is right we get given these
+
+924
+00:35:04,200 --> 00:35:05,340
+designs that are really nasty and
+
+925
+00:35:05,340 --> 00:35:08,040
+horrible and we just think I can't build
+
+926
+00:35:08,040 --> 00:35:09,690
+this nicely this is going to be happy
+
+927
+00:35:09,690 --> 00:35:10,710
+we're gonna have to use this and this
+
+928
+00:35:10,710 --> 00:35:11,670
+I'm gonna have to polyfill it with
+
+929
+00:35:11,670 --> 00:35:13,890
+JavaScript and you've got back to your
+
+930
+00:35:13,890 --> 00:35:15,570
+product owner or your project manager
+
+931
+00:35:15,570 --> 00:35:17,850
+and you say hey look I actually think we
+
+932
+00:35:17,850 --> 00:35:19,320
+shouldn't do this I think that this is
+
+933
+00:35:19,320 --> 00:35:21,090
+bad idea because it's gonna really
+
+934
+00:35:21,090 --> 00:35:22,680
+negatively affect the quality of our
+
+935
+00:35:22,680 --> 00:35:24,870
+code base and they probably say
+
+936
+00:35:24,870 --> 00:35:26,520
+something like well the clients happy to
+
+937
+00:35:26,520 --> 00:35:30,000
+pay for it and you're like fine if you
+
+938
+00:35:30,000 --> 00:35:32,520
+put all the hacks for that particular
+
+939
+00:35:32,520 --> 00:35:35,880
+feature inside your shamed CSS file when
+
+940
+00:35:35,880 --> 00:35:37,290
+that feature is finished you can go to
+
+941
+00:35:37,290 --> 00:35:39,960
+your product owner and say two weeks ago
+
+942
+00:35:39,960 --> 00:35:43,290
+this file had 17 lines of CSS in it now
+
+943
+00:35:43,290 --> 00:35:45,480
+I finished that feature it has 212 lines
+
+944
+00:35:45,480 --> 00:35:46,730
+of CSS in it
+
+945
+00:35:46,730 --> 00:35:49,380
+this feature directly contribute bhai
+
+946
+00:35:49,380 --> 00:35:50,850
+made their awkward numbers I have to do
+
+947
+00:35:50,850 --> 00:35:53,810
+some math now it's like 198 lines of CSS
+
+948
+00:35:53,810 --> 00:35:56,280
+that you've added to the project you can
+
+949
+00:35:56,280 --> 00:35:58,500
+actually start to prove with numbers
+
+950
+00:35:58,500 --> 00:36:01,050
+just how much technical debt particular
+
+951
+00:36:01,050 --> 00:36:03,630
+features add to your project it remains
+
+952
+00:36:03,630 --> 00:36:05,850
+the next time somebody asks for a weird
+
+953
+00:36:05,850 --> 00:36:07,980
+feature you can say look last time we
+
+954
+00:36:07,980 --> 00:36:09,650
+did this I told you it'd be a bad idea
+
+955
+00:36:09,650 --> 00:36:12,390
+this is what happened I'm keen to avoid
+
+956
+00:36:12,390 --> 00:36:15,210
+that happening again at the final good
+
+957
+00:36:15,210 --> 00:36:17,310
+thing about shame dot CSS is it's easy
+
+958
+00:36:17,310 --> 00:36:20,340
+to run get blame over a single file
+
+959
+00:36:20,340 --> 00:36:24,540
+I was really nasty when I say this I'm
+
+960
+00:36:24,540 --> 00:36:26,490
+not doing this in order to catch people
+
+961
+00:36:26,490 --> 00:36:28,410
+out I've actually got quite an
+
+962
+00:36:28,410 --> 00:36:30,930
+interesting story of how this really
+
+963
+00:36:30,930 --> 00:36:34,110
+helped me on a project about two years
+
+964
+00:36:34,110 --> 00:36:36,510
+ago I was kind of the lead consultant
+
+965
+00:36:36,510 --> 00:36:38,700
+and lead developer on phase one at a
+
+966
+00:36:38,700 --> 00:36:42,990
+fairly big elearning platform it's a
+
+967
+00:36:42,990 --> 00:36:44,520
+really exciting project it turns a fun
+
+968
+00:36:44,520 --> 00:36:46,590
+and I built kind of phase one and it's
+
+969
+00:36:46,590 --> 00:36:48,000
+my job to hand it over to another team
+
+970
+00:36:48,000 --> 00:36:51,240
+we had a full like proper handover
+
+971
+00:36:51,240 --> 00:36:52,500
+workshop where I talked him through the
+
+972
+00:36:52,500 --> 00:36:54,750
+architecture how everything worked and I
+
+973
+00:36:54,750 --> 00:36:56,160
+was like do you understand and they're
+
+974
+00:36:56,160 --> 00:37:00,090
+like yes we understand and I left and I
+
+975
+00:37:00,090 --> 00:37:01,590
+came back about two months later just to
+
+976
+00:37:01,590 --> 00:37:02,970
+check in and see how things were going
+
+977
+00:37:02,970 --> 00:37:04,590
+and I said oh cool I'm gonna take a look
+
+978
+00:37:04,590 --> 00:37:05,700
+through the codebase and see if there's
+
+979
+00:37:05,700 --> 00:37:07,620
+anything we need to discuss and all of a
+
+980
+00:37:07,620 --> 00:37:10,020
+sudden ashamed of CSS file it got it got
+
+981
+00:37:10,020 --> 00:37:12,030
+enormous and I ran get blame across it
+
+982
+00:37:12,030 --> 00:37:13,170
+and it's just one developer it was all
+
+983
+00:37:13,170 --> 00:37:17,040
+his work and at first I was like he said
+
+984
+00:37:17,040 --> 00:37:19,020
+he understood and he lied and at first I
+
+985
+00:37:19,020 --> 00:37:20,250
+was kind of angry but then I realized
+
+986
+00:37:20,250 --> 00:37:23,430
+that a way all of this CSS in here is
+
+987
+00:37:23,430 --> 00:37:25,770
+around the grid system that's the thing
+
+988
+00:37:25,770 --> 00:37:28,350
+I explained the least so what this
+
+989
+00:37:28,350 --> 00:37:29,850
+taught me or what this told me was that
+
+990
+00:37:29,850 --> 00:37:32,279
+I hadn't explained something very well
+
+991
+00:37:32,279 --> 00:37:34,049
+the guy was hacking around stuff that
+
+992
+00:37:34,049 --> 00:37:35,849
+already existed hadn't really made it
+
+993
+00:37:35,849 --> 00:37:39,150
+obvious so it was a quick case of I said
+
+994
+00:37:39,150 --> 00:37:40,799
+like dude can we grab a coffee for 58
+
+995
+00:37:40,799 --> 00:37:42,240
+for 15 minutes like I want to show you
+
+996
+00:37:42,240 --> 00:37:43,380
+some stuff about how the grid system
+
+997
+00:37:43,380 --> 00:37:46,349
+works and basically what this allowed me
+
+998
+00:37:46,349 --> 00:37:48,359
+to do was learn who struggles with which
+
+999
+00:37:48,359 --> 00:37:50,130
+parts of the project as a lead developer
+
+1000
+00:37:50,130 --> 00:37:52,470
+or as a senior developer that's really
+
+1001
+00:37:52,470 --> 00:37:54,089
+useful information to have if you can
+
+1002
+00:37:54,089 --> 00:37:56,250
+see that this person is struggling with
+
+1003
+00:37:56,250 --> 00:37:59,430
+the nav or the carousel or something it
+
+1004
+00:37:59,430 --> 00:38:00,690
+means you can start sharing knowledge
+
+1005
+00:38:00,690 --> 00:38:02,309
+with the right people about the right
+
+1006
+00:38:02,309 --> 00:38:06,750
+things that's it for the kind of the
+
+1007
+00:38:06,750 --> 00:38:08,779
+tips I just wanna close on quite um
+
+1008
+00:38:08,779 --> 00:38:10,799
+there's an interesting thing that
+
+1009
+00:38:10,799 --> 00:38:12,599
+happened to me again about two years ago
+
+1010
+00:38:12,599 --> 00:38:15,390
+I had a very very interesting point of
+
+1011
+00:38:15,390 --> 00:38:18,510
+view given to me by a developer that I
+
+1012
+00:38:18,510 --> 00:38:22,230
+was talking to and it's about second
+
+1013
+00:38:22,230 --> 00:38:23,640
+chances this is kind of weird I never
+
+1014
+00:38:23,640 --> 00:38:25,190
+really do this kind of philosophical
+
+1015
+00:38:25,190 --> 00:38:27,390
+ending to a talk but I think it's quite
+
+1016
+00:38:27,390 --> 00:38:30,359
+poignant it was basically that second
+
+1017
+00:38:30,359 --> 00:38:31,950
+chances I was running a workshop in
+
+1018
+00:38:31,950 --> 00:38:36,150
+London and I always asked the attendees
+
+1019
+00:38:36,150 --> 00:38:38,309
+like well where do you work what do you
+
+1020
+00:38:38,309 --> 00:38:40,079
+work on what kind of stuff do you do and
+
+1021
+00:38:40,079 --> 00:38:43,289
+and one guy said that I'm brand new to
+
+1022
+00:38:43,289 --> 00:38:45,480
+web development I'm like I've been a
+
+1023
+00:38:45,480 --> 00:38:49,079
+developer for like two months and I said
+
+1024
+00:38:49,079 --> 00:38:50,430
+oh cool how are you finding it are you
+
+1025
+00:38:50,430 --> 00:38:51,690
+enjoying it and he said oh it's amazing
+
+1026
+00:38:51,690 --> 00:38:54,630
+I used to be a civil engineer so he used
+
+1027
+00:38:54,630 --> 00:38:56,430
+to build bridges and roads and that kind
+
+1028
+00:38:56,430 --> 00:38:58,799
+of stuff and I said so how are you
+
+1029
+00:38:58,799 --> 00:39:00,299
+finding the transition to web
+
+1030
+00:39:00,299 --> 00:39:01,980
+development and he said oh it's
+
+1031
+00:39:01,980 --> 00:39:04,769
+incredible because web developers have a
+
+1032
+00:39:04,769 --> 00:39:08,970
+chance to refactor things I am a civil
+
+1033
+00:39:08,970 --> 00:39:10,980
+engineer I can't refactor a bridge
+
+1034
+00:39:10,980 --> 00:39:13,170
+it's either perfect first time or 200
+
+1035
+00:39:13,170 --> 00:39:16,200
+people died and I was like yeah you're
+
+1036
+00:39:16,200 --> 00:39:17,250
+right that's incredible
+
+1037
+00:39:17,250 --> 00:39:19,559
+like yeah I never even thought about
+
+1038
+00:39:19,559 --> 00:39:21,660
+that you can't refactor a bridge it's
+
+1039
+00:39:21,660 --> 00:39:23,970
+like oh like what that's me going
+
+1040
+00:39:23,970 --> 00:39:27,480
+to prison yeah as a civil engineer I
+
+1041
+00:39:27,480 --> 00:39:29,099
+don't get the chance to or as civil
+
+1042
+00:39:29,099 --> 00:39:30,509
+engineers we don't get a chance to
+
+1043
+00:39:30,509 --> 00:39:32,430
+refactor our architecture and I was like
+
+1044
+00:39:32,430 --> 00:39:34,349
+oh my god like I've always looked at
+
+1045
+00:39:34,349 --> 00:39:37,140
+refactoring as a horrible job I've
+
+1046
+00:39:37,140 --> 00:39:38,519
+looked at refactoring as a chore
+
+1047
+00:39:38,519 --> 00:39:40,259
+something that I had to do something I
+
+1048
+00:39:40,259 --> 00:39:41,930
+resented
+
+1049
+00:39:41,930 --> 00:39:43,130
+what refactoring actually there's a
+
+1050
+00:39:43,130 --> 00:39:45,170
+second chance that most industries don't
+
+1051
+00:39:45,170 --> 00:39:46,819
+get it's a chance for us to learn about
+
+1052
+00:39:46,819 --> 00:39:49,069
+our product as we build it it's a chance
+
+1053
+00:39:49,069 --> 00:39:51,829
+to respond to changes in requirements or
+
+1054
+00:39:51,829 --> 00:39:54,290
+changes in use it's a chance for us to
+
+1055
+00:39:54,290 --> 00:39:55,940
+learn from previous mistakes or learn
+
+1056
+00:39:55,940 --> 00:39:57,950
+from new knowledge to make even better
+
+1057
+00:39:57,950 --> 00:40:01,579
+stuff surgeons can't refactor a heart
+
+1058
+00:40:01,579 --> 00:40:04,430
+surgery right you die civil engineers
+
+1059
+00:40:04,430 --> 00:40:06,170
+can't read factor a bridge pilots can't
+
+1060
+00:40:06,170 --> 00:40:08,900
+refactor a failed flight web developers
+
+1061
+00:40:08,900 --> 00:40:10,220
+we can be like yeah well this
+
+1062
+00:40:10,220 --> 00:40:11,750
+architecture is not good enough let me
+
+1063
+00:40:11,750 --> 00:40:14,030
+spend a week fixing it so rather than
+
+1064
+00:40:14,030 --> 00:40:15,589
+seeing refactoring is a nasty job
+
+1065
+00:40:15,589 --> 00:40:17,119
+perhaps we should see it as a kind of a
+
+1066
+00:40:17,119 --> 00:40:18,680
+second chance that is actually kind of
+
+1067
+00:40:18,680 --> 00:40:21,740
+cool I've actually gone 10 minutes over
+
+1068
+00:40:21,740 --> 00:40:23,210
+my time I think so I need to start
+
+1069
+00:40:23,210 --> 00:40:25,309
+wrapping up um okay let's leave on this
+
+1070
+00:40:25,309 --> 00:40:28,550
+then remember um prevention is cheaper
+
+1071
+00:40:28,550 --> 00:40:29,690
+than the cure if we can start
+
+1072
+00:40:29,690 --> 00:40:32,480
+refactoring things as we spot them as we
+
+1073
+00:40:32,480 --> 00:40:34,220
+are working we're going to keep things
+
+1074
+00:40:34,220 --> 00:40:35,720
+cheaper in the long run we don't have to
+
+1075
+00:40:35,720 --> 00:40:38,230
+tear things down and start again
+
+1076
+00:40:38,230 --> 00:40:41,000
+technical debt is fine right a lot of
+
+1077
+00:40:41,000 --> 00:40:43,069
+people avoid technical debt completely
+
+1078
+00:40:43,069 --> 00:40:44,569
+that's quite naive technical that is
+
+1079
+00:40:44,569 --> 00:40:46,280
+going to happen it's bound to happen
+
+1080
+00:40:46,280 --> 00:40:48,890
+which need to be very very careful very
+
+1081
+00:40:48,890 --> 00:40:50,930
+diligent in keeping up repayment so that
+
+1082
+00:40:50,930 --> 00:40:53,000
+we don't go bankrupt and have to rebuild
+
+1083
+00:40:53,000 --> 00:40:56,780
+the entire site I'm only refactor things
+
+1084
+00:40:56,780 --> 00:40:58,849
+once we can see tangible benefits try
+
+1085
+00:40:58,849 --> 00:41:00,559
+and avoid refactoring something just out
+
+1086
+00:41:00,559 --> 00:41:02,839
+of a sense of pride only refactor
+
+1087
+00:41:02,839 --> 00:41:04,400
+something if is actually slowing you
+
+1088
+00:41:04,400 --> 00:41:06,200
+down if it's causing problems if it's
+
+1089
+00:41:06,200 --> 00:41:10,490
+costing the business money avoid long
+
+1090
+00:41:10,490 --> 00:41:12,170
+refactoring tunnels do not pick
+
+1091
+00:41:12,170 --> 00:41:13,940
+refactoring tasks that have a large
+
+1092
+00:41:13,940 --> 00:41:16,819
+surface area pick off tiny granular jobs
+
+1093
+00:41:16,819 --> 00:41:18,859
+complete them as quickly as you can and
+
+1094
+00:41:18,859 --> 00:41:22,700
+move on to the next one and any hacks or
+
+1095
+00:41:22,700 --> 00:41:24,710
+refactored code any code that are even
+
+1096
+00:41:24,710 --> 00:41:27,049
+remotely interesting to other developers
+
+1097
+00:41:27,049 --> 00:41:28,940
+highlight it Aref
+
+1098
+00:41:28,940 --> 00:41:31,099
+in front of your refactored code hacky
+
+1099
+00:41:31,099 --> 00:41:35,180
+code inside shame dot CSS the very last
+
+1100
+00:41:35,180 --> 00:41:36,770
+thing I want to say to you or leave you
+
+1101
+00:41:36,770 --> 00:41:39,319
+with is this quote by Sir Robert
+
+1102
+00:41:39,319 --> 00:41:42,290
+baden-powell Robert baden-powell is the
+
+1103
+00:41:42,290 --> 00:41:43,849
+founder of the Boy Scouts a movement
+
+1104
+00:41:43,849 --> 00:41:47,420
+or was he's dead now and he said he
+
+1105
+00:41:47,420 --> 00:41:49,849
+famously said to his Boy Scouts always
+
+1106
+00:41:49,849 --> 00:41:50,970
+leave the camera
+
+1107
+00:41:50,970 --> 00:41:53,819
+cleaner than when you found it I'd like
+
+1108
+00:41:53,819 --> 00:41:55,200
+to think that as developers we have the
+
+1109
+00:41:55,200 --> 00:41:57,270
+same responsibility to leave the
+
+1110
+00:41:57,270 --> 00:41:59,730
+codebase cleaner than when we found it
+
+1111
+00:41:59,730 --> 00:42:01,400
+thank you very much for your time
+

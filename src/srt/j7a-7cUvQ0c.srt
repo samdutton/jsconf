@@ -1,0 +1,2729 @@
+1
+00:00:06,900 --> 00:00:11,870
+
+how's it going everybody
+
+2
+00:00:11,880 --> 00:00:13,830
+real quick plug for codes
+
+3
+00:00:13,830 --> 00:00:15,360
+they actually just hired somebody who
+
+4
+00:00:15,360 --> 00:00:17,190
+graduated from code Smith it was a
+
+5
+00:00:17,190 --> 00:00:19,230
+couple months ago it worked out great so
+
+6
+00:00:19,230 --> 00:00:21,779
+highly recommended yeah so today we're
+
+7
+00:00:21,779 --> 00:00:23,160
+going to talk about load testing which
+
+8
+00:00:23,160 --> 00:00:24,689
+is also known as denial of service
+
+9
+00:00:24,689 --> 00:00:27,630
+attacks so anytime somebody asks you hey
+
+10
+00:00:27,630 --> 00:00:29,369
+can you beta test my app you can say
+
+11
+00:00:29,369 --> 00:00:31,650
+yeah I actually can do more than that I
+
+12
+00:00:31,650 --> 00:00:34,440
+can help you destroy it so a little bit
+
+13
+00:00:34,440 --> 00:00:37,199
+about me my background in coding since
+
+14
+00:00:37,199 --> 00:00:39,360
+the original Gameboy and I've been doing
+
+15
+00:00:39,360 --> 00:00:41,070
+startups pretty much my whole working
+
+16
+00:00:41,070 --> 00:00:42,989
+life I actually met my first investor at
+
+17
+00:00:42,989 --> 00:00:45,210
+a racetrack we did 200 miles an hour
+
+18
+00:00:45,210 --> 00:00:47,519
+without helmets on so I know he was a
+
+19
+00:00:47,519 --> 00:00:50,100
+risk taker and so that was kind of a
+
+20
+00:00:50,100 --> 00:00:52,290
+good profile and we meshed and anyway
+
+21
+00:00:52,290 --> 00:00:54,750
+started a company so load testing of
+
+22
+00:00:54,750 --> 00:00:57,570
+course what is load testing Dave gave a
+
+23
+00:00:57,570 --> 00:00:59,400
+pretty good introduction to it but
+
+24
+00:00:59,400 --> 00:01:01,080
+basically it's about finding that limit
+
+25
+00:01:01,080 --> 00:01:03,239
+and then pushing past it and seeing what
+
+26
+00:01:03,239 --> 00:01:06,390
+happens so we try to simulate all kinds
+
+27
+00:01:06,390 --> 00:01:08,280
+of user activities some normal some
+
+28
+00:01:08,280 --> 00:01:11,070
+abnormal and apply stress on the
+
+29
+00:01:11,070 --> 00:01:13,350
+application or the REST API or whatever
+
+30
+00:01:13,350 --> 00:01:16,140
+it is until that moment at which it all
+
+31
+00:01:16,140 --> 00:01:18,210
+just comes crashing down and sometimes
+
+32
+00:01:18,210 --> 00:01:20,010
+it degrades nicely and smoothly that
+
+33
+00:01:20,010 --> 00:01:22,110
+never happens for me it always just sort
+
+34
+00:01:22,110 --> 00:01:23,610
+of flips a switch and then it just
+
+35
+00:01:23,610 --> 00:01:24,930
+absolute meltdown
+
+36
+00:01:24,930 --> 00:01:26,910
+sometimes it takes the database down
+
+37
+00:01:26,910 --> 00:01:29,700
+with it so all kinds of fun stuff with
+
+38
+00:01:29,700 --> 00:01:32,160
+load testing but we're definitely going
+
+39
+00:01:32,160 --> 00:01:33,930
+to we're definitely going to learn a
+
+40
+00:01:33,930 --> 00:01:35,700
+little bit more about how to use it I
+
+41
+00:01:35,700 --> 00:01:38,850
+guess effectively and how to use it in a
+
+42
+00:01:38,850 --> 00:01:40,710
+way that can actually help things move
+
+43
+00:01:40,710 --> 00:01:42,090
+forward instead of just taking them down
+
+44
+00:01:42,090 --> 00:01:44,850
+so in looking at what happens under load
+
+45
+00:01:44,850 --> 00:01:46,050
+you have a couple different things
+
+46
+00:01:46,050 --> 00:01:49,020
+depending on who you talk to talk to us
+
+47
+00:01:49,020 --> 00:01:50,970
+talk to the engineers the developers and
+
+48
+00:01:50,970 --> 00:01:52,500
+all of that then there are technical
+
+49
+00:01:52,500 --> 00:01:54,030
+limits you know does it does it crash
+
+50
+00:01:54,030 --> 00:01:56,400
+okay it crash well how quickly can it
+
+51
+00:01:56,400 --> 00:01:58,500
+come back up if you take down a database
+
+52
+00:01:58,500 --> 00:02:00,300
+under load it could take a second for it
+
+53
+00:02:00,300 --> 00:02:04,080
+to come back up for various reasons does
+
+54
+00:02:04,080 --> 00:02:07,020
+the experience of the app degrade nicely
+
+55
+00:02:07,020 --> 00:02:09,239
+or does it again just sort of melt down
+
+56
+00:02:09,239 --> 00:02:11,129
+does it start errors start popping up
+
+57
+00:02:11,129 --> 00:02:13,640
+pages start taking really long to load
+
+58
+00:02:13,640 --> 00:02:16,200
+depends on what it is rest api website
+
+59
+00:02:16,200 --> 00:02:18,989
+whatever or an app you know mobile app
+
+60
+00:02:18,989 --> 00:02:20,670
+but there are a lot of things that can
+
+61
+00:02:20,670 --> 00:02:22,200
+happen technically but then when you
+
+62
+00:02:22,200 --> 00:02:24,470
+look at and talk to the business guy
+
+63
+00:02:24,470 --> 00:02:27,420
+there are much more serious impacts
+
+64
+00:02:27,420 --> 00:02:29,360
+like you know what does how many
+
+65
+00:02:29,360 --> 00:02:31,800
+customers can we handle if we get more
+
+66
+00:02:31,800 --> 00:02:34,920
+customers than that and then the site
+
+67
+00:02:34,920 --> 00:02:37,230
+crashes do we lose the last half-hour of
+
+68
+00:02:37,230 --> 00:02:39,840
+orders which could you know be a lot of
+
+69
+00:02:39,840 --> 00:02:41,819
+money especially when you're handling a
+
+70
+00:02:41,819 --> 00:02:44,760
+large volume of users so for example if
+
+71
+00:02:44,760 --> 00:02:46,170
+something were to crash on Black Friday
+
+72
+00:02:46,170 --> 00:02:48,600
+and you lose oh let's say half a day of
+
+73
+00:02:48,600 --> 00:02:50,400
+orders that could be that could be a
+
+74
+00:02:50,400 --> 00:02:52,260
+quarter of the orders for the whole year
+
+75
+00:02:52,260 --> 00:02:54,720
+so obviously you need to make sure that
+
+76
+00:02:54,720 --> 00:02:56,610
+doesn't happen and then assuming that
+
+77
+00:02:56,610 --> 00:02:58,319
+you can figure out what happens how much
+
+78
+00:02:58,319 --> 00:03:00,569
+does it cost to actually fix it and
+
+79
+00:03:00,569 --> 00:03:02,940
+reinforce it and get it ready so some of
+
+80
+00:03:02,940 --> 00:03:04,830
+the goals that we're gonna focus on or
+
+81
+00:03:04,830 --> 00:03:08,580
+some of the I guess the intent of load
+
+82
+00:03:08,580 --> 00:03:10,530
+testing really is to gauge performance
+
+83
+00:03:10,530 --> 00:03:13,590
+to assess reliability to figure out
+
+84
+00:03:13,590 --> 00:03:15,930
+scalability whatever that means that can
+
+85
+00:03:15,930 --> 00:03:17,069
+mean a lot of different things to a lot
+
+86
+00:03:17,069 --> 00:03:19,950
+of different people and in some cases it
+
+87
+00:03:19,950 --> 00:03:21,660
+can mean capacity planning so figuring
+
+88
+00:03:21,660 --> 00:03:23,610
+out how to handle that volume how to
+
+89
+00:03:23,610 --> 00:03:25,380
+handle those spikes in traffic are we
+
+90
+00:03:25,380 --> 00:03:28,230
+prepared are we confident in our system
+
+91
+00:03:28,230 --> 00:03:30,600
+you know when we test a little bit on a
+
+92
+00:03:30,600 --> 00:03:32,489
+local machine does it already start to
+
+93
+00:03:32,489 --> 00:03:34,500
+exhibit strange behavior under load and
+
+94
+00:03:34,500 --> 00:03:36,630
+so you put it on a production system and
+
+95
+00:03:36,630 --> 00:03:38,220
+then it's just yeah it's just not going
+
+96
+00:03:38,220 --> 00:03:40,530
+to happen so some of the metrics some of
+
+97
+00:03:40,530 --> 00:03:42,090
+the magical numbers that we're going to
+
+98
+00:03:42,090 --> 00:03:44,130
+track with all of this latency that's a
+
+99
+00:03:44,130 --> 00:03:46,500
+big one and that's a good indicator as
+
+100
+00:03:46,500 --> 00:03:48,000
+you'll see in a graph a little bit later
+
+101
+00:03:48,000 --> 00:03:50,489
+on requests per second this is kind of
+
+102
+00:03:50,489 --> 00:03:53,549
+one of our magical numbers is how many
+
+103
+00:03:53,549 --> 00:03:56,070
+actual users simultaneously are really
+
+104
+00:03:56,070 --> 00:03:58,560
+requests simultaneously can we take now
+
+105
+00:03:58,560 --> 00:04:00,060
+it's possible for users to generate
+
+106
+00:04:00,060 --> 00:04:02,100
+multiple requests per second then that's
+
+107
+00:04:02,100 --> 00:04:04,109
+probably a problem in the app shouldn't
+
+108
+00:04:04,109 --> 00:04:06,570
+be doing that but response time how long
+
+109
+00:04:06,570 --> 00:04:08,700
+does it take when they hit a request to
+
+110
+00:04:08,700 --> 00:04:10,680
+the REST API tour whatever to the to the
+
+111
+00:04:10,680 --> 00:04:12,209
+website how long does it actually take
+
+112
+00:04:12,209 --> 00:04:14,280
+for a response to come back and again
+
+113
+00:04:14,280 --> 00:04:16,019
+you want to get that in a nice sweet
+
+114
+00:04:16,019 --> 00:04:18,299
+spot and when it starts to degrade
+
+115
+00:04:18,299 --> 00:04:20,310
+you're gonna see that response time just
+
+116
+00:04:20,310 --> 00:04:22,410
+slowly climbing up until it hits
+
+117
+00:04:22,410 --> 00:04:25,320
+infinity percentiles that's probably a
+
+118
+00:04:25,320 --> 00:04:27,060
+little bit more specific in terms of how
+
+119
+00:04:27,060 --> 00:04:28,500
+you actually look at these different
+
+120
+00:04:28,500 --> 00:04:30,780
+numbers now I wanted to throw out just
+
+121
+00:04:30,780 --> 00:04:32,940
+some ballpark numbers for requests per
+
+122
+00:04:32,940 --> 00:04:35,039
+second and latency now again everybody
+
+123
+00:04:35,039 --> 00:04:36,450
+is gonna have their own opinion about
+
+124
+00:04:36,450 --> 00:04:38,970
+what these numbers should be I would say
+
+125
+00:04:38,970 --> 00:04:41,220
+that for a mid-sized cloud instance
+
+126
+00:04:41,220 --> 00:04:43,650
+on Amazon like a medium or something you
+
+127
+00:04:43,650 --> 00:04:45,120
+should probably expect somewhere around
+
+128
+00:04:45,120 --> 00:04:47,220
+a thousand requests per second for
+
+129
+00:04:47,220 --> 00:04:49,230
+whatever it is and maybe 20 millisecond
+
+130
+00:04:49,230 --> 00:04:52,170
+latency 30 millisecond latency so when
+
+131
+00:04:52,170 --> 00:04:53,730
+you're doing all your load test you
+
+132
+00:04:53,730 --> 00:04:55,140
+start looking at the numbers and you're
+
+133
+00:04:55,140 --> 00:04:57,240
+not hitting that with the medium or
+
+134
+00:04:57,240 --> 00:04:59,190
+maybe a slightly above medium then you
+
+135
+00:04:59,190 --> 00:05:02,400
+should be concerned so we'll also take a
+
+136
+00:05:02,400 --> 00:05:04,500
+look at some product services
+
+137
+00:05:04,500 --> 00:05:06,720
+I should be getting paid by some of
+
+138
+00:05:06,720 --> 00:05:07,920
+these companies there's one in
+
+139
+00:05:07,920 --> 00:05:09,150
+particular although it's I guess an
+
+140
+00:05:09,150 --> 00:05:11,970
+open-source project so it's the one I
+
+141
+00:05:11,970 --> 00:05:14,100
+really like and I'm gonna show you how
+
+142
+00:05:14,100 --> 00:05:15,720
+to use it but here's some of the other
+
+143
+00:05:15,720 --> 00:05:17,880
+ones here's some of the paid ones which
+
+144
+00:05:17,880 --> 00:05:19,710
+has anybody used any of these by the way
+
+145
+00:05:19,710 --> 00:05:21,860
+quick show of hands okay a couple people
+
+146
+00:05:21,860 --> 00:05:25,710
+loader blitz so stuff so as to I don't
+
+147
+00:05:25,710 --> 00:05:27,630
+know Microsoft Microsoft's is actually
+
+148
+00:05:27,630 --> 00:05:29,910
+decent I hate to say it it's it's pretty
+
+149
+00:05:29,910 --> 00:05:30,420
+good
+
+150
+00:05:30,420 --> 00:05:33,330
+so flood I haven't used that one yet but
+
+151
+00:05:33,330 --> 00:05:34,740
+we tried a bunch of the others and we
+
+152
+00:05:34,740 --> 00:05:36,650
+had mixed experiences across the board
+
+153
+00:05:36,650 --> 00:05:38,910
+so we looked at some of the libraries
+
+154
+00:05:38,910 --> 00:05:41,669
+that were available Apache bench which
+
+155
+00:05:41,669 --> 00:05:44,730
+is kind of the I guess original
+
+156
+00:05:44,730 --> 00:05:46,710
+workhorse I mean everybody used to use
+
+157
+00:05:46,710 --> 00:05:48,660
+that back in the day for simulating
+
+158
+00:05:48,660 --> 00:05:51,390
+traffic and then artillery which is a
+
+159
+00:05:51,390 --> 00:05:53,160
+little bit more modern but a lot of the
+
+160
+00:05:53,160 --> 00:05:55,440
+same concept we really like artillery
+
+161
+00:05:55,440 --> 00:05:56,640
+that's what I'm going to get into on
+
+162
+00:05:56,640 --> 00:05:58,530
+this one and then W R K which I guess is
+
+163
+00:05:58,530 --> 00:05:59,729
+yet another flavor
+
+164
+00:05:59,729 --> 00:06:02,310
+I hate Apache bench I hate it with a
+
+165
+00:06:02,310 --> 00:06:04,140
+passion it's so confusing so difficult
+
+166
+00:06:04,140 --> 00:06:06,570
+to use artillery is just great though so
+
+167
+00:06:06,570 --> 00:06:07,770
+we're going to talk about artillery and
+
+168
+00:06:07,770 --> 00:06:10,229
+not a pat revenge so it supports
+
+169
+00:06:10,229 --> 00:06:13,110
+multiple protocols scriptable extensible
+
+170
+00:06:13,110 --> 00:06:14,880
+has a lot of different ways of looking
+
+171
+00:06:14,880 --> 00:06:16,950
+at metrics and a lot of different
+
+172
+00:06:16,950 --> 00:06:19,140
+metrics also its integratable into a
+
+173
+00:06:19,140 --> 00:06:20,660
+bunch of stuff so it's really know D
+
+174
+00:06:20,660 --> 00:06:24,450
+really gulpy adjectives that you know
+
+175
+00:06:24,450 --> 00:06:27,390
+work in this audience and it's pretty
+
+176
+00:06:27,390 --> 00:06:29,040
+good performance I mean definitely able
+
+177
+00:06:29,040 --> 00:06:30,720
+to take down pretty much every server
+
+178
+00:06:30,720 --> 00:06:33,450
+with it so that works so to install it
+
+179
+00:06:33,450 --> 00:06:35,880
+quite simple quite straightforward and
+
+180
+00:06:35,880 --> 00:06:38,340
+then to test it artillery dyno
+
+181
+00:06:38,340 --> 00:06:41,310
+I don't know sure they have some
+
+182
+00:06:41,310 --> 00:06:43,950
+dinosaur thing sure
+
+183
+00:06:43,950 --> 00:06:46,050
+so another thing that I would say that
+
+184
+00:06:46,050 --> 00:06:48,270
+he does not come with out of the box or
+
+185
+00:06:48,270 --> 00:06:49,979
+at least it didn't when when we were
+
+186
+00:06:49,979 --> 00:06:53,039
+testing and using it were like real time
+
+187
+00:06:53,039 --> 00:06:53,630
+monitor
+
+188
+00:06:53,630 --> 00:06:56,300
+of your app so looking from inside the
+
+189
+00:06:56,300 --> 00:06:58,280
+application or inside the API what's
+
+190
+00:06:58,280 --> 00:07:00,800
+going on I'm in crash reporting also so
+
+191
+00:07:00,800 --> 00:07:02,900
+figuring out if your thing does crash
+
+192
+00:07:02,900 --> 00:07:05,480
+and burn how did it crash was it you
+
+193
+00:07:05,480 --> 00:07:07,550
+know file system related network related
+
+194
+00:07:07,550 --> 00:07:10,430
+something else CPU a memory ran out of
+
+195
+00:07:10,430 --> 00:07:12,800
+memory which is a common one so figuring
+
+196
+00:07:12,800 --> 00:07:14,990
+out what exactly happened artillery is
+
+197
+00:07:14,990 --> 00:07:16,400
+not going to tell you that it will just
+
+198
+00:07:16,400 --> 00:07:18,260
+destroy it it's up to you to figure out
+
+199
+00:07:18,260 --> 00:07:21,260
+how it broke so fair warning about that
+
+200
+00:07:21,260 --> 00:07:24,650
+so this is probably the simplest test if
+
+201
+00:07:24,650 --> 00:07:26,540
+you mess with these numbers a little bit
+
+202
+00:07:26,540 --> 00:07:28,010
+you should be able to put a lot of
+
+203
+00:07:28,010 --> 00:07:30,590
+stress on whatever is at my app comm so
+
+204
+00:07:30,590 --> 00:07:32,660
+replace that with your friends app comm
+
+205
+00:07:32,660 --> 00:07:35,030
+and this specifically will put 10
+
+206
+00:07:35,030 --> 00:07:37,940
+virtual users every second making 20
+
+207
+00:07:37,940 --> 00:07:40,580
+requests each for about 60 seconds so
+
+208
+00:07:40,580 --> 00:07:42,950
+for about a minute it'll do a small a
+
+209
+00:07:42,950 --> 00:07:45,890
+little bit amount of load here's a more
+
+210
+00:07:45,890 --> 00:07:48,200
+detailed one and so you start to put
+
+211
+00:07:48,200 --> 00:07:50,240
+them into scriptable files and this is
+
+212
+00:07:50,240 --> 00:07:51,290
+where you can start to put them in a
+
+213
+00:07:51,290 --> 00:07:52,790
+version control you can start to roll
+
+214
+00:07:52,790 --> 00:07:55,490
+them inside of your code repository etc
+
+215
+00:07:55,490 --> 00:07:58,010
+etc you can set up these scenarios where
+
+216
+00:07:58,010 --> 00:08:00,590
+you have sort of a scriptable behavior
+
+217
+00:08:00,590 --> 00:08:03,260
+almost simulating what a user is doing
+
+218
+00:08:03,260 --> 00:08:05,030
+and how they're doing it so you can
+
+219
+00:08:05,030 --> 00:08:07,040
+start to put in specific requests to
+
+220
+00:08:07,040 --> 00:08:10,220
+specific URLs you can also have it if
+
+221
+00:08:10,220 --> 00:08:12,500
+they're phases term is how you can have
+
+222
+00:08:12,500 --> 00:08:15,020
+it ramped up in number of users ramped
+
+223
+00:08:15,020 --> 00:08:17,660
+up a number of requests you can simulate
+
+224
+00:08:17,660 --> 00:08:20,060
+a little bit of people you know entering
+
+225
+00:08:20,060 --> 00:08:21,710
+pinging a few services here and there
+
+226
+00:08:21,710 --> 00:08:23,900
+and then all of a sudden a lot of people
+
+227
+00:08:23,900 --> 00:08:26,330
+hitting it and then you have flow which
+
+228
+00:08:26,330 --> 00:08:28,940
+is again more of the setting up of the
+
+229
+00:08:28,940 --> 00:08:30,470
+scenario so this is kind of the nuts and
+
+230
+00:08:30,470 --> 00:08:32,300
+bolts of how to set it up but this
+
+231
+00:08:32,300 --> 00:08:34,039
+actually this script right here that you
+
+232
+00:08:34,039 --> 00:08:35,890
+see up there is probably the simplest
+
+233
+00:08:35,890 --> 00:08:39,020
+representation of actually making a load
+
+234
+00:08:39,020 --> 00:08:41,390
+test so it's quite easy so I'd recommend
+
+235
+00:08:41,390 --> 00:08:43,849
+if nobody is doing it or if anybody
+
+236
+00:08:43,849 --> 00:08:45,530
+isn't hasn't done it yet you should
+
+237
+00:08:45,530 --> 00:08:47,360
+probably give it a try it's really quite
+
+238
+00:08:47,360 --> 00:08:49,940
+easy at least it's easy nowadays and you
+
+239
+00:08:49,940 --> 00:08:51,320
+can really simulate a lot of user
+
+240
+00:08:51,320 --> 00:08:54,140
+behavior some of the best practices and
+
+241
+00:08:54,140 --> 00:08:56,480
+anybody can agree agree or disagree with
+
+242
+00:08:56,480 --> 00:08:59,360
+this have a little warmup period so
+
+243
+00:08:59,360 --> 00:09:00,950
+that's something that doesn't really
+
+244
+00:09:00,950 --> 00:09:02,780
+make sense logically when you think
+
+245
+00:09:02,780 --> 00:09:04,310
+about it I mean it's it's an application
+
+246
+00:09:04,310 --> 00:09:06,740
+it doesn't need to warm up necessarily
+
+247
+00:09:06,740 --> 00:09:08,120
+when you think about it in a production
+
+248
+00:09:08,120 --> 00:09:10,310
+environment maybe you're warming up your
+
+249
+00:09:10,310 --> 00:09:13,580
+caches you're warming up I mean I guess
+
+250
+00:09:13,580 --> 00:09:14,930
+you could be physically warming up the
+
+251
+00:09:14,930 --> 00:09:17,630
+machine as its first booting but anyway
+
+252
+00:09:17,630 --> 00:09:20,089
+virtual machines never mind so then you
+
+253
+00:09:20,089 --> 00:09:21,500
+really want to ramp it up then you've
+
+254
+00:09:21,500 --> 00:09:22,940
+got your cruising period where you've
+
+255
+00:09:22,940 --> 00:09:25,100
+got a fairly moderate amount of load
+
+256
+00:09:25,100 --> 00:09:26,990
+which is maybe at your breaking point
+
+257
+00:09:26,990 --> 00:09:30,110
+and then you don't always see a crash
+
+258
+00:09:30,110 --> 00:09:32,480
+test in a lot of load tests I always
+
+259
+00:09:32,480 --> 00:09:33,770
+like to add one it's just very
+
+260
+00:09:33,770 --> 00:09:36,560
+satisfying to just finish it off you
+
+261
+00:09:36,560 --> 00:09:37,940
+know you start it up and then you just
+
+262
+00:09:37,940 --> 00:09:41,300
+take it down so yeah in this particular
+
+263
+00:09:41,300 --> 00:09:43,310
+instance a couple of the numbers maybe
+
+264
+00:09:43,310 --> 00:09:44,750
+the ramp up period is a hundred users
+
+265
+00:09:44,750 --> 00:09:47,540
+every second cruising is maybe a hundred
+
+266
+00:09:47,540 --> 00:09:49,580
+users for a good twenty minutes and then
+
+267
+00:09:49,580 --> 00:09:51,680
+crash is like a thousand users for you
+
+268
+00:09:51,680 --> 00:09:53,540
+know for a minute straight and that'll
+
+269
+00:09:53,540 --> 00:09:56,330
+probably take it down so this is kind of
+
+270
+00:09:56,330 --> 00:09:58,730
+what happens when you run artillery you
+
+271
+00:09:58,730 --> 00:10:00,050
+know you put it in there you're putting
+
+272
+00:10:00,050 --> 00:10:01,550
+your services your paths and all of that
+
+273
+00:10:01,550 --> 00:10:04,430
+and you actually run it this is what
+
+274
+00:10:04,430 --> 00:10:05,209
+it's outputting
+
+275
+00:10:05,209 --> 00:10:08,450
+so pretty not pretty there are many
+
+276
+00:10:08,450 --> 00:10:10,370
+different ways to report on what's going
+
+277
+00:10:10,370 --> 00:10:12,770
+on so we'll step through a little bit of
+
+278
+00:10:12,770 --> 00:10:14,839
+the terminology on this one and what
+
+279
+00:10:14,839 --> 00:10:17,870
+you're actually looking at but at the
+
+280
+00:10:17,870 --> 00:10:19,760
+end of the day you can generate charts
+
+281
+00:10:19,760 --> 00:10:21,410
+and stuff with it which we have one of
+
+282
+00:10:21,410 --> 00:10:23,089
+those coming up and those are actually
+
+283
+00:10:23,089 --> 00:10:25,820
+pretty the other this thing whatever but
+
+284
+00:10:25,820 --> 00:10:28,279
+anyway so scenarios launch scenarios
+
+285
+00:10:28,279 --> 00:10:29,870
+completed a number of requests for
+
+286
+00:10:29,870 --> 00:10:32,810
+second latency codes this is a really
+
+287
+00:10:32,810 --> 00:10:35,180
+important one so these are the HTTP
+
+288
+00:10:35,180 --> 00:10:36,740
+response codes let's say your load
+
+289
+00:10:36,740 --> 00:10:39,170
+testing a REST API and you're getting a
+
+290
+00:10:39,170 --> 00:10:41,540
+lot of 500 or 502 s or something like
+
+291
+00:10:41,540 --> 00:10:43,130
+that your web server is starting to act
+
+292
+00:10:43,130 --> 00:10:44,660
+a little funky maybe you're getting
+
+293
+00:10:44,660 --> 00:10:46,100
+timeouts
+
+294
+00:10:46,100 --> 00:10:48,020
+where does that 504 I don't does anybody
+
+295
+00:10:48,020 --> 00:10:52,550
+know it's VP codes in here 504 okay good
+
+296
+00:10:52,550 --> 00:10:54,440
+so if you're getting a lot of 504 is
+
+297
+00:10:54,440 --> 00:10:56,480
+then you're probably starting to reach
+
+298
+00:10:56,480 --> 00:10:59,029
+that limit so then you've got requests
+
+299
+00:10:59,029 --> 00:11:00,740
+completed if that's a good thing the
+
+300
+00:11:00,740 --> 00:11:03,170
+more you see of those the better so okay
+
+301
+00:11:03,170 --> 00:11:05,390
+let's look at it on a graph this is a
+
+302
+00:11:05,390 --> 00:11:07,160
+little bit more interesting and so what
+
+303
+00:11:07,160 --> 00:11:08,750
+we've got here is response time is in
+
+304
+00:11:08,750 --> 00:11:10,640
+green the green little boxes throughput
+
+305
+00:11:10,640 --> 00:11:13,880
+is blue so that's sort of what your what
+
+306
+00:11:13,880 --> 00:11:14,810
+you're handling and then you have
+
+307
+00:11:14,810 --> 00:11:17,510
+failures in red so if you look closely
+
+308
+00:11:17,510 --> 00:11:20,190
+at this and you look around 128 that's
+
+309
+00:11:20,190 --> 00:11:22,050
+meltdown it is finished it's over it's
+
+310
+00:11:22,050 --> 00:11:24,420
+not coming back up but if you look back
+
+311
+00:11:24,420 --> 00:11:26,040
+a little bit so you're almost looking at
+
+312
+00:11:26,040 --> 00:11:27,960
+this and then reversing time if you look
+
+313
+00:11:27,960 --> 00:11:29,400
+back a little bit you can actually see
+
+314
+00:11:29,400 --> 00:11:30,750
+that there are indicators that this is
+
+315
+00:11:30,750 --> 00:11:34,080
+about to happen so conceivably you could
+
+316
+00:11:34,080 --> 00:11:36,060
+add some sort of intelligence into your
+
+317
+00:11:36,060 --> 00:11:37,470
+application that when you start to
+
+318
+00:11:37,470 --> 00:11:40,020
+measure this kind of failure condition
+
+319
+00:11:40,020 --> 00:11:42,120
+you could either throw an alert you
+
+320
+00:11:42,120 --> 00:11:44,070
+could execute some other script you
+
+321
+00:11:44,070 --> 00:11:46,530
+could target an auto scaling piece of
+
+322
+00:11:46,530 --> 00:11:48,330
+logic or something like that you could
+
+323
+00:11:48,330 --> 00:11:50,940
+really start to react or preempt the
+
+324
+00:11:50,940 --> 00:11:54,050
+crash now that's perhaps a little bit
+
+325
+00:11:54,050 --> 00:11:56,880
+maybe it's not realistic in practicality
+
+326
+00:11:56,880 --> 00:11:59,940
+but it is certainly possible and so if
+
+327
+00:11:59,940 --> 00:12:01,110
+you add those hooks in there and you
+
+328
+00:12:01,110 --> 00:12:02,790
+have a little bit of awareness or
+
+329
+00:12:02,790 --> 00:12:04,290
+intelligence in the application you
+
+330
+00:12:04,290 --> 00:12:05,400
+might be able to prevent it from
+
+331
+00:12:05,400 --> 00:12:08,250
+crashing under load so if you look back
+
+332
+00:12:08,250 --> 00:12:11,520
+over under 32 so probably around what's
+
+333
+00:12:11,520 --> 00:12:14,370
+between 16 and 32 is where you start to
+
+334
+00:12:14,370 --> 00:12:16,680
+see B be latency and the response time
+
+335
+00:12:16,680 --> 00:12:17,970
+is climbing up a little bit you know
+
+336
+00:12:17,970 --> 00:12:19,500
+it's been pretty steady up until that
+
+337
+00:12:19,500 --> 00:12:21,720
+point but now you have your minimum
+
+338
+00:12:21,720 --> 00:12:24,810
+response time is starting to creep up so
+
+339
+00:12:24,810 --> 00:12:26,610
+and it never really recovers it never
+
+340
+00:12:26,610 --> 00:12:28,860
+really comes back down and then around
+
+341
+00:12:28,860 --> 00:12:31,380
+64 you start to get these 500 errors
+
+342
+00:12:31,380 --> 00:12:33,630
+whose HTTP errors and then of course
+
+343
+00:12:33,630 --> 00:12:36,420
+just crash and burn at 128 so this is a
+
+344
+00:12:36,420 --> 00:12:38,900
+good way of just looking at visually
+
+345
+00:12:38,900 --> 00:12:41,910
+what happens to an app as it hits load
+
+346
+00:12:41,910 --> 00:12:45,690
+or what happens to a REST API so this is
+
+347
+00:12:45,690 --> 00:12:47,790
+what your friends web logs will look
+
+348
+00:12:47,790 --> 00:12:51,240
+like after you load tested for him so or
+
+349
+00:12:51,240 --> 00:12:54,570
+her when do you actually do this this is
+
+350
+00:12:54,570 --> 00:12:59,100
+certainly contentious but you have beta
+
+351
+00:12:59,100 --> 00:13:01,110
+testing periods that's probably when I
+
+352
+00:13:01,110 --> 00:13:02,790
+would recommend doing it maybe
+
+353
+00:13:02,790 --> 00:13:05,100
+pre-launch you do a heavy duty load test
+
+354
+00:13:05,100 --> 00:13:06,720
+you could even load test your production
+
+355
+00:13:06,720 --> 00:13:08,760
+system we do that sometimes we try to
+
+356
+00:13:08,760 --> 00:13:12,600
+take down our own live website people
+
+357
+00:13:12,600 --> 00:13:14,460
+well my business partners don't really
+
+358
+00:13:14,460 --> 00:13:16,260
+like that but what are you gonna do
+
+359
+00:13:16,260 --> 00:13:18,360
+major product releases right before a
+
+360
+00:13:18,360 --> 00:13:19,860
+product release we'll try to do the same
+
+361
+00:13:19,860 --> 00:13:22,230
+thing maybe on holidays when the the
+
+362
+00:13:22,230 --> 00:13:25,290
+user traffic is down down low you know
+
+363
+00:13:25,290 --> 00:13:27,390
+there's always that one guy who's up
+
+364
+00:13:27,390 --> 00:13:29,400
+until like 9:00 p.m. on Christmas on
+
+365
+00:13:29,400 --> 00:13:31,140
+your app when you're trying to do a load
+
+366
+00:13:31,140 --> 00:13:32,610
+test so you just you know give them a
+
+367
+00:13:32,610 --> 00:13:33,840
+little Christmas present
+
+368
+00:13:33,840 --> 00:13:36,029
+sharing the site with 10,000 virtual
+
+369
+00:13:36,029 --> 00:13:37,920
+users as we load tests or January
+
+370
+00:13:37,920 --> 00:13:40,500
+deployment so that guy you know whatever
+
+371
+00:13:40,500 --> 00:13:42,540
+too bad for him he'll come back they
+
+372
+00:13:42,540 --> 00:13:45,660
+always do so what do you do next in
+
+373
+00:13:45,660 --> 00:13:48,900
+terms of load testing and and where do
+
+374
+00:13:48,900 --> 00:13:50,130
+we go from here
+
+375
+00:13:50,130 --> 00:13:52,589
+well some of the other capabilities of
+
+376
+00:13:52,589 --> 00:13:54,210
+artillery back to the commercial for
+
+377
+00:13:54,210 --> 00:13:56,970
+artillery is you can load in external
+
+378
+00:13:56,970 --> 00:13:58,770
+data so you can have a CSV file which
+
+379
+00:13:58,770 --> 00:14:00,839
+may be a bunch of product IDs
+
+380
+00:14:00,839 --> 00:14:02,850
+maybe you export that from your database
+
+381
+00:14:02,850 --> 00:14:05,520
+and you load it in here you just kind of
+
+382
+00:14:05,520 --> 00:14:08,700
+specify a link to that CSV file and then
+
+383
+00:14:08,700 --> 00:14:10,170
+what it'll do is it'll pull a random
+
+384
+00:14:10,170 --> 00:14:12,600
+number from that file a random lion and
+
+385
+00:14:12,600 --> 00:14:14,730
+pull a random number out of it and then
+
+386
+00:14:14,730 --> 00:14:17,580
+be able to plug that in to the link so
+
+387
+00:14:17,580 --> 00:14:18,990
+if you remembered back a couple slides
+
+388
+00:14:18,990 --> 00:14:21,240
+to where we show that llamó file with
+
+389
+00:14:21,240 --> 00:14:23,460
+the configuration of the test you could
+
+390
+00:14:23,460 --> 00:14:25,770
+just specify you know product ID dot
+
+391
+00:14:25,770 --> 00:14:28,800
+whatever or API slash product slash
+
+392
+00:14:28,800 --> 00:14:30,990
+product ID and then say hey and use this
+
+393
+00:14:30,990 --> 00:14:33,300
+CSV file and then you can have somebody
+
+394
+00:14:33,300 --> 00:14:35,700
+else kind of updating the CSV file or
+
+395
+00:14:35,700 --> 00:14:37,470
+whatever and you've built that load test
+
+396
+00:14:37,470 --> 00:14:38,820
+you can step away you don't have to come
+
+397
+00:14:38,820 --> 00:14:40,650
+back to and it'll always sort of plug in
+
+398
+00:14:40,650 --> 00:14:43,800
+those values from that list and be able
+
+399
+00:14:43,800 --> 00:14:45,300
+to test against actual
+
+400
+00:14:45,300 --> 00:14:48,180
+endpoints with actual values where this
+
+401
+00:14:48,180 --> 00:14:50,580
+comes in handy is when you have a
+
+402
+00:14:50,580 --> 00:14:52,230
+production environment and let's say a
+
+403
+00:14:52,230 --> 00:14:53,640
+dev environment or a staging environment
+
+404
+00:14:53,640 --> 00:14:55,470
+where you have maybe different product
+
+405
+00:14:55,470 --> 00:14:57,870
+IDs so you want to do some testing but
+
+406
+00:14:57,870 --> 00:14:59,790
+you don't want to accidentally hit and
+
+407
+00:14:59,790 --> 00:15:01,830
+test maybe the live server or something
+
+408
+00:15:01,830 --> 00:15:03,270
+like that so you have different Product
+
+409
+00:15:03,270 --> 00:15:06,120
+ID sets anyway replicating user behavior
+
+410
+00:15:06,120 --> 00:15:07,710
+you can look back through web logs or
+
+411
+00:15:07,710 --> 00:15:09,030
+something and start to piece together
+
+412
+00:15:09,030 --> 00:15:11,430
+how somebody traverse through your
+
+413
+00:15:11,430 --> 00:15:13,020
+application and then you can load that
+
+414
+00:15:13,020 --> 00:15:14,880
+into those scenarios and those phases
+
+415
+00:15:14,880 --> 00:15:18,060
+back in that ya mole or JSON file so you
+
+416
+00:15:18,060 --> 00:15:20,190
+can actually simulate what real user
+
+417
+00:15:20,190 --> 00:15:22,680
+activity was or in some way now this
+
+418
+00:15:22,680 --> 00:15:24,030
+probably takes some scripting but you
+
+419
+00:15:24,030 --> 00:15:25,709
+might be able to take a web log as an
+
+420
+00:15:25,709 --> 00:15:28,530
+input and then create a load test out of
+
+421
+00:15:28,530 --> 00:15:30,540
+it so that you're replicating almost
+
+422
+00:15:30,540 --> 00:15:32,550
+like a groundhog day what happened that
+
+423
+00:15:32,550 --> 00:15:34,350
+day and and if it was a day that your
+
+424
+00:15:34,350 --> 00:15:36,209
+thing crashed I mean that it's almost
+
+425
+00:15:36,209 --> 00:15:38,160
+like playing back history again and
+
+426
+00:15:38,160 --> 00:15:39,750
+again and you can watch them and you can
+
+427
+00:15:39,750 --> 00:15:42,060
+make a few adjustments play it back and
+
+428
+00:15:42,060 --> 00:15:44,190
+then really solve it retroactively Lee
+
+429
+00:15:44,190 --> 00:15:47,150
+so kind of exciting in that regard
+
+430
+00:15:47,150 --> 00:15:48,920
+with being able to actually apply this
+
+431
+00:15:48,920 --> 00:15:51,560
+practically to some problem so you can
+
+432
+00:15:51,560 --> 00:15:53,690
+also start to integrate it with with
+
+433
+00:15:53,690 --> 00:15:55,880
+OAuth and with that whole flow so it has
+
+434
+00:15:55,880 --> 00:15:58,640
+the capability of incorporating custom
+
+435
+00:15:58,640 --> 00:16:00,350
+headers and headers generated at runtime
+
+436
+00:16:00,350 --> 00:16:03,170
+etc etc very nice with regard to that so
+
+437
+00:16:03,170 --> 00:16:04,940
+automating it with continuous
+
+438
+00:16:04,940 --> 00:16:07,070
+integration so let's say you do a commit
+
+439
+00:16:07,070 --> 00:16:08,660
+to the repository you could conceivably
+
+440
+00:16:08,660 --> 00:16:10,790
+execute a load test right then and there
+
+441
+00:16:10,790 --> 00:16:12,320
+I'm not sure I recommend doing that
+
+442
+00:16:12,320 --> 00:16:14,540
+because if somebody's committing and
+
+443
+00:16:14,540 --> 00:16:15,920
+they don't really realize what's
+
+444
+00:16:15,920 --> 00:16:17,650
+happening as a result maybe you have a
+
+445
+00:16:17,650 --> 00:16:19,640
+somebody on the team who's a little
+
+446
+00:16:19,640 --> 00:16:21,890
+commit happy one night and just commit
+
+447
+00:16:21,890 --> 00:16:23,810
+after committee met them and of course
+
+448
+00:16:23,810 --> 00:16:25,310
+you're taking down your server every
+
+449
+00:16:25,310 --> 00:16:27,110
+time if you have that crash scenario
+
+450
+00:16:27,110 --> 00:16:29,450
+built in they're monitoring live
+
+451
+00:16:29,450 --> 00:16:30,980
+activities so that's something I kind of
+
+452
+00:16:30,980 --> 00:16:33,410
+mentioned at the beginning is figuring
+
+453
+00:16:33,410 --> 00:16:35,300
+out what is actually happening inside
+
+454
+00:16:35,300 --> 00:16:37,190
+via the application not necessarily
+
+455
+00:16:37,190 --> 00:16:39,530
+what's happening at the load tester so
+
+456
+00:16:39,530 --> 00:16:41,510
+the load tester is simulating a client
+
+457
+00:16:41,510 --> 00:16:43,970
+pretending to be some regular user but
+
+458
+00:16:43,970 --> 00:16:45,440
+then you also have of course the
+
+459
+00:16:45,440 --> 00:16:47,150
+application itself so you almost want to
+
+460
+00:16:47,150 --> 00:16:49,310
+watch on both sides you know it's like
+
+461
+00:16:49,310 --> 00:16:51,710
+being on both sides of a battle and you
+
+462
+00:16:51,710 --> 00:16:54,500
+want to see how it's going down so those
+
+463
+00:16:54,500 --> 00:16:55,610
+are pretty much that's where I would
+
+464
+00:16:55,610 --> 00:16:57,110
+take load testing and that's where I
+
+465
+00:16:57,110 --> 00:16:59,270
+would recommend taking load testing when
+
+466
+00:16:59,270 --> 00:17:01,220
+you want to take it to the next step and
+
+467
+00:17:01,220 --> 00:17:02,480
+of course it gets even more complicated
+
+468
+00:17:02,480 --> 00:17:05,600
+than that but that's pretty much that's
+
+469
+00:17:05,600 --> 00:17:07,970
+load testing in a nutshell and using
+
+470
+00:17:07,970 --> 00:17:11,150
+artillery very easy to get into and very
+
+471
+00:17:11,150 --> 00:17:13,190
+fun to watch as something just comes
+
+472
+00:17:13,190 --> 00:17:15,680
+crashing down that you spent six months
+
+473
+00:17:15,680 --> 00:17:24,130
+building so thank you very much
+
+474
+00:17:24,140 --> 00:17:38,790
+any questions there are a couple answers
+
+475
+00:17:38,790 --> 00:17:41,190
+for that number one is you could do it
+
+476
+00:17:41,190 --> 00:17:43,320
+one day and then there's site crashes
+
+477
+00:17:43,320 --> 00:17:44,730
+them you see you know we really should
+
+478
+00:17:44,730 --> 00:17:46,410
+have load testing so we can see that
+
+479
+00:17:46,410 --> 00:17:49,770
+coming just cover your tracks and delete
+
+480
+00:17:49,770 --> 00:17:51,840
+your log files but no I would say that
+
+481
+00:17:51,840 --> 00:17:54,630
+if there's no way that they can't
+
+482
+00:17:54,630 --> 00:17:57,179
+understand the concept behind it the
+
+483
+00:17:57,179 --> 00:17:59,370
+concept of stress testing I mean it's a
+
+484
+00:17:59,370 --> 00:18:01,230
+fundamental engineering concept there
+
+485
+00:18:01,230 --> 00:18:03,150
+are entire disciplines of physics and
+
+486
+00:18:03,150 --> 00:18:05,610
+engineering built around stress testing
+
+487
+00:18:05,610 --> 00:18:07,559
+and fracture points and all of that and
+
+488
+00:18:07,559 --> 00:18:09,150
+people do it for building bridges so you
+
+489
+00:18:09,150 --> 00:18:11,040
+can make a bunch of silly analogies to
+
+490
+00:18:11,040 --> 00:18:13,230
+them like hey before we build this
+
+491
+00:18:13,230 --> 00:18:15,600
+bridge and install it between us and the
+
+492
+00:18:15,600 --> 00:18:17,760
+customer we should really take a bunch
+
+493
+00:18:17,760 --> 00:18:19,559
+of vehicles over it and see and make
+
+494
+00:18:19,559 --> 00:18:21,510
+sure it doesn't collapse but I would say
+
+495
+00:18:21,510 --> 00:18:22,860
+the number one thing just tell them that
+
+496
+00:18:22,860 --> 00:18:24,900
+there's money you know that if we crash
+
+497
+00:18:24,900 --> 00:18:27,690
+and we lose a bunch of customers or
+
+498
+00:18:27,690 --> 00:18:29,280
+customers are unhappy we lose a bunch of
+
+499
+00:18:29,280 --> 00:18:30,809
+transactions it's gonna cost a lot of
+
+500
+00:18:30,809 --> 00:18:33,330
+money and it's really cheap now if we do
+
+501
+00:18:33,330 --> 00:18:36,090
+it some combination of these anecdotes
+
+502
+00:18:36,090 --> 00:18:39,210
+will perhaps influence somebody but I
+
+503
+00:18:39,210 --> 00:18:41,940
+would probably just do it and then ask
+
+504
+00:18:41,940 --> 00:18:46,020
+for forgiveness afterwards questions
+
+505
+00:18:46,020 --> 00:18:55,530
+yeah
+
+506
+00:18:55,540 --> 00:18:59,550
+[Music]
+
+507
+00:18:59,560 --> 00:19:02,300
+so the question you're asking is if
+
+508
+00:19:02,300 --> 00:19:04,580
+you're sending a request over to your
+
+509
+00:19:04,580 --> 00:19:06,380
+server and the response is a little bit
+
+510
+00:19:06,380 --> 00:19:12,170
+dynamic how does it your gonna be
+
+511
+00:19:12,170 --> 00:19:14,630
+writing some code for that yeah I don't
+
+512
+00:19:14,630 --> 00:19:17,330
+think that that's necessarily one of the
+
+513
+00:19:17,330 --> 00:19:20,030
+primary use cases it's probably more to
+
+514
+00:19:20,030 --> 00:19:22,580
+see how that end point would respond but
+
+515
+00:19:22,580 --> 00:19:24,290
+I see what you're saying I mean in terms
+
+516
+00:19:24,290 --> 00:19:26,900
+of following user behavior if you wanted
+
+517
+00:19:26,900 --> 00:19:29,240
+to make it let's say pick a random item
+
+518
+00:19:29,240 --> 00:19:30,740
+from a list that comes back and then
+
+519
+00:19:30,740 --> 00:19:32,990
+visit that item I believe there's some
+
+520
+00:19:32,990 --> 00:19:35,900
+level of randomization for picking out
+
+521
+00:19:35,900 --> 00:19:38,960
+responses in a JSON responds in a JSON
+
+522
+00:19:38,960 --> 00:19:41,420
+response and using those as variables in
+
+523
+00:19:41,420 --> 00:19:42,140
+the next test
+
+524
+00:19:42,140 --> 00:19:44,480
+it does have some capacity for that but
+
+525
+00:19:44,480 --> 00:19:46,070
+you may end up having to write some code
+
+526
+00:19:46,070 --> 00:19:54,260
+oh the graph oh they actually have it on
+
+527
+00:19:54,260 --> 00:19:54,830
+their website
+
+528
+00:19:54,830 --> 00:19:57,380
+no that's say there's a specific
+
+529
+00:19:57,380 --> 00:19:59,540
+reporting tool that they have that will
+
+530
+00:19:59,540 --> 00:20:03,020
+create those sort of load graphs I can't
+
+531
+00:20:03,020 --> 00:20:04,640
+remember the name of it it's linked from
+
+532
+00:20:04,640 --> 00:20:07,970
+their website so that that's probably
+
+533
+00:20:07,970 --> 00:20:11,630
+there so you've got the JSON output that
+
+534
+00:20:11,630 --> 00:20:13,430
+it that it produces you've got the text
+
+535
+00:20:13,430 --> 00:20:15,380
+output that I showed on the screen what
+
+536
+00:20:15,380 --> 00:20:16,850
+these reporters will do and if you've
+
+537
+00:20:16,850 --> 00:20:19,250
+ever used something like mocha or that's
+
+538
+00:20:19,250 --> 00:20:21,410
+a testing framework that also has these
+
+539
+00:20:21,410 --> 00:20:23,450
+sort of pluggable reporting tools that
+
+540
+00:20:23,450 --> 00:20:26,210
+the normal output is really kind of ugly
+
+541
+00:20:26,210 --> 00:20:28,460
+and texty and console e and when you
+
+542
+00:20:28,460 --> 00:20:30,410
+want to show it in a pretty graph you
+
+543
+00:20:30,410 --> 00:20:32,360
+need some kind of translations so it's
+
+544
+00:20:32,360 --> 00:20:34,850
+just JSON output that you could graph
+
+545
+00:20:34,850 --> 00:20:37,010
+with anything really but they also
+
+546
+00:20:37,010 --> 00:20:38,990
+provide some graphing tools some
+
+547
+00:20:38,990 --> 00:20:41,240
+reporters so it'd be a custom reporter
+
+548
+00:20:41,240 --> 00:20:44,090
+visual graphing reporter and they would
+
+549
+00:20:44,090 --> 00:20:48,390
+have it on their website linked
+
+550
+00:20:48,400 --> 00:20:52,830
+[Music]
+
+551
+00:20:52,830 --> 00:20:55,450
+yeah I mean I would run it on inside of
+
+552
+00:20:55,450 --> 00:20:57,460
+a sandbox to run it on a localhost now
+
+553
+00:20:57,460 --> 00:20:59,050
+the trick with running it on a local
+
+554
+00:20:59,050 --> 00:21:00,340
+host is you're probably gonna want to
+
+555
+00:21:00,340 --> 00:21:03,100
+have two machines or two virtual
+
+556
+00:21:03,100 --> 00:21:05,530
+machines I would say that you don't
+
+557
+00:21:05,530 --> 00:21:07,450
+necessarily want to run the load tester
+
+558
+00:21:07,450 --> 00:21:10,480
+on the same machine as where your actual
+
+559
+00:21:10,480 --> 00:21:12,490
+app is or where your service is the
+
+560
+00:21:12,490 --> 00:21:14,050
+reason being you can actually run out of
+
+561
+00:21:14,050 --> 00:21:15,850
+network handles depending on your
+
+562
+00:21:15,850 --> 00:21:17,320
+operating system you can run out of file
+
+563
+00:21:17,320 --> 00:21:19,840
+handles because you you may only be
+
+564
+00:21:19,840 --> 00:21:21,910
+getting a number that's about half of
+
+565
+00:21:21,910 --> 00:21:23,530
+what your machine is capable because the
+
+566
+00:21:23,530 --> 00:21:25,390
+load tester itself is using quite a
+
+567
+00:21:25,390 --> 00:21:27,640
+number of resources to hit your server
+
+568
+00:21:27,640 --> 00:21:30,610
+so that's what I would say is you you
+
+569
+00:21:30,610 --> 00:21:32,380
+will probably end up wanting to have two
+
+570
+00:21:32,380 --> 00:21:34,660
+machines next to each other or again
+
+571
+00:21:34,660 --> 00:21:36,370
+load testing you know your friends
+
+572
+00:21:36,370 --> 00:21:38,260
+machine I mean having them load test
+
+573
+00:21:38,260 --> 00:21:40,870
+yours something like that but yeah in
+
+574
+00:21:40,870 --> 00:21:42,930
+terms of avoiding production environment
+
+575
+00:21:42,930 --> 00:21:45,150
+make a copy of a production environment
+
+576
+00:21:45,150 --> 00:21:52,680
+do it on there any other questions Oh
+
+577
+00:21:52,690 --> 00:22:05,860
+same person sure yeah let me run back to
+
+578
+00:22:05,860 --> 00:22:06,310
+it real quick
+
+579
+00:22:06,310 --> 00:22:10,440
+[Music]
+
+580
+00:22:10,440 --> 00:22:13,300
+well that's believe that's response time
+
+581
+00:22:13,300 --> 00:22:16,360
+so it is going up I mean it's kind of
+
+582
+00:22:16,360 --> 00:22:18,970
+impressive that it's even responding at
+
+583
+00:22:18,970 --> 00:22:22,270
+that point so I think that are you
+
+584
+00:22:22,270 --> 00:22:25,090
+talking about the blue line okay
+
+585
+00:22:25,090 --> 00:22:26,890
+yeah what's happening is it's not really
+
+586
+00:22:26,890 --> 00:22:28,900
+capable of delivering any more
+
+587
+00:22:28,900 --> 00:22:31,270
+throughput so you have a little spike
+
+588
+00:22:31,270 --> 00:22:33,520
+there around 128 where the server
+
+589
+00:22:33,520 --> 00:22:36,460
+seemingly recovers for a second and it's
+
+590
+00:22:36,460 --> 00:22:38,680
+able to queue up a lot more requests but
+
+591
+00:22:38,680 --> 00:22:40,330
+then that queue of requests overloaded
+
+592
+00:22:40,330 --> 00:22:42,070
+again because it's still kind of
+
+593
+00:22:42,070 --> 00:22:43,690
+crippled so it hasn't fully recovered
+
+594
+00:22:43,690 --> 00:22:46,090
+from the load that it's experienced up
+
+595
+00:22:46,090 --> 00:22:48,670
+to that point so that's why you want to
+
+596
+00:22:48,670 --> 00:22:51,520
+do this continuous load on it that kind
+
+597
+00:22:51,520 --> 00:22:53,740
+of a test because you will see it it
+
+598
+00:22:53,740 --> 00:22:55,720
+could take five minutes of load for
+
+599
+00:22:55,720 --> 00:22:58,090
+something to eventually dip down and
+
+600
+00:22:58,090 --> 00:23:00,040
+crash it may not be very straightforward
+
+601
+00:23:00,040 --> 00:23:02,010
+it may not crash instantly it could take
+
+602
+00:23:02,010 --> 00:23:03,930
+a little bit and that's just a side
+
+603
+00:23:03,930 --> 00:23:06,330
+effect of it could be memory allocation
+
+604
+00:23:06,330 --> 00:23:08,550
+it could be just never able to really
+
+605
+00:23:08,550 --> 00:23:10,590
+catch up and then it just eventually
+
+606
+00:23:10,590 --> 00:23:13,560
+sinks but yeah that would explain that
+
+607
+00:23:13,560 --> 00:23:15,810
+is it it just kind of crashed and then
+
+608
+00:23:15,810 --> 00:23:17,400
+it seemingly recovered and then it's
+
+609
+00:23:17,400 --> 00:23:18,930
+trying to stabilize maybe at a lower
+
+610
+00:23:18,930 --> 00:23:21,240
+point but it'll probably just crash and
+
+611
+00:23:21,240 --> 00:23:23,160
+come up again for a second in the crash
+
+612
+00:23:23,160 --> 00:23:33,160
+again okay
+
+613
+00:23:33,170 --> 00:23:35,060
+[Music]
+
+614
+00:23:35,060 --> 00:23:37,620
+DDoS attack is probably going to come
+
+615
+00:23:37,620 --> 00:23:39,060
+from a lot of different machines and
+
+616
+00:23:39,060 --> 00:23:41,670
+it'll probably have a lot of different
+
+617
+00:23:41,670 --> 00:23:45,510
+kinds of attack patterns so I would say
+
+618
+00:23:45,510 --> 00:23:47,370
+in structuring a load test or
+
+619
+00:23:47,370 --> 00:23:48,510
+understanding the difference between
+
+620
+00:23:48,510 --> 00:23:51,540
+them a load test will look like a load
+
+621
+00:23:51,540 --> 00:23:54,360
+test unless you try really really hard
+
+622
+00:23:54,360 --> 00:23:56,370
+to make it look like a DDoS attack and
+
+623
+00:23:56,370 --> 00:23:57,450
+to make it look like a DDoS attack
+
+624
+00:23:57,450 --> 00:23:58,650
+you're gonna have to use a lot of
+
+625
+00:23:58,650 --> 00:23:59,970
+different machines probably from a lot
+
+626
+00:23:59,970 --> 00:24:03,030
+of different places in the world so now
+
+627
+00:24:03,030 --> 00:24:04,020
+you start getting into network
+
+628
+00:24:04,020 --> 00:24:05,550
+configuration to where that's going to
+
+629
+00:24:05,550 --> 00:24:07,050
+be a big variable I would say that this
+
+630
+00:24:07,050 --> 00:24:09,420
+load testing that well we would use it
+
+631
+00:24:09,420 --> 00:24:11,820
+primarily for is testing a service in an
+
+632
+00:24:11,820 --> 00:24:13,560
+isolated environment testing it in a
+
+633
+00:24:13,560 --> 00:24:15,150
+sandbox what we're testing is not a
+
+634
+00:24:15,150 --> 00:24:17,460
+network configuration we're testing the
+
+635
+00:24:17,460 --> 00:24:20,220
+server response code the API the REST
+
+636
+00:24:20,220 --> 00:24:22,230
+API whatever it may be we're testing how
+
+637
+00:24:22,230 --> 00:24:25,170
+that handles load not necessarily attack
+
+638
+00:24:25,170 --> 00:24:27,720
+patterns of DDoS that is a kind of a
+
+639
+00:24:27,720 --> 00:24:30,180
+separate topic I would say more more
+
+640
+00:24:30,180 --> 00:24:32,250
+towards security or a network
+
+641
+00:24:32,250 --> 00:24:34,410
+infrastructure less about code
+
+642
+00:24:34,410 --> 00:24:36,240
+optimization you can always optimize
+
+643
+00:24:36,240 --> 00:24:39,030
+your code to avoid that what I would say
+
+644
+00:24:39,030 --> 00:24:40,760
+is one of the things you do with the
+
+645
+00:24:40,760 --> 00:24:42,750
+preventing DDoS attacks is you'd
+
+646
+00:24:42,750 --> 00:24:44,370
+probably start to look at patterns of
+
+647
+00:24:44,370 --> 00:24:47,010
+traffic and start to throttle down the
+
+648
+00:24:47,010 --> 00:24:48,390
+network side of it prevent those
+
+649
+00:24:48,390 --> 00:24:50,430
+requests from ever getting to the server
+
+650
+00:24:50,430 --> 00:24:52,920
+and this would be more for well what
+
+651
+00:24:52,920 --> 00:24:54,780
+happens to the requests that actually do
+
+652
+00:24:54,780 --> 00:25:01,270
+get through what is that failure point
+
+653
+00:25:01,280 --> 00:25:07,289
+[Music]
+
+654
+00:25:07,289 --> 00:25:09,580
+no we have we haven't been doing that
+
+655
+00:25:09,580 --> 00:25:12,159
+that's the next step really so once we
+
+656
+00:25:12,159 --> 00:25:13,690
+figured this out and we get our app
+
+657
+00:25:13,690 --> 00:25:15,999
+seemingly working then we put it on you
+
+658
+00:25:15,999 --> 00:25:17,499
+know production hardware and then all of
+
+659
+00:25:17,499 --> 00:25:19,720
+a sudden you know we realized that oh
+
+660
+00:25:19,720 --> 00:25:21,580
+well now we have to deal with Network
+
+661
+00:25:21,580 --> 00:25:23,619
+optimization so yeah that's the next
+
+662
+00:25:23,619 --> 00:25:26,590
+step that would be part two is now that
+
+663
+00:25:26,590 --> 00:25:27,850
+you've done this and you think you're
+
+664
+00:25:27,850 --> 00:25:41,019
+done you're actually not done we've
+
+665
+00:25:41,019 --> 00:25:42,460
+tried a bunch of those different tools
+
+666
+00:25:42,460 --> 00:25:44,679
+and they all have their pros and cons we
+
+667
+00:25:44,679 --> 00:25:46,830
+ended up doing something that was
+
+668
+00:25:46,830 --> 00:25:49,659
+effectively reporting through WebSockets
+
+669
+00:25:49,659 --> 00:25:52,210
+to a central ops dashboard that does the
+
+670
+00:25:52,210 --> 00:25:54,759
+reporting built in at bat so it's not
+
+671
+00:25:54,759 --> 00:25:56,440
+necessarily the most conventional it may
+
+672
+00:25:56,440 --> 00:25:58,299
+not even be the best way to do it by any
+
+673
+00:25:58,299 --> 00:26:01,389
+capacity but we effectively have a live
+
+674
+00:26:01,389 --> 00:26:03,850
+connection between our servers and kind
+
+675
+00:26:03,850 --> 00:26:06,309
+of behind the scenes ops server and once
+
+676
+00:26:06,309 --> 00:26:08,889
+that connection is fuzzy we don't really
+
+677
+00:26:08,889 --> 00:26:10,809
+care what happens to the machine at that
+
+678
+00:26:10,809 --> 00:26:12,999
+point if it can't report its logs then
+
+679
+00:26:12,999 --> 00:26:14,919
+it's going down and we kind of reroute
+
+680
+00:26:14,919 --> 00:26:19,060
+traffic around it anyway so
+
+681
+00:26:19,060 --> 00:26:26,850
+[Music]
+
+682
+00:26:26,860 --> 00:26:37,080
+you
+

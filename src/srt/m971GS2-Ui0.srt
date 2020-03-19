@@ -1,0 +1,3201 @@
+1
+00:00:00,000 --> 00:00:01,740
+
+um today we're going to be talking about
+
+2
+00:00:01,740 --> 00:00:04,170
+a project I've been working on for about
+
+3
+00:00:04,170 --> 00:00:07,919
+six months in my free time it's been an
+
+4
+00:00:07,919 --> 00:00:09,360
+especially difficult project for me
+
+5
+00:00:09,360 --> 00:00:11,130
+because I don't have a computer science
+
+6
+00:00:11,130 --> 00:00:13,889
+background and it's kind of important
+
+7
+00:00:13,889 --> 00:00:16,859
+for this project because the goal is to
+
+8
+00:00:16,859 --> 00:00:20,840
+make updating filtered lists logarithmic
+
+9
+00:00:20,840 --> 00:00:23,910
+which could have the potential to
+
+10
+00:00:23,910 --> 00:00:25,619
+significantly speed up your applications
+
+11
+00:00:25,619 --> 00:00:27,420
+depending on how often you're filtering
+
+12
+00:00:27,420 --> 00:00:32,460
+lists right this is to do MBC I'm sure
+
+13
+00:00:32,460 --> 00:00:36,660
+lunch you recognize it so you know it's
+
+14
+00:00:36,660 --> 00:00:38,390
+the simplest app you could possibly
+
+15
+00:00:38,390 --> 00:00:42,930
+build right so we claim we're going to
+
+16
+00:00:42,930 --> 00:00:45,059
+make this app well not this app but
+
+17
+00:00:45,059 --> 00:00:47,219
+we're going to make the most commonly
+
+18
+00:00:47,219 --> 00:00:49,739
+used utility in this app and the most
+
+19
+00:00:49,739 --> 00:00:51,629
+commonly implemented feature across a
+
+20
+00:00:51,629 --> 00:00:54,329
+wide range of apps something that's so
+
+21
+00:00:54,329 --> 00:00:57,469
+common it's even in the to do MVC app
+
+22
+00:00:57,469 --> 00:00:59,760
+we're going to make it go from scaling
+
+23
+00:00:59,760 --> 00:01:04,140
+like this which is linear to something
+
+24
+00:01:04,140 --> 00:01:06,689
+like this which is logarithmic it's very
+
+25
+00:01:06,689 --> 00:01:09,689
+exciting stuff so here's how we're going
+
+26
+00:01:09,689 --> 00:01:12,650
+to do it first we're going to examine a
+
+27
+00:01:12,650 --> 00:01:16,080
+eight naive filter by feature
+
+28
+00:01:16,080 --> 00:01:18,150
+implementation we're just going to do it
+
+29
+00:01:18,150 --> 00:01:19,560
+as stupidly as we can we're not going to
+
+30
+00:01:19,560 --> 00:01:22,020
+rely on any tools we're not even write a
+
+31
+00:01:22,020 --> 00:01:24,210
+code but we're just going to do it and
+
+32
+00:01:24,210 --> 00:01:26,520
+it like as if we were just writing in
+
+33
+00:01:26,520 --> 00:01:28,340
+jquery and we didn't know any better
+
+34
+00:01:28,340 --> 00:01:31,079
+we're going to improve the performance
+
+35
+00:01:31,079 --> 00:01:33,990
+of this implementation using a small
+
+36
+00:01:33,990 --> 00:01:36,119
+diffing algorithm and then we're going
+
+37
+00:01:36,119 --> 00:01:37,439
+to kind of try and gauge how that's
+
+38
+00:01:37,439 --> 00:01:40,860
+going to scale over you know time and
+
+39
+00:01:40,860 --> 00:01:43,229
+then we're also going to take a tour of
+
+40
+00:01:43,229 --> 00:01:46,409
+our logarithmic filter algorithm that
+
+41
+00:01:46,409 --> 00:01:49,079
+I've been working on for six months at
+
+42
+00:01:49,079 --> 00:01:50,700
+the very end hopefully we'll have time
+
+43
+00:01:50,700 --> 00:01:54,119
+to actually demo our implementation so
+
+44
+00:01:54,119 --> 00:01:57,540
+that's cool let's get started so in
+
+45
+00:01:57,540 --> 00:02:02,399
+order to help visualize how the arrays
+
+46
+00:02:02,399 --> 00:02:05,880
+are being filtered and how memory is
+
+47
+00:02:05,880 --> 00:02:08,099
+being moved around and whatnot came up
+
+48
+00:02:08,099 --> 00:02:10,080
+with this kind of like template the goal
+
+49
+00:02:10,080 --> 00:02:13,610
+of the template is to kind of give us a
+
+50
+00:02:13,610 --> 00:02:17,400
+an understanding of where we're spending
+
+51
+00:02:17,400 --> 00:02:22,110
+the most time and how how it's changing
+
+52
+00:02:22,110 --> 00:02:24,660
+as we go from the original update of a
+
+53
+00:02:24,660 --> 00:02:26,700
+filtered list to the update of our Dom
+
+54
+00:02:26,700 --> 00:02:29,760
+so on the left here see we have this
+
+55
+00:02:29,760 --> 00:02:32,570
+kind of like objects land section
+
+56
+00:02:32,570 --> 00:02:35,459
+operations that occur here cost one unit
+
+57
+00:02:35,459 --> 00:02:38,790
+of time on the right you'll see there
+
+58
+00:02:38,790 --> 00:02:41,190
+Dom land operations that occur there
+
+59
+00:02:41,190 --> 00:02:43,770
+cost 10 units of time it's mostly
+
+60
+00:02:43,770 --> 00:02:45,330
+arbitrary it's just chosen for the sake
+
+61
+00:02:45,330 --> 00:02:49,110
+of argument inside of object land you'll
+
+62
+00:02:49,110 --> 00:02:52,410
+notice we have kind of two columns there
+
+63
+00:02:52,410 --> 00:02:55,350
+one of them is our to-do list this would
+
+64
+00:02:55,350 --> 00:02:57,209
+be like you're just raw list of all of
+
+65
+00:02:57,209 --> 00:02:59,630
+the to do's and that map like to do MVC
+
+66
+00:02:59,630 --> 00:03:02,430
+this is the unfiltered list of to do's
+
+67
+00:03:02,430 --> 00:03:04,590
+and then the second column being
+
+68
+00:03:04,590 --> 00:03:06,810
+completed this is our filtered list of
+
+69
+00:03:06,810 --> 00:03:09,930
+completed to juice so only to do is ever
+
+70
+00:03:09,930 --> 00:03:11,400
+completed we'll wind up the missus and
+
+71
+00:03:11,400 --> 00:03:15,300
+finally on the far right in dom land
+
+72
+00:03:15,300 --> 00:03:17,040
+there's a node list and this is what
+
+73
+00:03:17,040 --> 00:03:20,299
+would be in the browser representing the
+
+74
+00:03:20,299 --> 00:03:25,140
+the completed version of the to-do list
+
+75
+00:03:25,140 --> 00:03:29,250
+right yes cool most importantly in the
+
+76
+00:03:29,250 --> 00:03:30,570
+bottom right you'll notice there's this
+
+77
+00:03:30,570 --> 00:03:33,860
+little cost counter so as we start to
+
+78
+00:03:33,860 --> 00:03:36,269
+conduct operations on these lists and
+
+79
+00:03:36,269 --> 00:03:38,010
+this Dom we're going to kind of keep
+
+80
+00:03:38,010 --> 00:03:39,959
+track of what it's costing us in order
+
+81
+00:03:39,959 --> 00:03:45,260
+to do so cool so um let's get started oh
+
+82
+00:03:45,260 --> 00:03:48,060
+also one quick note what we're going to
+
+83
+00:03:48,060 --> 00:03:51,060
+start from this point right we're going
+
+84
+00:03:51,060 --> 00:03:52,980
+to start with an existing list of to
+
+85
+00:03:52,980 --> 00:03:54,269
+do's we're assuming we already have it
+
+86
+00:03:54,269 --> 00:03:55,320
+like a member you don't have to go do
+
+87
+00:03:55,320 --> 00:03:58,440
+some async requests and build it and
+
+88
+00:03:58,440 --> 00:04:00,540
+then we're also going to start with its
+
+89
+00:04:00,540 --> 00:04:02,310
+filter counterpart the completed list
+
+90
+00:04:02,310 --> 00:04:04,560
+right so we already know that these two
+
+91
+00:04:04,560 --> 00:04:06,000
+items are will be filtered out of the
+
+92
+00:04:06,000 --> 00:04:08,549
+main to do this list and then we're also
+
+93
+00:04:08,549 --> 00:04:09,870
+going to start with our rendered Dom
+
+94
+00:04:09,870 --> 00:04:11,280
+elements already the reason we're doing
+
+95
+00:04:11,280 --> 00:04:13,739
+it like this is because everything that
+
+96
+00:04:13,739 --> 00:04:16,049
+happened before this can't be optimized
+
+97
+00:04:16,049 --> 00:04:19,680
+it just is what it is and I just hope
+
+98
+00:04:19,680 --> 00:04:24,850
+that you all trust me on that
+
+99
+00:04:24,860 --> 00:04:28,440
+let's see so we're going to update this
+
+100
+00:04:28,440 --> 00:04:31,500
+list on the left to do's by adding the
+
+101
+00:04:31,500 --> 00:04:33,870
+new item to it called run so now we have
+
+102
+00:04:33,870 --> 00:04:37,980
+hop skip and jump and run escape is the
+
+103
+00:04:37,980 --> 00:04:42,270
+only one that's not completed by adding
+
+104
+00:04:42,270 --> 00:04:44,760
+this run element or item to the to-do
+
+105
+00:04:44,760 --> 00:04:47,280
+list we really have to refill tur
+
+106
+00:04:47,280 --> 00:04:51,330
+completed right so what will first have
+
+107
+00:04:51,330 --> 00:04:53,250
+to do is ask are all the elements in
+
+108
+00:04:53,250 --> 00:04:56,610
+completed and then afterwards we can
+
+109
+00:04:56,610 --> 00:04:59,370
+start filtering through the unfiltered
+
+110
+00:04:59,370 --> 00:05:01,170
+to-do list so look something like this
+
+111
+00:05:01,170 --> 00:05:04,230
+first we'll hip hop hop is completed so
+
+112
+00:05:04,230 --> 00:05:05,780
+we'll copy it over to the completed list
+
+113
+00:05:05,780 --> 00:05:08,580
+skip is not completed so it will not be
+
+114
+00:05:08,580 --> 00:05:13,470
+copied over jump is run is notice the
+
+115
+00:05:13,470 --> 00:05:15,540
+cost is going up every time we have that
+
+116
+00:05:15,540 --> 00:05:17,400
+little red circle touch one of these
+
+117
+00:05:17,400 --> 00:05:21,900
+elements in the list so now we have our
+
+118
+00:05:21,900 --> 00:05:24,540
+completed two dues list everything's
+
+119
+00:05:24,540 --> 00:05:26,250
+been filtered and this is you know we're
+
+120
+00:05:26,250 --> 00:05:27,930
+halfway there to getting what we wanted
+
+121
+00:05:27,930 --> 00:05:30,390
+you just got to get it into the Dom but
+
+122
+00:05:30,390 --> 00:05:31,680
+we already have a couple items in the
+
+123
+00:05:31,680 --> 00:05:35,690
+Dom so we're gonna have to empty it and
+
+124
+00:05:35,690 --> 00:05:37,830
+that's kind of expensive we just notice
+
+125
+00:05:37,830 --> 00:05:39,150
+on the bottom right there we like
+
+126
+00:05:39,150 --> 00:05:41,070
+increased 20 units because there's two
+
+127
+00:05:41,070 --> 00:05:42,840
+items in there we remove those two items
+
+128
+00:05:42,840 --> 00:05:46,410
+it's 10 units per operations or up to 20
+
+129
+00:05:46,410 --> 00:05:47,850
+units just for that one little thing
+
+130
+00:05:47,850 --> 00:05:50,040
+it's kind of expensive but hey we're
+
+131
+00:05:50,040 --> 00:05:52,110
+just you know building a filtered list
+
+132
+00:05:52,110 --> 00:05:53,130
+we don't really care about performance
+
+133
+00:05:53,130 --> 00:05:56,790
+right now so now we can start rebuilding
+
+134
+00:05:56,790 --> 00:05:59,610
+that Dom list so represents the
+
+135
+00:05:59,610 --> 00:06:01,500
+completed list so we'll start iterating
+
+136
+00:06:01,500 --> 00:06:05,490
+that and then as we do we'll add those
+
+137
+00:06:05,490 --> 00:06:11,760
+elements to the node list all together
+
+138
+00:06:11,760 --> 00:06:14,730
+over the course of this entire updating
+
+139
+00:06:14,730 --> 00:06:16,830
+of the filtered list I'm sorry of the
+
+140
+00:06:16,830 --> 00:06:19,410
+to-do list and rendering the filtered
+
+141
+00:06:19,410 --> 00:06:23,610
+variation we somehow got up to 55 units
+
+142
+00:06:23,610 --> 00:06:26,430
+of cost so this is our baseline all we
+
+143
+00:06:26,430 --> 00:06:27,720
+have to do is really improve upon that
+
+144
+00:06:27,720 --> 00:06:30,300
+and I notice some wasteful stuff while
+
+145
+00:06:30,300 --> 00:06:32,190
+we are doing that I think we can
+
+146
+00:06:32,190 --> 00:06:34,250
+probably pretty easily drop it down some
+
+147
+00:06:34,250 --> 00:06:37,889
+so the first thing that I noticed
+
+148
+00:06:37,889 --> 00:06:39,090
+that when we were refill Turing the
+
+149
+00:06:39,090 --> 00:06:42,599
+completed list after the to do's like
+
+150
+00:06:42,599 --> 00:06:45,180
+the run to do was added we unnecessarily
+
+151
+00:06:45,180 --> 00:06:49,550
+removed these two items hop and jump
+
+152
+00:06:49,550 --> 00:06:51,360
+because we were kind of starting over
+
+153
+00:06:51,360 --> 00:06:54,060
+from scratch right and that was really
+
+154
+00:06:54,060 --> 00:06:56,520
+necessary because we had to go back to
+
+155
+00:06:56,520 --> 00:06:58,919
+the original to-do list and reevaluate
+
+156
+00:06:58,919 --> 00:07:00,599
+each of those and then put them right
+
+157
+00:07:00,599 --> 00:07:02,370
+back where they were so there was no
+
+158
+00:07:02,370 --> 00:07:05,389
+real change from the time that they were
+
+159
+00:07:05,389 --> 00:07:08,999
+first there when we started updating the
+
+160
+00:07:08,999 --> 00:07:12,150
+filth the to-do list and after we've
+
+161
+00:07:12,150 --> 00:07:14,099
+updated the to-do list so really all
+
+162
+00:07:14,099 --> 00:07:16,020
+that changed in the end was that we're
+
+163
+00:07:16,020 --> 00:07:18,590
+going to add a run element to the end of
+
+164
+00:07:18,590 --> 00:07:21,419
+the completed list but in doing that it
+
+165
+00:07:21,419 --> 00:07:24,330
+costs us three units which you know
+
+166
+00:07:24,330 --> 00:07:27,360
+maybe not too bad but yeah it's
+
+167
+00:07:27,360 --> 00:07:29,849
+something the next thing we noticed is
+
+168
+00:07:29,849 --> 00:07:33,270
+that when we were rebuilding the node
+
+169
+00:07:33,270 --> 00:07:35,370
+list and we're updating the node list to
+
+170
+00:07:35,370 --> 00:07:39,029
+represent our new completed list we had
+
+171
+00:07:39,029 --> 00:07:41,909
+to like I said invest 20 units just to
+
+172
+00:07:41,909 --> 00:07:44,849
+empty the thing out and start over that
+
+173
+00:07:44,849 --> 00:07:46,289
+was really expensive but then also
+
+174
+00:07:46,289 --> 00:07:48,629
+putting the items back in was really
+
+175
+00:07:48,629 --> 00:07:52,469
+expensive 20 units per and again these
+
+176
+00:07:52,469 --> 00:07:55,649
+elements didn't change we took them out
+
+177
+00:07:55,649 --> 00:07:57,000
+we put them back in and they're exactly
+
+178
+00:07:57,000 --> 00:07:58,740
+the same after so it was kind of like
+
+179
+00:07:58,740 --> 00:08:01,669
+unnecessary if we had touch them at all
+
+180
+00:08:01,669 --> 00:08:04,770
+everything would have just been fine but
+
+181
+00:08:04,770 --> 00:08:07,830
+we did and so it costs us if you were to
+
+182
+00:08:07,830 --> 00:08:10,649
+kind of break down what we thought was
+
+183
+00:08:10,649 --> 00:08:12,689
+necessary and not necessary what you'll
+
+184
+00:08:12,689 --> 00:08:14,669
+find is that 12 of the units were
+
+185
+00:08:14,669 --> 00:08:17,279
+absolutely necessary and 43 of those
+
+186
+00:08:17,279 --> 00:08:19,169
+units we just invested were completely
+
+187
+00:08:19,169 --> 00:08:21,599
+unnecessary that's very very very
+
+188
+00:08:21,599 --> 00:08:27,210
+inefficient so we we know of a way to
+
+189
+00:08:27,210 --> 00:08:29,149
+improve upon this right we've seen
+
+190
+00:08:29,149 --> 00:08:31,770
+diffing algorithms and to speed things
+
+191
+00:08:31,770 --> 00:08:34,919
+up by by moving some of the computation
+
+192
+00:08:34,919 --> 00:08:37,919
+over into object land instead right this
+
+193
+00:08:37,919 --> 00:08:39,120
+is the kind of thing we want we just
+
+194
+00:08:39,120 --> 00:08:40,680
+want to know what changed and then once
+
+195
+00:08:40,680 --> 00:08:42,479
+we know what changed then we can just
+
+196
+00:08:42,479 --> 00:08:44,159
+update the dumb as efficiently as
+
+197
+00:08:44,159 --> 00:08:47,699
+possible so let's give it a run right so
+
+198
+00:08:47,699 --> 00:08:48,569
+we're going to go back to the beginning
+
+199
+00:08:48,569 --> 00:08:50,279
+we're going to update the to-do list
+
+200
+00:08:50,279 --> 00:08:51,270
+right
+
+201
+00:08:51,270 --> 00:08:55,020
+add that run item in doing that we're
+
+202
+00:08:55,020 --> 00:08:57,390
+going to filter the to do's all right we
+
+203
+00:08:57,390 --> 00:08:59,670
+got to update that filtered list but
+
+204
+00:08:59,670 --> 00:09:01,530
+this time instead of just like dumping
+
+205
+00:09:01,530 --> 00:09:03,210
+the completed list and starting from
+
+206
+00:09:03,210 --> 00:09:04,290
+scratch we're going to save a reference
+
+207
+00:09:04,290 --> 00:09:06,180
+to the completed list or i call it
+
+208
+00:09:06,180 --> 00:09:08,070
+previous completed i ran out of space
+
+209
+00:09:08,070 --> 00:09:11,160
+there then we could kind of discard the
+
+210
+00:09:11,160 --> 00:09:13,920
+completed list and start rebuilding or
+
+211
+00:09:13,920 --> 00:09:16,560
+refill turing from the to-do list all
+
+212
+00:09:16,560 --> 00:09:18,210
+right so we'll hit hop again hop is
+
+213
+00:09:18,210 --> 00:09:22,880
+included skip is not jump is run is
+
+214
+00:09:22,880 --> 00:09:25,560
+excellent so now we have our new
+
+215
+00:09:25,560 --> 00:09:27,660
+completed list we have a reference or
+
+216
+00:09:27,660 --> 00:09:30,660
+old completed list now we can actually
+
+217
+00:09:30,660 --> 00:09:34,110
+start doing some dipping and hopefully
+
+218
+00:09:34,110 --> 00:09:38,820
+update the Dom much faster or in total
+
+219
+00:09:38,820 --> 00:09:41,310
+spend less units accomplishing the same
+
+220
+00:09:41,310 --> 00:09:43,230
+test right so that's let's begin with
+
+221
+00:09:43,230 --> 00:09:45,720
+the diff really simple we're just going
+
+222
+00:09:45,720 --> 00:09:48,120
+to traverse the lists together
+
+223
+00:09:48,120 --> 00:09:50,820
+simultaneously we're going to visit each
+
+224
+00:09:50,820 --> 00:09:53,100
+of the note of the items so first we're
+
+225
+00:09:53,100 --> 00:09:54,390
+going to visit the first I've been
+
+226
+00:09:54,390 --> 00:09:55,650
+completed in the first item in the
+
+227
+00:09:55,650 --> 00:09:56,610
+previous completed and we're going to
+
+228
+00:09:56,610 --> 00:09:57,840
+compare them see if they're the same
+
+229
+00:09:57,840 --> 00:10:00,390
+they're the same cool we can keep on
+
+230
+00:10:00,390 --> 00:10:02,930
+going jump and jump again the same
+
+231
+00:10:02,930 --> 00:10:06,120
+nothing needs to be done here this where
+
+232
+00:10:06,120 --> 00:10:08,400
+we get to run run is new and in their
+
+233
+00:10:08,400 --> 00:10:10,020
+previous completed list we did not have
+
+234
+00:10:10,020 --> 00:10:12,570
+that so this is you know a change that
+
+235
+00:10:12,570 --> 00:10:15,000
+we have to actually apply so we're going
+
+236
+00:10:15,000 --> 00:10:18,060
+to patch the Dom the node list with this
+
+237
+00:10:18,060 --> 00:10:21,360
+change so just to get there we were up
+
+238
+00:10:21,360 --> 00:10:23,640
+like eight units not bad but we haven't
+
+239
+00:10:23,640 --> 00:10:24,900
+done anything in dom land so we're doing
+
+240
+00:10:24,900 --> 00:10:27,390
+pretty good let's update the dom with
+
+241
+00:10:27,390 --> 00:10:29,910
+the new item the run item which the diff
+
+242
+00:10:29,910 --> 00:10:32,820
+informed us we need to move over 10
+
+243
+00:10:32,820 --> 00:10:34,200
+units we knew we're gonna have to do
+
+244
+00:10:34,200 --> 00:10:36,630
+that no big deal and here we are we've
+
+245
+00:10:36,630 --> 00:10:39,450
+accomplished the same thing and we're at
+
+246
+00:10:39,450 --> 00:10:42,870
+18 units which is a huge improvement
+
+247
+00:10:42,870 --> 00:10:45,690
+over what we previously did we could see
+
+248
+00:10:45,690 --> 00:10:50,040
+here now what we see is that we only had
+
+249
+00:10:50,040 --> 00:10:52,830
+about six units of wasted effort right
+
+250
+00:10:52,830 --> 00:10:55,170
+because 12 was what we absolutely needed
+
+251
+00:10:55,170 --> 00:10:59,160
+to move the to update the to-do list and
+
+252
+00:10:59,160 --> 00:11:01,890
+then to move that node into a filtered
+
+253
+00:11:01,890 --> 00:11:05,430
+list and then to move that filtered item
+
+254
+00:11:05,430 --> 00:11:09,980
+into our Dom nodes are yes our noblest
+
+255
+00:11:09,980 --> 00:11:12,810
+so the question though is did our
+
+256
+00:11:12,810 --> 00:11:14,400
+solution that we just implements scale
+
+257
+00:11:14,400 --> 00:11:17,430
+right can we can we rely on this being
+
+258
+00:11:17,430 --> 00:11:20,070
+like ultra fast and performance even
+
+259
+00:11:20,070 --> 00:11:22,440
+when were you know doing hundreds of
+
+260
+00:11:22,440 --> 00:11:23,640
+thousands of items if that were the case
+
+261
+00:11:23,640 --> 00:11:25,380
+of our browsers couldn't handle that
+
+262
+00:11:25,380 --> 00:11:27,090
+kind of stuff so we're going to scale
+
+263
+00:11:27,090 --> 00:11:30,870
+the example up entirely instead of three
+
+264
+00:11:30,870 --> 00:11:33,240
+initial items will have 30 initial items
+
+265
+00:11:33,240 --> 00:11:35,370
+and instead of one of those items not
+
+266
+00:11:35,370 --> 00:11:37,050
+being complete there will be 10 of those
+
+267
+00:11:37,050 --> 00:11:38,940
+items that aren't complete similarly
+
+268
+00:11:38,940 --> 00:11:40,470
+instead of doing one update we're going
+
+269
+00:11:40,470 --> 00:11:44,460
+to do ten updates right so if we go
+
+270
+00:11:44,460 --> 00:11:46,650
+through this and I don't diagram it all
+
+271
+00:11:46,650 --> 00:11:49,170
+out for you I just do some little math
+
+272
+00:11:49,170 --> 00:11:52,320
+on a notepad here and we come to this
+
+273
+00:11:52,320 --> 00:11:55,200
+conclusion find out that if we were
+
+274
+00:11:55,200 --> 00:11:59,670
+doing that many items we are wasting 600
+
+275
+00:11:59,670 --> 00:12:02,370
+units of work not really accomplishing
+
+276
+00:12:02,370 --> 00:12:03,870
+anything the only really important
+
+277
+00:12:03,870 --> 00:12:06,780
+things that actually mattered that word
+
+278
+00:12:06,780 --> 00:12:08,940
+that like could not go without were
+
+279
+00:12:08,940 --> 00:12:11,760
+these 120 operations so it's like super
+
+280
+00:12:11,760 --> 00:12:14,550
+inefficient and there's room for
+
+281
+00:12:14,550 --> 00:12:16,710
+improvement there right so we can keep
+
+282
+00:12:16,710 --> 00:12:20,730
+on going ideally we would do something
+
+283
+00:12:20,730 --> 00:12:23,700
+else let's take a look at what I ideal
+
+284
+00:12:23,700 --> 00:12:25,830
+approach would look like so now we're
+
+285
+00:12:25,830 --> 00:12:26,850
+going to go through this whole process
+
+286
+00:12:26,850 --> 00:12:29,490
+again we're going to implode the run
+
+287
+00:12:29,490 --> 00:12:33,870
+item to the dues list something is going
+
+288
+00:12:33,870 --> 00:12:35,880
+to happen we don't know what but it's
+
+289
+00:12:35,880 --> 00:12:37,410
+going to be probably more efficient we
+
+290
+00:12:37,410 --> 00:12:38,900
+want it to be more efficient anyway and
+
+291
+00:12:38,900 --> 00:12:41,610
+we're somehow going to get be able to
+
+292
+00:12:41,610 --> 00:12:43,140
+tell that hey we should move this one
+
+293
+00:12:43,140 --> 00:12:45,960
+item in to-do list or into the completed
+
+294
+00:12:45,960 --> 00:12:47,940
+list cool and that would only cost us
+
+295
+00:12:47,940 --> 00:12:49,410
+one unit that would be great if we can
+
+296
+00:12:49,410 --> 00:12:52,290
+figure that out really quickly then we
+
+297
+00:12:52,290 --> 00:12:53,880
+want to do it again basically right we
+
+298
+00:12:53,880 --> 00:12:55,530
+want to in some way shape or form figure
+
+299
+00:12:55,530 --> 00:12:58,410
+out how we can update the node list and
+
+300
+00:12:58,410 --> 00:13:00,720
+Dom land without a whole lot of overhead
+
+301
+00:13:00,720 --> 00:13:04,920
+and and get our fantastic result and
+
+302
+00:13:04,920 --> 00:13:06,810
+that would only cost of 12 units like we
+
+303
+00:13:06,810 --> 00:13:07,980
+can't really make it any faster than
+
+304
+00:13:07,980 --> 00:13:10,230
+that right we just copied the exact item
+
+305
+00:13:10,230 --> 00:13:14,310
+over but it's not really like that
+
+306
+00:13:14,310 --> 00:13:16,710
+simple right we can't just copy that one
+
+307
+00:13:16,710 --> 00:13:17,610
+item over and
+
+308
+00:13:17,610 --> 00:13:20,730
+say it was that easy because it's really
+
+309
+00:13:20,730 --> 00:13:24,899
+not trivial the run item was added to
+
+310
+00:13:24,899 --> 00:13:27,990
+the to do list here but we don't really
+
+311
+00:13:27,990 --> 00:13:29,700
+know at what index we should put it in
+
+312
+00:13:29,700 --> 00:13:31,589
+the completed list you know we can do
+
+313
+00:13:31,589 --> 00:13:33,180
+some work to figure it out but then
+
+314
+00:13:33,180 --> 00:13:35,160
+again we're just doing more work right
+
+315
+00:13:35,160 --> 00:13:37,200
+like there's not we're not gaining
+
+316
+00:13:37,200 --> 00:13:38,459
+anything we're just changing the style
+
+317
+00:13:38,459 --> 00:13:40,860
+of work maybe instead of refill turing
+
+318
+00:13:40,860 --> 00:13:43,110
+the list we're just going to iterate and
+
+319
+00:13:43,110 --> 00:13:44,670
+search through the completed list and
+
+320
+00:13:44,670 --> 00:13:46,320
+find an insertion point that's not
+
+321
+00:13:46,320 --> 00:13:47,820
+saving us anything with stuff to do that
+
+322
+00:13:47,820 --> 00:13:51,089
+work and if it seems like you know maybe
+
+323
+00:13:51,089 --> 00:13:53,100
+I'm overcomplicating it try really
+
+324
+00:13:53,100 --> 00:13:55,500
+quickly to figure out where this item
+
+325
+00:13:55,500 --> 00:13:58,500
+belongs in its filter variation it's not
+
+326
+00:13:58,500 --> 00:14:00,269
+super obvious I mean you can figure it
+
+327
+00:14:00,269 --> 00:14:01,170
+out but it's going to take you a couple
+
+328
+00:14:01,170 --> 00:14:03,060
+seconds and have to write a program to
+
+329
+00:14:03,060 --> 00:14:06,120
+do the same amount of work it's also
+
+330
+00:14:06,120 --> 00:14:10,459
+going to be inefficient right okay so
+
+331
+00:14:10,459 --> 00:14:13,160
+this is where I decide to get clever
+
+332
+00:14:13,160 --> 00:14:15,390
+where you have to think outside of the
+
+333
+00:14:15,390 --> 00:14:20,279
+array brackets and or box after many
+
+334
+00:14:20,279 --> 00:14:22,709
+failed attempts and a bunch of help for
+
+335
+00:14:22,709 --> 00:14:25,260
+my co-workers I learned that no matter
+
+336
+00:14:25,260 --> 00:14:28,410
+how I try to work with these arrays I'm
+
+337
+00:14:28,410 --> 00:14:30,750
+not going to be able to update them
+
+338
+00:14:30,750 --> 00:14:34,820
+quickly or efficiently but if we look at
+
+339
+00:14:34,820 --> 00:14:38,040
+red black binary trees they offer a
+
+340
+00:14:38,040 --> 00:14:39,510
+couple properties that we can maybe take
+
+341
+00:14:39,510 --> 00:14:42,329
+advantage of and i'm not sure if any of
+
+342
+00:14:42,329 --> 00:14:44,420
+you guys are aware of how these work or
+
+343
+00:14:44,420 --> 00:14:47,640
+remember how they work for me i had to
+
+344
+00:14:47,640 --> 00:14:49,050
+learn them so they're fresh on my mind
+
+345
+00:14:49,050 --> 00:14:50,870
+but i'll give you a quick run-through on
+
+346
+00:14:50,870 --> 00:14:54,750
+how they how they work so first we add
+
+347
+00:14:54,750 --> 00:14:56,940
+like the first item in our to-do list
+
+348
+00:14:56,940 --> 00:14:58,709
+into the tree and this becomes a root
+
+349
+00:14:58,709 --> 00:15:03,839
+node next we try to add the next item
+
+350
+00:15:03,839 --> 00:15:05,399
+the next item would be skip it had an
+
+351
+00:15:05,399 --> 00:15:09,000
+index of one so we'll compare this new
+
+352
+00:15:09,000 --> 00:15:11,100
+item we're putting into the tree against
+
+353
+00:15:11,100 --> 00:15:13,649
+the root node and you see here that skip
+
+354
+00:15:13,649 --> 00:15:15,540
+has a value of one because that's its
+
+355
+00:15:15,540 --> 00:15:18,360
+index in the to do list and then hop has
+
+356
+00:15:18,360 --> 00:15:21,390
+an index of zero so one vs 0 we need to
+
+357
+00:15:21,390 --> 00:15:23,820
+put skip to the right of hop so that's
+
+358
+00:15:23,820 --> 00:15:26,790
+what the tree does that's
+
+359
+00:15:26,790 --> 00:15:30,360
+tastic now what happens is we want to
+
+360
+00:15:30,360 --> 00:15:32,310
+put in a third item right and so jump
+
+361
+00:15:32,310 --> 00:15:35,010
+tries to go in it's cotton and X 2 hops
+
+362
+00:15:35,010 --> 00:15:37,080
+got the index of zero we compare them
+
+363
+00:15:37,080 --> 00:15:39,450
+and then the cool thing above tree is
+
+364
+00:15:39,450 --> 00:15:41,610
+that it basically does the same exact
+
+365
+00:15:41,610 --> 00:15:44,460
+operation but on in the next node and
+
+366
+00:15:44,460 --> 00:15:45,990
+the next node in the next node until it
+
+367
+00:15:45,990 --> 00:15:47,820
+runs out of places to search to compare
+
+368
+00:15:47,820 --> 00:15:49,680
+nodes and it just assumes this is where
+
+369
+00:15:49,680 --> 00:15:52,410
+I belong right because I used logic and
+
+370
+00:15:52,410 --> 00:15:54,660
+reasoning to get here so jump compares
+
+371
+00:15:54,660 --> 00:15:56,790
+itself with skip and it says I've got to
+
+372
+00:15:56,790 --> 00:16:00,810
+go to the right of that fantastic so one
+
+373
+00:16:00,810 --> 00:16:03,120
+of the beauties of binary trees is that
+
+374
+00:16:03,120 --> 00:16:04,920
+they drastically reduce the cost of
+
+375
+00:16:04,920 --> 00:16:07,440
+operations on them like insert and
+
+376
+00:16:07,440 --> 00:16:11,310
+remove or find because you don't have to
+
+377
+00:16:11,310 --> 00:16:13,890
+visit every item in the tree right so we
+
+378
+00:16:13,890 --> 00:16:17,910
+can kind of just like split the size of
+
+379
+00:16:17,910 --> 00:16:19,950
+the data set like in half every time we
+
+380
+00:16:19,950 --> 00:16:22,290
+kind of try to find that information
+
+381
+00:16:22,290 --> 00:16:24,540
+which is super helpful but in order for
+
+382
+00:16:24,540 --> 00:16:26,880
+that to happen the red black tree has to
+
+383
+00:16:26,880 --> 00:16:29,940
+balance itself right it right now this
+
+384
+00:16:29,940 --> 00:16:35,310
+is like a 3 3 tier or tree or like that
+
+385
+00:16:35,310 --> 00:16:38,220
+has a depth of 3 nodes and so I would
+
+386
+00:16:38,220 --> 00:16:40,740
+have to compare myself against two nodes
+
+387
+00:16:40,740 --> 00:16:41,880
+to get to the third one but if we
+
+388
+00:16:41,880 --> 00:16:45,240
+rebalance rotate you know now the depth
+
+389
+00:16:45,240 --> 00:16:47,220
+is much more shallow and in order to
+
+390
+00:16:47,220 --> 00:16:48,720
+find the note i can find it in one
+
+391
+00:16:48,720 --> 00:16:51,030
+operation instead of two right this is
+
+392
+00:16:51,030 --> 00:16:52,260
+constantly happening as you're adding
+
+393
+00:16:52,260 --> 00:16:55,080
+elements to the tree it's just it's it's
+
+394
+00:16:55,080 --> 00:16:56,760
+a very efficient and it's a really
+
+395
+00:16:56,760 --> 00:16:59,340
+clever design so then the question
+
+396
+00:16:59,340 --> 00:17:01,710
+becomes how do we use these red black
+
+397
+00:17:01,710 --> 00:17:04,500
+trees Lloyd black binary trees to filter
+
+398
+00:17:04,500 --> 00:17:06,000
+arrays because that's kind of not what
+
+399
+00:17:06,000 --> 00:17:10,800
+they're designed to do initially so
+
+400
+00:17:10,800 --> 00:17:12,300
+we'll take a look at our model again
+
+401
+00:17:12,300 --> 00:17:15,600
+this is um this is the algorithm right
+
+402
+00:17:15,600 --> 00:17:17,880
+the results of the algorithm and it
+
+403
+00:17:17,880 --> 00:17:19,500
+comes in a couple different parts and
+
+404
+00:17:19,500 --> 00:17:21,630
+they're really intricate little bits and
+
+405
+00:17:21,630 --> 00:17:23,550
+pieces I hope you guys can see it but
+
+406
+00:17:23,550 --> 00:17:24,630
+I'm going to go walk through it like
+
+407
+00:17:24,630 --> 00:17:26,250
+step by step and kind of show you all
+
+408
+00:17:26,250 --> 00:17:30,290
+the different little moving parts so
+
+409
+00:17:30,290 --> 00:17:32,520
+this would look like when it's done
+
+410
+00:17:32,520 --> 00:17:34,650
+right look on the Left we see we've got
+
+411
+00:17:34,650 --> 00:17:37,140
+the to do list it's already got the run
+
+412
+00:17:37,140 --> 00:17:39,180
+item in it
+
+413
+00:17:39,180 --> 00:17:40,770
+we've got this thing called the
+
+414
+00:17:40,770 --> 00:17:43,290
+predicate tree it's in the center area
+
+415
+00:17:43,290 --> 00:17:46,110
+below that is a pleated tree and on the
+
+416
+00:17:46,110 --> 00:17:47,070
+right is the node list that we're
+
+417
+00:17:47,070 --> 00:17:48,240
+familiar with so all we really did was
+
+418
+00:17:48,240 --> 00:17:50,790
+take out this filtered array that was in
+
+419
+00:17:50,790 --> 00:17:52,740
+the center and we replace it with these
+
+420
+00:17:52,740 --> 00:17:55,580
+two trees okay so let's look at the
+
+421
+00:17:55,580 --> 00:17:58,560
+predicate tree the predicate tree has
+
+422
+00:17:58,560 --> 00:18:01,560
+two primary roles for every item in the
+
+423
+00:18:01,560 --> 00:18:03,780
+to do's list there's going to be a node
+
+424
+00:18:03,780 --> 00:18:05,610
+in the predicate tree so it like
+
+425
+00:18:05,610 --> 00:18:07,920
+maintains a one-to-one relationship
+
+426
+00:18:07,920 --> 00:18:10,340
+obviously they're structured differently
+
+427
+00:18:10,340 --> 00:18:13,590
+to do this list has like indexes and
+
+428
+00:18:13,590 --> 00:18:15,030
+they're all one after another and then
+
+429
+00:18:15,030 --> 00:18:16,470
+this tree has this kind of strange
+
+430
+00:18:16,470 --> 00:18:20,430
+pyramid shape and has no indexes blood
+
+431
+00:18:20,430 --> 00:18:21,870
+but that's his job the predicate tree
+
+432
+00:18:21,870 --> 00:18:23,940
+just make sure that it has all the same
+
+433
+00:18:23,940 --> 00:18:26,160
+items that's to do the tree to do this
+
+434
+00:18:26,160 --> 00:18:29,670
+list has also if you were to be more
+
+435
+00:18:29,670 --> 00:18:30,750
+generic we would just call that the
+
+436
+00:18:30,750 --> 00:18:33,270
+source list because this can be applied
+
+437
+00:18:33,270 --> 00:18:35,760
+to any any less obviously the next thing
+
+438
+00:18:35,760 --> 00:18:38,070
+that it's meant to do is match the order
+
+439
+00:18:38,070 --> 00:18:41,160
+of the to-do list so if items are moved
+
+440
+00:18:41,160 --> 00:18:43,020
+around or added to the beginning or Matt
+
+441
+00:18:43,020 --> 00:18:45,120
+at the end it's it's going to match that
+
+442
+00:18:45,120 --> 00:18:46,890
+to like it has to say one hundred
+
+443
+00:18:46,890 --> 00:18:49,650
+percent in sync with the bolt they order
+
+444
+00:18:49,650 --> 00:18:55,120
+the number of items so on and so forth
+
+445
+00:18:55,130 --> 00:19:01,170
+perfect the predicate functions nodes so
+
+446
+00:19:01,170 --> 00:19:05,190
+the squares in sorry not the pretty the
+
+447
+00:19:05,190 --> 00:19:06,990
+predicate tree the nodes in the
+
+448
+00:19:06,990 --> 00:19:09,810
+predicate tree hold on to something
+
+449
+00:19:09,810 --> 00:19:11,790
+called the predicate result the word
+
+450
+00:19:11,790 --> 00:19:12,990
+predicate I don't know if everybody
+
+451
+00:19:12,990 --> 00:19:15,600
+knows what that means it's probably find
+
+452
+00:19:15,600 --> 00:19:17,130
+it like lodash documentation or
+
+453
+00:19:17,130 --> 00:19:18,960
+underscore documentation it's the
+
+454
+00:19:18,960 --> 00:19:20,910
+function that you use to compare against
+
+455
+00:19:20,910 --> 00:19:24,510
+each item so if you said to do is that
+
+456
+00:19:24,510 --> 00:19:28,440
+filter function if completed return true
+
+457
+00:19:28,440 --> 00:19:30,180
+and everything that returns true is
+
+458
+00:19:30,180 --> 00:19:31,740
+going to be in your filtered list at
+
+459
+00:19:31,740 --> 00:19:33,150
+that function that you pass to the
+
+460
+00:19:33,150 --> 00:19:34,590
+filter method that was your predicate
+
+461
+00:19:34,590 --> 00:19:37,470
+function it's used to determine if the
+
+462
+00:19:37,470 --> 00:19:41,580
+item should or should not be included so
+
+463
+00:19:41,580 --> 00:19:43,260
+the predicate tree has the
+
+464
+00:19:43,260 --> 00:19:44,910
+responsibility of holding on to the
+
+465
+00:19:44,910 --> 00:19:48,960
+result of that function but it also can
+
+466
+00:19:48,960 --> 00:19:50,450
+be made to
+
+467
+00:19:50,450 --> 00:19:54,800
+bind to its source item right so if my
+
+468
+00:19:54,800 --> 00:19:56,870
+source item changes so for instance if
+
+469
+00:19:56,870 --> 00:20:00,770
+hop got renames to hopping that
+
+470
+00:20:00,770 --> 00:20:03,440
+predicate function can rerun and make a
+
+471
+00:20:03,440 --> 00:20:05,810
+decision about how to proceed so that's
+
+472
+00:20:05,810 --> 00:20:08,660
+kind of a neat thing to do cool keep
+
+473
+00:20:08,660 --> 00:20:11,650
+going I think that's right the second a
+
+474
+00:20:11,650 --> 00:20:14,360
+tree and our algorithm here is the
+
+475
+00:20:14,360 --> 00:20:17,390
+completed tree it looks a lot like the
+
+476
+00:20:17,390 --> 00:20:19,190
+predicate tree except it's missing some
+
+477
+00:20:19,190 --> 00:20:24,020
+some nodes the print the completed tree
+
+478
+00:20:24,020 --> 00:20:26,540
+contains only nodes a Soviet associated
+
+479
+00:20:26,540 --> 00:20:29,720
+with items that were filtered from the
+
+480
+00:20:29,720 --> 00:20:31,880
+to do's in this case right so this is
+
+481
+00:20:31,880 --> 00:20:34,700
+this tree only has items that we want in
+
+482
+00:20:34,700 --> 00:20:38,870
+our filtered result set okay simple it's
+
+483
+00:20:38,870 --> 00:20:41,810
+just our filtered list but it has like
+
+484
+00:20:41,810 --> 00:20:43,670
+this kind of one nuance it has
+
+485
+00:20:43,670 --> 00:20:47,480
+references to its sister nodes in the
+
+486
+00:20:47,480 --> 00:20:50,690
+predicate tree right so you see these
+
+487
+00:20:50,690 --> 00:20:52,460
+little asterisks that I have in each
+
+488
+00:20:52,460 --> 00:20:54,470
+node that's just meant to represent that
+
+489
+00:20:54,470 --> 00:20:57,310
+any one of these nodes can very easily
+
+490
+00:20:57,310 --> 00:21:01,780
+get access to that predicate tree and
+
+491
+00:21:01,780 --> 00:21:03,760
+potentially traverse it if it wanted to
+
+492
+00:21:03,760 --> 00:21:09,800
+I'll call those sister nodes so the
+
+493
+00:21:09,800 --> 00:21:11,840
+nodes of both trees have a couple things
+
+494
+00:21:11,840 --> 00:21:14,570
+in common they're not 100% unique
+
+495
+00:21:14,570 --> 00:21:17,180
+between the two of them each one of them
+
+496
+00:21:17,180 --> 00:21:20,960
+each one of the trees is nodes maintains
+
+497
+00:21:20,960 --> 00:21:24,890
+a left count a right count and a gap
+
+498
+00:21:24,890 --> 00:21:27,050
+count and what that means is if you look
+
+499
+00:21:27,050 --> 00:21:30,950
+at the skip item kind of the right of
+
+500
+00:21:30,950 --> 00:21:32,600
+the false you've got this colon you've
+
+501
+00:21:32,600 --> 00:21:36,790
+got one pipe zero pipe too so the one
+
+502
+00:21:36,790 --> 00:21:39,140
+implies that there's one item to the
+
+503
+00:21:39,140 --> 00:21:41,660
+left of it 0 implies that there is no
+
+504
+00:21:41,660 --> 00:21:45,380
+gap to the left of it so like if you
+
+505
+00:21:45,380 --> 00:21:46,790
+were to create an array where you put an
+
+506
+00:21:46,790 --> 00:21:48,650
+item at zero index and then you put an
+
+507
+00:21:48,650 --> 00:21:50,960
+item at the third index you just created
+
+508
+00:21:50,960 --> 00:21:52,940
+a gap in between those two right so
+
+509
+00:21:52,940 --> 00:21:56,180
+using a left count and a left gap count
+
+510
+00:21:56,180 --> 00:21:59,600
+we can calculate what the index of that
+
+511
+00:21:59,600 --> 00:22:01,760
+node is right so with a left count of
+
+512
+00:22:01,760 --> 00:22:03,270
+one and
+
+513
+00:22:03,270 --> 00:22:05,700
+no gap we can easily assume that this
+
+514
+00:22:05,700 --> 00:22:08,970
+node is that the first index but the
+
+515
+00:22:08,970 --> 00:22:10,050
+important thing there is that we didn't
+
+516
+00:22:10,050 --> 00:22:12,030
+have to like store that information we
+
+517
+00:22:12,030 --> 00:22:15,380
+can calculate it on demand at any time
+
+518
+00:22:15,380 --> 00:22:18,150
+another thing that each node has is a
+
+519
+00:22:18,150 --> 00:22:21,030
+reference to its left child so for
+
+520
+00:22:21,030 --> 00:22:24,090
+instance skip has a reference to hop you
+
+521
+00:22:24,090 --> 00:22:25,590
+can see that pen through the lines there
+
+522
+00:22:25,590 --> 00:22:28,320
+and then it has a reference to its right
+
+523
+00:22:28,320 --> 00:22:31,200
+child assuming it has one similar on the
+
+524
+00:22:31,200 --> 00:22:34,890
+right skip has a reference to jump and
+
+525
+00:22:34,890 --> 00:22:38,970
+then also its able to implement a linked
+
+526
+00:22:38,970 --> 00:22:44,540
+list a doubly linked list so this hop
+
+527
+00:22:44,540 --> 00:22:46,440
+I'm sorry I don't actually have an
+
+528
+00:22:46,440 --> 00:22:48,540
+example here but essentially if you had
+
+529
+00:22:48,540 --> 00:22:51,180
+two leaves that had split apart right
+
+530
+00:22:51,180 --> 00:22:52,740
+and then they'd come back together and
+
+531
+00:22:52,740 --> 00:22:55,560
+the furthest rightmost node in this leaf
+
+532
+00:22:55,560 --> 00:22:58,080
+and the furthest leftmost node in this
+
+533
+00:22:58,080 --> 00:23:01,050
+leaf they're not actually sharing a
+
+534
+00:23:01,050 --> 00:23:05,430
+child or a parent directly but we can
+
+535
+00:23:05,430 --> 00:23:07,950
+still relate the two using a linked list
+
+536
+00:23:07,950 --> 00:23:11,460
+which is just fun and then the other
+
+537
+00:23:11,460 --> 00:23:13,950
+most important thing is that each one of
+
+538
+00:23:13,950 --> 00:23:16,080
+the nodes in both lists I'm sorry both
+
+539
+00:23:16,080 --> 00:23:19,770
+trees has a reference to its parent this
+
+540
+00:23:19,770 --> 00:23:24,330
+is super critical because waffle expect
+
+541
+00:23:24,330 --> 00:23:29,340
+later let's continue actually I think
+
+542
+00:23:29,340 --> 00:23:31,350
+that's everything cool that's all I
+
+543
+00:23:31,350 --> 00:23:34,950
+prerequisite algorithm teachings so
+
+544
+00:23:34,950 --> 00:23:37,470
+let's just review real quickly the
+
+545
+00:23:37,470 --> 00:23:42,000
+predicate tree has the predicate result
+
+546
+00:23:42,000 --> 00:23:43,620
+the true or false should this or should
+
+547
+00:23:43,620 --> 00:23:46,020
+this not be included in the resulting
+
+548
+00:23:46,020 --> 00:23:48,870
+filtered list and then the completed
+
+549
+00:23:48,870 --> 00:23:52,350
+tree has a reference to nodes sister
+
+550
+00:23:52,350 --> 00:23:56,250
+nodes in the predicate tree and every
+
+551
+00:23:56,250 --> 00:23:58,950
+one of the nodes within its own tree has
+
+552
+00:23:58,950 --> 00:24:02,280
+as a way of linking to other nodes in
+
+553
+00:24:02,280 --> 00:24:04,380
+the tree friends and siblings children
+
+554
+00:24:04,380 --> 00:24:09,910
+and parents cool
+
+555
+00:24:09,910 --> 00:24:13,460
+so I think we're ready to to actually
+
+556
+00:24:13,460 --> 00:24:18,230
+model the solution so we're going to
+
+557
+00:24:18,230 --> 00:24:19,550
+start with the same place where we
+
+558
+00:24:19,550 --> 00:24:21,890
+started before with the filtered list to
+
+559
+00:24:21,890 --> 00:24:23,960
+do's is just got the three elements in
+
+560
+00:24:23,960 --> 00:24:26,840
+it hop skip and jump and then we're
+
+561
+00:24:26,840 --> 00:24:29,780
+going to modify that right but in this
+
+562
+00:24:29,780 --> 00:24:31,400
+case we actually have a little bit more
+
+563
+00:24:31,400 --> 00:24:33,020
+infrastructure built around it the
+
+564
+00:24:33,020 --> 00:24:35,690
+predicate tree already has those three
+
+565
+00:24:35,690 --> 00:24:37,720
+nodes associated with the to do's items
+
+566
+00:24:37,720 --> 00:24:41,210
+hop skip and jump and also has metadata
+
+567
+00:24:41,210 --> 00:24:43,880
+about them with regards to their indexes
+
+568
+00:24:43,880 --> 00:24:45,290
+or their left counts and their gap
+
+569
+00:24:45,290 --> 00:24:47,390
+counts and then it also has already
+
+570
+00:24:47,390 --> 00:24:50,390
+solved for the predicate result so we
+
+571
+00:24:50,390 --> 00:24:53,450
+know true false and true yes it's um yes
+
+572
+00:24:53,450 --> 00:24:55,400
+hop is completed skip is not completed
+
+573
+00:24:55,400 --> 00:24:58,790
+jump is completed and then finally not
+
+574
+00:24:58,790 --> 00:25:01,580
+finally actually our completed tree has
+
+575
+00:25:01,580 --> 00:25:05,300
+references to the relevant nodes in
+
+576
+00:25:05,300 --> 00:25:07,640
+order to filter the news list right so
+
+577
+00:25:07,640 --> 00:25:09,830
+we have the hop node we have the jump
+
+578
+00:25:09,830 --> 00:25:11,750
+node they have their left and right
+
+579
+00:25:11,750 --> 00:25:13,340
+counts and their gaps and then they also
+
+580
+00:25:13,340 --> 00:25:15,500
+have their references to their sister
+
+581
+00:25:15,500 --> 00:25:20,690
+nodes in the predicate treat let's do
+
+582
+00:25:20,690 --> 00:25:24,500
+the update and see what happens we
+
+583
+00:25:24,500 --> 00:25:26,990
+insert the run item into the to-do list
+
+584
+00:25:26,990 --> 00:25:28,630
+just like we've been doing all along
+
+585
+00:25:28,630 --> 00:25:32,450
+when this happens the predicate tree
+
+586
+00:25:32,450 --> 00:25:35,780
+finds out and starts to insert the run
+
+587
+00:25:35,780 --> 00:25:38,660
+item into the tree now the run item
+
+588
+00:25:38,660 --> 00:25:41,750
+currently inside of the to-do list has
+
+589
+00:25:41,750 --> 00:25:45,980
+an index of 3 the skip item in the
+
+590
+00:25:45,980 --> 00:25:48,710
+predicate tree has an index of one we
+
+591
+00:25:48,710 --> 00:25:50,090
+were able to calculate that based on
+
+592
+00:25:50,090 --> 00:25:51,980
+this left count and it's gap count we're
+
+593
+00:25:51,980 --> 00:25:54,200
+going to compare those indexes and we're
+
+594
+00:25:54,200 --> 00:25:56,690
+going to say okay run has an index of 3
+
+595
+00:25:56,690 --> 00:25:58,430
+we have an index 1 we need to traverse
+
+596
+00:25:58,430 --> 00:26:01,730
+downward to the right so run is now
+
+597
+00:26:01,730 --> 00:26:07,130
+compared against the jump node because
+
+598
+00:26:07,130 --> 00:26:09,320
+we have a reference to our parent the
+
+599
+00:26:09,320 --> 00:26:13,280
+jump node can calculate my parents has a
+
+600
+00:26:13,280 --> 00:26:16,400
+left count of one my parent represents
+
+601
+00:26:16,400 --> 00:26:18,920
+one node in space and I'm the node after
+
+602
+00:26:18,920 --> 00:26:21,170
+it so I must be
+
+603
+00:26:21,170 --> 00:26:23,240
+in the number two index position right
+
+604
+00:26:23,240 --> 00:26:27,350
+so the run being in the third index jump
+
+605
+00:26:27,350 --> 00:26:29,210
+being in the second index we can
+
+606
+00:26:29,210 --> 00:26:31,430
+continue to insert to the right and
+
+607
+00:26:31,430 --> 00:26:35,180
+that's what happens the run item in the
+
+608
+00:26:35,180 --> 00:26:39,020
+to-do list wind up being a run node in
+
+609
+00:26:39,020 --> 00:26:41,780
+the predicate tree and you can see that
+
+610
+00:26:41,780 --> 00:26:43,340
+we got the predicate result here this is
+
+611
+00:26:43,340 --> 00:26:44,870
+going to be a true thing we do want this
+
+612
+00:26:44,870 --> 00:26:47,690
+in the filtered list our left count or
+
+613
+00:26:47,690 --> 00:26:49,460
+right counts and our gaap count or zero
+
+614
+00:26:49,460 --> 00:26:52,250
+because it's very lonely down there in
+
+615
+00:26:52,250 --> 00:26:54,680
+the bottom corner of that tree but
+
+616
+00:26:54,680 --> 00:26:57,530
+that's okay so now that the predicate
+
+617
+00:26:57,530 --> 00:26:59,270
+tree has been updated the completed tree
+
+618
+00:26:59,270 --> 00:27:01,010
+is going to catch wind of it and it's
+
+619
+00:27:01,010 --> 00:27:04,130
+going to say well I probably need to put
+
+620
+00:27:04,130 --> 00:27:05,780
+this in my tree let's see what the
+
+621
+00:27:05,780 --> 00:27:07,820
+predicate result was the predicate
+
+622
+00:27:07,820 --> 00:27:12,830
+result here was true and so we take the
+
+623
+00:27:12,830 --> 00:27:16,760
+index of the run node in predicate tree
+
+624
+00:27:16,760 --> 00:27:19,550
+which we've calculated as three and we
+
+625
+00:27:19,550 --> 00:27:21,830
+compare it against the calculated index
+
+626
+00:27:21,830 --> 00:27:26,420
+of the jump node in the completed tree
+
+627
+00:27:26,420 --> 00:27:32,300
+and we have three verses too but this is
+
+628
+00:27:32,300 --> 00:27:35,840
+actually a little more clever than it
+
+629
+00:27:35,840 --> 00:27:37,880
+looks because we have the reference to
+
+630
+00:27:37,880 --> 00:27:39,440
+the sister node and the predicate tree
+
+631
+00:27:39,440 --> 00:27:44,050
+right so we were using not the index of
+
+632
+00:27:44,050 --> 00:27:47,750
+jump in the completed tree for using the
+
+633
+00:27:47,750 --> 00:27:49,750
+index of jump in the predicate tree
+
+634
+00:27:49,750 --> 00:27:52,670
+while we're traversing the completed
+
+635
+00:27:52,670 --> 00:27:55,580
+tree so it's like where we're going to
+
+636
+00:27:55,580 --> 00:27:58,070
+make the operations on the completed
+
+637
+00:27:58,070 --> 00:28:00,500
+tree but the logic that we're using to
+
+638
+00:28:00,500 --> 00:28:04,310
+base our operate are our actions is
+
+639
+00:28:04,310 --> 00:28:06,080
+actually coming from the predicate tree
+
+640
+00:28:06,080 --> 00:28:07,790
+we're making decisions about how we're
+
+641
+00:28:07,790 --> 00:28:08,900
+going to interact with the completed
+
+642
+00:28:08,900 --> 00:28:13,100
+tree based on things outside of the
+
+643
+00:28:13,100 --> 00:28:14,420
+scope of the complete the tree which is
+
+644
+00:28:14,420 --> 00:28:17,840
+kind of cool so let's try this one more
+
+645
+00:28:17,840 --> 00:28:19,720
+time I'll make sure I get this across
+
+646
+00:28:19,720 --> 00:28:26,030
+the jump node in the completed tree has
+
+647
+00:28:26,030 --> 00:28:28,610
+a reference to the sister element in the
+
+648
+00:28:28,610 --> 00:28:31,010
+predicate tree that's the one whose
+
+649
+00:28:31,010 --> 00:28:33,830
+index we really care about right so we
+
+650
+00:28:33,830 --> 00:28:35,000
+want to put run in
+
+651
+00:28:35,000 --> 00:28:37,370
+the completed tree relative to where it
+
+652
+00:28:37,370 --> 00:28:39,740
+belongs in the two dudes list we can't
+
+653
+00:28:39,740 --> 00:28:41,120
+put it before jump we can't put it
+
+654
+00:28:41,120 --> 00:28:43,310
+before skip or we can put it before hop
+
+655
+00:28:43,310 --> 00:28:46,940
+so when we compare the run node to the
+
+656
+00:28:46,940 --> 00:28:48,740
+jump node in the completed tree the jump
+
+657
+00:28:48,740 --> 00:28:50,090
+node currently thinks it's in the first
+
+658
+00:28:50,090 --> 00:28:51,860
+position but we know better it's
+
+659
+00:28:51,860 --> 00:28:54,170
+actually in the second position so
+
+660
+00:28:54,170 --> 00:28:55,370
+that's why we've referred to the
+
+661
+00:28:55,370 --> 00:28:56,720
+predicate tree and that's why the
+
+662
+00:28:56,720 --> 00:28:58,340
+predicate trees sole responsibility is
+
+663
+00:28:58,340 --> 00:29:01,880
+to maintain at the same order as it's
+
+664
+00:29:01,880 --> 00:29:03,530
+useless and you may ask like that seems
+
+665
+00:29:03,530 --> 00:29:06,050
+unnecessary like why would you just
+
+666
+00:29:06,050 --> 00:29:08,840
+duplicate all this data you know we we
+
+667
+00:29:08,840 --> 00:29:11,390
+already know that jump is the second
+
+668
+00:29:11,390 --> 00:29:14,290
+item in the to-do list except when
+
+669
+00:29:14,290 --> 00:29:16,510
+except you don't actually know that and
+
+670
+00:29:16,510 --> 00:29:19,400
+the best way to solve for it is actually
+
+671
+00:29:19,400 --> 00:29:21,140
+industry where we can just kind of keep
+
+672
+00:29:21,140 --> 00:29:24,740
+crawling up the binary tree and
+
+673
+00:29:24,740 --> 00:29:26,900
+recalculating all these left counts and
+
+674
+00:29:26,900 --> 00:29:29,510
+gap counts it's much faster than like
+
+675
+00:29:29,510 --> 00:29:31,700
+starting on one end iterating towards
+
+676
+00:29:31,700 --> 00:29:35,870
+your item you know finding the item and
+
+677
+00:29:35,870 --> 00:29:38,540
+saying oh we kept track of our index and
+
+678
+00:29:38,540 --> 00:29:42,410
+that's called an index of all right so
+
+679
+00:29:42,410 --> 00:29:44,240
+we can put our run node into the
+
+680
+00:29:44,240 --> 00:29:48,350
+completed tree that's exciting and then
+
+681
+00:29:48,350 --> 00:29:50,450
+knowing that the run node was added into
+
+682
+00:29:50,450 --> 00:29:52,520
+the completed tree at the second index
+
+683
+00:29:52,520 --> 00:29:54,890
+we can very efficiently say hey add one
+
+684
+00:29:54,890 --> 00:29:59,020
+Dom node to the node list and Dom land
+
+685
+00:29:59,020 --> 00:30:04,740
+so let's take a look at it
+
+686
+00:30:04,750 --> 00:30:13,370
+now I've got a dash mirror let's do this
+
+687
+00:30:13,380 --> 00:30:16,890
+excellent okay cool you guys can see
+
+688
+00:30:16,890 --> 00:30:21,630
+this I'll start this over so this is an
+
+689
+00:30:21,630 --> 00:30:24,870
+example of a source list on the far left
+
+690
+00:30:24,870 --> 00:30:26,850
+it's made up of a couple of items with
+
+691
+00:30:26,850 --> 00:30:28,620
+some random numbers generated and then
+
+692
+00:30:28,620 --> 00:30:31,710
+on the right or from there on every one
+
+693
+00:30:31,710 --> 00:30:33,900
+of these is a filtered variation of this
+
+694
+00:30:33,900 --> 00:30:36,810
+source list so the first one is all even
+
+695
+00:30:36,810 --> 00:30:39,240
+items from the source list that can jizz
+
+696
+00:30:39,240 --> 00:30:41,580
+all items from the source list the third
+
+697
+00:30:41,580 --> 00:30:44,400
+is all items less than 50 from the
+
+698
+00:30:44,400 --> 00:30:45,990
+source list and then the fourth is all
+
+699
+00:30:45,990 --> 00:30:48,210
+items greater than 50 from the sources
+
+700
+00:30:48,210 --> 00:30:49,740
+so if we remember our original example
+
+701
+00:30:49,740 --> 00:30:51,390
+in order to solve for this we'd have to
+
+702
+00:30:51,390 --> 00:30:53,460
+call filter for x which means we'd have
+
+703
+00:30:53,460 --> 00:30:56,250
+to iterate source for x which means we'd
+
+704
+00:30:56,250 --> 00:30:58,080
+have to go do some pretty clunky Dom
+
+705
+00:30:58,080 --> 00:31:01,560
+manipulation four times for every change
+
+706
+00:31:01,560 --> 00:31:04,200
+that happens to the source so if I were
+
+707
+00:31:04,200 --> 00:31:07,110
+to do this we would notice an item was
+
+708
+00:31:07,110 --> 00:31:09,690
+added calculate calculate even calculate
+
+709
+00:31:09,690 --> 00:31:11,910
+calculate odd so on and so forth but
+
+710
+00:31:11,910 --> 00:31:14,760
+because of the binary trees it's really
+
+711
+00:31:14,760 --> 00:31:16,350
+super efficient like we said earlier
+
+712
+00:31:16,350 --> 00:31:18,270
+logarithmic so I can do something like
+
+713
+00:31:18,270 --> 00:31:24,390
+this and we notice no lag at all that
+
+714
+00:31:24,390 --> 00:31:25,890
+was really fast right and I can keep
+
+715
+00:31:25,890 --> 00:31:27,570
+doing this watch the dots count at the
+
+716
+00:31:27,570 --> 00:31:29,760
+top which is going to go and go and go
+
+717
+00:31:29,760 --> 00:31:31,650
+and we can type them have my repaint
+
+718
+00:31:31,650 --> 00:31:33,780
+rate at the bottom it's doing pretty
+
+719
+00:31:33,780 --> 00:31:36,360
+good now we will see to drop off just
+
+720
+00:31:36,360 --> 00:31:39,090
+because the cost of the repaints is you
+
+721
+00:31:39,090 --> 00:31:40,470
+know going to get greater and greater as
+
+722
+00:31:40,470 --> 00:31:44,550
+more dom nodes are added but we know for
+
+723
+00:31:44,550 --> 00:31:47,670
+sure that on the JavaScript side we are
+
+724
+00:31:47,670 --> 00:31:50,940
+we're not taking an exorbitant amount of
+
+725
+00:31:50,940 --> 00:31:52,950
+extra time to accomplish it fast also we
+
+726
+00:31:52,950 --> 00:31:55,400
+can randomize all the items in the list
+
+727
+00:31:55,400 --> 00:31:58,170
+just jam on that and this is filtering
+
+728
+00:31:58,170 --> 00:31:59,640
+over and over and over and over and over
+
+729
+00:31:59,640 --> 00:32:01,320
+again every single time we change a
+
+730
+00:32:01,320 --> 00:32:03,600
+number on the left list it's filtering
+
+731
+00:32:03,600 --> 00:32:04,950
+and that would typically be really
+
+732
+00:32:04,950 --> 00:32:09,390
+expensive but it's not anymore let's go
+
+733
+00:32:09,390 --> 00:32:14,430
+to react this is react sorting the same
+
+734
+00:32:14,430 --> 00:32:17,070
+kind of lists right we've got the source
+
+735
+00:32:17,070 --> 00:32:19,170
+list even odd less than 50 greater than
+
+736
+00:32:19,170 --> 00:32:20,100
+50 forget
+
+737
+00:32:20,100 --> 00:32:23,940
+how many nodes we have here yeah it's
+
+738
+00:32:23,940 --> 00:32:27,090
+100 notes oh cool so let's bounce this
+
+739
+00:32:27,090 --> 00:32:32,309
+up to a thousand nodes so let's curl you
+
+740
+00:32:32,309 --> 00:32:35,010
+so you can see react struggling through
+
+741
+00:32:35,010 --> 00:32:37,260
+this list and it's a it's changing every
+
+742
+00:32:37,260 --> 00:32:38,669
+one of the numbers and we can't really
+
+743
+00:32:38,669 --> 00:32:40,740
+see it outside the screen but they
+
+744
+00:32:40,740 --> 00:32:43,380
+filtered lists that are based on where
+
+745
+00:32:43,380 --> 00:32:44,789
+that are derived from that source list
+
+746
+00:32:44,789 --> 00:32:47,490
+are updating removing items from them
+
+747
+00:32:47,490 --> 00:32:49,289
+adding items back in removing atoms
+
+748
+00:32:49,289 --> 00:32:52,080
+adding items from the items and it's
+
+749
+00:32:52,080 --> 00:32:55,350
+it's using our native array filter in
+
+750
+00:32:55,350 --> 00:32:57,630
+order to accomplish that right it's in a
+
+751
+00:32:57,630 --> 00:33:02,280
+pretty good job here's can derive the
+
+752
+00:33:02,280 --> 00:33:03,929
+project that I've been working on doing
+
+753
+00:33:03,929 --> 00:33:07,080
+the exact same thing it's managing to do
+
+754
+00:33:07,080 --> 00:33:09,750
+it at 50 frames a second though which is
+
+755
+00:33:09,750 --> 00:33:12,030
+a whole lot cooler let's go back to camp
+
+756
+00:33:12,030 --> 00:33:17,789
+to react this is 30 frames a second this
+
+757
+00:33:17,789 --> 00:33:20,460
+is 50 frames a second here's what
+
+758
+00:33:20,460 --> 00:33:23,340
+happens when we take the Dom out of the
+
+759
+00:33:23,340 --> 00:33:25,919
+equation we're just going to not display
+
+760
+00:33:25,919 --> 00:33:34,890
+any of these items well Oh a little bit
+
+761
+00:33:34,890 --> 00:33:41,000
+here
+
+762
+00:33:41,010 --> 00:33:48,540
+why aren't they hiding out so I'm not
+
+763
+00:33:48,540 --> 00:33:52,200
+thinking
+
+764
+00:33:52,210 --> 00:33:55,220
+ok now the Dom nodes are actually being
+
+765
+00:33:55,220 --> 00:33:56,840
+influenced but they're not being
+
+766
+00:33:56,840 --> 00:33:59,510
+repainted on the screen so this is
+
+767
+00:33:59,510 --> 00:34:01,490
+happening really fast if you guys can
+
+768
+00:34:01,490 --> 00:34:04,010
+see it's like 120 frames a second and
+
+769
+00:34:04,010 --> 00:34:06,710
+something like that or 120 operations a
+
+770
+00:34:06,710 --> 00:34:10,270
+second reacts doing the exact same thing
+
+771
+00:34:10,270 --> 00:34:12,770
+unfortunately it's limited by how fast
+
+772
+00:34:12,770 --> 00:34:15,050
+dot filter can chug through those items
+
+773
+00:34:15,050 --> 00:34:17,750
+and it really can't go any faster even
+
+774
+00:34:17,750 --> 00:34:19,540
+though the render is like you know
+
+775
+00:34:19,540 --> 00:34:22,429
+really intelligent and can make a lot of
+
+776
+00:34:22,429 --> 00:34:25,370
+smart decisions the filtering is what's
+
+777
+00:34:25,370 --> 00:34:27,500
+going to slow it down it can't go any
+
+778
+00:34:27,500 --> 00:34:29,179
+faster it still has to go through a
+
+779
+00:34:29,179 --> 00:34:30,770
+thousand items four times every time
+
+780
+00:34:30,770 --> 00:34:33,140
+single time there's a change and then
+
+781
+00:34:33,140 --> 00:34:35,659
+having do that means that items are
+
+782
+00:34:35,659 --> 00:34:37,280
+going to added remove from the Dom so on
+
+783
+00:34:37,280 --> 00:34:40,070
+and so forth so this is this is the
+
+784
+00:34:40,070 --> 00:34:41,030
+project I've been working on for six
+
+785
+00:34:41,030 --> 00:34:42,649
+months that's all I have to present for
+
+786
+00:34:42,649 --> 00:34:44,360
+you you guys have questions I'd love to
+
+787
+00:34:44,360 --> 00:34:46,700
+hear them it's sometimes really excited
+
+788
+00:34:46,700 --> 00:34:48,320
+about hopefully I'm gonna be releasing
+
+789
+00:34:48,320 --> 00:34:49,940
+it to you if you want to take a look at
+
+790
+00:34:49,940 --> 00:34:56,270
+it it's in a repo called can derive the
+
+791
+00:34:56,270 --> 00:34:57,530
+reason it's built on top of kin is
+
+792
+00:34:57,530 --> 00:34:59,890
+because we want to be able to observe
+
+793
+00:34:59,890 --> 00:35:02,720
+lists and maps and then also the
+
+794
+00:35:02,720 --> 00:35:04,310
+objective for the can drive project is
+
+795
+00:35:04,310 --> 00:35:07,340
+not specifically just to filter list the
+
+796
+00:35:07,340 --> 00:35:09,290
+goal is to make it super efficient to
+
+797
+00:35:09,290 --> 00:35:11,330
+update all sorts of data transform so
+
+798
+00:35:11,330 --> 00:35:16,310
+Maps group by and even sorting which is
+
+799
+00:35:16,310 --> 00:35:18,200
+a whole other conversation but anyway
+
+800
+00:35:18,200 --> 00:35:19,220
+thanks a lot guys I appreciate you
+

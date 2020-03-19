@@ -1,0 +1,4245 @@
+1
+00:00:07,139 --> 00:00:09,550
+
+I'm gonna talk today about style guide
+
+2
+00:00:09,550 --> 00:00:11,590
+driven development on a project that
+
+3
+00:00:11,590 --> 00:00:14,740
+I've been working on at pivotal labs how
+
+4
+00:00:14,740 --> 00:00:15,970
+many people here have done test-driven
+
+5
+00:00:15,970 --> 00:00:19,060
+development Oh awesome so a whole bunch
+
+6
+00:00:19,060 --> 00:00:21,579
+of you do you mind if you haven't done
+
+7
+00:00:21,579 --> 00:00:22,810
+test-driven development raising your
+
+8
+00:00:22,810 --> 00:00:27,759
+hand I see a few ok so basically and
+
+9
+00:00:27,759 --> 00:00:28,989
+this is gonna be my summary of
+
+10
+00:00:28,989 --> 00:00:31,119
+test-driven development because from
+
+11
+00:00:31,119 --> 00:00:32,710
+what I've seen so far everybody that
+
+12
+00:00:32,710 --> 00:00:34,059
+I've ever asked about it comes up with a
+
+13
+00:00:34,059 --> 00:00:35,530
+different answer for exactly what it
+
+14
+00:00:35,530 --> 00:00:37,870
+means but the rough idea is how do you
+
+15
+00:00:37,870 --> 00:00:40,359
+work incrementally and write tests that
+
+16
+00:00:40,359 --> 00:00:42,250
+are going to figure out whether you're
+
+17
+00:00:42,250 --> 00:00:44,019
+on the path to getting your code to do
+
+18
+00:00:44,019 --> 00:00:46,120
+what you want it to do or not and then
+
+19
+00:00:46,120 --> 00:00:49,199
+how do you then later use those tests to
+
+20
+00:00:49,199 --> 00:00:51,489
+to make sure that your code still works
+
+21
+00:00:51,489 --> 00:00:53,649
+when you make other changes and that
+
+22
+00:00:53,649 --> 00:00:55,300
+sounds fantastic but sometimes it kind
+
+23
+00:00:55,300 --> 00:00:56,920
+of works with CSS and other times it
+
+24
+00:00:56,920 --> 00:00:59,050
+doesn't really and so in my project we
+
+25
+00:00:59,050 --> 00:01:00,249
+came up with something called style
+
+26
+00:01:00,249 --> 00:01:02,079
+guide style guide driven development
+
+27
+00:01:02,079 --> 00:01:04,480
+which I think the pivotal labs New York
+
+28
+00:01:04,480 --> 00:01:06,760
+office actually sort of started using
+
+29
+00:01:06,760 --> 00:01:08,530
+that term first and I'm not even really
+
+30
+00:01:08,530 --> 00:01:10,390
+sure where they got it but it's been
+
+31
+00:01:10,390 --> 00:01:11,770
+working out pretty well so I want to
+
+32
+00:01:11,770 --> 00:01:13,800
+tell you a little bit about it I'm
+
+33
+00:01:13,800 --> 00:01:15,940
+sewing to talk about a few things first
+
+34
+00:01:15,940 --> 00:01:19,870
+the goals the challenges our plan how we
+
+35
+00:01:19,870 --> 00:01:22,330
+execute it on it and the results that we
+
+36
+00:01:22,330 --> 00:01:24,160
+got and it gets super important to focus
+
+37
+00:01:24,160 --> 00:01:26,050
+on results because it's something that's
+
+38
+00:01:26,050 --> 00:01:28,060
+really the right approach then it has
+
+39
+00:01:28,060 --> 00:01:31,510
+good results so our goal was to reskin
+
+40
+00:01:31,510 --> 00:01:34,420
+the site to match some new branding we
+
+41
+00:01:34,420 --> 00:01:37,300
+had this site which was you know very
+
+42
+00:01:37,300 --> 00:01:41,230
+heavy and was loading super slow and
+
+43
+00:01:41,230 --> 00:01:43,030
+generally weren't happy with it there
+
+44
+00:01:43,030 --> 00:01:44,350
+were a bunch of things that that just
+
+45
+00:01:44,350 --> 00:01:45,940
+weren't right and the designers really
+
+46
+00:01:45,940 --> 00:01:49,060
+wanted to change it too these were the
+
+47
+00:01:49,060 --> 00:01:50,770
+sort of intermediate designs we came up
+
+48
+00:01:50,770 --> 00:01:52,720
+with we had a two-phase project the
+
+49
+00:01:52,720 --> 00:01:55,060
+first one we called we called B flat
+
+50
+00:01:55,060 --> 00:01:56,410
+because we knew that we weren't going to
+
+51
+00:01:56,410 --> 00:01:59,740
+get to do a huge change in the way any
+
+52
+00:01:59,740 --> 00:02:01,320
+of the UX worked we just needed to
+
+53
+00:02:01,320 --> 00:02:03,690
+flatten things out and get some of the
+
+54
+00:02:03,690 --> 00:02:07,150
+excess UI stuff out of there and then
+
+55
+00:02:07,150 --> 00:02:09,160
+very shortly after we did another
+
+56
+00:02:09,160 --> 00:02:11,050
+redesign which this is what we ended up
+
+57
+00:02:11,050 --> 00:02:12,060
+with
+
+58
+00:02:12,060 --> 00:02:15,150
+basically we didn't know for sure that
+
+59
+00:02:15,150 --> 00:02:16,680
+this would be such a different design
+
+60
+00:02:16,680 --> 00:02:19,170
+when we were going through it but even
+
+61
+00:02:19,170 --> 00:02:20,790
+still the component system that we built
+
+62
+00:02:20,790 --> 00:02:22,920
+and the style guide really helped us get
+
+63
+00:02:22,920 --> 00:02:25,349
+through two major redesigns in something
+
+64
+00:02:25,349 --> 00:02:29,430
+like three or four months so the
+
+65
+00:02:29,430 --> 00:02:31,440
+challenges there were a lot of them
+
+66
+00:02:31,440 --> 00:02:35,670
+actually first there was so much CSS 91%
+
+67
+00:02:35,670 --> 00:02:38,069
+of it unused but on a standard page it
+
+68
+00:02:38,069 --> 00:02:43,200
+was like 314 KB uncompressed it was not
+
+69
+00:02:43,200 --> 00:02:45,030
+so much slowing the page down I mean
+
+70
+00:02:45,030 --> 00:02:46,379
+that was part of it but it was just
+
+71
+00:02:46,379 --> 00:02:49,019
+really unwieldy to work with we had
+
+72
+00:02:49,019 --> 00:02:51,569
+custom CSS per view it's a rails app and
+
+73
+00:02:51,569 --> 00:02:53,640
+rails really wants to encourage you to
+
+74
+00:02:53,640 --> 00:02:57,000
+write CSS a separate CSS file for every
+
+75
+00:02:57,000 --> 00:02:58,530
+single view that you have in your app
+
+76
+00:02:58,530 --> 00:02:59,819
+and you kind of have to fight it to get
+
+77
+00:02:59,819 --> 00:03:02,519
+it not to not to have you do that source
+
+78
+00:03:02,519 --> 00:03:05,129
+CSS tended to be either deeply nested
+
+79
+00:03:05,129 --> 00:03:08,400
+and specific and so not reusable at all
+
+80
+00:03:08,400 --> 00:03:11,579
+or it was extremely global almost
+
+81
+00:03:11,579 --> 00:03:13,170
+impossible to know the scope and where
+
+82
+00:03:13,170 --> 00:03:15,000
+it was used and what in fact you'd break
+
+83
+00:03:15,000 --> 00:03:18,690
+if you changed any of it we also had a
+
+84
+00:03:18,690 --> 00:03:20,190
+problem with layout proliferation
+
+85
+00:03:20,190 --> 00:03:21,660
+layouts and rails are your sort of
+
+86
+00:03:21,660 --> 00:03:23,519
+top-level templates that your starting
+
+87
+00:03:23,519 --> 00:03:25,560
+points for your app it seemed like for
+
+88
+00:03:25,560 --> 00:03:27,120
+basically every single page we had
+
+89
+00:03:27,120 --> 00:03:28,650
+created a new a new starting point
+
+90
+00:03:28,650 --> 00:03:31,230
+layout even though they weren't actually
+
+91
+00:03:31,230 --> 00:03:32,489
+substantially different
+
+92
+00:03:32,489 --> 00:03:34,169
+what tended to be different in them was
+
+93
+00:03:34,169 --> 00:03:37,349
+actually the content area and when we
+
+94
+00:03:37,349 --> 00:03:38,669
+would make changes we've quite
+
+95
+00:03:38,669 --> 00:03:40,799
+frequently forget that we had another
+
+96
+00:03:40,799 --> 00:03:43,349
+layout for you know some random page and
+
+97
+00:03:43,349 --> 00:03:45,629
+end up with end up with one of our
+
+98
+00:03:45,629 --> 00:03:47,400
+layouts being broken because it wasn't
+
+99
+00:03:47,400 --> 00:03:51,180
+up to date we also kind of had partials
+
+100
+00:03:51,180 --> 00:03:55,139
+inception someone on the team before we
+
+101
+00:03:55,139 --> 00:03:56,849
+all started must have really loved
+
+102
+00:03:56,849 --> 00:03:58,769
+creating partials we had partials for
+
+103
+00:03:58,769 --> 00:04:01,199
+things that weren't shared anywhere we
+
+104
+00:04:01,199 --> 00:04:03,959
+had we had like nested layers like each
+
+105
+00:04:03,959 --> 00:04:06,120
+partial would have like a line or two in
+
+106
+00:04:06,120 --> 00:04:07,169
+it and then it would point to another
+
+107
+00:04:07,169 --> 00:04:08,879
+partial a line or two and it would point
+
+108
+00:04:08,879 --> 00:04:11,099
+to another partial you get like 12 deep
+
+109
+00:04:11,099 --> 00:04:13,079
+before you could finally see anything
+
+110
+00:04:13,079 --> 00:04:15,919
+about what was going on in your partial
+
+111
+00:04:15,919 --> 00:04:19,620
+we also had a sort of more buttons more
+
+112
+00:04:19,620 --> 00:04:22,109
+better philosophy we had like 20 or 30
+
+113
+00:04:22,109 --> 00:04:23,729
+different kinds of buttons different
+
+114
+00:04:23,729 --> 00:04:24,760
+sizes you couldn't
+
+115
+00:04:24,760 --> 00:04:25,990
+and always see that they were different
+
+116
+00:04:25,990 --> 00:04:27,700
+they look like the same orange button
+
+117
+00:04:27,700 --> 00:04:31,210
+but actually they were you know pixel
+
+118
+00:04:31,210 --> 00:04:32,950
+difference or they looked exactly the
+
+119
+00:04:32,950 --> 00:04:34,510
+same but they were actually coded twice
+
+120
+00:04:34,510 --> 00:04:36,760
+and so you'd end up with extra images
+
+121
+00:04:36,760 --> 00:04:38,590
+because of course everything was done
+
+122
+00:04:38,590 --> 00:04:41,830
+with images it didn't have any css3 so
+
+123
+00:04:41,830 --> 00:04:44,080
+it's really hard to change designers
+
+124
+00:04:44,080 --> 00:04:46,030
+would ask for what should be a simple
+
+125
+00:04:46,030 --> 00:04:48,550
+thing like I'd like to update the button
+
+126
+00:04:48,550 --> 00:04:50,350
+styles for the small green buttons and
+
+127
+00:04:50,350 --> 00:04:51,820
+we would give them estimates like well
+
+128
+00:04:51,820 --> 00:04:53,320
+that'll probably take a week which is
+
+129
+00:04:53,320 --> 00:04:54,940
+just not the amount of time it should
+
+130
+00:04:54,940 --> 00:04:58,900
+take to change a button style over we
+
+131
+00:04:58,900 --> 00:05:01,740
+also had jQuery soup and a lot of it
+
+132
+00:05:01,740 --> 00:05:04,990
+everything was these custom widgets and
+
+133
+00:05:04,990 --> 00:05:07,240
+one-offs setup on the page rather than
+
+134
+00:05:07,240 --> 00:05:09,970
+reusable we had like six different ways
+
+135
+00:05:09,970 --> 00:05:12,970
+of toggling something which just seemed
+
+136
+00:05:12,970 --> 00:05:16,390
+a little bit crazy we've also put our
+
+137
+00:05:16,390 --> 00:05:18,430
+frameworks in our assets file which in
+
+138
+00:05:18,430 --> 00:05:19,930
+rails that's where your own code is
+
+139
+00:05:19,930 --> 00:05:21,940
+supposed to go which meant that people
+
+140
+00:05:21,940 --> 00:05:23,350
+felt like it was ok to change them
+
+141
+00:05:23,350 --> 00:05:25,390
+because the Heron assets and so we end
+
+142
+00:05:25,390 --> 00:05:27,010
+up with like all these different
+
+143
+00:05:27,010 --> 00:05:29,590
+frameworks all in assets and slightly
+
+144
+00:05:29,590 --> 00:05:31,210
+modified from their originals so
+
+145
+00:05:31,210 --> 00:05:35,590
+basically impossible to upgrade we also
+
+146
+00:05:35,590 --> 00:05:38,170
+had a sort of epic stories that were
+
+147
+00:05:38,170 --> 00:05:40,240
+sort of difficult to estimate they give
+
+148
+00:05:40,240 --> 00:05:41,800
+us a story that was along the lines of
+
+149
+00:05:41,800 --> 00:05:44,050
+redesigned the marketplace page and
+
+150
+00:05:44,050 --> 00:05:46,210
+we're like yeah that could be you know
+
+151
+00:05:46,210 --> 00:05:48,040
+that could be a few days or that could
+
+152
+00:05:48,040 --> 00:05:49,750
+be a few weeks it's super hard to tell
+
+153
+00:05:49,750 --> 00:05:52,900
+how long that's going to take we also
+
+154
+00:05:52,900 --> 00:05:54,760
+had a crazy deadline constraint we had
+
+155
+00:05:54,760 --> 00:05:57,070
+about six weeks and the design wasn't
+
+156
+00:05:57,070 --> 00:05:59,350
+complete when we got started basically
+
+157
+00:05:59,350 --> 00:06:01,000
+our PM was supportive but at the same
+
+158
+00:06:01,000 --> 00:06:02,410
+time he knew that we had to get the
+
+159
+00:06:02,410 --> 00:06:04,570
+first version of the site out and he
+
+160
+00:06:04,570 --> 00:06:06,640
+basically said I need to see some
+
+161
+00:06:06,640 --> 00:06:09,040
+progress by January first and if I don't
+
+162
+00:06:09,040 --> 00:06:12,250
+then I'm gonna have to call the project
+
+163
+00:06:12,250 --> 00:06:14,740
+off and we're gonna just have to you
+
+164
+00:06:14,740 --> 00:06:16,510
+know reskin it whatever we have to do
+
+165
+00:06:16,510 --> 00:06:18,760
+whatever crazy terrible CSS we have to
+
+166
+00:06:18,760 --> 00:06:20,980
+write and I was like no no please give
+
+167
+00:06:20,980 --> 00:06:23,350
+me time we're gonna do it definitely
+
+168
+00:06:23,350 --> 00:06:25,120
+didn't want to write more crazy on top
+
+169
+00:06:25,120 --> 00:06:28,960
+of the crazy that we already had it was
+
+170
+00:06:28,960 --> 00:06:30,580
+a little overwhelming the constraints
+
+171
+00:06:30,580 --> 00:06:33,190
+were pretty tough so we started thinking
+
+172
+00:06:33,190 --> 00:06:35,380
+about how to get there we know what we
+
+173
+00:06:35,380 --> 00:06:37,580
+wanted to look like
+
+174
+00:06:37,580 --> 00:06:39,439
+what we have was too fragile and brittle
+
+175
+00:06:39,439 --> 00:06:42,370
+to really get it there incrementally so
+
+176
+00:06:42,370 --> 00:06:44,569
+what did we want to do we basically
+
+177
+00:06:44,569 --> 00:06:46,099
+decided that we needed to build
+
+178
+00:06:46,099 --> 00:06:48,949
+components and start using style guide
+
+179
+00:06:48,949 --> 00:06:51,379
+driven development to sort of rescue our
+
+180
+00:06:51,379 --> 00:06:53,449
+project from the the chaos that had gone
+
+181
+00:06:53,449 --> 00:06:55,520
+into I should mention as well our
+
+182
+00:06:55,520 --> 00:06:57,800
+velocity was really low we were having
+
+183
+00:06:57,800 --> 00:06:59,300
+trouble releasing features which is
+
+184
+00:06:59,300 --> 00:07:00,889
+something that happens to teams when
+
+185
+00:07:00,889 --> 00:07:01,909
+they get into a place where their
+
+186
+00:07:01,909 --> 00:07:04,189
+front-end code is really messy it gets
+
+187
+00:07:04,189 --> 00:07:05,810
+really hard to get something new out
+
+188
+00:07:05,810 --> 00:07:07,250
+because you're having to work around all
+
+189
+00:07:07,250 --> 00:07:11,750
+this legacy to get anything released and
+
+190
+00:07:11,750 --> 00:07:13,849
+some components helped us structure the
+
+191
+00:07:13,849 --> 00:07:15,650
+site and now I'll give you a little demo
+
+192
+00:07:15,650 --> 00:07:18,259
+and this style guide is actually live on
+
+193
+00:07:18,259 --> 00:07:24,770
+the web so you can check it out I will
+
+194
+00:07:24,770 --> 00:07:26,360
+tweet out the link later but it's at
+
+195
+00:07:26,360 --> 00:07:28,819
+console run pivotal do and it's slash
+
+196
+00:07:28,819 --> 00:07:31,250
+style guide and we decided to build on
+
+197
+00:07:31,250 --> 00:07:33,110
+top of bootstrap mainly because the
+
+198
+00:07:33,110 --> 00:07:36,169
+product wasn't defined yet we didn't
+
+199
+00:07:36,169 --> 00:07:37,639
+know exactly what it was going to be or
+
+200
+00:07:37,639 --> 00:07:39,169
+what it was for the designers were still
+
+201
+00:07:39,169 --> 00:07:40,759
+doing a lot of user testing and still
+
+202
+00:07:40,759 --> 00:07:42,830
+figuring out like why would somebody use
+
+203
+00:07:42,830 --> 00:07:45,889
+this it's a tool for the product that I
+
+204
+00:07:45,889 --> 00:07:48,770
+work on is a tool for being able to
+
+205
+00:07:48,770 --> 00:07:50,539
+scale cloud applications adding
+
+206
+00:07:50,539 --> 00:07:52,669
+instances and and things like that being
+
+207
+00:07:52,669 --> 00:07:54,080
+able to check the health of your system
+
+208
+00:07:54,080 --> 00:07:56,839
+and make sure that your your apps are
+
+209
+00:07:56,839 --> 00:07:58,580
+running well and that they you know
+
+210
+00:07:58,580 --> 00:08:01,370
+being able to change different setup of
+
+211
+00:08:01,370 --> 00:08:05,569
+them live and on the cloud and so it's a
+
+212
+00:08:05,569 --> 00:08:07,490
+funny product to be working on because a
+
+213
+00:08:07,490 --> 00:08:09,020
+lot of people who are going to want to
+
+214
+00:08:09,020 --> 00:08:10,400
+change these things are going to be much
+
+215
+00:08:10,400 --> 00:08:12,199
+more comfortable in a CLI than they are
+
+216
+00:08:12,199 --> 00:08:14,599
+in a web app and they're going to want
+
+217
+00:08:14,599 --> 00:08:17,330
+to go to a CLI so our designers we're
+
+218
+00:08:17,330 --> 00:08:18,710
+still doing a lot of research to figure
+
+219
+00:08:18,710 --> 00:08:23,360
+out why would somebody use this over you
+
+220
+00:08:23,360 --> 00:08:24,979
+know over the CLI over the tool that
+
+221
+00:08:24,979 --> 00:08:27,050
+they're pretty comfortable with and some
+
+222
+00:08:27,050 --> 00:08:28,520
+of the things that we'd found out were
+
+223
+00:08:28,520 --> 00:08:30,770
+people said they'd use it on mobile so
+
+224
+00:08:30,770 --> 00:08:32,719
+you know what if I need to scale the app
+
+225
+00:08:32,719 --> 00:08:34,640
+because I get an incident report on my
+
+226
+00:08:34,640 --> 00:08:36,469
+mobile phone I get an alert but I don't
+
+227
+00:08:36,469 --> 00:08:38,269
+actually have my computer with me
+
+228
+00:08:38,269 --> 00:08:40,519
+I could add instances or I could restart
+
+229
+00:08:40,519 --> 00:08:42,380
+the app from my mobile phone and so
+
+230
+00:08:42,380 --> 00:08:43,490
+that's some of the stuff that we're
+
+231
+00:08:43,490 --> 00:08:45,890
+still figuring out what it's for and so
+
+232
+00:08:45,890 --> 00:08:47,420
+building on top of bootstrap meant that
+
+233
+00:08:47,420 --> 00:08:48,480
+we didn't have to know
+
+234
+00:08:48,480 --> 00:08:50,699
+what we were doing ahead of time we
+
+235
+00:08:50,699 --> 00:08:52,589
+weren't making the most optimized system
+
+236
+00:08:52,589 --> 00:08:54,570
+we were trying to make a system that we
+
+237
+00:08:54,570 --> 00:08:56,880
+could iterate with and then and then get
+
+238
+00:08:56,880 --> 00:08:58,829
+better swim a whole bunch of different
+
+239
+00:08:58,829 --> 00:09:00,959
+kinds of components in here from alerts
+
+240
+00:09:00,959 --> 00:09:03,449
+to app status this is where you would
+
+241
+00:09:03,449 --> 00:09:06,110
+stop or restart your app different
+
+242
+00:09:06,110 --> 00:09:08,070
+different kinds of things that we would
+
+243
+00:09:08,070 --> 00:09:11,070
+use all different sorts of buttons fewer
+
+244
+00:09:11,070 --> 00:09:12,769
+than we had before which is fantastic
+
+245
+00:09:12,769 --> 00:09:15,510
+our colors and things like that so this
+
+246
+00:09:15,510 --> 00:09:17,579
+may seem like a lot of colors but we had
+
+247
+00:09:17,579 --> 00:09:20,160
+way way way more before so this is sort
+
+248
+00:09:20,160 --> 00:09:22,589
+of continuing to constrain it down to
+
+249
+00:09:22,589 --> 00:09:25,170
+sort of a more reasonable number and
+
+250
+00:09:25,170 --> 00:09:27,000
+different different kinds of things
+
+251
+00:09:27,000 --> 00:09:28,740
+Gravett ours and grids and health
+
+252
+00:09:28,740 --> 00:09:33,180
+indicators all kinds of stuff oh and
+
+253
+00:09:33,180 --> 00:09:34,649
+we've since broken it up into different
+
+254
+00:09:34,649 --> 00:09:36,180
+areas because we're having trouble
+
+255
+00:09:36,180 --> 00:09:38,339
+finding things but the categories aren't
+
+256
+00:09:38,339 --> 00:09:39,720
+necessarily working that well because
+
+257
+00:09:39,720 --> 00:09:41,430
+you still don't know where something's
+
+258
+00:09:41,430 --> 00:09:44,130
+going to be anyway so that's roughly how
+
+259
+00:09:44,130 --> 00:09:45,959
+the style guide works so you know we
+
+260
+00:09:45,959 --> 00:09:47,610
+might have progress bars or whatever
+
+261
+00:09:47,610 --> 00:09:50,190
+else so when somebody needs that we
+
+262
+00:09:50,190 --> 00:09:53,069
+actually use Hamel for the most part so
+
+263
+00:09:53,069 --> 00:09:56,040
+they have a Hamel example exactly what
+
+264
+00:09:56,040 --> 00:09:57,510
+they'd have to copy/paste in order to
+
+265
+00:09:57,510 --> 00:10:00,480
+get that into a particular page and then
+
+266
+00:10:00,480 --> 00:10:02,519
+we have the rendered versions of each of
+
+267
+00:10:02,519 --> 00:10:04,949
+those so the goal is to make it really
+
+268
+00:10:04,949 --> 00:10:06,810
+super easy for people to use existing
+
+269
+00:10:06,810 --> 00:10:09,569
+components much easier than it is for
+
+270
+00:10:09,569 --> 00:10:12,120
+them to make up their own stuff
+
+271
+00:10:12,120 --> 00:10:19,709
+basically um so here are some of the
+
+272
+00:10:19,709 --> 00:10:21,600
+results some of the numbers that we got
+
+273
+00:10:21,600 --> 00:10:24,420
+we had a lot fewer layouts we moved from
+
+274
+00:10:24,420 --> 00:10:26,490
+about seven layouts to two which felt a
+
+275
+00:10:26,490 --> 00:10:28,199
+lot better we needed to have one
+
+276
+00:10:28,199 --> 00:10:30,300
+simplified layer States so that we
+
+277
+00:10:30,300 --> 00:10:31,170
+didn't have
+
+278
+00:10:31,170 --> 00:10:33,360
+we weren't dependent on having data
+
+279
+00:10:33,360 --> 00:10:35,279
+available for our error states to render
+
+280
+00:10:35,279 --> 00:10:37,380
+correctly but still we were pretty happy
+
+281
+00:10:37,380 --> 00:10:41,130
+with that change we had 21 image
+
+282
+00:10:41,130 --> 00:10:44,639
+requests before at 82 KB down to 2 image
+
+283
+00:10:44,639 --> 00:10:47,819
+requests at 21.9 KB so pretty good
+
+284
+00:10:47,819 --> 00:10:49,589
+pretty good improvement in image size I
+
+285
+00:10:49,589 --> 00:10:51,360
+think frankly we could go a little bit
+
+286
+00:10:51,360 --> 00:10:53,670
+further but you know we've got a little
+
+287
+00:10:53,670 --> 00:10:56,310
+work to do in order to do that our CSS
+
+288
+00:10:56,310 --> 00:11:00,149
+moved from 314 KB to 128 from to me
+
+289
+00:11:00,149 --> 00:11:01,520
+that's still big that's
+
+290
+00:11:01,520 --> 00:11:04,220
+a lot but we're not at the point in our
+
+291
+00:11:04,220 --> 00:11:05,990
+app where we're ready to be optimizing
+
+292
+00:11:05,990 --> 00:11:08,330
+for like the the high use case we're
+
+293
+00:11:08,330 --> 00:11:10,220
+right now still like figuring out what
+
+294
+00:11:10,220 --> 00:11:11,930
+we are and what we're gonna do and what
+
+295
+00:11:11,930 --> 00:11:14,030
+we're building and why people use it and
+
+296
+00:11:14,030 --> 00:11:15,410
+stuff like that so that seems like a
+
+297
+00:11:15,410 --> 00:11:18,860
+good middle ground for us right now we
+
+298
+00:11:18,860 --> 00:11:21,860
+also moved the compressed CSS from 44 KB
+
+299
+00:11:21,860 --> 00:11:25,130
+down to 22 yeah still a little high
+
+300
+00:11:25,130 --> 00:11:27,440
+especially given that we don't have a
+
+301
+00:11:27,440 --> 00:11:29,570
+mobile version of the site the the
+
+302
+00:11:29,570 --> 00:11:32,600
+site's responsive and just works well
+
+303
+00:11:32,600 --> 00:11:34,880
+you know as best we can just works on
+
+304
+00:11:34,880 --> 00:11:37,250
+mobile so that means that you know
+
+305
+00:11:37,250 --> 00:11:39,680
+unfortunately that much that much CSS
+
+306
+00:11:39,680 --> 00:11:41,030
+getting sent over the wire is kind of
+
+307
+00:11:41,030 --> 00:11:42,590
+high definitely something we're looking
+
+308
+00:11:42,590 --> 00:11:44,450
+at for that inflection point when it'll
+
+309
+00:11:44,450 --> 00:11:45,560
+be the moment where we should really
+
+310
+00:11:45,560 --> 00:11:49,460
+start reducing that and so we went from
+
+311
+00:11:49,460 --> 00:11:53,510
+90% unused CSS to 69% the unfortunate
+
+312
+00:11:53,510 --> 00:11:55,220
+thing is 53% of that comes from
+
+313
+00:11:55,220 --> 00:11:55,990
+bootstrap
+
+314
+00:11:55,990 --> 00:11:59,720
+which is a little bit we don't want to
+
+315
+00:11:59,720 --> 00:12:01,640
+modify the framework because that would
+
+316
+00:12:01,640 --> 00:12:04,400
+make the upgrade path hard but if we use
+
+317
+00:12:04,400 --> 00:12:05,840
+the framework we get a lot of stuff we
+
+318
+00:12:05,840 --> 00:12:07,640
+don't want and that's in spite of
+
+319
+00:12:07,640 --> 00:12:09,650
+actually having pulled in all of
+
+320
+00:12:09,650 --> 00:12:11,420
+bootstrap commented out all the at
+
+321
+00:12:11,420 --> 00:12:14,030
+includes and then uncommenting them as
+
+322
+00:12:14,030 --> 00:12:15,710
+we use them so we're not pulling in
+
+323
+00:12:15,710 --> 00:12:18,350
+everything just what we need but any one
+
+324
+00:12:18,350 --> 00:12:20,330
+bootstrap file actually has quite a bit
+
+325
+00:12:20,330 --> 00:12:23,090
+of stuff in it and so you know while we
+
+326
+00:12:23,090 --> 00:12:26,360
+might not need like maybe we only want
+
+327
+00:12:26,360 --> 00:12:28,400
+regular progress bars or not animated
+
+328
+00:12:28,400 --> 00:12:30,080
+progress bars it all sort of comes
+
+329
+00:12:30,080 --> 00:12:33,320
+lumped in together so it's something
+
+330
+00:12:33,320 --> 00:12:35,780
+where we're thinking about and starting
+
+331
+00:12:35,780 --> 00:12:37,370
+to contribute back to bootstrap so that
+
+332
+00:12:37,370 --> 00:12:41,030
+we can make it a little more granular so
+
+333
+00:12:41,030 --> 00:12:42,500
+how did we do it that's that's a little
+
+334
+00:12:42,500 --> 00:12:43,940
+bit of the results and how it turned out
+
+335
+00:12:43,940 --> 00:12:46,100
+but how did that happen
+
+336
+00:12:46,100 --> 00:12:48,020
+our hypothesis was basically that
+
+337
+00:12:48,020 --> 00:12:50,330
+components are hard and and pages are
+
+338
+00:12:50,330 --> 00:12:52,700
+relatively easier and that components
+
+339
+00:12:52,700 --> 00:12:54,680
+are actually a feature that should be
+
+340
+00:12:54,680 --> 00:12:56,840
+validated when they're documented in our
+
+341
+00:12:56,840 --> 00:12:59,930
+style guide faster design feedback meant
+
+342
+00:12:59,930 --> 00:13:01,220
+then we'd had a better sense if we were
+
+343
+00:13:01,220 --> 00:13:02,720
+going to make our release if we were on
+
+344
+00:13:02,720 --> 00:13:05,200
+the right track we basically started
+
+345
+00:13:05,200 --> 00:13:07,730
+having a story first that would be crate
+
+346
+00:13:07,730 --> 00:13:09,620
+X component and put it in the style
+
+347
+00:13:09,620 --> 00:13:11,600
+guide and that became really helpful
+
+348
+00:13:11,600 --> 00:13:13,970
+because straightaway if
+
+349
+00:13:13,970 --> 00:13:15,740
+sort of built it wrong the designer got
+
+350
+00:13:15,740 --> 00:13:17,689
+a chance to see it before we were you
+
+351
+00:13:17,689 --> 00:13:19,310
+know eight miles deep into building a
+
+352
+00:13:19,310 --> 00:13:21,769
+particular page the the PM got to
+
+353
+00:13:21,769 --> 00:13:23,480
+validate that it fit with what he was
+
+354
+00:13:23,480 --> 00:13:25,699
+expecting it to look like we would also
+
+355
+00:13:25,699 --> 00:13:27,470
+kind of skip a bunch of the fine-tuning
+
+356
+00:13:27,470 --> 00:13:29,720
+of the animations and then do that in a
+
+357
+00:13:29,720 --> 00:13:32,269
+final pass with the designer once it was
+
+358
+00:13:32,269 --> 00:13:34,040
+in the style guide but before it was on
+
+359
+00:13:34,040 --> 00:13:35,959
+the page and that worked out pretty well
+
+360
+00:13:35,959 --> 00:13:40,009
+for us so the result was smaller more
+
+361
+00:13:40,009 --> 00:13:41,930
+manageable stories a much more
+
+362
+00:13:41,930 --> 00:13:43,730
+predictable delivery and our velocity
+
+363
+00:13:43,730 --> 00:13:45,019
+shot up
+
+364
+00:13:45,019 --> 00:13:48,680
+I think the funny thing about about when
+
+365
+00:13:48,680 --> 00:13:50,689
+a team starts moving faster is that just
+
+366
+00:13:50,689 --> 00:13:52,069
+moving faster and itself is super
+
+367
+00:13:52,069 --> 00:13:53,990
+motivating and when you get that
+
+368
+00:13:53,990 --> 00:13:55,459
+motivation like you're like oh we're
+
+369
+00:13:55,459 --> 00:13:56,870
+getting work done where we're churning
+
+370
+00:13:56,870 --> 00:13:59,240
+through things all of a sudden it feels
+
+371
+00:13:59,240 --> 00:14:02,750
+much more viable to be able to output a
+
+372
+00:14:02,750 --> 00:14:06,589
+large volume of work we also moved to
+
+373
+00:14:06,589 --> 00:14:08,509
+bootstrap three tip they could take
+
+374
+00:14:08,509 --> 00:14:10,970
+advantage of better support for modern
+
+375
+00:14:10,970 --> 00:14:12,980
+browsers and some of the responsive
+
+376
+00:14:12,980 --> 00:14:15,230
+stuff which I found really cool
+
+377
+00:14:15,230 --> 00:14:17,569
+we had a dependency on something called
+
+378
+00:14:17,569 --> 00:14:19,689
+Rails admin which unfortunately wanted
+
+379
+00:14:19,689 --> 00:14:22,670
+bootstrap too which is super annoying
+
+380
+00:14:22,670 --> 00:14:24,230
+but we ended up being able to break that
+
+381
+00:14:24,230 --> 00:14:25,790
+by only including that in the admin
+
+382
+00:14:25,790 --> 00:14:28,610
+pages which are not actually accessed by
+
+383
+00:14:28,610 --> 00:14:32,000
+real users and put it in the agenda to
+
+384
+00:14:32,000 --> 00:14:34,009
+later build our own admin pages so that
+
+385
+00:14:34,009 --> 00:14:37,639
+we wouldn't be dependent on that we also
+
+386
+00:14:37,639 --> 00:14:38,959
+used something called hologram from
+
+387
+00:14:38,959 --> 00:14:42,019
+Trulia for our style guide and Susan Lin
+
+388
+00:14:42,019 --> 00:14:44,389
+is in the audience today and she she
+
+389
+00:14:44,389 --> 00:14:46,639
+worked with me at Trulia just before
+
+390
+00:14:46,639 --> 00:14:49,279
+they actually created hologram so I had
+
+391
+00:14:49,279 --> 00:14:51,230
+made a style guide generation tool in my
+
+392
+00:14:51,230 --> 00:14:53,329
+company and I thought it was awesome
+
+393
+00:14:53,329 --> 00:14:55,009
+it was so complicated you wouldn't even
+
+394
+00:14:55,009 --> 00:14:57,649
+believe it and I was like oh this is
+
+395
+00:14:57,649 --> 00:14:59,300
+fantastic this is the best style guide
+
+396
+00:14:59,300 --> 00:15:01,399
+generator ever and the moment I stopped
+
+397
+00:15:01,399 --> 00:15:02,870
+working with truly they were very polite
+
+398
+00:15:02,870 --> 00:15:04,579
+while I worked there but the moment I
+
+399
+00:15:04,579 --> 00:15:06,350
+stopped working with them they switched
+
+400
+00:15:06,350 --> 00:15:07,670
+away from that style guide tool
+
+401
+00:15:07,670 --> 00:15:09,199
+immediately and built their own and I
+
+402
+00:15:09,199 --> 00:15:12,110
+was like oh but then I tried theirs and
+
+403
+00:15:12,110 --> 00:15:14,029
+it was actually fantastic it was so much
+
+404
+00:15:14,029 --> 00:15:16,189
+better than mine you wouldn't believe so
+
+405
+00:15:16,189 --> 00:15:18,040
+then I switched over to theirs instead
+
+406
+00:15:18,040 --> 00:15:21,170
+it's a really great tool it basically
+
+407
+00:15:21,170 --> 00:15:23,120
+allows you to have markdown and your CSS
+
+408
+00:15:23,120 --> 00:15:25,040
+so if you look up here I know it's a
+
+409
+00:15:25,040 --> 00:15:26,560
+little bit light to see
+
+410
+00:15:26,560 --> 00:15:28,690
+you basically have a markdown comment
+
+411
+00:15:28,690 --> 00:15:30,700
+doc and it gives you the title the name
+
+412
+00:15:30,700 --> 00:15:33,190
+in the category and so based on the
+
+413
+00:15:33,190 --> 00:15:34,540
+things that you put in there and you can
+
+414
+00:15:34,540 --> 00:15:36,250
+put tables in as well and you can put
+
+415
+00:15:36,250 --> 00:15:37,900
+your actual documentation and markdown
+
+416
+00:15:37,900 --> 00:15:40,420
+right near the CSS that it's actually
+
+417
+00:15:40,420 --> 00:15:42,760
+documenting which for us was a big key
+
+418
+00:15:42,760 --> 00:15:44,290
+to actually keeping the two synched up
+
+419
+00:15:44,290 --> 00:15:46,960
+as long as those were in separate files
+
+420
+00:15:46,960 --> 00:15:49,750
+it was just too easy for them to get out
+
+421
+00:15:49,750 --> 00:15:52,690
+of sync with each other one cool thing
+
+422
+00:15:52,690 --> 00:15:54,460
+you can do is also have a sub component
+
+423
+00:15:54,460 --> 00:15:56,950
+so here you have the same the title name
+
+424
+00:15:56,950 --> 00:15:58,300
+and category that you could have skipped
+
+425
+00:15:58,300 --> 00:15:59,890
+the category in this case because it has
+
+426
+00:15:59,890 --> 00:16:02,380
+a parent panel so it's a square panel
+
+427
+00:16:02,380 --> 00:16:03,820
+and it's a parent of panel and that
+
+428
+00:16:03,820 --> 00:16:05,920
+allows us to do the the nesting and the
+
+429
+00:16:05,920 --> 00:16:07,630
+style guide automatically without needed
+
+430
+00:16:07,630 --> 00:16:09,310
+to do any work to actually make that
+
+431
+00:16:09,310 --> 00:16:12,490
+happen we also found that the
+
+432
+00:16:12,490 --> 00:16:14,680
+combination of this and bootstrap 3
+
+433
+00:16:14,680 --> 00:16:16,630
+we're actually writing very very little
+
+434
+00:16:16,630 --> 00:16:19,089
+CSS and yet having a pretty clean
+
+435
+00:16:19,089 --> 00:16:22,600
+experience the generated style guide is
+
+436
+00:16:22,600 --> 00:16:24,580
+going to look something like this with
+
+437
+00:16:24,580 --> 00:16:27,310
+all of our different classes documented
+
+438
+00:16:27,310 --> 00:16:29,860
+in the table the modifier class that you
+
+439
+00:16:29,860 --> 00:16:31,870
+need to make that happen there and then
+
+440
+00:16:31,870 --> 00:16:35,020
+underneath the rendered example & hamill
+
+441
+00:16:35,020 --> 00:16:38,530
+example we've since taken on a larger
+
+442
+00:16:38,530 --> 00:16:40,420
+scope which is to be used by a bunch of
+
+443
+00:16:40,420 --> 00:16:41,950
+projects that are actually not written
+
+444
+00:16:41,950 --> 00:16:43,930
+in rails so now we're going to be used
+
+445
+00:16:43,930 --> 00:16:46,270
+by a project in Java project and go and
+
+446
+00:16:46,270 --> 00:16:48,670
+that's just too stupid so we're going to
+
+447
+00:16:48,670 --> 00:16:51,480
+be fully front-end and we're going to
+
+448
+00:16:51,480 --> 00:16:54,250
+basically break any dependence we have
+
+449
+00:16:54,250 --> 00:16:57,270
+with with any back-end languages so
+
+450
+00:16:57,270 --> 00:17:01,000
+gonna have to have HTML examples in
+
+451
+00:17:01,000 --> 00:17:03,160
+there and full JavaScript rendering
+
+452
+00:17:03,160 --> 00:17:04,780
+which is sort of an interesting
+
+453
+00:17:04,780 --> 00:17:09,130
+challenge we'll see how that one goes so
+
+454
+00:17:09,130 --> 00:17:10,510
+what we found was the designers really
+
+455
+00:17:10,510 --> 00:17:13,569
+work in a view related world they work
+
+456
+00:17:13,569 --> 00:17:15,910
+on a page at a time or a flow at a time
+
+457
+00:17:15,910 --> 00:17:18,069
+they're really thinking page by page by
+
+458
+00:17:18,069 --> 00:17:20,260
+page and that that needed to be
+
+459
+00:17:20,260 --> 00:17:22,089
+translated for developer consumption
+
+460
+00:17:22,089 --> 00:17:23,829
+like basically we needed it broken down
+
+461
+00:17:23,829 --> 00:17:25,780
+into components but they really needed
+
+462
+00:17:25,780 --> 00:17:27,850
+to be thinking globally and so we did a
+
+463
+00:17:27,850 --> 00:17:31,060
+lot of sort of work on how to do that so
+
+464
+00:17:31,060 --> 00:17:32,770
+basically this is our marketplace page
+
+465
+00:17:32,770 --> 00:17:35,560
+and they're different sorts of services
+
+466
+00:17:35,560 --> 00:17:37,420
+that you can add to your AB databases
+
+467
+00:17:37,420 --> 00:17:38,259
+and
+
+468
+00:17:38,259 --> 00:17:40,149
+testing services and things like that
+
+469
+00:17:40,149 --> 00:17:43,509
+sort of standard things and so the
+
+470
+00:17:43,509 --> 00:17:45,190
+designer might look at this and sort of
+
+471
+00:17:45,190 --> 00:17:47,739
+be thinking you know of this as an
+
+472
+00:17:47,739 --> 00:17:49,950
+entire page an entire experience but
+
+473
+00:17:49,950 --> 00:17:51,970
+when we thought about it we were
+
+474
+00:17:51,970 --> 00:17:54,129
+thinking of it as little pieces and so
+
+475
+00:17:54,129 --> 00:17:56,080
+there was a lot of tension of whose job
+
+476
+00:17:56,080 --> 00:17:57,789
+it was to actually break it down into
+
+477
+00:17:57,789 --> 00:18:01,480
+component stories one of our PM's felt
+
+478
+00:18:01,480 --> 00:18:02,830
+like it really should be done by the
+
+479
+00:18:02,830 --> 00:18:05,259
+designers but they hadn't had experience
+
+480
+00:18:05,259 --> 00:18:06,340
+in breaking something down into
+
+481
+00:18:06,340 --> 00:18:08,769
+components so that didn't quite work and
+
+482
+00:18:08,769 --> 00:18:11,350
+then you know on the developer side we
+
+483
+00:18:11,350 --> 00:18:13,149
+wanted to take responsibility for it as
+
+484
+00:18:13,149 --> 00:18:14,470
+well but we weren't always aware of
+
+485
+00:18:14,470 --> 00:18:16,480
+where the design was going and when it
+
+486
+00:18:16,480 --> 00:18:19,149
+was ready to be broken down so it kind
+
+487
+00:18:19,149 --> 00:18:22,239
+of ended up being everybody's job so we
+
+488
+00:18:22,239 --> 00:18:23,590
+would start breaking something down we
+
+489
+00:18:23,590 --> 00:18:25,509
+would build you know boxes and we'd
+
+490
+00:18:25,509 --> 00:18:27,159
+build the media block and some of this
+
+491
+00:18:27,159 --> 00:18:28,629
+existing and bootstraps some of it
+
+492
+00:18:28,629 --> 00:18:30,399
+needing to be modified we'd build
+
+493
+00:18:30,399 --> 00:18:33,580
+headings and body copy and three column
+
+494
+00:18:33,580 --> 00:18:35,679
+grids getting them just right for us
+
+495
+00:18:35,679 --> 00:18:37,029
+making sure they have the right gutters
+
+496
+00:18:37,029 --> 00:18:39,369
+and making sure that they they layout
+
+497
+00:18:39,369 --> 00:18:41,679
+properly in the way that we need that
+
+498
+00:18:41,679 --> 00:18:42,759
+they're going to flow and change
+
+499
+00:18:42,759 --> 00:18:45,700
+according to page size so that ended up
+
+500
+00:18:45,700 --> 00:18:48,190
+being a lot on me at first I ended up
+
+501
+00:18:48,190 --> 00:18:49,989
+doing a lot of the translation step and
+
+502
+00:18:49,989 --> 00:18:52,059
+actually found it really hard to teach
+
+503
+00:18:52,059 --> 00:18:54,009
+that to people I'm I would love
+
+504
+00:18:54,009 --> 00:18:56,200
+suggestions if you guys have it for good
+
+505
+00:18:56,200 --> 00:18:58,840
+ways to teach people to break down pages
+
+506
+00:18:58,840 --> 00:19:01,899
+into components still not 100% sure but
+
+507
+00:19:01,899 --> 00:19:04,090
+I know that they're they're a lot better
+
+508
+00:19:04,090 --> 00:19:05,830
+at it from pairing and working together
+
+509
+00:19:05,830 --> 00:19:09,429
+doing it very definitely are several
+
+510
+00:19:09,429 --> 00:19:10,779
+people are starting to be able to do
+
+511
+00:19:10,779 --> 00:19:12,249
+that and the designers started to talk
+
+512
+00:19:12,249 --> 00:19:14,619
+about components once the once the page
+
+513
+00:19:14,619 --> 00:19:16,600
+is done and the the experience has been
+
+514
+00:19:16,600 --> 00:19:18,460
+sort of crafted been the conversation
+
+515
+00:19:18,460 --> 00:19:20,950
+turning to practical things started to
+
+516
+00:19:20,950 --> 00:19:23,259
+naturally turn to components which is
+
+517
+00:19:23,259 --> 00:19:25,749
+great but still I think we have a ways
+
+518
+00:19:25,749 --> 00:19:29,409
+to go and that um so this is an example
+
+519
+00:19:29,409 --> 00:19:30,820
+of a story that we would have in in
+
+520
+00:19:30,820 --> 00:19:33,279
+pivotal tracker the tracking software
+
+521
+00:19:33,279 --> 00:19:36,129
+that we use but you could have it in any
+
+522
+00:19:36,129 --> 00:19:38,230
+kind of tracking settest software like
+
+523
+00:19:38,230 --> 00:19:41,320
+my company used to use github issues and
+
+524
+00:19:41,320 --> 00:19:44,230
+and that works fine too so basically
+
+525
+00:19:44,230 --> 00:19:45,850
+create box components and document
+
+526
+00:19:45,850 --> 00:19:48,279
+document them in the style guide so
+
+527
+00:19:48,279 --> 00:19:49,299
+boxes
+
+528
+00:19:49,299 --> 00:19:51,039
+it says at the bottom boxes only include
+
+529
+00:19:51,039 --> 00:19:52,690
+borders background should go in
+
+530
+00:19:52,690 --> 00:19:54,340
+background components and contents will
+
+531
+00:19:54,340 --> 00:19:56,739
+be created separately so this is a kind
+
+532
+00:19:56,739 --> 00:19:58,840
+of instruction isn't necessary now but
+
+533
+00:19:58,840 --> 00:20:00,340
+in the beginning it was really hard for
+
+534
+00:20:00,340 --> 00:20:02,169
+people to tell from a mock-up which bit
+
+535
+00:20:02,169 --> 00:20:03,820
+of the thing they were supposed to be
+
+536
+00:20:03,820 --> 00:20:05,889
+building we had all these crazy sketches
+
+537
+00:20:05,889 --> 00:20:07,690
+weird people would outline in magenta
+
+538
+00:20:07,690 --> 00:20:10,059
+that was supposed to be built and try to
+
+539
+00:20:10,059 --> 00:20:11,679
+X out the bit that wasn't supposed to be
+
+540
+00:20:11,679 --> 00:20:13,779
+built and now I think people just have a
+
+541
+00:20:13,779 --> 00:20:16,149
+natural sense for it but it was a little
+
+542
+00:20:16,149 --> 00:20:19,269
+bit difficult in the beginning and so
+
+543
+00:20:19,269 --> 00:20:20,799
+then we would have examples of the
+
+544
+00:20:20,799 --> 00:20:23,769
+different boxes images of them uploaded
+
+545
+00:20:23,769 --> 00:20:25,330
+to the bug because no matter how you
+
+546
+00:20:25,330 --> 00:20:27,009
+describe something it's just much better
+
+547
+00:20:27,009 --> 00:20:28,480
+to see it when you're building something
+
+548
+00:20:28,480 --> 00:20:30,669
+visual and that that worked out pretty
+
+549
+00:20:30,669 --> 00:20:33,309
+well and we create tasks sometimes for
+
+550
+00:20:33,309 --> 00:20:35,019
+each of the kinds of boxes that we were
+
+551
+00:20:35,019 --> 00:20:36,970
+going to build and that helped just keep
+
+552
+00:20:36,970 --> 00:20:38,739
+us sort of organized and see how much
+
+553
+00:20:38,739 --> 00:20:42,359
+closer we were getting to to being done
+
+554
+00:20:42,359 --> 00:20:46,059
+so how many people here have seen me
+
+555
+00:20:46,059 --> 00:20:48,749
+talk about object oriented CSS at all
+
+556
+00:20:48,749 --> 00:20:51,669
+okay so a fair number but not everybody
+
+557
+00:20:51,669 --> 00:20:53,769
+forgive me a little bit I kind of wanted
+
+558
+00:20:53,769 --> 00:20:55,509
+to add a little detour into what makes a
+
+559
+00:20:55,509 --> 00:20:57,730
+good component some of you if you've
+
+560
+00:20:57,730 --> 00:20:59,799
+seen me talk about oo CSS are probably
+
+561
+00:20:59,799 --> 00:21:01,330
+gonna have seen this before but I didn't
+
+562
+00:21:01,330 --> 00:21:03,580
+want anybody to be left behind so added
+
+563
+00:21:03,580 --> 00:21:06,489
+about 10 slides of this so let's get
+
+564
+00:21:06,489 --> 00:21:06,970
+into it
+
+565
+00:21:06,970 --> 00:21:08,830
+so basically if we think about building
+
+566
+00:21:08,830 --> 00:21:10,809
+boxes we have to figure out what is a
+
+567
+00:21:10,809 --> 00:21:12,399
+good component and what makes a good
+
+568
+00:21:12,399 --> 00:21:14,590
+component how do you define how much do
+
+569
+00:21:14,590 --> 00:21:16,119
+you put into it and how much do you
+
+570
+00:21:16,119 --> 00:21:18,909
+break it into separate pieces and this
+
+571
+00:21:18,909 --> 00:21:21,100
+is something that I find you know when
+
+572
+00:21:21,100 --> 00:21:23,350
+you first get started in CSS or maybe in
+
+573
+00:21:23,350 --> 00:21:25,090
+any language because I find myself doing
+
+574
+00:21:25,090 --> 00:21:28,090
+it in Ruby for sure you really want
+
+575
+00:21:28,090 --> 00:21:29,830
+rules you want someone to tell you like
+
+576
+00:21:29,830 --> 00:21:33,399
+X is the way to do this thing and so
+
+577
+00:21:33,399 --> 00:21:35,230
+people will ask me should I make this
+
+578
+00:21:35,230 --> 00:21:37,690
+into one component or should I break it
+
+579
+00:21:37,690 --> 00:21:40,359
+into into two classes or should it be
+
+580
+00:21:40,359 --> 00:21:42,809
+one component and then a modifier and
+
+581
+00:21:42,809 --> 00:21:47,980
+often my answers are sort of sort of
+
+582
+00:21:47,980 --> 00:21:49,749
+like trade offs you know I'll say okay
+
+583
+00:21:49,749 --> 00:21:51,399
+well the positives of putting it all in
+
+584
+00:21:51,399 --> 00:21:53,200
+one are that you would only have one
+
+585
+00:21:53,200 --> 00:21:54,580
+class to apply and you get all that
+
+586
+00:21:54,580 --> 00:21:56,559
+behavior the negatives are if you want
+
+587
+00:21:56,559 --> 00:21:57,879
+to use that separately from this you
+
+588
+00:21:57,879 --> 00:21:58,899
+really can't you're going to have to
+
+589
+00:21:58,899 --> 00:21:59,990
+make yet another new
+
+590
+00:21:59,990 --> 00:22:02,120
+and then talking about breaking it out
+
+591
+00:22:02,120 --> 00:22:04,910
+saying well you know would it make sense
+
+592
+00:22:04,910 --> 00:22:08,810
+to a user - for me a user as a developer
+
+593
+00:22:08,810 --> 00:22:11,600
+sorry would it make sense to a developer
+
+594
+00:22:11,600 --> 00:22:13,640
+who's using the system to know what
+
+595
+00:22:13,640 --> 00:22:16,010
+those individual pieces mean my sort of
+
+596
+00:22:16,010 --> 00:22:18,440
+guideline on that side is not having
+
+597
+00:22:18,440 --> 00:22:20,240
+anything that can't be shown and
+
+598
+00:22:20,240 --> 00:22:22,430
+understood in a style guide and the
+
+599
+00:22:22,430 --> 00:22:23,990
+reason for that is you know float:left
+
+600
+00:22:23,990 --> 00:22:25,910
+might feel like a really really great
+
+601
+00:22:25,910 --> 00:22:28,040
+class to have you know how floats work
+
+602
+00:22:28,040 --> 00:22:29,510
+and you know that you have to clear them
+
+603
+00:22:29,510 --> 00:22:31,130
+and you know all the ins and outs of
+
+604
+00:22:31,130 --> 00:22:32,660
+what might break if you float something
+
+605
+00:22:32,660 --> 00:22:34,940
+but I don't want to assume that the
+
+606
+00:22:34,940 --> 00:22:37,870
+people using my style guide to build
+
+607
+00:22:37,870 --> 00:22:40,430
+functionality know what a float means I
+
+608
+00:22:40,430 --> 00:22:41,510
+don't want them to have to think about
+
+609
+00:22:41,510 --> 00:22:43,670
+the guts of how CSS works when they're
+
+610
+00:22:43,670 --> 00:22:46,730
+interacting with it um so that's sort of
+
+611
+00:22:46,730 --> 00:22:48,350
+the trade-offs that I kind of try to
+
+612
+00:22:48,350 --> 00:22:50,000
+think of and try to walk them through
+
+613
+00:22:50,000 --> 00:22:52,670
+but it's hard right it's it's it turns
+
+614
+00:22:52,670 --> 00:22:54,590
+out like nothing really replaces a smart
+
+615
+00:22:54,590 --> 00:22:57,020
+developer making good decisions in a in
+
+616
+00:22:57,020 --> 00:23:01,040
+a given situation and I think that it's
+
+617
+00:23:01,040 --> 00:23:03,020
+it's difficult there are pros and cons
+
+618
+00:23:03,020 --> 00:23:05,990
+on both sides it's a little bit of the
+
+619
+00:23:05,990 --> 00:23:07,820
+anatomy of a good component let's look
+
+620
+00:23:07,820 --> 00:23:10,550
+at an example from Facebook this is
+
+621
+00:23:10,550 --> 00:23:13,430
+basically a media block example so it's
+
+622
+00:23:13,430 --> 00:23:15,050
+an image on the left and stuff that
+
+623
+00:23:15,050 --> 00:23:17,450
+describes it to the right this is in the
+
+624
+00:23:17,450 --> 00:23:19,550
+Oh CSS open source project on github
+
+625
+00:23:19,550 --> 00:23:21,860
+it's also in bootstrap now so you can
+
+626
+00:23:21,860 --> 00:23:25,160
+check it out there as well all of these
+
+627
+00:23:25,160 --> 00:23:26,900
+are actually a media blocks they're all
+
+628
+00:23:26,900 --> 00:23:29,120
+images with stuff that describes it to
+
+629
+00:23:29,120 --> 00:23:32,330
+the left or to the right they may look
+
+630
+00:23:32,330 --> 00:23:34,760
+different they may be different sizes
+
+631
+00:23:34,760 --> 00:23:36,050
+and things like that but they but
+
+632
+00:23:36,050 --> 00:23:38,090
+they're the same object so the first
+
+633
+00:23:38,090 --> 00:23:39,020
+thing to think about when you're trying
+
+634
+00:23:39,020 --> 00:23:41,300
+to figure out if something is a good
+
+635
+00:23:41,300 --> 00:23:42,560
+component is to figure out what do you
+
+636
+00:23:42,560 --> 00:23:44,750
+know about it now with these we know
+
+637
+00:23:44,750 --> 00:23:46,340
+they can be nested right because we've
+
+638
+00:23:46,340 --> 00:23:48,770
+got we've got a nested one over here
+
+639
+00:23:48,770 --> 00:23:51,590
+with a little envelope inside of that
+
+640
+00:23:51,590 --> 00:23:54,230
+particular that particular media block
+
+641
+00:23:54,230 --> 00:23:56,120
+we know that they have an optional right
+
+642
+00:23:56,120 --> 00:23:57,410
+button because that one also has a
+
+643
+00:23:57,410 --> 00:23:59,360
+little X on it where you can close it
+
+644
+00:23:59,360 --> 00:24:01,640
+away we know it's got a clear fix
+
+645
+00:24:01,640 --> 00:24:03,800
+because you don't want some content sort
+
+646
+00:24:03,800 --> 00:24:06,740
+of running up inside of the the media
+
+647
+00:24:06,740 --> 00:24:08,950
+blocks that you already have on the page
+
+648
+00:24:08,950 --> 00:24:11,150
+but maybe a little bit more important to
+
+649
+00:24:11,150 --> 00:24:12,290
+think about what we don't know
+
+650
+00:24:12,290 --> 00:24:13,670
+about it because what we don't know
+
+651
+00:24:13,670 --> 00:24:14,990
+about this object it's where it's gonna
+
+652
+00:24:14,990 --> 00:24:17,630
+be flexible where it's gonna solve more
+
+653
+00:24:17,630 --> 00:24:19,280
+than one problem rather than just the
+
+654
+00:24:19,280 --> 00:24:20,380
+problem at hand
+
+655
+00:24:20,380 --> 00:24:22,580
+so what we'll notice is the image width
+
+656
+00:24:22,580 --> 00:24:24,410
+and decoration vary we don't have any
+
+657
+00:24:24,410 --> 00:24:26,360
+idea how big the images in fact it could
+
+658
+00:24:26,360 --> 00:24:28,030
+be it could be a movie it could be
+
+659
+00:24:28,030 --> 00:24:30,740
+anything it could be video or other kind
+
+660
+00:24:30,740 --> 00:24:32,710
+of content as long as it's fixed with
+
+661
+00:24:32,710 --> 00:24:35,870
+the right contents also unknown in some
+
+662
+00:24:35,870 --> 00:24:37,610
+cases it's a list in some cases it's
+
+663
+00:24:37,610 --> 00:24:39,920
+just a simple link in some cases it's
+
+664
+00:24:39,920 --> 00:24:42,500
+fairly complex with links and lists and
+
+665
+00:24:42,500 --> 00:24:44,660
+all sorts of things put in it so we
+
+666
+00:24:44,660 --> 00:24:45,890
+don't want to assume anything about
+
+667
+00:24:45,890 --> 00:24:47,960
+what's gonna be contained inside of this
+
+668
+00:24:47,960 --> 00:24:50,750
+media block and the other thing is that
+
+669
+00:24:50,750 --> 00:24:52,490
+the width is unknown so we've got one
+
+670
+00:24:52,490 --> 00:24:53,750
+little one up there but we've got
+
+671
+00:24:53,750 --> 00:24:55,730
+another one that's really wide and if we
+
+672
+00:24:55,730 --> 00:24:58,400
+made this exactly 467 pixels wide
+
+673
+00:24:58,400 --> 00:25:00,050
+because that's how wide the sidebar
+
+674
+00:25:00,050 --> 00:25:01,280
+happened to be in this particular
+
+675
+00:25:01,280 --> 00:25:03,920
+iteration of a particular design and you
+
+676
+00:25:03,920 --> 00:25:05,510
+could only use that media block in a
+
+677
+00:25:05,510 --> 00:25:07,910
+case where that was true and that's
+
+678
+00:25:07,910 --> 00:25:09,500
+gonna be a really limited subset of
+
+679
+00:25:09,500 --> 00:25:12,680
+times so making the width be flexible is
+
+680
+00:25:12,680 --> 00:25:16,700
+super important as well we also want to
+
+681
+00:25:16,700 --> 00:25:19,880
+separate structure from chrome in the
+
+682
+00:25:19,880 --> 00:25:21,740
+top example it's a little hard to see
+
+683
+00:25:21,740 --> 00:25:23,240
+here there's a blue background and in
+
+684
+00:25:23,240 --> 00:25:24,500
+the bottom example there's a white
+
+685
+00:25:24,500 --> 00:25:27,020
+background we don't want to tie those
+
+686
+00:25:27,020 --> 00:25:28,550
+things together because then if we need
+
+687
+00:25:28,550 --> 00:25:30,170
+to make a green one or whatever other
+
+688
+00:25:30,170 --> 00:25:32,480
+color we would basically have to rewrite
+
+689
+00:25:32,480 --> 00:25:34,580
+all of the media block code and we don't
+
+690
+00:25:34,580 --> 00:25:37,460
+want to have to duplicate it so it's a
+
+691
+00:25:37,460 --> 00:25:40,010
+few lines of HTML this is the CSS
+
+692
+00:25:40,010 --> 00:25:41,510
+example rather than the bootstrap
+
+693
+00:25:41,510 --> 00:25:43,400
+example they weren't basically the same
+
+694
+00:25:43,400 --> 00:25:44,900
+the class names are just a little bit
+
+695
+00:25:44,900 --> 00:25:47,990
+different and then it's just a few lines
+
+696
+00:25:47,990 --> 00:25:50,870
+of CSS as well really simple on the
+
+697
+00:25:50,870 --> 00:25:52,940
+media there's a clear fix in this case
+
+698
+00:25:52,940 --> 00:25:54,710
+it's an overflow:hidden clear fix but it
+
+699
+00:25:54,710 --> 00:25:56,930
+really could be anything I found out
+
+700
+00:25:56,930 --> 00:25:59,720
+from talking to now at CSS coffee you
+
+701
+00:25:59,720 --> 00:26:02,210
+that from Facebook that they're now
+
+702
+00:26:02,210 --> 00:26:04,460
+using an overflow:hidden clear fix but
+
+703
+00:26:04,460 --> 00:26:05,450
+there are several different ways that
+
+704
+00:26:05,450 --> 00:26:07,670
+you can do it and all of them again have
+
+705
+00:26:07,670 --> 00:26:09,980
+positives and negatives good things
+
+706
+00:26:09,980 --> 00:26:11,630
+about them and things that are that are
+
+707
+00:26:11,630 --> 00:26:14,060
+harder and that you have to work with so
+
+708
+00:26:14,060 --> 00:26:15,590
+then it's just some float left and float
+
+709
+00:26:15,590 --> 00:26:17,030
+right and a little bit of margins to
+
+710
+00:26:17,030 --> 00:26:18,860
+separate out your your images from the
+
+711
+00:26:18,860 --> 00:26:20,990
+content there next to I'm so pretty
+
+712
+00:26:20,990 --> 00:26:23,630
+simple all in all and yet this is my
+
+713
+00:26:23,630 --> 00:26:25,150
+this is my facebook stream
+
+714
+00:26:25,150 --> 00:26:26,559
+on the right-hand side I've highlighted
+
+715
+00:26:26,559 --> 00:26:28,420
+everywhere that they used a media block
+
+716
+00:26:28,420 --> 00:26:31,300
+in order to layout content and I made it
+
+717
+00:26:31,300 --> 00:26:33,250
+a partial opacity so you can see where
+
+718
+00:26:33,250 --> 00:26:35,110
+it's darker red that's basically where
+
+719
+00:26:35,110 --> 00:26:36,730
+they're nesting media blocks inside of
+
+720
+00:26:36,730 --> 00:26:39,240
+each other so with just this one little
+
+721
+00:26:39,240 --> 00:26:41,860
+component it's pretty powerful and you
+
+722
+00:26:41,860 --> 00:26:44,200
+can you can actually do a whole bunch of
+
+723
+00:26:44,200 --> 00:26:46,000
+different kinds of layouts just with
+
+724
+00:26:46,000 --> 00:26:48,940
+this this one thing I think of it as one
+
+725
+00:26:48,940 --> 00:26:50,350
+of the most fundamental building blocks
+
+726
+00:26:50,350 --> 00:26:52,150
+of the web because almost every site or
+
+727
+00:26:52,150 --> 00:26:54,809
+app that I've worked on has one of these
+
+728
+00:26:54,809 --> 00:26:57,910
+the Facebook HTML size reduced by about
+
+729
+00:26:57,910 --> 00:27:02,290
+50% when they were working on this it's
+
+730
+00:27:02,290 --> 00:27:03,429
+kind of interesting because a lot of
+
+731
+00:27:03,429 --> 00:27:04,840
+people will say to me oh but you're
+
+732
+00:27:04,840 --> 00:27:06,280
+gonna have a lot of class names and your
+
+733
+00:27:06,280 --> 00:27:07,990
+HTML size it's gonna go up but
+
+734
+00:27:07,990 --> 00:27:09,820
+consistently with the different clients
+
+735
+00:27:09,820 --> 00:27:11,770
+I've worked with I ate CML size actually
+
+736
+00:27:11,770 --> 00:27:14,230
+goes down I think the reason is that
+
+737
+00:27:14,230 --> 00:27:15,880
+sure you may have a case that's super
+
+738
+00:27:15,880 --> 00:27:18,100
+optimized where you have like oh I only
+
+739
+00:27:18,100 --> 00:27:20,170
+needed one link and I was able to put
+
+740
+00:27:20,170 --> 00:27:22,510
+the icon in as a background image so you
+
+741
+00:27:22,510 --> 00:27:25,480
+only had to have that one that one node
+
+742
+00:27:25,480 --> 00:27:28,110
+in order to do it but the truth is that
+
+743
+00:27:28,110 --> 00:27:30,760
+usually if you have multiple ways of
+
+744
+00:27:30,760 --> 00:27:32,800
+coding the same component over and over
+
+745
+00:27:32,800 --> 00:27:35,020
+some may be coated really well and some
+
+746
+00:27:35,020 --> 00:27:36,910
+may be coated by a back-end developer
+
+747
+00:27:36,910 --> 00:27:38,530
+who would really rather not be writing
+
+748
+00:27:38,530 --> 00:27:40,540
+any CSS at all and who knows how they'll
+
+749
+00:27:40,540 --> 00:27:41,620
+end up doing it or how many nodes
+
+750
+00:27:41,620 --> 00:27:43,690
+they'll add so my feeling is that
+
+751
+00:27:43,690 --> 00:27:46,270
+overall the size reduces because the
+
+752
+00:27:46,270 --> 00:27:49,090
+consistency increases but that's you
+
+753
+00:27:49,090 --> 00:27:50,620
+know sort of me making up a story around
+
+754
+00:27:50,620 --> 00:27:53,200
+it all I really know numbers-wise is
+
+755
+00:27:53,200 --> 00:27:55,360
+that it does reduce you know when you
+
+756
+00:27:55,360 --> 00:27:58,660
+when you componentize so what makes a
+
+757
+00:27:58,660 --> 00:28:00,970
+good component correct granularity is
+
+758
+00:28:00,970 --> 00:28:04,000
+really really important how do you solve
+
+759
+00:28:04,000 --> 00:28:06,700
+only one problem and solve it well when
+
+760
+00:28:06,700 --> 00:28:07,840
+which problem are you going to have
+
+761
+00:28:07,840 --> 00:28:09,460
+solved by this component which things
+
+762
+00:28:09,460 --> 00:28:11,700
+aren't you going to try and make it do
+
+763
+00:28:11,700 --> 00:28:13,780
+flexibility what don't you know
+
+764
+00:28:13,780 --> 00:28:15,490
+particularly width and height you want
+
+765
+00:28:15,490 --> 00:28:16,870
+to let the content control your height
+
+766
+00:28:16,870 --> 00:28:18,970
+and grids control your width rather than
+
+767
+00:28:18,970 --> 00:28:21,330
+having individual components have sizes
+
+768
+00:28:21,330 --> 00:28:24,550
+you want to keep your specificity low if
+
+769
+00:28:24,550 --> 00:28:25,360
+you want to be able to combine
+
+770
+00:28:25,360 --> 00:28:27,040
+components it's really important to have
+
+771
+00:28:27,040 --> 00:28:28,390
+low specificity so they're not
+
+772
+00:28:28,390 --> 00:28:31,080
+constantly overriding each other
+
+773
+00:28:31,080 --> 00:28:33,460
+encapsulation is important to which
+
+774
+00:28:33,460 --> 00:28:35,110
+nodes actually belong to this media
+
+775
+00:28:35,110 --> 00:28:36,730
+block and which are just they happen to
+
+776
+00:28:36,730 --> 00:28:38,269
+be children but they're not
+
+777
+00:28:38,269 --> 00:28:41,469
+part of the media block itself and
+
+778
+00:28:41,469 --> 00:28:43,849
+modularity and predictability as well
+
+779
+00:28:43,849 --> 00:28:45,200
+the media block shouldn't behave
+
+780
+00:28:45,200 --> 00:28:47,269
+differently just because you put it into
+
+781
+00:28:47,269 --> 00:28:49,279
+a different column or you put it into a
+
+782
+00:28:49,279 --> 00:28:51,619
+different page developers won't trust
+
+783
+00:28:51,619 --> 00:28:53,989
+your code if they think that something
+
+784
+00:28:53,989 --> 00:28:56,929
+may not behave the same way on different
+
+785
+00:28:56,929 --> 00:29:01,219
+parts of the site so here's the the tile
+
+786
+00:29:01,219 --> 00:29:03,769
+panel that we built and the designs for
+
+787
+00:29:03,769 --> 00:29:06,440
+it it was sort of interesting I think
+
+788
+00:29:06,440 --> 00:29:08,629
+it's typical of designs and illustrator
+
+789
+00:29:08,629 --> 00:29:11,479
+when we got it from the designer we
+
+790
+00:29:11,479 --> 00:29:14,929
+noticed that the the icon and the text
+
+791
+00:29:14,929 --> 00:29:17,959
+was always centered even when the footer
+
+792
+00:29:17,959 --> 00:29:19,519
+showed and didn't show on hover and
+
+793
+00:29:19,519 --> 00:29:21,799
+we're at first said oh goodness like how
+
+794
+00:29:21,799 --> 00:29:24,829
+are we going to do that and we at first
+
+795
+00:29:24,829 --> 00:29:26,119
+tried not to but it looked really bad
+
+796
+00:29:26,119 --> 00:29:29,089
+you had a big gap under there when when
+
+797
+00:29:29,089 --> 00:29:31,309
+the footer wasn't showing then we made
+
+798
+00:29:31,309 --> 00:29:32,570
+it like a Plinko board where it just
+
+799
+00:29:32,570 --> 00:29:34,309
+showed on hover like you know really
+
+800
+00:29:34,309 --> 00:29:36,079
+fast and that didn't work either
+
+801
+00:29:36,079 --> 00:29:38,269
+so iterating with the designer we were
+
+802
+00:29:38,269 --> 00:29:39,799
+able to come up with an animation that
+
+803
+00:29:39,799 --> 00:29:43,129
+showed the the footer slowly it faded in
+
+804
+00:29:43,129 --> 00:29:45,859
+and faded out and the content rose up
+
+805
+00:29:45,859 --> 00:29:48,409
+and rose down along with it something
+
+806
+00:29:48,409 --> 00:29:53,029
+like a 300 millisecond animation and so
+
+807
+00:29:53,029 --> 00:29:54,619
+by working with them and actually having
+
+808
+00:29:54,619 --> 00:29:56,599
+them sit down and do design dev pairing
+
+809
+00:29:56,599 --> 00:29:58,729
+we were able to get something that felt
+
+810
+00:29:58,729 --> 00:30:01,279
+like it worked pretty well but without
+
+811
+00:30:01,279 --> 00:30:02,959
+having to have it specified to the ends
+
+812
+00:30:02,959 --> 00:30:05,539
+degree I really hate the illustrator
+
+813
+00:30:05,539 --> 00:30:07,369
+with the red line marks on it that say
+
+814
+00:30:07,369 --> 00:30:08,839
+exactly how many pixels should be
+
+815
+00:30:08,839 --> 00:30:10,700
+between this thing and that thing
+
+816
+00:30:10,700 --> 00:30:13,070
+it drives me crazy I don't think that we
+
+817
+00:30:13,070 --> 00:30:14,690
+always know that and I think it's really
+
+818
+00:30:14,690 --> 00:30:17,559
+hard to keep it consistent across pages
+
+819
+00:30:17,559 --> 00:30:19,639
+there's no way to do a DIF of an
+
+820
+00:30:19,639 --> 00:30:21,440
+illustrator file and to figure out that
+
+821
+00:30:21,440 --> 00:30:23,209
+oh whoops we used a slightly larger
+
+822
+00:30:23,209 --> 00:30:24,919
+heading in this one or we've added an
+
+823
+00:30:24,919 --> 00:30:27,169
+extra Pixlr to of space below this guy
+
+824
+00:30:27,169 --> 00:30:28,969
+so I think it's much more important to
+
+825
+00:30:28,969 --> 00:30:30,440
+define the default spacing for the
+
+826
+00:30:30,440 --> 00:30:32,629
+components and then put them together
+
+827
+00:30:32,629 --> 00:30:34,279
+and let them let them sort of deal with
+
+828
+00:30:34,279 --> 00:30:38,479
+themselves so we then did a sort of
+
+829
+00:30:38,479 --> 00:30:40,609
+visual acceptance of the components so
+
+830
+00:30:40,609 --> 00:30:42,559
+in the style guide context the PM the
+
+831
+00:30:42,559 --> 00:30:45,249
+design took time to review and
+
+832
+00:30:45,249 --> 00:30:47,509
+independent of the individual page it
+
+833
+00:30:47,509 --> 00:30:49,700
+was used on this felt really good to us
+
+834
+00:30:49,700 --> 00:30:52,100
+because we were struggling when we try
+
+835
+00:30:52,100 --> 00:30:54,620
+two views based CSS with ending up
+
+836
+00:30:54,620 --> 00:30:56,330
+calling things really specific stuff
+
+837
+00:30:56,330 --> 00:30:58,460
+like it would it would be like the the
+
+838
+00:30:58,460 --> 00:31:00,890
+marketing marketing footer and things
+
+839
+00:31:00,890 --> 00:31:02,240
+like that and then we'd end up using it
+
+840
+00:31:02,240 --> 00:31:03,679
+on another page and it started to feel
+
+841
+00:31:03,679 --> 00:31:05,390
+weird because it wasn't a marketing page
+
+842
+00:31:05,390 --> 00:31:06,830
+anymore they just happen to want to have
+
+843
+00:31:06,830 --> 00:31:09,770
+the same footer so doing that acceptance
+
+844
+00:31:09,770 --> 00:31:12,110
+independently helped us write cleaner
+
+845
+00:31:12,110 --> 00:31:15,860
+more generic code so we converted the
+
+846
+00:31:15,860 --> 00:31:18,830
+marketing page first mainly because it
+
+847
+00:31:18,830 --> 00:31:21,320
+got designed first and it was a little
+
+848
+00:31:21,320 --> 00:31:24,860
+more concrete because and mainly because
+
+849
+00:31:24,860 --> 00:31:26,630
+as well all the components for that page
+
+850
+00:31:26,630 --> 00:31:29,059
+got done first we really wanted to start
+
+851
+00:31:29,059 --> 00:31:31,460
+converting pages as soon as possible
+
+852
+00:31:31,460 --> 00:31:32,900
+because we were afraid the PM would pull
+
+853
+00:31:32,900 --> 00:31:34,370
+the plug on the project if we took too
+
+854
+00:31:34,370 --> 00:31:36,230
+long and so we wanted him to start to
+
+855
+00:31:36,230 --> 00:31:38,570
+see project progress and to see that we
+
+856
+00:31:38,570 --> 00:31:41,030
+were getting somewhere so we basically
+
+857
+00:31:41,030 --> 00:31:43,250
+then at a story once we'd done the
+
+858
+00:31:43,250 --> 00:31:44,870
+stories for all the components for that
+
+859
+00:31:44,870 --> 00:31:45,440
+page
+
+860
+00:31:45,440 --> 00:31:47,360
+we had another story which was implement
+
+861
+00:31:47,360 --> 00:31:49,340
+the marketplace page design with
+
+862
+00:31:49,340 --> 00:31:54,110
+components it was it was quite cool to
+
+863
+00:31:54,110 --> 00:31:56,030
+get a story like this because once we
+
+864
+00:31:56,030 --> 00:31:57,830
+had all the components together it was
+
+865
+00:31:57,830 --> 00:32:00,470
+like hooking up Legos and you know we
+
+866
+00:32:00,470 --> 00:32:01,760
+would put all the components together
+
+867
+00:32:01,760 --> 00:32:05,090
+and in basically a plain HTML or plain
+
+868
+00:32:05,090 --> 00:32:08,000
+Hamel document with lorem ipsum in it
+
+869
+00:32:08,000 --> 00:32:09,919
+and then we separated out actually
+
+870
+00:32:09,919 --> 00:32:11,570
+hooking up the backend and hooking up
+
+871
+00:32:11,570 --> 00:32:13,520
+the data side of things and doing that
+
+872
+00:32:13,520 --> 00:32:15,710
+again in two steps helped it to be
+
+873
+00:32:15,710 --> 00:32:18,020
+faster and cleaner especially for the
+
+874
+00:32:18,020 --> 00:32:19,580
+developers who weren't as familiar with
+
+875
+00:32:19,580 --> 00:32:21,440
+component systems they got a chance to
+
+876
+00:32:21,440 --> 00:32:23,480
+just figure out components not have to
+
+877
+00:32:23,480 --> 00:32:25,130
+do that along with figuring out hooking
+
+878
+00:32:25,130 --> 00:32:27,530
+up the data and from my side where I'm
+
+879
+00:32:27,530 --> 00:32:29,299
+less familiar with back-end it was great
+
+880
+00:32:29,299 --> 00:32:31,340
+because I got to do the hooking of the
+
+881
+00:32:31,340 --> 00:32:33,110
+data side without having to also think
+
+882
+00:32:33,110 --> 00:32:35,000
+about whether I'd properly indented my
+
+883
+00:32:35,000 --> 00:32:36,950
+panel and that kind of stuff all that
+
+884
+00:32:36,950 --> 00:32:41,000
+was solved ahead of time we had feature
+
+885
+00:32:41,000 --> 00:32:42,500
+flags for all of this so that we could
+
+886
+00:32:42,500 --> 00:32:45,110
+still regularly deploy usually we like
+
+887
+00:32:45,110 --> 00:32:47,059
+to do incremental deploys but in this
+
+888
+00:32:47,059 --> 00:32:48,710
+case it was just such a big change that
+
+889
+00:32:48,710 --> 00:32:50,630
+we couldn't have some one page of the
+
+890
+00:32:50,630 --> 00:32:52,250
+site be green and another page of the
+
+891
+00:32:52,250 --> 00:32:54,950
+site or all the other pages be blue so
+
+892
+00:32:54,950 --> 00:32:56,570
+we decided to feature flag the whole
+
+893
+00:32:56,570 --> 00:32:59,840
+thing and do one big giant deploy I'm
+
+894
+00:32:59,840 --> 00:33:01,549
+sort of considering that incremental
+
+895
+00:33:01,549 --> 00:33:04,070
+release or the big bang approach and I
+
+896
+00:33:04,070 --> 00:33:05,510
+like incremental release
+
+897
+00:33:05,510 --> 00:33:07,010
+I think it's a lot easier to be sure
+
+898
+00:33:07,010 --> 00:33:08,210
+you're not doing something crazy or
+
+899
+00:33:08,210 --> 00:33:10,370
+users are going to hate but in this case
+
+900
+00:33:10,370 --> 00:33:11,900
+it wouldn't it wouldn't work for us with
+
+901
+00:33:11,900 --> 00:33:15,530
+the constraints of time that we had so
+
+902
+00:33:15,530 --> 00:33:16,790
+the thing that we were trying to do more
+
+903
+00:33:16,790 --> 00:33:18,320
+than anything was to make an unsightly
+
+904
+00:33:18,320 --> 00:33:20,870
+clean spot and this is something that a
+
+905
+00:33:20,870 --> 00:33:22,370
+friend of mine came up with years ago
+
+906
+00:33:22,370 --> 00:33:25,400
+when he loved to restore old cars and he
+
+907
+00:33:25,400 --> 00:33:26,600
+would talk about when he'd gotten a
+
+908
+00:33:26,600 --> 00:33:29,060
+really junky old car and he would clean
+
+909
+00:33:29,060 --> 00:33:31,550
+part of it and how just cleaning that
+
+910
+00:33:31,550 --> 00:33:33,770
+part made such a contrast so that you
+
+911
+00:33:33,770 --> 00:33:35,390
+could actually see how dirty and how
+
+912
+00:33:35,390 --> 00:33:37,640
+much attention and time other parts of
+
+913
+00:33:37,640 --> 00:33:40,060
+the antique car needed to bring it up to
+
+914
+00:33:40,060 --> 00:33:43,970
+to restored condition and so we kind of
+
+915
+00:33:43,970 --> 00:33:45,500
+did that with our site we had some
+
+916
+00:33:45,500 --> 00:33:48,260
+pretty messy code it felt pretty
+
+917
+00:33:48,260 --> 00:33:50,480
+overwhelming and a bunch of people had
+
+918
+00:33:50,480 --> 00:33:52,070
+sort of tried to start getting things
+
+919
+00:33:52,070 --> 00:33:53,810
+cleaner and it no one had gotten
+
+920
+00:33:53,810 --> 00:33:56,120
+traction our velocity was super low and
+
+921
+00:33:56,120 --> 00:33:58,910
+we just weren't getting things done and
+
+922
+00:33:58,910 --> 00:34:00,770
+so then we decided the unsightly clean
+
+923
+00:34:00,770 --> 00:34:02,420
+spot approach we weren't gonna try to
+
+924
+00:34:02,420 --> 00:34:05,030
+get everything better we were just gonna
+
+925
+00:34:05,030 --> 00:34:06,500
+focus on getting the front end code
+
+926
+00:34:06,500 --> 00:34:08,540
+better just gonna focus on components
+
+927
+00:34:08,540 --> 00:34:09,950
+and we're gonna completely ignore the
+
+928
+00:34:09,950 --> 00:34:12,110
+Ruby for a while and once we did that
+
+929
+00:34:12,110 --> 00:34:14,240
+and we actually made an unsightly clean
+
+930
+00:34:14,240 --> 00:34:16,909
+spot we could see oh wow that's the Ruby
+
+931
+00:34:16,909 --> 00:34:18,620
+our endpoints are not working for us
+
+932
+00:34:18,620 --> 00:34:20,659
+because we need we actually need this in
+
+933
+00:34:20,659 --> 00:34:21,980
+the front end and we're not getting it
+
+934
+00:34:21,980 --> 00:34:24,500
+in the way that we need so I think it's
+
+935
+00:34:24,500 --> 00:34:26,510
+actually a pretty good way of starting
+
+936
+00:34:26,510 --> 00:34:29,419
+to starting to clean up a messy code
+
+937
+00:34:29,419 --> 00:34:32,179
+bases don't try to like spread your your
+
+938
+00:34:32,179 --> 00:34:34,250
+refactoring around the entire code base
+
+939
+00:34:34,250 --> 00:34:37,159
+evenly focus it on one bit and like
+
+940
+00:34:37,159 --> 00:34:39,770
+really get that bit making sense I think
+
+941
+00:34:39,770 --> 00:34:45,990
+at least for us that worked really well
+
+942
+00:34:46,000 --> 00:34:49,760
+so when converting a page first we
+
+943
+00:34:49,760 --> 00:34:51,590
+created the layout with the static
+
+944
+00:34:51,590 --> 00:34:53,270
+components and then second we wired up
+
+945
+00:34:53,270 --> 00:34:55,340
+the page to the back-end dynamic content
+
+946
+00:34:55,340 --> 00:34:57,139
+so we would end up with something like
+
+947
+00:34:57,139 --> 00:35:00,680
+this where we had a Hamel but it you
+
+948
+00:35:00,680 --> 00:35:03,590
+know was all basically first lorem ipsum
+
+949
+00:35:03,590 --> 00:35:05,270
+and then we would actually hook it up to
+
+950
+00:35:05,270 --> 00:35:07,340
+our endpoints and get our you know
+
+951
+00:35:07,340 --> 00:35:09,110
+service offering names and descriptions
+
+952
+00:35:09,110 --> 00:35:13,430
+and things like that once we finally had
+
+953
+00:35:13,430 --> 00:35:15,650
+put together everything so we had we had
+
+954
+00:35:15,650 --> 00:35:17,810
+all the components we had the page done
+
+955
+00:35:17,810 --> 00:35:18,589
+with we
+
+956
+00:35:18,589 --> 00:35:20,029
+components and then we had all the data
+
+957
+00:35:20,029 --> 00:35:22,039
+hooked up then we did another stage of
+
+958
+00:35:22,039 --> 00:35:23,539
+acceptance where our p.m. would look at
+
+959
+00:35:23,539 --> 00:35:25,339
+the actual page and test all the flows
+
+960
+00:35:25,339 --> 00:35:27,319
+and make sure they made sense as well I
+
+961
+00:35:27,319 --> 00:35:28,969
+would give design a chance to look at
+
+962
+00:35:28,969 --> 00:35:32,359
+the entire page in in its context and
+
+963
+00:35:32,359 --> 00:35:33,920
+make sure that the decisions we'd made
+
+964
+00:35:33,920 --> 00:35:36,410
+in the in the microcosm of a particular
+
+965
+00:35:36,410 --> 00:35:37,999
+component actually made sense when they
+
+966
+00:35:37,999 --> 00:35:42,079
+were blown up to a page level design dev
+
+967
+00:35:42,079 --> 00:35:44,660
+pairing was amazing for this we got to
+
+968
+00:35:44,660 --> 00:35:46,460
+do refinements we got to do animation
+
+969
+00:35:46,460 --> 00:35:48,710
+timing and interactions it just wasn't
+
+970
+00:35:48,710 --> 00:35:50,390
+possible to communicate that in static
+
+971
+00:35:50,390 --> 00:35:53,359
+mock-ups Adobe products are really tough
+
+972
+00:35:53,359 --> 00:35:55,729
+for for anything where you want to
+
+973
+00:35:55,729 --> 00:35:57,380
+communicate about how something changes
+
+974
+00:35:57,380 --> 00:36:00,910
+over time or or anything like that so we
+
+975
+00:36:00,910 --> 00:36:03,469
+found that it was much better to do a
+
+976
+00:36:03,469 --> 00:36:06,589
+rough version in pure HTML with just
+
+977
+00:36:06,589 --> 00:36:08,509
+some basic design feedback and then
+
+978
+00:36:08,509 --> 00:36:10,759
+actually sit with the designer and do it
+
+979
+00:36:10,759 --> 00:36:13,670
+together and then we discovered our
+
+980
+00:36:13,670 --> 00:36:15,140
+designer could code as well which was a
+
+981
+00:36:15,140 --> 00:36:17,960
+fantastic thing to find out now we're
+
+982
+00:36:17,960 --> 00:36:19,910
+making him code all the time
+
+983
+00:36:19,910 --> 00:36:22,670
+so we all scented color and spacing
+
+984
+00:36:22,670 --> 00:36:23,960
+tweaks when they didn't match the
+
+985
+00:36:23,960 --> 00:36:26,450
+mock-ups so sometimes he do things like
+
+986
+00:36:26,450 --> 00:36:29,660
+change the background color when you
+
+987
+00:36:29,660 --> 00:36:31,460
+know normal iterations right he had used
+
+988
+00:36:31,460 --> 00:36:33,170
+a pretty dark grey kind of a battleship
+
+989
+00:36:33,170 --> 00:36:35,089
+gray for our background and it really
+
+990
+00:36:35,089 --> 00:36:37,130
+looked cool but in a bunch of cases with
+
+991
+00:36:37,130 --> 00:36:38,359
+different content and didn't work very
+
+992
+00:36:38,359 --> 00:36:40,789
+well so slowly over time he'd lightened
+
+993
+00:36:40,789 --> 00:36:42,619
+it in the mock-ups but we didn't realize
+
+994
+00:36:42,619 --> 00:36:44,930
+so in design death pairing he would pick
+
+995
+00:36:44,930 --> 00:36:46,190
+up things like that and say oh you
+
+996
+00:36:46,190 --> 00:36:47,779
+didn't notice I'd lightened this we need
+
+997
+00:36:47,779 --> 00:36:49,489
+to change the gray that's the background
+
+998
+00:36:49,489 --> 00:36:55,640
+of our our page and so more sort of
+
+999
+00:36:55,640 --> 00:36:57,589
+mushy results like less numbers based
+
+1000
+00:36:57,589 --> 00:36:59,420
+but I think just as important if not
+
+1001
+00:36:59,420 --> 00:37:01,969
+more important we now have no view
+
+1002
+00:37:01,969 --> 00:37:04,489
+specific CSS at all it's it's completely
+
+1003
+00:37:04,489 --> 00:37:07,519
+gone making making changes to the CSS
+
+1004
+00:37:07,519 --> 00:37:09,680
+isn't terrifying anymore I mean I have
+
+1005
+00:37:09,680 --> 00:37:11,779
+like 10 years or 13 years of experience
+
+1006
+00:37:11,779 --> 00:37:14,539
+writing CSS and the CSS that we had in
+
+1007
+00:37:14,539 --> 00:37:16,279
+the beginning I didn't dare change it I
+
+1008
+00:37:16,279 --> 00:37:17,359
+felt like I was going to break
+
+1009
+00:37:17,359 --> 00:37:19,460
+everything if I touched it anywhere
+
+1010
+00:37:19,460 --> 00:37:21,079
+nevermind people who were just getting
+
+1011
+00:37:21,079 --> 00:37:22,549
+out of college or who had done back end
+
+1012
+00:37:22,549 --> 00:37:24,619
+and hadn't done a lot of front end it
+
+1013
+00:37:24,619 --> 00:37:26,059
+was really rough
+
+1014
+00:37:26,059 --> 00:37:28,430
+and so now changing our CSS you know
+
+1015
+00:37:28,430 --> 00:37:30,079
+exactly what's going to change as a
+
+1016
+00:37:30,079 --> 00:37:30,710
+result
+
+1017
+00:37:30,710 --> 00:37:33,040
+the scope is a lot easier to determine
+
+1018
+00:37:33,040 --> 00:37:35,450
+all of the components are in the style
+
+1019
+00:37:35,450 --> 00:37:36,950
+guide which in terms of a testing
+
+1020
+00:37:36,950 --> 00:37:38,960
+strategy has worked out really well it
+
+1021
+00:37:38,960 --> 00:37:40,430
+means that when we add a new component
+
+1022
+00:37:40,430 --> 00:37:42,080
+we can check the style guide rather than
+
+1023
+00:37:42,080 --> 00:37:43,790
+having to check every page of the entire
+
+1024
+00:37:43,790 --> 00:37:47,270
+site and that has been really super in
+
+1025
+00:37:47,270 --> 00:37:49,400
+terms of having I spent less time on
+
+1026
+00:37:49,400 --> 00:37:50,630
+testing and more time actually getting
+
+1027
+00:37:50,630 --> 00:37:53,690
+features out there way fewer partials
+
+1028
+00:37:53,690 --> 00:37:55,820
+it's possible to actually tell what's
+
+1029
+00:37:55,820 --> 00:37:57,350
+going on in a page because we made
+
+1030
+00:37:57,350 --> 00:37:59,750
+sensible partials when something was
+
+1031
+00:37:59,750 --> 00:38:01,640
+reused we made it into a partial when it
+
+1032
+00:38:01,640 --> 00:38:04,430
+wasn't we didn't and that has been
+
+1033
+00:38:04,430 --> 00:38:07,730
+that's been pretty helpful oh we got rid
+
+1034
+00:38:07,730 --> 00:38:10,730
+of jQuery UI and bootstrap too which is
+
+1035
+00:38:10,730 --> 00:38:12,950
+fantastic I think one framework is
+
+1036
+00:38:12,950 --> 00:38:15,170
+enough for anybody and we did not need
+
+1037
+00:38:15,170 --> 00:38:17,810
+to have so many hanging around and more
+
+1038
+00:38:17,810 --> 00:38:19,190
+importantly maybe for the user the
+
+1039
+00:38:19,190 --> 00:38:20,870
+design is consistent and now when the
+
+1040
+00:38:20,870 --> 00:38:22,400
+designer wants to change something like
+
+1041
+00:38:22,400 --> 00:38:23,870
+he just came up with a new design for
+
+1042
+00:38:23,870 --> 00:38:26,480
+all of the buttons we can do that and we
+
+1043
+00:38:26,480 --> 00:38:27,410
+can do that quickly
+
+1044
+00:38:27,410 --> 00:38:29,600
+you know that's now in our story instead
+
+1045
+00:38:29,600 --> 00:38:33,980
+of a multi-day or possibly week story so
+
+1046
+00:38:33,980 --> 00:38:36,140
+before when people were starting a new
+
+1047
+00:38:36,140 --> 00:38:37,250
+story the question they were asking
+
+1048
+00:38:37,250 --> 00:38:39,920
+himself was what markup and CSS do I
+
+1049
+00:38:39,920 --> 00:38:41,630
+need to write now when they're starting
+
+1050
+00:38:41,630 --> 00:38:43,310
+a new story they say which components is
+
+1051
+00:38:43,310 --> 00:38:45,320
+this page made of and that's a really
+
+1052
+00:38:45,320 --> 00:38:47,720
+fantastic change that's that's made a
+
+1053
+00:38:47,720 --> 00:38:50,060
+huge difference in terms of how we work
+
+1054
+00:38:50,060 --> 00:38:51,320
+together and how much fun we're having
+
+1055
+00:38:51,320 --> 00:38:53,420
+building things not wasting time
+
+1056
+00:38:53,420 --> 00:38:54,980
+reinventing the wheel but instead
+
+1057
+00:38:54,980 --> 00:38:57,320
+spending our time making the stuff
+
+1058
+00:38:57,320 --> 00:38:58,580
+that's really going to make the product
+
+1059
+00:38:58,580 --> 00:39:00,680
+different and innovative and you know
+
+1060
+00:39:00,680 --> 00:39:01,850
+building the new thing instead of
+
+1061
+00:39:01,850 --> 00:39:03,790
+building the old things over and over
+

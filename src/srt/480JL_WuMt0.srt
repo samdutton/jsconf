@@ -1,0 +1,3665 @@
+1
+00:00:00,580 --> 00:00:19,260
+
+[Music]
+
+2
+00:00:19,270 --> 00:00:21,290
+intercalating this is talk about
+
+3
+00:00:21,290 --> 00:00:23,720
+javascript performance tuning secrets so
+
+4
+00:00:23,720 --> 00:00:25,910
+this is not so much about how to
+
+5
+00:00:25,910 --> 00:00:27,439
+structure your code in a way that it
+
+6
+00:00:27,439 --> 00:00:29,450
+runs quickly it's more about the tools
+
+7
+00:00:29,450 --> 00:00:31,099
+and techniques that you can use to begin
+
+8
+00:00:31,099 --> 00:00:33,380
+to evaluate and investigate performance
+
+9
+00:00:33,380 --> 00:00:35,540
+issues and so I'm assuming that you're
+
+10
+00:00:35,540 --> 00:00:37,010
+sort of familiar already with the basic
+
+11
+00:00:37,010 --> 00:00:38,059
+stuff and the dev tools like the
+
+12
+00:00:38,059 --> 00:00:41,120
+timeline panel and the profiler this is
+
+13
+00:00:41,120 --> 00:00:42,440
+going more into sort of more exotic
+
+14
+00:00:42,440 --> 00:00:43,970
+crazy stuff that you might not be as
+
+15
+00:00:43,970 --> 00:00:45,410
+familiar with some of it's a little
+
+16
+00:00:45,410 --> 00:00:47,150
+hacky some of it's a little bit tricky
+
+17
+00:00:47,150 --> 00:00:49,640
+and all that to get working but if
+
+18
+00:00:49,640 --> 00:00:50,750
+you're really in a tough bind with
+
+19
+00:00:50,750 --> 00:00:52,070
+performance and you're just desperate
+
+20
+00:00:52,070 --> 00:00:53,540
+for one little clue one of the most
+
+21
+00:00:53,540 --> 00:00:54,890
+scrap of information that might lead you
+
+22
+00:00:54,890 --> 00:00:57,379
+to an improvement and a fix these are
+
+23
+00:00:57,379 --> 00:01:00,049
+good tools to have in your tool kit so
+
+24
+00:01:00,049 --> 00:01:01,309
+because this talk is pretty short I'm
+
+25
+00:01:01,309 --> 00:01:02,540
+gonna fly over a lot of different
+
+26
+00:01:02,540 --> 00:01:04,940
+material I'm gonna try to post up some
+
+27
+00:01:04,940 --> 00:01:06,740
+links to further reading on this github
+
+28
+00:01:06,740 --> 00:01:09,080
+repo along with the slides there's
+
+29
+00:01:09,080 --> 00:01:10,850
+nothing there yet but hopefully by this
+
+30
+00:01:10,850 --> 00:01:15,890
+weekend there will be so me real quick I
+
+31
+00:01:15,890 --> 00:01:17,390
+started doing professional web
+
+32
+00:01:17,390 --> 00:01:19,700
+development back when Firefox was in 100
+
+33
+00:01:19,700 --> 00:01:21,890
+beta back when WebKit's javascript
+
+34
+00:01:21,890 --> 00:01:23,659
+engine sucks so badly that you couldn't
+
+35
+00:01:23,659 --> 00:01:25,969
+do anything with it things that really
+
+36
+00:01:25,969 --> 00:01:27,920
+come a long way since then these days I
+
+37
+00:01:27,920 --> 00:01:29,689
+work at Adobe on the brackets team
+
+38
+00:01:29,689 --> 00:01:31,729
+brackets is an open source code editor
+
+39
+00:01:31,729 --> 00:01:33,229
+that we're building for web developers
+
+40
+00:01:33,229 --> 00:01:35,479
+it's also written in JavaScript and it's
+
+41
+00:01:35,479 --> 00:01:37,549
+a pretty pretty serious app the rackets
+
+42
+00:01:37,549 --> 00:01:39,170
+UI is about a hundred thousand lines of
+
+43
+00:01:39,170 --> 00:01:40,820
+JavaScript code that's over ten
+
+44
+00:01:40,820 --> 00:01:43,100
+megabytes of J's files so it's a very
+
+45
+00:01:43,100 --> 00:01:44,960
+performance intensive app and that's
+
+46
+00:01:44,960 --> 00:01:46,250
+kind of where I'm coming from on all
+
+47
+00:01:46,250 --> 00:01:50,630
+this stuff so first of all why is this
+
+48
+00:01:50,630 --> 00:01:51,979
+even a complicated problem I mean it
+
+49
+00:01:51,979 --> 00:01:53,840
+seems like sort of naively you could
+
+50
+00:01:53,840 --> 00:01:55,100
+just do something like this right you
+
+51
+00:01:55,100 --> 00:01:56,840
+you record a start time you do some
+
+52
+00:01:56,840 --> 00:01:58,789
+stuff you record an end time you know
+
+53
+00:01:58,789 --> 00:02:00,590
+how how long it took right and we're
+
+54
+00:02:00,590 --> 00:02:02,090
+using that these higher resolution
+
+55
+00:02:02,090 --> 00:02:04,429
+performance measuring API is that are in
+
+56
+00:02:04,429 --> 00:02:06,109
+modern browsers you get sub millisecond
+
+57
+00:02:06,109 --> 00:02:09,200
+accuracy it's really cool but I think
+
+58
+00:02:09,200 --> 00:02:10,460
+there's basically two big problems with
+
+59
+00:02:10,460 --> 00:02:12,500
+this the first is that you know a lot of
+
+60
+00:02:12,500 --> 00:02:13,790
+times your JavaScript is running in the
+
+61
+00:02:13,790 --> 00:02:14,900
+browser and when you're running in the
+
+62
+00:02:14,900 --> 00:02:16,160
+browser there's a lot of other stuff
+
+63
+00:02:16,160 --> 00:02:17,540
+that happens after this code is done
+
+64
+00:02:17,540 --> 00:02:20,060
+like that or that or that
+
+65
+00:02:20,060 --> 00:02:22,730
+that so if what you actually care about
+
+66
+00:02:22,730 --> 00:02:25,550
+is how long it takes before the user
+
+67
+00:02:25,550 --> 00:02:28,129
+gets feedback visually on screen the
+
+68
+00:02:28,129 --> 00:02:29,780
+browser native rendering stuff is
+
+69
+00:02:29,780 --> 00:02:31,780
+actually very important and that's
+
+70
+00:02:31,780 --> 00:02:33,010
+from the bottleneck these days because
+
+71
+00:02:33,010 --> 00:02:35,920
+JavaScript is so darn fast that the
+
+72
+00:02:35,920 --> 00:02:37,450
+browser native side can actually be the
+
+73
+00:02:37,450 --> 00:02:40,690
+bigger performance issue so that's one
+
+74
+00:02:40,690 --> 00:02:42,310
+issue but then of course also you know
+
+75
+00:02:42,310 --> 00:02:44,319
+lots of people run JavaScript like on on
+
+76
+00:02:44,319 --> 00:02:46,150
+the server or in helicopters or other
+
+77
+00:02:46,150 --> 00:02:48,340
+crazy stuff and regardless of where
+
+78
+00:02:48,340 --> 00:02:49,360
+you're running and I think the second
+
+79
+00:02:49,360 --> 00:02:50,680
+issue comes into play and that is that
+
+80
+00:02:50,680 --> 00:02:51,790
+javascript is not actually what's
+
+81
+00:02:51,790 --> 00:02:54,220
+running on a CPU right there's this this
+
+82
+00:02:54,220 --> 00:02:56,260
+mystery black boxes JavaScript VM it
+
+83
+00:02:56,260 --> 00:02:58,150
+does a bunch of magic and make circa one
+
+84
+00:02:58,150 --> 00:02:59,440
+and that's actually what's running on
+
+85
+00:02:59,440 --> 00:03:02,050
+the CPU and for performance sensitive
+
+86
+00:03:02,050 --> 00:03:04,540
+code what goes on that black box can be
+
+87
+00:03:04,540 --> 00:03:06,070
+really important getting deeper insights
+
+88
+00:03:06,070 --> 00:03:08,380
+into there as valuable so I'll talk
+
+89
+00:03:08,380 --> 00:03:09,940
+about those two topics in turn first
+
+90
+00:03:09,940 --> 00:03:11,830
+kind of like getting inter tangled with
+
+91
+00:03:11,830 --> 00:03:13,650
+browser native rendering stuff and then
+
+92
+00:03:13,650 --> 00:03:15,250
+second the interaction between
+
+93
+00:03:15,250 --> 00:03:16,989
+JavaScript and the VM it's running in
+
+94
+00:03:16,989 --> 00:03:19,090
+I'll go through a number of topics in
+
+95
+00:03:19,090 --> 00:03:20,769
+each of these they're arranged roughly
+
+96
+00:03:20,769 --> 00:03:23,709
+in ascending order of craziness so we'll
+
+97
+00:03:23,709 --> 00:03:24,819
+go down the left column first and I'm
+
+98
+00:03:24,819 --> 00:03:27,010
+going on the right column and and then
+
+99
+00:03:27,010 --> 00:03:28,090
+it'll have a little bit of miscellaneous
+
+100
+00:03:28,090 --> 00:03:31,840
+stuff at the end the wrap-up so first of
+
+101
+00:03:31,840 --> 00:03:33,190
+all who hasn't seen the timeline panel
+
+102
+00:03:33,190 --> 00:03:35,290
+and is willing to admit it in front of
+
+103
+00:03:35,290 --> 00:03:38,019
+everybody here anyone no one brave
+
+104
+00:03:38,019 --> 00:03:39,880
+enough okay but that's good and so
+
+105
+00:03:39,880 --> 00:03:40,840
+hopefully everybody knows about this
+
+106
+00:03:40,840 --> 00:03:43,090
+frames view which is I think the the
+
+107
+00:03:43,090 --> 00:03:44,560
+most powerful visualization you can get
+
+108
+00:03:44,560 --> 00:03:45,760
+in there for things like animation
+
+109
+00:03:45,760 --> 00:03:46,810
+performance scrolling performance
+
+110
+00:03:46,810 --> 00:03:48,459
+anything that's really rendering
+
+111
+00:03:48,459 --> 00:03:51,160
+oriented okay so hopefully everyone's
+
+112
+00:03:51,160 --> 00:03:52,570
+familiar with that but here are some
+
+113
+00:03:52,570 --> 00:03:53,560
+things you might not know about the
+
+114
+00:03:53,560 --> 00:03:56,019
+timeline panel first of all you can
+
+115
+00:03:56,019 --> 00:03:58,150
+actually add your own custom annotation
+
+116
+00:03:58,150 --> 00:03:59,590
+to this panel so if you do consult a
+
+117
+00:03:59,590 --> 00:04:01,090
+timestamp you actually get these tick
+
+118
+00:04:01,090 --> 00:04:03,820
+marks that show up both in the overview
+
+119
+00:04:03,820 --> 00:04:05,320
+of the whole timeline capture and also
+
+120
+00:04:05,320 --> 00:04:07,510
+in the individual zoomed interview you
+
+121
+00:04:07,510 --> 00:04:09,420
+can also use slightly different code
+
+122
+00:04:09,420 --> 00:04:12,250
+console that time and time end to
+
+123
+00:04:12,250 --> 00:04:14,920
+actually insert your own little bars in
+
+124
+00:04:14,920 --> 00:04:16,810
+the view so you can basically begin to
+
+125
+00:04:16,810 --> 00:04:19,919
+layer on semantic annotations that are
+
+126
+00:04:19,919 --> 00:04:22,360
+specific to your code so it makes it
+
+127
+00:04:22,360 --> 00:04:23,620
+that much easier to parse so you're no
+
+128
+00:04:23,620 --> 00:04:24,700
+longer you're looking at this really
+
+129
+00:04:24,700 --> 00:04:26,890
+generic you sort of blinded you that the
+
+130
+00:04:26,890 --> 00:04:28,720
+browser gives you what's going on you
+
+131
+00:04:28,720 --> 00:04:30,070
+can now actually begin looking at this
+
+132
+00:04:30,070 --> 00:04:31,630
+in terms of what it means in your in
+
+133
+00:04:31,630 --> 00:04:34,000
+your app which is pretty pretty cool
+
+134
+00:04:34,000 --> 00:04:36,669
+stuff but one thing that's always
+
+135
+00:04:36,669 --> 00:04:38,110
+bothered me about the timeline panel is
+
+136
+00:04:38,110 --> 00:04:40,030
+that it's very manually driven workflow
+
+137
+00:04:40,030 --> 00:04:41,830
+right like you load your page you have
+
+138
+00:04:41,830 --> 00:04:43,300
+to click around in it you record some
+
+139
+00:04:43,300 --> 00:04:44,440
+data you scrub through it in the
+
+140
+00:04:44,440 --> 00:04:46,780
+timeline it's not really conducive to
+
+141
+00:04:46,780 --> 00:04:48,190
+things like continuous integration where
+
+142
+00:04:48,190 --> 00:04:50,050
+you might want to be you know checking
+
+143
+00:04:50,050 --> 00:04:51,159
+for performance regressions
+
+144
+00:04:51,159 --> 00:04:52,750
+automatically on every check-in and
+
+145
+00:04:52,750 --> 00:04:53,500
+things like that
+
+146
+00:04:53,500 --> 00:04:56,289
+but it actually turns out there is a way
+
+147
+00:04:56,289 --> 00:04:58,780
+to do that so this may not be widely
+
+148
+00:04:58,780 --> 00:05:00,669
+known but the timeline panel in fact
+
+149
+00:05:00,669 --> 00:05:02,200
+everything in the developer tools in
+
+150
+00:05:02,200 --> 00:05:05,409
+Chrome and WebKit is built on top of an
+
+151
+00:05:05,409 --> 00:05:08,140
+open API that's just in JSON format and
+
+152
+00:05:08,140 --> 00:05:10,960
+it exposes a socket connection so anyone
+
+153
+00:05:10,960 --> 00:05:12,430
+can connect to that remote debugging API
+
+154
+00:05:12,430 --> 00:05:14,200
+in fact in the brackets editor we use
+
+155
+00:05:14,200 --> 00:05:15,460
+that API for things like live
+
+156
+00:05:15,460 --> 00:05:17,919
+development and google has actually
+
+157
+00:05:17,919 --> 00:05:19,990
+built a testing framework on top of this
+
+158
+00:05:19,990 --> 00:05:22,330
+called the telemetry framework it's
+
+159
+00:05:22,330 --> 00:05:24,039
+basically a collection of Python scripts
+
+160
+00:05:24,039 --> 00:05:27,360
+and and templates for test cases that
+
+161
+00:05:27,360 --> 00:05:29,979
+let you do automated performance testing
+
+162
+00:05:29,979 --> 00:05:31,630
+using the same data feed that the
+
+163
+00:05:31,630 --> 00:05:33,460
+timeline panel gives you except in an
+
+164
+00:05:33,460 --> 00:05:35,620
+automated way it actually includes some
+
+165
+00:05:35,620 --> 00:05:37,300
+some pretty powerful UI automation
+
+166
+00:05:37,300 --> 00:05:38,470
+capability so you can do things like
+
+167
+00:05:38,470 --> 00:05:40,270
+simulating clicks and and scrolling
+
+168
+00:05:40,270 --> 00:05:42,640
+scrolling is a particularly tricky one
+
+169
+00:05:42,640 --> 00:05:44,890
+to simulate normally from JavaScript so
+
+170
+00:05:44,890 --> 00:05:46,030
+actually what they do here is that
+
+171
+00:05:46,030 --> 00:05:47,950
+there's a there's a special API that is
+
+172
+00:05:47,950 --> 00:05:49,659
+turned off in Chrome normally that when
+
+173
+00:05:49,659 --> 00:05:51,610
+the telemetry framework runs chrome it
+
+174
+00:05:51,610 --> 00:05:54,159
+passes a flag that enables a special API
+
+175
+00:05:54,159 --> 00:05:56,289
+just for simulating scrolling accurately
+
+176
+00:05:56,289 --> 00:05:57,640
+to get really good performance data
+
+177
+00:05:57,640 --> 00:05:59,950
+there so it's really cool stuff and
+
+178
+00:05:59,950 --> 00:06:01,360
+briefly the way it works is you you
+
+179
+00:06:01,360 --> 00:06:02,830
+write it up a JSON file that has like a
+
+180
+00:06:02,830 --> 00:06:04,659
+list of URLs and a list of actions in
+
+181
+00:06:04,659 --> 00:06:06,010
+the URLs and what you want to test in
+
+182
+00:06:06,010 --> 00:06:08,020
+them you know you can scroll different
+
+183
+00:06:08,020 --> 00:06:09,250
+parts of the document click on different
+
+184
+00:06:09,250 --> 00:06:11,680
+dom nodes that sort of thing
+
+185
+00:06:11,680 --> 00:06:13,090
+you need to get the chrome source code
+
+186
+00:06:13,090 --> 00:06:14,229
+you don't need to compile it but you get
+
+187
+00:06:14,229 --> 00:06:15,220
+the scripts out of there and then you
+
+188
+00:06:15,220 --> 00:06:16,810
+run you run these scripts and you pass
+
+189
+00:06:16,810 --> 00:06:19,780
+it your JSON file and and then it
+
+190
+00:06:19,780 --> 00:06:21,099
+actually spits out a JSON file with
+
+191
+00:06:21,099 --> 00:06:25,030
+performance data so simple as that if
+
+192
+00:06:25,030 --> 00:06:26,469
+you're looking for an example of how to
+
+193
+00:06:26,469 --> 00:06:28,090
+use this I think a great place to look
+
+194
+00:06:28,090 --> 00:06:30,219
+is the topcoat project which if anyone
+
+195
+00:06:30,219 --> 00:06:31,840
+was at CSS comp you would have seen a
+
+196
+00:06:31,840 --> 00:06:33,640
+little bit about that there it's an open
+
+197
+00:06:33,640 --> 00:06:36,820
+source CSS framework basically and
+
+198
+00:06:36,820 --> 00:06:38,200
+they're very very concerned with
+
+199
+00:06:38,200 --> 00:06:39,610
+performance rendering performance load
+
+200
+00:06:39,610 --> 00:06:41,110
+performance all that so they're doing
+
+201
+00:06:41,110 --> 00:06:42,580
+automated testing using this telemetry
+
+202
+00:06:42,580 --> 00:06:44,050
+framework you can see a great example of
+
+203
+00:06:44,050 --> 00:06:44,890
+how to use it there
+
+204
+00:06:44,890 --> 00:06:47,140
+and they've also built a spin-off
+
+205
+00:06:47,140 --> 00:06:49,030
+project which is the top code server
+
+206
+00:06:49,030 --> 00:06:50,620
+project it's basically a node server
+
+207
+00:06:50,620 --> 00:06:52,120
+that you can use to upload your
+
+208
+00:06:52,120 --> 00:06:52,880
+performer
+
+209
+00:06:52,880 --> 00:06:54,590
+results too and we'll track the results
+
+210
+00:06:54,590 --> 00:06:56,240
+over time and it presents a really nice
+
+211
+00:06:56,240 --> 00:06:58,310
+web view visualizing how your
+
+212
+00:06:58,310 --> 00:07:00,380
+performance is varying over time so it's
+
+213
+00:07:00,380 --> 00:07:01,640
+a really great project you can make use
+
+214
+00:07:01,640 --> 00:07:06,310
+of when you're using these api's also
+
+215
+00:07:06,310 --> 00:07:08,240
+there's some other cool stuff in the dev
+
+216
+00:07:08,240 --> 00:07:10,160
+tools the FPS meter continuous
+
+217
+00:07:10,160 --> 00:07:11,990
+repainting these are really invaluable
+
+218
+00:07:11,990 --> 00:07:14,360
+for assessing rendering performance I'm
+
+219
+00:07:14,360 --> 00:07:15,860
+not going to go into detail on them here
+
+220
+00:07:15,860 --> 00:07:17,150
+though there's a lot of great stuff you
+
+221
+00:07:17,150 --> 00:07:19,330
+can read up on the googles about this
+
+222
+00:07:19,330 --> 00:07:21,050
+definitely very useful if you don't know
+
+223
+00:07:21,050 --> 00:07:24,440
+about it similarly there's a mode where
+
+224
+00:07:24,440 --> 00:07:25,970
+you can see repaint rectangles overlaid
+
+225
+00:07:25,970 --> 00:07:27,200
+in the page and there's a mode where you
+
+226
+00:07:27,200 --> 00:07:30,050
+can see compositing layers annotated
+
+227
+00:07:30,050 --> 00:07:32,420
+with borders and grids on the page it
+
+228
+00:07:32,420 --> 00:07:33,590
+gives you really really great deep
+
+229
+00:07:33,590 --> 00:07:34,790
+insight into what's going on with
+
+230
+00:07:34,790 --> 00:07:36,410
+browser painting on the one hand and
+
+231
+00:07:36,410 --> 00:07:38,320
+browser compositing on the other hand
+
+232
+00:07:38,320 --> 00:07:40,400
+but again this is pretty well-documented
+
+233
+00:07:40,400 --> 00:07:41,840
+stuff so I'm not going to go into too
+
+234
+00:07:41,840 --> 00:07:44,120
+much detail on it right here the
+
+235
+00:07:44,120 --> 00:07:45,380
+question actually then I'm going to talk
+
+236
+00:07:45,380 --> 00:07:46,640
+about is what if this is what if this
+
+237
+00:07:46,640 --> 00:07:48,260
+isn't enough what if you need even more
+
+238
+00:07:48,260 --> 00:07:51,460
+deeper insight into what's going on with
+
+239
+00:07:51,460 --> 00:07:54,580
+rendering and compositing in the browser
+
+240
+00:07:54,580 --> 00:07:56,510
+how many people have seen this for you
+
+241
+00:07:56,510 --> 00:07:59,630
+before phew how many people like to know
+
+242
+00:07:59,630 --> 00:08:03,740
+how to read it all right cool it's gonna
+
+243
+00:08:03,740 --> 00:08:04,790
+do a whole joke or someone had their
+
+244
+00:08:04,790 --> 00:08:05,930
+hand up I was gonna be like put your
+
+245
+00:08:05,930 --> 00:08:06,860
+hand down if you work at Google that's
+
+246
+00:08:06,860 --> 00:08:08,360
+cheating but I guess no one hears from
+
+247
+00:08:08,360 --> 00:08:11,630
+Google so well so I'll give you a quick
+
+248
+00:08:11,630 --> 00:08:15,470
+tour of this well resolution okay this
+
+249
+00:08:15,470 --> 00:08:16,520
+is a lot like what you see in the
+
+250
+00:08:16,520 --> 00:08:17,930
+timeline panel except it's broken down
+
+251
+00:08:17,930 --> 00:08:21,830
+at a very low level by thread and so the
+
+252
+00:08:21,830 --> 00:08:22,940
+first thing to know is it's capturing
+
+253
+00:08:22,940 --> 00:08:23,870
+everything that's going on in the
+
+254
+00:08:23,870 --> 00:08:25,430
+browser including all tabs you have open
+
+255
+00:08:25,430 --> 00:08:26,930
+so you want to close every other tab to
+
+256
+00:08:26,930 --> 00:08:29,060
+get extraneous data out of here and then
+
+257
+00:08:29,060 --> 00:08:31,700
+you want to use the the task manager to
+
+258
+00:08:31,700 --> 00:08:35,450
+actually identify which which to which
+
+259
+00:08:35,450 --> 00:08:37,219
+process ID you care about for your tab
+
+260
+00:08:37,219 --> 00:08:38,570
+there's always going to be a few extra
+
+261
+00:08:38,570 --> 00:08:40,820
+ones in here I happen to know that for
+
+262
+00:08:40,820 --> 00:08:42,800
+this run that I already captured the
+
+263
+00:08:42,800 --> 00:08:45,650
+thread that I care about is 60 to 60 so
+
+264
+00:08:45,650 --> 00:08:48,500
+I'm just gonna go close all this extra
+
+265
+00:08:48,500 --> 00:08:53,620
+stuff here that I don't care about and
+
+266
+00:08:53,620 --> 00:08:56,600
+I'll just leave a couple the gp1 is
+
+267
+00:08:56,600 --> 00:08:59,450
+useful to see also so there are
+
+268
+00:08:59,450 --> 00:09:02,030
+basically two threads involved in
+
+269
+00:09:02,030 --> 00:09:03,010
+rendering on any given
+
+270
+00:09:03,010 --> 00:09:04,690
+browser tab there's a compositor thread
+
+271
+00:09:04,690 --> 00:09:06,400
+and the renderer thread which is
+
+272
+00:09:06,400 --> 00:09:07,480
+actually where the bulk of the work
+
+273
+00:09:07,480 --> 00:09:09,010
+usually happens that's where v8 runs
+
+274
+00:09:09,010 --> 00:09:10,210
+your JavaScript that's where layout
+
+275
+00:09:10,210 --> 00:09:12,510
+happens that's where repainting happens
+
+276
+00:09:12,510 --> 00:09:14,590
+but this doesn't really look like much
+
+277
+00:09:14,590 --> 00:09:15,880
+yet if you look at this is actually a
+
+278
+00:09:15,880 --> 00:09:17,500
+really big time scale it's like a like
+
+279
+00:09:17,500 --> 00:09:19,510
+three second capture so it's just a big
+
+280
+00:09:19,510 --> 00:09:21,100
+mash of stuff we want to be able to zoom
+
+281
+00:09:21,100 --> 00:09:24,220
+in and the quickest way to do that is to
+
+282
+00:09:24,220 --> 00:09:25,630
+hold down alt and use the mouse wheel
+
+283
+00:09:25,630 --> 00:09:27,970
+and you can begin zooming in and start
+
+284
+00:09:27,970 --> 00:09:29,830
+seeing this break down into individual
+
+285
+00:09:29,830 --> 00:09:33,460
+basically frame per frame units to
+
+286
+00:09:33,460 --> 00:09:34,660
+navigate further you pretend you're
+
+287
+00:09:34,660 --> 00:09:36,490
+playing quake and you use the a and the
+
+288
+00:09:36,490 --> 00:09:39,310
+D key to pan horizontally and you can
+
+289
+00:09:39,310 --> 00:09:41,560
+use W and s to zoom in and out so it's
+
+290
+00:09:41,560 --> 00:09:43,300
+like a video game it's a little crazy to
+
+291
+00:09:43,300 --> 00:09:45,760
+navigate and as we zoom in more we can
+
+292
+00:09:45,760 --> 00:09:47,620
+start seeing these individual frame by
+
+293
+00:09:47,620 --> 00:09:48,760
+frame units and if you look they're
+
+294
+00:09:48,760 --> 00:09:51,430
+broken down roughly in 16 and changed
+
+295
+00:09:51,430 --> 00:09:53,380
+millisecond intervals so that's this is
+
+296
+00:09:53,380 --> 00:09:55,180
+one frame right here and there's this
+
+297
+00:09:55,180 --> 00:09:57,550
+characteristic u-shape to it so
+
+298
+00:09:57,550 --> 00:09:59,830
+rendering a given frame starts on the
+
+299
+00:09:59,830 --> 00:10:01,450
+compositor thread and the bulk of the
+
+300
+00:10:01,450 --> 00:10:02,590
+work usually happens in the render
+
+301
+00:10:02,590 --> 00:10:04,300
+thread and then it basically wraps up on
+
+302
+00:10:04,300 --> 00:10:05,560
+the compositor threat again so when you
+
+303
+00:10:05,560 --> 00:10:07,270
+see one of these u shapes that's
+
+304
+00:10:07,270 --> 00:10:09,010
+generally a single frame from start to
+
+305
+00:10:09,010 --> 00:10:12,670
+finish so the way that you actually read
+
+306
+00:10:12,670 --> 00:10:13,960
+the data in here is this is basically a
+
+307
+00:10:13,960 --> 00:10:15,820
+stack trace on the native side so these
+
+308
+00:10:15,820 --> 00:10:17,680
+are different methods that are running
+
+309
+00:10:17,680 --> 00:10:22,120
+in in Chrome there's run task calls
+
+310
+00:10:22,120 --> 00:10:23,860
+begin frame on main thread which calls
+
+311
+00:10:23,860 --> 00:10:25,600
+animate on the one hand which calls into
+
+312
+00:10:25,600 --> 00:10:27,960
+v8 that's requestanimationframe
+
+313
+00:10:27,960 --> 00:10:30,280
+calls layout after that it calls update
+
+314
+00:10:30,280 --> 00:10:33,610
+layers etc so the width of the bar is
+
+315
+00:10:33,610 --> 00:10:34,960
+how long it took so you can begin to get
+
+316
+00:10:34,960 --> 00:10:36,520
+a really good sense here of what's the
+
+317
+00:10:36,520 --> 00:10:38,410
+self time versus the total time forgiven
+
+318
+00:10:38,410 --> 00:10:40,750
+method call broken down in a really low
+
+319
+00:10:40,750 --> 00:10:44,080
+level the colors don't actually mean
+
+320
+00:10:44,080 --> 00:10:45,460
+anything in particular that was pretty
+
+321
+00:10:45,460 --> 00:10:47,560
+confusing to me at first they're just
+
+322
+00:10:47,560 --> 00:10:49,510
+randomly assigned but the same method
+
+323
+00:10:49,510 --> 00:10:50,800
+consistently gets the same color
+
+324
+00:10:50,800 --> 00:10:52,570
+everywhere that it appears so it makes
+
+325
+00:10:52,570 --> 00:10:53,860
+it much easier to sort of skim through
+
+326
+00:10:53,860 --> 00:10:56,740
+repeated results more easily you'll also
+
+327
+00:10:56,740 --> 00:10:59,620
+see that as a GPU thread down here which
+
+328
+00:10:59,620 --> 00:11:01,390
+is sometimes in sync with what's going
+
+329
+00:11:01,390 --> 00:11:03,400
+on in your particular tabs compositor
+
+330
+00:11:03,400 --> 00:11:04,720
+and render threads but not always
+
+331
+00:11:04,720 --> 00:11:06,100
+because it's actually shared across the
+
+332
+00:11:06,100 --> 00:11:08,170
+whole browser and so it's usually
+
+333
+00:11:08,170 --> 00:11:09,700
+running at the same frame rate but
+
+334
+00:11:09,700 --> 00:11:11,470
+sometimes out of phase which is one of
+
+335
+00:11:11,470 --> 00:11:13,540
+the reasons that measuring rendering
+
+336
+00:11:13,540 --> 00:11:15,290
+latency is a lot trickier than regiment
+
+337
+00:11:15,290 --> 00:11:17,980
+during rendering frequency or framerate
+
+338
+00:11:17,980 --> 00:11:20,720
+an X on the GPU thread this is view is
+
+339
+00:11:20,720 --> 00:11:22,459
+going to be enhanced in a future version
+
+340
+00:11:22,459 --> 00:11:24,589
+of Chrome as they do some rendering
+
+341
+00:11:24,589 --> 00:11:25,910
+refactoring it's going to add more and
+
+342
+00:11:25,910 --> 00:11:27,740
+more tools to begin visualizing what's
+
+343
+00:11:27,740 --> 00:11:29,389
+going on with GPU textures and
+
+344
+00:11:29,389 --> 00:11:31,880
+individual repaint steps even so it's
+
+345
+00:11:31,880 --> 00:11:35,660
+pretty powerful this is sort of a
+
+346
+00:11:35,660 --> 00:11:36,860
+complement to the timeline panel though
+
+347
+00:11:36,860 --> 00:11:38,149
+it's not a replacement for it in fact
+
+348
+00:11:38,149 --> 00:11:39,380
+there's some cases where the timeline
+
+349
+00:11:39,380 --> 00:11:40,730
+panel gives you more information than
+
+350
+00:11:40,730 --> 00:11:42,500
+what you see here for example if you
+
+351
+00:11:42,500 --> 00:11:44,600
+hover over a repaint in the timelines
+
+352
+00:11:44,600 --> 00:11:46,940
+it'll show you overlaid on the page the
+
+353
+00:11:46,940 --> 00:11:48,319
+bounds of the repaint you can't get that
+
+354
+00:11:48,319 --> 00:11:49,759
+from chrome tracing and same thing with
+
+355
+00:11:49,759 --> 00:11:51,380
+layout you can see the stack trace that
+
+356
+00:11:51,380 --> 00:11:52,940
+caused the layout to happen you don't
+
+357
+00:11:52,940 --> 00:11:54,589
+get that from here either but what you
+
+358
+00:11:54,589 --> 00:11:56,149
+do get is this really really in-depth
+
+359
+00:11:56,149 --> 00:11:57,920
+thread by thread breakdown of what's
+
+360
+00:11:57,920 --> 00:11:59,690
+going on on the GPU thread versus the
+
+361
+00:11:59,690 --> 00:12:00,949
+compositor thread and you can begin to
+
+362
+00:12:00,949 --> 00:12:02,839
+see where bottlenecks are actually
+
+363
+00:12:02,839 --> 00:12:04,130
+happening at at a more fine-grained
+
+364
+00:12:04,130 --> 00:12:08,839
+level so back before all these tools
+
+365
+00:12:08,839 --> 00:12:11,660
+though you know measuring rendering
+
+366
+00:12:11,660 --> 00:12:13,339
+performance in JavaScript was like
+
+367
+00:12:13,339 --> 00:12:14,779
+comically bad if you mirror that earlier
+
+368
+00:12:14,779 --> 00:12:15,680
+slide there's all that stuff that
+
+369
+00:12:15,680 --> 00:12:17,240
+happens outside of JavaScript there's
+
+370
+00:12:17,240 --> 00:12:18,290
+almost native stuff so if you try to
+
+371
+00:12:18,290 --> 00:12:19,370
+measure it from JavaScript you get
+
+372
+00:12:19,370 --> 00:12:21,410
+ridiculous results like this where it's
+
+373
+00:12:21,410 --> 00:12:24,110
+like off by 2x or 3x it's just
+
+374
+00:12:24,110 --> 00:12:26,180
+completely ridiculous useless data and
+
+375
+00:12:26,180 --> 00:12:28,250
+back before things like the FPS meter
+
+376
+00:12:28,250 --> 00:12:29,300
+and the timeline panel were
+
+377
+00:12:29,300 --> 00:12:32,510
+well-established this is the kind of
+
+378
+00:12:32,510 --> 00:12:34,490
+terrible data you got and so this leads
+
+379
+00:12:34,490 --> 00:12:36,560
+us to our last and craziest hack in the
+
+380
+00:12:36,560 --> 00:12:38,750
+Dom rendering column back in the day
+
+381
+00:12:38,750 --> 00:12:41,180
+like say 2011 before there was an FPS
+
+382
+00:12:41,180 --> 00:12:44,360
+meter available what could you do to get
+
+383
+00:12:44,360 --> 00:12:46,310
+these orange bars to get the actual
+
+384
+00:12:46,310 --> 00:12:48,350
+accurate data when javascript is so far
+
+385
+00:12:48,350 --> 00:12:51,050
+off the mark and we developed a number
+
+386
+00:12:51,050 --> 00:12:52,160
+of people actually were not the only
+
+387
+00:12:52,160 --> 00:12:53,600
+ones we developed a really ridiculous
+
+388
+00:12:53,600 --> 00:12:56,690
+idea that looks like this that's not a
+
+389
+00:12:56,690 --> 00:12:58,399
+regular SLR camera that's a camera that
+
+390
+00:12:58,399 --> 00:13:00,050
+shoots video at 600 frames per second
+
+391
+00:13:00,050 --> 00:13:02,240
+and of course if you give engineers a
+
+392
+00:13:02,240 --> 00:13:03,529
+toy like this inevitably we're gonna
+
+393
+00:13:03,529 --> 00:13:04,670
+shoot some video that looks like this
+
+394
+00:13:04,670 --> 00:13:07,189
+before we get any real work done it's a
+
+395
+00:13:07,189 --> 00:13:09,319
+guy breathing fire obviously but
+
+396
+00:13:09,319 --> 00:13:10,519
+eventually we decided we should probably
+
+397
+00:13:10,519 --> 00:13:14,290
+try to be productive and we eventually
+
+398
+00:13:14,290 --> 00:13:16,759
+decided to shoot video that looks more
+
+399
+00:13:16,759 --> 00:13:19,430
+like this this is me hitting a key as
+
+400
+00:13:19,430 --> 00:13:20,360
+fast as I can
+
+401
+00:13:20,360 --> 00:13:22,910
+slow down 20 times and you can see
+
+402
+00:13:22,910 --> 00:13:24,139
+there's a noticeable delay between my
+
+403
+00:13:24,139 --> 00:13:25,220
+fingers striking the key and the
+
+404
+00:13:25,220 --> 00:13:25,889
+character
+
+405
+00:13:25,889 --> 00:13:28,439
+on the screen so you can get extremely
+
+406
+00:13:28,439 --> 00:13:29,970
+extremely precise information about
+
+407
+00:13:29,970 --> 00:13:31,949
+things like rendering latency using this
+
+408
+00:13:31,949 --> 00:13:33,959
+kind of technique obviously this is a
+
+409
+00:13:33,959 --> 00:13:35,790
+last resort it's really time consuming
+
+410
+00:13:35,790 --> 00:13:37,829
+to do this so you should prefer to use
+
+411
+00:13:37,829 --> 00:13:39,359
+the timeline panel the frame per second
+
+412
+00:13:39,359 --> 00:13:41,609
+meter requestanimationframe base timing
+
+413
+00:13:41,609 --> 00:13:42,629
+these more modern things that are
+
+414
+00:13:42,629 --> 00:13:44,429
+available but there are a few cases I
+
+415
+00:13:44,429 --> 00:13:46,169
+think where this is still useful things
+
+416
+00:13:46,169 --> 00:13:47,579
+like latency for example again are
+
+417
+00:13:47,579 --> 00:13:48,929
+trickier to measure the frames per
+
+418
+00:13:48,929 --> 00:13:50,639
+second meter tells you frequency but not
+
+419
+00:13:50,639 --> 00:13:53,069
+wait and see another thing that's really
+
+420
+00:13:53,069 --> 00:13:54,359
+powerful about it though is it actually
+
+421
+00:13:54,359 --> 00:13:56,040
+lets you measure the performance of apps
+
+422
+00:13:56,040 --> 00:13:57,389
+where you don't have access to the code
+
+423
+00:13:57,389 --> 00:13:59,069
+so I think we're very used to in the
+
+424
+00:13:59,069 --> 00:14:00,449
+JavaScript world you can bring up any
+
+425
+00:14:00,449 --> 00:14:02,040
+webpage and pull up developer tools on
+
+426
+00:14:02,040 --> 00:14:03,899
+it start poking around in the code but
+
+427
+00:14:03,899 --> 00:14:05,189
+let's say you're building like a mobile
+
+428
+00:14:05,189 --> 00:14:07,589
+website or code Cordova based mobile app
+
+429
+00:14:07,589 --> 00:14:09,089
+and you want to compare your performance
+
+430
+00:14:09,089 --> 00:14:10,529
+against a native phone app that's your
+
+431
+00:14:10,529 --> 00:14:12,299
+competitor you don't have access to the
+
+432
+00:14:12,299 --> 00:14:14,129
+native code you can't instrument it so a
+
+433
+00:14:14,129 --> 00:14:15,419
+technique like this would actually let
+
+434
+00:14:15,419 --> 00:14:17,069
+you measure the performance of the
+
+435
+00:14:17,069 --> 00:14:18,899
+native app and compare that against your
+
+436
+00:14:18,899 --> 00:14:20,730
+web-based app so in cases like that
+
+437
+00:14:20,730 --> 00:14:22,589
+world though this is crazy as a last
+
+438
+00:14:22,589 --> 00:14:24,350
+resort it can still come in handy
+
+439
+00:14:24,350 --> 00:14:26,989
+alright so we're done talking about the
+
+440
+00:14:26,989 --> 00:14:29,160
+rendering column let's switch over and
+
+441
+00:14:29,160 --> 00:14:30,600
+talk about things that go on inside of
+
+442
+00:14:30,600 --> 00:14:33,389
+v8 now and I think that probably
+
+443
+00:14:33,389 --> 00:14:35,189
+everybody knows about the profiler panel
+
+444
+00:14:35,189 --> 00:14:38,069
+at least a little bit in v8 or sorry in
+
+445
+00:14:38,069 --> 00:14:40,589
+the developer tools but actually I think
+
+446
+00:14:40,589 --> 00:14:42,749
+that for memory profiling the timeline
+
+447
+00:14:42,749 --> 00:14:44,779
+panel is a great first place to start
+
+448
+00:14:44,779 --> 00:14:46,679
+there are four things that this gives
+
+449
+00:14:46,679 --> 00:14:48,749
+you that are really really handy the
+
+450
+00:14:48,749 --> 00:14:50,279
+first is you get this if you switch to
+
+451
+00:14:50,279 --> 00:14:52,019
+the memory view you get this overview
+
+452
+00:14:52,019 --> 00:14:53,579
+across the whole timeline capture of
+
+453
+00:14:53,579 --> 00:14:55,139
+memory usage over time so you can start
+
+454
+00:14:55,139 --> 00:14:56,519
+to see patterns like memory leaks right
+
+455
+00:14:56,519 --> 00:14:58,350
+increasing constantly you can see
+
+456
+00:14:58,350 --> 00:14:59,730
+excessive object turn if you're getting
+
+457
+00:14:59,730 --> 00:15:02,879
+a GC sort of sawtooth too frequently you
+
+458
+00:15:02,879 --> 00:15:04,589
+also get this count at the bottom which
+
+459
+00:15:04,589 --> 00:15:07,049
+is counting the number of Dom related
+
+460
+00:15:07,049 --> 00:15:08,519
+objects specifically which is one of the
+
+461
+00:15:08,519 --> 00:15:10,049
+more dangerous sources of memory leaks
+
+462
+00:15:10,049 --> 00:15:11,939
+because of how much native browser stuff
+
+463
+00:15:11,939 --> 00:15:13,889
+is prevented from getting freed by
+
+464
+00:15:13,889 --> 00:15:16,649
+holding on to Dom objects then you can
+
+465
+00:15:16,649 --> 00:15:18,449
+also see individual GC events
+
+466
+00:15:18,449 --> 00:15:20,879
+highlighted as individual tick marks
+
+467
+00:15:20,879 --> 00:15:22,139
+here so you can actually quantify how
+
+468
+00:15:22,139 --> 00:15:24,629
+much time your JavaScript is frozen from
+
+469
+00:15:24,629 --> 00:15:27,389
+being executed by a GC going on and then
+
+470
+00:15:27,389 --> 00:15:29,189
+lastly for any individual yellow bar in
+
+471
+00:15:29,189 --> 00:15:30,480
+the timeline that's showing JavaScript
+
+472
+00:15:30,480 --> 00:15:32,399
+execution recent versions of chrome
+
+473
+00:15:32,399 --> 00:15:35,249
+actually show you the size of the number
+
+474
+00:15:35,249 --> 00:15:37,139
+of objects that were generated during
+
+475
+00:15:37,139 --> 00:15:38,030
+the execution that
+
+476
+00:15:38,030 --> 00:15:39,380
+javascript so you can again start to get
+
+477
+00:15:39,380 --> 00:15:41,180
+a sense of how much object turn is going
+
+478
+00:15:41,180 --> 00:15:43,750
+on and at a pretty fine-grained level
+
+479
+00:15:43,750 --> 00:15:46,280
+and then of course moving into the more
+
+480
+00:15:46,280 --> 00:15:48,440
+standard memory profiling view hopefully
+
+481
+00:15:48,440 --> 00:15:50,060
+everybody knows you can you can take a
+
+482
+00:15:50,060 --> 00:15:51,650
+memory snapshot and begin delving into
+
+483
+00:15:51,650 --> 00:15:53,630
+it something that might be a little less
+
+484
+00:15:53,630 --> 00:15:54,920
+widely known though is that you can
+
+485
+00:15:54,920 --> 00:15:56,600
+actually take multiple snapshots and dip
+
+486
+00:15:56,600 --> 00:15:59,900
+them in this view so this is really
+
+487
+00:15:59,900 --> 00:16:01,040
+really useful for looking at memory
+
+488
+00:16:01,040 --> 00:16:03,080
+leaks you can basically take one
+
+489
+00:16:03,080 --> 00:16:05,840
+snapshot do an operation that you expect
+
+490
+00:16:05,840 --> 00:16:07,400
+to be memory neutral like open and close
+
+491
+00:16:07,400 --> 00:16:08,660
+something and then take a second
+
+492
+00:16:08,660 --> 00:16:10,790
+snapshot and get a diff and all the unjú
+
+493
+00:16:10,790 --> 00:16:12,230
+seed objects hanging around between
+
+494
+00:16:12,230 --> 00:16:14,420
+those two snapshots are red flags are
+
+495
+00:16:14,420 --> 00:16:18,460
+potential sources of memory leaks so
+
+496
+00:16:18,460 --> 00:16:20,960
+let's talk about CPU profiling which is
+
+497
+00:16:20,960 --> 00:16:22,370
+of course the other sort of JavaScript
+
+498
+00:16:22,370 --> 00:16:24,170
+performance oriented side of the
+
+499
+00:16:24,170 --> 00:16:25,820
+profiling world this is getting a little
+
+500
+00:16:25,820 --> 00:16:27,080
+more exotic there's something that just
+
+501
+00:16:27,080 --> 00:16:29,120
+landed in Chrome Canary recently called
+
+502
+00:16:29,120 --> 00:16:30,830
+the flame chart view so if you capture a
+
+503
+00:16:30,830 --> 00:16:33,010
+CPU profile you can get this really cool
+
+504
+00:16:33,010 --> 00:16:35,360
+visualization of the data and what's
+
+505
+00:16:35,360 --> 00:16:36,590
+nice about this is that unlike the
+
+506
+00:16:36,590 --> 00:16:39,620
+normal CPU profile view which buckets
+
+507
+00:16:39,620 --> 00:16:41,750
+all of the entire profiling run into one
+
+508
+00:16:41,750 --> 00:16:43,820
+data capture this actually shows you how
+
+509
+00:16:43,820 --> 00:16:46,310
+the hotspots of area over time so
+
+510
+00:16:46,310 --> 00:16:47,660
+there's two different panels here
+
+511
+00:16:47,660 --> 00:16:49,670
+basically and it's a little tricky to
+
+512
+00:16:49,670 --> 00:16:51,230
+sort them out but basically the top
+
+513
+00:16:51,230 --> 00:16:52,790
+panel here is an overview of the entire
+
+514
+00:16:52,790 --> 00:16:55,640
+profile capturing run and the spikes
+
+515
+00:16:55,640 --> 00:16:56,600
+here are basically showing you
+
+516
+00:16:56,600 --> 00:16:58,670
+JavaScript activities so the y-axis is
+
+517
+00:16:58,670 --> 00:17:01,070
+you know increased CPU usage essentially
+
+518
+00:17:01,070 --> 00:17:02,750
+and then you can zoom in on a particular
+
+519
+00:17:02,750 --> 00:17:04,490
+part of that like the highlighted area
+
+520
+00:17:04,490 --> 00:17:07,070
+here and you'll see along the bottom you
+
+521
+00:17:07,070 --> 00:17:09,410
+get this zoomed in view and this
+
+522
+00:17:09,410 --> 00:17:10,880
+actually the y-axis means something
+
+523
+00:17:10,880 --> 00:17:12,320
+different though his rig is confusing
+
+524
+00:17:12,320 --> 00:17:15,290
+the y-axis here is just is just a stack
+
+525
+00:17:15,290 --> 00:17:17,600
+call stack basically so it's a lot like
+
+526
+00:17:17,600 --> 00:17:18,800
+the chrome tracing view where it's a
+
+527
+00:17:18,800 --> 00:17:20,390
+call stack it's just actually flipped
+
+528
+00:17:20,390 --> 00:17:21,830
+upside down in this case but same
+
+529
+00:17:21,830 --> 00:17:25,120
+difference so the the x-axis here
+
+530
+00:17:25,120 --> 00:17:28,010
+represents time so the wider the bar the
+
+531
+00:17:28,010 --> 00:17:29,270
+more time spent just like the chrome
+
+532
+00:17:29,270 --> 00:17:31,940
+tracing view so the x-axis here roughly
+
+533
+00:17:31,940 --> 00:17:33,560
+maps to the y-axis up in this other
+
+534
+00:17:33,560 --> 00:17:35,720
+chart that's a little confusing the
+
+535
+00:17:35,720 --> 00:17:36,890
+other thing that's potentially confusing
+
+536
+00:17:36,890 --> 00:17:38,840
+about this is the color scheme combined
+
+537
+00:17:38,840 --> 00:17:40,340
+with the name flame chart makes it sound
+
+538
+00:17:40,340 --> 00:17:42,020
+kind of like a heat map like red is bad
+
+539
+00:17:42,020 --> 00:17:42,710
+and green
+
+540
+00:17:42,710 --> 00:17:45,620
+good that's actually not true at all the
+
+541
+00:17:45,620 --> 00:17:47,120
+colors here are just like chrome tracing
+
+542
+00:17:47,120 --> 00:17:48,320
+where they're essentially randomly
+
+543
+00:17:48,320 --> 00:17:49,909
+chosen colors that the same method gets
+
+544
+00:17:49,909 --> 00:17:51,710
+the same color everywhere it appears
+
+545
+00:17:51,710 --> 00:17:53,570
+just to make it easier to read but the
+
+546
+00:17:53,570 --> 00:17:55,010
+colors don't have any particular meaning
+
+547
+00:17:55,010 --> 00:18:00,049
+other than that so if you want to start
+
+548
+00:18:00,049 --> 00:18:01,850
+getting more sort of honing in on very
+
+549
+00:18:01,850 --> 00:18:03,710
+specific you know parts of your code
+
+550
+00:18:03,710 --> 00:18:05,779
+base to target for performance profiling
+
+551
+00:18:05,779 --> 00:18:07,549
+there are two really cool ways that you
+
+552
+00:18:07,549 --> 00:18:10,159
+can do that the first is you can use
+
+553
+00:18:10,159 --> 00:18:11,990
+consult up profile and profile end to
+
+554
+00:18:11,990 --> 00:18:13,429
+actually automatically kick off
+
+555
+00:18:13,429 --> 00:18:15,289
+profiling sessions to get recorded in
+
+556
+00:18:15,289 --> 00:18:16,700
+the dev tools and show up with your own
+
+557
+00:18:16,700 --> 00:18:18,470
+label you can actually have more than
+
+558
+00:18:18,470 --> 00:18:20,360
+one of these running at once they can be
+
+559
+00:18:20,360 --> 00:18:21,380
+overlapping they don't have to be
+
+560
+00:18:21,380 --> 00:18:23,360
+strictly nested so it's a really great
+
+561
+00:18:23,360 --> 00:18:25,880
+way to begin you know honing down on
+
+562
+00:18:25,880 --> 00:18:27,140
+specific parts of your code without
+
+563
+00:18:27,140 --> 00:18:28,909
+having to click the begin and end button
+
+564
+00:18:28,909 --> 00:18:30,610
+manually right at the right times and
+
+565
+00:18:30,610 --> 00:18:34,850
+then also you can use console time and
+
+566
+00:18:34,850 --> 00:18:37,580
+time end to add custom annotations that
+
+567
+00:18:37,580 --> 00:18:39,529
+show up in the chrome tracing view so
+
+568
+00:18:39,529 --> 00:18:40,760
+there you can actually begin to see your
+
+569
+00:18:40,760 --> 00:18:42,860
+own method calls your own time brackets
+
+570
+00:18:42,860 --> 00:18:45,080
+basically precisely lined up with what's
+
+571
+00:18:45,080 --> 00:18:46,730
+going on in the browser native side of
+
+572
+00:18:46,730 --> 00:18:49,429
+things in this really really rich rich
+
+573
+00:18:49,429 --> 00:18:51,200
+threaded view of what's going on so
+
+574
+00:18:51,200 --> 00:18:52,549
+again you know like the custom
+
+575
+00:18:52,549 --> 00:18:53,990
+annotations in the timeline panel these
+
+576
+00:18:53,990 --> 00:18:55,279
+are really cool ways to begin adding
+
+577
+00:18:55,279 --> 00:18:58,070
+your own annotations to a data set that
+
+578
+00:18:58,070 --> 00:18:59,690
+normally is kind of blind to what your
+
+579
+00:18:59,690 --> 00:19:01,399
+code means and is this very generic view
+
+580
+00:19:01,399 --> 00:19:03,529
+and here you can begin to make it much
+
+581
+00:19:03,529 --> 00:19:05,419
+more specific to your own profiling
+
+582
+00:19:05,419 --> 00:19:09,200
+needs your own goals and targets all
+
+583
+00:19:09,200 --> 00:19:11,840
+right let's say none of that stuff is
+
+584
+00:19:11,840 --> 00:19:13,760
+crazy enough let's dial up the craziness
+
+585
+00:19:13,760 --> 00:19:16,909
+meter a little bit further here if that
+
+586
+00:19:16,909 --> 00:19:18,830
+stuff isn't giving enough information it
+
+587
+00:19:18,830 --> 00:19:21,020
+turns out that v8 s-- profiler actually
+
+588
+00:19:21,020 --> 00:19:23,000
+produces a lot more info than what the
+
+589
+00:19:23,000 --> 00:19:25,520
+dev tools show and there are a few kind
+
+590
+00:19:25,520 --> 00:19:27,020
+of crazy hacky ways that you can get at
+
+591
+00:19:27,020 --> 00:19:29,539
+some of that richer info the set up for
+
+592
+00:19:29,539 --> 00:19:31,820
+this is a little bit involved that's why
+
+593
+00:19:31,820 --> 00:19:32,929
+this is on the high end of the crazy
+
+594
+00:19:32,929 --> 00:19:34,340
+spectrum so I won't go through that in
+
+595
+00:19:34,340 --> 00:19:36,020
+detail but I'll post up those steps
+
+596
+00:19:36,020 --> 00:19:39,679
+later but basically what you do is once
+
+597
+00:19:39,679 --> 00:19:41,570
+you get that set up you close all
+
+598
+00:19:41,570 --> 00:19:42,950
+instances of chrome that you have open
+
+599
+00:19:42,950 --> 00:19:44,779
+that includes canary and stable if you
+
+600
+00:19:44,779 --> 00:19:46,820
+happen to have both open thanks to a
+
+601
+00:19:46,820 --> 00:19:48,590
+John mcCutchan at Google for helping me
+
+602
+00:19:48,590 --> 00:19:49,789
+to figure that one out is very confusing
+
+603
+00:19:49,789 --> 00:19:51,260
+clothes every chrome process you can get
+
+604
+00:19:51,260 --> 00:19:52,399
+your hands on and when they're all
+
+605
+00:19:52,399 --> 00:19:53,840
+closed you go to the command line and
+
+606
+00:19:53,840 --> 00:19:54,980
+you launch Chrome with these special
+
+607
+00:19:54,980 --> 00:19:55,790
+flags
+
+608
+00:19:55,790 --> 00:19:57,320
+and they basically get fed through to v8
+
+609
+00:19:57,320 --> 00:20:00,740
+and tells v8 to generate a log file then
+
+610
+00:20:00,740 --> 00:20:02,420
+you dig out that log file and you run
+
+611
+00:20:02,420 --> 00:20:04,430
+this plot timer events script on it
+
+612
+00:20:04,430 --> 00:20:07,640
+which is part of the v8 source and it
+
+613
+00:20:07,640 --> 00:20:09,230
+generates a ping file it'll chug for a
+
+614
+00:20:09,230 --> 00:20:10,520
+little while and spit out this ping file
+
+615
+00:20:10,520 --> 00:20:13,180
+next to the log and it looks like this
+
+616
+00:20:13,180 --> 00:20:15,080
+looks a little bit like the chrome
+
+617
+00:20:15,080 --> 00:20:17,270
+tracing view but rather than being
+
+618
+00:20:17,270 --> 00:20:18,470
+concerned with browser rendering
+
+619
+00:20:18,470 --> 00:20:20,480
+performance this is all about what's
+
+620
+00:20:20,480 --> 00:20:22,040
+going on on the v8 side of things and
+
+621
+00:20:22,040 --> 00:20:24,200
+you can get really really fine grained
+
+622
+00:20:24,200 --> 00:20:26,390
+detail here like for example do you see
+
+623
+00:20:26,390 --> 00:20:28,310
+compactor and GC scavenger you can
+
+624
+00:20:28,310 --> 00:20:30,710
+actually see when GC activity is going
+
+625
+00:20:30,710 --> 00:20:32,120
+on when garbage collection is going on
+
+626
+00:20:32,120 --> 00:20:34,070
+is it garbage collecting from the young
+
+627
+00:20:34,070 --> 00:20:36,560
+space or the old space is it basically
+
+628
+00:20:36,560 --> 00:20:37,700
+is it garbage collecting objects that
+
+629
+00:20:37,700 --> 00:20:38,990
+were recently created and didn't leave
+
+630
+00:20:38,990 --> 00:20:40,040
+very long or is it getting rid of
+
+631
+00:20:40,040 --> 00:20:41,510
+objects that hung around a long time and
+
+632
+00:20:41,510 --> 00:20:42,830
+then all of a sudden all got freed it
+
+633
+00:20:42,830 --> 00:20:44,120
+was that can be a very very interesting
+
+634
+00:20:44,120 --> 00:20:46,610
+insight to have into what's going on and
+
+635
+00:20:46,610 --> 00:20:49,070
+with GC performance problems another
+
+636
+00:20:49,070 --> 00:20:51,070
+thing that's really cool in this view is
+
+637
+00:20:51,070 --> 00:20:53,510
+this bar that runs along the middle here
+
+638
+00:20:53,510 --> 00:20:56,030
+which tells you the kind of code being
+
+639
+00:20:56,030 --> 00:20:58,100
+executed and what that means is whether
+
+640
+00:20:58,100 --> 00:21:00,560
+v8 is currently running optimized code
+
+641
+00:21:00,560 --> 00:21:03,950
+or unoptimized code which can be very a
+
+642
+00:21:03,950 --> 00:21:05,570
+very important problem if your code
+
+643
+00:21:05,570 --> 00:21:06,920
+that's performance sensitive isn't
+
+644
+00:21:06,920 --> 00:21:08,750
+getting optimized fully by v8 that can
+
+645
+00:21:08,750 --> 00:21:10,730
+be a problem and it can be sort of a
+
+646
+00:21:10,730 --> 00:21:12,980
+mystery too and the way you tell it by
+
+647
+00:21:12,980 --> 00:21:15,410
+the my screen is optimized read full
+
+648
+00:21:15,410 --> 00:21:17,000
+code they call it is it is unoptimized
+
+649
+00:21:17,000 --> 00:21:19,280
+this particular trace is not such a good
+
+650
+00:21:19,280 --> 00:21:21,230
+example it's mostly neither it's mostly
+
+651
+00:21:21,230 --> 00:21:22,820
+not bottleneck by JavaScript at all but
+
+652
+00:21:22,820 --> 00:21:24,200
+in things that are bottlenecking on
+
+653
+00:21:24,200 --> 00:21:25,460
+javascript you'll see a lot of either
+
+654
+00:21:25,460 --> 00:21:26,180
+red or green
+
+655
+00:21:26,180 --> 00:21:29,300
+hopefully green but maybe red and so to
+
+656
+00:21:29,300 --> 00:21:30,740
+begin looking at it the first thing you
+
+657
+00:21:30,740 --> 00:21:32,060
+need to do is actually zoom in on this
+
+658
+00:21:32,060 --> 00:21:33,830
+data because if you look at this it's
+
+659
+00:21:33,830 --> 00:21:35,060
+capturing it's really hard to see the
+
+660
+00:21:35,060 --> 00:21:37,640
+numbers but it's basically 14 seconds is
+
+661
+00:21:37,640 --> 00:21:38,900
+the only thing this capture one it's the
+
+662
+00:21:38,900 --> 00:21:40,310
+entire time that chrome is up and
+
+663
+00:21:40,310 --> 00:21:42,830
+running you don't get any any control
+
+664
+00:21:42,830 --> 00:21:44,090
+over how long it runs the capture for
+
+665
+00:21:44,090 --> 00:21:45,460
+the whole time it's it's up and running
+
+666
+00:21:45,460 --> 00:21:48,620
+so to zoom in on this you can pass some
+
+667
+00:21:48,620 --> 00:21:50,810
+arguments to that the plot timer events
+
+668
+00:21:50,810 --> 00:21:52,430
+function and you can basically begin
+
+669
+00:21:52,430 --> 00:21:53,840
+zooming in so you can see now it's sort
+
+670
+00:21:53,840 --> 00:21:55,160
+of starting to break down if these frame
+
+671
+00:21:55,160 --> 00:21:58,220
+units again and you can zoom in even on
+
+672
+00:21:58,220 --> 00:21:59,720
+a single frame and start to get really
+
+673
+00:21:59,720 --> 00:22:00,980
+really detailed information you know
+
+674
+00:22:00,980 --> 00:22:02,630
+down to the millisecond basically about
+
+675
+00:22:02,630 --> 00:22:04,910
+what's going on inside a v8 at every
+
+676
+00:22:04,910 --> 00:22:08,030
+little time slice this is still kind of
+
+677
+00:22:08,030 --> 00:22:09,570
+a crappy iterative process like
+
+678
+00:22:09,570 --> 00:22:10,860
+have to like run the script and then
+
+679
+00:22:10,860 --> 00:22:12,390
+relook at the ping file and run the
+
+680
+00:22:12,390 --> 00:22:14,430
+script again and all that I did come up
+
+681
+00:22:14,430 --> 00:22:16,380
+with an interesting hack for it
+
+682
+00:22:16,380 --> 00:22:18,350
+navigating this data more interactively
+
+683
+00:22:18,350 --> 00:22:20,790
+it's a little tricky it requires pulling
+
+684
+00:22:20,790 --> 00:22:22,470
+a chunk of code out of the plot timer
+
+685
+00:22:22,470 --> 00:22:24,480
+event script that you run and basically
+
+686
+00:22:24,480 --> 00:22:26,550
+getting it to save its intermediate file
+
+687
+00:22:26,550 --> 00:22:29,370
+before generating the ping it turns out
+
+688
+00:22:29,370 --> 00:22:30,750
+that the intermediate file that it uses
+
+689
+00:22:30,750 --> 00:22:32,100
+to generate the ping is just a text
+
+690
+00:22:32,100 --> 00:22:33,900
+format file that contains a bunch of
+
+691
+00:22:33,900 --> 00:22:36,660
+drawing commands and if you cross out
+
+692
+00:22:36,660 --> 00:22:38,220
+the first line if you delete that first
+
+693
+00:22:38,220 --> 00:22:39,960
+line from the file you can then open
+
+694
+00:22:39,960 --> 00:22:42,720
+this in an interactive visualizer so
+
+695
+00:22:42,720 --> 00:22:45,090
+gnuplot is the thing it uses you can you
+
+696
+00:22:45,090 --> 00:22:46,800
+can get interactive visualizers onto
+
+697
+00:22:46,800 --> 00:22:49,440
+this new platform at data and I'll show
+
+698
+00:22:49,440 --> 00:22:52,920
+you a quick example of that here's where
+
+699
+00:22:52,920 --> 00:22:54,870
+the control scheme from chrome tracing
+
+700
+00:22:54,870 --> 00:22:56,220
+the video game style thing starts to
+
+701
+00:22:56,220 --> 00:22:57,720
+sound less crazy because I find this
+
+702
+00:22:57,720 --> 00:22:58,830
+even more bizarre the way that you
+
+703
+00:22:58,830 --> 00:23:01,080
+navigate this is you you control mouse
+
+704
+00:23:01,080 --> 00:23:02,490
+wheel to zoom in which seems pretty
+
+705
+00:23:02,490 --> 00:23:04,740
+reasonable and this is actually quite
+
+706
+00:23:04,740 --> 00:23:06,300
+powerful because it's because this is a
+
+707
+00:23:06,300 --> 00:23:07,830
+data plotting software package you
+
+708
+00:23:07,830 --> 00:23:09,060
+notice it's smart enough to keep the
+
+709
+00:23:09,060 --> 00:23:10,950
+axis labels interview even as you zoomed
+
+710
+00:23:10,950 --> 00:23:14,040
+in which is pretty cool but the way that
+
+711
+00:23:14,040 --> 00:23:15,900
+you scroll horizontally is you see I
+
+712
+00:23:15,900 --> 00:23:17,280
+have to refer to notes as how crazy this
+
+713
+00:23:17,280 --> 00:23:19,080
+is you have to you hold down shift and
+
+714
+00:23:19,080 --> 00:23:20,220
+you use the mouse wheel to scroll
+
+715
+00:23:20,220 --> 00:23:21,960
+horizontally and then to scroll
+
+716
+00:23:21,960 --> 00:23:23,640
+vertically you hold down alt and use the
+
+717
+00:23:23,640 --> 00:23:26,070
+mouse wheel makes tons of sense right
+
+718
+00:23:26,070 --> 00:23:27,870
+it's such an intuitive way of navigating
+
+719
+00:23:27,870 --> 00:23:30,120
+data but it is nonetheless a much faster
+
+720
+00:23:30,120 --> 00:23:33,060
+iteration than having to repeatedly look
+
+721
+00:23:33,060 --> 00:23:34,440
+at the milliseconds and then rerun the
+
+722
+00:23:34,440 --> 00:23:35,880
+script and open the ping file again and
+
+723
+00:23:35,880 --> 00:23:37,950
+you know rinse and repeat so this is
+
+724
+00:23:37,950 --> 00:23:39,710
+kind of a cool way to visualize the data
+
+725
+00:23:39,710 --> 00:23:42,210
+of course because this is just a text
+
+726
+00:23:42,210 --> 00:23:43,350
+format I think it would be really
+
+727
+00:23:43,350 --> 00:23:44,640
+awesome if someone wrote like a Java
+
+728
+00:23:44,640 --> 00:23:46,440
+Script in d3 based visualization of this
+
+729
+00:23:46,440 --> 00:23:48,060
+or something like that I'll definitely
+
+730
+00:23:48,060 --> 00:23:49,590
+buy a case of beer for anyone who I can
+
+731
+00:23:49,590 --> 00:23:51,030
+sort that out or for that matter anyone
+
+732
+00:23:51,030 --> 00:23:52,020
+who checks it into the dev tools
+
+733
+00:23:52,020 --> 00:23:53,190
+hopefully one of those two things will
+
+734
+00:23:53,190 --> 00:23:57,960
+happen to happen soon so once you've
+
+735
+00:23:57,960 --> 00:23:59,940
+actually zoomed in enough and been able
+
+736
+00:23:59,940 --> 00:24:02,130
+to identify some data there and let's
+
+737
+00:24:02,130 --> 00:24:03,240
+say you can actually see that some
+
+738
+00:24:03,240 --> 00:24:05,160
+things aren't getting optimized when you
+
+739
+00:24:05,160 --> 00:24:08,400
+want them to be optimized first you
+
+740
+00:24:08,400 --> 00:24:09,690
+don't know what code that actually is
+
+741
+00:24:09,690 --> 00:24:11,160
+you just you can see a red bar and you
+
+742
+00:24:11,160 --> 00:24:12,870
+want to know what functions they are so
+
+743
+00:24:12,870 --> 00:24:14,760
+one way to get more info on that is to
+
+744
+00:24:14,760 --> 00:24:16,080
+run that same log file through a
+
+745
+00:24:16,080 --> 00:24:17,550
+slightly different command it spits out
+
+746
+00:24:17,550 --> 00:24:18,960
+a text file that looks like this
+
+747
+00:24:18,960 --> 00:24:20,880
+at first glance this looks a lot like
+
+748
+00:24:20,880 --> 00:24:22,630
+the data you get out of the regular
+
+749
+00:24:22,630 --> 00:24:24,370
+tools profiler panel it's just kind of a
+
+750
+00:24:24,370 --> 00:24:26,260
+you know top-down heavy heavy daylight
+
+751
+00:24:26,260 --> 00:24:29,410
+you know list of functions but it has
+
+752
+00:24:29,410 --> 00:24:31,450
+this extra little annotation the
+
+753
+00:24:31,450 --> 00:24:32,740
+asterisk is telling you that those
+
+754
+00:24:32,740 --> 00:24:34,900
+functions are running optimized in the
+
+755
+00:24:34,900 --> 00:24:37,180
+VM the lack of an asterisk tells you
+
+756
+00:24:37,180 --> 00:24:38,770
+that the function is running unoptimized
+
+757
+00:24:38,770 --> 00:24:41,230
+and that is probably the red bar you're
+
+758
+00:24:41,230 --> 00:24:42,550
+looking at if you're seeing a lot of red
+
+759
+00:24:42,550 --> 00:24:44,050
+in your code it's gonna be the heavy
+
+760
+00:24:44,050 --> 00:24:46,540
+function that's not optimized so now you
+
+761
+00:24:46,540 --> 00:24:48,100
+know which function the next question is
+
+762
+00:24:48,100 --> 00:24:50,050
+why is it not running optimized because
+
+763
+00:24:50,050 --> 00:24:51,340
+that can be a total mystery you could
+
+764
+00:24:51,340 --> 00:24:52,900
+make random changes and see if it fixes
+
+765
+00:24:52,900 --> 00:24:54,430
+things but if you're really desperate
+
+766
+00:24:54,430 --> 00:24:56,290
+you'd like to get some kind of clue as
+
+767
+00:24:56,290 --> 00:24:57,700
+to what's up and why it didn't get
+
+768
+00:24:57,700 --> 00:24:59,740
+optimized and that's where the third v8
+
+769
+00:24:59,740 --> 00:25:02,170
+logging trick comes in you run Chrome is
+
+770
+00:25:02,170 --> 00:25:04,030
+slightly different flags and it actually
+
+771
+00:25:04,030 --> 00:25:05,620
+barks out a bunch of stuff the console
+
+772
+00:25:05,620 --> 00:25:07,390
+so you redirect it to a text file and
+
+773
+00:25:07,390 --> 00:25:09,250
+when you search that text file you start
+
+774
+00:25:09,250 --> 00:25:11,800
+seeing things like this and you can
+
+775
+00:25:11,800 --> 00:25:13,060
+actually see names of some of your own
+
+776
+00:25:13,060 --> 00:25:14,530
+functions in there and it'll actually
+
+777
+00:25:14,530 --> 00:25:16,750
+give you the reason in sort of shorthand
+
+778
+00:25:16,750 --> 00:25:18,460
+it'll give you the reason why that
+
+779
+00:25:18,460 --> 00:25:19,990
+function was ineligible for being
+
+780
+00:25:19,990 --> 00:25:22,030
+optimized or maybe in some cases why it
+
+781
+00:25:22,030 --> 00:25:24,700
+was optimized and then later on kicked
+
+782
+00:25:24,700 --> 00:25:26,740
+back and D optimized because it violated
+
+783
+00:25:26,740 --> 00:25:28,360
+some assumption that v8 was making about
+
+784
+00:25:28,360 --> 00:25:32,680
+its control flow this stuff is is again
+
+785
+00:25:32,680 --> 00:25:33,850
+this is like on the extreme end of the
+
+786
+00:25:33,850 --> 00:25:35,770
+crazy scale because of not only the
+
+787
+00:25:35,770 --> 00:25:37,210
+complicated set up but also the data
+
+788
+00:25:37,210 --> 00:25:39,220
+file that you get here is pretty hard to
+
+789
+00:25:39,220 --> 00:25:40,900
+parse through the reasons that it lists
+
+790
+00:25:40,900 --> 00:25:42,970
+are often pretty vague and from what
+
+791
+00:25:42,970 --> 00:25:44,440
+I've seen it seems to not always list
+
+792
+00:25:44,440 --> 00:25:45,940
+all of the functions that you expect it
+
+793
+00:25:45,940 --> 00:25:47,410
+to list so sometimes it may be missing
+
+794
+00:25:47,410 --> 00:25:49,750
+information so it's pretty hard to parse
+
+795
+00:25:49,750 --> 00:25:50,980
+through if you don't know the v8 source
+
+796
+00:25:50,980 --> 00:25:53,680
+code which I certainly don't but
+
+797
+00:25:53,680 --> 00:25:55,150
+hopefully a lot of this data is going to
+
+798
+00:25:55,150 --> 00:25:57,310
+begin bubbling up you know into views
+
+799
+00:25:57,310 --> 00:25:59,020
+like chrome tracing and even the dev
+
+800
+00:25:59,020 --> 00:26:01,810
+tools proper B you know as this stuff
+
+801
+00:26:01,810 --> 00:26:03,520
+coming out of v8 gets richer and more
+
+802
+00:26:03,520 --> 00:26:05,620
+stable and there's just so much need for
+
+803
+00:26:05,620 --> 00:26:07,330
+this to be exposed at a higher level so
+
+804
+00:26:07,330 --> 00:26:08,470
+I think we'll start seeing more of this
+
+805
+00:26:08,470 --> 00:26:11,650
+in the near future in actual UI oriented
+
+806
+00:26:11,650 --> 00:26:16,780
+tools so with all that said sometimes
+
+807
+00:26:16,780 --> 00:26:18,040
+you should ignore everything I talked
+
+808
+00:26:18,040 --> 00:26:19,990
+about and in fact everything anyone says
+
+809
+00:26:19,990 --> 00:26:21,790
+about JavaScript performance because
+
+810
+00:26:21,790 --> 00:26:23,410
+some things that sometimes they're
+
+811
+00:26:23,410 --> 00:26:24,790
+reasons to not focus on JavaScript
+
+812
+00:26:24,790 --> 00:26:26,020
+performance at all but to focus on other
+
+813
+00:26:26,020 --> 00:26:29,140
+things so reason number one I'll give
+
+814
+00:26:29,140 --> 00:26:30,700
+you three what I think are three good
+
+815
+00:26:30,700 --> 00:26:32,710
+reasons to not be always focus on
+
+816
+00:26:32,710 --> 00:26:33,669
+JavaScript performance
+
+817
+00:26:33,669 --> 00:26:35,679
+number one is that sometimes Network i/o
+
+818
+00:26:35,679 --> 00:26:37,479
+performance is a much much bigger issue
+
+819
+00:26:37,479 --> 00:26:39,159
+page load time is often one of the
+
+820
+00:26:39,159 --> 00:26:40,929
+number one complaints about slowness
+
+821
+00:26:40,929 --> 00:26:42,909
+that users have and that often has very
+
+822
+00:26:42,909 --> 00:26:45,219
+little to do with JavaScript has to do
+
+823
+00:26:45,219 --> 00:26:46,269
+with network performance and
+
+824
+00:26:46,269 --> 00:26:49,149
+minimization things like that and there
+
+825
+00:26:49,149 --> 00:26:50,469
+are a couple really cool browser API to
+
+826
+00:26:50,469 --> 00:26:52,629
+let you get an info about page load
+
+827
+00:26:52,629 --> 00:26:54,489
+timing like this one that's information
+
+828
+00:26:54,489 --> 00:26:56,679
+that is really hard to gather either on
+
+829
+00:26:56,679 --> 00:26:58,929
+your server or using regular JavaScript
+
+830
+00:26:58,929 --> 00:27:00,190
+without the help of this browser API
+
+831
+00:27:00,190 --> 00:27:01,929
+because you don't have insight into the
+
+832
+00:27:01,929 --> 00:27:03,639
+whole flow from the time the user clicks
+
+833
+00:27:03,639 --> 00:27:04,809
+a link to the time that this stuff
+
+834
+00:27:04,809 --> 00:27:06,849
+renders on-screen the browser knows that
+
+835
+00:27:06,849 --> 00:27:08,349
+whole timeline and they can save the
+
+836
+00:27:08,349 --> 00:27:10,419
+data and give it to you you can also get
+
+837
+00:27:10,419 --> 00:27:12,639
+data broken down by individual resources
+
+838
+00:27:12,639 --> 00:27:15,009
+so you can use these api's to get at the
+
+839
+00:27:15,009 --> 00:27:17,229
+loading time of individual image files
+
+840
+00:27:17,229 --> 00:27:21,159
+individual script files all that stuff
+
+841
+00:27:21,159 --> 00:27:24,249
+the working group that oh sorry this one
+
+842
+00:27:24,249 --> 00:27:25,529
+thing is going to say about this is that
+
+843
+00:27:25,529 --> 00:27:27,999
+perceived performance is often more
+
+844
+00:27:27,999 --> 00:27:30,219
+important than actual performance so
+
+845
+00:27:30,219 --> 00:27:31,899
+when you're talking to a server and the
+
+846
+00:27:31,899 --> 00:27:33,700
+server might be slow doing that in a way
+
+847
+00:27:33,700 --> 00:27:35,019
+that's asynchronous and doesn't block
+
+848
+00:27:35,019 --> 00:27:38,169
+any part of your pages UI is is a huge
+
+849
+00:27:38,169 --> 00:27:39,759
+huge win if you look at the way that you
+
+850
+00:27:39,759 --> 00:27:41,200
+know things like Google Docs or Trello
+
+851
+00:27:41,200 --> 00:27:43,779
+or Gmail do saves asynchronously in the
+
+852
+00:27:43,779 --> 00:27:45,279
+background of that blocking stuff it
+
+853
+00:27:45,279 --> 00:27:46,749
+makes it feel a lot faster even though
+
+854
+00:27:46,749 --> 00:27:47,979
+it could take several seconds for the
+
+855
+00:27:47,979 --> 00:27:51,789
+server to actually respond quick aside
+
+856
+00:27:51,789 --> 00:27:53,799
+the w3c working group that produced
+
+857
+00:27:53,799 --> 00:27:55,269
+those resource timing API is that I
+
+858
+00:27:55,269 --> 00:27:57,039
+showed you on this slide here they're
+
+859
+00:27:57,039 --> 00:27:59,049
+also beginning work now on a number of
+
+860
+00:27:59,049 --> 00:28:01,269
+AP is for rendering performance for
+
+861
+00:28:01,269 --> 00:28:02,619
+measuring that stuff programmatically so
+
+862
+00:28:02,619 --> 00:28:03,459
+they're beginning to basically
+
+863
+00:28:03,459 --> 00:28:05,919
+standardize things like the scrolling
+
+864
+00:28:05,919 --> 00:28:07,479
+simulation API that I mentioned earlier
+
+865
+00:28:07,479 --> 00:28:10,959
+with the chrome telemetry stuff so I
+
+866
+00:28:10,959 --> 00:28:12,789
+think we'll see a lot of cool stuff out
+
+867
+00:28:12,789 --> 00:28:13,929
+of this working group in the future this
+
+868
+00:28:13,929 --> 00:28:14,859
+is also the group that produced
+
+869
+00:28:14,859 --> 00:28:16,749
+requestanimationframe so we've gotten a
+
+870
+00:28:16,749 --> 00:28:17,889
+lot of good things out of them already I
+
+871
+00:28:17,889 --> 00:28:21,579
+think reason number two is that maybe
+
+872
+00:28:21,579 --> 00:28:23,739
+your code is good enough already I think
+
+873
+00:28:23,739 --> 00:28:25,179
+that sometimes there's a tendency in
+
+874
+00:28:25,179 --> 00:28:26,889
+some parts of JavaScript community to
+
+875
+00:28:26,889 --> 00:28:27,729
+started to jump the gun about
+
+876
+00:28:27,729 --> 00:28:30,249
+performance for example if someone might
+
+877
+00:28:30,249 --> 00:28:31,659
+see code like this and say oh geez you
+
+878
+00:28:31,659 --> 00:28:32,619
+can't do that look at this you're
+
+879
+00:28:32,619 --> 00:28:33,909
+entering a function closure every
+
+880
+00:28:33,909 --> 00:28:35,440
+iteration of loop and I mean look what
+
+881
+00:28:35,440 --> 00:28:37,869
+Jesper comm says about this it's way
+
+882
+00:28:37,869 --> 00:28:39,339
+faster to just use a regular for loop
+
+883
+00:28:39,339 --> 00:28:41,799
+and while there's some truth to that if
+
+884
+00:28:41,799 --> 00:28:43,089
+you look at the time scale on these
+
+885
+00:28:43,089 --> 00:28:44,859
+things sometimes you're talking about
+
+886
+00:28:44,859 --> 00:28:46,419
+the difference between 12 meeting 12
+
+887
+00:28:46,419 --> 00:28:47,480
+million iterations per sec
+
+888
+00:28:47,480 --> 00:28:49,070
+eighty million iterations per second and
+
+889
+00:28:49,070 --> 00:28:51,200
+if the context of your code is for
+
+890
+00:28:51,200 --> 00:28:53,779
+example creating a menu you know that
+
+891
+00:28:53,779 --> 00:28:55,159
+that difference makes no difference
+
+892
+00:28:55,159 --> 00:28:56,480
+right if you're only it going to iterate
+
+893
+00:28:56,480 --> 00:28:58,039
+a couple hundred even a couple thousand
+
+894
+00:28:58,039 --> 00:28:59,529
+times
+
+895
+00:28:59,529 --> 00:29:01,639
+that's that difference is just totally
+
+896
+00:29:01,639 --> 00:29:03,080
+water under the bridge so you know it's
+
+897
+00:29:03,080 --> 00:29:04,730
+not a best practice to make your code
+
+898
+00:29:04,730 --> 00:29:06,139
+harder to read or harder to maintain
+
+899
+00:29:06,139 --> 00:29:08,299
+just for speculative performance gains
+
+900
+00:29:08,299 --> 00:29:09,850
+the best practice is to identify
+
+901
+00:29:09,850 --> 00:29:12,230
+specific bottlenecks that your users
+
+902
+00:29:12,230 --> 00:29:14,720
+actually care about and make fixes for
+
+903
+00:29:14,720 --> 00:29:16,210
+those in a targeted way
+
+904
+00:29:16,210 --> 00:29:19,460
+lastly reason number three engineering
+
+905
+00:29:19,460 --> 00:29:21,169
+time is a finite resource and you should
+
+906
+00:29:21,169 --> 00:29:23,389
+spend time on what's most important so
+
+907
+00:29:23,389 --> 00:29:24,710
+here are some things that might be more
+
+908
+00:29:24,710 --> 00:29:32,789
+important than working on performance
+
+909
+00:29:32,799 --> 00:29:35,210
+it's a pretty good list right but
+
+910
+00:29:35,210 --> 00:29:36,440
+sometimes performance really does matter
+
+911
+00:29:36,440 --> 00:29:38,120
+and when that is the most important
+
+912
+00:29:38,120 --> 00:29:39,799
+thing to work on I hope that the tools I
+
+913
+00:29:39,799 --> 00:29:41,240
+showed you will make your life easier
+
+914
+00:29:41,240 --> 00:29:42,440
+when you get desperate with performance
+
+915
+00:29:42,440 --> 00:29:44,270
+stuff thanks for listening
+
+916
+00:29:44,270 --> 00:29:58,530
+[Applause]
+

@@ -1,0 +1,2709 @@
+1
+00:00:09,500 --> 00:00:13,160
+
+Isak I'm here to talk to you about NPM
+
+2
+00:00:13,160 --> 00:00:15,480
+so just a little quick disclaimer here
+
+3
+00:00:15,480 --> 00:00:17,550
+I'm not I'm gonna talk about how NPM
+
+4
+00:00:17,550 --> 00:00:19,830
+works and NPM sort of by definition
+
+5
+00:00:19,830 --> 00:00:21,420
+works the way that I think a package
+
+6
+00:00:21,420 --> 00:00:22,710
+manager should work because otherwise I
+
+7
+00:00:22,710 --> 00:00:25,619
+would have done it differently there's a
+
+8
+00:00:25,619 --> 00:00:26,880
+lot of trade-offs though right and
+
+9
+00:00:26,880 --> 00:00:28,050
+there's a lot of different paths you can
+
+10
+00:00:28,050 --> 00:00:30,269
+go down we can still be friends if you
+
+11
+00:00:30,269 --> 00:00:31,650
+know if you're from the Debian world or
+
+12
+00:00:31,650 --> 00:00:33,630
+from Kiwi or whatever
+
+13
+00:00:33,630 --> 00:00:37,770
+rubygems aficionados in here so basic
+
+14
+00:00:37,770 --> 00:00:41,850
+hands up if you have not used NPM great
+
+15
+00:00:41,850 --> 00:00:43,530
+I'm just gonna skip this slide the long
+
+16
+00:00:43,530 --> 00:00:45,660
+and the short of it is 1.0 just landed
+
+17
+00:00:45,660 --> 00:00:47,700
+and there's a bunch of big changes I'm
+
+18
+00:00:47,700 --> 00:00:52,140
+gonna tell you about some of those the
+
+19
+00:00:52,140 --> 00:00:55,350
+basically the vision behind NPM and when
+
+20
+00:00:55,350 --> 00:00:58,020
+we when I started out with this was we
+
+21
+00:00:58,020 --> 00:00:59,730
+really wanted to just increase speed of
+
+22
+00:00:59,730 --> 00:01:01,559
+node development and in the node
+
+23
+00:01:01,559 --> 00:01:03,030
+community and I think really either you
+
+24
+00:01:03,030 --> 00:01:04,710
+can if you want to increase speed you
+
+25
+00:01:04,710 --> 00:01:06,420
+can either push harder or you can reduce
+
+26
+00:01:06,420 --> 00:01:09,450
+the friction and whatever everybody else
+
+27
+00:01:09,450 --> 00:01:10,860
+is doing you should really do the other
+
+28
+00:01:10,860 --> 00:01:14,430
+one in 2009 there was a lot of people
+
+29
+00:01:14,430 --> 00:01:15,840
+really pushing hard on node they were
+
+30
+00:01:15,840 --> 00:01:17,180
+doing a lot of interesting things
+
+31
+00:01:17,180 --> 00:01:18,750
+writing all these really interesting
+
+32
+00:01:18,750 --> 00:01:21,600
+programs and modules and stuff and I
+
+33
+00:01:21,600 --> 00:01:23,130
+kind of figured you know well I'm not
+
+34
+00:01:23,130 --> 00:01:25,439
+gonna really add much to that so I'm
+
+35
+00:01:25,439 --> 00:01:26,490
+gonna try and make it a little bit
+
+36
+00:01:26,490 --> 00:01:28,080
+easier to install all these things that
+
+37
+00:01:28,080 --> 00:01:29,130
+I want to play with that people are
+
+38
+00:01:29,130 --> 00:01:30,900
+building and I figured since we're
+
+39
+00:01:30,900 --> 00:01:32,220
+starting with a clean slate we may as
+
+40
+00:01:32,220 --> 00:01:35,520
+well get it right so the main sources of
+
+41
+00:01:35,520 --> 00:01:38,280
+friction that I saw were you know these
+
+42
+00:01:38,280 --> 00:01:41,820
+these four things I'd come from from
+
+43
+00:01:41,820 --> 00:01:43,350
+Yahoo I was actually still at Yahoo at
+
+44
+00:01:43,350 --> 00:01:45,140
+the time and using Lion switch is a
+
+45
+00:01:45,140 --> 00:01:47,610
+brilliant brilliant package manager you
+
+46
+00:01:47,610 --> 00:01:49,259
+should go get a job at Yahoo just to use
+
+47
+00:01:49,259 --> 00:01:52,140
+why inst but that you know you still
+
+48
+00:01:52,140 --> 00:01:54,240
+kind of have these these four sort of
+
+49
+00:01:54,240 --> 00:01:56,820
+sources of friction here so the first
+
+50
+00:01:56,820 --> 00:01:58,590
+one conflicting dependencies this is my
+
+51
+00:01:58,590 --> 00:02:01,290
+least favorite you know you try to
+
+52
+00:02:01,290 --> 00:02:03,240
+install something it requires something
+
+53
+00:02:03,240 --> 00:02:04,710
+else that require something else that
+
+54
+00:02:04,710 --> 00:02:05,909
+requires something else you end up in a
+
+55
+00:02:05,909 --> 00:02:08,369
+conflict and then you make this face and
+
+56
+00:02:08,369 --> 00:02:11,550
+you say this word and you you have to
+
+57
+00:02:11,550 --> 00:02:13,590
+carefully go through and be like okay
+
+58
+00:02:13,590 --> 00:02:15,959
+maybe toot one-two isn't gonna work but
+
+59
+00:02:15,959 --> 00:02:20,180
+2-1-1 still use the oh gosh shoot me now
+
+60
+00:02:20,180 --> 00:02:23,540
+completely intolerable unacceptable
+
+61
+00:02:23,540 --> 00:02:25,860
+the other one is inconsistent services
+
+62
+00:02:25,860 --> 00:02:27,060
+that was the biggest problem when node
+
+63
+00:02:27,060 --> 00:02:28,800
+was starting out right somebody would
+
+64
+00:02:28,800 --> 00:02:30,630
+email the mailing list and they'd say oh
+
+65
+00:02:30,630 --> 00:02:32,220
+hey I wrote this really cool thing it's
+
+66
+00:02:32,220 --> 00:02:33,569
+a binding to this library and what you
+
+67
+00:02:33,569 --> 00:02:34,709
+do is you run make and then you copy the
+
+68
+00:02:34,709 --> 00:02:36,630
+file I mean you do whatever Jace and you
+
+69
+00:02:36,630 --> 00:02:40,290
+have a version of no unacceptable this
+
+70
+00:02:40,290 --> 00:02:43,230
+is better you install it then you
+
+71
+00:02:43,230 --> 00:02:48,569
+require it and it just works another
+
+72
+00:02:48,569 --> 00:02:50,010
+thing is that I kind of found in a lot
+
+73
+00:02:50,010 --> 00:02:51,720
+of other package managers is just a lot
+
+74
+00:02:51,720 --> 00:02:53,220
+of excessive metadata that you have to
+
+75
+00:02:53,220 --> 00:02:55,410
+kind of fill out now sometimes you want
+
+76
+00:02:55,410 --> 00:02:57,239
+that right I mean metadata is good it's
+
+77
+00:02:57,239 --> 00:02:59,480
+it's searchable it's kind of nice but
+
+78
+00:02:59,480 --> 00:03:02,010
+you can't get too carried away with it
+
+79
+00:03:02,010 --> 00:03:04,470
+so in NPM I decided we were gonna go
+
+80
+00:03:04,470 --> 00:03:07,769
+with this just this one JSON file is
+
+81
+00:03:07,769 --> 00:03:10,310
+originally called NPM JSON but you know
+
+82
+00:03:10,310 --> 00:03:12,950
+tried to be standard ish or whatever
+
+83
+00:03:12,950 --> 00:03:15,060
+there's only two required fields name
+
+84
+00:03:15,060 --> 00:03:17,930
+and version everything else is optional
+
+85
+00:03:17,930 --> 00:03:20,250
+there's a lot of stuff in there run NPM
+
+86
+00:03:20,250 --> 00:03:23,670
+help JSON and then the last one is a
+
+87
+00:03:23,670 --> 00:03:25,680
+publication cabal you see this a lot in
+
+88
+00:03:25,680 --> 00:03:28,620
+operating system package managers where
+
+89
+00:03:28,620 --> 00:03:29,940
+it kind of makes sense you know for
+
+90
+00:03:29,940 --> 00:03:32,370
+Debian people trust Debian packages they
+
+91
+00:03:32,370 --> 00:03:33,750
+trust that they're gonna be stable that
+
+92
+00:03:33,750 --> 00:03:35,609
+they're all gonna work together that you
+
+93
+00:03:35,609 --> 00:03:36,780
+know they're not gonna have malware in
+
+94
+00:03:36,780 --> 00:03:39,600
+them so it kind of makes sense that you
+
+95
+00:03:39,600 --> 00:03:42,000
+need permission but I don't want to do
+
+96
+00:03:42,000 --> 00:03:43,799
+that work everybody's too busy building
+
+97
+00:03:43,799 --> 00:03:45,569
+things to be reviewing all the other
+
+98
+00:03:45,569 --> 00:03:47,730
+things other people are building so we
+
+99
+00:03:47,730 --> 00:03:50,959
+went with just an anarchic dictatorship
+
+100
+00:03:50,959 --> 00:03:54,359
+so it's a pretty popular mantra to kind
+
+101
+00:03:54,359 --> 00:03:56,430
+of mention convention versus
+
+102
+00:03:56,430 --> 00:03:58,319
+configuration right and say oh well we
+
+103
+00:03:58,319 --> 00:03:59,760
+you know we prefer convention over
+
+104
+00:03:59,760 --> 00:04:00,720
+configuration
+
+105
+00:04:00,720 --> 00:04:03,329
+I think convention is an awful lot like
+
+106
+00:04:03,329 --> 00:04:05,280
+like kids you know it needs to grow up
+
+107
+00:04:05,280 --> 00:04:06,600
+at its own speed and if you have it
+
+108
+00:04:06,600 --> 00:04:08,700
+before you're ready it's really a bad
+
+109
+00:04:08,700 --> 00:04:13,440
+idea so just to put things in
+
+110
+00:04:13,440 --> 00:04:16,079
+perspective here right Perl is 24 years
+
+111
+00:04:16,079 --> 00:04:19,769
+old it's got a master's degree Python is
+
+112
+00:04:19,769 --> 00:04:21,750
+20 years old it's you know going to
+
+113
+00:04:21,750 --> 00:04:24,840
+college doing its thing ruby is you know
+
+114
+00:04:24,840 --> 00:04:26,220
+still kind of a punk it's but it's
+
+115
+00:04:26,220 --> 00:04:26,940
+almost done with high
+
+116
+00:04:26,940 --> 00:04:29,400
+school got his driver's license now note
+
+117
+00:04:29,400 --> 00:04:31,860
+is two years old it like just learned
+
+118
+00:04:31,860 --> 00:04:34,980
+how to walk we don't have a lot of
+
+119
+00:04:34,980 --> 00:04:37,320
+conventions yet you know so yeah we're
+
+120
+00:04:37,320 --> 00:04:39,210
+standing on top of v8 and github and
+
+121
+00:04:39,210 --> 00:04:40,110
+these other things that weren't around
+
+122
+00:04:40,110 --> 00:04:41,810
+when those other platforms were built
+
+123
+00:04:41,810 --> 00:04:44,340
+its totally impressive it's very
+
+124
+00:04:44,340 --> 00:04:46,260
+important it we're spamming hacker news
+
+125
+00:04:46,260 --> 00:04:48,690
+every day but I mean really like we as a
+
+126
+00:04:48,690 --> 00:04:50,670
+community are still kind of finding our
+
+127
+00:04:50,670 --> 00:04:52,800
+voice for what is a module and what
+
+128
+00:04:52,800 --> 00:04:54,570
+makes sense has one package or how
+
+129
+00:04:54,570 --> 00:04:57,000
+should I structure things so a better a
+
+130
+00:04:57,000 --> 00:04:59,190
+better idea for this was to go with I
+
+131
+00:04:59,190 --> 00:05:01,650
+think to try and be a pain killer rather
+
+132
+00:05:01,650 --> 00:05:04,740
+than a vitamin when I started out I said
+
+133
+00:05:04,740 --> 00:05:06,180
+you know here's a pull request with a
+
+134
+00:05:06,180 --> 00:05:08,700
+package.json would you please put this
+
+135
+00:05:08,700 --> 00:05:10,440
+in your program so that I can install it
+
+136
+00:05:10,440 --> 00:05:14,010
+and play with it and you know if I said
+
+137
+00:05:14,010 --> 00:05:16,200
+well you know can you take all this this
+
+138
+00:05:16,200 --> 00:05:18,300
+folder that you're calling modules can
+
+139
+00:05:18,300 --> 00:05:20,490
+you call it Lib instead and you know
+
+140
+00:05:20,490 --> 00:05:21,900
+could you name your things based on the
+
+141
+00:05:21,900 --> 00:05:23,040
+name of the class that you're defining
+
+142
+00:05:23,040 --> 00:05:25,410
+in them and could you be like no would
+
+143
+00:05:25,410 --> 00:05:28,290
+not would not fly now maybe we could
+
+144
+00:05:28,290 --> 00:05:30,420
+kind of find those patterns that make
+
+145
+00:05:30,420 --> 00:05:34,380
+sense but at that time it just copying
+
+146
+00:05:34,380 --> 00:05:35,820
+what Ruby or Python did didn't really
+
+147
+00:05:35,820 --> 00:05:37,950
+make sense so I think a better model is
+
+148
+00:05:37,950 --> 00:05:39,930
+convention in configuration in search of
+
+149
+00:05:39,930 --> 00:05:42,750
+convention so just enable everything
+
+150
+00:05:42,750 --> 00:05:44,880
+right make it very configurable make it
+
+151
+00:05:44,880 --> 00:05:47,340
+very flexible and then as patterns kind
+
+152
+00:05:47,340 --> 00:05:49,860
+of arise let's bless the the popular
+
+153
+00:05:49,860 --> 00:05:51,750
+ones right this is a process it's
+
+154
+00:05:51,750 --> 00:05:53,850
+organic it's happening and I think with
+
+155
+00:05:53,850 --> 00:05:55,440
+node zero four we kind of took some of
+
+156
+00:05:55,440 --> 00:05:58,440
+the things that we saw as as good kind
+
+157
+00:05:58,440 --> 00:06:00,480
+of patterns to to go with and we kind of
+
+158
+00:06:00,480 --> 00:06:01,950
+blessed a few of them so that's why
+
+159
+00:06:01,950 --> 00:06:03,650
+you're seeing some simplification and
+
+160
+00:06:03,650 --> 00:06:06,900
+it's it's a growing and shrinking kind
+
+161
+00:06:06,900 --> 00:06:08,520
+of process it's not always comfortable
+
+162
+00:06:08,520 --> 00:06:13,290
+but it's how it works so today there are
+
+163
+00:06:13,290 --> 00:06:17,430
+almost 1,900 packages from close to 800
+
+164
+00:06:17,430 --> 00:06:19,169
+different active paths package authors
+
+165
+00:06:19,169 --> 00:06:21,270
+even if you're maroc Squires you can't
+
+166
+00:06:21,270 --> 00:06:22,650
+list them all in a single lunchtime
+
+167
+00:06:22,650 --> 00:06:25,650
+event there's the this is the wild thing
+
+168
+00:06:25,650 --> 00:06:27,570
+there's about 300 new packages every
+
+169
+00:06:27,570 --> 00:06:30,240
+month that's crazy
+
+170
+00:06:30,240 --> 00:06:32,850
+and something like 2000 updates every
+
+171
+00:06:32,850 --> 00:06:36,240
+month you know that the next node conf
+
+172
+00:06:36,240 --> 00:06:37,830
+I'm going to show you that last slide
+
+173
+00:06:37,830 --> 00:06:40,900
+and you're gonna be like 1900
+
+174
+00:06:40,900 --> 00:06:43,690
+I was tiny that's like a thousand
+
+175
+00:06:43,690 --> 00:06:47,290
+thousands now you know really I can't I
+
+176
+00:06:47,290 --> 00:06:49,870
+can't stress this point enough NPM is
+
+177
+00:06:49,870 --> 00:06:51,220
+really valuable because of what all of
+
+178
+00:06:51,220 --> 00:06:52,840
+you guys are doing with it everything
+
+179
+00:06:52,840 --> 00:06:54,220
+that you guys are building and adding to
+
+180
+00:06:54,220 --> 00:06:56,560
+it I mean there's this huge long tail of
+
+181
+00:06:56,560 --> 00:06:58,479
+bindings and modules and stuff that are
+
+182
+00:06:58,479 --> 00:07:01,000
+all much more you know they add a lot of
+
+183
+00:07:01,000 --> 00:07:02,710
+value to that package manager so really
+
+184
+00:07:02,710 --> 00:07:04,300
+without everything getting put into it
+
+185
+00:07:04,300 --> 00:07:05,979
+it wouldn't be that great
+
+186
+00:07:05,979 --> 00:07:07,060
+you should give yourselves a round of
+
+187
+00:07:07,060 --> 00:07:14,530
+applause that's awesome okay so that's
+
+188
+00:07:14,530 --> 00:07:15,699
+kind of a little bit of background
+
+189
+00:07:15,699 --> 00:07:17,949
+here's the 50-cent tour of how it works
+
+190
+00:07:17,949 --> 00:07:21,669
+internally the the registry where things
+
+191
+00:07:21,669 --> 00:07:24,070
+go when you publish them is a couch app
+
+192
+00:07:24,070 --> 00:07:26,650
+it's running on Irish couch if you want
+
+193
+00:07:26,650 --> 00:07:29,169
+to take a look at the the JSON API
+
+194
+00:07:29,169 --> 00:07:31,389
+that's at registry on NPM JSTOR that's
+
+195
+00:07:31,389 --> 00:07:33,280
+where the NPM client actually talks to
+
+196
+00:07:33,280 --> 00:07:35,560
+the HTML thing that most people know is
+
+197
+00:07:35,560 --> 00:07:38,440
+search to NPM j/s org which is a handy
+
+198
+00:07:38,440 --> 00:07:40,780
+way to search for modules and of course
+
+199
+00:07:40,780 --> 00:07:43,080
+you can view the couch app code or
+
+200
+00:07:43,080 --> 00:07:46,080
+replicate out the data if you want to
+
+201
+00:07:46,080 --> 00:07:49,510
+tar balls are are added as attachments
+
+202
+00:07:49,510 --> 00:07:51,130
+to the registry documents there's one
+
+203
+00:07:51,130 --> 00:07:53,260
+document per package and then underneath
+
+204
+00:07:53,260 --> 00:07:54,460
+that there's a different version for
+
+205
+00:07:54,460 --> 00:07:57,400
+each one you use the add user thing to
+
+206
+00:07:57,400 --> 00:07:59,380
+auth and then the owner command to
+
+207
+00:07:59,380 --> 00:08:01,030
+manage who owns what who can publish
+
+208
+00:08:01,030 --> 00:08:03,010
+CouchDB is really awesome for this I got
+
+209
+00:08:03,010 --> 00:08:05,740
+to say it's it's I started out using
+
+210
+00:08:05,740 --> 00:08:07,419
+couchdb just because Michael Rogers said
+
+211
+00:08:07,419 --> 00:08:09,190
+I'll make a registry for you if you let
+
+212
+00:08:09,190 --> 00:08:11,020
+me do it and couch was like I will let
+
+213
+00:08:11,020 --> 00:08:14,530
+you do it in whatever you want and no
+
+214
+00:08:14,530 --> 00:08:16,360
+it's been really great the replication
+
+215
+00:08:16,360 --> 00:08:19,229
+model is really is really nice and you
+
+216
+00:08:19,229 --> 00:08:22,570
+know the whole document and attachment
+
+217
+00:08:22,570 --> 00:08:24,190
+model is actually really really good for
+
+218
+00:08:24,190 --> 00:08:25,630
+this kind of an applications vary with
+
+219
+00:08:25,630 --> 00:08:29,260
+the grain of what couchdb does a lot of
+
+220
+00:08:29,260 --> 00:08:31,930
+people are using NPM inside of their own
+
+221
+00:08:31,930 --> 00:08:34,180
+organizations I believe I've heard
+
+222
+00:08:34,180 --> 00:08:35,589
+rumors I don't know if it's actually
+
+223
+00:08:35,589 --> 00:08:38,110
+happening at Yahoo or not do you guys
+
+224
+00:08:38,110 --> 00:08:42,669
+know it is all right it is yeah Yahoo's
+
+225
+00:08:42,669 --> 00:08:44,920
+doing this I know Rackspace is doing
+
+226
+00:08:44,920 --> 00:08:47,350
+this we have some stuff like this going
+
+227
+00:08:47,350 --> 00:08:48,670
+on at joint and it's basically you've
+
+228
+00:08:48,670 --> 00:08:49,990
+got a couple of different things that
+
+229
+00:08:49,990 --> 00:08:51,370
+you can put in your package JSON to
+
+230
+00:08:51,370 --> 00:08:52,720
+prevent accidentally publishing
+
+231
+00:08:52,720 --> 00:08:54,970
+something public one of them is private
+
+232
+00:08:54,970 --> 00:08:55,240
+true
+
+233
+00:08:55,240 --> 00:08:57,700
+which will prevent any publishing the
+
+234
+00:08:57,700 --> 00:08:59,709
+other one is published config so you can
+
+235
+00:08:59,709 --> 00:09:02,110
+say anytime I publish this let's set the
+
+236
+00:09:02,110 --> 00:09:04,510
+registry to this other place just so I
+
+237
+00:09:04,510 --> 00:09:05,680
+don't accidentally send it to the wrong
+
+238
+00:09:05,680 --> 00:09:08,920
+wrong one so a little bit about that
+
+239
+00:09:08,920 --> 00:09:10,930
+anarchic dictatorship if you publish
+
+240
+00:09:10,930 --> 00:09:13,270
+something it's yours and you own it this
+
+241
+00:09:13,270 --> 00:09:15,760
+is a land grab for names it's still kind
+
+242
+00:09:15,760 --> 00:09:16,779
+of a land grab there's a lot of good
+
+243
+00:09:16,779 --> 00:09:18,990
+names that haven't yet been taken and
+
+244
+00:09:18,990 --> 00:09:21,070
+you know I really think a land grab is
+
+245
+00:09:21,070 --> 00:09:22,630
+important because it incentivizes early
+
+246
+00:09:22,630 --> 00:09:24,670
+adopters and without early adopters you
+
+247
+00:09:24,670 --> 00:09:29,680
+don't have any adopters so yeah authors
+
+248
+00:09:29,680 --> 00:09:30,970
+all admin their own stuff it's a really
+
+249
+00:09:30,970 --> 00:09:32,529
+simple permission scheme either you can
+
+250
+00:09:32,529 --> 00:09:34,360
+write to something or you can't and if
+
+251
+00:09:34,360 --> 00:09:35,350
+you can write to it you have full
+
+252
+00:09:35,350 --> 00:09:39,000
+permissions to it the dictatorship part
+
+253
+00:09:39,000 --> 00:09:41,080
+you know sometimes packages get
+
+254
+00:09:41,080 --> 00:09:43,410
+abandoned authors go AWOL they decide to
+
+255
+00:09:43,410 --> 00:09:46,060
+go on vacation for six months and their
+
+256
+00:09:46,060 --> 00:09:47,890
+stuffs broken and you can't get them to
+
+257
+00:09:47,890 --> 00:09:49,420
+fix it or you know you send them a pull
+
+258
+00:09:49,420 --> 00:09:50,529
+request and they accept it but then they
+
+259
+00:09:50,529 --> 00:09:52,380
+never publish it back to the registry
+
+260
+00:09:52,380 --> 00:09:54,339
+occasionally programs can be malicious
+
+261
+00:09:54,339 --> 00:09:58,120
+or misleading or just beyond bad like in
+
+262
+00:09:58,120 --> 00:09:59,740
+tolerably Badham it's got to be really
+
+263
+00:09:59,740 --> 00:10:03,040
+bad to be a pain but basically that's my
+
+264
+00:10:03,040 --> 00:10:05,170
+email address I'm gonna admit on the
+
+265
+00:10:05,170 --> 00:10:07,329
+server email me if something is really a
+
+266
+00:10:07,329 --> 00:10:12,810
+problem don't be creepy the cache folder
+
+267
+00:10:12,810 --> 00:10:17,079
+in npm 1.0 in tilde dot npm there's a
+
+268
+00:10:17,079 --> 00:10:19,000
+registry items are all cached and then
+
+269
+00:10:19,000 --> 00:10:20,230
+it does etag caching that's another
+
+270
+00:10:20,230 --> 00:10:22,060
+reason why CouchDB is so great because
+
+271
+00:10:22,060 --> 00:10:24,750
+you know it's got this really really
+
+272
+00:10:24,750 --> 00:10:27,220
+good use of etags it uses them really
+
+273
+00:10:27,220 --> 00:10:28,750
+the way that the HTTP spec sort of
+
+274
+00:10:28,750 --> 00:10:34,540
+intends you to use e tags so new in 1.0
+
+275
+00:10:34,540 --> 00:10:36,459
+we've got a vastly simplified folder
+
+276
+00:10:36,459 --> 00:10:39,610
+structure much smarter GUID ignore an
+
+277
+00:10:39,610 --> 00:10:41,649
+NPM ignore handling it it actually kind
+
+278
+00:10:41,649 --> 00:10:42,760
+of works the way you probably always
+
+279
+00:10:42,760 --> 00:10:45,339
+thought it did and then we've got this
+
+280
+00:10:45,339 --> 00:10:47,529
+global versus local installation on it
+
+281
+00:10:47,529 --> 00:10:49,450
+tell you a little bit about that people
+
+282
+00:10:49,450 --> 00:10:53,350
+tend to either love or hate that raise
+
+283
+00:10:53,350 --> 00:10:55,779
+your hand if you hate it anybody yeah
+
+284
+00:10:55,779 --> 00:10:58,420
+all right good somebody's gonna heckle
+
+285
+00:10:58,420 --> 00:11:02,050
+me later that's awesome if you haven't
+
+286
+00:11:02,050 --> 00:11:03,220
+if you haven't kind of gotten on this
+
+287
+00:11:03,220 --> 00:11:04,959
+bandwagon yet basically with any command
+
+288
+00:11:04,959 --> 00:11:08,860
+you add - G or - - global
+
+289
+00:11:08,860 --> 00:11:11,620
+run that command globally if you don't
+
+290
+00:11:11,620 --> 00:11:13,540
+do that then it runs inside your own
+
+291
+00:11:13,540 --> 00:11:15,400
+package folder so anytime you install
+
+292
+00:11:15,400 --> 00:11:16,810
+something it's installing it just within
+
+293
+00:11:16,810 --> 00:11:23,990
+your project global oh okay thanks
+
+294
+00:11:24,000 --> 00:11:26,500
+global goes and use a local local goes
+
+295
+00:11:26,500 --> 00:11:29,620
+in your project global is for putting
+
+296
+00:11:29,620 --> 00:11:32,740
+files in the path and local is for doing
+
+297
+00:11:32,740 --> 00:11:36,370
+require the global route is not in nodes
+
+298
+00:11:36,370 --> 00:11:41,290
+require path this is on purpose and if
+
+299
+00:11:41,290 --> 00:11:43,000
+you don't like it I think you should
+
+300
+00:11:43,000 --> 00:11:45,670
+just try it and kind of try to submit
+
+301
+00:11:45,670 --> 00:11:47,740
+yourself to this and accept it and
+
+302
+00:11:47,740 --> 00:11:51,820
+you'll grow to like it is this it's like
+
+303
+00:11:51,820 --> 00:11:53,650
+get versus SVN right I mean it's you
+
+304
+00:11:53,650 --> 00:11:55,150
+know you hated get when you first used
+
+305
+00:11:55,150 --> 00:11:57,180
+it you could admit it
+
+306
+00:11:57,180 --> 00:11:59,530
+so yeah packages are installed into the
+
+307
+00:11:59,530 --> 00:12:01,510
+node modules folder I think I think I've
+
+308
+00:12:01,510 --> 00:12:02,620
+been shown slides too long you guys want
+
+309
+00:12:02,620 --> 00:12:08,190
+some stuff am I still on all right good
+
+310
+00:12:08,190 --> 00:12:14,879
+what's that
+
+311
+00:12:14,889 --> 00:12:19,059
+oh yeah okay anybody follow me on
+
+312
+00:12:19,059 --> 00:12:19,869
+Twitter come on
+
+313
+00:12:19,869 --> 00:12:22,119
+I've been bitching about this all week
+
+314
+00:12:22,119 --> 00:12:26,949
+oh hey so what was that
+
+315
+00:12:26,949 --> 00:12:35,410
+you got a request oh fail hold on a
+
+316
+00:12:35,410 --> 00:12:40,759
+second I can I can do this
+
+317
+00:12:40,769 --> 00:12:49,720
+command option what
+
+318
+00:12:49,730 --> 00:12:55,520
+command option control 8 oh yes thank
+
+319
+00:12:55,520 --> 00:12:58,130
+you that's brilliant okay so what was I
+
+320
+00:12:58,130 --> 00:12:58,490
+talking about
+
+321
+00:12:58,490 --> 00:12:59,690
+oh yeah node modules folders so if I
+
+322
+00:12:59,690 --> 00:13:01,460
+look here this is actually in the npm
+
+323
+00:13:01,460 --> 00:13:04,610
+source code let me go someplace a little
+
+324
+00:13:04,610 --> 00:13:06,610
+bit more interesting
+
+325
+00:13:06,610 --> 00:13:14,690
+all right great so now I've got a
+
+326
+00:13:14,690 --> 00:13:17,480
+package.json in this folder and I depend
+
+327
+00:13:17,480 --> 00:13:20,120
+on a bunch of things and as you can see
+
+328
+00:13:20,120 --> 00:13:22,250
+none of them are installed so they do
+
+329
+00:13:22,250 --> 00:13:28,340
+type NPM install what it's actually
+
+330
+00:13:28,340 --> 00:13:30,440
+doing right now if you remember from NPM
+
+331
+00:13:30,440 --> 00:13:32,570
+0x it would be spewing all kinds of crap
+
+332
+00:13:32,570 --> 00:13:34,640
+but what it is actually doing was going
+
+333
+00:13:34,640 --> 00:13:36,650
+to the registry figuring out you know
+
+334
+00:13:36,650 --> 00:13:38,030
+calculating which install twitch thing
+
+335
+00:13:38,030 --> 00:13:39,350
+it needs to install and then finding the
+
+336
+00:13:39,350 --> 00:13:41,300
+right version and dropping it into the
+
+337
+00:13:41,300 --> 00:13:42,410
+folder and now you can see it's actually
+
+338
+00:13:42,410 --> 00:13:44,600
+showing me the thing it installed and
+
+339
+00:13:44,600 --> 00:13:49,040
+then the place that installed it so you
+
+340
+00:13:49,040 --> 00:13:50,930
+can see in this node modules folder I
+
+341
+00:13:50,930 --> 00:13:53,990
+basically have a folder for each one of
+
+342
+00:13:53,990 --> 00:14:00,770
+those packages and I mean that's about
+
+343
+00:14:00,770 --> 00:14:02,000
+all there is to it those packages are
+
+344
+00:14:02,000 --> 00:14:04,400
+just there it's just using nodes built
+
+345
+00:14:04,400 --> 00:14:05,780
+in module loader which is why that node
+
+346
+00:14:05,780 --> 00:14:11,870
+modules folder works like that oh I'm
+
+347
+00:14:11,870 --> 00:14:16,380
+still in background mode oops
+
+348
+00:14:16,390 --> 00:14:18,920
+command shift weight command option
+
+349
+00:14:18,920 --> 00:14:20,780
+control 8 there we go
+
+350
+00:14:20,780 --> 00:14:23,150
+I was like why is it black on weight
+
+351
+00:14:23,150 --> 00:14:25,600
+again great
+
+352
+00:14:25,600 --> 00:14:27,950
+okay so cycles are handled smartly
+
+353
+00:14:27,950 --> 00:14:29,810
+actually so right now it won't install
+
+354
+00:14:29,810 --> 00:14:31,130
+anything it doesn't need to like if it's
+
+355
+00:14:31,130 --> 00:14:33,260
+already found in a parent node modules
+
+356
+00:14:33,260 --> 00:14:35,180
+folder it won't bother to install it a
+
+357
+00:14:35,180 --> 00:14:37,760
+second time which is really important so
+
+358
+00:14:37,760 --> 00:14:38,870
+there's a few things you can put in your
+
+359
+00:14:38,870 --> 00:14:41,720
+package JSON the that a lot of you
+
+360
+00:14:41,720 --> 00:14:42,980
+probably know about and just kind of
+
+361
+00:14:42,980 --> 00:14:45,620
+maybe some of you maybe don't the first
+
+362
+00:14:45,620 --> 00:14:47,900
+is the scripts they it's a hash of like
+
+363
+00:14:47,900 --> 00:14:50,390
+an event name and then a command that
+
+364
+00:14:50,390 --> 00:14:52,910
+you run NPM will run these scripts as
+
+365
+00:14:52,910 --> 00:14:55,120
+nobody if you're currently root which is
+
+366
+00:14:55,120 --> 00:14:57,590
+important an important security point
+
+367
+00:14:57,590 --> 00:15:00,170
+you can set the unsafe perm flag and
+
+368
+00:15:00,170 --> 00:15:01,520
+then that will just run at us whoever
+
+369
+00:15:01,520 --> 00:15:02,840
+you are all the time
+
+370
+00:15:02,840 --> 00:15:04,850
+you can do pre and post events on each
+
+371
+00:15:04,850 --> 00:15:08,240
+lifecycle moment and the environment has
+
+372
+00:15:08,240 --> 00:15:10,970
+like just all kinds of data you know NPM
+
+373
+00:15:10,970 --> 00:15:13,280
+underscore config under store every
+
+374
+00:15:13,280 --> 00:15:15,680
+config option if you read from process
+
+375
+00:15:15,680 --> 00:15:17,210
+10 then you're in your script you'll see
+
+376
+00:15:17,210 --> 00:15:18,700
+all kinds of stuff
+
+377
+00:15:18,700 --> 00:15:21,250
+the important scripts to know about
+
+378
+00:15:21,250 --> 00:15:23,270
+install happens when your project gets
+
+379
+00:15:23,270 --> 00:15:25,340
+installed start is how you start your
+
+380
+00:15:25,340 --> 00:15:28,490
+server there's I'm not sure if the other
+
+381
+00:15:28,490 --> 00:15:31,820
+node has systems are using NPM start but
+
+382
+00:15:31,820 --> 00:15:33,230
+we're rolling that out
+
+383
+00:15:33,230 --> 00:15:37,160
+soonish and I know de the test command
+
+384
+00:15:37,160 --> 00:15:40,910
+is run by the NPM tests command and then
+
+385
+00:15:40,910 --> 00:15:42,770
+pre publish runs before your stuff gets
+
+386
+00:15:42,770 --> 00:15:44,300
+published so if you have a you know if
+
+387
+00:15:44,300 --> 00:15:45,680
+you want to generate all your JavaScript
+
+388
+00:15:45,680 --> 00:15:47,750
+from coffee scripts at publish time so
+
+389
+00:15:47,750 --> 00:15:49,430
+that people don't need CoffeeScript to
+
+390
+00:15:49,430 --> 00:15:51,140
+run your program that's how you would do
+
+391
+00:15:51,140 --> 00:15:55,490
+it definitely include a test script I'm
+
+392
+00:15:55,490 --> 00:15:56,660
+going to show you something a little bit
+
+393
+00:15:56,660 --> 00:15:58,010
+later which is awesome you were really
+
+394
+00:15:58,010 --> 00:16:00,470
+gonna love and tests make you look like
+
+395
+00:16:00,470 --> 00:16:02,000
+a grown-up that make you look like you
+
+396
+00:16:02,000 --> 00:16:05,170
+know what you're doing and like you care
+
+397
+00:16:05,170 --> 00:16:08,330
+so all of the all of the commands in the
+
+398
+00:16:08,330 --> 00:16:10,970
+NPM you know all the different commands
+
+399
+00:16:10,970 --> 00:16:13,040
+you can run are all in an PM sources lib
+
+400
+00:16:13,040 --> 00:16:15,200
+slash whatever excuse me
+
+401
+00:16:15,200 --> 00:16:17,810
+whatever dot J s and they hang on that
+
+402
+00:16:17,810 --> 00:16:20,810
+NPM object as NPM commands dot whatever
+
+403
+00:16:20,810 --> 00:16:22,400
+this has actually been a really
+
+404
+00:16:22,400 --> 00:16:25,490
+interesting study in building a kind of
+
+405
+00:16:25,490 --> 00:16:28,870
+a sprawling large program in node right
+
+406
+00:16:28,870 --> 00:16:32,270
+so you know and in particular how do you
+
+407
+00:16:32,270 --> 00:16:34,070
+how do you organize things like adding
+
+408
+00:16:34,070 --> 00:16:36,200
+completion or help Docs or you know
+
+409
+00:16:36,200 --> 00:16:38,590
+stuff like that or a breath support so
+
+410
+00:16:38,590 --> 00:16:41,080
+one thing you can actually do in NPM
+
+411
+00:16:41,080 --> 00:16:44,620
+which i think is kind of kind of RAD is
+
+412
+00:16:44,620 --> 00:16:48,620
+this npm completion now it's it's hard
+
+413
+00:16:48,620 --> 00:16:50,300
+to see at this monitor I'm actually
+
+414
+00:16:50,300 --> 00:16:52,850
+gonna I'm gonna bump oh wait you need me
+
+415
+00:16:52,850 --> 00:16:55,810
+you need me to uh yeah there we go
+
+416
+00:16:55,810 --> 00:16:58,850
+so what NPM completion actually does it
+
+417
+00:16:58,850 --> 00:17:01,370
+you can run this on your on your laptops
+
+418
+00:17:01,370 --> 00:17:03,050
+right now it actually spits out a
+
+419
+00:17:03,050 --> 00:17:05,690
+completion script so you can pipe that
+
+420
+00:17:05,690 --> 00:17:08,570
+to your bash RC or to your z shrc or
+
+421
+00:17:08,570 --> 00:17:11,060
+whatever I didn't you know there's so
+
+422
+00:17:11,060 --> 00:17:14,660
+many different ways to assign a script
+
+423
+00:17:14,660 --> 00:17:15,980
+to be run as a completion script so I
+
+424
+00:17:15,980 --> 00:17:16,579
+don't want to
+
+425
+00:17:16,579 --> 00:17:19,730
+sort of hard-code that but it spews out
+
+426
+00:17:19,730 --> 00:17:25,409
+stuff that works for Z shell or bash
+
+427
+00:17:25,419 --> 00:17:31,049
+keynote there we go
+
+428
+00:17:31,059 --> 00:17:33,440
+if you only know a single NPM command
+
+429
+00:17:33,440 --> 00:17:34,880
+this is definitely the one to know so if
+
+430
+00:17:34,880 --> 00:17:36,500
+you if you run it without any arguments
+
+431
+00:17:36,500 --> 00:17:38,779
+it sets up your local build directory it
+
+432
+00:17:38,779 --> 00:17:40,309
+installs all your dependencies it runs
+
+433
+00:17:40,309 --> 00:17:42,260
+your build script it's pretty much the
+
+434
+00:17:42,260 --> 00:17:43,789
+one thing that you probably need to do
+
+435
+00:17:43,789 --> 00:17:46,970
+the most link is really handy if you
+
+436
+00:17:46,970 --> 00:17:49,309
+want to make changes and then see the
+
+437
+00:17:49,309 --> 00:17:51,340
+changes automatically without having to
+
+438
+00:17:51,340 --> 00:17:54,019
+you know rerun your your install every
+
+439
+00:17:54,019 --> 00:17:58,309
+time yeah basically just read the help
+
+440
+00:17:58,309 --> 00:18:01,370
+file it if you were using link in 0x it
+
+441
+00:18:01,370 --> 00:18:04,190
+changed a lot so this REO architecture
+
+442
+00:18:04,190 --> 00:18:06,110
+really hit that one more than most other
+
+443
+00:18:06,110 --> 00:18:09,769
+commands LS is important you can do LS
+
+444
+00:18:09,769 --> 00:18:11,690
+dash G to see all your global packages
+
+445
+00:18:11,690 --> 00:18:14,269
+LS dash P to list it in parsable format
+
+446
+00:18:14,269 --> 00:18:16,940
+or LS dash L to list it in long format
+
+447
+00:18:16,940 --> 00:18:18,799
+and you can combine those flags together
+
+448
+00:18:18,799 --> 00:18:24,289
+but it's still MIT licensed and there's
+
+449
+00:18:24,289 --> 00:18:26,059
+a we've been working on splitting out
+
+450
+00:18:26,059 --> 00:18:27,830
+myself and actually a couple of other
+
+451
+00:18:27,830 --> 00:18:28,760
+people have contributed to this
+
+452
+00:18:28,760 --> 00:18:30,470
+splitting out some of the reusable
+
+453
+00:18:30,470 --> 00:18:33,260
+pieces of NPM out into their own their
+
+454
+00:18:33,260 --> 00:18:35,630
+own projects so this is pretty handy I
+
+455
+00:18:35,630 --> 00:18:37,429
+mean if you're writing a large command
+
+456
+00:18:37,429 --> 00:18:41,840
+line app like NPM nopt is a really nice
+
+457
+00:18:41,840 --> 00:18:45,080
+option parser and validator cember is
+
+458
+00:18:45,080 --> 00:18:46,490
+the thing that NPM uses to parse
+
+459
+00:18:46,490 --> 00:18:47,720
+versions so if you're basically if
+
+460
+00:18:47,720 --> 00:18:49,700
+you're parsing versions in node I would
+
+461
+00:18:49,700 --> 00:18:51,289
+highly recommend using that same cember
+
+462
+00:18:51,289 --> 00:18:53,210
+lab library because then you're gonna
+
+463
+00:18:53,210 --> 00:18:54,590
+you know you're gonna know that you
+
+464
+00:18:54,590 --> 00:18:57,139
+always are using what NPM is using and
+
+465
+00:18:57,139 --> 00:19:00,350
+AB Rev is like the Ruby AB rev module
+
+466
+00:19:00,350 --> 00:19:01,510
+it's so you can actually type NPM
+
+467
+00:19:01,510 --> 00:19:04,010
+instead of NPM install and it'll know
+
+468
+00:19:04,010 --> 00:19:07,320
+you know what you meant
+
+469
+00:19:07,330 --> 00:19:10,070
+so this is the part where I make
+
+470
+00:19:10,070 --> 00:19:11,980
+promises and get myself into trouble
+
+471
+00:19:11,980 --> 00:19:15,070
+everything that comes after now is
+
+472
+00:19:15,070 --> 00:19:20,450
+suspect one thing that we're that we're
+
+473
+00:19:20,450 --> 00:19:23,690
+looking into with npm 1.0 is to do
+
+474
+00:19:23,690 --> 00:19:26,720
+binary distributions it it turns out
+
+475
+00:19:26,720 --> 00:19:28,130
+this is really really important for
+
+476
+00:19:28,130 --> 00:19:30,410
+Windows because Windows users just the
+
+477
+00:19:30,410 --> 00:19:33,590
+don't have a compiler and it's also kind
+
+478
+00:19:33,590 --> 00:19:35,240
+of important when you have you know
+
+479
+00:19:35,240 --> 00:19:37,610
+little VMs where you want to run a
+
+480
+00:19:37,610 --> 00:19:39,110
+little node process or if you're talking
+
+481
+00:19:39,110 --> 00:19:40,820
+about stuff for you know the palm
+
+482
+00:19:40,820 --> 00:19:42,650
+devices or whatever there's a lot of
+
+483
+00:19:42,650 --> 00:19:44,450
+places we want node to go where there's
+
+484
+00:19:44,450 --> 00:19:46,100
+no compiler and there's no tool chain
+
+485
+00:19:46,100 --> 00:19:47,450
+and even if there is a compiler and a
+
+486
+00:19:47,450 --> 00:19:49,160
+tool chain there's hardly any memory so
+
+487
+00:19:49,160 --> 00:19:50,570
+it's gonna take three days to compile
+
+488
+00:19:50,570 --> 00:19:54,110
+anything so we've got this experiment
+
+489
+00:19:54,110 --> 00:19:55,280
+I've got this experimental feature
+
+490
+00:19:55,280 --> 00:19:57,500
+landed in 1.0 where it'll actually when
+
+491
+00:19:57,500 --> 00:19:59,270
+you publish it'll pre-compile a binary
+
+492
+00:19:59,270 --> 00:20:01,250
+add-on and also publish the precompiled
+
+493
+00:20:01,250 --> 00:20:03,620
+copy and then it install time it'll see
+
+494
+00:20:03,620 --> 00:20:05,240
+if there's a pre compiled copy for your
+
+495
+00:20:05,240 --> 00:20:08,090
+architecture and your platform in the
+
+496
+00:20:08,090 --> 00:20:10,370
+version of node and everything and if
+
+497
+00:20:10,370 --> 00:20:11,600
+there's a matching copy then it'll
+
+498
+00:20:11,600 --> 00:20:14,150
+install that one instead it's probably
+
+499
+00:20:14,150 --> 00:20:16,610
+pretty broken but it's working
+
+500
+00:20:16,610 --> 00:20:18,740
+surprisingly well so far I'm sure that
+
+501
+00:20:18,740 --> 00:20:19,820
+there are issues we're gonna sort of
+
+502
+00:20:19,820 --> 00:20:23,930
+suss out over the coming months end pad
+
+503
+00:20:23,930 --> 00:20:25,490
+this is that thing with the testing I've
+
+504
+00:20:25,490 --> 00:20:27,140
+probably talked your ear off at some
+
+505
+00:20:27,140 --> 00:20:29,810
+point a lot of people in this room I
+
+506
+00:20:29,810 --> 00:20:31,070
+know I've got I get really excited about
+
+507
+00:20:31,070 --> 00:20:34,730
+this one but basically so pearl has like
+
+508
+00:20:34,730 --> 00:20:38,680
+the best distributed testing service
+
+509
+00:20:38,680 --> 00:20:41,390
+just ever I mean in any language
+
+510
+00:20:41,390 --> 00:20:45,500
+platform it is hands-down the best when
+
+511
+00:20:45,500 --> 00:20:47,300
+I I wasn't really I'm not really a perl
+
+512
+00:20:47,300 --> 00:20:50,570
+user primarily but when I kind of took a
+
+513
+00:20:50,570 --> 00:20:52,460
+closer look into the sea pants stuff I
+
+514
+00:20:52,460 --> 00:20:55,550
+mean that's incredible it is so so good
+
+515
+00:20:55,550 --> 00:20:59,300
+and we just we need the best of
+
+516
+00:20:59,300 --> 00:21:00,890
+everything in note if there's something
+
+517
+00:21:00,890 --> 00:21:02,180
+out there that's better than what Note
+
+518
+00:21:02,180 --> 00:21:04,940
+has for that thing we need to make a
+
+519
+00:21:04,940 --> 00:21:07,070
+better one of those and so this is
+
+520
+00:21:07,070 --> 00:21:09,410
+definitely no exception I want to the
+
+521
+00:21:09,410 --> 00:21:12,320
+idea here is if you do NPM set and Pat
+
+522
+00:21:12,320 --> 00:21:14,870
+true then every time you install a
+
+523
+00:21:14,870 --> 00:21:17,150
+package it will also install the dev
+
+524
+00:21:17,150 --> 00:21:18,800
+dependencies and also run all of the
+
+525
+00:21:18,800 --> 00:21:22,280
+tests so if there's a problem you'll see
+
+526
+00:21:22,280 --> 00:21:25,130
+it right away if you you know want to go
+
+527
+00:21:25,130 --> 00:21:26,360
+ahead and install it anyway you can
+
+528
+00:21:26,360 --> 00:21:27,980
+always just override that flag at at
+
+529
+00:21:27,980 --> 00:21:31,820
+install time so the future part of this
+
+530
+00:21:31,820 --> 00:21:32,990
+that that much is implemented now the
+
+531
+00:21:32,990 --> 00:21:34,670
+future part of this is that eventually
+
+532
+00:21:34,670 --> 00:21:36,200
+those results are going to be uploaded
+
+533
+00:21:36,200 --> 00:21:38,450
+up to a database along with platform
+
+534
+00:21:38,450 --> 00:21:40,850
+information and the version of node and
+
+535
+00:21:40,850 --> 00:21:42,200
+what other dependencies were installed
+
+536
+00:21:42,200 --> 00:21:44,179
+so you could you as a module
+
+537
+00:21:44,179 --> 00:21:46,820
+or can say hey where are my tests
+
+538
+00:21:46,820 --> 00:21:48,799
+failing you know if you see a big red
+
+539
+00:21:48,799 --> 00:21:50,570
+marks under the freebsd column you'll
+
+540
+00:21:50,570 --> 00:21:53,720
+know hey maybe I should check that out
+
+541
+00:21:53,720 --> 00:21:56,869
+you know and Pat will tell you when it
+
+542
+00:21:56,869 --> 00:22:00,470
+works and when it doesn't so if you have
+
+543
+00:22:00,470 --> 00:22:03,830
+that those n Pat reports and you have
+
+544
+00:22:03,830 --> 00:22:05,450
+binary distributions that can be built
+
+545
+00:22:05,450 --> 00:22:08,749
+right and then we get a bunch of VMs and
+
+546
+00:22:08,749 --> 00:22:09,950
+a bunch of different operating systems
+
+547
+00:22:09,950 --> 00:22:12,110
+and architectures we can have the
+
+548
+00:22:12,110 --> 00:22:13,970
+ultimate package test integration mega
+
+549
+00:22:13,970 --> 00:22:18,730
+engine like that's what I'm calling it
+
+550
+00:22:18,730 --> 00:22:23,210
+or uptime for short that is in all caps
+
+551
+00:22:23,210 --> 00:22:25,789
+that is always in all caps NPM is in
+
+552
+00:22:25,789 --> 00:22:28,129
+lower case because NPM cares about you
+
+553
+00:22:28,129 --> 00:22:31,009
+it's very gentle uptime is not gentle
+
+554
+00:22:31,009 --> 00:22:32,869
+uptime sends you an email it says dude
+
+555
+00:22:32,869 --> 00:22:35,779
+you screwed up on this operating system
+
+556
+00:22:35,779 --> 00:22:38,779
+go fix it yeah I think that node needs
+
+557
+00:22:38,779 --> 00:22:39,889
+one of these you know there's there's
+
+558
+00:22:39,889 --> 00:22:42,110
+these kind of clever interesting CI
+
+559
+00:22:42,110 --> 00:22:43,999
+things being developed but really we as
+
+560
+00:22:43,999 --> 00:22:45,409
+a node community for the open source
+
+561
+00:22:45,409 --> 00:22:47,480
+community need to have the best one of
+
+562
+00:22:47,480 --> 00:22:51,799
+those that there is yeah so then I mean
+
+563
+00:22:51,799 --> 00:22:52,999
+at that point then we've got the couch
+
+564
+00:22:52,999 --> 00:22:54,139
+changes feed we could just build
+
+565
+00:22:54,139 --> 00:22:55,460
+everything as it's published
+
+566
+00:22:55,460 --> 00:22:57,409
+publish the binary distributions back
+
+567
+00:22:57,409 --> 00:23:00,230
+into the registry run the tests upload
+
+568
+00:23:00,230 --> 00:23:03,840
+the results this is gonna be awesome so
+
+569
+00:23:03,850 --> 00:23:07,399
+how can you help there's basically just
+
+570
+00:23:07,399 --> 00:23:09,080
+keep building awesome stuff with node I
+
+571
+00:23:09,080 --> 00:23:10,460
+mean that like I said that last slide
+
+572
+00:23:10,460 --> 00:23:13,309
+with the numbers we need to make that
+
+573
+00:23:13,309 --> 00:23:16,279
+number keep going up open source your
+
+574
+00:23:16,279 --> 00:23:17,720
+reusable libraries as you build them I
+
+575
+00:23:17,720 --> 00:23:18,679
+mean there's a lot of people doing
+
+576
+00:23:18,679 --> 00:23:20,299
+interesting creative things with node
+
+577
+00:23:20,299 --> 00:23:23,419
+now if even if you're doing a closed
+
+578
+00:23:23,419 --> 00:23:25,279
+source product you know you can probably
+
+579
+00:23:25,279 --> 00:23:27,019
+still open source some binding or some
+
+580
+00:23:27,019 --> 00:23:28,399
+library that you're that you're using
+
+581
+00:23:28,399 --> 00:23:31,850
+and you know publish that back up to the
+
+582
+00:23:31,850 --> 00:23:35,330
+NPM registry and just try to help out
+
+583
+00:23:35,330 --> 00:23:36,559
+with some of that future stuff if you
+
+584
+00:23:36,559 --> 00:23:37,970
+think that there's some some benefit in
+
+585
+00:23:37,970 --> 00:23:40,340
+it for you and in general I mean hang
+
+586
+00:23:40,340 --> 00:23:42,230
+out in the IRC room and and tell people
+
+587
+00:23:42,230 --> 00:23:47,299
+how to do stuff so that's it my slides
+
+588
+00:23:47,299 --> 00:23:53,600
+are on this URL anybody got any
+
+589
+00:23:53,600 --> 00:23:55,490
+questions the question is I was
+
+590
+00:23:55,490 --> 00:23:56,990
+wondering how that test stuff works is
+
+591
+00:23:56,990 --> 00:23:58,080
+it just the exit status
+
+592
+00:23:58,080 --> 00:24:06,570
+of the process primarily yeah so I do
+
+593
+00:24:06,570 --> 00:24:08,279
+eventually want to do some stuff with
+
+594
+00:24:08,279 --> 00:24:10,830
+parsing the output and I wrote a little
+
+595
+00:24:10,830 --> 00:24:13,049
+library called node tap which is kind of
+
+596
+00:24:13,049 --> 00:24:14,880
+like it's it's more a toolkit than a
+
+597
+00:24:14,880 --> 00:24:15,870
+library you can kind of pick and choose
+
+598
+00:24:15,870 --> 00:24:17,340
+bits of it
+
+599
+00:24:17,340 --> 00:24:20,370
+so that you can output tap results from
+
+600
+00:24:20,370 --> 00:24:21,799
+your test frameworks I'm trying to get
+
+601
+00:24:21,799 --> 00:24:25,200
+TJ and Alexis to use it in expresso and
+
+602
+00:24:25,200 --> 00:24:30,299
+vows respectively Kalin McMahon as well
+
+603
+00:24:30,299 --> 00:24:33,690
+in in node unit and they all seem fairly
+
+604
+00:24:33,690 --> 00:24:34,860
+receptive they're just all busy
+
+605
+00:24:34,860 --> 00:24:37,529
+obviously at some point though we're
+
+606
+00:24:37,529 --> 00:24:39,000
+gonna make this end pad server actually
+
+607
+00:24:39,000 --> 00:24:41,940
+parse the output and if it is tap then
+
+608
+00:24:41,940 --> 00:24:44,490
+it will you know give you much much more
+
+609
+00:24:44,490 --> 00:24:49,649
+granular results good question thanks so
+
+610
+00:24:49,649 --> 00:24:52,080
+the I'm gonna abbreviate your question a
+
+611
+00:24:52,080 --> 00:24:55,620
+little bit so the question was there's a
+
+612
+00:24:55,620 --> 00:24:57,059
+bunch of stuff in the NPM registry that
+
+613
+00:24:57,059 --> 00:24:58,830
+people use just because NPM is so
+
+614
+00:24:58,830 --> 00:25:03,360
+awesome right yeah okay and is there any
+
+615
+00:25:03,360 --> 00:25:04,950
+thought given to delineating which
+
+616
+00:25:04,950 --> 00:25:06,240
+things are node modules versus which
+
+617
+00:25:06,240 --> 00:25:08,880
+things are common j/s modules or CouchDB
+
+618
+00:25:08,880 --> 00:25:11,460
+models or whatever and I mean currently
+
+619
+00:25:11,460 --> 00:25:12,960
+you can do this right in your your
+
+620
+00:25:12,960 --> 00:25:15,510
+package JSON file you can you can
+
+621
+00:25:15,510 --> 00:25:18,419
+specify an engines hash which specify
+
+622
+00:25:18,419 --> 00:25:19,679
+which is actually really important
+
+623
+00:25:19,679 --> 00:25:22,019
+because the node API is still you know
+
+624
+00:25:22,019 --> 00:25:25,350
+is obviously still changing but you can
+
+625
+00:25:25,350 --> 00:25:26,850
+also say engines I think there are
+
+626
+00:25:26,850 --> 00:25:28,260
+actually a few things that are you know
+
+627
+00:25:28,260 --> 00:25:30,960
+engines Narwhal or engines dojo and
+
+628
+00:25:30,960 --> 00:25:34,139
+there is actually a way for the dojo
+
+629
+00:25:34,139 --> 00:25:35,789
+Foundation has some overlap between
+
+630
+00:25:35,789 --> 00:25:37,470
+their registry which is using the same
+
+631
+00:25:37,470 --> 00:25:40,380
+kind of API and the couch app where they
+
+632
+00:25:40,380 --> 00:25:41,909
+they publish a reference to their
+
+633
+00:25:41,909 --> 00:25:45,690
+registry and then I think it's I forget
+
+634
+00:25:45,690 --> 00:25:48,659
+the promise di oh all that stuff is
+
+635
+00:25:48,659 --> 00:25:50,730
+actually hosted on the dojo registry not
+
+636
+00:25:50,730 --> 00:25:54,630
+on mine and yeah I mean you can do that
+
+637
+00:25:54,630 --> 00:25:56,639
+today and there's there's really no
+
+638
+00:25:56,639 --> 00:25:59,370
+reason not to I mean it's a I really
+
+639
+00:25:59,370 --> 00:26:01,380
+believe firmly that you you loosely
+
+640
+00:26:01,380 --> 00:26:03,419
+couple as many parts of the thing that
+
+641
+00:26:03,419 --> 00:26:05,580
+you're doing is possible and whether
+
+642
+00:26:05,580 --> 00:26:07,500
+that's you know that works in software
+
+643
+00:26:07,500 --> 00:26:09,720
+as well as in communities right there's
+
+644
+00:26:09,720 --> 00:26:11,460
+no reason why we can't have some over
+
+645
+00:26:11,460 --> 00:26:13,230
+between the dojo Foundation in the note
+
+646
+00:26:13,230 --> 00:26:15,899
+group or you know couchdb modules and
+
+647
+00:26:15,899 --> 00:26:17,730
+node modules some things are gonna work
+
+648
+00:26:17,730 --> 00:26:21,750
+in both places some things aren't okay
+
+649
+00:26:21,750 --> 00:26:23,309
+so everything that I mentioned in that
+
+650
+00:26:23,309 --> 00:26:25,679
+futures future not futures that's a
+
+651
+00:26:25,679 --> 00:26:28,620
+different thing that's fibers everything
+
+652
+00:26:28,620 --> 00:26:29,760
+I mentioned in the future section is
+
+653
+00:26:29,760 --> 00:26:31,169
+basically geared towards that question
+
+654
+00:26:31,169 --> 00:26:33,539
+like how do I oh sorry
+
+655
+00:26:33,539 --> 00:26:35,370
+the question was how do I pick which
+
+656
+00:26:35,370 --> 00:26:38,760
+module I want to use and you know you
+
+657
+00:26:38,760 --> 00:26:40,380
+pick the one that has the tests that run
+
+658
+00:26:40,380 --> 00:26:41,940
+and that work on your system and that
+
+659
+00:26:41,940 --> 00:26:43,590
+has more dependencies on it and we're
+
+660
+00:26:43,590 --> 00:26:45,179
+working on kind of building those those
+
+661
+00:26:45,179 --> 00:26:48,210
+heuristics out to both help module users
+
+662
+00:26:48,210 --> 00:26:51,510
+as well as module authors yeah so the
+
+663
+00:26:51,510 --> 00:26:53,130
+big difference the questions the why not
+
+664
+00:26:53,130 --> 00:26:55,860
+use optimist why use not the the big
+
+665
+00:26:55,860 --> 00:26:57,840
+difference between the two is that
+
+666
+00:26:57,840 --> 00:26:59,909
+optimist I believe generates a help
+
+667
+00:26:59,909 --> 00:27:00,659
+banner for you
+
+668
+00:27:00,659 --> 00:27:07,980
+and nopt doesn't also nopt does option
+
+669
+00:27:07,980 --> 00:27:11,460
+validation so it will actually yell at
+
+670
+00:27:11,460 --> 00:27:12,840
+you if you try to make a number thing
+
+671
+00:27:12,840 --> 00:27:15,480
+not a number and I didn't need anything
+
+672
+00:27:15,480 --> 00:27:16,740
+to generate help banners because I
+
+673
+00:27:16,740 --> 00:27:17,640
+already have that you know this
+
+674
+00:27:17,640 --> 00:27:20,190
+extensive kind of help structure
+
+675
+00:27:20,190 --> 00:27:22,679
+throughout NPM so I just needed
+
+676
+00:27:22,679 --> 00:27:24,210
+something to validate the options where
+
+677
+00:27:24,210 --> 00:27:27,779
+we're valid and I think I'm getting
+

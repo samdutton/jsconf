@@ -1,0 +1,3241 @@
+1
+00:00:17,910 --> 00:00:21,939
+
+well it's good to be here I'm pleased to
+
+2
+00:00:21,939 --> 00:00:24,430
+see that as soon as anyone puts up a
+
+3
+00:00:24,430 --> 00:00:26,890
+chat at a conference people try and hack
+
+4
+00:00:26,890 --> 00:00:29,739
+it with cross-site scripting it's a good
+
+5
+00:00:29,739 --> 00:00:34,030
+good sign for a tech conference I'm Alex
+
+6
+00:00:34,030 --> 00:00:36,730
+macaw and actually we're already off to
+
+7
+00:00:36,730 --> 00:00:38,500
+a good start because in my last
+
+8
+00:00:38,500 --> 00:00:40,360
+presentation that J's Kampf
+
+9
+00:00:40,360 --> 00:00:43,649
+I actually spelled my name wrong so
+
+10
+00:00:43,649 --> 00:00:45,879
+they're already off to a good start
+
+11
+00:00:45,879 --> 00:00:50,430
+so this the this slides about the
+
+12
+00:00:50,430 --> 00:00:52,539
+deconstruction of a JavaScript web app
+
+13
+00:00:52,539 --> 00:00:54,870
+and this JavaScript web app is called
+
+14
+00:00:54,870 --> 00:00:58,000
+monocle now I can't want to give you a
+
+15
+00:00:58,000 --> 00:00:59,579
+warning that this presentation is really
+
+16
+00:00:59,579 --> 00:01:03,730
+code heavy but pretty pretty much every
+
+17
+00:01:03,730 --> 00:01:06,640
+slide has code on it and we're going to
+
+18
+00:01:06,640 --> 00:01:08,080
+try and cover the whole out which also
+
+19
+00:01:08,080 --> 00:01:11,259
+means Ruby and CoffeeScript so a little
+
+20
+00:01:11,259 --> 00:01:14,500
+warning there so what is monocle well
+
+21
+00:01:14,500 --> 00:01:16,840
+it's the social news aggregation side
+
+22
+00:01:16,840 --> 00:01:19,090
+it's a lot like hacking use if you use
+
+23
+00:01:19,090 --> 00:01:21,550
+that and you can go and check it out
+
+24
+00:01:21,550 --> 00:01:26,530
+monocle dot IO and it's got a very
+
+25
+00:01:26,530 --> 00:01:28,420
+pretty in a face done by a designer
+
+26
+00:01:28,420 --> 00:01:31,239
+friend of mine and we have posted on the
+
+27
+00:01:31,239 --> 00:01:34,929
+Left content on the right and members
+
+28
+00:01:34,929 --> 00:01:38,739
+can post new links and post comments and
+
+29
+00:01:38,739 --> 00:01:40,270
+they're just we're extracting a bit of
+
+30
+00:01:40,270 --> 00:01:44,289
+the post a bit of text from the post and
+
+31
+00:01:44,289 --> 00:01:47,950
+we're also extracting a preview image so
+
+32
+00:01:47,950 --> 00:01:51,280
+today I'm open sourcing this see if you
+
+33
+00:01:51,280 --> 00:01:53,349
+actually go to github.com slash macman
+
+34
+00:01:53,349 --> 00:01:56,800
+slash monocle you can download it and I
+
+35
+00:01:56,800 --> 00:01:59,860
+actually suggest you clone it right now
+
+36
+00:01:59,860 --> 00:02:02,739
+so you can actually go through the code
+
+37
+00:02:02,739 --> 00:02:05,200
+as I'm talking about it it'll give you a
+
+38
+00:02:05,200 --> 00:02:08,170
+lot more context to the app so I'm just
+
+39
+00:02:08,170 --> 00:02:12,789
+gonna give you a few moments to do that
+
+40
+00:02:12,799 --> 00:02:16,859
+if you open it up you'll see the
+
+41
+00:02:16,859 --> 00:02:19,950
+structure structure and you'll notice
+
+42
+00:02:19,950 --> 00:02:22,230
+that it's using Sinatra the whole app is
+
+43
+00:02:22,230 --> 00:02:25,260
+built on Sinatra and most of the
+
+44
+00:02:25,260 --> 00:02:26,639
+application code is under the app
+
+45
+00:02:26,639 --> 00:02:28,829
+directory so notice we also have this
+
+46
+00:02:28,829 --> 00:02:31,200
+MVC architecture we have models views
+
+47
+00:02:31,200 --> 00:02:33,450
+controllers in this case we call
+
+48
+00:02:33,450 --> 00:02:37,709
+controllers routes now any client-side
+
+49
+00:02:37,709 --> 00:02:41,549
+code is on their app assets and the
+
+50
+00:02:41,549 --> 00:02:43,260
+father bootstraps the whole app is
+
+51
+00:02:43,260 --> 00:02:47,879
+called AB dot RB makes sense right this
+
+52
+00:02:47,879 --> 00:02:49,310
+is what it looks like
+
+53
+00:02:49,310 --> 00:02:51,599
+notice we're adding each route as
+
+54
+00:02:51,599 --> 00:02:54,180
+middleware each route is its own Sinatra
+
+55
+00:02:54,180 --> 00:02:56,010
+app which is I think the best way of
+
+56
+00:02:56,010 --> 00:02:59,879
+actually architecting Sinatra apps so we
+
+57
+00:02:59,879 --> 00:03:01,760
+are adding rec deflator therefore
+
+58
+00:03:01,760 --> 00:03:05,790
+gzipping support we are adding RAC CSRF
+
+59
+00:03:05,790 --> 00:03:07,760
+there for cross-site scripting
+
+60
+00:03:07,760 --> 00:03:10,739
+cross-site request forgery attack
+
+61
+00:03:10,739 --> 00:03:13,109
+prevention and then we're adding our own
+
+62
+00:03:13,109 --> 00:03:15,780
+routes so we have static first not just
+
+63
+00:03:15,780 --> 00:03:18,930
+static files we have the users for users
+
+64
+00:03:18,930 --> 00:03:21,120
+API we have the route the posts are out
+
+65
+00:03:21,120 --> 00:03:24,060
+for the posts API comments for comments
+
+66
+00:03:24,060 --> 00:03:26,519
+API and the client and the last one is
+
+67
+00:03:26,519 --> 00:03:28,409
+actually what serves up our JavaScript
+
+68
+00:03:28,409 --> 00:03:30,780
+client so let's mosey down into the
+
+69
+00:03:30,780 --> 00:03:33,479
+client and have a look at that if you
+
+70
+00:03:33,479 --> 00:03:37,169
+open up client dot RB you can see our
+
+71
+00:03:37,169 --> 00:03:39,079
+client is bootstrapped in a few steps
+
+72
+00:03:39,079 --> 00:03:43,290
+first any request to / or / posts is
+
+73
+00:03:43,290 --> 00:03:47,159
+caught now this rather ugly regex is
+
+74
+00:03:47,159 --> 00:03:49,439
+what's doing that there's a there's
+
+75
+00:03:49,439 --> 00:03:52,109
+actually a better way of doing this but
+
+76
+00:03:52,109 --> 00:03:54,720
+for now we're using a regex so our
+
+77
+00:03:54,720 --> 00:03:56,459
+JavaScript client will be served up at
+
+78
+00:03:56,459 --> 00:03:59,340
+any of those URLs so regardless of if
+
+79
+00:03:59,340 --> 00:04:00,870
+they're for a force so we didn't
+
+80
+00:04:00,870 --> 00:04:02,519
+actually check to see if a URL is rather
+
+81
+00:04:02,519 --> 00:04:06,150
+at this point we also check to see if
+
+82
+00:04:06,150 --> 00:04:07,859
+the request is from supported mobile
+
+83
+00:04:07,859 --> 00:04:10,799
+client and if it is then we serve up a
+
+84
+00:04:10,799 --> 00:04:13,159
+specialized mobile version of the app so
+
+85
+00:04:13,159 --> 00:04:16,229
+let's took take a look at index dot our
+
+86
+00:04:16,229 --> 00:04:19,829
+er B which is being rendered there this
+
+87
+00:04:19,829 --> 00:04:21,329
+is what it looks like we have one
+
+88
+00:04:21,329 --> 00:04:24,630
+concatenated CSS file one concatenated
+
+89
+00:04:24,630 --> 00:04:26,170
+javascript file
+
+90
+00:04:26,170 --> 00:04:28,910
+we have nothing in the body tag and
+
+91
+00:04:28,910 --> 00:04:31,790
+everything is generated and notice how
+
+92
+00:04:31,790 --> 00:04:33,910
+we have defer and all the script tags
+
+93
+00:04:33,910 --> 00:04:36,290
+that makes sure that the page isn't
+
+94
+00:04:36,290 --> 00:04:38,840
+blocked during rendering and also notice
+
+95
+00:04:38,840 --> 00:04:41,390
+that we have the setup to J's file which
+
+96
+00:04:41,390 --> 00:04:44,570
+is actually going to bootstrap the app
+
+97
+00:04:44,570 --> 00:04:46,970
+it's going to accentuate the app with
+
+98
+00:04:46,970 --> 00:04:50,030
+pre-loaded data so we jump back to
+
+99
+00:04:50,030 --> 00:04:52,130
+client client dot RB we can actually see
+
+100
+00:04:52,130 --> 00:04:54,590
+how these assets are generated anything
+
+101
+00:04:54,590 --> 00:04:56,810
+under slash assets is being served up by
+
+102
+00:04:56,810 --> 00:04:57,980
+sprockets
+
+103
+00:04:57,980 --> 00:05:01,280
+which is a Ruby asset manager I use it
+
+104
+00:05:01,280 --> 00:05:03,560
+everywhere I highly recommend you use it
+
+105
+00:05:03,560 --> 00:05:05,930
+and the thing underst
+
+106
+00:05:05,930 --> 00:05:09,470
+it set up the gist is generated by that
+
+107
+00:05:09,470 --> 00:05:12,590
+little function there it actually
+
+108
+00:05:12,590 --> 00:05:14,360
+generates this JavaScript file and it
+
+109
+00:05:14,360 --> 00:05:16,760
+pre-populated with data you can see
+
+110
+00:05:16,760 --> 00:05:18,650
+we're doing a sequel query here we're
+
+111
+00:05:18,650 --> 00:05:20,720
+setting up some options instance
+
+112
+00:05:20,720 --> 00:05:22,400
+variable and then we're rendering the
+
+113
+00:05:22,400 --> 00:05:25,550
+setup DRB a template if we jump down
+
+114
+00:05:25,550 --> 00:05:29,300
+into that you can see that the EOB
+
+115
+00:05:29,300 --> 00:05:31,610
+generates some JavaScript and you can
+
+116
+00:05:31,610 --> 00:05:33,200
+see all it's doing is requiring the app
+
+117
+00:05:33,200 --> 00:05:35,870
+and I'll get on a bit later in the talk
+
+118
+00:05:35,870 --> 00:05:38,840
+about how require actually works and
+
+119
+00:05:38,840 --> 00:05:42,220
+then instantiating this app variable and
+
+120
+00:05:42,220 --> 00:05:45,950
+appending it to the body so if we go
+
+121
+00:05:45,950 --> 00:05:47,420
+through the steps again browser
+
+122
+00:05:47,420 --> 00:05:51,490
+navigates to slash the client which
+
+123
+00:05:51,490 --> 00:05:54,520
+matches this the client slash route
+
+124
+00:05:54,520 --> 00:05:57,470
+returns indexed or ARB whereas the
+
+125
+00:05:57,470 --> 00:05:59,390
+fetches CSS and JavaScript and then also
+
+126
+00:05:59,390 --> 00:06:01,790
+the setup that Jas and then the browser
+
+127
+00:06:01,790 --> 00:06:04,210
+is instantiated and then app is ready so
+
+128
+00:06:04,210 --> 00:06:06,830
+so we look at the front end which is
+
+129
+00:06:06,830 --> 00:06:08,690
+probably better topic for this
+
+130
+00:06:08,690 --> 00:06:10,130
+conference
+
+131
+00:06:10,130 --> 00:06:12,440
+it's an MVC structure - - we have
+
+132
+00:06:12,440 --> 00:06:14,800
+controllers we have models we have views
+
+133
+00:06:14,800 --> 00:06:19,010
+and in this case the views are eco
+
+134
+00:06:19,010 --> 00:06:22,150
+templates which is a CoffeeScript
+
+135
+00:06:22,150 --> 00:06:27,370
+templating framework or language
+
+136
+00:06:27,370 --> 00:06:29,510
+actually it's much easier to look at
+
+137
+00:06:29,510 --> 00:06:31,670
+these controllers visually we have one
+
+138
+00:06:31,670 --> 00:06:33,890
+main app controller which encompasses
+
+139
+00:06:33,890 --> 00:06:36,230
+the whole app everything else belongs to
+
+140
+00:06:36,230 --> 00:06:39,080
+that then we have two main sub
+
+141
+00:06:39,080 --> 00:06:39,650
+controllers
+
+142
+00:06:39,650 --> 00:06:43,460
+the sidebar this is Sabo doc modular
+
+143
+00:06:43,460 --> 00:06:47,300
+coffee and then we have hosts the post
+
+144
+00:06:47,300 --> 00:06:49,250
+controller posts top modular coffee and
+
+145
+00:06:49,250 --> 00:06:51,789
+then those two main sub controllers
+
+146
+00:06:51,789 --> 00:06:55,759
+themselves have self controllers we have
+
+147
+00:06:55,759 --> 00:06:59,840
+the post details and we also have post
+
+148
+00:06:59,840 --> 00:07:02,960
+comments now the key thing is to note
+
+149
+00:07:02,960 --> 00:07:04,550
+that none of these controllers know
+
+150
+00:07:04,550 --> 00:07:06,350
+about the other controllers they only
+
+151
+00:07:06,350 --> 00:07:08,210
+know about the sub controllers they only
+
+152
+00:07:08,210 --> 00:07:09,979
+know about models so although they're
+
+153
+00:07:09,979 --> 00:07:12,500
+all really decoupled if we're going to
+
+154
+00:07:12,500 --> 00:07:14,600
+talk about decoupling we can't not talk
+
+155
+00:07:14,600 --> 00:07:17,210
+about conscious modules so if you notice
+
+156
+00:07:17,210 --> 00:07:19,820
+all this files on the front-end have dot
+
+157
+00:07:19,820 --> 00:07:21,949
+module in the file name this is because
+
+158
+00:07:21,949 --> 00:07:24,770
+they're common jeaious modules now what
+
+159
+00:07:24,770 --> 00:07:27,050
+exactly does that mean well commonjs
+
+160
+00:07:27,050 --> 00:07:28,520
+gives you require and it gives you
+
+161
+00:07:28,520 --> 00:07:31,760
+exports and they're absolutely critical
+
+162
+00:07:31,760 --> 00:07:34,820
+to building I think any large JavaScript
+
+163
+00:07:34,820 --> 00:07:37,550
+apps without them you get spaghetti code
+
+164
+00:07:37,550 --> 00:07:40,940
+and you get a namespace pollution so if
+
+165
+00:07:40,940 --> 00:07:44,030
+you're using sprockets then you can
+
+166
+00:07:44,030 --> 00:07:46,370
+easily get a common chair support by
+
+167
+00:07:46,370 --> 00:07:49,190
+just adding the gem sprockets comment
+
+168
+00:07:49,190 --> 00:07:52,910
+yes there you just add that gem and
+
+169
+00:07:52,910 --> 00:07:55,580
+you're good to go all you have to do is
+
+170
+00:07:55,580 --> 00:07:57,889
+put module on the file name and we'll
+
+171
+00:07:57,889 --> 00:08:01,130
+wrap it up as a common Janus module and
+
+172
+00:08:01,130 --> 00:08:03,530
+essentially this means the file is
+
+173
+00:08:03,530 --> 00:08:05,659
+wrapped by some boiler pote boilerplate
+
+174
+00:08:05,659 --> 00:08:09,440
+code and so it's executed in a local
+
+175
+00:08:09,440 --> 00:08:11,300
+scope and that boilerplate code also
+
+176
+00:08:11,300 --> 00:08:14,659
+gives it the require function and the
+
+177
+00:08:14,659 --> 00:08:17,690
+ability to export values and functions
+
+178
+00:08:17,690 --> 00:08:20,659
+so you have required at the top you can
+
+179
+00:08:20,659 --> 00:08:22,370
+require the modules and then at the
+
+180
+00:08:22,370 --> 00:08:23,780
+bottom of every single module you have
+
+181
+00:08:23,780 --> 00:08:28,130
+an export which basically exposes
+
+182
+00:08:28,130 --> 00:08:31,909
+particular values so if you now go back
+
+183
+00:08:31,909 --> 00:08:34,459
+to index dot module dot RB a few things
+
+184
+00:08:34,459 --> 00:08:36,229
+should make more sense now this is the
+
+185
+00:08:36,229 --> 00:08:38,709
+main app controller if you remember
+
+186
+00:08:38,709 --> 00:08:41,029
+everything else belongs to that at the
+
+187
+00:08:41,029 --> 00:08:44,390
+top we're loading in all the controllers
+
+188
+00:08:44,390 --> 00:08:48,079
+and models we're going to need and then
+
+189
+00:08:48,079 --> 00:08:50,779
+we create this class code app this is
+
+190
+00:08:50,779 --> 00:08:53,130
+the Harriton from controller and
+
+191
+00:08:53,130 --> 00:08:56,519
+exporting at the bottom when app is
+
+192
+00:08:56,519 --> 00:08:59,100
+instantiated we're setting we're using
+
+193
+00:08:59,100 --> 00:09:00,660
+all the preloaded data passed him by
+
+194
+00:09:00,660 --> 00:09:04,290
+selectively Jas and then finally we
+
+195
+00:09:04,290 --> 00:09:06,690
+instantiate our main sub controllers
+
+196
+00:09:06,690 --> 00:09:10,500
+pending them to the page and then if you
+
+197
+00:09:10,500 --> 00:09:12,300
+have a look at post controller it's very
+
+198
+00:09:12,300 --> 00:09:14,850
+similar we're doing the same thing we're
+
+199
+00:09:14,850 --> 00:09:16,649
+acquiring our controllers we're
+
+200
+00:09:16,649 --> 00:09:18,569
+listening to events and we're appending
+
+201
+00:09:18,569 --> 00:09:21,000
+sub-controllers so it's fairly
+
+202
+00:09:21,000 --> 00:09:23,610
+straightforward now you may have noticed
+
+203
+00:09:23,610 --> 00:09:25,079
+this controller object they were
+
+204
+00:09:25,079 --> 00:09:27,060
+inheriting from what exactly is that
+
+205
+00:09:27,060 --> 00:09:30,480
+well if you've built MVC II apps before
+
+206
+00:09:30,480 --> 00:09:33,269
+you may be familiar with controllers the
+
+207
+00:09:33,269 --> 00:09:37,410
+C part of MVC a lot of MVC libraries
+
+208
+00:09:37,410 --> 00:09:39,750
+call these views like backbone I call
+
+209
+00:09:39,750 --> 00:09:42,949
+them controllers is just terminology now
+
+210
+00:09:42,949 --> 00:09:45,540
+in molecule I'm not actually using
+
+211
+00:09:45,540 --> 00:09:47,250
+backbone I'm not actually using spine
+
+212
+00:09:47,250 --> 00:09:49,680
+I'm using this pasteurization of both of
+
+213
+00:09:49,680 --> 00:09:53,370
+them which it combines what I think is
+
+214
+00:09:53,370 --> 00:09:54,540
+some of the best ideas from both for
+
+215
+00:09:54,540 --> 00:09:56,040
+them and I actually want to take you
+
+216
+00:09:56,040 --> 00:09:57,660
+through some of this library because I
+
+217
+00:09:57,660 --> 00:09:59,850
+think it's simple and has some neat
+
+218
+00:09:59,850 --> 00:10:02,130
+approaches that you can apply to your
+
+219
+00:10:02,130 --> 00:10:04,110
+own apps even if you're not using the
+
+220
+00:10:04,110 --> 00:10:07,680
+sly berry so this is controller dot
+
+221
+00:10:07,680 --> 00:10:10,889
+module dock coffee and this is found in
+
+222
+00:10:10,889 --> 00:10:13,500
+the vendor directory and this is the
+
+223
+00:10:13,500 --> 00:10:14,790
+whole library right here
+
+224
+00:10:14,790 --> 00:10:17,670
+so a controller's job is scoping
+
+225
+00:10:17,670 --> 00:10:21,060
+behavior to a single element so every
+
+226
+00:10:21,060 --> 00:10:23,000
+single controller has a single element
+
+227
+00:10:23,000 --> 00:10:26,490
+called e/l now there might be a little
+
+228
+00:10:26,490 --> 00:10:28,259
+hard to read it might be a bit small I'm
+
+229
+00:10:28,259 --> 00:10:30,360
+sorry about that but you can see at the
+
+230
+00:10:30,360 --> 00:10:33,689
+top we're creating this element and then
+
+231
+00:10:33,689 --> 00:10:35,759
+we're creating a jquery wrapped version
+
+232
+00:10:35,759 --> 00:10:37,319
+of this element which is called dollar
+
+233
+00:10:37,319 --> 00:10:41,759
+e-l and then a lot of controllers have
+
+234
+00:10:41,759 --> 00:10:43,230
+this class named property if that's
+
+235
+00:10:43,230 --> 00:10:46,860
+present we're adding it to the element
+
+236
+00:10:46,860 --> 00:10:48,750
+we're heading at class to the element
+
+237
+00:10:48,750 --> 00:10:50,880
+and what was it going to listen to this
+
+238
+00:10:50,880 --> 00:10:52,230
+removed event I'm going to talk more
+
+239
+00:10:52,230 --> 00:10:56,339
+about that later ignore it for now so
+
+240
+00:10:56,339 --> 00:10:58,079
+most of the controller functions are
+
+241
+00:10:58,079 --> 00:11:00,180
+just delegating straits to that jQuery
+
+242
+00:11:00,180 --> 00:11:02,639
+wrapped element and they're adding
+
+243
+00:11:02,639 --> 00:11:05,459
+events appending bits of HTML that kind
+
+244
+00:11:05,459 --> 00:11:06,799
+of thing
+
+245
+00:11:06,799 --> 00:11:10,229
+so the last two functions in this
+
+246
+00:11:10,229 --> 00:11:12,329
+controller file of view and template and
+
+247
+00:11:12,329 --> 00:11:15,599
+they make it really easy to to fetch an
+
+248
+00:11:15,599 --> 00:11:18,569
+eco template and render it and pass
+
+249
+00:11:18,569 --> 00:11:20,489
+through helpers to it so you can see
+
+250
+00:11:20,489 --> 00:11:23,939
+that sprockets creates this global
+
+251
+00:11:23,939 --> 00:11:26,819
+variable called jst and it hatches all
+
+252
+00:11:26,819 --> 00:11:29,879
+the templates to it as properties now
+
+253
+00:11:29,879 --> 00:11:32,279
+you can just fetch your template there
+
+254
+00:11:32,279 --> 00:11:35,339
+it'll be a function you look it up by
+
+255
+00:11:35,339 --> 00:11:37,139
+property it'll be function and then you
+
+256
+00:11:37,139 --> 00:11:39,239
+can execute that function pass through a
+
+257
+00:11:39,239 --> 00:11:43,499
+context and you'll get a string all view
+
+258
+00:11:43,499 --> 00:11:45,539
+is doing is actually decorating the
+
+259
+00:11:45,539 --> 00:11:48,959
+context with any helpers that are
+
+260
+00:11:48,959 --> 00:11:53,220
+present so in otherwise you render views
+
+261
+00:11:53,220 --> 00:11:56,639
+like this you pass a view a function
+
+262
+00:11:56,639 --> 00:11:59,759
+named sorry ever a template name it
+
+263
+00:11:59,759 --> 00:12:02,939
+returns a function itself and then I you
+
+264
+00:12:02,939 --> 00:12:04,679
+basically execute that function in you
+
+265
+00:12:04,679 --> 00:12:07,439
+pass your context so when it compiled
+
+266
+00:12:07,439 --> 00:12:09,419
+rendered as a string and then you just
+
+267
+00:12:09,419 --> 00:12:11,659
+set the elements HTML to that string
+
+268
+00:12:11,659 --> 00:12:13,349
+pretty straightforward
+
+269
+00:12:13,349 --> 00:12:15,089
+now let's talk about something pretty
+
+270
+00:12:15,089 --> 00:12:16,739
+neat let's jump back into the controller
+
+271
+00:12:16,739 --> 00:12:18,779
+library and talk about that removed
+
+272
+00:12:18,779 --> 00:12:21,479
+event now this removed event will
+
+273
+00:12:21,479 --> 00:12:22,889
+actually be fired whenever that
+
+274
+00:12:22,889 --> 00:12:25,639
+controller is removed from the DOM and
+
+275
+00:12:25,639 --> 00:12:29,699
+then our release function is called now
+
+276
+00:12:29,699 --> 00:12:32,189
+this is a pretty useful little utility
+
+277
+00:12:32,189 --> 00:12:34,679
+because if you've registered any global
+
+278
+00:12:34,679 --> 00:12:37,919
+event handlers say listening to keyboard
+
+279
+00:12:37,919 --> 00:12:40,289
+events for example in the controllers
+
+280
+00:12:40,289 --> 00:12:43,109
+constructor then in the release function
+
+281
+00:12:43,109 --> 00:12:45,209
+the bottom you can unregister those
+
+282
+00:12:45,209 --> 00:12:48,239
+events basically cleanup a global event
+
+283
+00:12:48,239 --> 00:12:51,089
+lessness other language like objective-c
+
+284
+00:12:51,089 --> 00:12:55,019
+have same kind of thing so how does that
+
+285
+00:12:55,019 --> 00:12:56,399
+removed event as you get fired
+
+286
+00:12:56,399 --> 00:12:59,659
+well we're kind of using this neat trick
+
+287
+00:12:59,659 --> 00:13:03,029
+called jquery a special events and you
+
+288
+00:13:03,029 --> 00:13:04,859
+can have a look this is basically the
+
+289
+00:13:04,859 --> 00:13:07,559
+entire codes to fire that removed event
+
+290
+00:13:07,559 --> 00:13:10,169
+and it's in jQuery dot event or remove
+
+291
+00:13:10,169 --> 00:13:10,909
+dot coffee
+
+292
+00:13:10,909 --> 00:13:13,799
+so whenever jquery removes an element it
+
+293
+00:13:13,799 --> 00:13:17,249
+actually passes it through this clean
+
+294
+00:13:17,249 --> 00:13:19,740
+data function jquery dot clean data
+
+295
+00:13:19,740 --> 00:13:21,180
+which actually goes through a removes
+
+296
+00:13:21,180 --> 00:13:22,740
+all the event listeners the jQuery is
+
+297
+00:13:22,740 --> 00:13:24,840
+added to that element and now this is
+
+298
+00:13:24,840 --> 00:13:26,990
+useful because in some browsers like IE
+
+299
+00:13:26,990 --> 00:13:29,610
+event listeners aren't removed properly
+
+300
+00:13:29,610 --> 00:13:31,920
+and you get memory leaks so jQuery has
+
+301
+00:13:31,920 --> 00:13:34,590
+to actually remove all the event
+
+302
+00:13:34,590 --> 00:13:36,150
+listeners from itself and you can just
+
+303
+00:13:36,150 --> 00:13:38,910
+tap into that functionality and define
+
+304
+00:13:38,910 --> 00:13:41,220
+your own event and the zone your own
+
+305
+00:13:41,220 --> 00:13:43,650
+events could removed and wait and when
+
+306
+00:13:43,650 --> 00:13:45,390
+jQuery tries to clean up this event from
+
+307
+00:13:45,390 --> 00:13:48,120
+elements you actually fire it rather
+
+308
+00:13:48,120 --> 00:13:50,970
+than clean it up and so then you
+
+309
+00:13:50,970 --> 00:13:52,640
+automatically fire this removed event
+
+310
+00:13:52,640 --> 00:13:55,200
+and then it'll trigger the release
+
+311
+00:13:55,200 --> 00:13:57,090
+function and controllers and you
+
+312
+00:13:57,090 --> 00:13:58,770
+automatically cleaning up controllers
+
+313
+00:13:58,770 --> 00:14:00,690
+and there's a very simple way of doing
+
+314
+00:14:00,690 --> 00:14:04,530
+that so we cover the controller library
+
+315
+00:14:04,530 --> 00:14:07,970
+let's jump back into the post controller
+
+316
+00:14:07,970 --> 00:14:12,680
+notice we've got the state objects now
+
+317
+00:14:12,680 --> 00:14:14,940
+which we're adding an event listener to
+
+318
+00:14:14,940 --> 00:14:20,100
+this post property now whenever I want
+
+319
+00:14:20,100 --> 00:14:22,680
+had to have global state in my app I
+
+320
+00:14:22,680 --> 00:14:25,820
+have to attach it to the state object
+
+321
+00:14:25,820 --> 00:14:28,020
+now I try to keep global state to a
+
+322
+00:14:28,020 --> 00:14:31,860
+minimum and and actually a monocle the
+
+323
+00:14:31,860 --> 00:14:33,810
+only property is in global state are the
+
+324
+00:14:33,810 --> 00:14:35,670
+current user the current environment
+
+325
+00:14:35,670 --> 00:14:38,090
+like developmental production and
+
+326
+00:14:38,090 --> 00:14:40,110
+crucially the currently viewed post
+
+327
+00:14:40,110 --> 00:14:41,700
+which is what we're listening to here so
+
+328
+00:14:41,700 --> 00:14:43,950
+whenever that changes the controller is
+
+329
+00:14:43,950 --> 00:14:46,860
+going to re-render itself if you have a
+
+330
+00:14:46,860 --> 00:14:48,300
+look at the state module state of
+
+331
+00:14:48,300 --> 00:14:50,310
+modular coffee it essentially looks like
+
+332
+00:14:50,310 --> 00:14:52,440
+this we have a state class that inherits
+
+333
+00:14:52,440 --> 00:14:55,680
+from model and and notice the bottom
+
+334
+00:14:55,680 --> 00:14:58,470
+that we're actually instantiating that
+
+335
+00:14:58,470 --> 00:15:01,350
+state class there's only ever one
+
+336
+00:15:01,350 --> 00:15:04,410
+instance of their state class so there
+
+337
+00:15:04,410 --> 00:15:07,080
+are other models too that represent all
+
+338
+00:15:07,080 --> 00:15:08,580
+the major data structures in the app we
+
+339
+00:15:08,580 --> 00:15:11,070
+have posts comments etc these are all
+
+340
+00:15:11,070 --> 00:15:13,320
+whole data related state rather than
+
+341
+00:15:13,320 --> 00:15:15,060
+view related state which is a realm of
+
+342
+00:15:15,060 --> 00:15:18,180
+the controller and if you have a look at
+
+343
+00:15:18,180 --> 00:15:20,610
+the post mod model post on wanted of
+
+344
+00:15:20,610 --> 00:15:24,090
+coffee it looks a bit like this however
+
+345
+00:15:24,090 --> 00:15:26,220
+I'm gonna stop right there because it's
+
+346
+00:15:26,220 --> 00:15:27,600
+unlikely you're going to be using this
+
+347
+00:15:27,600 --> 00:15:29,670
+custom MVC framework
+
+348
+00:15:29,670 --> 00:15:31,529
+there's got no following your support
+
+349
+00:15:31,529 --> 00:15:32,730
+it's just something I like tinkering
+
+350
+00:15:32,730 --> 00:15:35,579
+around with so I won't expand a much of
+
+351
+00:15:35,579 --> 00:15:38,399
+this part of app but what I do want to
+
+352
+00:15:38,399 --> 00:15:41,490
+cover is parts that you are gonna reuse
+
+353
+00:15:41,490 --> 00:15:43,079
+that it hopefully be useful in the kind
+
+354
+00:15:43,079 --> 00:15:44,600
+of JavaScript apps that you're making
+
+355
+00:15:44,600 --> 00:15:49,050
+such as scoping CSS so let's take a
+
+356
+00:15:49,050 --> 00:15:51,390
+simple controller this is the landing
+
+357
+00:15:51,390 --> 00:15:53,940
+page this is displayed if no post is
+
+358
+00:15:53,940 --> 00:15:56,550
+selected notice the top we have this
+
+359
+00:15:56,550 --> 00:16:00,570
+class name property pretty much every
+
+360
+00:16:00,570 --> 00:16:02,790
+controller has this when instantiated
+
+361
+00:16:02,790 --> 00:16:04,620
+this class name will be actually being
+
+362
+00:16:04,620 --> 00:16:08,670
+added to the controller's element every
+
+363
+00:16:08,670 --> 00:16:11,040
+controller has a corresponding CSS file
+
+364
+00:16:11,040 --> 00:16:15,470
+so posts landing dot module has this
+
+365
+00:16:15,470 --> 00:16:16,620
+post
+
+366
+00:16:16,620 --> 00:16:21,329
+unschooling dot CSS style CSS file now
+
+367
+00:16:21,329 --> 00:16:23,459
+I'm not actually using stylus sorry I'm
+
+368
+00:16:23,459 --> 00:16:25,110
+not actually using plain CSS I'm using
+
+369
+00:16:25,110 --> 00:16:27,570
+stylus for this if you're not familiar
+
+370
+00:16:27,570 --> 00:16:29,399
+stylus it's just another CSS
+
+371
+00:16:29,399 --> 00:16:34,290
+preprocessor like less or sass but the
+
+372
+00:16:34,290 --> 00:16:35,519
+key thing here is that notice that
+
+373
+00:16:35,519 --> 00:16:38,640
+everything in this CSS file is named
+
+374
+00:16:38,640 --> 00:16:41,670
+spaced by the class name property we
+
+375
+00:16:41,670 --> 00:16:45,449
+said earlier so all the CSS is specific
+
+376
+00:16:45,449 --> 00:16:49,440
+to that controller so my advice is to
+
+377
+00:16:49,440 --> 00:16:51,240
+make CSS as specific as possible when
+
+378
+00:16:51,240 --> 00:16:53,300
+you're making the large JavaScript apps
+
+379
+00:16:53,300 --> 00:16:55,440
+don't worry about China's too much
+
+380
+00:16:55,440 --> 00:16:57,510
+repetition will be removed a lot by
+
+381
+00:16:57,510 --> 00:16:59,459
+gzipping there may be a performance
+
+382
+00:16:59,459 --> 00:17:01,949
+impact for this but again you can
+
+383
+00:17:01,949 --> 00:17:05,000
+approach that later if if it's a problem
+
+384
+00:17:05,000 --> 00:17:07,740
+now if a controller has sub controllers
+
+385
+00:17:07,740 --> 00:17:09,569
+then you may find that a controller CSS
+
+386
+00:17:09,569 --> 00:17:12,240
+is actually affecting all those elements
+
+387
+00:17:12,240 --> 00:17:15,569
+that are appended to it and this just
+
+388
+00:17:15,569 --> 00:17:17,010
+means you need to get more specific you
+
+389
+00:17:17,010 --> 00:17:19,260
+can use the right-hand bracket here and
+
+390
+00:17:19,260 --> 00:17:21,569
+that's what only select the direct
+
+391
+00:17:21,569 --> 00:17:25,470
+children of this element I want to talk
+
+392
+00:17:25,470 --> 00:17:27,510
+a bit about how we created the
+
+393
+00:17:27,510 --> 00:17:31,250
+scrollable list and the side bar of
+
+394
+00:17:31,250 --> 00:17:34,440
+Monaco and also how we added keyboard
+
+395
+00:17:34,440 --> 00:17:36,179
+shortcuts to it if you use the up and
+
+396
+00:17:36,179 --> 00:17:37,590
+down arrow keys you'll notice that they
+
+397
+00:17:37,590 --> 00:17:40,890
+work right in Monaco you have this
+
+398
+00:17:40,890 --> 00:17:43,500
+infinite list a post in the sidebar
+
+399
+00:17:43,500 --> 00:17:45,059
+now this list is actually rendered by
+
+400
+00:17:45,059 --> 00:17:47,789
+the posts lists controller and each list
+
+401
+00:17:47,789 --> 00:17:50,700
+item is rendered by the posts item
+
+402
+00:17:50,700 --> 00:17:53,460
+controller it makes sense if we open up
+
+403
+00:17:53,460 --> 00:17:56,340
+the posts lists controller post list or
+
+404
+00:17:56,340 --> 00:17:59,429
+modular coffee we can step through the
+
+405
+00:17:59,429 --> 00:18:02,000
+execution flow and see what's going on
+
+406
+00:18:02,000 --> 00:18:05,850
+okay so the controller is instantiated
+
+407
+00:18:05,850 --> 00:18:08,809
+and we're calling render immediately
+
+408
+00:18:08,809 --> 00:18:11,120
+surrender just cleans up the dom
+
+409
+00:18:11,120 --> 00:18:14,669
+basically empties all the elements in
+
+410
+00:18:14,669 --> 00:18:18,020
+the controller and then cause a doll and
+
+411
+00:18:18,020 --> 00:18:22,470
+then a doll will iterate through this
+
+412
+00:18:22,470 --> 00:18:23,669
+collection the collection is basically
+
+413
+00:18:23,669 --> 00:18:26,309
+just an array of posts instances and
+
+414
+00:18:26,309 --> 00:18:28,169
+then for each one and we'll call this
+
+415
+00:18:28,169 --> 00:18:32,220
+add one function and that just append a
+
+416
+00:18:32,220 --> 00:18:35,280
+new post item to the controller's
+
+417
+00:18:35,280 --> 00:18:37,980
+element now the post item controller
+
+418
+00:18:37,980 --> 00:18:40,230
+will take care of rendering itself
+
+419
+00:18:40,230 --> 00:18:42,720
+rendering a little section of that list
+
+420
+00:18:42,720 --> 00:18:45,330
+and it'll take care of rear-ending it if
+
+421
+00:18:45,330 --> 00:18:48,270
+the name changes of the the vote the
+
+422
+00:18:48,270 --> 00:18:50,580
+upvote score increases that kind of
+
+423
+00:18:50,580 --> 00:18:52,590
+thing and it'll also take care of
+
+424
+00:18:52,590 --> 00:18:54,419
+listening to click events when people up
+
+425
+00:18:54,419 --> 00:18:58,590
+vary posts now if you remember earlier
+
+426
+00:18:58,590 --> 00:19:00,419
+we had this global state with a post
+
+427
+00:19:00,419 --> 00:19:03,150
+property so if we actually listen to
+
+428
+00:19:03,150 --> 00:19:05,940
+that we can actually light whichever
+
+429
+00:19:05,940 --> 00:19:09,510
+post is currently selected so we're
+
+430
+00:19:09,510 --> 00:19:14,159
+listening to the change post anyway we
+
+431
+00:19:14,159 --> 00:19:15,299
+can get rid of the little video the
+
+432
+00:19:15,299 --> 00:19:19,169
+bottom it's kind of blocking the code so
+
+433
+00:19:19,169 --> 00:19:22,230
+we're listening to the the posts
+
+434
+00:19:22,230 --> 00:19:23,880
+property on state and we're calling the
+
+435
+00:19:23,880 --> 00:19:26,730
+set post function whenever it changes
+
+436
+00:19:26,730 --> 00:19:31,110
+now if we define set post function what
+
+437
+00:19:31,110 --> 00:19:33,330
+we can do is we're setting this instance
+
+438
+00:19:33,330 --> 00:19:35,610
+variable called at post and then we're
+
+439
+00:19:35,610 --> 00:19:38,280
+calling set active instead active will
+
+440
+00:19:38,280 --> 00:19:41,400
+iterate through all the Dom elements in
+
+441
+00:19:41,400 --> 00:19:42,000
+the list
+
+442
+00:19:42,000 --> 00:19:44,970
+remove the active class and then if
+
+443
+00:19:44,970 --> 00:19:47,789
+there is a post it'll try and find that
+
+444
+00:19:47,789 --> 00:19:50,940
+using a data ID selector and add the
+
+445
+00:19:50,940 --> 00:19:52,919
+class of accident to it and then we've
+
+446
+00:19:52,919 --> 00:19:55,080
+got this interesting function scroll
+
+447
+00:19:55,080 --> 00:19:57,089
+into view if needed
+
+448
+00:19:57,089 --> 00:19:59,789
+and what exactly does that do well is
+
+449
+00:19:59,789 --> 00:20:02,849
+actually a little-known WebKit function
+
+450
+00:20:02,849 --> 00:20:05,309
+it's on elements inside WebKit and it
+
+451
+00:20:05,309 --> 00:20:08,399
+does what it says on the tin so in this
+
+452
+00:20:08,399 --> 00:20:11,879
+case of abstracted it - jQuery plug-in
+
+453
+00:20:11,879 --> 00:20:13,320
+but slightly just a method on Dom
+
+454
+00:20:13,320 --> 00:20:15,659
+elements and if you call it Atlas it'll
+
+455
+00:20:15,659 --> 00:20:17,940
+scroll that element into the view it's
+
+456
+00:20:17,940 --> 00:20:20,549
+super useful and in other browsers that
+
+457
+00:20:20,549 --> 00:20:23,429
+aren't WebKit based there and you can
+
+458
+00:20:23,429 --> 00:20:26,909
+just use this shim so this ensures that
+
+459
+00:20:26,909 --> 00:20:29,039
+whatever current element is selected
+
+460
+00:20:29,039 --> 00:20:31,769
+it'll be visible which is important when
+
+461
+00:20:31,769 --> 00:20:33,989
+you're doing up-and-down keyboard
+
+462
+00:20:33,989 --> 00:20:38,219
+navigation which is the next section so
+
+463
+00:20:38,219 --> 00:20:39,950
+we can add up and down
+
+464
+00:20:39,950 --> 00:20:42,839
+keyboard bindings to the sidebar
+
+465
+00:20:42,839 --> 00:20:43,529
+controller
+
+466
+00:20:43,529 --> 00:20:45,269
+so again if you open up side by top
+
+467
+00:20:45,269 --> 00:20:48,719
+modular coffee we can add a global event
+
+468
+00:20:48,719 --> 00:20:51,239
+listener for key down in the constructor
+
+469
+00:20:51,239 --> 00:20:54,479
+here and then we can clean that up in
+
+470
+00:20:54,479 --> 00:20:55,859
+the release function they remember
+
+471
+00:20:55,859 --> 00:20:57,749
+that's quite important because if the
+
+472
+00:20:57,749 --> 00:20:59,519
+controller's roof removed from the Dom
+
+473
+00:20:59,519 --> 00:21:05,549
+we want that to be cleaned up now we
+
+474
+00:21:05,549 --> 00:21:07,829
+actually have a key mapping property on
+
+475
+00:21:07,829 --> 00:21:10,229
+here now you can see that that's just
+
+476
+00:21:10,229 --> 00:21:13,769
+mapping a key code to a function name so
+
+477
+00:21:13,769 --> 00:21:17,339
+38 is the up key 40 down key we also
+
+478
+00:21:17,339 --> 00:21:20,969
+have this key down event listener
+
+479
+00:21:20,969 --> 00:21:22,950
+callback which is what we were listening
+
+480
+00:21:22,950 --> 00:21:25,320
+to it's listening to keyboard events in
+
+481
+00:21:25,320 --> 00:21:28,950
+the document so basically all it does is
+
+482
+00:21:28,950 --> 00:21:32,339
+check to see if there's a key mapping
+
+483
+00:21:32,339 --> 00:21:35,339
+for a specific event key code and if
+
+484
+00:21:35,339 --> 00:21:39,749
+there is it'll execute it so in this
+
+485
+00:21:39,749 --> 00:21:42,539
+case we have two callbacks 38 40 up and
+
+486
+00:21:42,539 --> 00:21:46,889
+down caret keys and the keyboard so down
+
+487
+00:21:46,889 --> 00:21:49,469
+arrow down a rate goes down key which in
+
+488
+00:21:49,469 --> 00:21:52,829
+turn calls next post notice that what
+
+489
+00:21:52,829 --> 00:21:55,469
+we're doing is looking to see which item
+
+490
+00:21:55,469 --> 00:21:58,159
+has an active class and then we're using
+
+491
+00:21:58,159 --> 00:22:02,329
+jQuery is next and dot previous
+
+492
+00:22:02,329 --> 00:22:04,799
+functions to try and find whatever the
+
+493
+00:22:04,799 --> 00:22:07,259
+next previous element is click on it and
+
+494
+00:22:07,259 --> 00:22:10,380
+we just basically simulate a click it
+
+495
+00:22:10,380 --> 00:22:12,990
+as if the user clicked it themselves but
+
+496
+00:22:12,990 --> 00:22:14,100
+we have a problem here we have a
+
+497
+00:22:14,100 --> 00:22:17,190
+scrolling conflict because the browser
+
+498
+00:22:17,190 --> 00:22:19,170
+also uses the up and down arrow keys to
+
+499
+00:22:19,170 --> 00:22:21,270
+scroll the contents so if you remember
+
+500
+00:22:21,270 --> 00:22:23,100
+we're actually managing the scrolling of
+
+501
+00:22:23,100 --> 00:22:24,750
+the sidebar ourselves were scrolling to
+
+502
+00:22:24,750 --> 00:22:27,780
+view if needed we could just cancel all
+
+503
+00:22:27,780 --> 00:22:29,850
+the scroll events but the scrolling that
+
+504
+00:22:29,850 --> 00:22:31,260
+needs to happen in other parts of the
+
+505
+00:22:31,260 --> 00:22:33,780
+app so these are actually the two main
+
+506
+00:22:33,780 --> 00:22:36,390
+scroll areas we have the sidebar we have
+
+507
+00:22:36,390 --> 00:22:38,820
+the main content so we basically need to
+
+508
+00:22:38,820 --> 00:22:41,190
+figure out which areas focus if the
+
+509
+00:22:41,190 --> 00:22:43,800
+sidebar has focus then we can just
+
+510
+00:22:43,800 --> 00:22:47,430
+cancel scroll events or and that are
+
+511
+00:22:47,430 --> 00:22:48,780
+associated with the up and down arrow
+
+512
+00:22:48,780 --> 00:22:50,820
+keys and do the scrolling ourselves if
+
+513
+00:22:50,820 --> 00:22:55,070
+it's if the main part number two has
+
+514
+00:22:55,070 --> 00:23:00,320
+focus then we need to not scroll the
+
+515
+00:23:00,320 --> 00:23:02,340
+sidebar and we just need to let the
+
+516
+00:23:02,340 --> 00:23:05,450
+browser as you scroll the content itself
+
+517
+00:23:05,450 --> 00:23:09,420
+so if you think about it the the active
+
+518
+00:23:09,420 --> 00:23:12,450
+areas with is whichever area was clicked
+
+519
+00:23:12,450 --> 00:23:16,740
+last so I try to find a browser API to
+
+520
+00:23:16,740 --> 00:23:19,890
+do this doesn't exist I tried for hours
+
+521
+00:23:19,890 --> 00:23:22,850
+you think it would exist it's kind of a
+
+522
+00:23:22,850 --> 00:23:25,050
+logical thing to put in the browser but
+
+523
+00:23:25,050 --> 00:23:27,540
+it doesn't so we're gonna have to do
+
+524
+00:23:27,540 --> 00:23:30,750
+this ourselves we can create this jQuery
+
+525
+00:23:30,750 --> 00:23:34,140
+door active area Coffee jQuery plugin
+
+526
+00:23:34,140 --> 00:23:36,480
+and all it does is you can mark up
+
+527
+00:23:36,480 --> 00:23:38,640
+active areas in your app and it will
+
+528
+00:23:38,640 --> 00:23:41,160
+listen to click events on them when a
+
+529
+00:23:41,160 --> 00:23:44,820
+click event is listed or activated it's
+
+530
+00:23:44,820 --> 00:23:46,950
+going to call this active area callback
+
+531
+00:23:46,950 --> 00:23:49,110
+and then it's just going to set the
+
+532
+00:23:49,110 --> 00:23:52,500
+current variable and then we can have
+
+533
+00:23:52,500 --> 00:23:54,210
+another function that just checks to see
+
+534
+00:23:54,210 --> 00:23:58,560
+if if specific Dom element is the
+
+535
+00:23:58,560 --> 00:24:02,640
+current one so let's mark up our active
+
+536
+00:24:02,640 --> 00:24:04,050
+areas and the posts and sidebar
+
+537
+00:24:04,050 --> 00:24:05,550
+controller
+
+538
+00:24:05,550 --> 00:24:09,090
+these are our two main areas that are
+
+539
+00:24:09,090 --> 00:24:10,890
+scrollable if you remember now these are
+
+540
+00:24:10,890 --> 00:24:11,640
+going to be listened to
+
+541
+00:24:11,640 --> 00:24:14,460
+now we go back to our sidebar controller
+
+542
+00:24:14,460 --> 00:24:18,540
+what we can do is check to see if the
+
+543
+00:24:18,540 --> 00:24:21,810
+element is active if it's not just
+
+544
+00:24:21,810 --> 00:24:24,210
+ignore the event it's that simple
+
+545
+00:24:24,210 --> 00:24:28,080
+I want to talk a bit about dynamic
+
+546
+00:24:28,080 --> 00:24:31,860
+pagination now this is a pretty tricky
+
+547
+00:24:31,860 --> 00:24:35,670
+problem actually so in molecule thus
+
+548
+00:24:35,670 --> 00:24:37,320
+order a post on the left side is
+
+549
+00:24:37,320 --> 00:24:39,360
+actually dynamic a single vote could
+
+550
+00:24:39,360 --> 00:24:42,270
+cause the post to raise up or down and
+
+551
+00:24:42,270 --> 00:24:44,670
+also there's a time decay which also
+
+552
+00:24:44,670 --> 00:24:47,850
+affects rankings but once the user is
+
+553
+00:24:47,850 --> 00:24:49,500
+scroll to the bottom of this list we
+
+554
+00:24:49,500 --> 00:24:50,850
+need to figure out what the next pages
+
+555
+00:24:50,850 --> 00:24:54,750
+fetch it and add it to the list we we
+
+556
+00:24:54,750 --> 00:24:57,120
+need to figure out the next page even if
+
+557
+00:24:57,120 --> 00:24:59,610
+it involves not putting duplicates in
+
+558
+00:24:59,610 --> 00:25:00,900
+this one even if the list has already
+
+559
+00:25:00,900 --> 00:25:05,090
+changed so what do other people do well
+
+560
+00:25:05,090 --> 00:25:07,350
+what does hacking use do well actually
+
+561
+00:25:07,350 --> 00:25:09,960
+stores every single possible sort
+
+562
+00:25:09,960 --> 00:25:13,560
+combination in enclosure and as you can
+
+563
+00:25:13,560 --> 00:25:16,010
+imagine this gets bigger and bigger is
+
+564
+00:25:16,010 --> 00:25:18,480
+exponentially huge as you have more
+
+565
+00:25:18,480 --> 00:25:23,850
+posts so what what happens ultimately
+
+566
+00:25:23,850 --> 00:25:27,320
+well the garbage collector kicks in and
+
+567
+00:25:27,320 --> 00:25:31,020
+and then it cleans up this closures and
+
+568
+00:25:31,020 --> 00:25:33,570
+that means you get expired pagination
+
+569
+00:25:33,570 --> 00:25:34,980
+link so you may have seen it in hacker
+
+570
+00:25:34,980 --> 00:25:38,460
+news it's kind of shitty really it kind
+
+571
+00:25:38,460 --> 00:25:40,290
+of does the same thing except it shows
+
+572
+00:25:40,290 --> 00:25:42,030
+even more duplicates on the second page
+
+573
+00:25:42,030 --> 00:25:48,300
+so how do you solve this well I was on
+
+574
+00:25:48,300 --> 00:25:49,860
+holiday would take Thornton recently and
+
+575
+00:25:49,860 --> 00:25:51,630
+he told me what he did with medium and
+
+576
+00:25:51,630 --> 00:25:55,170
+it's very simple but it's very good I
+
+577
+00:25:55,170 --> 00:25:59,010
+think hex to this problem so in other
+
+578
+00:25:59,010 --> 00:26:01,320
+words what you do is whenever you fetch
+
+579
+00:26:01,320 --> 00:26:03,870
+the next page of posts you send an array
+
+580
+00:26:03,870 --> 00:26:05,760
+containing all the previously fetched
+
+581
+00:26:05,760 --> 00:26:08,430
+post items IDs so the ones that you
+
+582
+00:26:08,430 --> 00:26:10,290
+already have on the page you send that
+
+583
+00:26:10,290 --> 00:26:12,570
+to the server then whenever you return
+
+584
+00:26:12,570 --> 00:26:15,200
+posts from the server you ensure that
+
+585
+00:26:15,200 --> 00:26:19,190
+those ideas are not referenced in the
+
+586
+00:26:19,190 --> 00:26:23,460
+from the resulting set so this is what
+
+587
+00:26:23,460 --> 00:26:25,830
+the Ruby code looks like you find the
+
+588
+00:26:25,830 --> 00:26:28,380
+popular posts you exclude any which have
+
+589
+00:26:28,380 --> 00:26:30,720
+an ID of the array that's passed in and
+
+590
+00:26:30,720 --> 00:26:34,170
+then you return them you limit it by 30
+
+591
+00:26:34,170 --> 00:26:36,480
+and routes you return the next page it
+
+592
+00:26:36,480 --> 00:26:38,370
+works great
+
+593
+00:26:38,370 --> 00:26:40,610
+that's the solution to that problem
+
+594
+00:26:40,610 --> 00:26:42,630
+real-time streaming while actually
+
+595
+00:26:42,630 --> 00:26:44,820
+monocle uses real-time streaming to keep
+
+596
+00:26:44,820 --> 00:26:46,920
+us interface up-to-date so if you up
+
+597
+00:26:46,920 --> 00:26:49,530
+vote a posts or add a new comment or add
+
+598
+00:26:49,530 --> 00:26:51,630
+a new post those things are gonna be
+
+599
+00:26:51,630 --> 00:26:53,160
+reflected instantly across everyone
+
+600
+00:26:53,160 --> 00:26:56,370
+viewing well how do we do this serve a
+
+601
+00:26:56,370 --> 00:26:58,890
+certain event now this is the easiest
+
+602
+00:26:58,890 --> 00:27:00,840
+form of real-time streaming I think on
+
+603
+00:27:00,840 --> 00:27:03,360
+the browser if you only need pub/sub and
+
+604
+00:27:03,360 --> 00:27:04,830
+you don't need bi-directional
+
+605
+00:27:04,830 --> 00:27:06,960
+communication use server-side events
+
+606
+00:27:06,960 --> 00:27:09,300
+they are so much simpler than WebSockets
+
+607
+00:27:09,300 --> 00:27:11,280
+they don't have a binary protocol it's
+
+608
+00:27:11,280 --> 00:27:13,320
+very simple in fact I can show you the
+
+609
+00:27:13,320 --> 00:27:17,580
+protocol right here in a ruby example so
+
+610
+00:27:17,580 --> 00:27:19,020
+all you have to do is make sure that
+
+611
+00:27:19,020 --> 00:27:22,020
+spot responses contain this content type
+
+612
+00:27:22,020 --> 00:27:25,110
+of text slash event stream then you need
+
+613
+00:27:25,110 --> 00:27:27,300
+to keep the connection open then to
+
+614
+00:27:27,300 --> 00:27:29,820
+write to a streams connection you just
+
+615
+00:27:29,820 --> 00:27:32,340
+write data code on and then the message
+
+616
+00:27:32,340 --> 00:27:34,470
+and then you line your line and that is
+
+617
+00:27:34,470 --> 00:27:36,720
+the entire protocol that's what
+
+618
+00:27:36,720 --> 00:27:39,150
+WebSockets should have beat but yeah we
+
+619
+00:27:39,150 --> 00:27:40,850
+had luckily we have server sent events
+
+620
+00:27:40,850 --> 00:27:43,920
+so back in the day I used to have this
+
+621
+00:27:43,920 --> 00:27:46,020
+project called juggernaut which as she
+
+622
+00:27:46,020 --> 00:27:48,240
+did real-time streaming every flash when
+
+623
+00:27:48,240 --> 00:27:50,309
+server-side events came along I call it
+
+624
+00:27:50,309 --> 00:27:51,300
+a day I was like
+
+625
+00:27:51,300 --> 00:27:53,520
+the browser has fixed this problem we
+
+626
+00:27:53,520 --> 00:27:55,950
+can deprecated Jagga no problem is
+
+627
+00:27:55,950 --> 00:27:58,110
+solved however what I realized is that
+
+628
+00:27:58,110 --> 00:28:01,200
+people want abstraction and I wanted
+
+629
+00:28:01,200 --> 00:28:02,280
+abstraction for monocle
+
+630
+00:28:02,280 --> 00:28:04,350
+so I made this thing called Sinatra -
+
+631
+00:28:04,350 --> 00:28:07,710
+pops up so gem anyone can use it and
+
+632
+00:28:07,710 --> 00:28:09,480
+it'll deal with channels and they'll
+
+633
+00:28:09,480 --> 00:28:12,090
+deal with cross-origin request headers
+
+634
+00:28:12,090 --> 00:28:14,010
+and I'll deal with keep our lives and
+
+635
+00:28:14,010 --> 00:28:16,790
+read as pub/sub and it's it's kind of
+
+636
+00:28:16,790 --> 00:28:19,910
+geared towards using it on Heroku
+
+637
+00:28:19,910 --> 00:28:22,710
+so here's another example of using this
+
+638
+00:28:22,710 --> 00:28:25,020
+library here we're publishing a talk
+
+639
+00:28:25,020 --> 00:28:27,540
+message to the tick channel and we have
+
+640
+00:28:27,540 --> 00:28:30,600
+a client subscribing to it so on the
+
+641
+00:28:30,600 --> 00:28:32,700
+client side you just use this event
+
+642
+00:28:32,700 --> 00:28:36,720
+source object and you just pass it
+
+643
+00:28:36,720 --> 00:28:38,730
+through a URL and then it will start
+
+644
+00:28:38,730 --> 00:28:43,350
+streaming from the server and this slash
+
+645
+00:28:43,350 --> 00:28:45,990
+subscribe route is actually what set up
+
+646
+00:28:45,990 --> 00:28:48,360
+by Sinatra pops up so that is all you
+
+647
+00:28:48,360 --> 00:28:50,220
+need to do to stream this talk message
+
+648
+00:28:50,220 --> 00:28:53,730
+claim and in fact if you go to J's can't
+
+649
+00:28:53,730 --> 00:28:56,789
+- ticked at her oh crap calm I set up
+
+650
+00:28:56,789 --> 00:28:58,950
+the simple example of this you know
+
+651
+00:28:58,950 --> 00:29:01,710
+it'll just stream these tick messages
+
+652
+00:29:01,710 --> 00:29:03,419
+it's pretty boring to be honest it
+
+653
+00:29:03,419 --> 00:29:07,260
+doesn't do much more than that so I'm
+
+654
+00:29:07,260 --> 00:29:08,549
+telling you all of this because Monica
+
+655
+00:29:08,549 --> 00:29:11,570
+has the streaming setup server under
+
+656
+00:29:11,570 --> 00:29:15,299
+stream Monica bio and if you look at the
+
+657
+00:29:15,299 --> 00:29:18,450
+stream module in vendor I've abstracted
+
+658
+00:29:18,450 --> 00:29:21,780
+event source a bit and I made it pass or
+
+659
+00:29:21,780 --> 00:29:24,630
+the event or the messages that it
+
+660
+00:29:24,630 --> 00:29:27,980
+actually gets so I made it pass through
+
+661
+00:29:27,980 --> 00:29:31,559
+Jason and then I'm firing my own event
+
+662
+00:29:31,559 --> 00:29:36,630
+on this stream module so if you have a
+
+663
+00:29:36,630 --> 00:29:38,909
+look on the server side notice that we
+
+664
+00:29:38,909 --> 00:29:42,630
+have this is an example of how a post is
+
+665
+00:29:42,630 --> 00:29:45,150
+voted we have this publish method right
+
+666
+00:29:45,150 --> 00:29:47,610
+here and this publish method basically
+
+667
+00:29:47,610 --> 00:29:50,309
+interacts with Sinatra pub/sub rise the
+
+668
+00:29:50,309 --> 00:29:53,520
+message to all channels in this case
+
+669
+00:29:53,520 --> 00:29:55,289
+we're publishing that a post got voted
+
+670
+00:29:55,289 --> 00:29:58,140
+upon and now if we have a look
+
+671
+00:29:58,140 --> 00:30:01,620
+and I client-side again it's just kind
+
+672
+00:30:01,620 --> 00:30:04,440
+of cut out you we can perform the
+
+673
+00:30:04,440 --> 00:30:06,330
+appropriate action we can listen to the
+
+674
+00:30:06,330 --> 00:30:11,159
+posts vote event and then we can in this
+
+675
+00:30:11,159 --> 00:30:12,299
+case what we're doing is we're just
+
+676
+00:30:12,299 --> 00:30:13,980
+refreshing that post we're fetching it
+
+677
+00:30:13,980 --> 00:30:15,809
+again from the server and we'll have the
+
+678
+00:30:15,809 --> 00:30:18,750
+updated book count so you in other ways
+
+679
+00:30:18,750 --> 00:30:19,980
+you can add this kind of real-time
+
+680
+00:30:19,980 --> 00:30:22,400
+streaming to your app very very simply
+
+681
+00:30:22,400 --> 00:30:26,460
+probably do only take you half now so
+
+682
+00:30:26,460 --> 00:30:29,720
+adding SEO to Monica was pretty easy
+
+683
+00:30:29,720 --> 00:30:31,880
+Google have this Ajax crawling
+
+684
+00:30:31,880 --> 00:30:35,130
+specification and basically all we need
+
+685
+00:30:35,130 --> 00:30:36,929
+to do is set up a robot friendly version
+
+686
+00:30:36,929 --> 00:30:39,090
+of the site's one that isn't rented with
+
+687
+00:30:39,090 --> 00:30:42,480
+JavaScript so if you go to this URL and
+
+688
+00:30:42,480 --> 00:30:45,750
+you include the underscore skate of the
+
+689
+00:30:45,750 --> 00:30:47,309
+score fragment under Scott exactly as
+
+690
+00:30:47,309 --> 00:30:48,929
+shown there you'll see the robots
+
+691
+00:30:48,929 --> 00:30:51,270
+friendly version of the site and it
+
+692
+00:30:51,270 --> 00:30:55,049
+looks a bit like this it's just a plain
+
+693
+00:30:55,049 --> 00:30:57,690
+HTML there's no JavaScript in there or
+
+694
+00:30:57,690 --> 00:31:01,140
+anything else now the key to making a
+
+695
+00:31:01,140 --> 00:31:04,169
+google fetch your page like this
+
+696
+00:31:04,169 --> 00:31:06,749
+is this metatag you just put it in your
+
+697
+00:31:06,749 --> 00:31:12,359
+main site and what Google do as soon as
+
+698
+00:31:12,359 --> 00:31:14,489
+it comes across this meta tag it all
+
+699
+00:31:14,489 --> 00:31:17,279
+read request the page again and they'll
+
+700
+00:31:17,279 --> 00:31:20,190
+add that underscore escape fragment
+
+701
+00:31:20,190 --> 00:31:23,129
+underscore to the URL what you can do on
+
+702
+00:31:23,129 --> 00:31:25,259
+the server side is just detect if that
+
+703
+00:31:25,259 --> 00:31:27,570
+is there and then you can render your
+
+704
+00:31:27,570 --> 00:31:32,100
+spider friendly page so you simply
+
+705
+00:31:32,100 --> 00:31:33,720
+implement a route that checks for it and
+
+706
+00:31:33,720 --> 00:31:36,509
+in fact in Sinatra you can do this in a
+
+707
+00:31:36,509 --> 00:31:38,879
+little nicer way what you can do is add
+
+708
+00:31:38,879 --> 00:31:41,489
+a route condition so this route or any
+
+709
+00:31:41,489 --> 00:31:44,100
+match if escape fragment is in the
+
+710
+00:31:44,100 --> 00:31:49,350
+parameters on the client side in in the
+
+711
+00:31:49,350 --> 00:31:51,929
+rendered ARB it looks a bit like this we
+
+712
+00:31:51,929 --> 00:31:54,720
+just have plain HTML we have an h1 tag
+
+713
+00:31:54,720 --> 00:31:56,879
+important for SEO we have a Meta
+
+714
+00:31:56,879 --> 00:31:58,950
+Description tag again important for SEO
+
+715
+00:31:58,950 --> 00:32:02,039
+that is what is displayed inside Google
+
+716
+00:32:02,039 --> 00:32:06,600
+search engine and then and then that's
+
+717
+00:32:06,600 --> 00:32:08,460
+it we have SEO if you go to a site
+
+718
+00:32:08,460 --> 00:32:10,230
+kernel monocle to i/o if you just google
+
+719
+00:32:10,230 --> 00:32:12,659
+that you'll see there's a bunch of
+
+720
+00:32:12,659 --> 00:32:14,789
+monocle has been indexed by Google it
+
+721
+00:32:14,789 --> 00:32:18,480
+works pretty well so I want to make sure
+
+722
+00:32:18,480 --> 00:32:22,049
+that the user doesn't quit the tab when
+
+723
+00:32:22,049 --> 00:32:24,090
+certain Ajax requests are in the fly
+
+724
+00:32:24,090 --> 00:32:27,989
+such as creating new posts voting that
+
+725
+00:32:27,989 --> 00:32:28,559
+kind of thing
+
+726
+00:32:28,559 --> 00:32:31,139
+so what we can do for this is use the
+
+727
+00:32:31,139 --> 00:32:34,470
+under for unload event which we can use
+
+728
+00:32:34,470 --> 00:32:36,539
+to warn the user they mean lose data if
+
+729
+00:32:36,539 --> 00:32:39,749
+they continue closing the tab now this
+
+730
+00:32:39,749 --> 00:32:41,609
+event is actually really a pseudo event
+
+731
+00:32:41,609 --> 00:32:43,409
+it's not really event can only have one
+
+732
+00:32:43,409 --> 00:32:45,840
+Handler and it's called just before the
+
+733
+00:32:45,840 --> 00:32:48,330
+page closes and now if a string is
+
+734
+00:32:48,330 --> 00:32:52,289
+returned from this event then that all
+
+735
+00:32:52,289 --> 00:32:53,669
+that string will be prompted to the
+
+736
+00:32:53,669 --> 00:32:55,980
+clients and then they had the option to
+
+737
+00:32:55,980 --> 00:32:58,200
+close the tab or not so that's the only
+
+738
+00:32:58,200 --> 00:32:59,940
+control you have for security reasons
+
+739
+00:32:59,940 --> 00:33:02,909
+now jQuery has this active property it's
+
+740
+00:33:02,909 --> 00:33:07,409
+an undocumented but it'll an active
+
+741
+00:33:07,409 --> 00:33:09,059
+property is basically in an integer
+
+742
+00:33:09,059 --> 00:33:11,879
+count of the current Ajax connections so
+
+743
+00:33:11,879 --> 00:33:13,830
+there's more than one connection and
+
+744
+00:33:13,830 --> 00:33:17,140
+then this flow control would turn true
+
+745
+00:33:17,140 --> 00:33:19,390
+a string will be returned the user be
+
+746
+00:33:19,390 --> 00:33:21,490
+prompted to see if they actually want to
+
+747
+00:33:21,490 --> 00:33:25,870
+close the tab now actually I found a bug
+
+748
+00:33:25,870 --> 00:33:27,730
+in Google Chrome where the cache gets
+
+749
+00:33:27,730 --> 00:33:32,170
+completely booked if you use on before
+
+750
+00:33:32,170 --> 00:33:35,710
+unload so the only way to actually walk
+
+751
+00:33:35,710 --> 00:33:39,280
+around this is set before I unload only
+
+752
+00:33:39,280 --> 00:33:40,630
+when the page isn't and then that
+
+753
+00:33:40,630 --> 00:33:43,660
+unnoted will state so if you have a look
+
+754
+00:33:43,660 --> 00:33:46,150
+at jQuery done close this is another
+
+755
+00:33:46,150 --> 00:33:47,760
+plugin than the vendor read directory
+
+756
+00:33:47,760 --> 00:33:51,460
+which I wrote from wanaka you can see
+
+757
+00:33:51,460 --> 00:33:54,940
+that if whenever there's an ajax request
+
+758
+00:33:54,940 --> 00:33:57,850
+being sent out we're incrementing our
+
+759
+00:33:57,850 --> 00:34:01,690
+own active transforms integer and then
+
+760
+00:34:01,690 --> 00:34:03,130
+we're adding the handler if there are
+
+761
+00:34:03,130 --> 00:34:05,140
+active transforms and then we're doing
+
+762
+00:34:05,140 --> 00:34:07,210
+the opposite when the HX request is
+
+763
+00:34:07,210 --> 00:34:11,560
+complete lastly I want to talk about the
+
+764
+00:34:11,560 --> 00:34:14,560
+wake event so we want to make sure that
+
+765
+00:34:14,560 --> 00:34:16,480
+the computer wakes up the browser
+
+766
+00:34:16,480 --> 00:34:18,780
+fetches the latest posts from Monika
+
+767
+00:34:18,780 --> 00:34:21,130
+because people keep tabs open for a long
+
+768
+00:34:21,130 --> 00:34:21,580
+time
+
+769
+00:34:21,580 --> 00:34:23,429
+we don't want data to get stale on there
+
+770
+00:34:23,429 --> 00:34:27,300
+but there's no browser API API for this
+
+771
+00:34:27,300 --> 00:34:30,250
+there is a browser API for page
+
+772
+00:34:30,250 --> 00:34:32,470
+visibility but actually doesn't help
+
+773
+00:34:32,470 --> 00:34:34,899
+here so we again we have to do it
+
+774
+00:34:34,899 --> 00:34:35,460
+ourselves
+
+775
+00:34:35,460 --> 00:34:40,270
+I've ridden this plugin again as she's
+
+776
+00:34:40,270 --> 00:34:42,760
+caught jquery waked up coffee nodejs
+
+777
+00:34:42,760 --> 00:34:46,030
+but what we can what it's doing here is
+
+778
+00:34:46,030 --> 00:34:48,760
+using timers to detect if we think
+
+779
+00:34:48,760 --> 00:34:52,360
+there's been a page sleep now since
+
+780
+00:34:52,360 --> 00:34:54,610
+timers executed a relatively predictable
+
+781
+00:34:54,610 --> 00:34:57,610
+interval we can check each iteration and
+
+782
+00:34:57,610 --> 00:34:59,890
+see if it matches at the current time is
+
+783
+00:34:59,890 --> 00:35:03,310
+is what we expect it to be if it isn't
+
+784
+00:35:03,310 --> 00:35:05,320
+the likelihood is that the computer
+
+785
+00:35:05,320 --> 00:35:08,320
+probably paused the timers during asleep
+
+786
+00:35:08,320 --> 00:35:10,770
+and then we can execute our awake event
+
+787
+00:35:10,770 --> 00:35:14,680
+now all we have to do in index don't
+
+788
+00:35:14,680 --> 00:35:16,540
+want to do the coffee is listen to this
+
+789
+00:35:16,540 --> 00:35:19,300
+wake event refresh the posts and we're
+
+790
+00:35:19,300 --> 00:35:23,080
+done I want to thank you very much for
+
+791
+00:35:23,080 --> 00:35:24,550
+listening to this talk and if you have
+
+792
+00:35:24,550 --> 00:35:32,069
+any questions we have it
+
+793
+00:35:32,079 --> 00:35:35,510
+all right thank you so much Alex now we
+
+794
+00:35:35,510 --> 00:35:37,549
+have a time for a few questions before
+
+795
+00:35:37,549 --> 00:35:40,150
+we go on a break
+
+796
+00:35:40,150 --> 00:35:44,809
+does anyone have any questions please
+
+797
+00:35:44,809 --> 00:35:45,500
+raise your hands
+
+798
+00:35:45,500 --> 00:35:48,170
+all right there's a gentleman here um so
+
+799
+00:35:48,170 --> 00:35:50,630
+I've just got once what go back quite a
+
+800
+00:35:50,630 --> 00:35:53,079
+bit into the talk with your issues with
+
+801
+00:35:53,079 --> 00:35:56,210
+pagination have there been any issues
+
+802
+00:35:56,210 --> 00:35:58,430
+with a move on into the mewar even just
+
+803
+00:35:58,430 --> 00:36:00,079
+theoretical with the URLs getting too
+
+804
+00:36:00,079 --> 00:36:02,329
+long by requesting so many existing
+
+805
+00:36:02,329 --> 00:36:05,690
+posts ladies are getting too long yes
+
+806
+00:36:05,690 --> 00:36:09,410
+yes they well spotted URLs have a set
+
+807
+00:36:09,410 --> 00:36:12,920
+length and if you put too many IDs in
+
+808
+00:36:12,920 --> 00:36:14,030
+that then you're gonna have problems
+
+809
+00:36:14,030 --> 00:36:17,180
+that's why you use a post okay yeah so
+
+810
+00:36:17,180 --> 00:36:19,400
+use a post for your yeah pagination
+

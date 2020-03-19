@@ -1,0 +1,2873 @@
+1
+00:00:00,000 --> 00:00:12,150
+
+I have a lot of energy because I
+
+2
+00:00:12,150 --> 00:00:14,969
+literally have been typing into these
+
+3
+00:00:14,969 --> 00:00:19,470
+slides like three seconds ago so I'm
+
+4
+00:00:19,470 --> 00:00:24,810
+hyped about how this is gonna go so this
+
+5
+00:00:24,810 --> 00:00:27,710
+talk is about creating add-ons for node
+
+6
+00:00:27,710 --> 00:00:30,210
+how many people know what add-ons for
+
+7
+00:00:30,210 --> 00:00:35,690
+node are okay cool cool that's people
+
+8
+00:00:35,690 --> 00:00:39,450
+so essentially add-ons are the node
+
+9
+00:00:39,450 --> 00:00:42,059
+version of C extension so you can take C
+
+10
+00:00:42,059 --> 00:00:45,149
+C code C libraries and expose them as
+
+11
+00:00:45,149 --> 00:00:48,570
+JavaScript API is I'm kind of going out
+
+12
+00:00:48,570 --> 00:00:52,410
+of order here so we'll see Who am I
+
+13
+00:00:52,410 --> 00:00:55,770
+first of all I'm Marco Rogers very newly
+
+14
+00:00:55,770 --> 00:00:58,829
+minted started working at at Yammer in
+
+15
+00:00:58,829 --> 00:01:02,699
+San Francisco so I'm also like one of
+
+16
+00:01:02,699 --> 00:01:04,260
+the node guys from very early days I was
+
+17
+00:01:04,260 --> 00:01:06,780
+like lurking on the mailing list when it
+
+18
+00:01:06,780 --> 00:01:09,119
+first showed up and like you know
+
+19
+00:01:09,119 --> 00:01:12,750
+remember 0.133 which really kind of felt
+
+20
+00:01:12,750 --> 00:01:14,340
+like it was a node and that you could
+
+21
+00:01:14,340 --> 00:01:16,439
+use it for something useful and they
+
+22
+00:01:16,439 --> 00:01:20,090
+stayed three three for a long time so
+
+23
+00:01:20,090 --> 00:01:22,470
+I've been around for a while I kind of
+
+24
+00:01:22,470 --> 00:01:24,960
+fell into doing node add-ons it's kind
+
+25
+00:01:24,960 --> 00:01:26,009
+of a story but we don't have a lot of
+
+26
+00:01:26,009 --> 00:01:27,330
+time I have a tremendous amount of
+
+27
+00:01:27,330 --> 00:01:30,299
+slides and I don't even we're not gonna
+
+28
+00:01:30,299 --> 00:01:31,409
+make it through those because I want to
+
+29
+00:01:31,409 --> 00:01:34,890
+do something else too so so let's keep
+
+30
+00:01:34,890 --> 00:01:36,689
+it moving I'm also the maintainer of Lib
+
+31
+00:01:36,689 --> 00:01:40,890
+xml j s one of the biggest node add-ons
+
+32
+00:01:40,890 --> 00:01:42,780
+easily one of the most complex it is
+
+33
+00:01:42,780 --> 00:01:47,340
+bindings to lib xml - which is the giant
+
+34
+00:01:47,340 --> 00:01:51,090
+like you know super compliant c library
+
+35
+00:01:51,090 --> 00:01:53,579
+for dealing with xml and HTML people
+
+36
+00:01:53,579 --> 00:01:57,329
+familiar with that pretty much so okay
+
+37
+00:01:57,329 --> 00:01:59,399
+and just to shout out to to Jeff's make
+
+38
+00:01:59,399 --> 00:02:01,320
+who actually started the project I
+
+39
+00:02:01,320 --> 00:02:04,860
+handed her over to me at a certain point
+
+40
+00:02:04,860 --> 00:02:06,570
+so I'm the primary maintainer now but I
+
+41
+00:02:06,570 --> 00:02:08,009
+just want to I wanted to give him a
+
+42
+00:02:08,009 --> 00:02:11,039
+shout out real quick so let's go through
+
+43
+00:02:11,039 --> 00:02:12,840
+the kind of boilerplate e stuff and then
+
+44
+00:02:12,840 --> 00:02:13,150
+we'll
+
+45
+00:02:13,150 --> 00:02:15,040
+get what kind of an atom looks like and
+
+46
+00:02:15,040 --> 00:02:16,299
+then I really want to kind of pull up
+
+47
+00:02:16,299 --> 00:02:19,180
+some code and look at it because the
+
+48
+00:02:19,180 --> 00:02:20,439
+reason I'm doing this talk let me kind
+
+49
+00:02:20,439 --> 00:02:22,000
+of just take a segue the reason I'm
+
+50
+00:02:22,000 --> 00:02:23,860
+doing this talk is because no one else
+
+51
+00:02:23,860 --> 00:02:27,909
+was doing this talk and note add-ons are
+
+52
+00:02:27,909 --> 00:02:29,470
+actually I think stream ly important
+
+53
+00:02:29,470 --> 00:02:31,150
+there's not a lot of community around
+
+54
+00:02:31,150 --> 00:02:33,519
+them yet and we we need to make more of
+
+55
+00:02:33,519 --> 00:02:35,650
+them so I'm the guy that's not afraid to
+
+56
+00:02:35,650 --> 00:02:36,939
+stand up here and look stupid while I
+
+57
+00:02:36,939 --> 00:02:39,310
+talk to you about it and like because
+
+58
+00:02:39,310 --> 00:02:41,230
+you know I don't have all the knowledge
+
+59
+00:02:41,230 --> 00:02:43,150
+that I need so I need to bring you guys
+
+60
+00:02:43,150 --> 00:02:44,879
+in so that's what I'm trying to do right
+
+61
+00:02:44,879 --> 00:02:47,650
+okay so an add-on is just simply a way
+
+62
+00:02:47,650 --> 00:02:50,859
+to bind C C++ classes or functions into
+
+63
+00:02:50,859 --> 00:02:53,530
+JavaScript okay a better definition a
+
+64
+00:02:53,530 --> 00:02:57,670
+way to enable new j/s ap is based on
+
+65
+00:02:57,670 --> 00:02:59,709
+existing code and that's a simple
+
+66
+00:02:59,709 --> 00:03:01,620
+distinction but it's important because
+
+67
+00:03:01,620 --> 00:03:04,870
+we'll see in a little bit you can create
+
+68
+00:03:04,870 --> 00:03:06,459
+you can and you should create your
+
+69
+00:03:06,459 --> 00:03:08,889
+JavaScript API the way that you want it
+
+70
+00:03:08,889 --> 00:03:10,720
+to be rather than looking at the library
+
+71
+00:03:10,720 --> 00:03:11,889
+and say what does this do
+
+72
+00:03:11,889 --> 00:03:13,720
+let me map this straight into JavaScript
+
+73
+00:03:13,720 --> 00:03:17,829
+right and most importantly I think just
+
+74
+00:03:17,829 --> 00:03:20,230
+for the purposes of organization a node
+
+75
+00:03:20,230 --> 00:03:22,030
+add-on when you create a node add-on you
+
+76
+00:03:22,030 --> 00:03:23,739
+get a you get one file and it's like
+
+77
+00:03:23,739 --> 00:03:25,859
+something dot node that's the extension
+
+78
+00:03:25,859 --> 00:03:29,980
+and node sees that as a module that it's
+
+79
+00:03:29,980 --> 00:03:31,720
+going to require and it's gonna have
+
+80
+00:03:31,720 --> 00:03:33,370
+exports hanging off of it just like any
+
+81
+00:03:33,370 --> 00:03:34,659
+other node module that you guys are
+
+82
+00:03:34,659 --> 00:03:37,060
+familiar with so that's also important
+
+83
+00:03:37,060 --> 00:03:41,560
+and we'll come back to that okay so why
+
+84
+00:03:41,560 --> 00:03:43,120
+would anyone want to do this I just
+
+85
+00:03:43,120 --> 00:03:44,709
+thought that this was something that I
+
+86
+00:03:44,709 --> 00:03:47,680
+wanted to throw out there C++ code is
+
+87
+00:03:47,680 --> 00:03:50,139
+really fast everybody likes that writing
+
+88
+00:03:50,139 --> 00:03:51,549
+it makes you feel kind of like a badass
+
+89
+00:03:51,549 --> 00:03:53,650
+especially if you are you know just
+
+90
+00:03:53,650 --> 00:03:56,199
+strictly a front-end guy like having
+
+91
+00:03:56,199 --> 00:03:58,060
+done C since college I'm describing
+
+92
+00:03:58,060 --> 00:04:00,790
+myself and then I jumped into it and I
+
+93
+00:04:00,790 --> 00:04:03,180
+was like alright I can do this right but
+
+94
+00:04:03,180 --> 00:04:07,750
+it it's hard and the people who know see
+
+95
+00:04:07,750 --> 00:04:10,299
+here are gonna be like well you can
+
+96
+00:04:10,299 --> 00:04:12,849
+leave I'm sorry cuz it sucks
+
+97
+00:04:12,849 --> 00:04:14,859
+and it's frustrating and but it's
+
+98
+00:04:14,859 --> 00:04:17,079
+awesome because when you get into it
+
+99
+00:04:17,079 --> 00:04:18,310
+when you get back into it and you feel
+
+100
+00:04:18,310 --> 00:04:21,039
+you see stuff working and you run a test
+
+101
+00:04:21,039 --> 00:04:24,610
+of a JavaScript module versus a C module
+
+102
+00:04:24,610 --> 00:04:26,380
+and you get like you know
+
+103
+00:04:26,380 --> 00:04:28,360
+orders of magnitude speed-up you feel
+
+104
+00:04:28,360 --> 00:04:31,570
+like a badass right so the third point I
+
+105
+00:04:31,570 --> 00:04:33,070
+think is the most important which is C
+
+106
+00:04:33,070 --> 00:04:37,300
+in C++ code actually exists and runs and
+
+107
+00:04:37,300 --> 00:04:39,460
+works right now whereas we're working
+
+108
+00:04:39,460 --> 00:04:41,650
+with JavaScript which doesn't have any
+
+109
+00:04:41,650 --> 00:04:44,350
+libraries right so the reason I'm giving
+
+110
+00:04:44,350 --> 00:04:45,610
+this talk and the reason that you guys
+
+111
+00:04:45,610 --> 00:04:48,700
+keep writing writing add-ons is to make
+
+112
+00:04:48,700 --> 00:04:51,100
+libraries for node right instead of
+
+113
+00:04:51,100 --> 00:04:52,450
+writing them in JavaScript which is
+
+114
+00:04:52,450 --> 00:04:55,360
+really fun and really cool use the ones
+
+115
+00:04:55,360 --> 00:04:57,010
+that are already there and network and
+
+116
+00:04:57,010 --> 00:04:57,970
+our battle-tested
+
+117
+00:04:57,970 --> 00:05:01,450
+and they're way fast right so and
+
+118
+00:05:01,450 --> 00:05:02,770
+finally you can speak intelligently
+
+119
+00:05:02,770 --> 00:05:05,260
+about why you hate to write C and C++
+
+120
+00:05:05,260 --> 00:05:10,090
+which I do all the time so so for the
+
+121
+00:05:10,090 --> 00:05:12,160
+for the majority of these examples I'm
+
+122
+00:05:12,160 --> 00:05:14,920
+gonna be using bcrypt people familiar
+
+123
+00:05:14,920 --> 00:05:15,550
+with bcrypt
+
+124
+00:05:15,550 --> 00:05:18,580
+pretty much so essentially it allows you
+
+125
+00:05:18,580 --> 00:05:23,230
+to encrypt data using Blowfish encoding
+
+126
+00:05:23,230 --> 00:05:25,480
+algorithms right and it's really simple
+
+127
+00:05:25,480 --> 00:05:27,190
+the the the signature should be crib
+
+128
+00:05:27,190 --> 00:05:28,390
+kind of look like this these are the two
+
+129
+00:05:28,390 --> 00:05:30,190
+major functions right you can generate a
+
+130
+00:05:30,190 --> 00:05:35,320
+salt by passing it a number and you can
+
+131
+00:05:35,320 --> 00:05:38,620
+call B crypt which is going to take a
+
+132
+00:05:38,620 --> 00:05:40,750
+the first string which is the the thing
+
+133
+00:05:40,750 --> 00:05:42,460
+that you want to encrypt the second
+
+134
+00:05:42,460 --> 00:05:45,340
+string which is the salt the second
+
+135
+00:05:45,340 --> 00:05:48,040
+string which is the salt and it's gonna
+
+136
+00:05:48,040 --> 00:05:49,810
+return you the encrypted version I'm
+
+137
+00:05:49,810 --> 00:05:52,750
+using s five for slides here so it's
+
+138
+00:05:52,750 --> 00:05:54,820
+gonna give me crap by now quick
+
+139
+00:05:54,820 --> 00:05:56,080
+shout-out to Nick Campbell who's a
+
+140
+00:05:56,080 --> 00:05:57,970
+friend of mine I wanted to use B crypt
+
+141
+00:05:57,970 --> 00:06:00,250
+for one because it's pretty simple the
+
+142
+00:06:00,250 --> 00:06:03,430
+API is simple but it's also very useful
+
+143
+00:06:03,430 --> 00:06:05,980
+and we can focus on the add-on rather
+
+144
+00:06:05,980 --> 00:06:08,140
+than the library itself because this is
+
+145
+00:06:08,140 --> 00:06:10,600
+the signature that's it we can move on
+
+146
+00:06:10,600 --> 00:06:12,370
+to the next thing and talk about how
+
+147
+00:06:12,370 --> 00:06:14,920
+we're gonna expose it in node and also
+
+148
+00:06:14,920 --> 00:06:16,150
+Nick Campbell is a good friend of mine
+
+149
+00:06:16,150 --> 00:06:17,920
+and I'm gonna if we have time kind of
+
+150
+00:06:17,920 --> 00:06:20,770
+tear into his version of B crypt and how
+
+151
+00:06:20,770 --> 00:06:22,780
+we might be able to improve it and he'd
+
+152
+00:06:22,780 --> 00:06:24,490
+be good-natured about that so I thought
+
+153
+00:06:24,490 --> 00:06:27,010
+that was a good idea and if you want to
+
+154
+00:06:27,010 --> 00:06:28,030
+learn more about bcrypt
+
+155
+00:06:28,030 --> 00:06:31,990
+click on this link where Koda Hale who
+
+156
+00:06:31,990 --> 00:06:33,580
+actually also works at Yammer I thought
+
+157
+00:06:33,580 --> 00:06:34,930
+it'd be cool I threw his link up there
+
+158
+00:06:34,930 --> 00:06:36,490
+it's from like years ago before I know
+
+159
+00:06:36,490 --> 00:06:37,870
+who he was and that's how I learned
+
+160
+00:06:37,870 --> 00:06:39,690
+about bcrypt so that's cool
+
+161
+00:06:39,690 --> 00:06:43,110
+all right so we're gonna write an add-on
+
+162
+00:06:43,110 --> 00:06:46,080
+and essentially it's gonna work like
+
+163
+00:06:46,080 --> 00:06:48,090
+this we're gonna require bcrypt
+
+164
+00:06:48,090 --> 00:06:49,860
+and that's gonna be our add-on module
+
+165
+00:06:49,860 --> 00:06:52,320
+it's gonna have a you know a class
+
+166
+00:06:52,320 --> 00:06:55,890
+hanging off of it that is bcrypt we're
+
+167
+00:06:55,890 --> 00:06:57,540
+gonna skip the salt stuff I just have my
+
+168
+00:06:57,540 --> 00:07:00,510
+own salt here create a bcrypt object and
+
+169
+00:07:00,510 --> 00:07:05,010
+then call encrypt one function that's
+
+170
+00:07:05,010 --> 00:07:05,880
+not gonna work
+
+171
+00:07:05,880 --> 00:07:08,520
+one function you call and you get you
+
+172
+00:07:08,520 --> 00:07:10,260
+pass it a password you get a salt and
+
+173
+00:07:10,260 --> 00:07:12,590
+you're good to go right that's that's
+
+174
+00:07:12,590 --> 00:07:14,850
+85% of what you need out of out of this
+
+175
+00:07:14,850 --> 00:07:17,760
+module right so pretty simple and we
+
+176
+00:07:17,760 --> 00:07:19,490
+should be able to get it done
+
+177
+00:07:19,490 --> 00:07:23,040
+how's it work so like I said when you
+
+178
+00:07:23,040 --> 00:07:24,840
+create a module you when you when you
+
+179
+00:07:24,840 --> 00:07:26,610
+successfully get your module to compile
+
+180
+00:07:26,610 --> 00:07:29,030
+you're gonna get one file that says
+
+181
+00:07:29,030 --> 00:07:31,710
+bcrypt node or whatever you decided to
+
+182
+00:07:31,710 --> 00:07:35,250
+name it be crypt that node when you
+
+183
+00:07:35,250 --> 00:07:38,580
+require modules in node it searches
+
+184
+00:07:38,580 --> 00:07:40,650
+through the past it finds them and it
+
+185
+00:07:40,650 --> 00:07:42,660
+tries to load them up when it sees dot
+
+186
+00:07:42,660 --> 00:07:44,880
+node it immediately treats that as an
+
+187
+00:07:44,880 --> 00:07:47,580
+add-on and calls DL open if you're
+
+188
+00:07:47,580 --> 00:07:49,410
+jumping into C you'll find out about DL
+
+189
+00:07:49,410 --> 00:07:51,630
+open I'm not gonna talk about it because
+
+190
+00:07:51,630 --> 00:07:55,680
+it makes my head hurt and then inside
+
+191
+00:07:55,680 --> 00:07:58,350
+your add-on will see this there's an
+
+192
+00:07:58,350 --> 00:08:00,330
+init function right and that's your
+
+193
+00:08:00,330 --> 00:08:02,750
+entry point into C into loading up your
+
+194
+00:08:02,750 --> 00:08:06,510
+C module as an add-on and we'll see that
+
+195
+00:08:06,510 --> 00:08:08,550
+and it basically it essentially behaves
+
+196
+00:08:08,550 --> 00:08:11,340
+like a module except you get you and it
+
+197
+00:08:11,340 --> 00:08:13,770
+you pass in an exports object and you
+
+198
+00:08:13,770 --> 00:08:15,600
+enhance that exports object and pass it
+
+199
+00:08:15,600 --> 00:08:17,850
+back from C right so it's essentially
+
+200
+00:08:17,850 --> 00:08:19,920
+you you get a module like like you
+
+201
+00:08:19,920 --> 00:08:22,080
+expect a node with an object that has
+
+202
+00:08:22,080 --> 00:08:23,760
+methods and properties hanging off of it
+
+203
+00:08:23,760 --> 00:08:28,740
+so it should be pretty familiar C so
+
+204
+00:08:28,740 --> 00:08:30,930
+let's let's kind of jump kind of jump in
+
+205
+00:08:30,930 --> 00:08:33,090
+I want to look at some code in in a
+
+206
+00:08:33,090 --> 00:08:34,620
+second but I want to go through the kind
+
+207
+00:08:34,620 --> 00:08:36,690
+of basic stuff right so this is
+
+208
+00:08:36,690 --> 00:08:39,780
+JavaScript and it's running in v8 and
+
+209
+00:08:39,780 --> 00:08:42,300
+it's a simple function it says encrypt
+
+210
+00:08:42,300 --> 00:08:44,430
+this is bound to whatever the context is
+
+211
+00:08:44,430 --> 00:08:46,680
+if there is one there's some arguments
+
+212
+00:08:46,680 --> 00:08:49,410
+you can check the arguments object and
+
+213
+00:08:49,410 --> 00:08:51,300
+you can pull them out and then you
+
+214
+00:08:51,300 --> 00:08:53,940
+return something very simple 101 right
+
+215
+00:08:53,940 --> 00:08:58,970
+here's what that looks like in v8
+
+216
+00:08:58,980 --> 00:09:04,880
+this is C++ if every time I look at it I
+
+217
+00:09:04,880 --> 00:09:07,890
+try to like I have to encourage myself
+
+218
+00:09:07,890 --> 00:09:11,430
+to keep doing it but it looks like this
+
+219
+00:09:11,430 --> 00:09:14,670
+right so bcrypt here is a C++ class and
+
+220
+00:09:14,670 --> 00:09:16,290
+encrypt is the function that's hanging
+
+221
+00:09:16,290 --> 00:09:18,420
+off of it and this is the part that
+
+222
+00:09:18,420 --> 00:09:20,060
+looks funky right this is the this is
+
+223
+00:09:20,060 --> 00:09:23,670
+essentially the crux of the v8 API which
+
+224
+00:09:23,670 --> 00:09:27,180
+is you call C++ functions and they have
+
+225
+00:09:27,180 --> 00:09:28,740
+this method signature and there's this
+
+226
+00:09:28,740 --> 00:09:31,260
+arguments object and that's in v8 and
+
+227
+00:09:31,260 --> 00:09:33,660
+this is their encapsulation of what we
+
+228
+00:09:33,660 --> 00:09:35,820
+just saw right which is we've got this
+
+229
+00:09:35,820 --> 00:09:39,180
+argument object that that represents the
+
+230
+00:09:39,180 --> 00:09:40,590
+the variable number of arguments that
+
+231
+00:09:40,590 --> 00:09:42,720
+we're passing to this function and then
+
+232
+00:09:42,720 --> 00:09:43,950
+we do something with them and we don't
+
+233
+00:09:43,950 --> 00:09:44,700
+return something
+
+234
+00:09:44,700 --> 00:09:49,410
+so this arguments object has some some
+
+235
+00:09:49,410 --> 00:09:50,670
+methods off of it that let you do
+
+236
+00:09:50,670 --> 00:09:53,340
+essentially the same thing because of
+
+237
+00:09:53,340 --> 00:09:55,470
+the way C++ works and because javascript
+
+238
+00:09:55,470 --> 00:09:57,300
+is so dynamic and the the context is
+
+239
+00:09:57,300 --> 00:09:59,550
+gonna change you can't use the regular
+
+240
+00:09:59,550 --> 00:10:03,510
+C++ this so the v8 guys they hung it off
+
+241
+00:10:03,510 --> 00:10:05,190
+of the arguments object so that's how
+
+242
+00:10:05,190 --> 00:10:07,560
+you can always get to this which is a
+
+243
+00:10:07,560 --> 00:10:09,180
+handle and we're gonna talk about that
+
+244
+00:10:09,180 --> 00:10:12,330
+in a minute I'm creating the same kind
+
+245
+00:10:12,330 --> 00:10:14,250
+of variable here with an Argus one I
+
+246
+00:10:14,250 --> 00:10:17,070
+missed a step but you can check the
+
+247
+00:10:17,070 --> 00:10:20,460
+length you can pull arguments out of the
+
+248
+00:10:20,460 --> 00:10:24,480
+args object because it acts as an array
+
+249
+00:10:24,480 --> 00:10:27,330
+right so you can index it you have to
+
+250
+00:10:27,330 --> 00:10:30,450
+worry about types a lot in v8 right
+
+251
+00:10:30,450 --> 00:10:33,090
+JavaScript types are really simple C and
+
+252
+00:10:33,090 --> 00:10:36,570
+C++ types are not and that's gonna be a
+
+253
+00:10:36,570 --> 00:10:37,890
+big deal and that's something that I
+
+254
+00:10:37,890 --> 00:10:38,970
+really want to kind of get you guys
+
+255
+00:10:38,970 --> 00:10:41,070
+feedback on if again if we have this
+
+256
+00:10:41,070 --> 00:10:45,330
+time so you know you can set you set
+
+257
+00:10:45,330 --> 00:10:48,000
+some some parameters you create some
+
+258
+00:10:48,000 --> 00:10:50,250
+variable set some parameters and then
+
+259
+00:10:50,250 --> 00:10:51,720
+how we added these two strings together
+
+260
+00:10:51,720 --> 00:10:53,790
+here really simply we need to use a
+
+261
+00:10:53,790 --> 00:10:55,260
+function for that and C so they're
+
+262
+00:10:55,260 --> 00:10:56,160
+string
+
+263
+00:10:56,160 --> 00:10:59,760
+string ducking cat and you pass it to vh
+
+264
+00:10:59,760 --> 00:11:01,530
+string objects we can create a new one
+
+265
+00:11:01,530 --> 00:11:03,420
+on the fly and then we pass our variable
+
+266
+00:11:03,420 --> 00:11:05,580
+whether it's defaulted or whether it was
+
+267
+00:11:05,580 --> 00:11:07,500
+passed in so they make sense to
+
+268
+00:11:07,500 --> 00:11:07,920
+everybody
+
+269
+00:11:07,920 --> 00:11:17,040
+is that mapping go for it uh yes that
+
+270
+00:11:17,040 --> 00:11:18,090
+that's a problem that's the type of
+
+271
+00:11:18,090 --> 00:11:19,800
+sorry like I said three seconds ago I
+
+272
+00:11:19,800 --> 00:11:22,650
+was doing this yes this should be args
+
+273
+00:11:22,650 --> 00:11:24,180
+here is what he said
+
+274
+00:11:24,180 --> 00:11:27,780
+so we're gonna see real working code in
+
+275
+00:11:27,780 --> 00:11:28,770
+a little bit so hopefully they'll be
+
+276
+00:11:28,770 --> 00:11:33,270
+better let's go all right let's talk
+
+277
+00:11:33,270 --> 00:11:34,710
+about some concepts that we're that
+
+278
+00:11:34,710 --> 00:11:37,550
+we're seeing here right the type of this
+
+279
+00:11:37,550 --> 00:11:41,670
+variable is a handle and it should
+
+280
+00:11:41,670 --> 00:11:45,270
+actually have a template parameter on it
+
+281
+00:11:45,270 --> 00:11:48,600
+this is not a C++ tutorial so I'm not
+
+282
+00:11:48,600 --> 00:11:51,360
+even going to go into how that works but
+
+283
+00:11:51,360 --> 00:11:52,890
+you'll learn the kind of boilerplate
+
+284
+00:11:52,890 --> 00:11:56,360
+stuff and eventually it'll make sense
+
+285
+00:11:56,360 --> 00:12:00,120
+but so essentially it kind of works like
+
+286
+00:12:00,120 --> 00:12:04,650
+this v8 is running a JavaScript you know
+
+287
+00:12:04,650 --> 00:12:07,740
+environment on a heap all JavaScript
+
+288
+00:12:07,740 --> 00:12:10,890
+values are on a heap right so when
+
+289
+00:12:10,890 --> 00:12:13,410
+you're dealing with them in your C++
+
+290
+00:12:13,410 --> 00:12:15,600
+functions you deal with handles and
+
+291
+00:12:15,600 --> 00:12:18,300
+handle is a local reference to
+
+292
+00:12:18,300 --> 00:12:20,820
+JavaScript values on the heap right so
+
+293
+00:12:20,820 --> 00:12:22,380
+everything that you deal with that is a
+
+294
+00:12:22,380 --> 00:12:23,580
+javascript value is gonna go through
+
+295
+00:12:23,580 --> 00:12:25,800
+handles and you essentially unwrap them
+
+296
+00:12:25,800 --> 00:12:27,780
+to get at the C types underneath them
+
+297
+00:12:27,780 --> 00:12:29,900
+we'll see a little bit of that hopefully
+
+298
+00:12:29,900 --> 00:12:32,220
+but like I said I really want to get to
+
+299
+00:12:32,220 --> 00:12:33,920
+the kind of the meat of things right
+
+300
+00:12:33,920 --> 00:12:36,480
+this is kind of what I exactly what I
+
+301
+00:12:36,480 --> 00:12:38,460
+just said about handles you need to
+
+302
+00:12:38,460 --> 00:12:39,810
+unwrap handles to get to the data
+
+303
+00:12:39,810 --> 00:12:41,970
+there's also handle scopes the reason
+
+304
+00:12:41,970 --> 00:12:43,890
+that v8 went with this and if you know
+
+305
+00:12:43,890 --> 00:12:45,870
+anything about SpiderMonkey they don't
+
+306
+00:12:45,870 --> 00:12:47,520
+have any kind of concept like this
+
+307
+00:12:47,520 --> 00:12:50,040
+the reason v8 went with this is that
+
+308
+00:12:50,040 --> 00:12:52,760
+they want to make it easy for you to
+
+309
+00:12:52,760 --> 00:12:55,110
+clean up your references so that they
+
+310
+00:12:55,110 --> 00:12:57,450
+don't leak and the way that they do that
+
+311
+00:12:57,450 --> 00:12:59,130
+is to have everything in a handle and a
+
+312
+00:12:59,130 --> 00:13:01,890
+handle is a handle make sure that you're
+
+313
+00:13:01,890 --> 00:13:05,280
+going through the right you know I mean
+
+314
+00:13:05,280 --> 00:13:07,020
+it's a name named appropriately it's a
+
+315
+00:13:07,020 --> 00:13:08,670
+handle to whatever you're dealing with
+
+316
+00:13:08,670 --> 00:13:09,390
+and you always
+
+317
+00:13:09,390 --> 00:13:11,130
+through the handle and they can track
+
+318
+00:13:11,130 --> 00:13:13,500
+handles and the way that they do that is
+
+319
+00:13:13,500 --> 00:13:15,990
+through this handle scope object you
+
+320
+00:13:15,990 --> 00:13:17,820
+create a handle scope and every time you
+
+321
+00:13:17,820 --> 00:13:20,520
+get a handle this object is gonna track
+
+322
+00:13:20,520 --> 00:13:22,170
+it and when it goes out of scope by
+
+323
+00:13:22,170 --> 00:13:23,610
+popping off you know pot this function
+
+324
+00:13:23,610 --> 00:13:25,230
+pops off the stack it's gonna clean out
+
+325
+00:13:25,230 --> 00:13:27,120
+all those handles right so it keeps you
+
+326
+00:13:27,120 --> 00:13:29,400
+from having a lot of memory leaks it
+
+327
+00:13:29,400 --> 00:13:32,580
+also creates a lot of headaches and will
+
+328
+00:13:32,580 --> 00:13:33,930
+maybe talk about that in a little bit
+
+329
+00:13:33,930 --> 00:13:36,690
+right if I'm going too fast please let
+
+330
+00:13:36,690 --> 00:13:38,010
+me know but you know I really want to
+
+331
+00:13:38,010 --> 00:13:39,570
+kind of blaze and then see if we can see
+
+332
+00:13:39,570 --> 00:13:42,270
+some code right there's two types of
+
+333
+00:13:42,270 --> 00:13:44,610
+handles there's local handles which like
+
+334
+00:13:44,610 --> 00:13:46,020
+I said are really important for cleaning
+
+335
+00:13:46,020 --> 00:13:48,060
+up your temporary objects that you're
+
+336
+00:13:48,060 --> 00:13:49,860
+dealing with in JavaScript
+
+337
+00:13:49,860 --> 00:13:53,820
+those get collected as usual by you know
+
+338
+00:13:53,820 --> 00:13:57,270
+by a a sea stack popping off and then
+
+339
+00:13:57,270 --> 00:13:58,890
+there are persistent handles because you
+
+340
+00:13:58,890 --> 00:14:01,080
+want to you want to have you know when
+
+341
+00:14:01,080 --> 00:14:03,000
+you get to your final destination of
+
+342
+00:14:03,000 --> 00:14:05,310
+your you know your return value you want
+
+343
+00:14:05,310 --> 00:14:07,410
+to have that persist so it can go back
+
+344
+00:14:07,410 --> 00:14:09,390
+into the JavaScript environment and
+
+345
+00:14:09,390 --> 00:14:11,400
+doesn't get collected right because it's
+
+346
+00:14:11,400 --> 00:14:13,110
+it's gonna get collected unless there is
+
+347
+00:14:13,110 --> 00:14:16,140
+a JavaScript reference to it so you need
+
+348
+00:14:16,140 --> 00:14:17,640
+to use persistent handles to make sure
+
+349
+00:14:17,640 --> 00:14:20,160
+that you know if you're dealing with
+
+350
+00:14:20,160 --> 00:14:22,380
+stuff in JavaScript you jump into C++
+
+351
+00:14:22,380 --> 00:14:24,660
+land and start doing something meanwhile
+
+352
+00:14:24,660 --> 00:14:27,360
+the v8 garbage collector decides to run
+
+353
+00:14:27,360 --> 00:14:28,770
+and it says oh you're not using this
+
+354
+00:14:28,770 --> 00:14:30,720
+I'll just clean it up then you're effed
+
+355
+00:14:30,720 --> 00:14:34,410
+right you're kind of screwed so all
+
+356
+00:14:34,410 --> 00:14:37,530
+right so the way that you deal with that
+
+357
+00:14:37,530 --> 00:14:42,030
+handle scopes and handles is like this
+
+358
+00:14:42,030 --> 00:14:44,970
+and this this slide may made more sense
+
+359
+00:14:44,970 --> 00:14:47,700
+earlier but you create a handle scope by
+
+360
+00:14:47,700 --> 00:14:49,500
+just you know doing a local
+
+361
+00:14:49,500 --> 00:14:51,570
+initialization of it and as soon as you
+
+362
+00:14:51,570 --> 00:14:53,160
+do this this is the only line that you
+
+363
+00:14:53,160 --> 00:14:55,290
+need your tracking handles within this
+
+364
+00:14:55,290 --> 00:14:57,510
+function right every handle you create
+
+365
+00:14:57,510 --> 00:14:59,640
+within this function is gonna get
+
+366
+00:14:59,640 --> 00:15:00,960
+tracked and it's gonna get cleaned up
+
+367
+00:15:00,960 --> 00:15:04,230
+when the function ends so this is
+
+368
+00:15:04,230 --> 00:15:06,720
+actually the way this worked out is kind
+
+369
+00:15:06,720 --> 00:15:08,570
+of a patch file because what I had
+
+370
+00:15:08,570 --> 00:15:11,280
+before I before I knew better what I had
+
+371
+00:15:11,280 --> 00:15:13,470
+was just okay I'm just gonna return a v8
+
+372
+00:15:13,470 --> 00:15:15,330
+array right like so created new arrays
+
+373
+00:15:15,330 --> 00:15:17,550
+basically like the empty brackets that
+
+374
+00:15:17,550 --> 00:15:18,840
+we all know from JavaScript and return
+
+375
+00:15:18,840 --> 00:15:21,990
+it and it was working fine 80% of the
+
+376
+00:15:21,990 --> 00:15:23,550
+time until the garbage collector
+
+377
+00:15:23,550 --> 00:15:25,529
+got to it and then it was gone and I was
+
+378
+00:15:25,529 --> 00:15:27,540
+SEC faulting right so that's what
+
+379
+00:15:27,540 --> 00:15:29,279
+happens like it's gonna let you drag
+
+380
+00:15:29,279 --> 00:15:31,260
+these handles around all the time until
+
+381
+00:15:31,260 --> 00:15:34,019
+you try to use them and the data
+
+382
+00:15:34,019 --> 00:15:36,120
+underneath has been collected and it
+
+383
+00:15:36,120 --> 00:15:38,370
+craps out that's what happens so what
+
+384
+00:15:38,370 --> 00:15:40,290
+you have to do is create scopes make
+
+385
+00:15:40,290 --> 00:15:41,760
+sure things get cleaned up and then you
+
+386
+00:15:41,760 --> 00:15:44,910
+have to close the scope it's miss named
+
+387
+00:15:44,910 --> 00:15:47,540
+I think but essentially what it means is
+
+388
+00:15:47,540 --> 00:15:50,100
+this is a local handle but I'm gonna
+
+389
+00:15:50,100 --> 00:15:52,050
+pass it to the calling scope because I
+
+390
+00:15:52,050 --> 00:15:54,630
+know that it's my return value right so
+
+391
+00:15:54,630 --> 00:15:56,820
+you take this scope and you say okay for
+
+392
+00:15:56,820 --> 00:15:58,529
+this handle I know you have it tracked
+
+393
+00:15:58,529 --> 00:16:00,079
+and you're gonna try to screw me on this
+
+394
+00:16:00,079 --> 00:16:03,390
+close it pass it back right so this is
+
+395
+00:16:03,390 --> 00:16:04,649
+very important there are a lot of
+
+396
+00:16:04,649 --> 00:16:07,860
+patches in live XML Jas just doing this
+
+397
+00:16:07,860 --> 00:16:09,839
+right and if you forget it you will have
+
+398
+00:16:09,839 --> 00:16:14,730
+problems so okay next kind of concept I
+
+399
+00:16:14,730 --> 00:16:17,820
+want to talk about really quick is how
+
+400
+00:16:17,820 --> 00:16:21,360
+do you deal with objects right you you
+
+401
+00:16:21,360 --> 00:16:23,130
+have your C library it might be a C++
+
+402
+00:16:23,130 --> 00:16:26,040
+library and they have classes and you're
+
+403
+00:16:26,040 --> 00:16:27,750
+going to want to hang some state off of
+
+404
+00:16:27,750 --> 00:16:29,130
+those classes and you're gonna get to
+
+405
+00:16:29,130 --> 00:16:30,660
+them when you when your extension calls
+
+406
+00:16:30,660 --> 00:16:32,850
+your C methods right the way that you do
+
+407
+00:16:32,850 --> 00:16:35,880
+that or at least the the node way that
+
+408
+00:16:35,880 --> 00:16:38,459
+we're providing to do that is through
+
+409
+00:16:38,459 --> 00:16:42,600
+node object wrap and you know to kind of
+
+410
+00:16:42,600 --> 00:16:45,180
+keep things simple all this does is take
+
+411
+00:16:45,180 --> 00:16:48,779
+a C++ class and wrap it in a v8 handle
+
+412
+00:16:48,779 --> 00:16:51,420
+right so you can pass that handle around
+
+413
+00:16:51,420 --> 00:16:53,279
+and it'll act like an object when it's
+
+414
+00:16:53,279 --> 00:16:55,709
+in jeaious jeaious land when you call
+
+415
+00:16:55,709 --> 00:16:57,690
+and when you call into a c function you
+
+416
+00:16:57,690 --> 00:16:59,250
+take that handle and you unwrap it and
+
+417
+00:16:59,250 --> 00:17:01,620
+you get your C++ object back it's really
+
+418
+00:17:01,620 --> 00:17:04,589
+convenient it there's there's a lot of
+
+419
+00:17:04,589 --> 00:17:07,829
+like tricky C magic going on in there if
+
+420
+00:17:07,829 --> 00:17:09,540
+you're if you're not faint of heart jump
+
+421
+00:17:09,540 --> 00:17:11,669
+in there and take a look but it's it's
+
+422
+00:17:11,669 --> 00:17:13,679
+it's grimy so just you know do what it
+
+423
+00:17:13,679 --> 00:17:15,900
+says so
+
+424
+00:17:15,900 --> 00:17:18,089
+all right and I mean basically it has
+
+425
+00:17:18,089 --> 00:17:19,169
+two functions on it right
+
+426
+00:17:19,169 --> 00:17:22,559
+it has rap and has unwrapped so object
+
+427
+00:17:22,559 --> 00:17:23,939
+wrapped out unwrapped basically is gonna
+
+428
+00:17:23,939 --> 00:17:26,370
+take this the this the this context
+
+429
+00:17:26,370 --> 00:17:27,720
+that's coming in with this function and
+
+430
+00:17:27,720 --> 00:17:31,080
+that's a v8 handle write unwrap says
+
+431
+00:17:31,080 --> 00:17:35,100
+okay unwrap this and give me back my C++
+
+432
+00:17:35,100 --> 00:17:36,940
+object which is a B crypt and again
+
+433
+00:17:36,940 --> 00:17:39,160
+and I've left the template ization off
+
+434
+00:17:39,160 --> 00:17:41,290
+of here you have to tell it what you're
+
+435
+00:17:41,290 --> 00:17:42,970
+in right unwrapping and we'll see that
+
+436
+00:17:42,970 --> 00:17:45,610
+in real code in a little bit but as soon
+
+437
+00:17:45,610 --> 00:17:47,110
+as you do this you're you're back in
+
+438
+00:17:47,110 --> 00:17:49,090
+Sealand and you can do whatever you want
+
+439
+00:17:49,090 --> 00:17:51,010
+with this corner - you'd be crypt object
+
+440
+00:17:51,010 --> 00:17:54,310
+so alright there are a lot of classes
+
+441
+00:17:54,310 --> 00:17:56,380
+and utilities that node gives you to be
+
+442
+00:17:56,380 --> 00:18:00,010
+able to approximate what you expect a
+
+443
+00:18:00,010 --> 00:18:04,540
+node in the C in C and C++ land things
+
+444
+00:18:04,540 --> 00:18:06,640
+like event emitters are there so you can
+
+445
+00:18:06,640 --> 00:18:08,410
+subclass an event emitter on your C++
+
+446
+00:18:08,410 --> 00:18:10,060
+class and make it act like an event
+
+447
+00:18:10,060 --> 00:18:12,490
+emitter and and see you're calling emit
+
+448
+00:18:12,490 --> 00:18:14,500
+and you're giving it you know the the
+
+449
+00:18:14,500 --> 00:18:17,440
+name clothes and the callback thing is a
+
+450
+00:18:17,440 --> 00:18:19,720
+little a little a little different
+
+451
+00:18:19,720 --> 00:18:21,430
+that's on the other side of emit but
+
+452
+00:18:21,430 --> 00:18:23,230
+we're not gonna get to that because
+
+453
+00:18:23,230 --> 00:18:25,330
+there's a lot and we only have have a
+
+454
+00:18:25,330 --> 00:18:26,980
+half-hour and I'm already about 20
+
+455
+00:18:26,980 --> 00:18:30,130
+minutes in so but on the other side this
+
+456
+00:18:30,130 --> 00:18:31,990
+is JavaScript and I didn't you know I
+
+457
+00:18:31,990 --> 00:18:35,220
+didn't these slides are super new so
+
+458
+00:18:35,220 --> 00:18:37,870
+this is a new connection in JavaScript
+
+459
+00:18:37,870 --> 00:18:40,000
+this represents your connection in C++
+
+460
+00:18:40,000 --> 00:18:41,920
+class you're making a new one and you're
+
+461
+00:18:41,920 --> 00:18:43,240
+treating it just like an event emitter
+
+462
+00:18:43,240 --> 00:18:45,610
+right so it's gonna go through C code
+
+463
+00:18:45,610 --> 00:18:46,960
+it's gonna admit whatever you want it to
+
+464
+00:18:46,960 --> 00:18:49,600
+admit and it behaved when once it comes
+
+465
+00:18:49,600 --> 00:18:51,340
+out of the module it behaves like node
+
+466
+00:18:51,340 --> 00:18:54,640
+and it's awesome right so if you if you
+
+467
+00:18:54,640 --> 00:18:57,010
+learn the the kind of paradigms and the
+
+468
+00:18:57,010 --> 00:18:59,710
+the techniques to you know write your
+
+469
+00:18:59,710 --> 00:19:01,480
+modules such that they behave like node
+
+470
+00:19:01,480 --> 00:19:03,730
+you're white right way better add-ons
+
+471
+00:19:03,730 --> 00:19:06,850
+and people will be really happy there's
+
+472
+00:19:06,850 --> 00:19:08,530
+lots of other stuff I'm gonna start like
+
+473
+00:19:08,530 --> 00:19:10,120
+breeze in just a little bit like yeah
+
+474
+00:19:10,120 --> 00:19:11,380
+okay I'm so I'm a thing and there's lots
+
+475
+00:19:11,380 --> 00:19:12,940
+to cover here I didn't go through
+
+476
+00:19:12,940 --> 00:19:15,040
+throwing exceptions right you need to do
+
+477
+00:19:15,040 --> 00:19:18,670
+that object wrap also has a ref you know
+
+478
+00:19:18,670 --> 00:19:21,700
+it's kind of a reference counting thing
+
+479
+00:19:21,700 --> 00:19:23,590
+where you can when you have to do a
+
+480
+00:19:23,590 --> 00:19:25,060
+synchronous actions and you're
+
+481
+00:19:25,060 --> 00:19:28,270
+essentially off of the v8 thread to keep
+
+482
+00:19:28,270 --> 00:19:30,850
+your to keep your to keep the garbage
+
+483
+00:19:30,850 --> 00:19:33,610
+collector from collecting your your
+
+484
+00:19:33,610 --> 00:19:35,320
+objects like it's supposed to do you
+
+485
+00:19:35,320 --> 00:19:36,670
+have to tell it that it's referenced and
+
+486
+00:19:36,670 --> 00:19:38,440
+ref is the way that you do that there's
+
+487
+00:19:38,440 --> 00:19:40,360
+code around that to I really want to
+
+488
+00:19:40,360 --> 00:19:42,370
+just point you guys at a lot of examples
+
+489
+00:19:42,370 --> 00:19:44,620
+and have you kind of go in refer to
+
+490
+00:19:44,620 --> 00:19:46,120
+these slides and maybe it'll make more
+
+491
+00:19:46,120 --> 00:19:48,570
+sense but half hour so let's keep going
+
+492
+00:19:48,570 --> 00:19:50,810
+signatures are the way that you
+
+493
+00:19:50,810 --> 00:19:53,930
+make sure that the object that you're
+
+494
+00:19:53,930 --> 00:19:56,420
+calling methods on goes with your module
+
+495
+00:19:56,420 --> 00:19:58,850
+right because there's a disconnect
+
+496
+00:19:58,850 --> 00:20:01,850
+between the C++ classes and the
+
+497
+00:20:01,850 --> 00:20:03,620
+functions because javascript is so
+
+498
+00:20:03,620 --> 00:20:05,720
+dynamic I could I can take you know a
+
+499
+00:20:05,720 --> 00:20:07,460
+function and detach it from this object
+
+500
+00:20:07,460 --> 00:20:09,710
+and call it right and JavaScript is not
+
+501
+00:20:09,710 --> 00:20:11,840
+gonna know that it goes with that that
+
+502
+00:20:11,840 --> 00:20:14,420
+object because there's a C++ class under
+
+503
+00:20:14,420 --> 00:20:15,950
+it and if I try to reference it it's
+
+504
+00:20:15,950 --> 00:20:17,960
+gonna crash doesn't know that so there's
+
+505
+00:20:17,960 --> 00:20:19,880
+so signatures are really important also
+
+506
+00:20:19,880 --> 00:20:23,060
+but the thing is you can get really far
+
+507
+00:20:23,060 --> 00:20:25,760
+without doing any of this stuff and you
+
+508
+00:20:25,760 --> 00:20:27,200
+feel awesome about it and it's working
+
+509
+00:20:27,200 --> 00:20:29,450
+until it doesn't and so you have to
+
+510
+00:20:29,450 --> 00:20:32,420
+start finding all of these techniques to
+
+511
+00:20:32,420 --> 00:20:34,580
+to shore up your code and make it more
+
+512
+00:20:34,580 --> 00:20:36,230
+robust so I'm throwing this stuff in
+
+513
+00:20:36,230 --> 00:20:36,650
+here
+
+514
+00:20:36,650 --> 00:20:39,470
+but as you guys dig in like you know I'm
+
+515
+00:20:39,470 --> 00:20:40,490
+trying to get the conversation started
+
+516
+00:20:40,490 --> 00:20:42,110
+here so I know about this stuff when you
+
+517
+00:20:42,110 --> 00:20:43,700
+run into it like please let's starts
+
+518
+00:20:43,700 --> 00:20:45,080
+talking about it
+
+519
+00:20:45,080 --> 00:20:48,710
+so all right there's lots more slides
+
+520
+00:20:48,710 --> 00:20:50,900
+but let's let's stop and kind of look at
+
+521
+00:20:50,900 --> 00:20:51,950
+some code here and see if we can get
+
+522
+00:20:51,950 --> 00:20:54,800
+through at least a little bit right all
+
+523
+00:20:54,800 --> 00:20:58,310
+right so I've got I've got bcrypt here
+
+524
+00:20:58,310 --> 00:20:59,960
+right
+
+525
+00:20:59,960 --> 00:21:02,500
+there's several files here there is
+
+526
+00:21:02,500 --> 00:21:05,150
+there's a there's a dot H file which is
+
+527
+00:21:05,150 --> 00:21:08,210
+the headers for Blowfish and bcrypt
+
+528
+00:21:08,210 --> 00:21:11,270
+there's bcrypt CC which is the actual
+
+529
+00:21:11,270 --> 00:21:13,100
+implementation of bcrypt it has those
+
+530
+00:21:13,100 --> 00:21:15,260
+two that gin salt and that encrypt
+
+531
+00:21:15,260 --> 00:21:16,910
+function and see that I showed before
+
+532
+00:21:16,910 --> 00:21:23,600
+and there's Blowfish here so this is the
+
+533
+00:21:23,600 --> 00:21:27,230
+that's the the best extent of the C
+
+534
+00:21:27,230 --> 00:21:29,720
+library that's it right and then these
+
+535
+00:21:29,720 --> 00:21:33,200
+two files are your node add-on so these
+
+536
+00:21:33,200 --> 00:21:35,270
+five files if you put the right things
+
+537
+00:21:35,270 --> 00:21:37,340
+in them you get this little module that
+
+538
+00:21:37,340 --> 00:21:39,200
+will do B crypt for you and I think
+
+539
+00:21:39,200 --> 00:21:39,950
+that's really cool
+
+540
+00:21:39,950 --> 00:21:43,460
+so let's see how far I can get hang on
+
+541
+00:21:43,460 --> 00:21:53,880
+just a second
+
+542
+00:21:53,890 --> 00:21:57,580
+hello can hear alright cool cool uh
+
+543
+00:21:57,580 --> 00:22:00,110
+those are my slides let's get rid of
+
+544
+00:22:00,110 --> 00:22:04,760
+those this is Emacs oh god help me if I
+
+545
+00:22:04,760 --> 00:22:08,570
+can't get through this but yeah I'm
+
+546
+00:22:08,570 --> 00:22:10,880
+gonna blow them up um let me just find
+
+547
+00:22:10,880 --> 00:22:16,400
+what I need first let's look at the H
+
+548
+00:22:16,400 --> 00:22:21,850
+file which I don't have open this week
+
+549
+00:22:21,850 --> 00:22:26,080
+alright so source the Crypt node H
+
+550
+00:22:26,080 --> 00:22:28,220
+alright so here's our here's our header
+
+551
+00:22:28,220 --> 00:22:29,570
+file right here's what we want our
+
+552
+00:22:29,570 --> 00:22:32,150
+module to do it's gonna have a class
+
+553
+00:22:32,150 --> 00:22:35,210
+it's gonna be called bcrypt oh yeah
+
+554
+00:22:35,210 --> 00:22:44,360
+sorry there we go yeah all right I do I
+
+555
+00:22:44,360 --> 00:22:45,920
+do use Emacs I don't have to blow it up
+
+556
+00:22:45,920 --> 00:22:51,470
+very often so so here we go you've got
+
+557
+00:22:51,470 --> 00:22:54,050
+your bcrypt object and you've got uu
+
+558
+00:22:54,050 --> 00:22:56,240
+subclassing object wraps so that it will
+
+559
+00:22:56,240 --> 00:22:58,640
+behave sanely when you want it to stick
+
+560
+00:22:58,640 --> 00:23:01,190
+around right and there's there's three
+
+561
+00:23:01,190 --> 00:23:02,780
+there's three functions here right
+
+562
+00:23:02,780 --> 00:23:05,150
+there's there's a static version of
+
+563
+00:23:05,150 --> 00:23:06,560
+initialize which we'll see in just a
+
+564
+00:23:06,560 --> 00:23:08,140
+second that's how you're going to
+
+565
+00:23:08,140 --> 00:23:10,970
+essentially initialize your module and
+
+566
+00:23:10,970 --> 00:23:13,990
+populate it with methods there's a new
+
+567
+00:23:13,990 --> 00:23:16,730
+function which is your constructor for
+
+568
+00:23:16,730 --> 00:23:18,920
+this bcrypt object and javascript when
+
+569
+00:23:18,920 --> 00:23:20,810
+you call new bcrypt it's gonna call this
+
+570
+00:23:20,810 --> 00:23:23,210
+new function okay and there's encrypt
+
+571
+00:23:23,210 --> 00:23:26,780
+which is the the v8 version of this
+
+572
+00:23:26,780 --> 00:23:28,340
+encrypt function that you're gonna call
+
+573
+00:23:28,340 --> 00:23:29,930
+so these are if you remember the slides
+
+574
+00:23:29,930 --> 00:23:31,820
+that's the extent of what this module
+
+575
+00:23:31,820 --> 00:23:34,550
+does you get an object create one called
+
+576
+00:23:34,550 --> 00:23:37,190
+encrypt that's it right so this is the
+
+577
+00:23:37,190 --> 00:23:40,960
+extent of what we need for this now
+
+578
+00:23:40,960 --> 00:23:48,880
+let's look at the C file
+
+579
+00:23:48,890 --> 00:23:52,110
+okay I'm gonna I'm gonna go pretty fast
+
+580
+00:23:52,110 --> 00:23:55,530
+there's not a lot to look at here oh if
+
+581
+00:23:55,530 --> 00:24:03,410
+this is the wrong file sorry all right
+
+582
+00:24:03,420 --> 00:24:05,940
+here's what the C code looks like couple
+
+583
+00:24:05,940 --> 00:24:08,730
+headers don't worry about that using
+
+584
+00:24:08,730 --> 00:24:10,530
+namespace so you don't have to type v8
+
+585
+00:24:10,530 --> 00:24:12,660
+colon colon everywhere note colon colon
+
+586
+00:24:12,660 --> 00:24:13,260
+everywhere
+
+587
+00:24:13,260 --> 00:24:15,179
+here's your initialize function let me
+
+588
+00:24:15,179 --> 00:24:16,440
+start let me start with an it actually
+
+589
+00:24:16,440 --> 00:24:19,350
+here's an it way at the bottom it has an
+
+590
+00:24:19,350 --> 00:24:22,740
+extern it's called it in it and it gets
+
+591
+00:24:22,740 --> 00:24:24,510
+a handle object which is your target
+
+592
+00:24:24,510 --> 00:24:28,380
+this maps directly to module dot exports
+
+593
+00:24:28,380 --> 00:24:30,660
+it's the it's the JavaScript version of
+
+594
+00:24:30,660 --> 00:24:32,760
+that or is the C++ version of that so
+
+595
+00:24:32,760 --> 00:24:34,260
+we're gonna hang methods off of here and
+
+596
+00:24:34,260 --> 00:24:36,540
+when you do require bcrypt this is the
+
+597
+00:24:36,540 --> 00:24:38,130
+object that you're going to get and all
+
+598
+00:24:38,130 --> 00:24:39,600
+we do in this init function like I said
+
+599
+00:24:39,600 --> 00:24:41,429
+this is just a portal in is we
+
+600
+00:24:41,429 --> 00:24:43,410
+initialize it by passing it in to
+
+601
+00:24:43,410 --> 00:24:46,860
+initialize right here's where we get in
+
+602
+00:24:46,860 --> 00:24:50,760
+this - v8 I'm you know I can't do too
+
+603
+00:24:50,760 --> 00:24:52,110
+much to explain this because I have five
+
+604
+00:24:52,110 --> 00:24:54,960
+minutes but here the here are the things
+
+605
+00:24:54,960 --> 00:24:56,100
+that are happening here right we're
+
+606
+00:24:56,100 --> 00:24:57,929
+making a function template and what this
+
+607
+00:24:57,929 --> 00:24:59,490
+says is we're making a new function
+
+608
+00:24:59,490 --> 00:25:01,559
+template and what we're passing it in is
+
+609
+00:25:01,559 --> 00:25:05,429
+our function new that's this we're
+
+610
+00:25:05,429 --> 00:25:06,900
+telling it we're making a new JavaScript
+
+611
+00:25:06,900 --> 00:25:08,340
+function template that's going to be
+
+612
+00:25:08,340 --> 00:25:11,460
+mapped directly to this c++ new function
+
+613
+00:25:11,460 --> 00:25:14,669
+okay so when we when we call new bcrypt
+
+614
+00:25:14,669 --> 00:25:17,280
+it's going to call this we have to do
+
+615
+00:25:17,280 --> 00:25:19,020
+some some v8 stuff like set some
+
+616
+00:25:19,020 --> 00:25:21,110
+internal fields you'll learn about that
+
+617
+00:25:21,110 --> 00:25:23,580
+there's some other this is our Jen salt
+
+618
+00:25:23,580 --> 00:25:26,640
+function which I commented out and note
+
+619
+00:25:26,640 --> 00:25:29,190
+set prototype method is a one of those
+
+620
+00:25:29,190 --> 00:25:32,640
+handy macros that node gives you to do
+
+621
+00:25:32,640 --> 00:25:35,130
+these types of things easily so it's
+
+622
+00:25:35,130 --> 00:25:36,960
+going to take our function template it's
+
+623
+00:25:36,960 --> 00:25:38,220
+going to create a new property call
+
+624
+00:25:38,220 --> 00:25:40,230
+encrypt and encrypt is going to match
+
+625
+00:25:40,230 --> 00:25:42,840
+map directly to our encrypt function
+
+626
+00:25:42,840 --> 00:25:43,980
+that we're going to look at in just a
+
+627
+00:25:43,980 --> 00:25:46,049
+second so when you call encrypt on this
+
+628
+00:25:46,049 --> 00:25:48,570
+object it's going to map to this C++
+
+629
+00:25:48,570 --> 00:25:51,660
+function so so there's that and then
+
+630
+00:25:51,660 --> 00:25:54,150
+finally so what we have now what we have
+
+631
+00:25:54,150 --> 00:25:54,970
+now is
+
+632
+00:25:54,970 --> 00:25:58,330
+a new a new constructor essentially
+
+633
+00:25:58,330 --> 00:25:59,679
+right when we do new bcrypt
+
+634
+00:25:59,679 --> 00:26:01,090
+that's this this is a function template
+
+635
+00:26:01,090 --> 00:26:05,530
+right we've mapped it to encrypt so
+
+636
+00:26:05,530 --> 00:26:06,940
+we've got a function called encrypt and
+
+637
+00:26:06,940 --> 00:26:10,299
+then what we what we're creating now is
+
+638
+00:26:10,299 --> 00:26:12,429
+a new symbol called bcrypt
+
+639
+00:26:12,429 --> 00:26:15,700
+mapping it to our constructor and then
+
+640
+00:26:15,700 --> 00:26:16,299
+we're good to go
+
+641
+00:26:16,299 --> 00:26:18,130
+we've got our constructor here we've got
+
+642
+00:26:18,130 --> 00:26:19,299
+our encrypt function here
+
+643
+00:26:19,299 --> 00:26:20,950
+we hooked them up and then we've
+
+644
+00:26:20,950 --> 00:26:22,900
+attached that off of this target target
+
+645
+00:26:22,900 --> 00:26:26,320
+that set B Cribs get function cool
+
+646
+00:26:26,320 --> 00:26:30,330
+pretty much sweet all right
+
+647
+00:26:30,330 --> 00:26:35,440
+so new is really simple we create our
+
+648
+00:26:35,440 --> 00:26:38,460
+handle scope we always need those we
+
+649
+00:26:38,460 --> 00:26:43,270
+create a new bcrypt C++ object and then
+
+650
+00:26:43,270 --> 00:26:45,520
+we wrap it so this is a function that
+
+651
+00:26:45,520 --> 00:26:47,470
+comes off of object wrap and it says
+
+652
+00:26:47,470 --> 00:26:51,070
+take the C++ function and wrap this
+
+653
+00:26:51,070 --> 00:26:53,140
+handle around it and the handle that we
+
+654
+00:26:53,140 --> 00:26:56,340
+want is the context of this new function
+
+655
+00:26:56,340 --> 00:26:59,350
+okay so our thought this is going to
+
+656
+00:26:59,350 --> 00:27:00,789
+return our handle we're gonna pass it
+
+657
+00:27:00,789 --> 00:27:02,470
+into wrap and now we have a JavaScript
+
+658
+00:27:02,470 --> 00:27:05,020
+handle with our C object underneath and
+
+659
+00:27:05,020 --> 00:27:06,760
+they're gonna go together until they get
+
+660
+00:27:06,760 --> 00:27:10,179
+collected okay and then we return our
+
+661
+00:27:10,179 --> 00:27:12,490
+object you have to do this in you don't
+
+662
+00:27:12,490 --> 00:27:14,320
+have to do this explicitly in JavaScript
+
+663
+00:27:14,320 --> 00:27:17,919
+you have to do this in C++ to return
+
+664
+00:27:17,919 --> 00:27:19,799
+your object when you do constructors
+
+665
+00:27:19,799 --> 00:27:22,179
+encrypt this is the meat of it this is
+
+666
+00:27:22,179 --> 00:27:24,159
+the only thing that this this module
+
+667
+00:27:24,159 --> 00:27:28,990
+does handle scope unwrap our bcrypt
+
+668
+00:27:28,990 --> 00:27:30,940
+object because this we're calling bcrypt
+
+669
+00:27:30,940 --> 00:27:34,780
+dot encrypt unwrap it by calling unwrap
+
+670
+00:27:34,780 --> 00:27:36,280
+and we got we have to tell it it's a
+
+671
+00:27:36,280 --> 00:27:38,890
+bcrypt object right you've seen this now
+
+672
+00:27:38,890 --> 00:27:40,960
+we have our c++ object now we're gonna
+
+673
+00:27:40,960 --> 00:27:43,120
+pull the arguments out the first one is
+
+674
+00:27:43,120 --> 00:27:46,090
+our password second one is our salt all
+
+675
+00:27:46,090 --> 00:27:50,020
+of this is dealing with c conversion
+
+676
+00:27:50,020 --> 00:27:53,200
+from j s to C types all of this okay
+
+677
+00:27:53,200 --> 00:27:55,600
+turn it into a string because it's of
+
+678
+00:27:55,600 --> 00:27:58,480
+type handle value value is the highest
+
+679
+00:27:58,480 --> 00:27:59,980
+you know the highest level in the
+
+680
+00:27:59,980 --> 00:28:02,530
+hierarchy of values and v8 so it's a
+
+681
+00:28:02,530 --> 00:28:04,210
+value turn it into a string we know it's
+
+682
+00:28:04,210 --> 00:28:06,149
+a string because we're you know
+
+683
+00:28:06,149 --> 00:28:09,119
+we built this and we're writing the code
+
+684
+00:28:09,119 --> 00:28:11,729
+for it if you don't know what it is this
+
+685
+00:28:11,729 --> 00:28:14,419
+gets way harder but we know what it is
+
+686
+00:28:14,419 --> 00:28:17,549
+do data and you salt I'm turning into
+
+687
+00:28:17,549 --> 00:28:20,159
+utf-8 values and then I'm pulling those
+
+688
+00:28:20,159 --> 00:28:22,859
+out into char stars you have to go
+
+689
+00:28:22,859 --> 00:28:24,659
+through these steps usually right you
+
+690
+00:28:24,659 --> 00:28:25,859
+can write a macro around it but
+
+691
+00:28:25,859 --> 00:28:27,839
+essentially we went from JavaScript
+
+692
+00:28:27,839 --> 00:28:31,289
+strings to be a to C char stars now we
+
+693
+00:28:31,289 --> 00:28:33,439
+have we have our data right and then
+
+694
+00:28:33,439 --> 00:28:36,389
+this is the library call B Krypton those
+
+695
+00:28:36,389 --> 00:28:38,359
+two things and get back a char star
+
+696
+00:28:38,359 --> 00:28:41,669
+sorry um so I think the rest of this
+
+697
+00:28:41,669 --> 00:28:43,229
+makes a lot of sense right we're
+
+698
+00:28:43,229 --> 00:28:45,239
+creating a new string with our new b
+
+699
+00:28:45,239 --> 00:28:48,299
+cryptid value and we're returning it
+
+700
+00:28:48,299 --> 00:28:51,359
+that's it like you just you just created
+
+701
+00:28:51,359 --> 00:28:53,939
+a module right I didn't get to how to
+
+702
+00:28:53,939 --> 00:28:56,489
+build this and I don't think that's bad
+
+703
+00:28:56,489 --> 00:29:00,659
+because that part sucks but definitely
+
+704
+00:29:00,659 --> 00:29:02,159
+come talk to me let's look at this stuff
+
+705
+00:29:02,159 --> 00:29:04,049
+I'm gonna post all the slides which have
+
+706
+00:29:04,049 --> 00:29:05,819
+way more information about all the stuff
+
+707
+00:29:05,819 --> 00:29:08,909
+that I did not get to but if do we have
+
+708
+00:29:08,909 --> 00:29:11,939
+any time for questions at all what's
+
+709
+00:29:11,939 --> 00:29:19,769
+that oh yes it is going to be at it is
+
+710
+00:29:19,769 --> 00:29:24,119
+not up yet it is going to be at it is
+
+711
+00:29:24,119 --> 00:29:27,399
+going to be on github yes
+
+712
+00:29:27,409 --> 00:29:29,669
+it's in one of these slides where it
+
+713
+00:29:29,669 --> 00:29:31,259
+will be the repositories there is just
+
+714
+00:29:31,259 --> 00:29:33,899
+empty I'm gonna put the slides up what's
+
+715
+00:29:33,899 --> 00:29:34,729
+that
+
+716
+00:29:34,729 --> 00:29:38,549
+polo tech it's on the first slide that's
+
+717
+00:29:38,549 --> 00:29:41,609
+me everywhere Twitter github IRC
+
+718
+00:29:41,609 --> 00:29:44,609
+whatever so come talk to me we need to
+

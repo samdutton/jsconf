@@ -1,0 +1,3337 @@
+1
+00:00:19,770 --> 00:00:22,260
+
+hi everyone and welcome to Jack Buster's
+
+2
+00:00:22,260 --> 00:00:25,080
+I'm Tom will seus I'm a product manager
+
+3
+00:00:25,080 --> 00:00:27,180
+on the chrome graphics team yeah I'm
+
+4
+00:00:27,180 --> 00:00:29,070
+that I hack on the rendering system
+
+5
+00:00:29,070 --> 00:00:31,380
+where I could stuff like that and we're
+
+6
+00:00:31,380 --> 00:00:33,600
+here today to talk about jank on the web
+
+7
+00:00:33,600 --> 00:00:36,900
+what it is and and how to fight it yeah
+
+8
+00:00:36,900 --> 00:00:39,300
+so what we usually do when we talk about
+
+9
+00:00:39,300 --> 00:00:40,860
+Jang because we sort of start with like
+
+10
+00:00:40,860 --> 00:00:43,200
+what smoothness is right so you got a
+
+11
+00:00:43,200 --> 00:00:44,520
+screen in front of your a lot of you do
+
+12
+00:00:44,520 --> 00:00:47,160
+and the way that things working right is
+
+13
+00:00:47,160 --> 00:00:48,989
+it's tricking your eye and perceiving
+
+14
+00:00:48,989 --> 00:00:51,449
+motion when in fact what it's doing is
+
+15
+00:00:51,449 --> 00:00:53,640
+it's updating the screen those lcds
+
+16
+00:00:53,640 --> 00:00:55,950
+really really really fast once every
+
+17
+00:00:55,950 --> 00:00:58,800
+sixty sixtieth of a second now sometimes
+
+18
+00:00:58,800 --> 00:01:00,680
+it's like 50 Hertz sometimes it's 54
+
+19
+00:01:00,680 --> 00:01:03,899
+it's all over the map but the idea is
+
+20
+00:01:03,899 --> 00:01:05,460
+you've got to do it fast enough so your
+
+21
+00:01:05,460 --> 00:01:07,800
+eye perceives this as movement and if
+
+22
+00:01:07,800 --> 00:01:10,710
+you do so then it's smooth if you don't
+
+23
+00:01:10,710 --> 00:01:13,680
+then you get Jack yeah Jack comes in in
+
+24
+00:01:13,680 --> 00:01:16,290
+in a whole variety of formats we refer
+
+25
+00:01:16,290 --> 00:01:18,509
+to something as a hitch when you drop a
+
+26
+00:01:18,509 --> 00:01:20,399
+whole bunch of frames in a row so say
+
+27
+00:01:20,399 --> 00:01:22,229
+everything stops for 200 milliseconds or
+
+28
+00:01:22,229 --> 00:01:24,149
+a low frame rate is when maybe things
+
+29
+00:01:24,149 --> 00:01:26,640
+are still still happening routinely but
+
+30
+00:01:26,640 --> 00:01:27,690
+they're not having as often as they
+
+31
+00:01:27,690 --> 00:01:29,490
+should be so you only get a new frame up
+
+32
+00:01:29,490 --> 00:01:31,740
+every 50 milliseconds instead of every
+
+33
+00:01:31,740 --> 00:01:33,179
+16 milliseconds that kind of thing and
+
+34
+00:01:33,179 --> 00:01:35,640
+the worst is when these things combined
+
+35
+00:01:35,640 --> 00:01:37,350
+and you get you get a really variable
+
+36
+00:01:37,350 --> 00:01:39,330
+frame rate you get new frames coming up
+
+37
+00:01:39,330 --> 00:01:40,830
+on the screen at irregular intervals
+
+38
+00:01:40,830 --> 00:01:43,679
+your eye is really well it tuned to that
+
+39
+00:01:43,679 --> 00:01:45,750
+sort of irregularity because it's how we
+
+40
+00:01:45,750 --> 00:01:48,569
+notice motion and if you you look at
+
+41
+00:01:48,569 --> 00:01:50,700
+something that's supposed to stick to
+
+42
+00:01:50,700 --> 00:01:52,679
+your finger right like something like
+
+43
+00:01:52,679 --> 00:01:54,420
+say this div that's rolling up and down
+
+44
+00:01:54,420 --> 00:01:56,340
+it's pretty fast because this resolution
+
+45
+00:01:56,340 --> 00:01:57,990
+is a little smaller than the monitor I
+
+46
+00:01:57,990 --> 00:02:00,450
+try this on a high res device or a low
+
+47
+00:02:00,450 --> 00:02:02,970
+in computer for then then you'll see
+
+48
+00:02:02,970 --> 00:02:04,740
+that once that physical metaphor gets
+
+49
+00:02:04,740 --> 00:02:07,259
+broken of your finger moving and the
+
+50
+00:02:07,259 --> 00:02:10,229
+screen updating sort of correspondingly
+
+51
+00:02:10,229 --> 00:02:12,150
+then all the sudden things start to feel
+
+52
+00:02:12,150 --> 00:02:13,830
+really bad right and this is the
+
+53
+00:02:13,830 --> 00:02:14,940
+difference between something that feels
+
+54
+00:02:14,940 --> 00:02:17,190
+smooth and feels really nice and
+
+55
+00:02:17,190 --> 00:02:19,440
+responsive is something that feels janky
+
+56
+00:02:19,440 --> 00:02:20,489
+and this is what we're talking about
+
+57
+00:02:20,489 --> 00:02:22,950
+when we talk about Jack yeah I mean
+
+58
+00:02:22,950 --> 00:02:25,230
+basically you know we all talk about
+
+59
+00:02:25,230 --> 00:02:27,090
+it's all well well established right
+
+60
+00:02:27,090 --> 00:02:28,560
+you've got to optimize your lip you know
+
+61
+00:02:28,560 --> 00:02:30,510
+loads minify do this do that make sure
+
+62
+00:02:30,510 --> 00:02:31,470
+that your
+
+63
+00:02:31,470 --> 00:02:32,520
+you know doing the right request to your
+
+64
+00:02:32,520 --> 00:02:34,140
+network but there's the second class
+
+65
+00:02:34,140 --> 00:02:35,550
+citizen right which is the rendering
+
+66
+00:02:35,550 --> 00:02:37,410
+system which we haven't typically had to
+
+67
+00:02:37,410 --> 00:02:38,970
+think about because you know frankly the
+
+68
+00:02:38,970 --> 00:02:41,610
+old web pages of yesterday you move up
+
+69
+00:02:41,610 --> 00:02:43,590
+and down right and the browser can do
+
+70
+00:02:43,590 --> 00:02:45,360
+lots of tricks to make that just fast
+
+71
+00:02:45,360 --> 00:02:47,850
+but nowadays when you have you know
+
+72
+00:02:47,850 --> 00:02:50,040
+complex beautiful looking websites for
+
+73
+00:02:50,040 --> 00:02:51,750
+those to feel native for those to stick
+
+74
+00:02:51,750 --> 00:02:53,940
+to your finger the thing you have to do
+
+75
+00:02:53,940 --> 00:02:55,950
+is you have to run calculation of layout
+
+76
+00:02:55,950 --> 00:02:57,780
+you have to run JavaScript you might
+
+77
+00:02:57,780 --> 00:02:59,580
+garbage collect somewhere in there you
+
+78
+00:02:59,580 --> 00:03:01,410
+might have some animation that you have
+
+79
+00:03:01,410 --> 00:03:03,450
+to do you might accidentally query a
+
+80
+00:03:03,450 --> 00:03:05,130
+style select you want to interrupt yeah
+
+81
+00:03:05,130 --> 00:03:06,780
+right like say something where it's
+
+82
+00:03:06,780 --> 00:03:08,340
+really it's really hard right like
+
+83
+00:03:08,340 --> 00:03:10,230
+there's a lot that needs to go into that
+
+84
+00:03:10,230 --> 00:03:12,810
+16 milliseconds and that is rattling off
+
+85
+00:03:12,810 --> 00:03:16,140
+this list of things but it's it what
+
+86
+00:03:16,140 --> 00:03:17,610
+we're here today to talk about is the
+
+87
+00:03:17,610 --> 00:03:19,920
+stuff that I guess I would summarize as
+
+88
+00:03:19,920 --> 00:03:22,320
+the green bars in in chrome devtools
+
+89
+00:03:22,320 --> 00:03:25,500
+right so yes there are a whole wide
+
+90
+00:03:25,500 --> 00:03:27,180
+variety of things that you can think
+
+91
+00:03:27,180 --> 00:03:27,980
+about when you're thinking about
+
+92
+00:03:27,980 --> 00:03:29,910
+performance and that includes all the
+
+93
+00:03:29,910 --> 00:03:31,410
+the network latency stuff and that's
+
+94
+00:03:31,410 --> 00:03:32,850
+talking about it includes a lot of
+
+95
+00:03:32,850 --> 00:03:35,280
+JavaScript events but what we're here
+
+96
+00:03:35,280 --> 00:03:37,380
+today to discuss is what we call
+
+97
+00:03:37,380 --> 00:03:38,610
+rendering and that sort of breaks down
+
+98
+00:03:38,610 --> 00:03:40,170
+into painting compositing we're going to
+
+99
+00:03:40,170 --> 00:03:42,060
+talk about both and in fact there was a
+
+100
+00:03:42,060 --> 00:03:44,370
+really cool post by Paul Lewis just
+
+101
+00:03:44,370 --> 00:03:46,860
+today where he said I bet you that if
+
+102
+00:03:46,860 --> 00:03:48,570
+you go to your favorite website out
+
+103
+00:03:48,570 --> 00:03:51,239
+there you will see a whole lot of green
+
+104
+00:03:51,239 --> 00:03:54,840
+and purple in in the modern web and I
+
+105
+00:03:54,840 --> 00:03:56,370
+would encourage you to give that a try
+
+106
+00:03:56,370 --> 00:03:57,870
+and I think you'll find there's a lot of
+
+107
+00:03:57,870 --> 00:03:59,340
+websites out there that are basically
+
+108
+00:03:59,340 --> 00:04:01,980
+paint and this green bound that's what
+
+109
+00:04:01,980 --> 00:04:03,269
+we're here to talk to you about that's
+
+110
+00:04:03,269 --> 00:04:06,209
+jank busting yeah so how do you Jack
+
+111
+00:04:06,209 --> 00:04:08,340
+bust first step is you try to paint fast
+
+112
+00:04:08,340 --> 00:04:09,870
+right try to get those grain bars to be
+
+113
+00:04:09,870 --> 00:04:11,160
+as short as possible we're gonna talk a
+
+114
+00:04:11,160 --> 00:04:12,690
+little bit about how to do that but
+
+115
+00:04:12,690 --> 00:04:13,709
+better yet you're going to try not to
+
+116
+00:04:13,709 --> 00:04:15,000
+paint it all we're gonna talk about
+
+117
+00:04:15,000 --> 00:04:17,489
+about that in probably greater detail
+
+118
+00:04:17,489 --> 00:04:19,739
+and lastly we're going to go into a few
+
+119
+00:04:19,739 --> 00:04:23,490
+cases where because the platform is not
+
+120
+00:04:23,490 --> 00:04:25,320
+always as obvious as it might be you end
+
+121
+00:04:25,320 --> 00:04:26,700
+up painting when you really don't have
+
+122
+00:04:26,700 --> 00:04:28,770
+to and and you might not even be
+
+123
+00:04:28,770 --> 00:04:30,540
+noticing this kind of thing because it's
+
+124
+00:04:30,540 --> 00:04:32,550
+the sort of thing that you need to use
+
+125
+00:04:32,550 --> 00:04:34,560
+tools to sort of proactively look for
+
+126
+00:04:34,560 --> 00:04:36,000
+but we'll show you how to do that and
+
+127
+00:04:36,000 --> 00:04:37,410
+we'll show you how to hopefully get a
+
+128
+00:04:37,410 --> 00:04:38,910
+better glimpse into what's going on
+
+129
+00:04:38,910 --> 00:04:39,560
+under the
+
+130
+00:04:39,560 --> 00:04:41,450
+so you've heard us use the word paint
+
+131
+00:04:41,450 --> 00:04:43,340
+right and I think that's really the
+
+132
+00:04:43,340 --> 00:04:44,630
+building block here that we need to talk
+
+133
+00:04:44,630 --> 00:04:46,610
+a bit more about so you go to you know
+
+134
+00:04:46,610 --> 00:04:50,720
+goog and you you get this right which is
+
+135
+00:04:50,720 --> 00:04:53,540
+a blinking cursor right whoo
+
+136
+00:04:53,540 --> 00:04:55,780
+earth-shattering now what's going on
+
+137
+00:04:55,780 --> 00:04:58,970
+behind the scenes here is that Chrome
+
+138
+00:04:58,970 --> 00:05:01,490
+has the cursors a lie this is not the
+
+139
+00:05:01,490 --> 00:05:03,230
+operating system doing it chrome has
+
+140
+00:05:03,230 --> 00:05:06,139
+just a bitmap in memory just of RGB
+
+141
+00:05:06,139 --> 00:05:09,290
+colors and the cursor is just some dark
+
+142
+00:05:09,290 --> 00:05:13,040
+colors in that in that bitmap and link /
+
+143
+00:05:13,040 --> 00:05:16,040
+WebKit has book keeping it very
+
+144
+00:05:16,040 --> 00:05:17,690
+exhaustive bookkeeping that says who
+
+145
+00:05:17,690 --> 00:05:20,270
+this part of the shadow Dom changed I'm
+
+146
+00:05:20,270 --> 00:05:24,590
+going to repaint this part of the bitmap
+
+147
+00:05:24,590 --> 00:05:26,570
+because it's different now and I need to
+
+148
+00:05:26,570 --> 00:05:28,460
+put a cursor where there wasn't or I
+
+149
+00:05:28,460 --> 00:05:30,620
+need to remove a cursor that is called a
+
+150
+00:05:30,620 --> 00:05:32,540
+repaint and so it has a there's a
+
+151
+00:05:32,540 --> 00:05:34,310
+repaint rectangle you can imagine right
+
+152
+00:05:34,310 --> 00:05:36,110
+when something changes visually we have
+
+153
+00:05:36,110 --> 00:05:38,360
+to repaint it and you can sort of
+
+154
+00:05:38,360 --> 00:05:40,130
+imagine that the cost of a repaint is
+
+155
+00:05:40,130 --> 00:05:42,169
+you know to first order proportional to
+
+156
+00:05:42,169 --> 00:05:43,460
+how much you have to repaint so
+
+157
+00:05:43,460 --> 00:05:45,260
+certainly you know blinking that cursors
+
+158
+00:05:45,260 --> 00:05:46,190
+going to be a whole heck of a lot
+
+159
+00:05:46,190 --> 00:05:48,680
+cheaper than blinking say all of google
+
+160
+00:05:48,680 --> 00:05:50,800
+to black and white right back and forth
+
+161
+00:05:50,800 --> 00:05:52,910
+it's just sort of intuitive right you
+
+162
+00:05:52,910 --> 00:05:54,770
+have to touch more bits of memory but
+
+163
+00:05:54,770 --> 00:05:56,180
+you know of course that's not the whole
+
+164
+00:05:56,180 --> 00:05:58,850
+story we could all go home right the
+
+165
+00:05:58,850 --> 00:06:00,500
+other part of this is that not all
+
+166
+00:06:00,500 --> 00:06:02,810
+paints are going to be the same speed so
+
+167
+00:06:02,810 --> 00:06:04,490
+of course if we want to just fill in a
+
+168
+00:06:04,490 --> 00:06:06,860
+part of the page with white there's
+
+169
+00:06:06,860 --> 00:06:08,900
+gonna be a lot cheaper but if we go to
+
+170
+00:06:08,900 --> 00:06:10,460
+this I'm feeling lucky button and you
+
+171
+00:06:10,460 --> 00:06:11,930
+actually like really look at it and
+
+172
+00:06:11,930 --> 00:06:13,880
+actually i think this audience more than
+
+173
+00:06:13,880 --> 00:06:17,539
+anybody understands sort of the details
+
+174
+00:06:17,539 --> 00:06:19,880
+in some of these elements all of those
+
+175
+00:06:19,880 --> 00:06:21,639
+little effects you see the the
+
+176
+00:06:21,639 --> 00:06:24,470
+anti-aliasing on the text the rounded
+
+177
+00:06:24,470 --> 00:06:28,220
+corner the line being anti aliased all
+
+178
+00:06:28,220 --> 00:06:30,919
+of those things are costly and they're
+
+179
+00:06:30,919 --> 00:06:33,200
+costly in the sense that they eat CPU in
+
+180
+00:06:33,200 --> 00:06:35,120
+order to perform the computer you know
+
+181
+00:06:35,120 --> 00:06:36,830
+the CPU just has to sit there going oh
+
+182
+00:06:36,830 --> 00:06:39,800
+is this line on the pixel or halfway on
+
+183
+00:06:39,800 --> 00:06:41,419
+the pixel in it just you know noms away
+
+184
+00:06:41,419 --> 00:06:43,940
+at the CPU so the i'm feeling lucky
+
+185
+00:06:43,940 --> 00:06:46,550
+button is three or four times slower to
+
+186
+00:06:46,550 --> 00:06:48,650
+paint than just a white area and this
+
+187
+00:06:48,650 --> 00:06:49,760
+sort of makes sense and then if you go
+
+188
+00:06:49,760 --> 00:06:51,740
+to a low-end device like a phone it's
+
+189
+00:06:51,740 --> 00:06:52,729
+even more
+
+190
+00:06:52,729 --> 00:06:54,620
+or that that difference is even more
+
+191
+00:06:54,620 --> 00:06:58,490
+amplified so this is all sort of my
+
+192
+00:06:58,490 --> 00:07:00,439
+long-winded way of saying don't paint
+
+193
+00:07:00,439 --> 00:07:03,770
+right like don't do it and and in
+
+194
+00:07:03,770 --> 00:07:05,210
+particular if you're thinking about
+
+195
+00:07:05,210 --> 00:07:09,050
+mobile really really don't do it and to
+
+196
+00:07:09,050 --> 00:07:12,050
+help you with this we built into the
+
+197
+00:07:12,050 --> 00:07:15,169
+browser and not just we chrome pretty
+
+198
+00:07:15,169 --> 00:07:16,699
+much all browsers now have this concept
+
+199
+00:07:16,699 --> 00:07:19,580
+of a layer right the best way to think
+
+200
+00:07:19,580 --> 00:07:21,620
+about layers is we look at you know your
+
+201
+00:07:21,620 --> 00:07:24,110
+dom and we got this this thing is an
+
+202
+00:07:24,110 --> 00:07:26,059
+over scroll that like an overflow scroll
+
+203
+00:07:26,059 --> 00:07:28,639
+did you're probably going to move that
+
+204
+00:07:28,639 --> 00:07:31,759
+up and down right so hey let's let's
+
+205
+00:07:31,759 --> 00:07:34,159
+instead of instead of repainting in
+
+206
+00:07:34,159 --> 00:07:35,479
+order to make that scroll happen let's
+
+207
+00:07:35,479 --> 00:07:36,949
+take that thing and make it into sort of
+
+208
+00:07:36,949 --> 00:07:38,749
+like a Photoshop layer right and then we
+
+209
+00:07:38,749 --> 00:07:40,939
+can move the layer up and down right and
+
+210
+00:07:40,939 --> 00:07:43,219
+fake it out and then what we'll do is
+
+211
+00:07:43,219 --> 00:07:44,839
+we'll store the contents of that layer
+
+212
+00:07:44,839 --> 00:07:48,770
+on the GPU and then when we actually
+
+213
+00:07:48,770 --> 00:07:50,719
+just do an action on the page that moves
+
+214
+00:07:50,719 --> 00:07:52,729
+the document up and down like this all
+
+215
+00:07:52,729 --> 00:07:55,279
+that you have to do is ask the GPU to
+
+216
+00:07:55,279 --> 00:07:57,979
+composite so now in modern chrome you'll
+
+217
+00:07:57,979 --> 00:08:00,229
+see two steps in the in the timeline you
+
+218
+00:08:00,229 --> 00:08:01,580
+see paints which you don't want to do
+
+219
+00:08:01,580 --> 00:08:04,639
+and you see composites the composites
+
+220
+00:08:04,639 --> 00:08:06,050
+are us taking these layers and smashing
+
+221
+00:08:06,050 --> 00:08:08,300
+them down and if you do that chrome can
+
+222
+00:08:08,300 --> 00:08:10,580
+really hit some super super high smooth
+
+223
+00:08:10,580 --> 00:08:13,009
+frame rate 60 Hertz whatever it is if
+
+224
+00:08:13,009 --> 00:08:15,409
+you don't do it and you paint then
+
+225
+00:08:15,409 --> 00:08:17,930
+you're in trouble right so I'm going to
+
+226
+00:08:17,930 --> 00:08:19,969
+walk you through sort of an example of
+
+227
+00:08:19,969 --> 00:08:23,860
+that scrolling working well or not and
+
+228
+00:08:23,860 --> 00:08:27,020
+this is a site it's pretty simple a list
+
+229
+00:08:27,020 --> 00:08:31,479
+of 100 images and you can see that again
+
+230
+00:08:31,479 --> 00:08:33,649
+demos might be slightly off modulo the
+
+231
+00:08:33,649 --> 00:08:36,050
+the resolution being slightly smaller
+
+232
+00:08:36,050 --> 00:08:38,209
+than what's normally on this laptop but
+
+233
+00:08:38,209 --> 00:08:40,490
+this Scrolls pretty smoothly I can like
+
+234
+00:08:40,490 --> 00:08:42,529
+fling up and down in this area no
+
+235
+00:08:42,529 --> 00:08:44,930
+problem you can see the disc release ID
+
+236
+00:08:44,930 --> 00:08:48,440
+is updating like really nicely and I'm I
+
+237
+00:08:48,440 --> 00:08:50,810
+would not call this janky right but
+
+238
+00:08:50,810 --> 00:08:51,889
+you'll notice that as I'm doing this
+
+239
+00:08:51,889 --> 00:08:53,480
+I've got the mouse cursor sitting in the
+
+240
+00:08:53,480 --> 00:08:55,370
+gutter of the page and if I mouse over
+
+241
+00:08:55,370 --> 00:08:57,910
+one of these images I've got like a
+
+242
+00:08:57,910 --> 00:09:00,319
+simple animation effect that happens
+
+243
+00:09:00,319 --> 00:09:02,449
+just based on like the hover pseudo
+
+244
+00:09:02,449 --> 00:09:05,000
+pseudo class right and I got a little
+
+245
+00:09:05,000 --> 00:09:06,499
+bit of a drop shadow
+
+246
+00:09:06,499 --> 00:09:08,299
+right in the image a little bit nothing
+
+247
+00:09:08,299 --> 00:09:10,819
+nothing all that fancy but it is it is
+
+248
+00:09:10,819 --> 00:09:12,979
+an effect that changes things it's a you
+
+249
+00:09:12,979 --> 00:09:14,869
+know two or three lines of what you'll
+
+250
+00:09:14,869 --> 00:09:17,479
+see is very destructive CSS exactly and
+
+251
+00:09:17,479 --> 00:09:19,519
+you'll see that if I try to do that same
+
+252
+00:09:19,519 --> 00:09:22,429
+scroll haha it's pretty fast here if I
+
+253
+00:09:22,429 --> 00:09:24,619
+try to do that same scroll with the the
+
+254
+00:09:24,619 --> 00:09:28,309
+mouse an overlay images then all the
+
+255
+00:09:28,309 --> 00:09:29,929
+sudden things start to kind of fall
+
+256
+00:09:29,929 --> 00:09:33,019
+apart and the difference is something
+
+257
+00:09:33,019 --> 00:09:34,399
+that i'm going to show you right now if
+
+258
+00:09:34,399 --> 00:09:35,779
+you open up devtools and you turn on
+
+259
+00:09:35,779 --> 00:09:38,329
+show paint rectangles which is like our
+
+260
+00:09:38,329 --> 00:09:41,479
+beloved feature in devtools you can you
+
+261
+00:09:41,479 --> 00:09:43,039
+can see what the difference is the
+
+262
+00:09:43,039 --> 00:09:43,969
+difference is whether or not you're
+
+263
+00:09:43,969 --> 00:09:46,849
+painting during the scroll so if I just
+
+264
+00:09:46,849 --> 00:09:49,819
+move up and down now what's happening is
+
+265
+00:09:49,819 --> 00:09:51,919
+that crumbs pre-painted a little bit
+
+266
+00:09:51,919 --> 00:09:53,809
+behind the scenes and it can pre-paint
+
+267
+00:09:53,809 --> 00:09:57,319
+about fast enough that you don't
+
+268
+00:09:57,319 --> 00:09:59,119
+actually get paint operations that
+
+269
+00:09:59,119 --> 00:10:00,919
+happen when you actually need to show
+
+270
+00:10:00,919 --> 00:10:02,809
+new content on the screen and so that
+
+271
+00:10:02,809 --> 00:10:04,129
+means I can sit here scrolling up and
+
+272
+00:10:04,129 --> 00:10:07,039
+down and I don't get any red rectangles
+
+273
+00:10:07,039 --> 00:10:09,319
+which are the areas that are being
+
+274
+00:10:09,319 --> 00:10:10,759
+repainted just like the blinking cursor
+
+275
+00:10:10,759 --> 00:10:12,949
+from so this is that layer analogy right
+
+276
+00:10:12,949 --> 00:10:14,749
+then in this case the layer analogy is
+
+277
+00:10:14,749 --> 00:10:16,669
+working well right you're not seeing any
+
+278
+00:10:16,669 --> 00:10:18,409
+repaints it means that you're going nice
+
+279
+00:10:18,409 --> 00:10:20,389
+and fast you'll hit 60 Hertz in fact the
+
+280
+00:10:20,389 --> 00:10:21,619
+only thing repainting you'll notice is
+
+281
+00:10:21,619 --> 00:10:22,970
+the scroll bar on the right hand side
+
+282
+00:10:22,970 --> 00:10:25,099
+there and there's no helping that if I
+
+283
+00:10:25,099 --> 00:10:27,739
+mouse over one of these images you can
+
+284
+00:10:27,739 --> 00:10:28,849
+see the throughout the throughout the
+
+285
+00:10:28,849 --> 00:10:31,970
+course of that that hover effect I
+
+286
+00:10:31,970 --> 00:10:35,269
+animate in and out the classes i'm
+
+287
+00:10:35,269 --> 00:10:37,159
+changing and I'm getting repaints sort
+
+288
+00:10:37,159 --> 00:10:39,799
+of every frame of those of those effects
+
+289
+00:10:39,799 --> 00:10:41,479
+animating and that's that's really
+
+290
+00:10:41,479 --> 00:10:43,369
+really painful right not only is it
+
+291
+00:10:43,369 --> 00:10:44,569
+making the animation run a little bit
+
+292
+00:10:44,569 --> 00:10:48,199
+slow in theory if I invite you this and
+
+293
+00:10:48,199 --> 00:10:50,149
+scroll up and down all the sudden I'm
+
+294
+00:10:50,149 --> 00:10:51,829
+having all these red rectangles flash
+
+295
+00:10:51,829 --> 00:10:54,679
+during the scroll operation yeah we saw
+
+296
+00:10:54,679 --> 00:10:57,739
+this happen on a popular photo blogging
+
+297
+00:10:57,739 --> 00:10:59,629
+site thing where he can sort of guess
+
+298
+00:10:59,629 --> 00:11:02,479
+what it was we're basically they have
+
+299
+00:11:02,479 --> 00:11:04,879
+this nice hover effect and if you had
+
+300
+00:11:04,879 --> 00:11:06,589
+your cursor in the wrong place the site
+
+301
+00:11:06,589 --> 00:11:08,779
+was just completely unusable yeah and
+
+302
+00:11:08,779 --> 00:11:11,809
+and so I mean hover is something we're
+
+303
+00:11:11,809 --> 00:11:13,519
+picking on here but hover is actually
+
+304
+00:11:13,519 --> 00:11:14,959
+relatively simple to deal with it if
+
+305
+00:11:14,959 --> 00:11:16,459
+scrolling performance is important to
+
+306
+00:11:16,459 --> 00:11:17,809
+you you can turn off the hover effect
+
+307
+00:11:17,809 --> 00:11:18,949
+during scroll right like I'm going to
+
+308
+00:11:18,949 --> 00:11:20,089
+achieve that with a non scroll
+
+309
+00:11:20,089 --> 00:11:22,249
+handler on a timer and indeed if I do so
+
+310
+00:11:22,249 --> 00:11:23,660
+you'll know that I don't get the
+
+311
+00:11:23,660 --> 00:11:26,839
+repaints during the scroll but then as
+
+312
+00:11:26,839 --> 00:11:28,699
+soon as the scroll stops I sort of get
+
+313
+00:11:28,699 --> 00:11:30,079
+them again 200 milliseconds after the
+
+314
+00:11:30,079 --> 00:11:32,029
+last scroll event and that's great right
+
+315
+00:11:32,029 --> 00:11:33,620
+but it does change the UX of the site a
+
+316
+00:11:33,620 --> 00:11:34,910
+little bit and this is the kind of thing
+
+317
+00:11:34,910 --> 00:11:35,990
+that you need to start sort of
+
+318
+00:11:35,990 --> 00:11:37,999
+reorienting yourself re orienting
+
+319
+00:11:37,999 --> 00:11:40,040
+yourself to think about when you think
+
+320
+00:11:40,040 --> 00:11:42,920
+about design right because you can do
+
+321
+00:11:42,920 --> 00:11:44,329
+some really nice visual effects on the
+
+322
+00:11:44,329 --> 00:11:46,160
+web today but it's also really easy to
+
+323
+00:11:46,160 --> 00:11:47,290
+shoot yourself in the foot
+
+324
+00:11:47,290 --> 00:11:50,360
+performance-wise and I'm going to just
+
+325
+00:11:50,360 --> 00:11:52,129
+sort of assert that things like good
+
+326
+00:11:52,129 --> 00:11:53,449
+scrolling performance they're actually
+
+327
+00:11:53,449 --> 00:11:56,300
+just as critical to the design and feel
+
+328
+00:11:56,300 --> 00:11:58,870
+of your site as really nice visuals are
+
+329
+00:11:58,870 --> 00:12:01,999
+I'm going to assert that as well just to
+
+330
+00:12:01,999 --> 00:12:04,999
+be with him right so again i'm picking
+
+331
+00:12:04,999 --> 00:12:07,009
+on hover like the point here is not use
+
+332
+00:12:07,009 --> 00:12:08,600
+hover the point here is use dev tools to
+
+333
+00:12:08,600 --> 00:12:10,610
+see what's going on right so there there
+
+334
+00:12:10,610 --> 00:12:12,410
+are a wide variety of ways to get paints
+
+335
+00:12:12,410 --> 00:12:14,240
+that you don't necessarily need or want
+
+336
+00:12:14,240 --> 00:12:16,160
+during a stroll they include some of the
+
+337
+00:12:16,160 --> 00:12:18,559
+things on this list and if you do get
+
+338
+00:12:18,559 --> 00:12:19,910
+paints during a scroll it's not
+
+339
+00:12:19,910 --> 00:12:21,499
+necessarily a problem right like it's
+
+340
+00:12:21,499 --> 00:12:22,999
+entirely conceivable that the paint's
+
+341
+00:12:22,999 --> 00:12:26,300
+can be so fast that you can afford the
+
+342
+00:12:26,300 --> 00:12:28,429
+paint and the texture upload to the GPU
+
+343
+00:12:28,429 --> 00:12:30,079
+and the composite and whatever else goes
+
+344
+00:12:30,079 --> 00:12:31,429
+into the rendering pipeline but just
+
+345
+00:12:31,429 --> 00:12:33,050
+don't pay like don't get into a
+
+346
+00:12:33,050 --> 00:12:34,819
+dangerous situation just don't paint
+
+347
+00:12:34,819 --> 00:12:36,110
+because there are a lot of things that
+
+348
+00:12:36,110 --> 00:12:37,519
+can make make the paint's take a long
+
+349
+00:12:37,519 --> 00:12:39,829
+time right I'm like yeah the rounded
+
+350
+00:12:39,829 --> 00:12:42,499
+corners and drop shadows and the other
+
+351
+00:12:42,499 --> 00:12:43,730
+effects that we're all sort of familiar
+
+352
+00:12:43,730 --> 00:12:45,470
+with can play into this but there can be
+
+353
+00:12:45,470 --> 00:12:46,610
+a lot of other things that are a lot
+
+354
+00:12:46,610 --> 00:12:48,889
+more subtle are the bane of our
+
+355
+00:12:48,889 --> 00:12:51,290
+existence right now in in this category
+
+356
+00:12:51,290 --> 00:12:53,839
+is is definitely image decodes because
+
+357
+00:12:53,839 --> 00:12:55,309
+it's really possible especially on
+
+358
+00:12:55,309 --> 00:12:57,439
+high-resolution screens to blow a lot of
+
+359
+00:12:57,439 --> 00:12:59,629
+the internal image decode caches inside
+
+360
+00:12:59,629 --> 00:13:00,980
+of blank / WebKit and then like
+
+361
+00:13:00,980 --> 00:13:03,410
+everything so so this slide don't don't
+
+362
+00:13:03,410 --> 00:13:04,670
+sit there scrolling down you know
+
+363
+00:13:04,670 --> 00:13:05,990
+scribbling down this slide or like
+
+364
+00:13:05,990 --> 00:13:07,699
+whatever you know we're constantly
+
+365
+00:13:07,699 --> 00:13:09,529
+changing our minds and krumitz growing
+
+366
+00:13:09,529 --> 00:13:11,029
+up and chrome chrome has a very tiny
+
+367
+00:13:11,029 --> 00:13:13,459
+brain and it gets really confused really
+
+368
+00:13:13,459 --> 00:13:15,679
+easily so this is the current list of
+
+369
+00:13:15,679 --> 00:13:18,949
+bad things but the best thing to do is
+
+370
+00:13:18,949 --> 00:13:20,569
+to pay attention the techniques we're
+
+371
+00:13:20,569 --> 00:13:22,790
+showing you to measure the source of
+
+372
+00:13:22,790 --> 00:13:24,319
+Jack and then sort of deal with the
+
+373
+00:13:24,319 --> 00:13:25,970
+latest canary of whatever
+
+374
+00:13:25,970 --> 00:13:29,329
+the thing is at the time exactly and the
+
+375
+00:13:29,329 --> 00:13:31,129
+the layer model that we're talking about
+
+376
+00:13:31,129 --> 00:13:32,899
+that's so great for scrolling all of
+
+377
+00:13:32,899 --> 00:13:34,430
+this applies to other types of animation
+
+378
+00:13:34,430 --> 00:13:36,800
+too there's nothing sort of special
+
+379
+00:13:36,800 --> 00:13:38,509
+about scrolling other than that we've
+
+380
+00:13:38,509 --> 00:13:40,639
+put sort of an extraordinary amount of
+
+381
+00:13:40,639 --> 00:13:42,350
+work into trying to make that particular
+
+382
+00:13:42,350 --> 00:13:44,420
+kind of scroll a lot on the web yeah
+
+383
+00:13:44,420 --> 00:13:46,129
+because because it's so common but like
+
+384
+00:13:46,129 --> 00:13:47,689
+a lot of the same primitives or what we
+
+385
+00:13:47,689 --> 00:13:49,399
+use to try to make things like say CSS
+
+386
+00:13:49,399 --> 00:13:52,540
+animation also work well so if I open up
+
+387
+00:13:52,540 --> 00:13:56,689
+this demo this is super ugly we're not
+
+388
+00:13:56,689 --> 00:14:00,079
+designers but we're trying you'll see
+
+389
+00:14:00,079 --> 00:14:01,759
+that this is just a drawer right thus
+
+390
+00:14:01,759 --> 00:14:03,470
+animates in and out it's using CSS
+
+391
+00:14:03,470 --> 00:14:05,509
+animation so great right like I'm using
+
+392
+00:14:05,509 --> 00:14:07,279
+modern techniques I'm telling the
+
+393
+00:14:07,279 --> 00:14:08,959
+browser what I'm trying to be doing it
+
+394
+00:14:08,959 --> 00:14:10,040
+should just make things good for me
+
+395
+00:14:10,040 --> 00:14:13,579
+right well kind of but the way CSS
+
+396
+00:14:13,579 --> 00:14:15,290
+animation works you can actually you can
+
+397
+00:14:15,290 --> 00:14:16,970
+animate all sorts of stuff right and
+
+398
+00:14:16,970 --> 00:14:17,750
+there are things that you can animate
+
+399
+00:14:17,750 --> 00:14:20,300
+that don't play very well at all with
+
+400
+00:14:20,300 --> 00:14:22,129
+this notion of everything needing to fit
+
+401
+00:14:22,129 --> 00:14:24,860
+into 16 millisecond frames for instance
+
+402
+00:14:24,860 --> 00:14:26,839
+what if you need to do a lot of reflow
+
+403
+00:14:26,839 --> 00:14:29,750
+during during the animation right that
+
+404
+00:14:29,750 --> 00:14:31,699
+means that every time a new position
+
+405
+00:14:31,699 --> 00:14:34,279
+ticks out of this animation running
+
+406
+00:14:34,279 --> 00:14:36,559
+stuff could be like moving around and
+
+407
+00:14:36,559 --> 00:14:38,809
+that's the kind of thing that blank /
+
+408
+00:14:38,809 --> 00:14:40,639
+WebKit gets really really bad out really
+
+409
+00:14:40,639 --> 00:14:47,240
+fast so if I I was cool surprise if I
+
+410
+00:14:47,240 --> 00:14:49,490
+open up devtools again and I have show
+
+411
+00:14:49,490 --> 00:14:51,709
+paint rexin then you can see that during
+
+412
+00:14:51,709 --> 00:14:53,240
+this animation I'm actually painting
+
+413
+00:14:53,240 --> 00:14:54,740
+every single frame with it again that
+
+414
+00:14:54,740 --> 00:14:57,379
+red flash that means repaint and that's
+
+415
+00:14:57,379 --> 00:15:00,709
+bad that's really bad for animation and
+
+416
+00:15:00,709 --> 00:15:02,209
+you can even see that it's a little it's
+
+417
+00:15:02,209 --> 00:15:04,309
+a little jerky right all I'm animating
+
+418
+00:15:04,309 --> 00:15:06,920
+here is the left property and if I had
+
+419
+00:15:06,920 --> 00:15:08,569
+say text in the middle you would see it
+
+420
+00:15:08,569 --> 00:15:11,149
+reflow and stuff and and that reflow is
+
+421
+00:15:11,149 --> 00:15:13,220
+is really really negative for
+
+422
+00:15:13,220 --> 00:15:14,959
+performance if I open up the devtools
+
+423
+00:15:14,959 --> 00:15:17,500
+timeline I'd take a recording of that
+
+424
+00:15:17,500 --> 00:15:20,870
+animation running you can guess what
+
+425
+00:15:20,870 --> 00:15:22,879
+you're going to see but if i zoom in
+
+426
+00:15:22,879 --> 00:15:25,100
+here I get like style recalculation
+
+427
+00:15:25,100 --> 00:15:27,829
+re-layout paint operations composite
+
+428
+00:15:27,829 --> 00:15:30,230
+layer operations and on that paint thing
+
+429
+00:15:30,230 --> 00:15:31,670
+will basically if you take this to a
+
+430
+00:15:31,670 --> 00:15:33,230
+low-end machine that paint can balloon
+
+431
+00:15:33,230 --> 00:15:36,019
+to 30 40 50 60 milliseconds you know in
+
+432
+00:15:36,019 --> 00:15:37,699
+a blink of an eye you put an image on
+
+433
+00:15:37,699 --> 00:15:38,449
+there you
+
+434
+00:15:38,449 --> 00:15:41,149
+so shadow on there you put a border you
+
+435
+00:15:41,149 --> 00:15:43,669
+sneeze back there gives you 60
+
+436
+00:15:43,669 --> 00:15:45,589
+milliseconds and and you might be saying
+
+437
+00:15:45,589 --> 00:15:47,149
+like well the wouldn't it be great if
+
+438
+00:15:47,149 --> 00:15:48,199
+the browser could kind of make this
+
+439
+00:15:48,199 --> 00:15:49,369
+better for me but again there's
+
+440
+00:15:49,369 --> 00:15:51,139
+something kind of fundamental to the way
+
+441
+00:15:51,139 --> 00:15:53,269
+the left property works that makes that
+
+442
+00:15:53,269 --> 00:15:55,489
+hard because elements elements flow
+
+443
+00:15:55,489 --> 00:15:57,619
+right so instead if I use something like
+
+444
+00:15:57,619 --> 00:15:59,299
+a WebKit transform this is probably a
+
+445
+00:15:59,299 --> 00:16:02,209
+trick you've screwed my demo this is
+
+446
+00:16:02,209 --> 00:16:03,379
+probably a trick you've you've read
+
+447
+00:16:03,379 --> 00:16:05,540
+about online right like these transforms
+
+448
+00:16:05,540 --> 00:16:08,029
+promote things to their own layer so the
+
+449
+00:16:08,029 --> 00:16:09,290
+layers we're talking about for scrolling
+
+450
+00:16:09,290 --> 00:16:12,769
+earlier they apply here too and if I run
+
+451
+00:16:12,769 --> 00:16:16,819
+this animation using a translate X for
+
+452
+00:16:16,819 --> 00:16:18,889
+my transform instead of the left
+
+453
+00:16:18,889 --> 00:16:21,230
+property then all of a sudden those red
+
+454
+00:16:21,230 --> 00:16:23,269
+rectangles go away during the animation
+
+455
+00:16:23,269 --> 00:16:25,069
+and that's great right because that
+
+456
+00:16:25,069 --> 00:16:26,299
+means I'm not I'm not painting anymore
+
+457
+00:16:26,299 --> 00:16:28,160
+and indeed I can confirm this if i go
+
+458
+00:16:28,160 --> 00:16:30,379
+back to time line take a recording run
+
+459
+00:16:30,379 --> 00:16:34,129
+the animation stop it look at what's
+
+460
+00:16:34,129 --> 00:16:35,569
+going on here all i'm seeing or
+
+461
+00:16:35,569 --> 00:16:37,309
+composite layer operations and the
+
+462
+00:16:37,309 --> 00:16:38,839
+reason that we can get away with this is
+
+463
+00:16:38,839 --> 00:16:40,730
+because the transform takes the element
+
+464
+00:16:40,730 --> 00:16:43,639
+out of out of flow right and and it lets
+
+465
+00:16:43,639 --> 00:16:45,980
+us sort of make some guarantees about
+
+466
+00:16:45,980 --> 00:16:49,429
+the thing inside the transform being
+
+467
+00:16:49,429 --> 00:16:52,069
+kind of independent from the the sort of
+
+468
+00:16:52,069 --> 00:16:54,079
+parent container and that's that's
+
+469
+00:16:54,079 --> 00:16:56,989
+really nice but you'll notice there's
+
+470
+00:16:56,989 --> 00:16:59,629
+not quite done yet right because i'm
+
+471
+00:16:59,629 --> 00:17:00,919
+still seeing these red flashes at the
+
+472
+00:17:00,919 --> 00:17:02,269
+beginning and end of the animation and
+
+473
+00:17:02,269 --> 00:17:04,069
+this is the kind of thing that if you're
+
+474
+00:17:04,069 --> 00:17:06,079
+thinking with 16 millisecond frames in
+
+475
+00:17:06,079 --> 00:17:08,480
+in sort of the forefront of your mind
+
+476
+00:17:08,480 --> 00:17:10,669
+should should stand out as potentially
+
+477
+00:17:10,669 --> 00:17:12,019
+problematic right because that means
+
+478
+00:17:12,019 --> 00:17:13,579
+that as soon as I click the button a
+
+479
+00:17:13,579 --> 00:17:15,439
+repaints going to happen and if that
+
+480
+00:17:15,439 --> 00:17:17,329
+repaint might be slow then all of a
+
+481
+00:17:17,329 --> 00:17:18,980
+sudden there's this lag when I click the
+
+482
+00:17:18,980 --> 00:17:20,449
+button right and that sucks that's
+
+483
+00:17:20,449 --> 00:17:21,740
+that's really bad that's not what you
+
+484
+00:17:21,740 --> 00:17:23,360
+want it all you want things to feel
+
+485
+00:17:23,360 --> 00:17:24,709
+really responsive you want them to
+
+486
+00:17:24,709 --> 00:17:26,929
+respond immediately as soon as the other
+
+487
+00:17:26,929 --> 00:17:30,350
+the other kind of responsive right and
+
+488
+00:17:30,350 --> 00:17:33,230
+so it it so happens that there's a
+
+489
+00:17:33,230 --> 00:17:35,870
+relatively easy way around this and that
+
+490
+00:17:35,870 --> 00:17:37,370
+if you use a translate 3d instead of a
+
+491
+00:17:37,370 --> 00:17:39,320
+translate X the thing gets promoted to a
+
+492
+00:17:39,320 --> 00:17:42,049
+wire all the time if I want to
+
+493
+00:17:42,049 --> 00:17:45,110
+illustrate this I can use a great
+
+494
+00:17:45,110 --> 00:17:47,450
+feature of devtools called show
+
+495
+00:17:47,450 --> 00:17:50,659
+composited layer borders and if I turn
+
+496
+00:17:50,659 --> 00:17:52,110
+that on you see this sort of cyan
+
+497
+00:17:52,110 --> 00:17:54,179
+grid the grid is not important what is
+
+498
+00:17:54,179 --> 00:17:56,490
+important is the sort of yellowish
+
+499
+00:17:56,490 --> 00:17:58,650
+orange border that goes around the
+
+500
+00:17:58,650 --> 00:18:00,540
+viewport in this case and that yellow
+
+501
+00:18:00,540 --> 00:18:02,130
+orange border it means everything inside
+
+502
+00:18:02,130 --> 00:18:03,900
+of this is in its own layer so these
+
+503
+00:18:03,900 --> 00:18:05,370
+layers that we keep talking about here's
+
+504
+00:18:05,370 --> 00:18:07,470
+a way to sort of visualize them and if
+
+505
+00:18:07,470 --> 00:18:09,870
+you look at what happens as I run that
+
+506
+00:18:09,870 --> 00:18:12,000
+animation you can kind of see again if i
+
+507
+00:18:12,000 --> 00:18:15,360
+zoom in that the drawer gets a yellow
+
+508
+00:18:15,360 --> 00:18:17,309
+orange border of its own throughout the
+
+509
+00:18:17,309 --> 00:18:19,290
+course of the animation but if I make
+
+510
+00:18:19,290 --> 00:18:21,090
+the red rec go away the repaint wreck go
+
+511
+00:18:21,090 --> 00:18:23,160
+away you'll notice that there isn't any
+
+512
+00:18:23,160 --> 00:18:25,710
+yellow orange border before or after the
+
+513
+00:18:25,710 --> 00:18:27,960
+animation and that's bad right and
+
+514
+00:18:27,960 --> 00:18:29,910
+that's the reason that you get those red
+
+515
+00:18:29,910 --> 00:18:32,490
+flashes the repaints right at the
+
+516
+00:18:32,490 --> 00:18:34,020
+beginning and right at the end because
+
+517
+00:18:34,020 --> 00:18:36,059
+what happens is that I start the
+
+518
+00:18:36,059 --> 00:18:38,910
+animation the drawer gets ripped out put
+
+519
+00:18:38,910 --> 00:18:41,160
+in its own layer this is a new layer so
+
+520
+00:18:41,160 --> 00:18:43,530
+now chrome needs to paint the thing that
+
+521
+00:18:43,530 --> 00:18:45,559
+didn't exist before right that takes
+
+522
+00:18:45,559 --> 00:18:48,299
+arbitrarily long and then weary
+
+523
+00:18:48,299 --> 00:18:49,799
+composite recompose 'try composite the
+
+524
+00:18:49,799 --> 00:18:51,750
+animation runs and then we smush the
+
+525
+00:18:51,750 --> 00:18:53,010
+drawer back into the base layer of the
+
+526
+00:18:53,010 --> 00:18:54,809
+page when we smush it back into the base
+
+527
+00:18:54,809 --> 00:18:56,309
+layer of the page we have to repaint
+
+528
+00:18:56,309 --> 00:18:57,510
+that area and that's why you get the
+
+529
+00:18:57,510 --> 00:18:59,580
+second red flash with the at the end if
+
+530
+00:18:59,580 --> 00:19:01,260
+I use the the translate 3d instead of
+
+531
+00:19:01,260 --> 00:19:02,250
+the translate X this is sort of
+
+532
+00:19:02,250 --> 00:19:04,740
+incidental but you you don't get those
+
+533
+00:19:04,740 --> 00:19:09,299
+root glastron you get yeah it has a tiny
+
+534
+00:19:09,299 --> 00:19:12,419
+brain so it gets confused right it's a
+
+535
+00:19:12,419 --> 00:19:14,490
+well-meaning brain you'll see that now
+
+536
+00:19:14,490 --> 00:19:17,299
+there's this sort of orange-ish border
+
+537
+00:19:17,299 --> 00:19:19,380
+even when the animation isn't running
+
+538
+00:19:19,380 --> 00:19:21,059
+this is what we call sometimes pre
+
+539
+00:19:21,059 --> 00:19:23,850
+promotion because the layer is promote
+
+540
+00:19:23,850 --> 00:19:25,470
+the gorge of its own layer at all times
+
+541
+00:19:25,470 --> 00:19:27,419
+so if you have something that you think
+
+542
+00:19:27,419 --> 00:19:28,770
+will move in the future you need to
+
+543
+00:19:28,770 --> 00:19:30,660
+start thinking about not giving it a
+
+544
+00:19:30,660 --> 00:19:32,460
+layer at the last second like in the on
+
+545
+00:19:32,460 --> 00:19:34,559
+click but having it have a layer well in
+
+546
+00:19:34,559 --> 00:19:36,570
+advance so that it's already primed up
+
+547
+00:19:36,570 --> 00:19:38,309
+and ready to go so that when you get
+
+548
+00:19:38,309 --> 00:19:40,230
+that on click it just starts moving and
+
+549
+00:19:40,230 --> 00:19:42,510
+okay means fast right and you might be
+
+550
+00:19:42,510 --> 00:19:44,070
+thinking this feels really happy and you
+
+551
+00:19:44,070 --> 00:19:46,770
+would be you'd be correct yeah this is
+
+552
+00:19:46,770 --> 00:19:48,240
+this is the platform right now and it
+
+553
+00:19:48,240 --> 00:19:50,130
+stinks so sorry but but it is summer
+
+554
+00:19:50,130 --> 00:19:52,410
+tomato so actively changing because for
+
+555
+00:19:52,410 --> 00:19:54,750
+instance the the translate example I
+
+556
+00:19:54,750 --> 00:19:56,640
+have in the latest canary is it actually
+
+557
+00:19:56,640 --> 00:19:59,360
+stopped working as a bad example because
+
+558
+00:19:59,360 --> 00:20:01,950
+when there's a WebKit transition or a
+
+559
+00:20:01,950 --> 00:20:05,100
+transition property on the
+
+560
+00:20:05,100 --> 00:20:07,289
+the drawer element we actually are now
+
+561
+00:20:07,289 --> 00:20:09,860
+teaching link to be smart enough to
+
+562
+00:20:09,860 --> 00:20:12,390
+actually creep on pre promote the thing
+
+563
+00:20:12,390 --> 00:20:13,950
+on its own but you need to think about
+
+564
+00:20:13,950 --> 00:20:16,140
+this because it's just you don't assume
+
+565
+00:20:16,140 --> 00:20:17,640
+that the platform will get it right yet
+
+566
+00:20:17,640 --> 00:20:21,110
+someday maybe but not yet exactly so
+
+567
+00:20:21,110 --> 00:20:24,570
+that is layers for animation but
+
+568
+00:20:24,570 --> 00:20:25,860
+sometimes you need to see more than that
+
+569
+00:20:25,860 --> 00:20:27,210
+and that's going to show you yeah I mean
+
+570
+00:20:27,210 --> 00:20:29,280
+we like giving you eye strain with the
+
+571
+00:20:29,280 --> 00:20:30,809
+yellow lines those thin little yellow
+
+572
+00:20:30,809 --> 00:20:32,190
+lines that are absolutely critical for
+
+573
+00:20:32,190 --> 00:20:33,750
+performance like that's really nice
+
+574
+00:20:33,750 --> 00:20:37,650
+right so what what we've done is we
+
+575
+00:20:37,650 --> 00:20:41,760
+built an internal tool this is quite a
+
+576
+00:20:41,760 --> 00:20:46,890
+bit more technical than say you know dev
+
+577
+00:20:46,890 --> 00:20:48,870
+tools but what it will do is it let you
+
+578
+00:20:48,870 --> 00:20:50,520
+see your layering so here I just have a
+
+579
+00:20:50,520 --> 00:20:55,470
+you know cats search and when you use
+
+580
+00:20:55,470 --> 00:20:57,179
+chrome frame viewer and you can google
+
+581
+00:20:57,179 --> 00:21:00,120
+it to find info on this what you get is
+
+582
+00:21:00,120 --> 00:21:01,470
+you get a list of frames that were drawn
+
+583
+00:21:01,470 --> 00:21:04,950
+by the by the compositor so for example
+
+584
+00:21:04,950 --> 00:21:07,559
+here and then what you can end up with
+
+585
+00:21:07,559 --> 00:21:10,980
+is this which if you remember my gmail
+
+586
+00:21:10,980 --> 00:21:14,010
+slide that showed the gmail layers well
+
+587
+00:21:14,010 --> 00:21:16,799
+this is this but for your site so these
+
+588
+00:21:16,799 --> 00:21:18,750
+are your layers in your site and just to
+
+589
+00:21:18,750 --> 00:21:20,010
+give you sort of a morgue you know
+
+590
+00:21:20,010 --> 00:21:24,330
+complex example we've got you know plus
+
+591
+00:21:24,330 --> 00:21:26,220
+and here's plus here and the interesting
+
+592
+00:21:26,220 --> 00:21:29,730
+thing here is as you scroll if the
+
+593
+00:21:29,730 --> 00:21:33,230
+viewport sticks there it is over there
+
+594
+00:21:33,230 --> 00:21:35,700
+you can see sort of there's a viewport
+
+595
+00:21:35,700 --> 00:21:39,299
+here up there right and then we've got
+
+596
+00:21:39,299 --> 00:21:40,830
+the content for everything below the
+
+597
+00:21:40,830 --> 00:21:42,870
+page and so in this case as you go
+
+598
+00:21:42,870 --> 00:21:44,520
+between your pages what you'll see is
+
+599
+00:21:44,520 --> 00:21:46,980
+the actual viewport moving you'll see
+
+600
+00:21:46,980 --> 00:21:49,289
+the layers stuff like that and this can
+
+601
+00:21:49,289 --> 00:21:50,880
+end up being very useful because you can
+
+602
+00:21:50,880 --> 00:21:54,299
+pull things out like why a layer was
+
+603
+00:21:54,299 --> 00:21:58,169
+created and you know how much GPU memory
+
+604
+00:21:58,169 --> 00:21:59,760
+it's using it's sort of advanced stuff
+
+605
+00:21:59,760 --> 00:22:01,080
+but if you really are going to try to
+
+606
+00:22:01,080 --> 00:22:04,049
+push your content to the limits of the
+
+607
+00:22:04,049 --> 00:22:05,760
+current platform you may want to check
+
+608
+00:22:05,760 --> 00:22:07,710
+this sort of thing out particularly on
+
+609
+00:22:07,710 --> 00:22:09,419
+mobile where you run into things like
+
+610
+00:22:09,419 --> 00:22:10,890
+memory memory constraints a lot more
+
+611
+00:22:10,890 --> 00:22:13,290
+readily yeah this is kind of what we're
+
+612
+00:22:13,290 --> 00:22:15,059
+gonna we're gonna be pretty brief on
+
+613
+00:22:15,059 --> 00:22:16,890
+that though a pretty low level tool but
+
+614
+00:22:16,890 --> 00:22:18,360
+grab us if you're yeah we're happy to
+
+615
+00:22:18,360 --> 00:22:19,170
+talk about it more
+
+616
+00:22:19,170 --> 00:22:23,970
+ya later on last category of stuff we
+
+617
+00:22:23,970 --> 00:22:25,410
+want to talk about which is which is
+
+618
+00:22:25,410 --> 00:22:27,780
+that there there are times when you can
+
+619
+00:22:27,780 --> 00:22:30,150
+get one of these these repaint flashes
+
+620
+00:22:30,150 --> 00:22:33,030
+even if it seems like you didn't deserve
+
+621
+00:22:33,030 --> 00:22:35,400
+it and this can happen in all sorts of
+
+622
+00:22:35,400 --> 00:22:37,310
+scenarios but I'll walk you through one
+
+623
+00:22:37,310 --> 00:22:40,920
+if I click this button I add a div to a
+
+624
+00:22:40,920 --> 00:22:43,740
+container pretty simple fantastic so 100
+
+625
+00:22:43,740 --> 00:22:46,200
+100 pics square nothing complicated at
+
+626
+00:22:46,200 --> 00:22:49,140
+all about this styling right and if I
+
+627
+00:22:49,140 --> 00:22:51,090
+open up devtools and I have the the
+
+628
+00:22:51,090 --> 00:22:52,470
+repaint wrecks on I'm going to turn off
+
+629
+00:22:52,470 --> 00:22:54,780
+the layer borders have the repaint
+
+630
+00:22:54,780 --> 00:22:57,930
+wrecks on as I as I click to add more
+
+631
+00:22:57,930 --> 00:22:59,430
+you can see that i'm sort of repainting
+
+632
+00:22:59,430 --> 00:23:01,380
+where the button is and I'm repainting
+
+633
+00:23:01,380 --> 00:23:05,070
+where the the new divs are and as I get
+
+634
+00:23:05,070 --> 00:23:07,770
+sort of off-screen adding more I can sit
+
+635
+00:23:07,770 --> 00:23:09,660
+here all day mashing this button and the
+
+636
+00:23:09,660 --> 00:23:11,040
+only thing that repaints is well the
+
+637
+00:23:11,040 --> 00:23:13,650
+scroll bar and the button right this is
+
+638
+00:23:13,650 --> 00:23:15,600
+great this kind of makes sense it's it's
+
+639
+00:23:15,600 --> 00:23:17,460
+intuitive to think that well if I'm
+
+640
+00:23:17,460 --> 00:23:19,530
+changing something in the Dom but it's
+
+641
+00:23:19,530 --> 00:23:20,700
+only affecting things that are
+
+642
+00:23:20,700 --> 00:23:22,950
+off-screen shouldn't need to repaint
+
+643
+00:23:22,950 --> 00:23:25,950
+right and that's great when it works but
+
+644
+00:23:25,950 --> 00:23:28,620
+unfortunately repaints don't only happen
+
+645
+00:23:28,620 --> 00:23:30,630
+when you make changes that end up with
+
+646
+00:23:30,630 --> 00:23:33,450
+visual impact it's entirely possible to
+
+647
+00:23:33,450 --> 00:23:36,120
+do something like say toggle the padding
+
+648
+00:23:36,120 --> 00:23:38,700
+on this container block that you can see
+
+649
+00:23:38,700 --> 00:23:41,360
+outlined in black and when you do that
+
+650
+00:23:41,360 --> 00:23:43,500
+you end up repainting the entire
+
+651
+00:23:43,500 --> 00:23:45,540
+container and again if you think about
+
+652
+00:23:45,540 --> 00:23:46,950
+it a little longer maybe this makes
+
+653
+00:23:46,950 --> 00:23:49,170
+sense again because from blinks
+
+654
+00:23:49,170 --> 00:23:51,840
+perspective what happened you added a
+
+655
+00:23:51,840 --> 00:23:53,850
+little bit of padding but potentially
+
+656
+00:23:53,850 --> 00:23:55,770
+everything inside refloat right this is
+
+657
+00:23:55,770 --> 00:23:58,920
+like the beauty of the web and when that
+
+658
+00:23:58,920 --> 00:24:00,810
+happens all bets are off about the
+
+659
+00:24:00,810 --> 00:24:03,420
+content inside of the container blink
+
+660
+00:24:03,420 --> 00:24:04,890
+needs to be very very conservative about
+
+661
+00:24:04,890 --> 00:24:06,660
+maintaining like what might be dirty
+
+662
+00:24:06,660 --> 00:24:09,060
+what might be out of date and we have to
+
+663
+00:24:09,060 --> 00:24:11,130
+repaint and when we repaint this is what
+
+664
+00:24:11,130 --> 00:24:12,690
+you get so it's really important to
+
+665
+00:24:12,690 --> 00:24:15,270
+think about this in terms of like you
+
+666
+00:24:15,270 --> 00:24:16,980
+can't blink and get confused and it gets
+
+667
+00:24:16,980 --> 00:24:18,510
+confused very easily so you have to
+
+668
+00:24:18,510 --> 00:24:20,310
+monitor this sort monitor for this sort
+
+669
+00:24:20,310 --> 00:24:22,560
+of thing during your development there
+
+670
+00:24:22,560 --> 00:24:24,810
+ways with chrome developer tools
+
+671
+00:24:24,810 --> 00:24:27,900
+protocol to get the paint stream out so
+
+672
+00:24:27,900 --> 00:24:29,460
+that you can monitor and test harnesses
+
+673
+00:24:29,460 --> 00:24:31,920
+for example but you need to keep an eye
+
+674
+00:24:31,920 --> 00:24:32,880
+on this sort of thing
+
+675
+00:24:32,880 --> 00:24:34,470
+because stupid and knock your stuff like
+
+676
+00:24:34,470 --> 00:24:36,270
+setting width to the same thing that it
+
+677
+00:24:36,270 --> 00:24:38,600
+used to be can sometimes cause this and
+
+678
+00:24:38,600 --> 00:24:40,830
+and then it'll you know ruin your day
+
+679
+00:24:40,830 --> 00:24:42,390
+and this is the kind of thing that again
+
+680
+00:24:42,390 --> 00:24:43,320
+we're trying to make better all the time
+
+681
+00:24:43,320 --> 00:24:44,940
+but there are always going to be
+
+682
+00:24:44,940 --> 00:24:46,440
+pitfalls like this so it's the kind of
+
+683
+00:24:46,440 --> 00:24:48,150
+thing you need to sort of watch out for
+
+684
+00:24:48,150 --> 00:24:50,880
+yeah but I mean ultimately there there
+
+685
+00:24:50,880 --> 00:24:52,560
+are just times when you do your best
+
+686
+00:24:52,560 --> 00:24:54,990
+you've got you know everything done as
+
+687
+00:24:54,990 --> 00:24:56,610
+well as you can but you do have to paint
+
+688
+00:24:56,610 --> 00:24:58,440
+sometimes that's you've added something
+
+689
+00:24:58,440 --> 00:24:59,730
+to the dominant you actually really do
+
+690
+00:24:59,730 --> 00:25:01,380
+need to paint it and sometimes it's just
+
+691
+00:25:01,380 --> 00:25:02,760
+an effect that you're just not willing
+
+692
+00:25:02,760 --> 00:25:04,800
+to compromise on you know there might be
+
+693
+00:25:04,800 --> 00:25:06,990
+the g-wiz thing that you've done you
+
+694
+00:25:06,990 --> 00:25:08,280
+know who knows what it is but it happens
+
+695
+00:25:08,280 --> 00:25:12,210
+so we we started off with with sort of
+
+696
+00:25:12,210 --> 00:25:15,300
+this this thing up right and it's a
+
+697
+00:25:15,300 --> 00:25:16,920
+little janky er when you go fullscreen
+
+698
+00:25:16,920 --> 00:25:19,650
+and blah blah blah so we're showing you
+
+699
+00:25:19,650 --> 00:25:22,020
+this is sort of an example of bad
+
+700
+00:25:22,020 --> 00:25:24,300
+content right chrome has a feature
+
+701
+00:25:24,300 --> 00:25:26,610
+called continuous repainting mode or
+
+702
+00:25:26,610 --> 00:25:29,730
+devtools does so if I check this button
+
+703
+00:25:29,730 --> 00:25:33,390
+here and go back now what chrome is
+
+704
+00:25:33,390 --> 00:25:35,520
+doing is it's constantly repainting so
+
+705
+00:25:35,520 --> 00:25:37,230
+it's a little hard to see but basically
+
+706
+00:25:37,230 --> 00:25:39,030
+they're the whole page has got a little
+
+707
+00:25:39,030 --> 00:25:41,010
+red and that's because it's got a big
+
+708
+00:25:41,010 --> 00:25:42,600
+repaint rectangle on all of it and
+
+709
+00:25:42,600 --> 00:25:44,520
+what's happening here is Chrome's
+
+710
+00:25:44,520 --> 00:25:47,280
+constantly re re repainting all the time
+
+711
+00:25:47,280 --> 00:25:50,070
+as fast as it can go and up here is the
+
+712
+00:25:50,070 --> 00:25:52,980
+number in the top right the the paint
+
+713
+00:25:52,980 --> 00:25:54,780
+speed that we're sustaining so this is
+
+714
+00:25:54,780 --> 00:25:57,330
+assuming that you've just do you confuse
+
+715
+00:25:57,330 --> 00:25:59,880
+blink and it's going horribly so when i
+
+716
+00:25:59,880 --> 00:26:02,270
+unplug projector here this goes at like
+
+717
+00:26:02,270 --> 00:26:05,460
+167 milliseconds the idea here though is
+
+718
+00:26:05,460 --> 00:26:08,250
+you can sit there now in devtools we're
+
+719
+00:26:08,250 --> 00:26:09,870
+going to play some window size
+
+720
+00:26:09,870 --> 00:26:12,660
+acrobatics here to get that up on the
+
+721
+00:26:12,660 --> 00:26:16,730
+screen okay so we have another piece of
+
+722
+00:26:16,730 --> 00:26:19,020
+you know feature addition to dev tools
+
+723
+00:26:19,020 --> 00:26:21,000
+which is at the H key on the element
+
+724
+00:26:21,000 --> 00:26:22,770
+panel super super you know the top
+
+725
+00:26:22,770 --> 00:26:25,650
+secret yeah we live in large so we've
+
+726
+00:26:25,650 --> 00:26:27,090
+got this H key and what it does is it
+
+727
+00:26:27,090 --> 00:26:29,520
+hides that element and everybody that
+
+728
+00:26:29,520 --> 00:26:31,680
+descends from it and if you watch that
+
+729
+00:26:31,680 --> 00:26:33,480
+number that's being reported we're going
+
+730
+00:26:33,480 --> 00:26:35,280
+from a big number to a really really
+
+731
+00:26:35,280 --> 00:26:37,710
+trivial number not 20 and that sort of
+
+732
+00:26:37,710 --> 00:26:39,030
+makes sense we've still got to set the
+
+733
+00:26:39,030 --> 00:26:43,470
+page to this lovely puse color right so
+
+734
+00:26:43,470 --> 00:26:46,740
+but it's it's cheaper so we can go well
+
+735
+00:26:46,740 --> 00:26:48,480
+clearly this tells us that the thing
+
+736
+00:26:48,480 --> 00:26:51,300
+that slow painting is inside my body no
+
+737
+00:26:51,300 --> 00:26:54,990
+boo so this is simple it's just a bunch
+
+738
+00:26:54,990 --> 00:26:58,230
+of image you know tag so I can do the
+
+739
+00:26:58,230 --> 00:27:00,090
+same trick with styles so I can hide the
+
+740
+00:27:00,090 --> 00:27:02,490
+box shadow and now we're really cranking
+
+741
+00:27:02,490 --> 00:27:03,780
+we're going at what like eight
+
+742
+00:27:03,780 --> 00:27:06,420
+milliseconds right so now we sorta have
+
+743
+00:27:06,420 --> 00:27:08,130
+this idea that well maybe 22 of those
+
+744
+00:27:08,130 --> 00:27:11,070
+milliseconds or watch me do math some
+
+745
+00:27:11,070 --> 00:27:13,020
+some amount of that is going to the drop
+
+746
+00:27:13,020 --> 00:27:16,080
+shadow right we can bring it back on and
+
+747
+00:27:16,080 --> 00:27:17,640
+turn off the border radius and you can
+
+748
+00:27:17,640 --> 00:27:20,550
+see that well hmm maybe it's that one
+
+749
+00:27:20,550 --> 00:27:22,440
+right now these don't always compose
+
+750
+00:27:22,440 --> 00:27:24,360
+sometimes you confuse chrome so like if
+
+751
+00:27:24,360 --> 00:27:26,700
+I remove both of them we're not really
+
+752
+00:27:26,700 --> 00:27:28,890
+going incrementally much faster so
+
+753
+00:27:28,890 --> 00:27:30,120
+what's happening here is you're hitting
+
+754
+00:27:30,120 --> 00:27:32,100
+a particular corner case in Chrome's
+
+755
+00:27:32,100 --> 00:27:34,740
+rendering system where the comp is the
+
+756
+00:27:34,740 --> 00:27:36,120
+composition of these two different
+
+757
+00:27:36,120 --> 00:27:39,030
+styles is particularly slow don't go
+
+758
+00:27:39,030 --> 00:27:40,860
+home and say hey this is this this is
+
+759
+00:27:40,860 --> 00:27:42,480
+one to avoid because we may fix this
+
+760
+00:27:42,480 --> 00:27:45,600
+tomorrow right we probably won't but we
+
+761
+00:27:45,600 --> 00:27:50,400
+might and again keep the technique in
+
+762
+00:27:50,400 --> 00:27:52,440
+mind we found a lot of sites where
+
+763
+00:27:52,440 --> 00:27:54,660
+there's one effect that's particularly
+
+764
+00:27:54,660 --> 00:27:57,240
+slow now not to rag on gmail but in
+
+765
+00:27:57,240 --> 00:27:58,679
+Gmail there's a little drop shadow
+
+766
+00:27:58,679 --> 00:28:02,400
+between the top bar and the message list
+
+767
+00:28:02,400 --> 00:28:05,340
+and the little drop shadow that's a like
+
+768
+00:28:05,340 --> 00:28:08,370
+a half pixel and that costs a third of
+
+769
+00:28:08,370 --> 00:28:11,059
+the rendering time of the entire page
+
+770
+00:28:11,059 --> 00:28:13,650
+this is important to factor into your
+
+771
+00:28:13,650 --> 00:28:15,809
+design discussions right this is a back
+
+772
+00:28:15,809 --> 00:28:17,130
+and forth that you need to be having
+
+773
+00:28:17,130 --> 00:28:18,990
+early on so that you don't get a week
+
+774
+00:28:18,990 --> 00:28:20,910
+away from ship and go oh my god we can't
+
+775
+00:28:20,910 --> 00:28:23,190
+we can't afford this oh my god we're up
+
+776
+00:28:23,190 --> 00:28:25,410
+a creek so continuous painting mode
+
+777
+00:28:25,410 --> 00:28:27,150
+definitely check it out we also have
+
+778
+00:28:27,150 --> 00:28:29,429
+more fanciness coming in that high-tech
+
+779
+00:28:29,429 --> 00:28:30,900
+tool some of you may have seen in the
+
+780
+00:28:30,900 --> 00:28:33,780
+blogsphere about skia debugger and some
+
+781
+00:28:33,780 --> 00:28:35,400
+magic you can play that will start
+
+782
+00:28:35,400 --> 00:28:37,679
+showing up in the frame viewer so more
+
+783
+00:28:37,679 --> 00:28:42,540
+coming that's right so to wrap up again
+
+784
+00:28:42,540 --> 00:28:46,020
+the main takeaway here is tools you want
+
+785
+00:28:46,020 --> 00:28:47,370
+to ask yourself a couple key questions
+
+786
+00:28:47,370 --> 00:28:48,690
+when you're debugging site performance
+
+787
+00:28:48,690 --> 00:28:50,429
+you want to ask yourself why you're
+
+788
+00:28:50,429 --> 00:28:52,020
+painting well first you want to notice
+
+789
+00:28:52,020 --> 00:28:53,160
+that you're painting using show paint
+
+790
+00:28:53,160 --> 00:28:54,450
+Rex you and then you want to ask
+
+791
+00:28:54,450 --> 00:28:55,559
+yourself why you want to see if you can
+
+792
+00:28:55,559 --> 00:28:57,960
+avoid it either through judicious use of
+
+793
+00:28:57,960 --> 00:29:00,269
+layers or by just trying to not touch
+
+794
+00:29:00,269 --> 00:29:02,399
+unnecessarily and if you really can't
+
+795
+00:29:02,399 --> 00:29:03,359
+avoid it then you want to make it as
+
+796
+00:29:03,359 --> 00:29:05,129
+fast as possible using tools like
+
+797
+00:29:05,129 --> 00:29:06,869
+continuous painting mode the necklace
+
+798
+00:29:06,869 --> 00:29:08,099
+and it's especially important because
+
+799
+00:29:08,099 --> 00:29:11,309
+Chrome's changing a lot so you know be
+
+800
+00:29:11,309 --> 00:29:13,169
+familiar with what currently is bad
+
+801
+00:29:13,169 --> 00:29:15,479
+because it'll change again and also keep
+
+802
+00:29:15,479 --> 00:29:16,769
+in mind that your computer that you're
+
+803
+00:29:16,769 --> 00:29:18,389
+probably developing on is a really good
+
+804
+00:29:18,389 --> 00:29:20,159
+one I see a lot of sort of good machines
+
+805
+00:29:20,159 --> 00:29:22,830
+out there right that is not what MA and
+
+806
+00:29:22,830 --> 00:29:26,039
+pas have and that is most of the web so
+
+807
+00:29:26,039 --> 00:29:28,080
+keep that in mind when you get something
+
+808
+00:29:28,080 --> 00:29:29,369
+going it you know seven or eight
+
+809
+00:29:29,369 --> 00:29:31,469
+milliseconds on your computer know that
+
+810
+00:29:31,469 --> 00:29:32,579
+that's two or three or eight times
+
+811
+00:29:32,579 --> 00:29:35,940
+slower out on the real world or like
+
+812
+00:29:35,940 --> 00:29:38,700
+also shrink it was or whatever and a
+
+813
+00:29:38,700 --> 00:29:40,950
+really good number to walk away from is
+
+814
+00:29:40,950 --> 00:29:44,009
+or walk away with is Wikipedia if you
+
+815
+00:29:44,009 --> 00:29:45,929
+just do like the cats page on Wikipedia
+
+816
+00:29:45,929 --> 00:29:48,239
+I think it takes about 150 milliseconds
+
+817
+00:29:48,239 --> 00:29:53,489
+to paint on a nexus 7 so that is not
+
+818
+00:29:53,489 --> 00:29:56,279
+Jang free right so you know keep this
+
+819
+00:29:56,279 --> 00:30:00,209
+stuff in mind exactly so with that I'm
+
+820
+00:30:00,209 --> 00:30:01,820
+not sure we have time for questions but
+
+821
+00:30:01,820 --> 00:30:04,950
+this talk and other sort of resources
+
+822
+00:30:04,950 --> 00:30:07,169
+just a bunch of bunch of links to two
+
+823
+00:30:07,169 --> 00:30:09,119
+similar content is all up on Jack free
+
+824
+00:30:09,119 --> 00:30:12,239
+org which is a site we maintain a lot of
+
+825
+00:30:12,239 --> 00:30:14,279
+that content actually lives on html5
+
+826
+00:30:14,279 --> 00:30:15,719
+rocks which is the chrome developer
+
+827
+00:30:15,719 --> 00:30:18,299
+relations website our contact infos up
+
+828
+00:30:18,299 --> 00:30:20,789
+here if you have thoughts on any of this
+
+829
+00:30:20,789 --> 00:30:22,679
+we're always happy to talk about it and
+
+830
+00:30:22,679 --> 00:30:24,059
+we like talking to develop shoulder to
+
+831
+00:30:24,059 --> 00:30:26,190
+cry on yeah we'll be around tonight too
+
+832
+00:30:26,190 --> 00:30:28,139
+if anyone has a site that's slow or
+
+833
+00:30:28,139 --> 00:30:30,389
+whatever we do we can take a look thank
+
+834
+00:30:30,389 --> 00:30:34,019
+you and thank you very much
+

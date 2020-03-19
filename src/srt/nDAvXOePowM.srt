@@ -1,0 +1,2114 @@
+1
+00:00:00,160 --> 00:00:05,569
+We Started Using Webpack and it Took a While
+- Salem Hilal
+
+2
+00:00:05,569 --> 00:00:06,569
+>> Hello?
+
+3
+00:00:06,569 --> 00:00:07,569
+Hello, hi!, oh, my God, oh, my God, oh, my
+God, I'm so excited!
+
+4
+00:00:07,569 --> 00:00:08,569
+My coworker, Salem, is about to come up on
+stage and tell you about the migration process
+
+5
+00:00:08,569 --> 00:00:09,860
+of moving to Webpack and what a kind of disaster
+that was.
+
+6
+00:00:09,860 --> 00:00:10,920
+But it's a really interesting disaster, I
+promise.
+
+7
+00:00:10,920 --> 00:00:12,530
+So Salem gave me some fun facts but I'm going
+to go totally on my own and tell you my fun
+
+8
+00:00:12,530 --> 00:00:13,530
+facts and favorite things about Salem.
+
+9
+00:00:13,530 --> 00:00:14,530
+The first thing that you need to know about
+Salem is he gives the world's best hugs, literally,
+
+10
+00:00:14,530 --> 00:00:15,530
+so all of you need to be good-enough friends
+with him by the end of the conference so that
+
+11
+00:00:15,530 --> 00:00:16,530
+he could give you a hug and trust me, you
+will, like, love it for the rest of your life.
+
+12
+00:00:16,530 --> 00:00:17,530
+The other thing that you need to know about
+Salem is that we have regular Etsy-wide smash
+
+13
+00:00:17,530 --> 00:00:18,530
+tournaments, we had one the other night.
+
+14
+00:00:18,530 --> 00:00:19,530
+I was not there, but my husband went, and
+apparently do not let him play at duck hunt
+
+15
+00:00:19,530 --> 00:00:20,530
+because he will hide in the corner and throw
+beans at everybody.
+
+16
+00:00:20,530 --> 00:00:21,530
+All right, so everyone, gave it up for Salem
+Hilal.
+
+17
+00:00:21,530 --> 00:00:22,530
+[applause]
+
+18
+00:00:22,530 --> 00:00:23,530
+Oh, my gosh, that was the nicest thing that
+anyone has ever said about me.
+
+19
+00:00:23,530 --> 00:00:24,530
+It's also very bright up here, everyone's
+right, everybody said that already.
+
+20
+00:00:24,530 --> 00:00:25,530
+Thank you, Katie, I'll say thank you so much
+to everybody who has organized JSConf, it
+
+21
+00:00:25,530 --> 00:00:26,530
+is unreal to be up on stage.
+
+22
+00:00:26,530 --> 00:00:27,530
+I can hear my voice echo.
+
+23
+00:00:27,530 --> 00:00:28,530
+That makes it sound like I'm in a stadium,
+that's so cool.
+
+24
+00:00:28,530 --> 00:00:29,530
+My name is Salem, if you know about the cat,
+and my pronouns are he/him, and I work at
+
+25
+00:00:29,530 --> 00:00:30,530
+Etsy and we're hiring.
+
+26
+00:00:30,530 --> 00:00:31,530
+This is my very first conference talk, as
+well, so if you have any feedback for me,
+
+27
+00:00:31,530 --> 00:00:32,530
+please do not withhold it.
+
+28
+00:00:32,530 --> 00:00:33,530
+I would love to hear about it.
+
+29
+00:00:33,530 --> 00:00:34,530
+So.
+
+30
+00:00:34,530 --> 00:00:41,370
+OK, cool I wanted to talk about how we migrated
+from an in-house system to Webpack and specifically
+
+31
+00:00:41,370 --> 00:00:47,630
+I want to talk about why it took us so long
+to do that.
+
+32
+00:00:47,630 --> 00:00:52,399
+I work at a team at Etsy called the web platform
+team.
+
+33
+00:00:52,399 --> 00:00:55,540
+If you've ever worked at a place that has
+a front-end infrastructure team it's probably
+
+34
+00:00:55,540 --> 00:01:02,769
+very similar.
+
+35
+00:01:02,769 --> 00:01:09,860
+This talk is essentially about how we moved
+from one build system another, but this doesn't
+
+36
+00:01:09,860 --> 00:01:18,861
+mean I'm going to talk about -- my goal here
+is to talk about the weird problems that we
+
+37
+00:01:18,861 --> 00:01:21,610
+unearthed and how we fixed them and where
+all my hair went.
+
+38
+00:01:21,610 --> 00:01:22,610
+[laughter]
+
+39
+00:01:22,610 --> 00:01:26,570
+So this talk is like about five parts.
+
+40
+00:01:26,570 --> 00:01:29,630
+I'm going to first tell you about a little
+bit about Etsy and our old build system that
+
+41
+00:01:29,630 --> 00:01:41,480
+we called Builda, and then this really weird
+rolling it out.
+
+42
+00:01:41,480 --> 00:01:49,170
+So that's going to be a fun one, so if the
+beginning parts are boring, at least stay
+
+43
+00:01:49,170 --> 00:01:50,310
+till the end.
+
+44
+00:01:50,310 --> 00:01:55,390
+So before I get into it, there are two caveats
+that are worth mentioning, number one, the
+
+45
+00:01:55,390 --> 00:02:00,750
+decisions that we made were true at the time
+we made them.
+
+46
+00:02:00,750 --> 00:02:10,100
+JavaScript as you all probably know changes
+very quickly, which is the whole reason that
+
+47
+00:02:10,100 --> 00:02:14,370
+we wanted a really flexible build system in
+the first place and No. 2, all of the things
+
+48
+00:02:14,370 --> 00:02:16,930
+that I'm going to talk about today are big
+team efforts.
+
+49
+00:02:16,930 --> 00:02:27,280
+I know a whole lot about how Etsy's front
+end infrastructure on behalf of my whole team
+
+50
+00:02:27,280 --> 00:02:30,600
+that kind of collectively built and researched
+all the things that I'm going to talk about
+
+51
+00:02:30,600 --> 00:02:31,600
+today.
+
+52
+00:02:31,600 --> 00:02:34,000
+They kick ass, and I really love working with
+them.
+
+53
+00:02:34,000 --> 00:02:39,440
+I think Joe is right up there somewhere in
+the front.
+
+54
+00:02:39,440 --> 00:02:41,080
+That's my teammate Joe.
+
+55
+00:02:41,080 --> 00:02:53,260
+There's also John and Natalia who are not
+here but they're great to work with.
+
+56
+00:02:53,260 --> 00:02:57,070
+It's hard to tell you about a migration process
+without giving you a little bit of context.
+
+57
+00:02:57,070 --> 00:03:04,120
+So here it is, this is Etsy's codebase, it's
+like anyone's codebase at a medium sized company.
+
+58
+00:03:04,120 --> 00:03:06,270
+Some.
+
+59
+00:03:06,270 --> 00:03:18,310
+That is to say, the code that makes Etsy show
+up in your web browser from the API all the
+
+60
+00:03:18,310 --> 00:03:21,450
+way down to the CSS lives in one.
+
+61
+00:03:21,450 --> 00:03:28,050
+We call our mono repoetsy web, it's worked
+surprisingly well for us, it has helped us
+
+62
+00:03:28,050 --> 00:03:33,800
+facilitate.
+
+63
+00:03:33,800 --> 00:03:42,410
+One thing that did not scale very well when
+we moved was the JavaScript part of our codebase.
+
+64
+00:03:42,410 --> 00:03:45,600
+And.
+
+65
+00:03:45,600 --> 00:04:00,250
+So this system is something that we named
+Builda.
+
+66
+00:04:00,250 --> 00:04:05,940
+For those of you who may not be familiar with
+JavaScript build systems, a build system is
+
+67
+00:04:05,940 --> 00:04:11,520
+something that takes our files, resolves their
+dependencies, bundles them together, makes
+
+68
+00:04:11,520 --> 00:04:19,380
+them as small and efficient as possible, and
+(audio is breaking out).
+
+69
+00:04:19,380 --> 00:04:30,410
+we got to hit play on this part.
+
+70
+00:04:30,410 --> 00:04:42,550
+It's going to be like a carnival game where
+I have to aim on the screen.
+
+71
+00:04:42,550 --> 00:04:43,550
+Boop?
+
+72
+00:04:43,550 --> 00:04:44,550
+One more time.
+
+73
+00:04:44,550 --> 00:04:48,560
+Yay, there it goes, so when BBuilda was first
+written, it wasn't this sleek interactive
+
+74
+00:04:48,560 --> 00:04:54,910
+home page that you see here, complete with
+cool animations and a responsive navigation
+
+75
+00:04:54,910 --> 00:04:57,600
+bar and a really cool branding.
+
+76
+00:04:57,600 --> 00:05:04,090
+It looked more like that.
+
+77
+00:05:04,090 --> 00:05:07,780
+Having one file depend on another was pretty
+infrequent and when that did happen it was
+
+78
+00:05:07,780 --> 00:05:14,400
+usually for large globally scoped libraries,
+like JQuery ...
+
+79
+00:05:14,400 --> 00:05:21,560
+Production builds took very little time.
+
+80
+00:05:21,560 --> 00:05:23,060
+At Etsy, this is pretty important.
+
+81
+00:05:23,060 --> 00:05:27,310
+We deploy code dozens of times in a single
+day and slowing down deployment is something
+
+82
+00:05:27,310 --> 00:05:31,380
+we'd try to avoid at all costs.
+
+83
+00:05:31,380 --> 00:05:34,490
+So developing JavaScript was similarly pretty
+simple.
+
+84
+00:05:34,490 --> 00:05:36,840
+That's supposed to be me.
+
+85
+00:05:36,840 --> 00:05:41,000
+If we load a page in development that requests
+some JavaScript, that JavaScript file would
+
+86
+00:05:41,000 --> 00:05:45,010
+be built from our source and sent back inside
+of one request.
+
+87
+00:05:45,010 --> 00:05:49,480
+To keep track of all the possible files that
+we might need to request, we kept a list of
+
+88
+00:05:49,480 --> 00:05:52,180
+all of them which we brilliantly called the
+build list.
+
+89
+00:05:52,180 --> 00:05:55,650
+When we served a file we'd make sure it was
+in that list somewhere.
+
+90
+00:05:55,650 --> 00:05:59,460
+The build list was used in production then
+later to determine the entirety of what we
+
+91
+00:05:59,460 --> 00:06:05,669
+needed to build when we deployed [inaudible]
+in development if a requested file was not
+
+92
+00:06:05,669 --> 00:06:11,830
+the build list we'd respond with some JavaScript
+that threw us an exception.
+
+93
+00:06:11,830 --> 00:06:16,110
+This ensured that we could essentially build
+any file we wanted on demand.
+
+94
+00:06:16,110 --> 00:06:24,810
+We used require.js to manage our delinquencies.
+
+95
+00:06:24,810 --> 00:06:28,670
+Maybe you haven't even heard of this because
+it's a relatively old library but we still
+
+96
+00:06:28,670 --> 00:06:37,530
+used it and it was pretty simple up until
+we moved to Webpack, that is.
+
+97
+00:06:37,530 --> 00:06:40,130
+We'd follow it down with some of our own code.
+
+98
+00:06:40,130 --> 00:06:44,639
+Require.js then allows our own code to use
+any style module definitions as you can see
+
+99
+00:06:44,639 --> 00:06:45,639
+here.
+
+100
+00:06:45,639 --> 00:06:48,920
+For some of you this might sound out of the
+stone age but for us it was pretty cutting
+
+101
+00:06:48,920 --> 00:06:55,900
+edge when we did this.
+
+102
+00:06:55,900 --> 00:06:59,680
+Async ...
+We defined an array of imports which require
+
+103
+00:06:59,680 --> 00:07:04,320
+then resolve for us.
+
+104
+00:07:04,320 --> 00:07:07,890
+All of our code goes to the body of one of
+these callbacks where it has access to all
+
+105
+00:07:07,890 --> 00:07:09,830
+of the imports.
+
+106
+00:07:09,830 --> 00:07:14,620
+Builda's job was to make sure that all of
+the necessary modules were bundled into one
+
+107
+00:07:14,620 --> 00:07:19,870
+JavaScript file so that require.js has access
+to everything it needed in the browser.
+
+108
+00:07:19,870 --> 00:07:22,910
+At some point, React came along.
+
+109
+00:07:22,910 --> 00:07:28,110
+React is just a library that makes writing
+large, client-side applications a lot easier.
+
+110
+00:07:28,110 --> 00:07:33,810
+Sometime around 2016, we decided it would
+be a really good fit for some of our seller
+
+111
+00:07:33,810 --> 00:07:35,740
+tools.
+
+112
+00:07:35,740 --> 00:07:36,740
+Everyone was excited.
+
+113
+00:07:36,740 --> 00:07:42,900
+React, however, strongly relies on a syntax
+that looks like HTML controversially aligned
+
+114
+00:07:42,900 --> 00:07:43,900
+into JavaScript.
+
+115
+00:07:43,900 --> 00:07:47,462
+If you want to be able to use this syntax,
+we need to make a build system that it can
+
+116
+00:07:47,462 --> 00:07:54,280
+do more than just build files together.
+
+117
+00:07:54,280 --> 00:07:56,740
+So we used an old version of.
+
+118
+00:07:56,740 --> 00:08:04,520
+(Audio breaking out)
+So it's a stapler.
+
+119
+00:08:04,520 --> 00:08:16,480
+I added the staples last night.
+
+120
+00:08:16,480 --> 00:08:21,751
+There was one problem with this setup, however,
+because we built every file only when it was
+
+121
+00:08:21,751 --> 00:08:26,090
+requested rather than when some part of it
+was edited we had no way of knowing if it
+
+122
+00:08:26,090 --> 00:08:29,229
+had changed or not since the last time it
+was requested.
+
+123
+00:08:29,229 --> 00:08:33,719
+So we had to rebuild every asset every time
+we wanted to use it.
+
+124
+00:08:33,719 --> 00:08:40,969
+Transpiling JSX into JavaScript -- so React
+heavily ended up taking a good bit longer
+
+125
+00:08:40,969 --> 00:08:43,740
+in order to be served.
+
+126
+00:08:43,740 --> 00:08:50,629
+But JSX was new, so few few people felt the
+pain of long rebuild times in development.
+
+127
+00:08:50,629 --> 00:08:54,449
+Besides, it's just JavaScript, right?
+
+128
+00:08:54,449 --> 00:08:58,139
+We know it didn't last very long.
+
+129
+00:08:58,139 --> 00:09:02,580
+All of these quirks together meant that loading
+something large, like a single-page app implied
+
+130
+00:09:02,580 --> 00:09:07,149
+rebuilding the entire thing from scratch every
+time the page reloaded, plus our codebase
+
+131
+00:09:07,149 --> 00:09:16,529
+was only getting bigger, we had over 1,000
+separate JavaScript assets to output.
+
+132
+00:09:16,529 --> 00:09:20,379
+React code was use in a lot more places and
+it started to take the better part of a minute
+
+133
+00:09:20,379 --> 00:09:24,899
+to show up on the page in development which
+made iterating very, very tedious, on top
+
+134
+00:09:24,899 --> 00:09:28,329
+of this, developers were starting to ask for
+the ability to use ES6.
+
+135
+00:09:28,329 --> 00:09:34,889
+It felt like a nonstarter for us, React support
+was difficult to implement and when it worked,
+
+136
+00:09:34,889 --> 00:09:37,470
+it certainly wasn't sustainable.
+
+137
+00:09:37,470 --> 00:09:41,910
+We knew we needed to do something.
+
+138
+00:09:41,910 --> 00:09:45,839
+This is where I've told myself that I'm going
+to drink water and you all are going to take
+
+139
+00:09:45,839 --> 00:09:49,980
+15 seconds to introduce yourself to the people
+next to you so that you don't hear me gulping
+
+140
+00:09:49,980 --> 00:09:51,290
+over the microphone.
+
+141
+00:09:51,290 --> 00:09:52,290
+All right, time's up.
+
+142
+00:09:52,290 --> 00:09:53,290
+I'm going to test all of you later so I hope
+you all paid attention.
+
+143
+00:09:53,290 --> 00:09:54,290
+OK, I gotta hurry up because I'm already running
+behind my schedule.
+
+144
+00:09:54,290 --> 00:09:55,290
+(mic is cutting in and out.)
+
+145
+00:09:55,290 --> 00:09:56,290
+Can you hear me OK?
+
+146
+00:09:56,290 --> 00:09:57,290
+>> Can you still hear me OK?
+
+147
+00:09:57,290 --> 00:09:58,290
+All right, awesome.
+
+148
+00:09:58,290 --> 00:09:59,290
+OK, cool.
+
+149
+00:09:59,290 --> 00:10:00,290
+So I drank my water and it is now time for
+me to talk about the solution to every one
+
+150
+00:10:00,290 --> 00:10:01,290
+of our problems.
+
+151
+00:10:01,290 --> 00:10:03,440
+People started talking around this time about
+this brand new open source build system, it
+
+152
+00:10:03,440 --> 00:10:05,180
+was called Webpack.
+
+153
+00:10:05,180 --> 00:10:06,529
+You might have heard of it.
+
+154
+00:10:06,529 --> 00:10:13,389
+These are all the GIFs for my entire presentation,
+they are just right here.
+
+155
+00:10:13,389 --> 00:10:16,509
+All right, any new developer that we hired,
+asked if we could use Webpack and the internet
+
+156
+00:10:16,509 --> 00:10:26,970
+made it sound like every tech company that
+used JavaScript also used Webpack.
+
+157
+00:10:26,970 --> 00:10:31,839
+It sounded a lot like Builda in that it built
+stuff, but it also sounded very different
+
+158
+00:10:31,839 --> 00:10:37,050
+in that it had a robust development experience,
+it was highly extensible and it had a bunch
+
+159
+00:10:37,050 --> 00:10:40,790
+of built-in performance optimizations for
+our code.
+
+160
+00:10:40,790 --> 00:10:45,790
+Most of all it was supposed to be very fast,
+especially for development.
+
+161
+00:10:45,790 --> 00:10:46,790
+So we did a little research.
+
+162
+00:10:46,790 --> 00:10:51,720
+I wanted to point out, this is a fast chicken.
+
+163
+00:10:51,720 --> 00:10:54,290
+[laughter]
+
+164
+00:10:54,290 --> 00:10:57,249
+It's a recurring motif, so keep it in mind.
+
+165
+00:10:57,249 --> 00:11:01,339
+So we did a little bit of research, we evaluated
+a bunch of alternatives and we decided that
+
+166
+00:11:01,339 --> 00:11:05,119
+going down the path of building our JavaScript
+with Webpack instead of Builda was the right
+
+167
+00:11:05,119 --> 00:11:09,899
+path.
+
+168
+00:11:09,899 --> 00:11:13,360
+We had two requirements for any new system
+that we wanted to adopt.
+
+169
+00:11:13,360 --> 00:11:17,860
+Number one, it would have to take care of
+development builds without too much interacts
+
+170
+00:11:17,860 --> 00:11:23,280
+from developers, one of the nicest things
+about Builda, you could navigate the entire
+
+171
+00:11:23,280 --> 00:11:32,910
+site without having to worry about how the
+Builda requirement looked.
+
+172
+00:11:32,910 --> 00:11:36,040
+Etsy deploys code to production dozens of
+times in a day.
+
+173
+00:11:36,040 --> 00:11:41,129
+If our builds took longer than five minutes,
+Etsy's deployments would slow down, which
+
+174
+00:11:41,129 --> 00:11:43,209
+is not a good thing for us.
+
+175
+00:11:43,209 --> 00:11:49,410
+So Webpack, what was cool about Webpack for
+us, well, it's highly configurable.
+
+176
+00:11:49,410 --> 00:11:59,259
+Instead of a build list, Webpack uses a configuration
+file usually called Webpack.config.
+
+177
+00:11:59,259 --> 00:12:03,379
+From how you'd like to support templates,
+if any, to what sort of performance optimizations
+
+178
+00:12:03,379 --> 00:12:04,379
+you'd like to make.
+
+179
+00:12:04,379 --> 00:12:09,040
+This oftentimes means really large really
+scary config files, which isn't always the
+
+180
+00:12:09,040 --> 00:12:11,889
+right idea for small projects.
+
+181
+00:12:11,889 --> 00:12:18,059
+But having something that could adapt and
+fit to our code was very invaluable.
+
+182
+00:12:18,059 --> 00:12:25,910
+We spent a while writing out a really nice
+Webpack.config file and also different features
+
+183
+00:12:25,910 --> 00:12:29,870
+that Builda currently supported which at the
+time included everything from transpiling
+
+184
+00:12:29,870 --> 00:12:33,290
+templates.
+
+185
+00:12:33,290 --> 00:12:37,799
+After spending hours, setting things up just
+right, we finally got Webpack to build our
+
+186
+00:12:37,799 --> 00:12:41,809
+whole codebase, but it wasn't quite what we
+expected.
+
+187
+00:12:41,809 --> 00:12:44,160
+It took about a half hour to do.
+
+188
+00:12:44,160 --> 00:12:50,760
+It ate up 20 gigs of our servers' memory and
+maxed out every single one of its cores.
+
+189
+00:12:50,760 --> 00:12:52,959
+This is a real screenshot.
+
+190
+00:12:52,959 --> 00:13:01,940
+And it had the unclear progress indicator
+that everyone has come to know and love.
+
+191
+00:13:01,940 --> 00:13:05,029
+[laughter]
+
+192
+00:13:05,029 --> 00:13:09,040
+This made it exceptionally hard to figure
+out why it was so slow.
+
+193
+00:13:09,040 --> 00:13:12,139
+So we definitely had a lot to learn about
+improving Webpack's performance but at the
+
+194
+00:13:12,139 --> 00:13:17,489
+end of the day we needed to change a lot about
+how our codebase worked and how Webpack worked
+
+195
+00:13:17,489 --> 00:13:20,639
+with it if we wanted to use it with Etsy.
+
+196
+00:13:20,639 --> 00:13:28,679
+All right, I'm drinking water again, so tell
+the person next to you what your text editor
+
+197
+00:13:28,679 --> 00:13:31,930
+of choice is without trying to convince them
+that yours is the right one.
+
+198
+00:13:31,930 --> 00:13:32,930
+[laughter]
+
+199
+00:13:32,930 --> 00:13:33,930
+OK, how we doing?
+
+200
+00:13:33,930 --> 00:13:34,930
+Good?
+
+201
+00:13:34,930 --> 00:13:35,930
+All right.
+
+202
+00:13:35,930 --> 00:13:36,930
+I gotta hurry up.
+
+203
+00:13:36,930 --> 00:13:37,930
+I am, like I said, not on schedule.
+
+204
+00:13:37,930 --> 00:13:38,930
+I hope the answer was vim, but that's OK if
+it wasn't.
+
+205
+00:13:38,930 --> 00:13:39,930
+[applause]
+
+206
+00:13:39,930 --> 00:13:45,009
+OK, our first order of business was to get
+a development workflow that was good.
+
+207
+00:13:45,009 --> 00:13:48,109
+If engineers could develop with Webpack and
+validate that their code still worked with
+
+208
+00:13:48,109 --> 00:13:59,079
+Builda in production we wouldn't be able to
+offer new features like ES6 yet since Builda
+
+209
+00:13:59,079 --> 00:14:01,439
+didn't know anything about ES6 transformation.
+
+210
+00:14:01,439 --> 00:14:05,899
+But maybe we could let the engineers have
+a good time doing it.
+
+211
+00:14:05,899 --> 00:14:12,050
+And so why does Webpack take so long to build.
+
+212
+00:14:12,050 --> 00:14:16,059
+When Webpack first starts it does a complete
+build of all of your code first.
+
+213
+00:14:16,059 --> 00:14:20,579
+Then it enters watch mode.
+
+214
+00:14:20,579 --> 00:14:23,360
+It kicks off a portion rebuild every time
+it sees one.
+
+215
+00:14:23,360 --> 00:14:27,489
+This pattern developed to be extremely fast.
+
+216
+00:14:27,489 --> 00:14:33,879
+We figured that the longer builds would probably
+be much better but if that initial build took
+
+217
+00:14:33,879 --> 00:14:39,259
+a half hour and ate up all of our memory,
+it wouldn't be all that good.
+
+218
+00:14:39,259 --> 00:14:41,809
+So our codebase was really big and was getting
+even bigger.
+
+219
+00:14:41,809 --> 00:14:46,660
+So it would have to scale.
+
+220
+00:14:46,660 --> 00:14:53,300
+Well, Webpack makes inferences about your
+code in the context of your whole project.
+
+221
+00:14:53,300 --> 00:14:58,059
+For example, it is smart enough to group commonly
+requested modules together so that they can
+
+222
+00:14:58,059 --> 00:15:00,339
+be cast efficiently between pages.
+
+223
+00:15:00,339 --> 00:15:04,000
+It can only make these optimizations if it
+understands your entire project, not just
+
+224
+00:15:04,000 --> 00:15:05,499
+your individual files.
+
+225
+00:15:05,499 --> 00:15:14,639
+This is good if your project is nicely scoped
+but it makes a lot less sense in a mono repo.
+
+226
+00:15:14,639 --> 00:15:19,259
+So we started by trying to make Webpack faster
+and less resource intensive in general, something
+
+227
+00:15:19,259 --> 00:15:21,339
+that's really hard to do both of at the same
+time.
+
+228
+00:15:21,339 --> 00:15:27,999
+We got a lot of mileage from caching plugins
+like cache-loader and hard source and allowing
+
+229
+00:15:27,999 --> 00:15:34,699
+modules in parallel but at the end of the
+day we still had a prohibitively heavy first
+
+230
+00:15:34,699 --> 00:15:35,769
+build time.
+
+231
+00:15:35,769 --> 00:15:37,929
+I can't believe I found this image.
+
+232
+00:15:37,929 --> 00:15:39,279
+It's amazing.
+
+233
+00:15:39,279 --> 00:15:41,179
+We also looked at Webpack's development server.
+
+234
+00:15:41,179 --> 00:15:47,999
+The development server chooses to keep everything
+in memory.
+
+235
+00:15:47,999 --> 00:15:52,290
+For us this meant that our whole codebase,
+plus all the transformation information about
+
+236
+00:15:52,290 --> 00:15:58,369
+the whole codebase, plus all of the build
+files for the whole codebase had to fit in
+
+237
+00:15:58,369 --> 00:15:59,779
+memory.
+
+238
+00:15:59,779 --> 00:16:06,179
+There isn't a way to turn this off without
+modifying the development servers source code
+
+239
+00:16:06,179 --> 00:16:10,449
+which is actually a really nicely written
+repository and if you're interested in how
+
+240
+00:16:10,449 --> 00:16:14,419
+these things work, I would totally recommend
+reading through the source.
+
+241
+00:16:14,419 --> 00:16:18,579
+Even if there was a way to turn this off,
+it wasn't clear that it would save ourselves
+
+242
+00:16:18,579 --> 00:16:27,970
+from the size of our mono repo over time.
+
+243
+00:16:27,970 --> 00:16:31,429
+One really easy solution was just to make
+a bunch of different config files for different
+
+244
+00:16:31,429 --> 00:16:35,439
+areas of the codebase and only build the one
+that was being used at the time.
+
+245
+00:16:35,439 --> 00:16:39,069
+We can make each region be small enough so
+that memory is reasonable and initial build
+
+246
+00:16:39,069 --> 00:16:42,110
+times are closer to one minute rather than
+11.
+
+247
+00:16:42,110 --> 00:16:56,410
+For us this meant splitting our codebase into
+11 regions was
+
+248
+00:16:56,410 --> 00:16:58,809
+the right number.
+
+249
+00:16:58,809 --> 00:17:03,089
+Juggling a bunch of configurations just to
+browser on Etsy on your work machine was not
+
+250
+00:17:03,089 --> 00:17:04,089
+ideal.
+
+251
+00:17:04,089 --> 00:17:06,910
+This meant that we probably needed to write
+something of our own.
+
+252
+00:17:06,910 --> 00:17:11,380
+So we wrote a thing called Kevin.
+
+253
+00:17:11,380 --> 00:17:15,959
+Kevin is a plugin for the express web server
+framework.
+
+254
+00:17:15,959 --> 00:17:18,620
+And its only job is to manage a bunch of Webpack
+instances.
+
+255
+00:17:18,620 --> 00:17:21,040
+Why did we name it Kevin?
+
+256
+00:17:21,040 --> 00:17:22,640
+Look how funny he is.
+
+257
+00:17:22,640 --> 00:17:28,449
+When a request for any file comes in, Kevin
+determines when Webpack config is responsible
+
+258
+00:17:28,449 --> 00:17:33,700
+for building that file, if any, and then it
+starts a Webpack instance for that config.
+
+259
+00:17:33,700 --> 00:17:38,330
+Once the compiler is finished, it starts running
+that code in watch mode rebuilding files as
+
+260
+00:17:38,330 --> 00:17:41,510
+they're edited.
+
+261
+00:17:41,510 --> 00:17:46,360
+If Kevin gets a request for another file in
+a different config, it does the same thing.
+
+262
+00:17:46,360 --> 00:17:52,810
+If there are too many compilers running, Kevin
+will shut down that compiler based on a frequency
+
+263
+00:17:52,810 --> 00:17:54,510
+and recency model.
+
+264
+00:17:54,510 --> 00:17:58,490
+This keeps us from building the whole codebase
+and it has an added benefit of making sure
+
+265
+00:17:58,490 --> 00:18:05,310
+that the codebase has regions of it that are
+all related to each other.
+
+266
+00:18:05,310 --> 00:18:09,570
+The only extra thing to consider is that really
+long first build.
+
+267
+00:18:09,570 --> 00:18:15,010
+If a request for a JavaScript file times out
+after 30 seconds, and starting up the Webpack
+
+268
+00:18:15,010 --> 00:18:18,560
+server takes closer to a minute we're going
+to end up timing in development for what seems
+
+269
+00:18:18,560 --> 00:18:20,260
+like no reason.
+
+270
+00:18:20,260 --> 00:18:22,530
+Kid in time out.
+
+271
+00:18:22,530 --> 00:18:29,990
+That's a joke.
+
+272
+00:18:29,990 --> 00:18:33,430
+It is modeled after the Domino's Pizza tracker.
+
+273
+00:18:33,430 --> 00:18:37,620
+We also exposed some data about the status
+of every active compiler so that the overlay
+
+274
+00:18:37,620 --> 00:18:44,130
+is able to monitor the status of its build.
+
+275
+00:18:44,130 --> 00:18:48,420
+Keeps memory usage low and keeps engineers
+informed about the state of all of their builds
+
+276
+00:18:48,420 --> 00:18:51,110
+without requiring them to manage a build system.
+
+277
+00:18:51,110 --> 00:18:54,790
+With any luck, Kevin will be available as
+open source software very soon.
+
+278
+00:18:54,790 --> 00:18:56,790
+All right, another water break.
+
+279
+00:18:56,790 --> 00:19:00,640
+In 15 seconds or less, tell a neighbor what
+you did for adventure day.
+
+280
+00:19:00,640 --> 00:19:01,640
+Go!
+
+281
+00:19:01,640 --> 00:19:02,640
+All right, that is the 15-second warning.
+
+282
+00:19:02,640 --> 00:19:05,500
+Let me really quickly talk about productionizing
+your code and then that GC bug that I've been
+
+283
+00:19:05,500 --> 00:19:10,880
+waiting for.
+
+284
+00:19:10,880 --> 00:19:15,430
+I want to talk about localization, since there's
+a lot of other less interesting things that
+
+285
+00:19:15,430 --> 00:19:18,050
+went into getting our code production ready.
+
+286
+00:19:18,050 --> 00:19:21,300
+So at this point development was working.
+
+287
+00:19:21,300 --> 00:19:25,391
+We even started to onboard a handful of developers
+so they could start giving us feedback, most
+
+288
+00:19:25,391 --> 00:19:26,610
+of which was pretty good.
+
+289
+00:19:26,610 --> 00:19:34,970
+Because we weren't building production code
+with Builda packet.
+
+290
+00:19:34,970 --> 00:19:39,280
+The benefits of Webpack brought to the development
+speed were wins in and of themselves.
+
+291
+00:19:39,280 --> 00:19:42,790
+Our next order of business was to get production
+to have that same speed.
+
+292
+00:19:42,790 --> 00:19:47,031
+There is that chicken again, reminding us
+that we need to get five-minute production
+
+293
+00:19:47,031 --> 00:19:48,220
+goals.
+
+294
+00:19:48,220 --> 00:19:52,670
+A working development environment meant that
+we were at least able to successfully build
+
+295
+00:19:52,670 --> 00:19:55,330
+our code.
+
+296
+00:19:55,330 --> 00:19:59,570
+This involved minifying it but more critically
+it meant localizing all of our assets into
+
+297
+00:19:59,570 --> 00:20:02,030
+11 different languages.
+
+298
+00:20:02,030 --> 00:20:05,860
+Localization is a little tricky with Webpack.
+
+299
+00:20:05,860 --> 00:20:09,510
+You need to kick off a separate Webpack build.
+
+300
+00:20:09,510 --> 00:20:13,720
+Webpack's localization plugin uses a file
+that provides localized strings that you provide
+
+301
+00:20:13,720 --> 00:20:16,340
+and.
+
+302
+00:20:16,340 --> 00:20:18,410
+It seems simple enough.
+
+303
+00:20:18,410 --> 00:20:22,360
+Using this method, constant strings can be
+defined in one file and swapped out between
+
+304
+00:20:22,360 --> 00:20:25,040
+builds without your JavaScript changing.
+
+305
+00:20:25,040 --> 00:20:27,580
+There is an implication here that is a little
+tricky.
+
+306
+00:20:27,580 --> 00:20:32,370
+Webpack ends up with a different configuration
+because the plugin needs to be configured
+
+307
+00:20:32,370 --> 00:20:34,140
+differently will for each language.
+
+308
+00:20:34,140 --> 00:20:39,040
+This means that in order to run 11 different
+languages, you need to run 11 Webpack builds.
+
+309
+00:20:39,040 --> 00:20:46,710
+Again, 34 course, 62 gigs of ram?
+
+310
+00:20:46,710 --> 00:20:50,350
+It's really big.
+
+311
+00:20:50,350 --> 00:20:54,410
+We could maybe run two in parallel and have
+the resources and get like 8 or 9 minutes
+
+312
+00:20:54,410 --> 00:20:55,410
+for those two builds.
+
+313
+00:20:55,410 --> 00:21:00,580
+But that would still mean that all of our
+builds would take like an hour.
+
+314
+00:21:00,580 --> 00:21:09,670
+We 
+couldn't just ask for new hardware, let alone
+
+315
+00:21:09,670 --> 00:21:12,790
+a dozen or so of the most powerful computers
+that we used to have.
+
+316
+00:21:12,790 --> 00:21:18,450
+If we were trying to keep pace with Builda,
+we were going to have to cheat a little bit.
+
+317
+00:21:18,450 --> 00:21:22,920
+Luckily for us, cheating is OK, because Builda
+cheats, too.
+
+318
+00:21:22,920 --> 00:21:27,830
+Let me explain what I mean here.
+
+319
+00:21:27,830 --> 00:21:33,320
+Builda doesn't build that code 11 different
+times.
+
+320
+00:21:33,320 --> 00:21:40,090
+Later, when that Builda's mostly done and
+it looks like word salad, it goes back through
+
+321
+00:21:40,090 --> 00:21:46,200
+each file, finds those placeholders and swaps
+them out for actual localized strings in every
+
+322
+00:21:46,200 --> 00:21:47,390
+language.
+
+323
+00:21:47,390 --> 00:21:53,180
+If you speak French, you will know that this
+is an accurate translation.
+
+324
+00:21:53,180 --> 00:21:57,160
+Compared with Webpack's apparently deprecated
+international plugin, this seemed like a much
+
+325
+00:21:57,160 --> 00:21:58,500
+faster approach.
+
+326
+00:21:58,500 --> 00:22:03,670
+I actually didn't know this was deprecated
+at the time I wrote this talk, so like I said,
+
+327
+00:22:03,670 --> 00:22:05,440
+JavaScript changes very quickly.
+
+328
+00:22:05,440 --> 00:22:13,870
+Anyways, we tweaked our plugins and had them
+insert placeholders, instead.
+
+329
+00:22:13,870 --> 00:22:24,380
+From there, we would do a find and replace.
+
+330
+00:22:24,380 --> 00:22:26,860
+This is actually a lot easier than it sounds.
+
+331
+00:22:26,860 --> 00:22:30,040
+This whole screenshot is essentially all of
+the code but here are the juicy bits.
+
+332
+00:22:30,040 --> 00:22:37,770
+We're able to take our source code and call
+dot split on it with our placeholder.
+
+333
+00:22:37,770 --> 00:22:43,780
+Would iterate through the odd indexes and
+translate them.
+
+334
+00:22:43,780 --> 00:22:52,050
+In case you're curious we get our translations
+from a separate service that we maintain.
+
+335
+00:22:52,050 --> 00:22:57,140
+This message was actually so fast that we
+were able to provide localization in development.
+
+336
+00:22:57,140 --> 00:23:00,930
+That's why Kevin has Italian on his forehead.
+
+337
+00:23:00,930 --> 00:23:05,080
+We could do this quick enough by translating
+things as they were requested, rather than
+
+338
+00:23:05,080 --> 00:23:07,810
+build every file into every language possible.
+
+339
+00:23:07,810 --> 00:23:10,740
+Thanks to this method we were able to get
+our production builds ready in well under
+
+340
+00:23:10,740 --> 00:23:11,840
+5 minutes.
+
+341
+00:23:11,840 --> 00:23:18,060
+OK, in 15 seconds or less, tell your neighbor
+if you can speak more than one language.
+
+342
+00:23:18,060 --> 00:23:19,060
+OK, that is about 15 seconds.
+
+343
+00:23:19,060 --> 00:23:20,060
+Give or take.
+
+344
+00:23:20,060 --> 00:23:21,060
+I heard more than yes or no, so I don't know
+what you were talking about.
+
+345
+00:23:21,060 --> 00:23:22,240
+For the last part of this talk, let me tell
+you about that 4 milliseconds that kept us
+
+346
+00:23:22,240 --> 00:23:25,900
+from building this whole thing 3 months earlier
+than we actually did.
+
+347
+00:23:25,900 --> 00:23:30,670
+So we felt we were ready to try Webpack on
+code production traffic.
+
+348
+00:23:30,670 --> 00:23:34,830
+We were very excited.
+
+349
+00:23:34,830 --> 00:23:37,880
+A bunch of our end to end tests showed that
+things were the same.
+
+350
+00:23:37,880 --> 00:23:41,290
+However, build systems are very hard to replace.
+
+351
+00:23:41,290 --> 00:23:46,150
+A new build system has to work in every language
+in every page in the site like we talked about,
+
+352
+00:23:46,150 --> 00:23:53,480
+but it also has to work on every browser,
+no mart how old or cutting edge it may be.
+
+353
+00:23:53,480 --> 00:23:57,330
+So what do we want to do?
+
+354
+00:23:57,330 --> 00:24:00,960
+We run an A/B test.
+
+355
+00:24:00,960 --> 00:24:03,640
+A stock photo of an A/B test.
+
+356
+00:24:03,640 --> 00:24:07,560
+We actually ran five separate ones, and they
+all look pretty good.
+
+357
+00:24:07,560 --> 00:24:10,680
+You can see the important metrics that we
+checked.
+
+358
+00:24:10,680 --> 00:24:17,450
+And yet, in spite of all this, we had some
+pretty alarming changes in every one of our
+
+359
+00:24:17,450 --> 00:24:19,540
+browser performance metrics.
+
+360
+00:24:19,540 --> 00:24:22,540
+Every page was running way slower than we
+expected.
+
+361
+00:24:22,540 --> 00:24:26,970
+Some of our pages are up to 14% slower which
+is unheard of.
+
+362
+00:24:26,970 --> 00:24:33,140
+In the general view if your site's performance
+gets worse, so does your site's money.
+
+363
+00:24:33,140 --> 00:24:38,140
+We had to figure out what was going on before
+we could launch Webpack.
+
+364
+00:24:38,140 --> 00:24:41,390
+Before I go on, let me talk about our client-side
+metrics very quickly.
+
+365
+00:24:41,390 --> 00:24:44,450
+Many of you probably know this sort of thing,
+but some of you may not and I hope this is
+
+366
+00:24:44,450 --> 00:24:45,450
+a good refresher.
+
+367
+00:24:45,450 --> 00:24:50,580
+At Etsy we track a lot of things, but two
+in particular.
+
+368
+00:24:50,580 --> 00:24:54,080
+One is DOMContentLoaded and one is page load.
+
+369
+00:24:54,080 --> 00:24:59,460
+So when the browser parses our HTML it goes
+through line by line and evals everything
+
+370
+00:24:59,460 --> 00:25:03,130
+one line at a time.
+
+371
+00:25:03,130 --> 00:25:06,940
+It downloads and executes the whole thing
+before continuing to parse the page.
+
+372
+00:25:06,940 --> 00:25:15,000
+Some things like this image tag will -- here
+is our JavaScript at the very bottom.
+
+373
+00:25:15,000 --> 00:25:19,880
+Like CSS, JavaScript is downloaded and executed
+before the browser can continue.
+
+374
+00:25:19,880 --> 00:25:24,210
+Some JavaScript code, like a network request
+or timeout calls do not block the browser
+
+375
+00:25:24,210 --> 00:25:28,500
+and are added to a list of tasks that the
+browser can take care of at a later time.
+
+376
+00:25:28,500 --> 00:25:33,040
+Finally it fires the DOM-content loaded event.
+
+377
+00:25:33,040 --> 00:25:38,830
+There it is!
+
+378
+00:25:38,830 --> 00:25:45,490
+Once all of our subresources load -- that
+is a thing that you can buy on Etsy.com
+
+379
+00:25:45,490 --> 00:25:49,000
+Once all of our subresources load like that
+image and when the browser has run enough
+
+380
+00:25:49,000 --> 00:26:01,490
+tasks to really take care of it says that
+the fires the page.
+
+381
+00:26:01,490 --> 00:26:06,670
+Both of these were slower for us, this raised
+two questions: What is so small, yet so different
+
+382
+00:26:06,670 --> 00:26:08,130
+that we've miss it had?
+
+383
+00:26:08,130 --> 00:26:12,990
+And two, if something is so different, why
+do people still buy things on Etsy.com so
+
+384
+00:26:12,990 --> 00:26:17,270
+we started investigating or performance monitoring
+code and we double-checked that we weren't
+
+385
+00:26:17,270 --> 00:26:21,520
+shipping extra code to our clients but both
+of these things turned up nothing so we decided
+
+386
+00:26:21,520 --> 00:26:25,310
+to investigate how our code was running in
+the browser.
+
+387
+00:26:25,310 --> 00:26:31,430
+This is a flame graph for the listing page
+that shows the item for sale on Etsy.
+
+388
+00:26:31,430 --> 00:26:34,320
+The graph shows our code built with Builda.
+
+389
+00:26:34,320 --> 00:26:42,280
+Horizontal axis represents time the every
+rectangle represents a function call, and
+
+390
+00:26:42,280 --> 00:26:46,560
+everything below that is a subtask related
+to it.
+
+391
+00:26:46,560 --> 00:26:52,870
+This shows what the browser does when it parses
+the main JavaScript file on the page.
+
+392
+00:26:52,870 --> 00:26:55,370
+Now, what does Webpack's look like?
+
+393
+00:26:55,370 --> 00:26:57,000
+A lot worse.
+
+394
+00:26:57,000 --> 00:27:01,310
+This is the same file as the previous graph,
+but it's taking 4 times as long.
+
+395
+00:27:01,310 --> 00:27:03,690
+For kicks, here they are side by side.
+
+396
+00:27:03,690 --> 00:27:05,770
+Clearly Builda is doing a lot less.
+
+397
+00:27:05,770 --> 00:27:09,950
+So this is kind of concerning.
+
+398
+00:27:09,950 --> 00:27:11,520
+So why is this happening?
+
+399
+00:27:11,520 --> 00:27:14,600
+Even if our conversion numbers look good,
+this big difference may mean that we're missing
+
+400
+00:27:14,600 --> 00:27:16,210
+a performance win.
+
+401
+00:27:16,210 --> 00:27:19,230
+Let's take another look at the whole graph
+built with Builda.
+
+402
+00:27:19,230 --> 00:27:21,960
+This is roughly the area that we were looking
+at before.
+
+403
+00:27:21,960 --> 00:27:26,890
+This is where DOMContentLoading fires, this
+is page load and this is where our JavaScript
+
+404
+00:27:26,890 --> 00:27:28,740
+file was actually getting executed.
+
+405
+00:27:28,740 --> 00:27:35,650
+So zooming in a little bit, that rectangle
+there is the main body of our JavaScript file.
+
+406
+00:27:35,650 --> 00:27:46,230
+In other words, our performance metrics were
+not accounting for the time it took to actually
+
+407
+00:27:46,230 --> 00:27:51,940
+run our JavaScript, but rather when that JavaScript
+was built with Builda.
+
+408
+00:27:51,940 --> 00:27:54,360
+Code built with Webpack did not have this
+problem.
+
+409
+00:27:54,360 --> 00:27:57,880
+So we no why people were still buying stuff,
+the same things have happened, but our measurements
+
+410
+00:27:57,880 --> 00:28:01,000
+have moved.
+
+411
+00:28:01,000 --> 00:28:05,820
+So let's look back at our two metrics, specifically
+at load, and very specifically let's look
+
+412
+00:28:05,820 --> 00:28:09,760
+at the part that say there are no outstanding
+scripts waiting to be executed.
+
+413
+00:28:09,760 --> 00:28:15,210
+What if the browser was being tricked into
+ready.
+
+414
+00:28:15,210 --> 00:28:20,270
+Very quick because I know I'm way over time.
+
+415
+00:28:20,270 --> 00:28:22,970
+As ooh reminder, requires a library that Builda
+was built around.
+
+416
+00:28:22,970 --> 00:28:29,390
+We sent a copy of it to our browsers, where
+it's responsible for starting up our code.
+
+417
+00:28:29,390 --> 00:28:35,160
+Here's where require.js kicks off our execution
+and it's wrapped in this next tick function.
+
+418
+00:28:35,160 --> 00:28:45,820
+It looks like it's just a 4ms set time outscore.
+
+419
+00:28:45,820 --> 00:28:49,559
+This isn't a hard and fast time and the browser
+is totally allowed to push things back a little
+
+420
+00:28:49,559 --> 00:28:51,010
+bit later if it needs.
+
+421
+00:28:51,010 --> 00:28:56,070
+In other words, require.js tells the browser
+that none of our code needs to run right away.
+
+422
+00:28:56,070 --> 00:28:59,960
+Require.js may do this because it gives the
+browser a second to finish loading the page
+
+423
+00:28:59,960 --> 00:29:02,030
+before starting any JavaScript.
+
+424
+00:29:02,030 --> 00:29:05,590
+It also might do this because set timeout
+was a great way to make your performance numbers
+
+425
+00:29:05,590 --> 00:29:07,550
+look good in 2010.
+
+426
+00:29:07,550 --> 00:29:15,260
+So knowing that this was a bug, what did we
+do?
+
+427
+00:29:15,260 --> 00:29:17,470
+We did not wrap all of our code in set timeout
+calls.
+
+428
+00:29:17,470 --> 00:29:20,610
+That would make our numbers look better but
+it wouldn't tell us anything that we needed
+
+429
+00:29:20,610 --> 00:29:25,860
+to D but we did add some new metrics.
+
+430
+00:29:25,860 --> 00:29:28,780
+We added a timer to every one of our top five
+pages.
+
+431
+00:29:28,780 --> 00:29:31,330
+Here yellow is Webpack and lower is better.
+
+432
+00:29:31,330 --> 00:29:34,760
+Those timers were supposed to measure how
+long it took for all of our JavaScript to
+
+433
+00:29:34,760 --> 00:29:36,420
+run on those pages.
+
+434
+00:29:36,420 --> 00:29:38,320
+We were very happy with this graph.
+
+435
+00:29:38,320 --> 00:29:40,680
+OK, I'm about done.
+
+436
+00:29:40,680 --> 00:29:44,000
+In conclusion it took us almost a year and
+a half to move to Webpack.
+
+437
+00:29:44,000 --> 00:29:50,610
+That is a very long time and it's a lot of
+hair-pulling.
+
+438
+00:29:50,610 --> 00:29:54,800
+At the end of the day, we had a lot to learn
+about build systems, performance and our own
+
+439
+00:29:54,800 --> 00:29:55,800
+codebase.
+
+440
+00:29:55,800 --> 00:30:00,760
+I felt like there should be a three-point
+slide thing, but there were so many winnings
+
+441
+00:30:00,760 --> 00:30:02,720
+that we had that it's kind of hard to pick
+3.
+
+442
+00:30:02,720 --> 00:30:04,900
+But I tried anyways.
+
+443
+00:30:04,900 --> 00:30:07,850
+Number one, your codebase gets bigger, not
+smaller.
+
+444
+00:30:07,850 --> 00:30:15,160
+If you're trying to find small performance
+win, it probably won't last very long.
+
+445
+00:30:15,160 --> 00:30:22,370
+Number 2: Always question what other companies,
+websites, articles and blogs claim to be best
+
+446
+00:30:22,370 --> 00:30:23,370
+practices.
+
+447
+00:30:23,370 --> 00:30:26,350
+What works well for one person may not always
+work well everywhere.
+
+448
+00:30:26,350 --> 00:30:30,650
+If we accepted that Webpack's internationalisation
+plugin was the only option we'd still be waiting
+
+449
+00:30:30,650 --> 00:30:32,460
+for our JavaScript to build.
+
+450
+00:30:32,460 --> 00:30:41,070
+And finally if you can take a risk on a big
+build project, you absolutely should.
+
+451
+00:30:41,070 --> 00:30:46,520
+We really hated that that metrics bug cost
+us months of time but we ended up learning
+
+452
+00:30:46,520 --> 00:30:51,140
+so much more about performance, the browser
+and our code and at the end of the day after
+
+453
+00:30:51,140 --> 00:30:55,170
+almost a year and a half of wild problems
+and pulling my hair out, Webpack is pretty
+
+454
+00:30:55,170 --> 00:30:56,710
+great software.
+
+455
+00:30:56,710 --> 00:30:58,120
+So that is my talk.
+
+456
+00:30:58,120 --> 00:31:01,100
+If you have any questions, please hit me up
+on Slack or Twitter.
+
+457
+00:31:01,100 --> 00:31:12,220
+If you like this stuff, my team is hiring
+and of course, thank you all so very much.
+

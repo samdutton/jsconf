@@ -1,0 +1,1921 @@
+1
+00:00:03,109 --> 00:00:05,729
+
+thanks for having me here this is song
+
+2
+00:00:05,729 --> 00:00:09,030
+right but second okay today I'm going to
+
+3
+00:00:09,030 --> 00:00:11,040
+talk to you about implementing a visual
+
+4
+00:00:11,040 --> 00:00:13,530
+CSS testing framework using automatic
+
+5
+00:00:13,530 --> 00:00:15,209
+screenshot comparison to catch style
+
+6
+00:00:15,209 --> 00:00:17,910
+regressions my name is Jessica on the
+
+7
+00:00:17,910 --> 00:00:20,760
+internet and Jessica in real life and I
+
+8
+00:00:20,760 --> 00:00:22,259
+work at a company called bug snag here
+
+9
+00:00:22,259 --> 00:00:24,420
+in San Francisco bug snag is an
+
+10
+00:00:24,420 --> 00:00:26,339
+exception monitoring tool I'm a software
+
+11
+00:00:26,339 --> 00:00:28,259
+engineer they're working primarily in
+
+12
+00:00:28,259 --> 00:00:30,240
+Ruby and JavaScript but our stack
+
+13
+00:00:30,240 --> 00:00:31,589
+includes lots of languages including
+
+14
+00:00:31,589 --> 00:00:34,620
+node and go we're currently hiring so
+
+15
+00:00:34,620 --> 00:00:36,000
+please get in touch if you're interested
+
+16
+00:00:36,000 --> 00:00:37,980
+in working at a super small company for
+
+17
+00:00:37,980 --> 00:00:40,590
+developer tools so back to this whole
+
+18
+00:00:40,590 --> 00:00:42,629
+implementing a visual CSS testing
+
+19
+00:00:42,629 --> 00:00:44,489
+framework thing what am I even talking
+
+20
+00:00:44,489 --> 00:00:47,730
+about well at bug snag we decided we
+
+21
+00:00:47,730 --> 00:00:49,230
+wanted a way to automatically take two
+
+22
+00:00:49,230 --> 00:00:51,870
+screenshots of our website at different
+
+23
+00:00:51,870 --> 00:00:55,140
+times in our app for example since we
+
+24
+00:00:55,140 --> 00:00:56,789
+use get let's say we had a feature
+
+25
+00:00:56,789 --> 00:00:58,680
+branch that we just push to commit to
+
+26
+00:00:58,680 --> 00:01:00,690
+we'd want to take a screenshot of what
+
+27
+00:01:00,690 --> 00:01:02,460
+our home page looks like on that branch
+
+28
+00:01:02,460 --> 00:01:04,920
+and a screenshot of how our home page
+
+29
+00:01:04,920 --> 00:01:06,630
+looks on production or what's currently
+
+30
+00:01:06,630 --> 00:01:09,509
+running on master with those screenshots
+
+31
+00:01:09,509 --> 00:01:11,990
+we want to spot those differences and
+
+32
+00:01:11,990 --> 00:01:14,549
+produce some sort of diff image that
+
+33
+00:01:14,549 --> 00:01:17,159
+highlighted the difference is why would
+
+34
+00:01:17,159 --> 00:01:20,280
+we want to do this you ask well as we
+
+35
+00:01:20,280 --> 00:01:22,290
+all know writing reading and code
+
+36
+00:01:22,290 --> 00:01:24,229
+reviewing CSS can be pretty intense and
+
+37
+00:01:24,229 --> 00:01:27,570
+even more intense to refactor at bugs
+
+38
+00:01:27,570 --> 00:01:29,250
+nag we decided to do a huge
+
+39
+00:01:29,250 --> 00:01:31,110
+organizational and code style refactor
+
+40
+00:01:31,110 --> 00:01:33,360
+of our CSS and we wanted a way to test
+
+41
+00:01:33,360 --> 00:01:34,950
+that our site look the same despite
+
+42
+00:01:34,950 --> 00:01:37,740
+changing all of the code unfortunately
+
+43
+00:01:37,740 --> 00:01:39,180
+as you can tell that didn't really
+
+44
+00:01:39,180 --> 00:01:41,369
+always work out for us we went through
+
+45
+00:01:41,369 --> 00:01:43,439
+many iterations of refactoring and we
+
+46
+00:01:43,439 --> 00:01:45,420
+realized we needed a tool to help us out
+
+47
+00:01:45,420 --> 00:01:48,869
+and test our pages automatically so we
+
+48
+00:01:48,869 --> 00:01:51,000
+went on a hunt for a way to test our CSS
+
+49
+00:01:51,000 --> 00:01:52,649
+we wanted to know if there was a tool
+
+50
+00:01:52,649 --> 00:01:54,060
+already built that did what we wanted
+
+51
+00:01:54,060 --> 00:01:56,100
+without knowing exactly what it is that
+
+52
+00:01:56,100 --> 00:01:58,740
+we did want we first stumbled upon one
+
+53
+00:01:58,740 --> 00:02:00,329
+of Facebook's open source libraries
+
+54
+00:02:00,329 --> 00:02:03,090
+huxley and Huxley's read me it says
+
+55
+00:02:03,090 --> 00:02:05,430
+watches you browse take screenshots
+
+56
+00:02:05,430 --> 00:02:07,200
+tells you when they change which sounds
+
+57
+00:02:07,200 --> 00:02:09,479
+amazing it's exactly what we wanted but
+
+58
+00:02:09,479 --> 00:02:11,850
+I noticed it hadn't been updated in over
+
+59
+00:02:11,850 --> 00:02:14,490
+a year which wasn't promising but I
+
+60
+00:02:14,490 --> 00:02:16,010
+decided give it a shot anyway
+
+61
+00:02:16,010 --> 00:02:18,210
+after a good while of fiddling around
+
+62
+00:02:18,210 --> 00:02:19,650
+with Huxley it ended up being a little
+
+63
+00:02:19,650 --> 00:02:21,540
+bit too buggy for us although I did hear
+
+64
+00:02:21,540 --> 00:02:23,190
+somebody talking about it did work for
+
+65
+00:02:23,190 --> 00:02:26,490
+them so I'm happy yes but for us at it
+
+66
+00:02:26,490 --> 00:02:28,440
+would have random failures randomly
+
+67
+00:02:28,440 --> 00:02:30,300
+wouldn't take screenshots and I started
+
+68
+00:02:30,300 --> 00:02:31,740
+realizing it wasn't exactly what I was
+
+69
+00:02:31,740 --> 00:02:33,180
+looking for in a CSS testing tool anyway
+
+70
+00:02:33,180 --> 00:02:36,150
+I kept looking and it turns out there
+
+71
+00:02:36,150 --> 00:02:37,350
+are a lot of frameworks that do some
+
+72
+00:02:37,350 --> 00:02:39,780
+sort of CSS testing they all work in
+
+73
+00:02:39,780 --> 00:02:41,430
+different ways some take screenshots
+
+74
+00:02:41,430 --> 00:02:44,160
+some aren't even visual I definitely
+
+75
+00:02:44,160 --> 00:02:46,050
+recommend checking some of these out and
+
+76
+00:02:46,050 --> 00:02:47,910
+seeing if they fit what you're doing in
+
+77
+00:02:47,910 --> 00:02:49,260
+your apps before trying to build your
+
+78
+00:02:49,260 --> 00:02:52,500
+own but I really started thinking about
+
+79
+00:02:52,500 --> 00:02:54,120
+it what was I looking forward to CSS
+
+80
+00:02:54,120 --> 00:02:56,250
+testing framework what would fit the way
+
+81
+00:02:56,250 --> 00:02:58,830
+bug snag is built best I decided I
+
+82
+00:02:58,830 --> 00:03:00,630
+wanted a visual way to test my CSS with
+
+83
+00:03:00,630 --> 00:03:02,370
+screenshots rather than writing out
+
+84
+00:03:02,370 --> 00:03:05,250
+tests describing the visuals this is
+
+85
+00:03:05,250 --> 00:03:07,260
+where I need a disclaimer at bugs nag
+
+86
+00:03:07,260 --> 00:03:08,730
+our web dashboard is written in rails
+
+87
+00:03:08,730 --> 00:03:11,220
+this mix with the fact I wanted to test
+
+88
+00:03:11,220 --> 00:03:12,750
+to take screenshots affected my
+
+89
+00:03:12,750 --> 00:03:14,250
+decisions in what frameworks I wanted to
+
+90
+00:03:14,250 --> 00:03:17,970
+use we also use get for our source
+
+91
+00:03:17,970 --> 00:03:19,680
+control bug snag and we use it the
+
+92
+00:03:19,680 --> 00:03:22,890
+github way what that means is we have a
+
+93
+00:03:22,890 --> 00:03:24,510
+master branch which is always
+
+94
+00:03:24,510 --> 00:03:27,530
+deployables ready or it should be and
+
+95
+00:03:27,530 --> 00:03:30,000
+whenever we want to create a feature we
+
+96
+00:03:30,000 --> 00:03:31,500
+branch off master until it's ready and
+
+97
+00:03:31,500 --> 00:03:34,250
+then we were jit back into master
+
+98
+00:03:34,250 --> 00:03:36,030
+considering the tools we had at our
+
+99
+00:03:36,030 --> 00:03:38,430
+disposal and after taking a look at some
+
+100
+00:03:38,430 --> 00:03:40,800
+of the screenshot libraries their source
+
+101
+00:03:40,800 --> 00:03:42,780
+codes I realized that there actually
+
+102
+00:03:42,780 --> 00:03:44,700
+wasn't that much code going on in them
+
+103
+00:03:44,700 --> 00:03:47,070
+so I decided why not i'm going to write
+
+104
+00:03:47,070 --> 00:03:49,670
+one myself which is always a bad idea I
+
+105
+00:03:49,670 --> 00:03:52,080
+came up with a process of how I thought
+
+106
+00:03:52,080 --> 00:03:55,800
+I wanted my tests to work number one I
+
+107
+00:03:55,800 --> 00:03:57,540
+wanted a way to somehow automatically
+
+108
+00:03:57,540 --> 00:04:01,170
+visit pages of our site so the test
+
+109
+00:04:01,170 --> 00:04:03,870
+would in an actual browser hit each page
+
+110
+00:04:03,870 --> 00:04:07,080
+of our site on a local server once the
+
+111
+00:04:07,080 --> 00:04:09,240
+test visited the page I wanted the test
+
+112
+00:04:09,240 --> 00:04:11,790
+to take a screenshot of that page the
+
+113
+00:04:11,790 --> 00:04:13,500
+important bit for the screenshot is that
+
+114
+00:04:13,500 --> 00:04:14,580
+I'd wanted to take a screenshot of the
+
+115
+00:04:14,580 --> 00:04:17,280
+entire page not just the current view
+
+116
+00:04:17,280 --> 00:04:19,980
+port of the browser for example if a
+
+117
+00:04:19,980 --> 00:04:21,390
+change happened below the fold of our
+
+118
+00:04:21,390 --> 00:04:22,980
+site but we weren't taking full-page
+
+119
+00:04:22,980 --> 00:04:24,630
+screenshots we wouldn't be able to
+
+120
+00:04:24,630 --> 00:04:28,140
+capture the diff down there next I need
+
+121
+00:04:28,140 --> 00:04:29,910
+us I need somewhere to store these
+
+122
+00:04:29,910 --> 00:04:32,040
+shots and I need a way to upload and
+
+123
+00:04:32,040 --> 00:04:33,570
+download these screenshots from that
+
+124
+00:04:33,570 --> 00:04:37,260
+storage area so using get every time I
+
+125
+00:04:37,260 --> 00:04:39,360
+made a push to a branch I'd upload a
+
+126
+00:04:39,360 --> 00:04:40,830
+screenshot of the current state of each
+
+127
+00:04:40,830 --> 00:04:44,280
+page including our master branch and if
+
+128
+00:04:44,280 --> 00:04:46,590
+I had a screenshot already uploaded to
+
+129
+00:04:46,590 --> 00:04:48,090
+our storage area from our master branch
+
+130
+00:04:48,090 --> 00:04:51,030
+I need a way to upload my current
+
+131
+00:04:51,030 --> 00:04:52,650
+features branch to that storage area and
+
+132
+00:04:52,650 --> 00:04:54,570
+download my already uploaded master
+
+133
+00:04:54,570 --> 00:04:58,950
+screenshot from that storage area I then
+
+134
+00:04:58,950 --> 00:05:00,660
+need a way to make a diff of my
+
+135
+00:05:00,660 --> 00:05:03,690
+screenshots I'd want to diff between a
+
+136
+00:05:03,690 --> 00:05:05,490
+screenshot I took on master downloaded
+
+137
+00:05:05,490 --> 00:05:07,170
+from our storage area and the newest
+
+138
+00:05:07,170 --> 00:05:10,590
+screenshot I took on my future branch so
+
+139
+00:05:10,590 --> 00:05:12,510
+if i have the previous screen shot i
+
+140
+00:05:12,510 --> 00:05:14,220
+took which would be the current commit
+
+141
+00:05:14,220 --> 00:05:16,440
+commit on master vs my branches
+
+142
+00:05:16,440 --> 00:05:19,620
+screenshot i need a way to mark the
+
+143
+00:05:19,620 --> 00:05:20,760
+differences between those two
+
+144
+00:05:20,760 --> 00:05:22,620
+screenshots visually so in here it's the
+
+145
+00:05:22,620 --> 00:05:26,550
+header finally after i have just for all
+
+146
+00:05:26,550 --> 00:05:28,170
+my screenshots i need a way to view the
+
+147
+00:05:28,170 --> 00:05:30,150
+diffs even though i'll have a place to
+
+148
+00:05:30,150 --> 00:05:32,220
+upload them i did an accessible way for
+
+149
+00:05:32,220 --> 00:05:33,570
+everyone on the project to view the diff
+
+150
+00:05:33,570 --> 00:05:36,690
+screenshots depending on the commit so
+
+151
+00:05:36,690 --> 00:05:38,640
+now we have a plan we can start building
+
+152
+00:05:38,640 --> 00:05:39,930
+out our framework or on these things
+
+153
+00:05:39,930 --> 00:05:43,950
+that we need we need a way to write some
+
+154
+00:05:43,950 --> 00:05:46,770
+specs that will automatically run after
+
+155
+00:05:46,770 --> 00:05:48,740
+each push so we decided to use our spec
+
+156
+00:05:48,740 --> 00:05:51,600
+our spec is a testing tool for the Ruby
+
+157
+00:05:51,600 --> 00:05:53,490
+programming language we already had our
+
+158
+00:05:53,490 --> 00:05:55,590
+spec for our tests in our rails app so
+
+159
+00:05:55,590 --> 00:05:56,850
+writing these tests with our spec made
+
+160
+00:05:56,850 --> 00:06:00,720
+sense we wanted to be able to write
+
+161
+00:06:00,720 --> 00:06:02,610
+specs that look just like this where
+
+162
+00:06:02,610 --> 00:06:05,270
+we'd be able to navigate to a local URL
+
+163
+00:06:05,270 --> 00:06:09,990
+and save a screenshot of that page we
+
+164
+00:06:09,990 --> 00:06:11,640
+also wanted to these tests to be
+
+165
+00:06:11,640 --> 00:06:15,780
+separate from our main tests we pulled
+
+166
+00:06:15,780 --> 00:06:17,370
+out these visual specs into their own
+
+167
+00:06:17,370 --> 00:06:20,040
+r-spec tag that way these specs wouldn't
+
+168
+00:06:20,040 --> 00:06:22,140
+run with our main specs when we're
+
+169
+00:06:22,140 --> 00:06:23,640
+running the sweet locally unless we
+
+170
+00:06:23,640 --> 00:06:26,130
+explicitly asked it to this also made it
+
+171
+00:06:26,130 --> 00:06:27,690
+so we could break out our specs on our
+
+172
+00:06:27,690 --> 00:06:30,900
+CI we want on our visual specs to be
+
+173
+00:06:30,900 --> 00:06:33,390
+separate for a few reasons number one
+
+174
+00:06:33,390 --> 00:06:36,570
+our local build speed if our tell if our
+
+175
+00:06:36,570 --> 00:06:38,130
+local tests were bogged down by waiting
+
+176
+00:06:38,130 --> 00:06:39,479
+for visual specs that would become a
+
+177
+00:06:39,479 --> 00:06:41,820
+huge issue by having them broken out we
+
+178
+00:06:41,820 --> 00:06:42,860
+get iterate on our mains
+
+179
+00:06:42,860 --> 00:06:44,569
+Beck's faster and be able to push out
+
+180
+00:06:44,569 --> 00:06:47,659
+more often number two is speed with our
+
+181
+00:06:47,659 --> 00:06:50,330
+CI tests we wanted our main specs to
+
+182
+00:06:50,330 --> 00:06:52,310
+still be fast on our CI so that we could
+
+183
+00:06:52,310 --> 00:06:54,409
+merge non-visual pull requests without
+
+184
+00:06:54,409 --> 00:06:56,889
+waiting for our visual specs to finish
+
+185
+00:06:56,889 --> 00:07:00,080
+CI or continuous integration is a way
+
+186
+00:07:00,080 --> 00:07:01,819
+for us to automatically run our test
+
+187
+00:07:01,819 --> 00:07:03,550
+suite when we push things to github and
+
+188
+00:07:03,550 --> 00:07:06,680
+after our specs run on our CI we're able
+
+189
+00:07:06,680 --> 00:07:08,509
+to see if our build or is passing or not
+
+190
+00:07:08,509 --> 00:07:12,439
+I also learned that github just released
+
+191
+00:07:12,439 --> 00:07:13,699
+a new feature where you can split out
+
+192
+00:07:13,699 --> 00:07:16,849
+your build so thanks github so now we'll
+
+193
+00:07:16,849 --> 00:07:18,409
+be able to split out our visual specs
+
+194
+00:07:18,409 --> 00:07:20,569
+from our main specs here and so we can
+
+195
+00:07:20,569 --> 00:07:22,460
+quickly see which build is passing or
+
+196
+00:07:22,460 --> 00:07:24,620
+failing or still running without the
+
+197
+00:07:24,620 --> 00:07:28,219
+builds being combined at bugs now we
+
+198
+00:07:28,219 --> 00:07:30,800
+used build box for our CI build box
+
+199
+00:07:30,800 --> 00:07:33,110
+allows us to add steps to our tests that
+
+200
+00:07:33,110 --> 00:07:34,639
+way we can run our main specs first
+
+201
+00:07:34,639 --> 00:07:37,639
+apart from our visual specs and when
+
+202
+00:07:37,639 --> 00:07:39,050
+they're separate our visual specs don't
+
+203
+00:07:39,050 --> 00:07:41,719
+slow down our main specs and we converge
+
+204
+00:07:41,719 --> 00:07:43,669
+non-visual pull requests without waiting
+
+205
+00:07:43,669 --> 00:07:48,469
+for our visual specs to finish next we
+
+206
+00:07:48,469 --> 00:07:50,180
+needed a way to visit pages and take
+
+207
+00:07:50,180 --> 00:07:52,279
+screen shots with our r-spec tests for
+
+208
+00:07:52,279 --> 00:07:55,430
+that we decided to use selenium selenium
+
+209
+00:07:55,430 --> 00:07:57,020
+is a tool for automating browsers for
+
+210
+00:07:57,020 --> 00:07:59,150
+testing purposes we would need to use
+
+211
+00:07:59,150 --> 00:08:02,150
+specifically their webdriver API this
+
+212
+00:08:02,150 --> 00:08:03,379
+would allow us to drive a browser
+
+213
+00:08:03,379 --> 00:08:05,089
+natively on a local or remote machine
+
+214
+00:08:05,089 --> 00:08:07,310
+and more specifically this provides an
+
+215
+00:08:07,310 --> 00:08:10,759
+API between us and the browser to use
+
+216
+00:08:10,759 --> 00:08:12,740
+selenium we need to use the service like
+
+217
+00:08:12,740 --> 00:08:15,620
+soft labs or browser stack since we are
+
+218
+00:08:15,620 --> 00:08:17,569
+using a CI it doesn't just have browsers
+
+219
+00:08:17,569 --> 00:08:19,430
+built-in on the server we'd either have
+
+220
+00:08:19,430 --> 00:08:20,719
+to set up our own virtual machines for
+
+221
+00:08:20,719 --> 00:08:21,889
+these browsers or use one of these
+
+222
+00:08:21,889 --> 00:08:24,020
+services so we ended up trying browser
+
+223
+00:08:24,020 --> 00:08:27,949
+stack before our visual tests we need to
+
+224
+00:08:27,949 --> 00:08:29,900
+start our proxy to browser stack and a
+
+225
+00:08:29,900 --> 00:08:32,120
+fork trail server and then we need to
+
+226
+00:08:32,120 --> 00:08:33,349
+make an instance of our selenium
+
+227
+00:08:33,349 --> 00:08:35,659
+webdriver and then of course after all
+
+228
+00:08:35,659 --> 00:08:36,860
+of our tests we would terminate these
+
+229
+00:08:36,860 --> 00:08:40,039
+services we also had to allow but web
+
+230
+00:08:40,039 --> 00:08:42,560
+mock web mock is a library for stubbing
+
+231
+00:08:42,560 --> 00:08:45,290
+and setting expectations on HTTP
+
+232
+00:08:45,290 --> 00:08:47,990
+requests in Ruby this is to run what
+
+233
+00:08:47,990 --> 00:08:50,269
+real web requests in order to use our
+
+234
+00:08:50,269 --> 00:08:53,350
+local servers and upload our screenshots
+
+235
+00:08:53,350 --> 00:08:56,020
+to get our browserstack proxy running we
+
+236
+00:08:56,020 --> 00:08:57,250
+would just bought a new browser stuck
+
+237
+00:08:57,250 --> 00:08:59,290
+process and terminate the process using
+
+238
+00:08:59,290 --> 00:09:02,650
+its assigned PID and to get our rail
+
+239
+00:09:02,650 --> 00:09:04,060
+server running we would just spin up a
+
+240
+00:09:04,060 --> 00:09:05,680
+new rails process at four three thousand
+
+241
+00:09:05,680 --> 00:09:07,420
+unless one was currently running and
+
+242
+00:09:07,420 --> 00:09:09,100
+terminated the same way as our browser
+
+243
+00:09:09,100 --> 00:09:12,700
+stack process to set up our selenium
+
+244
+00:09:12,700 --> 00:09:14,230
+webdriver ways have to pass with the
+
+245
+00:09:14,230 --> 00:09:15,940
+capabilities we wanted like the browser
+
+246
+00:09:15,940 --> 00:09:18,580
+information and a URL to hit which was
+
+247
+00:09:18,580 --> 00:09:21,730
+pointed up our browser stack setting up
+
+248
+00:09:21,730 --> 00:09:23,530
+our silentium driver was easy but when
+
+249
+00:09:23,530 --> 00:09:25,420
+we were setting it up we did learn some
+
+250
+00:09:25,420 --> 00:09:26,620
+interesting things about taking
+
+251
+00:09:26,620 --> 00:09:29,380
+screenshots with different browsers with
+
+252
+00:09:29,380 --> 00:09:31,450
+our web driver we wanted to hit pages in
+
+253
+00:09:31,450 --> 00:09:33,820
+a trail browser and be able to take
+
+254
+00:09:33,820 --> 00:09:35,440
+screenshots of the full page not just
+
+255
+00:09:35,440 --> 00:09:38,140
+the current viewport unfortunately this
+
+256
+00:09:38,140 --> 00:09:39,760
+feature only works in firefox which is
+
+257
+00:09:39,760 --> 00:09:42,580
+not ideal since internet explorer and
+
+258
+00:09:42,580 --> 00:09:43,840
+chrome didn't work we couldn't really
+
+259
+00:09:43,840 --> 00:09:45,250
+transform this framework we were making
+
+260
+00:09:45,250 --> 00:09:47,080
+to be used for browser compatibility or
+
+261
+00:09:47,080 --> 00:09:49,060
+anything like that although this was an
+
+262
+00:09:49,060 --> 00:09:50,710
+ideal for our purposes right now is
+
+263
+00:09:50,710 --> 00:09:53,040
+we're factoring tool Firefox works fine
+
+264
+00:09:53,040 --> 00:09:55,480
+after writing our tests for static pages
+
+265
+00:09:55,480 --> 00:09:57,610
+such as our homepage we quickly realized
+
+266
+00:09:57,610 --> 00:09:59,020
+that we'd have an issue with the dynamic
+
+267
+00:09:59,020 --> 00:10:02,170
+data on our dashboard with dynamic data
+
+268
+00:10:02,170 --> 00:10:04,120
+you can get false positive diffs because
+
+269
+00:10:04,120 --> 00:10:05,380
+data can change between the viewing
+
+270
+00:10:05,380 --> 00:10:08,020
+times to combat this we set up picture
+
+271
+00:10:08,020 --> 00:10:10,000
+data for our r-spec tests and manually
+
+272
+00:10:10,000 --> 00:10:11,770
+adjusted any other data not covered by
+
+273
+00:10:11,770 --> 00:10:13,690
+fixtures using selenium JavaScript
+
+274
+00:10:13,690 --> 00:10:15,520
+support so that we don't get a false
+
+275
+00:10:15,520 --> 00:10:19,240
+positive diff okay now we have our test
+
+276
+00:10:19,240 --> 00:10:21,250
+taking screenshots we need to figure out
+
+277
+00:10:21,250 --> 00:10:22,690
+a way to make a diff between two of our
+
+278
+00:10:22,690 --> 00:10:25,000
+screenshots a magic worked perfectly for
+
+279
+00:10:25,000 --> 00:10:27,910
+this despite having literally one of the
+
+280
+00:10:27,910 --> 00:10:29,770
+worst sights I've ever seen imagemagick
+
+281
+00:10:29,770 --> 00:10:32,170
+did exactly what we needed imagemagick
+
+282
+00:10:32,170 --> 00:10:34,360
+is a tool to convert edit and compare
+
+283
+00:10:34,360 --> 00:10:37,330
+images image odjick has a command line
+
+284
+00:10:37,330 --> 00:10:39,340
+compare tool that with very various
+
+285
+00:10:39,340 --> 00:10:41,290
+options enabled allows us to shell out
+
+286
+00:10:41,290 --> 00:10:43,660
+and produce diff screenshots based on to
+
+287
+00:10:43,660 --> 00:10:46,630
+other screenshots for example when we
+
+288
+00:10:46,630 --> 00:10:48,340
+make a simple change to the Heather to
+
+289
+00:10:48,340 --> 00:10:51,220
+the header I tragic would spot those
+
+290
+00:10:51,220 --> 00:10:53,650
+differences and produce a screenshot
+
+291
+00:10:53,650 --> 00:10:57,190
+like that Emma Dragic has a lot of
+
+292
+00:10:57,190 --> 00:10:58,720
+options you can pass to its compare tool
+
+293
+00:10:58,720 --> 00:11:00,490
+and we take advantage of a few of these
+
+294
+00:11:00,490 --> 00:11:03,160
+options in order to make it work let's
+
+295
+00:11:03,160 --> 00:11:04,540
+go back to those options we use for a
+
+296
+00:11:04,540 --> 00:11:05,770
+second and go over how they actually
+
+297
+00:11:05,770 --> 00:11:07,529
+work with what we're doing
+
+298
+00:11:07,529 --> 00:11:09,910
+image objects compare tool from their
+
+299
+00:11:09,910 --> 00:11:11,920
+website mathematically and visually
+
+300
+00:11:11,920 --> 00:11:13,360
+annotates the differences between an
+
+301
+00:11:13,360 --> 00:11:15,970
+image and its reconstruction or in my
+
+302
+00:11:15,970 --> 00:11:18,550
+turn terms takes two images and provides
+
+303
+00:11:18,550 --> 00:11:22,149
+a Jeff compare lets you provide a metric
+
+304
+00:11:22,149 --> 00:11:23,830
+that outputs to a standard error a
+
+305
+00:11:23,830 --> 00:11:25,240
+measure of the difference is between
+
+306
+00:11:25,240 --> 00:11:27,550
+images according to a type of given
+
+307
+00:11:27,550 --> 00:11:30,880
+metric here we're using pae where PA e
+
+308
+00:11:30,880 --> 00:11:33,640
+stands for peak absolute we can use the
+
+309
+00:11:33,640 --> 00:11:35,140
+peak absolute to find the size of the
+
+310
+00:11:35,140 --> 00:11:37,390
+fuzz factor needed to make all pixels
+
+311
+00:11:37,390 --> 00:11:41,170
+similar so if we had screenshot 1 and
+
+312
+00:11:41,170 --> 00:11:43,980
+screenshot to that are pretty different
+
+313
+00:11:43,980 --> 00:11:46,120
+it would end up producing a diff like
+
+314
+00:11:46,120 --> 00:11:49,630
+this and our Peaks peak absolute
+
+315
+00:11:49,630 --> 00:11:51,040
+measurement would be outputted as
+
+316
+00:11:51,040 --> 00:11:53,110
+needing a huge fuss factor to make all
+
+317
+00:11:53,110 --> 00:11:56,740
+pixels similar the fuzz factor can be
+
+318
+00:11:56,740 --> 00:11:58,300
+important in case we want to ignore
+
+319
+00:11:58,300 --> 00:11:59,830
+pixels which only change by a slight
+
+320
+00:11:59,830 --> 00:12:02,380
+amount we might want to ignore small
+
+321
+00:12:02,380 --> 00:12:04,600
+changes in case of false positives for
+
+322
+00:12:04,600 --> 00:12:06,760
+example I've had false positives before
+
+323
+00:12:06,760 --> 00:12:08,529
+because gradients rendered slightly
+
+324
+00:12:08,529 --> 00:12:11,589
+differently between two images we don't
+
+325
+00:12:11,589 --> 00:12:13,450
+actually use this output right now but
+
+326
+00:12:13,450 --> 00:12:14,620
+it would be important if you wanted to
+
+327
+00:12:14,620 --> 00:12:15,760
+make an assertion in your tests
+
+328
+00:12:15,760 --> 00:12:17,529
+meaningful like actually have a failure
+
+329
+00:12:17,529 --> 00:12:19,959
+if a diff was produced we didn't end up
+
+330
+00:12:19,959 --> 00:12:20,950
+doing that because it doesn't
+
+331
+00:12:20,950 --> 00:12:22,630
+necessarily mean something's wrong if a
+
+332
+00:12:22,630 --> 00:12:23,950
+diff is produced it just means
+
+333
+00:12:23,950 --> 00:12:28,089
+something's change a few times when we
+
+334
+00:12:28,089 --> 00:12:29,500
+were running our specs we notice that
+
+335
+00:12:29,500 --> 00:12:32,350
+dips weren't even being produced we took
+
+336
+00:12:32,350 --> 00:12:33,760
+a look at the screenshots and realize
+
+337
+00:12:33,760 --> 00:12:34,720
+that they were different heights or
+
+338
+00:12:34,720 --> 00:12:37,060
+sizes for some reason like if we made a
+
+339
+00:12:37,060 --> 00:12:38,730
+change to accidentally remove the footer
+
+340
+00:12:38,730 --> 00:12:41,079
+Emma Dragic wouldn't let us do a default
+
+341
+00:12:41,079 --> 00:12:42,640
+compare on these images so we had to use
+
+342
+00:12:42,640 --> 00:12:45,790
+a sub image search sub image searching
+
+343
+00:12:45,790 --> 00:12:47,920
+is required to have compared search for
+
+344
+00:12:47,920 --> 00:12:50,230
+the best match location of a small image
+
+345
+00:12:50,230 --> 00:12:52,390
+within a larger image this option will
+
+346
+00:12:52,390 --> 00:12:54,279
+produce two different images or two
+
+347
+00:12:54,279 --> 00:12:56,050
+frames is what they call them the first
+
+348
+00:12:56,050 --> 00:12:57,610
+is the diff image is which is the one
+
+349
+00:12:57,610 --> 00:12:59,290
+we're going to be using and the second
+
+350
+00:12:59,290 --> 00:13:01,720
+would be the match score image match
+
+351
+00:13:01,720 --> 00:13:03,220
+score image isn't really important to us
+
+352
+00:13:03,220 --> 00:13:06,160
+but it's an image that's a smaller image
+
+353
+00:13:06,160 --> 00:13:08,079
+containing a pixel for every possible
+
+354
+00:13:08,079 --> 00:13:10,870
+position of the top left corner of the
+
+355
+00:13:10,870 --> 00:13:13,120
+given sub image the search will try to
+
+356
+00:13:13,120 --> 00:13:14,980
+compare the sub image at every possible
+
+357
+00:13:14,980 --> 00:13:17,320
+location in the larger image this can
+
+358
+00:13:17,320 --> 00:13:18,970
+make sub image searching very slow as
+
+359
+00:13:18,970 --> 00:13:20,590
+you could guess the smaller
+
+360
+00:13:20,590 --> 00:13:23,080
+some of the sub images the faster this
+
+361
+00:13:23,080 --> 00:13:26,860
+search is that being said this option
+
+362
+00:13:26,860 --> 00:13:28,450
+doesn't take effect unless you have two
+
+363
+00:13:28,450 --> 00:13:30,400
+images that are different sizes this
+
+364
+00:13:30,400 --> 00:13:32,050
+doesn't happen very often to us so the
+
+365
+00:13:32,050 --> 00:13:33,730
+amount it slows down our visual specs on
+
+366
+00:13:33,730 --> 00:13:34,990
+CI isn't really meaningful to us
+
+367
+00:13:34,990 --> 00:13:37,270
+especially since those specs aren't tied
+
+368
+00:13:37,270 --> 00:13:40,540
+to our main specs another fun thing we
+
+369
+00:13:40,540 --> 00:13:42,160
+ran into is sometimes our screen shots
+
+370
+00:13:42,160 --> 00:13:44,170
+were completely different like
+
+371
+00:13:44,170 --> 00:13:47,560
+completely different and imagemagick was
+
+372
+00:13:47,560 --> 00:13:50,020
+not into it in fact it just wouldn't
+
+373
+00:13:50,020 --> 00:13:51,820
+even give us a diff because the images
+
+374
+00:13:51,820 --> 00:13:54,340
+were so different without an option
+
+375
+00:13:54,340 --> 00:13:56,140
+called the dissimilarity threshold which
+
+376
+00:13:56,140 --> 00:13:58,660
+I find kind of weird this thrush will
+
+377
+00:13:58,660 --> 00:14:00,370
+determine how different two images could
+
+378
+00:14:00,370 --> 00:14:02,440
+be in order to dip them it's he faulted
+
+379
+00:14:02,440 --> 00:14:04,840
+2.2 so I just made it one and it seemed
+
+380
+00:14:04,840 --> 00:14:07,690
+to do the trick the only caveat as you
+
+381
+00:14:07,690 --> 00:14:09,220
+might get as you might have guessed is
+
+382
+00:14:09,220 --> 00:14:10,180
+doing dips on completely different
+
+383
+00:14:10,180 --> 00:14:11,860
+images can slow down your test by a lot
+
+384
+00:14:11,860 --> 00:14:14,020
+like our previous issue with some image
+
+385
+00:14:14,020 --> 00:14:15,220
+searching this doesn't seem to happen
+
+386
+00:14:15,220 --> 00:14:17,260
+much and since the tests are separate
+
+387
+00:14:17,260 --> 00:14:19,030
+from our main specs we weren't worried
+
+388
+00:14:19,030 --> 00:14:21,340
+about it plus the arguments aren't very
+
+389
+00:14:21,340 --> 00:14:22,570
+exciting just where our current
+
+390
+00:14:22,570 --> 00:14:25,600
+screenshot is located where our master
+
+391
+00:14:25,600 --> 00:14:28,420
+screenshot is located and where we want
+
+392
+00:14:28,420 --> 00:14:31,360
+the diff to save to okay now that we're
+
+393
+00:14:31,360 --> 00:14:35,200
+done with that stuff we had now that we
+
+394
+00:14:35,200 --> 00:14:36,730
+had our screenshots in our diffs we
+
+395
+00:14:36,730 --> 00:14:37,990
+needed somewhere to actually throw the
+
+396
+00:14:37,990 --> 00:14:40,180
+screenshots online and be able to grab
+
+397
+00:14:40,180 --> 00:14:41,830
+them back out with our rails app so we
+
+398
+00:14:41,830 --> 00:14:45,340
+decided to use AWS AWS or Amazon Web
+
+399
+00:14:45,340 --> 00:14:47,470
+Services offers cloud storage and has a
+
+400
+00:14:47,470 --> 00:14:49,570
+ruby API so we'll store and retrieve our
+
+401
+00:14:49,570 --> 00:14:52,840
+screenshots from one of their buckets we
+
+402
+00:14:52,840 --> 00:14:54,310
+ended up using a naming pattern of
+
+403
+00:14:54,310 --> 00:14:57,400
+commits sha area of site page name and
+
+404
+00:14:57,400 --> 00:15:00,460
+image type so for example we could have
+
+405
+00:15:00,460 --> 00:15:02,650
+a commit show of a 1a 1a 1a very
+
+406
+00:15:02,650 --> 00:15:04,900
+realistic I know where we're on our
+
+407
+00:15:04,900 --> 00:15:06,940
+marketing part of our site on the index
+
+408
+00:15:06,940 --> 00:15:09,100
+page and we're uploading the diff for
+
+409
+00:15:09,100 --> 00:15:12,160
+that page the image types could be the
+
+410
+00:15:12,160 --> 00:15:13,690
+current screenshot we took the master
+
+411
+00:15:13,690 --> 00:15:16,270
+screenshot we downloaded from s3 or the
+
+412
+00:15:16,270 --> 00:15:19,520
+diff we made of the two screenshots
+
+413
+00:15:19,530 --> 00:15:21,670
+viewing the screenshots from an amazon
+
+414
+00:15:21,670 --> 00:15:23,620
+bucket was far less than ideal so we
+
+415
+00:15:23,620 --> 00:15:25,360
+decided to set up our own custom viewing
+
+416
+00:15:25,360 --> 00:15:28,360
+page in our admin dashboard we created a
+
+417
+00:15:28,360 --> 00:15:29,680
+page that listed out our current
+
+418
+00:15:29,680 --> 00:15:32,570
+branches with our last three commits
+
+419
+00:15:32,570 --> 00:15:34,070
+and when you would click through it
+
+420
+00:15:34,070 --> 00:15:36,170
+would show you by area all of your
+
+421
+00:15:36,170 --> 00:15:37,490
+screenshots and dips which is our end
+
+422
+00:15:37,490 --> 00:15:41,060
+goal we did it however our tool is not
+
+423
+00:15:41,060 --> 00:15:42,980
+perfect right now it's certainly better
+
+424
+00:15:42,980 --> 00:15:46,300
+than what we had which was nothing but
+
+425
+00:15:46,300 --> 00:15:49,340
+right now all of our tests pass whether
+
+426
+00:15:49,340 --> 00:15:51,410
+or not there's a diff the only failed
+
+427
+00:15:51,410 --> 00:15:53,570
+there's an issue executing the test it
+
+428
+00:15:53,570 --> 00:15:54,710
+could be interesting to make our
+
+429
+00:15:54,710 --> 00:15:56,540
+assertions mean something like fail if
+
+430
+00:15:56,540 --> 00:15:58,580
+there's a diff we need to think more
+
+431
+00:15:58,580 --> 00:16:00,290
+about that because a diff like like I
+
+432
+00:16:00,290 --> 00:16:01,790
+said earlier it doesn't necessarily mean
+
+433
+00:16:01,790 --> 00:16:06,050
+a failure to us and the future it might
+
+434
+00:16:06,050 --> 00:16:08,840
+also be nice to account for 0% diffs so
+
+435
+00:16:08,840 --> 00:16:11,120
+maybe we shouldn't upload a diff image
+
+436
+00:16:11,120 --> 00:16:12,800
+at all if there's no diff between images
+
+437
+00:16:12,800 --> 00:16:15,770
+this could save a space on AWS bucket as
+
+438
+00:16:15,770 --> 00:16:17,750
+well speed up our tests because we're
+
+439
+00:16:17,750 --> 00:16:19,070
+trying to upload for your screenshots
+
+440
+00:16:19,070 --> 00:16:21,290
+and it would make our admin dashboard
+
+441
+00:16:21,290 --> 00:16:25,100
+less noisy we also think it would be
+
+442
+00:16:25,100 --> 00:16:26,600
+nice to automatically link these two a
+
+443
+00:16:26,600 --> 00:16:29,840
+github pull request so when a diff is
+
+444
+00:16:29,840 --> 00:16:31,790
+created maybe automatically attach it
+
+445
+00:16:31,790 --> 00:16:33,590
+onto its relevant pull request this
+
+446
+00:16:33,590 --> 00:16:35,570
+sounds a little tricky because maybe we
+
+447
+00:16:35,570 --> 00:16:36,620
+don't want to create that much noise
+
+448
+00:16:36,620 --> 00:16:38,780
+every time we push but it's an idea
+
+449
+00:16:38,780 --> 00:16:41,810
+something we need to think about another
+
+450
+00:16:41,810 --> 00:16:43,910
+thing is that we currently only diff
+
+451
+00:16:43,910 --> 00:16:45,410
+between our current commit on a branch
+
+452
+00:16:45,410 --> 00:16:48,410
+and versus our most recent commit on
+
+453
+00:16:48,410 --> 00:16:51,500
+that sir so when we push a new commit to
+
+454
+00:16:51,500 --> 00:16:53,570
+our branch it'll diff versus the last
+
+455
+00:16:53,570 --> 00:16:55,400
+thing that we push to mash to master
+
+456
+00:16:55,400 --> 00:16:57,410
+this way we know what's changed between
+
+457
+00:16:57,410 --> 00:16:59,240
+the future I'm working on and what's
+
+458
+00:16:59,240 --> 00:17:01,850
+currently running in production it would
+
+459
+00:17:01,850 --> 00:17:03,500
+be nice if we could dip on master with
+
+460
+00:17:03,500 --> 00:17:05,329
+the current most recent commit and its
+
+461
+00:17:05,329 --> 00:17:08,030
+previous commitment so that way in cush
+
+462
+00:17:08,030 --> 00:17:09,560
+in case you push a visual change
+
+463
+00:17:09,560 --> 00:17:11,240
+directly to master which don't do that
+
+464
+00:17:11,240 --> 00:17:15,110
+you could still see a dip for it it
+
+465
+00:17:15,110 --> 00:17:16,640
+would also be nice to see a diff between
+
+466
+00:17:16,640 --> 00:17:18,170
+the previous commit on the current
+
+467
+00:17:18,170 --> 00:17:21,410
+branch as well like if you push to
+
+468
+00:17:21,410 --> 00:17:23,510
+commit to your branch that changes some
+
+469
+00:17:23,510 --> 00:17:25,339
+stuff visually you might want to see a
+
+470
+00:17:25,339 --> 00:17:26,750
+dip between those two regardless of
+
+471
+00:17:26,750 --> 00:17:30,050
+what's happening on master it also
+
+472
+00:17:30,050 --> 00:17:31,340
+really love to get this hooked up to
+
+473
+00:17:31,340 --> 00:17:33,710
+more browsers that would really enable
+
+474
+00:17:33,710 --> 00:17:35,030
+us to make this into a backwards
+
+475
+00:17:35,030 --> 00:17:36,560
+compatibility tool as well as an
+
+476
+00:17:36,560 --> 00:17:38,000
+automatic browser comparison to make
+
+477
+00:17:38,000 --> 00:17:40,090
+sure things aren't messed up in IE
+
+478
+00:17:40,090 --> 00:17:42,770
+thanks that's all I have and feel free
+
+479
+00:17:42,770 --> 00:17:44,300
+to ask me questions after a few
+
+480
+00:17:44,300 --> 00:17:45,140
+interesting
+

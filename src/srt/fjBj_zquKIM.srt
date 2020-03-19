@@ -1,0 +1,1801 @@
+1
+00:00:00,000 --> 00:00:10,200
+
+ah
+
+2
+00:00:10,210 --> 00:00:13,760
+so the issue i was having with chrome
+
+3
+00:00:13,760 --> 00:00:15,260
+and this chrome extension that i was
+
+4
+00:00:15,260 --> 00:00:16,820
+writing and it's monitoring all my pages
+
+5
+00:00:16,820 --> 00:00:19,250
+is that I really wanted to calm it while
+
+6
+00:00:19,250 --> 00:00:21,980
+doing this and you very quickly hit a
+
+7
+00:00:21,980 --> 00:00:24,320
+connection limit when you have 100 some
+
+8
+00:00:24,320 --> 00:00:26,599
+tabs open each tab is individually
+
+9
+00:00:26,599 --> 00:00:27,679
+trying to make a connection to the
+
+10
+00:00:27,679 --> 00:00:29,900
+server and there's really no wait to
+
+11
+00:00:29,900 --> 00:00:33,260
+share that when my plugging into yours
+
+12
+00:00:33,260 --> 00:00:36,200
+that I just have to pay attention to
+
+13
+00:00:36,200 --> 00:00:40,310
+what I'm doing um so yeah I hit this
+
+14
+00:00:40,310 --> 00:00:41,840
+connection limit pretty quickly and I
+
+15
+00:00:41,840 --> 00:00:44,000
+really really thought that I've always
+
+16
+00:00:44,000 --> 00:00:45,320
+seen the connection limit is one of the
+
+17
+00:00:45,320 --> 00:00:49,250
+forefront problems in HTTP and the the
+
+18
+00:00:49,250 --> 00:00:51,830
+idea of being able to pull for data and
+
+19
+00:00:51,830 --> 00:00:53,890
+listen for data this comment idea
+
+20
+00:00:53,890 --> 00:00:56,390
+doesn't really scale and this is
+
+21
+00:00:56,390 --> 00:00:57,590
+something that I desperately wanted to
+
+22
+00:00:57,590 --> 00:01:02,750
+address and there is a working group out
+
+23
+00:01:02,750 --> 00:01:04,460
+there that addressed wanted to address
+
+24
+00:01:04,460 --> 00:01:07,610
+this issue the hanging request issue hi
+
+25
+00:01:07,610 --> 00:01:10,610
+by working group realized the comment in
+
+26
+00:01:10,610 --> 00:01:11,930
+the way that we were trying to deal with
+
+27
+00:01:11,930 --> 00:01:13,610
+the large amount of connections was
+
+28
+00:01:13,610 --> 00:01:15,470
+simply not working not scaling and was
+
+29
+00:01:15,470 --> 00:01:18,290
+kind of a hack there's HTTP is a
+
+30
+00:01:18,290 --> 00:01:20,090
+pipelined request response model and
+
+31
+00:01:20,090 --> 00:01:21,650
+there's just no way to deal with
+
+32
+00:01:21,650 --> 00:01:24,680
+responses that don't get back to us I'm
+
+33
+00:01:24,680 --> 00:01:26,120
+going to do a quick little tour through
+
+34
+00:01:26,120 --> 00:01:27,380
+some of what these people thought was
+
+35
+00:01:27,380 --> 00:01:30,260
+important and of course the screen is
+
+36
+00:01:30,260 --> 00:01:36,899
+absolutely tiny ha
+
+37
+00:01:36,909 --> 00:01:38,590
+so let's just look through the high by
+
+38
+00:01:38,590 --> 00:01:39,819
+mailing list and see some of the issues
+
+39
+00:01:39,819 --> 00:01:41,439
+that people thought was important and
+
+40
+00:01:41,439 --> 00:01:43,090
+this will just kind of be a really quick
+
+41
+00:01:43,090 --> 00:01:45,429
+retrospective on where what sort of
+
+42
+00:01:45,429 --> 00:01:46,990
+issues people were talking about at the
+
+43
+00:01:46,990 --> 00:01:54,609
+time when high by was made so minimal
+
+44
+00:01:54,609 --> 00:01:56,530
+eventing was one of the first ideas that
+
+45
+00:01:56,530 --> 00:01:58,509
+came up I was just a random thread
+
+46
+00:01:58,509 --> 00:02:00,490
+saying how do we get just talking to
+
+47
+00:02:00,490 --> 00:02:08,500
+bait ah one of the anyway there's a
+
+48
+00:02:08,500 --> 00:02:09,729
+bunch of people chipping in saying how
+
+49
+00:02:09,729 --> 00:02:11,079
+do we get information on the page what
+
+50
+00:02:11,079 --> 00:02:15,879
+do we do with all these widgets it's a
+
+51
+00:02:15,879 --> 00:02:17,349
+similar idea how do we deal with this
+
+52
+00:02:17,349 --> 00:02:19,000
+particularly in the context of our two
+
+53
+00:02:19,000 --> 00:02:20,140
+connection limit however many
+
+54
+00:02:20,140 --> 00:02:21,730
+connections we have how do we get data
+
+55
+00:02:21,730 --> 00:02:24,370
+onto the page in some sort of push a
+
+56
+00:02:24,370 --> 00:02:27,970
+sort of fashion we have one particular
+
+57
+00:02:27,970 --> 00:02:29,680
+opinion Greg Wilkins talking about how
+
+58
+00:02:29,680 --> 00:02:31,660
+multiplex multiplexing is the way that
+
+59
+00:02:31,660 --> 00:02:34,200
+this is going to be done and in general
+
+60
+00:02:34,200 --> 00:02:37,720
+this is a this is one particular way for
+
+61
+00:02:37,720 --> 00:02:40,569
+how connection sharing might be dressed
+
+62
+00:02:40,569 --> 00:02:42,040
+how we might be able to get around this
+
+63
+00:02:42,040 --> 00:02:44,260
+this is just from some random java.net
+
+64
+00:02:44,260 --> 00:02:46,690
+article but it really has i think many
+
+65
+00:02:46,690 --> 00:02:48,340
+of the core ideas and many of the ideas
+
+66
+00:02:48,340 --> 00:02:50,230
+that are talked about here i think are
+
+67
+00:02:50,230 --> 00:02:53,230
+items that well they are the particular
+
+68
+00:02:53,230 --> 00:02:55,540
+means that i use to implement my own way
+
+69
+00:02:55,540 --> 00:02:59,470
+to address this connection limit and the
+
+70
+00:02:59,470 --> 00:03:01,660
+idea really is to have some sort of pool
+
+71
+00:03:01,660 --> 00:03:04,090
+being run by this is particularly
+
+72
+00:03:04,090 --> 00:03:07,840
+talking about server sent events which
+
+73
+00:03:07,840 --> 00:03:09,250
+is another way of sending data to the
+
+74
+00:03:09,250 --> 00:03:11,250
+browser and the server sent events plan
+
+75
+00:03:11,250 --> 00:03:13,720
+you have a TCP connection that is
+
+76
+00:03:13,720 --> 00:03:15,790
+talking to each individual page so this
+
+77
+00:03:15,790 --> 00:03:17,349
+doesn't address the two connection limit
+
+78
+00:03:17,349 --> 00:03:20,019
+but this particular article is saying
+
+79
+00:03:20,019 --> 00:03:22,060
+well we can just have a pool some sort
+
+80
+00:03:22,060 --> 00:03:24,819
+of managed pool that's shared and then
+
+81
+00:03:24,819 --> 00:03:26,680
+from that shared pool we can designate
+
+82
+00:03:26,680 --> 00:03:29,099
+and send requests where they need to go
+
+83
+00:03:29,099 --> 00:03:32,019
+this is probably the best post I have
+
+84
+00:03:32,019 --> 00:03:35,349
+seen on the list James look here Jamie
+
+85
+00:03:35,349 --> 00:03:39,190
+look here I love this he's just talking
+
+86
+00:03:39,190 --> 00:03:41,290
+about what's required from multiplexing
+
+87
+00:03:41,290 --> 00:03:43,480
+how people would have to what's going to
+
+88
+00:03:43,480 --> 00:03:46,030
+be required to share a pipe to get a
+
+89
+00:03:46,030 --> 00:03:48,270
+pipe
+
+90
+00:03:48,270 --> 00:03:50,390
+a pipe that everyone can use together
+
+91
+00:03:50,390 --> 00:03:53,190
+and he's not specifically he doesn't
+
+92
+00:03:53,190 --> 00:03:55,250
+address the earlier points about the
+
+93
+00:03:55,250 --> 00:03:58,470
+connection the shared pool that's spoken
+
+94
+00:03:58,470 --> 00:04:01,050
+of here but in terms of how a shared
+
+95
+00:04:01,050 --> 00:04:02,670
+pool would be implemented and what needs
+
+96
+00:04:02,670 --> 00:04:04,350
+to go into a shared pool and how it
+
+97
+00:04:04,350 --> 00:04:06,000
+would work how we're going to route that
+
+98
+00:04:06,000 --> 00:04:12,570
+data this is just dead on and so it
+
+99
+00:04:12,570 --> 00:04:14,370
+seemed like a good challenge to be able
+
+100
+00:04:14,370 --> 00:04:16,920
+to try and get something working with
+
+101
+00:04:16,920 --> 00:04:18,239
+this to try and get some sort of
+
+102
+00:04:18,239 --> 00:04:22,260
+asynchronous HTTP Live running so I
+
+103
+00:04:22,260 --> 00:04:27,270
+wrote a very simple little system the
+
+104
+00:04:27,270 --> 00:04:32,280
+back end is nodejs implementation and
+
+105
+00:04:32,280 --> 00:04:35,310
+it's a message router it allows it's
+
+106
+00:04:35,310 --> 00:04:38,460
+simply a back-end for the backend server
+
+107
+00:04:38,460 --> 00:04:41,030
+it's a front-end proxy and it
+
+108
+00:04:41,030 --> 00:04:44,160
+multiplexes connections over HTTP and so
+
+109
+00:04:44,160 --> 00:04:45,660
+let's look at a test page this is the
+
+110
+00:04:45,660 --> 00:04:48,690
+test case the only really interesting
+
+111
+00:04:48,690 --> 00:04:51,540
+thing that's included here is piped xhr
+
+112
+00:04:51,540 --> 00:04:53,670
+j/s and that's my implementation of my
+
+113
+00:04:53,670 --> 00:04:56,070
+pipe system to be able to multiplex and
+
+114
+00:04:56,070 --> 00:05:00,240
+get a synchronous HTTP as you can see
+
+115
+00:05:00,240 --> 00:05:02,910
+the test case is pretty simple let's
+
+116
+00:05:02,910 --> 00:05:05,340
+open an exit xmlhttprequest let's get
+
+117
+00:05:05,340 --> 00:05:09,480
+some data and then do something to then
+
+118
+00:05:09,480 --> 00:05:10,470
+when we're done we're just going to
+
+119
+00:05:10,470 --> 00:05:13,230
+change with the page says a really
+
+120
+00:05:13,230 --> 00:05:21,150
+simple idea is your pipe got xhr
+
+121
+00:05:21,150 --> 00:05:24,480
+overload it does that is exactly what it
+
+122
+00:05:24,480 --> 00:05:28,440
+does it overloads xml httprequest and so
+
+123
+00:05:28,440 --> 00:05:31,590
+you get it very simple easy to use code
+
+124
+00:05:31,590 --> 00:05:35,040
+and yet behind the scenes nodejs is
+
+125
+00:05:35,040 --> 00:05:36,780
+routing all of these requests through
+
+126
+00:05:36,780 --> 00:05:39,930
+itself there's random useless logs it
+
+127
+00:05:39,930 --> 00:05:41,160
+doesn't really sit anything interesting
+
+128
+00:05:41,160 --> 00:05:46,140
+but that's not-- j/s in action so yeah
+
+129
+00:05:46,140 --> 00:05:50,400
+like hit it we have this data you can
+
+130
+00:05:50,400 --> 00:05:52,580
+see that what we're asking for is
+
+131
+00:05:52,580 --> 00:05:56,040
+resource study text you can see a
+
+132
+00:05:56,040 --> 00:05:59,280
+resource text is fulfilled through it
+
+133
+00:05:59,280 --> 00:06:00,330
+goes through there's a bunch of
+
+134
+00:06:00,330 --> 00:06:01,449
+different the seasons
+
+135
+00:06:01,449 --> 00:06:03,169
+goes through a bunch of different
+
+136
+00:06:03,169 --> 00:06:06,199
+filters and it gets to the x-pipe filter
+
+137
+00:06:06,199 --> 00:06:08,179
+and the x-pipe filter is what implements
+
+138
+00:06:08,179 --> 00:06:11,059
+the x-pipe routing then we'll look at
+
+139
+00:06:11,059 --> 00:06:15,289
+this take another view of this data and
+
+140
+00:06:15,289 --> 00:06:23,689
+look at what's happening so here's the
+
+141
+00:06:23,689 --> 00:06:25,909
+request being sent out when the request
+
+142
+00:06:25,909 --> 00:06:28,339
+is sent out it creates its own pipe it
+
+143
+00:06:28,339 --> 00:06:30,109
+just generates its own random ID for
+
+144
+00:06:30,109 --> 00:06:32,629
+this pipe and then the pipe and then the
+
+145
+00:06:32,629 --> 00:06:34,249
+response back to it when it gets the
+
+146
+00:06:34,249 --> 00:06:36,499
+data back we can see that the pipe this
+
+147
+00:06:36,499 --> 00:06:39,199
+message is tagged with a pipe again and
+
+148
+00:06:39,199 --> 00:06:40,819
+there's now a sequence with it the
+
+149
+00:06:40,819 --> 00:06:42,439
+sequence will just increment each time
+
+150
+00:06:42,439 --> 00:06:53,479
+this particular pipe is used so it's
+
+151
+00:06:53,479 --> 00:07:05,910
+just oops
+
+152
+00:07:05,920 --> 00:07:07,960
+it's a delay filter in here so I can
+
+153
+00:07:07,960 --> 00:07:10,270
+just this will make a request hang for a
+
+154
+00:07:10,270 --> 00:07:11,710
+little bit it'll just wait for a while
+
+155
+00:07:11,710 --> 00:07:13,090
+and then I'll be like oh here's your
+
+156
+00:07:13,090 --> 00:07:23,380
+data back we're still running good I did
+
+157
+00:07:23,380 --> 00:08:05,020
+not clear what I wanted in
+
+158
+00:08:05,030 --> 00:08:08,700
+well rather than try and demos the point
+
+159
+00:08:08,700 --> 00:08:09,780
+of what it's doing is it's creating
+
+160
+00:08:09,780 --> 00:08:11,760
+these individual pipes and this these
+
+161
+00:08:11,760 --> 00:08:13,920
+identifiers these tags on the messages
+
+162
+00:08:13,920 --> 00:08:16,020
+these headers give it a multi a way to
+
+163
+00:08:16,020 --> 00:08:18,240
+address each message and so rather than
+
+164
+00:08:18,240 --> 00:08:20,490
+have a request-response framework now
+
+165
+00:08:20,490 --> 00:08:22,410
+what we have is we have HTTP sending
+
+166
+00:08:22,410 --> 00:08:25,950
+requests out HTTP asking saying here's
+
+167
+00:08:25,950 --> 00:08:27,570
+this request and then when the response
+
+168
+00:08:27,570 --> 00:08:29,460
+comes back the response can be to any
+
+169
+00:08:29,460 --> 00:08:31,650
+message it's not necessarily going to be
+
+170
+00:08:31,650 --> 00:08:34,460
+in response to the message that was
+
+171
+00:08:34,460 --> 00:08:38,430
+originally the a message that is a reply
+
+172
+00:08:38,430 --> 00:08:41,460
+is not necessarily going to be to the
+
+173
+00:08:41,460 --> 00:08:42,660
+given message from which it was
+
+174
+00:08:42,660 --> 00:08:46,050
+requested so you're basically instead of
+
+175
+00:08:46,050 --> 00:08:48,570
+opening up a dedicated common connection
+
+176
+00:08:48,570 --> 00:08:50,670
+for every one of those xhr objects
+
+177
+00:08:50,670 --> 00:08:53,390
+you're opening up one comment and you're
+
+178
+00:08:53,390 --> 00:08:55,860
+basically piping all these other ones
+
+179
+00:08:55,860 --> 00:08:58,800
+through the single connection I eat yep
+
+180
+00:08:58,800 --> 00:09:00,870
+that is that is exactly what's going on
+
+181
+00:09:00,870 --> 00:09:02,850
+it's all be multiplexed and the way that
+
+182
+00:09:02,850 --> 00:09:07,470
+that is done mouse where are you hi all
+
+183
+00:09:07,470 --> 00:09:09,660
+right so this is weird i don't have the
+
+184
+00:09:09,660 --> 00:09:12,000
+splash screen need to do more than one
+
+185
+00:09:12,000 --> 00:09:16,530
+but not one to one so right now you just
+
+186
+00:09:16,530 --> 00:09:18,570
+you went from there's no way to have
+
+187
+00:09:18,570 --> 00:09:21,180
+multiple down to one could you do by yes
+
+188
+00:09:21,180 --> 00:09:23,430
+yes the idea is to take as much
+
+189
+00:09:23,430 --> 00:09:25,440
+advantage of the existing pipelining
+
+190
+00:09:25,440 --> 00:09:27,750
+system as possible so you can issue a
+
+191
+00:09:27,750 --> 00:09:30,570
+large pipeline of requests and then be
+
+192
+00:09:30,570 --> 00:09:32,730
+able to get them back as in whatever out
+
+193
+00:09:32,730 --> 00:09:34,770
+of order system you want and so kind of
+
+194
+00:09:34,770 --> 00:09:39,540
+the model for this is uh we'll have like
+
+195
+00:09:39,540 --> 00:09:41,400
+a couple different web pages open here
+
+196
+00:09:41,400 --> 00:09:44,580
+and then the magic that runs all of this
+
+197
+00:09:44,580 --> 00:09:46,530
+there's a very simple implementation of
+
+198
+00:09:46,530 --> 00:09:49,110
+a shared router excuse me a shared
+
+199
+00:09:49,110 --> 00:09:50,810
+worker shared workers are in html5
+
+200
+00:09:50,810 --> 00:09:53,340
+creation and the shared worker the
+
+201
+00:09:53,340 --> 00:09:55,530
+center item here is talking to each
+
+202
+00:09:55,530 --> 00:09:58,560
+individual page and what happens is when
+
+203
+00:09:58,560 --> 00:10:02,520
+you look at the xmlhttprequest when this
+
+204
+00:10:02,520 --> 00:10:05,880
+happens the proxy is talking to the
+
+205
+00:10:05,880 --> 00:10:08,070
+shared worker it's sending the
+
+206
+00:10:08,070 --> 00:10:10,350
+xmlhttprequest to the shared worker and
+
+207
+00:10:10,350 --> 00:10:12,150
+then the shared worker on behalf of the
+
+208
+00:10:12,150 --> 00:10:14,460
+page issues the request over to the
+
+209
+00:10:14,460 --> 00:10:16,620
+server and so this is going to be our
+
+210
+00:10:16,620 --> 00:10:19,480
+node.js server
+
+211
+00:10:19,490 --> 00:10:24,860
+dude I can't draw that's no secret each
+
+212
+00:10:24,860 --> 00:10:30,140
+character / awesome and yes um so it
+
+213
+00:10:30,140 --> 00:10:33,620
+talks to node and then node goes a node
+
+214
+00:10:33,620 --> 00:10:35,330
+goes off and does whatever a sink in
+
+215
+00:10:35,330 --> 00:10:37,640
+asynchronous processing it needs to with
+
+216
+00:10:37,640 --> 00:10:39,740
+this request that does something fancy
+
+217
+00:10:39,740 --> 00:10:40,880
+asynchronous and then at some point
+
+218
+00:10:40,880 --> 00:10:44,120
+later back in time it comes back that
+
+219
+00:10:44,120 --> 00:10:47,450
+the the data comes back and it will come
+
+220
+00:10:47,450 --> 00:10:50,089
+back node will send it out over whatever
+
+221
+00:10:50,089 --> 00:10:52,550
+particular TCP connections or whatever
+
+222
+00:10:52,550 --> 00:10:55,430
+HTTP connections are open and again it's
+
+223
+00:10:55,430 --> 00:10:57,110
+decoupled so it's not necessarily going
+
+224
+00:10:57,110 --> 00:10:59,750
+to be the same same item back and then
+
+225
+00:10:59,750 --> 00:11:01,399
+it will get routed back to from it's
+
+226
+00:11:01,399 --> 00:11:03,950
+over to its original destination and
+
+227
+00:11:03,950 --> 00:11:05,870
+this allows this common having this
+
+228
+00:11:05,870 --> 00:11:07,640
+common shared workers really kind of the
+
+229
+00:11:07,640 --> 00:11:14,480
+key it is very much I mean this idea is
+
+230
+00:11:14,480 --> 00:11:16,520
+really dead on we they were talking
+
+231
+00:11:16,520 --> 00:11:19,880
+about having a to handle the per server
+
+232
+00:11:19,880 --> 00:11:22,060
+connection limitation a shared worker
+
+233
+00:11:22,060 --> 00:11:24,260
+which shares a single event source
+
+234
+00:11:24,260 --> 00:11:26,570
+object can be used and so it's not a
+
+235
+00:11:26,570 --> 00:11:28,880
+single event source object it's the
+
+236
+00:11:28,880 --> 00:11:30,950
+shared worker is making a crap ton of
+
+237
+00:11:30,950 --> 00:11:34,850
+XML HTTP requests but it's getting when
+
+238
+00:11:34,850 --> 00:11:37,100
+I'd ever whenever it gets a response its
+
+239
+00:11:37,100 --> 00:11:39,079
+using that tagging do I still have
+
+240
+00:11:39,079 --> 00:11:42,020
+anything in do i do still have some data
+
+241
+00:11:42,020 --> 00:11:46,680
+yeah
+
+242
+00:11:46,690 --> 00:11:49,600
+it's using each messages individual tag
+
+243
+00:11:49,600 --> 00:11:54,700
+to route it back to the worker really so
+
+244
+00:11:54,700 --> 00:11:58,930
+the shared worker that's yes it's an
+
+245
+00:11:58,930 --> 00:12:01,660
+html5 thing yeah client-side okay so
+
+246
+00:12:01,660 --> 00:12:04,090
+that's how I can talk to everybody yes
+
+247
+00:12:04,090 --> 00:12:06,520
+yeah the shared worker is really the key
+
+248
+00:12:06,520 --> 00:12:07,600
+thing here that makes all of this
+
+249
+00:12:07,600 --> 00:12:08,950
+possible is the fact that we can have
+
+250
+00:12:08,950 --> 00:12:10,720
+this delegated responsibility for
+
+251
+00:12:10,720 --> 00:12:12,520
+actually making these connections in a
+
+252
+00:12:12,520 --> 00:12:14,920
+common place for all pages so really a
+
+253
+00:12:14,920 --> 00:12:16,990
+the idea for that was talking about
+
+254
+00:12:16,990 --> 00:12:19,690
+earlier this Chrome extension that I'd
+
+255
+00:12:19,690 --> 00:12:21,430
+written where I have every single tab
+
+256
+00:12:21,430 --> 00:12:23,710
+every single tab I have open and chrome
+
+257
+00:12:23,710 --> 00:12:27,040
+is issuing a comment request to my own
+
+258
+00:12:27,040 --> 00:12:29,770
+server well that was having that shared
+
+259
+00:12:29,770 --> 00:12:33,580
+worker allows me to share that one pool
+
+260
+00:12:33,580 --> 00:12:35,740
+of resources shared the shared worker as
+
+261
+00:12:35,740 --> 00:12:37,660
+a shared resource pool that's really
+
+262
+00:12:37,660 --> 00:12:40,920
+that's all I've done it's really simple
+
+263
+00:12:40,920 --> 00:12:45,370
+it's been really fun the shed work is
+
+264
+00:12:45,370 --> 00:12:50,110
+today cash the caching I have not yet
+
+265
+00:12:50,110 --> 00:12:51,520
+implemented I do want to implement
+
+266
+00:12:51,520 --> 00:12:52,840
+caching but I have to re-implement
+
+267
+00:12:52,840 --> 00:12:56,100
+caching at the in an application level
+
+268
+00:12:56,100 --> 00:13:01,360
+so there is work required there I'm just
+
+269
+00:13:01,360 --> 00:13:03,580
+wondering if it was normally if you pull
+
+270
+00:13:03,580 --> 00:13:09,210
+down some cogency cash it mm-hmm
+
+271
+00:13:09,220 --> 00:13:12,649
+there's no module for that that's I'm
+
+272
+00:13:12,649 --> 00:13:15,339
+repurposing the there's an app for that
+
+273
+00:13:15,339 --> 00:13:19,579
+hahaha very good um that's it if anybody
+
+274
+00:13:19,579 --> 00:13:23,300
+has any question any more questions I'd
+
+275
+00:13:23,300 --> 00:13:35,639
+unicode yeah uh code is up and it is a
+
+276
+00:13:35,649 --> 00:13:40,730
+see get booty where's calm / huh see its
+
+277
+00:13:40,730 --> 00:13:45,949
+particular about this actually Shh oops
+
+278
+00:13:45,949 --> 00:13:49,730
+and / the project is pi player I'm
+
+279
+00:13:49,730 --> 00:13:50,839
+laying new pipes for the web
+
+280
+00:13:50,839 --> 00:13:53,930
+infrastructure I don't know if it's
+
+281
+00:13:53,930 --> 00:13:55,910
+better yet but uh it allows me to run
+
+282
+00:13:55,910 --> 00:14:01,470
+300 gamma connections so so start there
+
+283
+00:14:01,470 --> 00:14:03,990
+Oh back to what I was trying to ask
+
+284
+00:14:03,990 --> 00:14:07,080
+earlier I'm sorry you've got one shared
+
+285
+00:14:07,080 --> 00:14:09,540
+worker yes is there any benefit or is
+
+286
+00:14:09,540 --> 00:14:12,000
+there even any capability to have five
+
+287
+00:14:12,000 --> 00:14:14,010
+shared workers the whole it up a
+
+288
+00:14:14,010 --> 00:14:18,000
+thousand connections I don't think
+
+289
+00:14:18,000 --> 00:14:20,700
+there's really a benefit you could if
+
+290
+00:14:20,700 --> 00:14:22,440
+you wanted to you could isolate the
+
+291
+00:14:22,440 --> 00:14:25,110
+pipes like if for whatever reason you
+
+292
+00:14:25,110 --> 00:14:26,910
+wanted like I don't know high security
+
+293
+00:14:26,910 --> 00:14:29,280
+your low scary a or B you could run
+
+294
+00:14:29,280 --> 00:14:31,320
+multiple shared workers and talk you
+
+295
+00:14:31,320 --> 00:14:36,540
+need to does it create one shared worker
+
+296
+00:14:36,540 --> 00:14:39,570
+for each target location like my
+
+297
+00:14:39,570 --> 00:14:42,330
+question is if I wanted to talk to five
+
+298
+00:14:42,330 --> 00:14:44,790
+different servers five different shared
+
+299
+00:14:44,790 --> 00:14:47,220
+workers no you each shared worker is
+
+300
+00:14:47,220 --> 00:14:49,140
+capable of doing all of the routing for
+
+301
+00:14:49,140 --> 00:14:52,580
+all of XML HTTP in flight and so it will
+
+302
+00:14:52,580 --> 00:14:54,930
+the shared work role gracefully degrade
+
+303
+00:14:54,930 --> 00:14:56,700
+if you're not running the pipe layering
+
+304
+00:14:56,700 --> 00:15:00,810
+system so you can access / calm / org
+
+305
+00:15:00,810 --> 00:15:04,440
+and it will still go through the shared
+
+306
+00:15:04,440 --> 00:15:07,170
+worker out to / get back and then get
+
+307
+00:15:07,170 --> 00:15:09,450
+routed back to the page there's no need
+
+308
+00:15:09,450 --> 00:15:11,490
+to run multiple shared workers it's it
+
+309
+00:15:11,490 --> 00:15:14,940
+is the new xmlhttprequest it fully tries
+
+310
+00:15:14,940 --> 00:15:16,650
+to emulate it in every way possible and
+
+311
+00:15:16,650 --> 00:15:18,750
+there's just one shared worker is the
+
+312
+00:15:18,750 --> 00:15:20,880
+model it was designed in that will run
+
+313
+00:15:20,880 --> 00:15:23,070
+power and route messages into and out of
+
+314
+00:15:23,070 --> 00:15:25,680
+it for where it needs to go so it's a
+
+315
+00:15:25,680 --> 00:15:26,640
+progressive
+
+316
+00:15:26,640 --> 00:15:29,070
+it is a progressive enhancement ability
+
+317
+00:15:29,070 --> 00:15:34,440
+back yep presumably common style stuff
+
+318
+00:15:34,440 --> 00:15:36,990
+in the back I'm working that's one of
+
+319
+00:15:36,990 --> 00:15:38,040
+the things I really would have loved to
+
+320
+00:15:38,040 --> 00:15:40,350
+demo one of the other big influences for
+
+321
+00:15:40,350 --> 00:15:42,780
+all of this has been reversed HTTP and
+
+322
+00:15:42,780 --> 00:15:45,270
+all the various push systems I'm really
+
+323
+00:15:45,270 --> 00:15:49,290
+a fan of l shift Tony Tony G Tony's
+
+324
+00:15:49,290 --> 00:15:52,380
+named Tony G he had this L ships had a
+
+325
+00:15:52,380 --> 00:15:54,450
+pretty good project called reverse HTTP
+
+326
+00:15:54,450 --> 00:15:55,710
+where they did a pretty good job of
+
+327
+00:15:55,710 --> 00:16:01,740
+taking like second life mark was it the
+
+328
+00:16:01,740 --> 00:16:04,140
+second life guys have been doing in
+
+329
+00:16:04,140 --> 00:16:06,540
+verse HTTP for a while and he took that
+
+330
+00:16:06,540 --> 00:16:08,910
+up and he wrote so it's there's like a
+
+331
+00:16:08,910 --> 00:16:10,800
+registration system on one side of it
+
+332
+00:16:10,800 --> 00:16:15,480
+where you're it's pretty crazy but he
+
+333
+00:16:15,480 --> 00:16:17,760
+wrote a really nice reverse HTTP system
+
+334
+00:16:17,760 --> 00:16:19,440
+has a bunch of interesting features and
+
+335
+00:16:19,440 --> 00:16:21,090
+that was a big inspiration and so the
+
+336
+00:16:21,090 --> 00:16:24,870
+piping also there was a sequence because
+
+337
+00:16:24,870 --> 00:16:26,910
+you can see this story is that it works
+
+338
+00:16:26,910 --> 00:16:29,220
+it works today everywhere it works
+
+339
+00:16:29,220 --> 00:16:33,000
+better with new technology hring pi
+
+340
+00:16:33,000 --> 00:16:35,610
+using a limited amount of pipes if you
+
+341
+00:16:35,610 --> 00:16:37,800
+have a limited pipe space it will give
+
+342
+00:16:37,800 --> 00:16:41,490
+you much more bumps if your server it
+
+343
+00:16:41,490 --> 00:16:43,080
+will give you a much wider pipe
+
+344
+00:16:43,080 --> 00:16:45,630
+utilization if the server has those
+
+345
+00:16:45,630 --> 00:16:49,320
+pipes available there still I mean if
+
+346
+00:16:49,320 --> 00:16:51,780
+the if the shared worker doesn't have an
+
+347
+00:16:51,780 --> 00:16:53,850
+x-pipe and doesn't have a sex sequence
+
+348
+00:16:53,850 --> 00:16:56,130
+it doesn't know where to route it and it
+
+349
+00:16:56,130 --> 00:16:58,130
+can only use native dumb xmlhttprequest
+
+350
+00:16:58,130 --> 00:17:00,090
+it can't use any of their progressive
+
+351
+00:17:00,090 --> 00:17:01,440
+enhancements so you're still going to be
+
+352
+00:17:01,440 --> 00:17:04,170
+stuck with whatever ajax limitations you
+
+353
+00:17:04,170 --> 00:17:09,570
+have common limitations you already have
+
+354
+00:17:09,580 --> 00:17:11,320
+speaking of progressive enhancement like
+
+355
+00:17:11,320 --> 00:17:13,030
+by going through that shared router
+
+356
+00:17:13,030 --> 00:17:16,450
+would you be able to also like negotiate
+
+357
+00:17:16,450 --> 00:17:18,120
+with the client if it does WebSockets
+
+358
+00:17:18,120 --> 00:17:20,440
+that kind of thing or negotiate with the
+
+359
+00:17:20,440 --> 00:17:23,290
+server that you can drop down to the
+
+360
+00:17:23,290 --> 00:17:26,890
+lower level but HTTP um I don't have any
+
+361
+00:17:26,890 --> 00:17:28,420
+lower levels this was all really built
+
+362
+00:17:28,420 --> 00:17:31,120
+to extend an embrace HTTP i really think
+
+363
+00:17:31,120 --> 00:17:34,390
+ish HTTP is the bee's knees so I that's
+
+364
+00:17:34,390 --> 00:17:39,410
+all I really that was my only real goal
+
+365
+00:17:39,420 --> 00:17:41,740
+this is something I was curious about I
+
+366
+00:17:41,740 --> 00:17:43,930
+mean there's obviously good there's even
+
+367
+00:17:43,930 --> 00:17:45,550
+though I also haven't had a little love
+
+368
+00:17:45,550 --> 00:17:47,920
+affair with their shitty foods there is
+
+369
+00:17:47,920 --> 00:17:49,690
+a lot of requests or header overhead
+
+370
+00:17:49,690 --> 00:17:54,790
+that you get we can get rid of it there
+
+371
+00:17:54,790 --> 00:17:56,860
+is definitely headers that you can get
+
+372
+00:17:56,860 --> 00:18:00,250
+rid of with WebSockets I I tend to abuse
+
+373
+00:18:00,250 --> 00:18:04,930
+headers is shown up here so I it I
+
+374
+00:18:04,930 --> 00:18:07,240
+haven't done anything with that I want
+
+375
+00:18:07,240 --> 00:18:09,520
+to actually back up a little bit to the
+
+376
+00:18:09,520 --> 00:18:12,630
+reverse pipe speaking to that one of the
+
+377
+00:18:12,630 --> 00:18:15,100
+features that is implemented in the
+
+378
+00:18:15,100 --> 00:18:16,570
+process of being implemented and what I
+
+379
+00:18:16,570 --> 00:18:18,250
+would have liked it not quite ready for
+
+380
+00:18:18,250 --> 00:18:22,180
+demo time yet but uh there is a based
+
+381
+00:18:22,180 --> 00:18:24,640
+off of the reverse HTTP work there is
+
+382
+00:18:24,640 --> 00:18:26,850
+sort of like an opera unite esque
+
+383
+00:18:26,850 --> 00:18:33,010
+reverse router so that like their this
+
+384
+00:18:33,010 --> 00:18:36,910
+page right here whatever that yeah this
+
+385
+00:18:36,910 --> 00:18:38,920
+page right here actually has an address
+
+386
+00:18:38,920 --> 00:18:42,730
+on the internet well it has an address
+
+387
+00:18:42,730 --> 00:18:44,880
+on the internet basically I guess yeah
+
+388
+00:18:44,880 --> 00:18:48,190
+so that I could issue a web hook I could
+
+389
+00:18:48,190 --> 00:18:51,430
+go to pub sub hubbub hook hook up this
+
+390
+00:18:51,430 --> 00:18:54,780
+page and say you know pub/sub
+
+391
+00:18:54,780 --> 00:18:58,090
+pubsubhubbub you need to notify my IP
+
+392
+00:18:58,090 --> 00:19:00,640
+address you need to notify my web server
+
+393
+00:19:00,640 --> 00:19:02,830
+whenever you get this data then the web
+
+394
+00:19:02,830 --> 00:19:05,230
+server will route that over to this page
+
+395
+00:19:05,230 --> 00:19:07,420
+so you can have web hooks in your web
+
+396
+00:19:07,420 --> 00:19:10,600
+page and that's like web hooks I think
+
+397
+00:19:10,600 --> 00:19:12,670
+are a pretty fantastic solution to being
+
+398
+00:19:12,670 --> 00:19:14,920
+able to do reverse and push and it
+
+399
+00:19:14,920 --> 00:19:16,690
+really works well because it's a great a
+
+400
+00:19:16,690 --> 00:19:18,760
+sinkers it's it's a very a synchronous
+
+401
+00:19:18,760 --> 00:19:21,670
+technology and it avoids the like long
+
+402
+00:19:21,670 --> 00:19:22,419
+polling
+
+403
+00:19:22,419 --> 00:19:24,340
+notion altogether of comment it's like
+
+404
+00:19:24,340 --> 00:19:25,929
+yes you can just run comment on this and
+
+405
+00:19:25,929 --> 00:19:29,320
+be naive and it will multiplex your 800
+
+406
+00:19:29,320 --> 00:19:31,600
+connections down into you know two pipes
+
+407
+00:19:31,600 --> 00:19:33,519
+one pipe it doesn't matter one HTTP
+
+408
+00:19:33,519 --> 00:19:37,239
+connection but the real that's that's
+
+409
+00:19:37,239 --> 00:19:38,710
+still a hack there's no reason to keep
+
+410
+00:19:38,710 --> 00:19:41,019
+those connections around just when you
+
+411
+00:19:41,019 --> 00:19:43,359
+get data send it over the pipe send it
+
+412
+00:19:43,359 --> 00:19:46,090
+back this pipe and that's also really a
+
+413
+00:19:46,090 --> 00:19:48,279
+very trivial implementation there's X
+
+414
+00:19:48,279 --> 00:19:50,200
+sequence which just grows up as you use
+
+415
+00:19:50,200 --> 00:19:52,119
+the pipe and again this is just
+
+416
+00:19:52,119 --> 00:19:54,100
+identification for each message so that
+
+417
+00:19:54,100 --> 00:19:55,509
+the shared worker knows where to route
+
+418
+00:19:55,509 --> 00:19:58,480
+it there's also that the inverse of this
+
+419
+00:19:58,480 --> 00:20:01,720
+is X our seek an XR seek is just that
+
+420
+00:20:01,720 --> 00:20:03,909
+reverse pipe when messages get are being
+
+421
+00:20:03,909 --> 00:20:05,710
+asserted to the pipe and the pipe has no
+
+422
+00:20:05,710 --> 00:20:08,950
+requests there it's it's data being
+
+423
+00:20:08,950 --> 00:20:12,789
+uploaded this is actually a x-pipe x
+
+424
+00:20:12,789 --> 00:20:17,230
+seek chris zip thank you a lot of this
+
+425
+00:20:17,230 --> 00:20:20,769
+idea came directly from dojo and x seek
+
+426
+00:20:20,769 --> 00:20:22,840
+they have their own x seek they don't
+
+427
+00:20:22,840 --> 00:20:26,739
+have india yeah they have x ID and x
+
+428
+00:20:26,739 --> 00:20:28,929
+seek yeah or the exige ID which I've
+
+429
+00:20:28,929 --> 00:20:30,759
+just identified so you can order your
+
+430
+00:20:30,759 --> 00:20:32,559
+transfer yeah it's a it's a few requests
+
+431
+00:20:32,559 --> 00:20:35,320
+if he's not order right yeah so that's
+
+432
+00:20:35,320 --> 00:20:37,690
+exactly it x seek was introduced to be
+
+433
+00:20:37,690 --> 00:20:42,309
+able to as I'm going to repeat x equals
+
+434
+00:20:42,309 --> 00:20:44,499
+introduced to be able to reorder HTTP
+
+435
+00:20:44,499 --> 00:20:46,570
+requests when they don't come in and
+
+436
+00:20:46,570 --> 00:20:49,269
+order in order and this is just saying
+
+437
+00:20:49,269 --> 00:20:52,269
+well rather than putting them into order
+
+438
+00:20:52,269 --> 00:20:56,049
+will will you know rii devise the order
+
+439
+00:20:56,049 --> 00:20:57,879
+it's a different it's a it's a different
+
+440
+00:20:57,879 --> 00:20:59,200
+rendition on the same idea I can't
+
+441
+00:20:59,200 --> 00:21:00,700
+precisely pin it down verbally for
+
+442
+00:21:00,700 --> 00:21:02,169
+exactly what it is but it's a similar
+
+443
+00:21:02,169 --> 00:21:05,580
+sort of ordering concept and that's
+
+444
+00:21:05,580 --> 00:21:08,109
+that's the implementation if I can't
+
+445
+00:21:08,109 --> 00:21:09,850
+walk you guys through most of it again
+
+446
+00:21:09,850 --> 00:21:14,109
+html5 on the client side is really what
+
+447
+00:21:14,109 --> 00:21:15,609
+powers this and then the backend is
+
+448
+00:21:15,609 --> 00:21:18,899
+awesome cool node.js code Thank You Raya
+
+449
+00:21:18,899 --> 00:21:21,669
+that's it any questions anyone else I
+
+450
+00:21:21,669 --> 00:21:24,930
+think we're done thank you all so much
+

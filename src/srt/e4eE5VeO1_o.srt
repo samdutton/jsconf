@@ -1,0 +1,2697 @@
+1
+00:00:38,359 --> 00:00:40,589
+
+there are many things in life that I
+
+2
+00:00:40,589 --> 00:00:43,260
+really enjoy more than good healthy
+
+3
+00:00:43,260 --> 00:00:45,420
+broken code I mean it's kind of
+
+4
+00:00:45,420 --> 00:00:46,800
+something that we experience in our day
+
+5
+00:00:46,800 --> 00:00:48,179
+to day lives all the time there's
+
+6
+00:00:48,179 --> 00:00:49,440
+nothing that we're ever gonna do to
+
+7
+00:00:49,440 --> 00:00:52,710
+write 100 percent perfect code it's
+
+8
+00:00:52,710 --> 00:00:53,760
+inevitable that we're gonna be shipping
+
+9
+00:00:53,760 --> 00:00:55,260
+things that are broken it's no it's
+
+10
+00:00:55,260 --> 00:00:56,309
+inevitable that we're gonna have to
+
+11
+00:00:56,309 --> 00:00:58,019
+debug these things we're gonna be bugs
+
+12
+00:00:58,019 --> 00:01:00,210
+in my production we're gonna have to you
+
+13
+00:01:00,210 --> 00:01:01,889
+know do whatever it is that we do to to
+
+14
+00:01:01,889 --> 00:01:05,880
+fix these things so who am i that light
+
+15
+00:01:05,880 --> 00:01:08,850
+just got really bright my name is Matt
+
+16
+00:01:08,850 --> 00:01:12,240
+Roman all I am the lead operations
+
+17
+00:01:12,240 --> 00:01:14,610
+engineer at discus so first of all does
+
+18
+00:01:14,610 --> 00:01:18,240
+anybody know what discusses a few people
+
+19
+00:01:18,240 --> 00:01:21,000
+cool I would like to note that I do not
+
+20
+00:01:21,000 --> 00:01:23,520
+write JavaScript before discus I am an
+
+21
+00:01:23,520 --> 00:01:26,130
+operations engineer I got roped into
+
+22
+00:01:26,130 --> 00:01:28,079
+doing this with a project called sentry
+
+23
+00:01:28,079 --> 00:01:30,810
+sentry is an error aggregation and an
+
+24
+00:01:30,810 --> 00:01:33,030
+error logging service it's an open
+
+25
+00:01:33,030 --> 00:01:34,710
+source project that originally came out
+
+26
+00:01:34,710 --> 00:01:37,200
+of Python and it has since evolved into
+
+27
+00:01:37,200 --> 00:01:39,420
+us being able to aggregate exceptions
+
+28
+00:01:39,420 --> 00:01:42,780
+from Ruby Python Erlang go and
+
+29
+00:01:42,780 --> 00:01:47,310
+JavaScript so I came onto this thinking
+
+30
+00:01:47,310 --> 00:01:49,829
+that the JavaScript client at the time
+
+31
+00:01:49,829 --> 00:01:51,509
+was really really poor and I figured
+
+32
+00:01:51,509 --> 00:01:53,820
+well this can't actually be that hard I
+
+33
+00:01:53,820 --> 00:01:55,350
+might as well just go at it and try to
+
+34
+00:01:55,350 --> 00:01:57,119
+fix all the problems little did I know
+
+35
+00:01:57,119 --> 00:01:59,549
+that browsers are really really really
+
+36
+00:01:59,549 --> 00:02:01,969
+terrible at doing these types of things
+
+37
+00:02:01,969 --> 00:02:04,259
+so kind of before I go into things I
+
+38
+00:02:04,259 --> 00:02:06,509
+kinda want to kick it off by this little
+
+39
+00:02:06,509 --> 00:02:08,070
+funny excerpt that I thought of and I
+
+40
+00:02:08,070 --> 00:02:10,409
+thought of a if exception happens in
+
+41
+00:02:10,409 --> 00:02:12,390
+production and nobody saw the chrome
+
+42
+00:02:12,390 --> 00:02:16,170
+debug console did actually happen
+
+43
+00:02:16,170 --> 00:02:18,250
+this is kind of something that happens
+
+44
+00:02:18,250 --> 00:02:19,780
+all the time you know we we ship
+
+45
+00:02:19,780 --> 00:02:21,490
+production code all of our tests pass
+
+46
+00:02:21,490 --> 00:02:24,130
+things were fine until users start
+
+47
+00:02:24,130 --> 00:02:25,570
+complaining and we have no idea why this
+
+48
+00:02:25,570 --> 00:02:28,270
+actually happened we've held this
+
+49
+00:02:28,270 --> 00:02:30,760
+post-mortem debugging so it for people
+
+50
+00:02:30,760 --> 00:02:31,780
+that aren't familiar post-mortem
+
+51
+00:02:31,780 --> 00:02:35,170
+debugging is the concept of an exception
+
+52
+00:02:35,170 --> 00:02:36,880
+has happened we don't have the
+
+53
+00:02:36,880 --> 00:02:38,350
+information at the time but we need some
+
+54
+00:02:38,350 --> 00:02:41,230
+way to figure out what happened and
+
+55
+00:02:41,230 --> 00:02:48,490
+debug it after after the fact so to go
+
+56
+00:02:48,490 --> 00:02:51,640
+with post-war debugging ideally we would
+
+57
+00:02:51,640 --> 00:02:52,780
+like to know that these things happen
+
+58
+00:02:52,780 --> 00:02:54,750
+before users start complaining to us
+
+59
+00:02:54,750 --> 00:02:56,710
+that's not a great user experience
+
+60
+00:02:56,710 --> 00:02:58,810
+people are reporting things are broken
+
+61
+00:02:58,810 --> 00:03:00,970
+and whatnot we would like to go to stay
+
+62
+00:03:00,970 --> 00:03:02,140
+on top of these things and know that
+
+63
+00:03:02,140 --> 00:03:03,580
+these things happen before they have to
+
+64
+00:03:03,580 --> 00:03:08,560
+tell us the ideal world these things
+
+65
+00:03:08,560 --> 00:03:10,420
+would be covered by tests right we would
+
+66
+00:03:10,420 --> 00:03:11,650
+write our tests we would cover every
+
+67
+00:03:11,650 --> 00:03:13,390
+test case with a TDD the out of
+
+68
+00:03:13,390 --> 00:03:14,650
+everything and everything would be
+
+69
+00:03:14,650 --> 00:03:16,270
+perfect and fine
+
+70
+00:03:16,270 --> 00:03:18,280
+in reality humans are actually really
+
+71
+00:03:18,280 --> 00:03:20,110
+hard at writing tests and this is due to
+
+72
+00:03:20,110 --> 00:03:22,900
+a factor a large number of things with
+
+73
+00:03:22,900 --> 00:03:24,400
+those being we don't know all that we
+
+74
+00:03:24,400 --> 00:03:25,690
+don't know all the test cases we can't
+
+75
+00:03:25,690 --> 00:03:27,550
+anticipate that our users are going to
+
+76
+00:03:27,550 --> 00:03:28,870
+do something really really really stupid
+
+77
+00:03:28,870 --> 00:03:30,610
+that we didn't think about users gonna
+
+78
+00:03:30,610 --> 00:03:31,990
+click a button eight million times
+
+79
+00:03:31,990 --> 00:03:33,820
+thinking that it's not working we didn't
+
+80
+00:03:33,820 --> 00:03:34,840
+anticipate that that's gonna happen
+
+81
+00:03:34,840 --> 00:03:36,750
+they're gonna have some crazy
+
+82
+00:03:36,750 --> 00:03:39,130
+combination of browser extensions and
+
+83
+00:03:39,130 --> 00:03:41,290
+all this other stuff that who knows what
+
+84
+00:03:41,290 --> 00:03:45,040
+they're doing a lot of times we actually
+
+85
+00:03:45,040 --> 00:03:46,480
+don't get tests at all so that's that's
+
+86
+00:03:46,480 --> 00:03:47,860
+the other side of things we can be as
+
+87
+00:03:47,860 --> 00:03:49,270
+meticulous as we want and write all
+
+88
+00:03:49,270 --> 00:03:52,570
+these tests in reality most things
+
+89
+00:03:52,570 --> 00:03:54,280
+actually don't even have tests so it's
+
+90
+00:03:54,280 --> 00:03:56,910
+that doesn't help us at all
+
+91
+00:03:56,910 --> 00:04:00,070
+also QA processes are faulty for
+
+92
+00:04:00,070 --> 00:04:01,330
+basically the same reason why writing
+
+93
+00:04:01,330 --> 00:04:03,850
+tests are pretty faulty so there's all
+
+94
+00:04:03,850 --> 00:04:06,490
+the combinations of browsers QA teams
+
+95
+00:04:06,490 --> 00:04:08,320
+are expensive you know there's a lot of
+
+96
+00:04:08,320 --> 00:04:10,210
+different cases you have to test at the
+
+97
+00:04:10,210 --> 00:04:11,440
+end of the day you're still not going to
+
+98
+00:04:11,440 --> 00:04:13,390
+do everything that every single user is
+
+99
+00:04:13,390 --> 00:04:15,550
+going to test users are your best QA
+
+100
+00:04:15,550 --> 00:04:16,989
+team they're the ones that are gonna
+
+101
+00:04:16,989 --> 00:04:18,790
+figure out what's broken they're gonna
+
+102
+00:04:18,790 --> 00:04:20,530
+do they're gonna touch everything that
+
+103
+00:04:20,530 --> 00:04:24,400
+you didn't even think was possible and a
+
+104
+00:04:24,400 --> 00:04:25,630
+matter what you do bugs are still going
+
+105
+00:04:25,630 --> 00:04:26,320
+to get into production
+
+106
+00:04:26,320 --> 00:04:27,639
+there's just nothing you're gonna
+
+107
+00:04:27,639 --> 00:04:28,900
+nothing you're gonna be able to do about
+
+108
+00:04:28,900 --> 00:04:30,819
+it we should just have better tooling to
+
+109
+00:04:30,819 --> 00:04:31,870
+get around this and deal with these
+
+110
+00:04:31,870 --> 00:04:36,460
+issues so if you guys work on a product
+
+111
+00:04:36,460 --> 00:04:38,979
+that users are using if you're fortunate
+
+112
+00:04:38,979 --> 00:04:40,810
+enough to have customer support or
+
+113
+00:04:40,810 --> 00:04:42,370
+someone just emails you and says
+
+114
+00:04:42,370 --> 00:04:44,439
+something's broken typically you get
+
+115
+00:04:44,439 --> 00:04:45,580
+something like this you get someone
+
+116
+00:04:45,580 --> 00:04:47,620
+that's angry and irate just says it
+
+117
+00:04:47,620 --> 00:04:50,620
+doesn't work for me well what do you
+
+118
+00:04:50,620 --> 00:04:52,599
+want me to do about it so we look at it
+
+119
+00:04:52,599 --> 00:04:54,400
+and if we're fortunate enough and we
+
+120
+00:04:54,400 --> 00:04:56,050
+have an actual text savvy user we can
+
+121
+00:04:56,050 --> 00:04:58,719
+maybe get a screenshot of their chrome
+
+122
+00:04:58,719 --> 00:05:00,909
+console we can somehow coerce them into
+
+123
+00:05:00,909 --> 00:05:03,129
+opening this up reproducing the bug and
+
+124
+00:05:03,129 --> 00:05:04,779
+we can maybe get a screenshot of
+
+125
+00:05:04,779 --> 00:05:06,819
+something like this this is probably the
+
+126
+00:05:06,819 --> 00:05:08,159
+best case that we can get out of
+
+127
+00:05:08,159 --> 00:05:11,620
+post-mortem debugging without doing
+
+128
+00:05:11,620 --> 00:05:17,139
+anything fancy so it ends up turning
+
+129
+00:05:17,139 --> 00:05:19,870
+into actually a lot of this it works for
+
+130
+00:05:19,870 --> 00:05:21,580
+me I'm not gonna fix this because I
+
+131
+00:05:21,580 --> 00:05:23,469
+don't know how to debug your problem and
+
+132
+00:05:23,469 --> 00:05:24,969
+your users usually can't give us enough
+
+133
+00:05:24,969 --> 00:05:29,620
+information to help us fix this how do
+
+134
+00:05:29,620 --> 00:05:31,120
+we begin to be more proactive about this
+
+135
+00:05:31,120 --> 00:05:32,319
+I guess at the beginning we want to be
+
+136
+00:05:32,319 --> 00:05:33,520
+able to say on top of this if we want to
+
+137
+00:05:33,520 --> 00:05:35,589
+be able to know these things before our
+
+138
+00:05:35,589 --> 00:05:36,939
+users are actually telling us we don't
+
+139
+00:05:36,939 --> 00:05:38,830
+want to rely on them doing faulty screen
+
+140
+00:05:38,830 --> 00:05:40,629
+shots and and all this stuff to tell us
+
+141
+00:05:40,629 --> 00:05:42,610
+here's what happened we don't want these
+
+142
+00:05:42,610 --> 00:05:44,080
+reproductions steps we want to actually
+
+143
+00:05:44,080 --> 00:05:46,539
+see what happened in real time we want
+
+144
+00:05:46,539 --> 00:05:49,240
+to see what the stack Trace is and all
+
+145
+00:05:49,240 --> 00:05:53,409
+the information in the context so we
+
+146
+00:05:53,409 --> 00:05:55,389
+should start capturing arrears and we
+
+147
+00:05:55,389 --> 00:05:56,439
+start logging as much information
+
+148
+00:05:56,439 --> 00:05:58,360
+automatically so that we can debug we
+
+149
+00:05:58,360 --> 00:05:59,830
+can get notified of these errors we can
+
+150
+00:05:59,830 --> 00:06:01,960
+track these on graphs we can do all this
+
+151
+00:06:01,960 --> 00:06:03,969
+up this information in real time on
+
+152
+00:06:03,969 --> 00:06:05,949
+behalf of our users before they start
+
+153
+00:06:05,949 --> 00:06:08,080
+complaining and telling us that you know
+
+154
+00:06:08,080 --> 00:06:11,500
+something's broken something start with
+
+155
+00:06:11,500 --> 00:06:13,509
+the most obvious way of doing this this
+
+156
+00:06:13,509 --> 00:06:15,939
+is what is my absolute favorite so I'm
+
+157
+00:06:15,939 --> 00:06:17,680
+sure we're all aware of this window dot
+
+158
+00:06:17,680 --> 00:06:21,819
+on everything if you're not the TLDR is
+
+159
+00:06:21,819 --> 00:06:23,379
+the window down earlier is a global
+
+160
+00:06:23,379 --> 00:06:26,110
+callback that is effectively a try-catch
+
+161
+00:06:26,110 --> 00:06:29,979
+over your entire application I also like
+
+162
+00:06:29,979 --> 00:06:34,389
+to call it window dot on nope it's
+
+163
+00:06:34,389 --> 00:06:36,219
+literally the worst way to capture an
+
+164
+00:06:36,219 --> 00:06:40,269
+exception that you can imagine
+
+165
+00:06:40,279 --> 00:06:41,839
+the signature of the callback looks
+
+166
+00:06:41,839 --> 00:06:43,399
+something like this so it takes three
+
+167
+00:06:43,399 --> 00:06:45,169
+arguments the first one being a message
+
+168
+00:06:45,169 --> 00:06:47,839
+the URL of the file that caused the
+
+169
+00:06:47,839 --> 00:06:51,709
+exception and then the line number in
+
+170
+00:06:51,709 --> 00:06:54,169
+reality usually end up getting this
+
+171
+00:06:54,169 --> 00:06:57,379
+cryptic script error message if any of
+
+172
+00:06:57,379 --> 00:06:59,029
+you have seen that before trying to
+
+173
+00:06:59,029 --> 00:07:02,719
+debug things I will explain who that is
+
+174
+00:07:02,719 --> 00:07:05,689
+more detail in a second so kind of the
+
+175
+00:07:05,689 --> 00:07:07,399
+problem with all of this is that out of
+
+176
+00:07:07,399 --> 00:07:09,049
+these three arguments that we saw none
+
+177
+00:07:09,049 --> 00:07:10,809
+of these are an actual error object
+
+178
+00:07:10,809 --> 00:07:13,939
+they're just a message URL and a line
+
+179
+00:07:13,939 --> 00:07:18,769
+number so in practice these three
+
+180
+00:07:18,769 --> 00:07:20,539
+arguments end up looking something like
+
+181
+00:07:20,539 --> 00:07:20,989
+this
+
+182
+00:07:20,989 --> 00:07:23,089
+we have some type error we cannot reap
+
+183
+00:07:23,089 --> 00:07:25,099
+repartee foo of undefined we have the
+
+184
+00:07:25,099 --> 00:07:26,449
+URL that it happened we have the line
+
+185
+00:07:26,449 --> 00:07:29,029
+number and a glance this actually looks
+
+186
+00:07:29,029 --> 00:07:30,469
+really useful we can we can drill under
+
+187
+00:07:30,469 --> 00:07:32,479
+our code we can see what is line 10 oh
+
+188
+00:07:32,479 --> 00:07:34,309
+this line you know something was
+
+189
+00:07:34,309 --> 00:07:35,989
+probably faulty here and we've we may
+
+190
+00:07:35,989 --> 00:07:37,369
+have solved we may be able to solve the
+
+191
+00:07:37,369 --> 00:07:42,289
+problem with this but your code is
+
+192
+00:07:42,289 --> 00:07:45,860
+actually probably minified line 1 is
+
+193
+00:07:45,860 --> 00:07:48,169
+your entire application you have a
+
+194
+00:07:48,169 --> 00:07:50,329
+million characters on this one really
+
+195
+00:07:50,329 --> 00:07:53,869
+really long line also your JavaScript is
+
+196
+00:07:53,869 --> 00:07:55,879
+likely being hosts on another domain so
+
+197
+00:07:55,879 --> 00:07:58,909
+we're talking a CDN or some extra sub
+
+198
+00:07:58,909 --> 00:08:00,619
+domain or a cookie list domain or
+
+199
+00:08:00,619 --> 00:08:03,259
+something like that the problem with
+
+200
+00:08:03,259 --> 00:08:06,529
+that is that these these window deny are
+
+201
+00:08:06,529 --> 00:08:09,439
+subject to cores so for the cross origin
+
+202
+00:08:09,439 --> 00:08:12,709
+request scripting and what that means is
+
+203
+00:08:12,709 --> 00:08:14,599
+when it gets the window down or you get
+
+204
+00:08:14,599 --> 00:08:17,059
+is then shaking is that it's something
+
+205
+00:08:17,059 --> 00:08:19,989
+like that it's cross-origin something
+
+206
+00:08:19,989 --> 00:08:24,679
+researcher whatever we're in the end
+
+207
+00:08:24,679 --> 00:08:26,119
+what this actually means for you as you
+
+208
+00:08:26,119 --> 00:08:28,009
+get script there so if you have your
+
+209
+00:08:28,009 --> 00:08:31,399
+JavaScript on a subdomain or a CDN or
+
+210
+00:08:31,399 --> 00:08:33,919
+something that is it doesn't have the
+
+211
+00:08:33,919 --> 00:08:35,120
+proper course headers and all this stuff
+
+212
+00:08:35,120 --> 00:08:36,589
+to go with that when it all right error
+
+213
+00:08:36,589 --> 00:08:38,059
+does not actually tell you anything it
+
+214
+00:08:38,059 --> 00:08:40,099
+tells you script there line 0 and an
+
+215
+00:08:40,099 --> 00:08:43,699
+empty URL you literally no idea what
+
+216
+00:08:43,699 --> 00:08:46,269
+happened just that something happened
+
+217
+00:08:46,269 --> 00:08:48,970
+though in newer versions of browsers
+
+218
+00:08:48,970 --> 00:08:52,069
+specifically gecko 31 in Firefox and
+
+219
+00:08:52,069 --> 00:08:53,720
+Chrome 28
+
+220
+00:08:53,720 --> 00:08:57,380
+introducing a more expanded version of
+
+221
+00:08:57,380 --> 00:08:59,390
+window Don on air and what this looks
+
+222
+00:08:59,390 --> 00:09:00,620
+like is they've given you two new
+
+223
+00:09:00,620 --> 00:09:02,240
+argument or two new arguments that are
+
+224
+00:09:02,240 --> 00:09:03,890
+passed through there's a column number
+
+225
+00:09:03,890 --> 00:09:05,720
+and then an error object that's passed
+
+226
+00:09:05,720 --> 00:09:09,580
+through now we have our error object
+
+227
+00:09:09,580 --> 00:09:11,360
+I've been talking about these error
+
+228
+00:09:11,360 --> 00:09:13,850
+objects well why are why are they so
+
+229
+00:09:13,850 --> 00:09:15,380
+important why is this better to work
+
+230
+00:09:15,380 --> 00:09:18,590
+with an actual the string message why is
+
+231
+00:09:18,590 --> 00:09:21,220
+this better than that generic type error
+
+232
+00:09:21,220 --> 00:09:23,150
+well first of all we get a stack trace
+
+233
+00:09:23,150 --> 00:09:29,750
+from this or we can try to and for those
+
+234
+00:09:29,750 --> 00:09:31,370
+aren't aware as that curious is just a
+
+235
+00:09:31,370 --> 00:09:33,950
+record of the function calls up until
+
+236
+00:09:33,950 --> 00:09:35,990
+this point within the current call stack
+
+237
+00:09:35,990 --> 00:09:37,760
+so it's a sequence of function calls
+
+238
+00:09:37,760 --> 00:09:40,160
+you've called a a calls be a calls or B
+
+239
+00:09:40,160 --> 00:09:42,500
+call C and whatnot down through what
+
+240
+00:09:42,500 --> 00:09:46,400
+they call as a call stack basically when
+
+241
+00:09:46,400 --> 00:09:47,540
+you're debugging something if you don't
+
+242
+00:09:47,540 --> 00:09:48,620
+have a stack curious it makes things
+
+243
+00:09:48,620 --> 00:09:50,960
+really really difficult it's probably a
+
+244
+00:09:50,960 --> 00:09:52,280
+little bit more difficult to dig into
+
+245
+00:09:52,280 --> 00:09:53,780
+the air because you see you can maybe
+
+246
+00:09:53,780 --> 00:09:55,910
+see that this exception happened at this
+
+247
+00:09:55,910 --> 00:09:57,620
+line but you don't know how you actually
+
+248
+00:09:57,620 --> 00:09:58,880
+got to that line you don't know what
+
+249
+00:09:58,880 --> 00:10:00,470
+function called that function you don't
+
+250
+00:10:00,470 --> 00:10:03,110
+know the order of events that preceded
+
+251
+00:10:03,110 --> 00:10:06,650
+that so to explore this we're gonna open
+
+252
+00:10:06,650 --> 00:10:11,120
+up our favorite executable node and
+
+253
+00:10:11,120 --> 00:10:12,860
+we're just going to simply throw a new
+
+254
+00:10:12,860 --> 00:10:18,290
+error the the message wall I'm sure
+
+255
+00:10:18,290 --> 00:10:19,580
+everybody has seen something like this
+
+256
+00:10:19,580 --> 00:10:21,440
+this is what comes back when you just
+
+257
+00:10:21,440 --> 00:10:23,540
+when you just arbitrarily throw and do
+
+258
+00:10:23,540 --> 00:10:26,060
+not catch an exception so I'm gonna
+
+259
+00:10:26,060 --> 00:10:27,950
+break down what what these individual
+
+260
+00:10:27,950 --> 00:10:30,770
+pieces are so the beginning we have the
+
+261
+00:10:30,770 --> 00:10:32,960
+name so in this case we just threw a
+
+262
+00:10:32,960 --> 00:10:35,630
+generic error this would also be a type
+
+263
+00:10:35,630 --> 00:10:37,430
+error or reference error or something
+
+264
+00:10:37,430 --> 00:10:39,170
+like that
+
+265
+00:10:39,170 --> 00:10:41,780
+and then we had the message so this
+
+266
+00:10:41,780 --> 00:10:43,970
+would be that long something is
+
+267
+00:10:43,970 --> 00:10:45,589
+undefined or whatever earn this case we
+
+268
+00:10:45,589 --> 00:10:47,930
+just pass the hole and then below that
+
+269
+00:10:47,930 --> 00:10:51,260
+we have the actual stack trace so we can
+
+270
+00:10:51,260 --> 00:10:52,700
+break down the stack carries in two
+
+271
+00:10:52,700 --> 00:10:55,839
+frames so each line of this that curious
+
+272
+00:10:55,839 --> 00:10:58,850
+gives us a very useful information so we
+
+273
+00:10:58,850 --> 00:11:00,680
+have a caller this is the function that
+
+274
+00:11:00,680 --> 00:11:04,120
+was this is the function of that frame
+
+275
+00:11:04,120 --> 00:11:06,589
+this is the source that that
+
+276
+00:11:06,589 --> 00:11:08,899
+function was called in so this case was
+
+277
+00:11:08,899 --> 00:11:11,899
+a venti is the line number of this came
+
+278
+00:11:11,899 --> 00:11:17,599
+from so line 95 and the column number so
+
+279
+00:11:17,599 --> 00:11:19,519
+for fun we have we don't have this
+
+280
+00:11:19,519 --> 00:11:22,489
+property off of the error prototype dot
+
+281
+00:11:22,489 --> 00:11:25,159
+stack for fun does anybody know what
+
+282
+00:11:25,159 --> 00:11:27,769
+this the actual type of error dot stack
+
+283
+00:11:27,769 --> 00:11:34,339
+actually is it is a string probably the
+
+284
+00:11:34,339 --> 00:11:35,659
+most useless thing that you can get back
+
+285
+00:11:35,659 --> 00:11:38,659
+from this so the way if you want to
+
+286
+00:11:38,659 --> 00:11:39,979
+start breaking this apart and you want
+
+287
+00:11:39,979 --> 00:11:41,449
+to extract the pieces out of it you need
+
+288
+00:11:41,449 --> 00:11:43,369
+to use a regular expression something
+
+289
+00:11:43,369 --> 00:11:46,459
+like this and this is also note this is
+
+290
+00:11:46,459 --> 00:11:51,439
+very specific for a v8 stacktrace so
+
+291
+00:11:51,439 --> 00:11:52,729
+this is kind of what's this begin to
+
+292
+00:11:52,729 --> 00:11:54,859
+look like in practice so here I've
+
+293
+00:11:54,859 --> 00:11:57,529
+written some really bad code we can see
+
+294
+00:11:57,529 --> 00:12:00,019
+that we have a function show thing this
+
+295
+00:12:00,019 --> 00:12:01,999
+show thing takes an arbitrary index as
+
+296
+00:12:01,999 --> 00:12:04,489
+an argument we expect this index to
+
+297
+00:12:04,489 --> 00:12:07,489
+exist in this arbitrary things array and
+
+298
+00:12:07,489 --> 00:12:10,129
+we're calling the Foo property on it as
+
+299
+00:12:10,129 --> 00:12:11,689
+we could probably do you know if we call
+
+300
+00:12:11,689 --> 00:12:15,470
+it the show thing 1 the result of things
+
+301
+00:12:15,470 --> 00:12:17,269
+index is going to be undefined and
+
+302
+00:12:17,269 --> 00:12:20,769
+undefined does not have a property foo
+
+303
+00:12:20,769 --> 00:12:23,119
+so fire up note again and we want to
+
+304
+00:12:23,119 --> 00:12:24,859
+actually execute this we will see it
+
+305
+00:12:24,859 --> 00:12:28,819
+does in fact throw a type error and to
+
+306
+00:12:28,819 --> 00:12:30,289
+go with that we can see this it's very
+
+307
+00:12:30,289 --> 00:12:32,359
+useful stack grace so we see that type
+
+308
+00:12:32,359 --> 00:12:34,579
+error cannot read property blah blah but
+
+309
+00:12:34,579 --> 00:12:36,679
+then we see right below that we can see
+
+310
+00:12:36,679 --> 00:12:38,209
+that it was within the show thing
+
+311
+00:12:38,209 --> 00:12:40,069
+function so within that show thing
+
+312
+00:12:40,069 --> 00:12:41,720
+function it also tells us exactly what
+
+313
+00:12:41,720 --> 00:12:43,039
+line number it happened and actually
+
+314
+00:12:43,039 --> 00:12:46,099
+exactly what column number raised the
+
+315
+00:12:46,099 --> 00:12:48,379
+exception and then if we keep traversing
+
+316
+00:12:48,379 --> 00:12:50,959
+down the stack we see line 12 which was
+
+317
+00:12:50,959 --> 00:12:53,029
+exactly where show thing was called it
+
+318
+00:12:53,029 --> 00:12:54,649
+had it's an anonymous function so it
+
+319
+00:12:54,649 --> 00:12:58,819
+doesn't have a name in the call stack we
+
+320
+00:12:58,819 --> 00:13:01,609
+also note Firefox does something very
+
+321
+00:13:01,609 --> 00:13:03,559
+drastically different it's the same
+
+322
+00:13:03,559 --> 00:13:05,479
+concept you still have the stack
+
+323
+00:13:05,479 --> 00:13:08,659
+property but since it's a string these
+
+324
+00:13:08,659 --> 00:13:10,159
+things are formatted completely
+
+325
+00:13:10,159 --> 00:13:12,769
+different so there is no standard around
+
+326
+00:13:12,769 --> 00:13:15,470
+how these stack traces are formatted so
+
+327
+00:13:15,470 --> 00:13:16,339
+if we were to write something that
+
+328
+00:13:16,339 --> 00:13:17,929
+extracted all of these different
+
+329
+00:13:17,929 --> 00:13:19,129
+components and all of these things for
+
+330
+00:13:19,129 --> 00:13:19,910
+different browsers
+
+331
+00:13:19,910 --> 00:13:22,190
+also note this changes per version of
+
+332
+00:13:22,190 --> 00:13:24,710
+browser so this is not even just all of
+
+333
+00:13:24,710 --> 00:13:27,230
+firefox this is you know firefox 14
+
+334
+00:13:27,230 --> 00:13:31,850
+versus firefox 25 versus whatever same
+
+335
+00:13:31,850 --> 00:13:34,370
+for chrome same for safari all these
+
+336
+00:13:34,370 --> 00:13:35,540
+things are different formats so if we
+
+337
+00:13:35,540 --> 00:13:36,560
+were to write something we have to write
+
+338
+00:13:36,560 --> 00:13:38,450
+a bunch of crazy regular expressions to
+
+339
+00:13:38,450 --> 00:13:40,280
+capture all of these different cases and
+
+340
+00:13:40,280 --> 00:13:42,530
+we have to also sort of feature detect
+
+341
+00:13:42,530 --> 00:13:44,690
+to determine which ones are going to
+
+342
+00:13:44,690 --> 00:13:49,430
+give us this type of factors now if we
+
+343
+00:13:49,430 --> 00:13:52,790
+go into minifying our code if we minify
+
+344
+00:13:52,790 --> 00:13:54,080
+that exact code we could end up with
+
+345
+00:13:54,080 --> 00:13:56,570
+something like this it should be
+
+346
+00:13:56,570 --> 00:13:58,550
+relatively possible it's pretty small
+
+347
+00:13:58,550 --> 00:13:59,780
+but we can see that there minification
+
+348
+00:13:59,780 --> 00:14:01,520
+we've we've removed all the white space
+
+349
+00:14:01,520 --> 00:14:04,100
+and we've also shortened our symbol
+
+350
+00:14:04,100 --> 00:14:07,190
+names so in this case if we look closely
+
+351
+00:14:07,190 --> 00:14:10,160
+there is a function end this signifies
+
+352
+00:14:10,160 --> 00:14:14,720
+what show thing was previously so if you
+
+353
+00:14:14,720 --> 00:14:16,670
+run this again we indeed get the exact
+
+354
+00:14:16,670 --> 00:14:20,540
+same exception except now we get line 1
+
+355
+00:14:20,540 --> 00:14:23,990
+call them 125 this now gets a little bit
+
+356
+00:14:23,990 --> 00:14:26,000
+more complicated to debug and figure out
+
+357
+00:14:26,000 --> 00:14:28,580
+what's going on right in this case it's
+
+358
+00:14:28,580 --> 00:14:30,230
+probably still kind of deductible but we
+
+359
+00:14:30,230 --> 00:14:32,510
+only have basically one function in play
+
+360
+00:14:32,510 --> 00:14:34,190
+if this was our application this might
+
+361
+00:14:34,190 --> 00:14:37,970
+actually be column 20,000 we also see in
+
+362
+00:14:37,970 --> 00:14:40,580
+the stack it happened at function n what
+
+363
+00:14:40,580 --> 00:14:42,410
+is N there can be multiple ends now
+
+364
+00:14:42,410 --> 00:14:44,090
+through minification we have no idea
+
+365
+00:14:44,090 --> 00:14:45,530
+what's what's actually happening here
+
+366
+00:14:45,530 --> 00:14:47,870
+we're very close at this point this is
+
+367
+00:14:47,870 --> 00:14:48,980
+how things are shipped in production
+
+368
+00:14:48,980 --> 00:14:53,090
+usually so something was invented source
+
+369
+00:14:53,090 --> 00:14:56,030
+maps I'm not sure the exact purpose that
+
+370
+00:14:56,030 --> 00:14:57,620
+these were been for probably with
+
+371
+00:14:57,620 --> 00:14:59,120
+CoffeeScript and all this other stuff
+
+372
+00:14:59,120 --> 00:15:01,340
+but the fact of the matter is we now
+
+373
+00:15:01,340 --> 00:15:02,600
+have these source maps and these source
+
+374
+00:15:02,600 --> 00:15:06,740
+maps are it's a map of minified tokens
+
+375
+00:15:06,740 --> 00:15:10,400
+to portions in the original source so
+
+376
+00:15:10,400 --> 00:15:11,840
+kind of what this actually means is if
+
+377
+00:15:11,840 --> 00:15:15,080
+we look at our source map for our window
+
+378
+00:15:15,080 --> 00:15:19,850
+guess we get our line 1 column 1 25 what
+
+379
+00:15:19,850 --> 00:15:21,170
+the solace map will tell us that you're
+
+380
+00:15:21,170 --> 00:15:24,380
+actually looking at line 9 column 30 of
+
+381
+00:15:24,380 --> 00:15:27,320
+the unknown if I drew on the script and
+
+382
+00:15:27,320 --> 00:15:29,690
+it will also translate that symbol end
+
+383
+00:15:29,690 --> 00:15:32,180
+to show thing so now we're kind of
+
+384
+00:15:32,180 --> 00:15:33,440
+making some progress we could we can
+
+385
+00:15:33,440 --> 00:15:33,890
+apply
+
+386
+00:15:33,890 --> 00:15:36,529
+sourcemap - are minified source we see
+
+387
+00:15:36,529 --> 00:15:39,079
+this exception random exception we're
+
+388
+00:15:39,079 --> 00:15:40,550
+able to actually get back what we would
+
+389
+00:15:40,550 --> 00:15:41,690
+have if we weren't running minified
+
+390
+00:15:41,690 --> 00:15:46,279
+source but the caveat is that source
+
+391
+00:15:46,279 --> 00:15:49,070
+maps require three three things to
+
+392
+00:15:49,070 --> 00:15:52,570
+actually be useful one is the file name
+
+393
+00:15:52,570 --> 00:15:54,529
+obviously the script that is coming from
+
+394
+00:15:54,529 --> 00:15:57,880
+the line number in the column number
+
+395
+00:15:57,880 --> 00:16:00,440
+without all three of these pieces of
+
+396
+00:16:00,440 --> 00:16:02,420
+information a source map is literally
+
+397
+00:16:02,420 --> 00:16:04,190
+useless there's nothing you could do if
+
+398
+00:16:04,190 --> 00:16:06,380
+you just have a line number you cannot
+
+399
+00:16:06,380 --> 00:16:08,540
+you have line one what are you gonna do
+
+400
+00:16:08,540 --> 00:16:11,839
+with line one and unfortunately call
+
+401
+00:16:11,839 --> 00:16:13,310
+numbers are actually pretty rare to get
+
+402
+00:16:13,310 --> 00:16:14,959
+it's getting better
+
+403
+00:16:14,959 --> 00:16:18,170
+through modern Chrome and Firefox oddly
+
+404
+00:16:18,170 --> 00:16:20,180
+gives you the column number of the top
+
+405
+00:16:20,180 --> 00:16:22,880
+frame none of the other frames it only
+
+406
+00:16:22,880 --> 00:16:25,790
+gives you the top frame don't know why
+
+407
+00:16:25,790 --> 00:16:28,190
+but that's the way it works
+
+408
+00:16:28,190 --> 00:16:31,339
+Internet Explorer just good luck no I do
+
+409
+00:16:31,339 --> 00:16:35,329
+you get terrible things from that window
+
+410
+00:16:35,329 --> 00:16:37,610
+Nair also has only a line number as we
+
+411
+00:16:37,610 --> 00:16:40,040
+originally pointed up so if you look at
+
+412
+00:16:40,040 --> 00:16:42,350
+this line in Firefox so we have one of
+
+413
+00:16:42,350 --> 00:16:44,029
+our frames we can see that we get
+
+414
+00:16:44,029 --> 00:16:46,160
+everything except that nice little
+
+415
+00:16:46,160 --> 00:16:53,570
+column number that we we would like I'm
+
+416
+00:16:53,570 --> 00:16:54,769
+never gonna explain Internet Explorer
+
+417
+00:16:54,769 --> 00:16:56,290
+but if you want to have some fun and
+
+418
+00:16:56,290 --> 00:16:58,790
+torture yourself please feel free to
+
+419
+00:16:58,790 --> 00:17:00,440
+explore this stuff Internet Explorer
+
+420
+00:17:00,440 --> 00:17:06,559
+because it's it's it's a it's right also
+
+421
+00:17:06,559 --> 00:17:08,510
+this this air duh prototype got stack
+
+422
+00:17:08,510 --> 00:17:11,150
+being a string really really sucks we
+
+423
+00:17:11,150 --> 00:17:11,990
+need to keep track of all these
+
+424
+00:17:11,990 --> 00:17:13,339
+different regular expressions we need to
+
+425
+00:17:13,339 --> 00:17:15,290
+keep track of the evolution of all these
+
+426
+00:17:15,290 --> 00:17:17,630
+browsers and the bottom line is there is
+
+427
+00:17:17,630 --> 00:17:19,429
+no standard around this so we can't just
+
+428
+00:17:19,429 --> 00:17:20,870
+come up with one regular expression that
+
+429
+00:17:20,870 --> 00:17:22,790
+solves the problem for everybody we have
+
+430
+00:17:22,790 --> 00:17:24,949
+all this feature detection we have to
+
+431
+00:17:24,949 --> 00:17:26,720
+determine what version of Firefox to
+
+432
+00:17:26,720 --> 00:17:28,400
+parse the you know that specific
+
+433
+00:17:28,400 --> 00:17:33,860
+exception out we just have a mess so v8
+
+434
+00:17:33,860 --> 00:17:35,750
+came out with something a while ago that
+
+435
+00:17:35,750 --> 00:17:37,549
+is really really interesting I don't
+
+436
+00:17:37,549 --> 00:17:38,870
+know if this is necessarily the best
+
+437
+00:17:38,870 --> 00:17:40,400
+option out there but it's probably by
+
+438
+00:17:40,400 --> 00:17:43,010
+far the most useful today unfortunately
+
+439
+00:17:43,010 --> 00:17:47,150
+it's only v8 but they've introduced
+
+440
+00:17:47,150 --> 00:17:49,370
+what they call is this call site API and
+
+441
+00:17:49,370 --> 00:17:50,990
+this is similar this is access to these
+
+442
+00:17:50,990 --> 00:17:53,810
+raw frames so if anyone that has worked
+
+443
+00:17:53,810 --> 00:17:55,520
+with Python and debugged
+
+444
+00:17:55,520 --> 00:17:58,760
+actual stack traces in Python in Python
+
+445
+00:17:58,760 --> 00:18:00,530
+you're able to literally traverse the
+
+446
+00:18:00,530 --> 00:18:02,330
+frames programmatically we're able to
+
+447
+00:18:02,330 --> 00:18:04,580
+walk up the tree and within that tree
+
+448
+00:18:04,580 --> 00:18:06,350
+you're able to access all the local
+
+449
+00:18:06,350 --> 00:18:08,390
+variables in each of the frames so I can
+
+450
+00:18:08,390 --> 00:18:10,010
+say what was the previous call which
+
+451
+00:18:10,010 --> 00:18:11,570
+would be analogous to arguments dot
+
+452
+00:18:11,570 --> 00:18:14,780
+caller you could walk up this tree and
+
+453
+00:18:14,780 --> 00:18:16,370
+you could say what functions were in
+
+454
+00:18:16,370 --> 00:18:18,890
+this scope you can walk up the next tree
+
+455
+00:18:18,890 --> 00:18:20,120
+or the next frame and you could say what
+
+456
+00:18:20,120 --> 00:18:22,880
+functions are in this scope and this is
+
+457
+00:18:22,880 --> 00:18:24,860
+extremely useful so we can see that when
+
+458
+00:18:24,860 --> 00:18:27,170
+we got into this show thing function we
+
+459
+00:18:27,170 --> 00:18:28,880
+may see that something was undefined but
+
+460
+00:18:28,880 --> 00:18:30,020
+we don't know why it was undefined
+
+461
+00:18:30,020 --> 00:18:32,360
+because we don't have the variable that
+
+462
+00:18:32,360 --> 00:18:33,560
+was actually passed through we don't
+
+463
+00:18:33,560 --> 00:18:36,020
+have access to these local variables um
+
+464
+00:18:36,020 --> 00:18:39,200
+so this call site API is is starting to
+
+465
+00:18:39,200 --> 00:18:40,850
+head that direction I don't know if the
+
+466
+00:18:40,850 --> 00:18:42,530
+ability is there to actually do all the
+
+467
+00:18:42,530 --> 00:18:45,020
+local variables but it's it's getting us
+
+468
+00:18:45,020 --> 00:18:46,730
+so that we can avoid parsing these stack
+
+469
+00:18:46,730 --> 00:18:50,810
+traces so what it introduces kind of as
+
+470
+00:18:50,810 --> 00:18:53,090
+the basics is this error duck prepare
+
+471
+00:18:53,090 --> 00:18:55,760
+stack trace and this air duck prepare
+
+472
+00:18:55,760 --> 00:18:57,740
+stack trace is a global call back which
+
+473
+00:18:57,740 --> 00:19:00,080
+for what it's worth is probably a pretty
+
+474
+00:19:00,080 --> 00:19:01,460
+terrible idea as well because people
+
+475
+00:19:01,460 --> 00:19:05,330
+conflict with this what you do with this
+
+476
+00:19:05,330 --> 00:19:06,710
+is prepare stack curious is you're able
+
+477
+00:19:06,710 --> 00:19:08,720
+to tell the engine how do you actually
+
+478
+00:19:08,720 --> 00:19:11,390
+want to parse the stack trace so the
+
+479
+00:19:11,390 --> 00:19:13,670
+default callback to airdrop prepare
+
+480
+00:19:13,670 --> 00:19:15,680
+stack trace is what we would see in v8
+
+481
+00:19:15,680 --> 00:19:17,870
+it's the string representation of what
+
+482
+00:19:17,870 --> 00:19:21,200
+our frames were but since has been
+
+483
+00:19:21,200 --> 00:19:23,090
+exposed we can actually use this to our
+
+484
+00:19:23,090 --> 00:19:23,510
+advantage
+
+485
+00:19:23,510 --> 00:19:25,880
+we can tell v-8 how to transform these
+
+486
+00:19:25,880 --> 00:19:29,750
+raw call sight objects into what we want
+
+487
+00:19:29,750 --> 00:19:31,220
+as the error dot prototype todd stack
+
+488
+00:19:31,220 --> 00:19:35,690
+property or we can actually not parse
+
+489
+00:19:35,690 --> 00:19:38,270
+them at all which is actually what we
+
+490
+00:19:38,270 --> 00:19:41,150
+want to do so this case of a callback
+
+491
+00:19:41,150 --> 00:19:42,890
+that we passed to air to prepare stack
+
+492
+00:19:42,890 --> 00:19:45,800
+trees we get two arguments are passed
+
+493
+00:19:45,800 --> 00:19:47,330
+through the actual error object and then
+
+494
+00:19:47,330 --> 00:19:50,300
+the frames if we just simply return the
+
+495
+00:19:50,300 --> 00:19:53,600
+frames from this we have access to the
+
+496
+00:19:53,600 --> 00:19:57,230
+raw call sight objects error dot stack
+
+497
+00:19:57,230 --> 00:20:00,109
+is no longer a string
+
+498
+00:20:00,109 --> 00:20:03,629
+so if we if we want to loop over all of
+
+499
+00:20:03,629 --> 00:20:05,429
+these frames we have access to these
+
+500
+00:20:05,429 --> 00:20:07,440
+getter functions like get function name
+
+501
+00:20:07,440 --> 00:20:10,079
+get line number and get call number and
+
+502
+00:20:10,079 --> 00:20:11,039
+now we don't with the parse regular
+
+503
+00:20:11,039 --> 00:20:13,979
+expressions this is a very good step in
+
+504
+00:20:13,979 --> 00:20:16,919
+the right direction basically this is
+
+505
+00:20:16,919 --> 00:20:18,239
+probably the only the most useful
+
+506
+00:20:18,239 --> 00:20:19,259
+information you can get out of it
+
+507
+00:20:19,259 --> 00:20:21,449
+there's a bunch of other functions you
+
+508
+00:20:21,449 --> 00:20:25,440
+can get out of it but I think this is at
+
+509
+00:20:25,440 --> 00:20:27,029
+least heading in the right direction the
+
+510
+00:20:27,029 --> 00:20:28,919
+problem that we have with the error nut
+
+511
+00:20:28,919 --> 00:20:30,719
+prepare stack trace is again like I said
+
+512
+00:20:30,719 --> 00:20:33,389
+because it's a global so if one thing is
+
+513
+00:20:33,389 --> 00:20:34,679
+trying to do something different with
+
+514
+00:20:34,679 --> 00:20:36,149
+the tired of prepare stack trace and
+
+515
+00:20:36,149 --> 00:20:37,319
+you're trying to do something different
+
+516
+00:20:37,319 --> 00:20:39,359
+you have conflicts so you need to do
+
+517
+00:20:39,359 --> 00:20:42,289
+this roundabout logic of setting it to
+
+518
+00:20:42,289 --> 00:20:44,940
+some variable overriding what it is and
+
+519
+00:20:44,940 --> 00:20:47,159
+inside your callback call this function
+
+520
+00:20:47,159 --> 00:20:49,499
+to get the functionality but again
+
+521
+00:20:49,499 --> 00:20:50,940
+because we're accessing this dot stack
+
+522
+00:20:50,940 --> 00:20:53,159
+off of these errors we get into a lot of
+
+523
+00:20:53,159 --> 00:20:55,319
+funky race conditions so in practice
+
+524
+00:20:55,319 --> 00:20:58,049
+this is ends up not being too useful if
+
+525
+00:20:58,049 --> 00:20:59,549
+you do anything in node and you work
+
+526
+00:20:59,549 --> 00:21:01,379
+with CoffeeScript coffee syrup is a
+
+527
+00:21:01,379 --> 00:21:03,509
+really good example they override this
+
+528
+00:21:03,509 --> 00:21:05,339
+area to prepare stack trace to give you
+
+529
+00:21:05,339 --> 00:21:08,909
+a better dot stack representation so you
+
+530
+00:21:08,909 --> 00:21:10,259
+can utilize that one here when you're
+
+531
+00:21:10,259 --> 00:21:12,359
+debugging what happens is if you try to
+
+532
+00:21:12,359 --> 00:21:14,489
+inject this you are now conflict in what
+
+533
+00:21:14,489 --> 00:21:15,690
+they're doing so either you're gonna
+
+534
+00:21:15,690 --> 00:21:18,569
+break what they're doing or they're
+
+535
+00:21:18,569 --> 00:21:23,459
+gonna break what you're doing so your
+
+536
+00:21:23,459 --> 00:21:25,169
+objects are actually are pretty cool so
+
+537
+00:21:25,169 --> 00:21:26,999
+we have a much better use of these as
+
+538
+00:21:26,999 --> 00:21:29,190
+opposed to these string stack traces now
+
+539
+00:21:29,190 --> 00:21:30,179
+how do we actually collect these
+
+540
+00:21:30,179 --> 00:21:34,159
+differently with this lovely try catch
+
+541
+00:21:34,159 --> 00:21:36,839
+so very simple we have something like
+
+542
+00:21:36,839 --> 00:21:38,789
+this we have we have our function we're
+
+543
+00:21:38,789 --> 00:21:40,440
+calling do stuff and we want to catch
+
+544
+00:21:40,440 --> 00:21:43,079
+the error and then in our ideal world we
+
+545
+00:21:43,079 --> 00:21:45,749
+want to log this error and then we want
+
+546
+00:21:45,749 --> 00:21:48,329
+to rethread the error the reason why
+
+547
+00:21:48,329 --> 00:21:49,619
+we're wreath rowing the air is because
+
+548
+00:21:49,619 --> 00:21:51,899
+to us this is an uncaught exception we
+
+549
+00:21:51,899 --> 00:21:52,919
+don't know how to handle this our
+
+550
+00:21:52,919 --> 00:21:54,509
+program should not continue executing
+
+551
+00:21:54,509 --> 00:21:56,069
+after an exception has happens we want
+
+552
+00:21:56,069 --> 00:22:00,779
+to rethread it until we fix a bug so the
+
+553
+00:22:00,779 --> 00:22:02,849
+fun part right here is this log error so
+
+554
+00:22:02,849 --> 00:22:04,139
+once we're able to catch the exception
+
+555
+00:22:04,139 --> 00:22:05,699
+we're actually able to extract all this
+
+556
+00:22:05,699 --> 00:22:07,259
+information and do something very very
+
+557
+00:22:07,259 --> 00:22:11,500
+useful with this with this error object
+
+558
+00:22:11,510 --> 00:22:13,100
+the track catch is not very very
+
+559
+00:22:13,100 --> 00:22:16,549
+scalable you it involves you having to
+
+560
+00:22:16,549 --> 00:22:18,019
+predict where your code is gonna break
+
+561
+00:22:18,019 --> 00:22:19,730
+you're gonna wrap every function in a
+
+562
+00:22:19,730 --> 00:22:21,440
+try-catch and hope that you know you
+
+563
+00:22:21,440 --> 00:22:23,000
+you've actually wrapped the right thing
+
+564
+00:22:23,000 --> 00:22:26,000
+and if you don't it's gonna bubble back
+
+565
+00:22:26,000 --> 00:22:27,350
+up to wind it on iron and you're back to
+
+566
+00:22:27,350 --> 00:22:31,370
+where you were you started with so what
+
+567
+00:22:31,370 --> 00:22:32,960
+we need to do is we need to wrap
+
+568
+00:22:32,960 --> 00:22:35,570
+everything so we need to wrap something
+
+569
+00:22:35,570 --> 00:22:38,720
+in ice what we call in Python is a
+
+570
+00:22:38,720 --> 00:22:41,149
+decorator but some just have a function
+
+571
+00:22:41,149 --> 00:22:43,460
+that calls your other function so you
+
+572
+00:22:43,460 --> 00:22:44,899
+just call this wrap function and pass
+
+573
+00:22:44,899 --> 00:22:46,220
+the argument of the function you're
+
+574
+00:22:46,220 --> 00:22:47,510
+actually calling and this would do the
+
+575
+00:22:47,510 --> 00:22:51,289
+magic for you in a very generic way so
+
+576
+00:22:51,289 --> 00:22:53,240
+this looks is the only thing we had to
+
+577
+00:22:53,240 --> 00:22:55,610
+change is this first line we just wrap
+
+578
+00:22:55,610 --> 00:23:00,769
+our entire outer function with a wrap
+
+579
+00:23:00,769 --> 00:23:02,510
+there's gonna be some caveats with that
+
+580
+00:23:02,510 --> 00:23:04,970
+because it obviously is within the
+
+581
+00:23:04,970 --> 00:23:06,950
+current stack so anything that you call
+
+582
+00:23:06,950 --> 00:23:08,630
+as an async callback is not going to be
+
+583
+00:23:08,630 --> 00:23:11,149
+within this stack so you to wrap all of
+
+584
+00:23:11,149 --> 00:23:13,909
+the your AC callbacks as well in this
+
+585
+00:23:13,909 --> 00:23:17,899
+wrap so that sounds pretty cumbersome as
+
+586
+00:23:17,899 --> 00:23:21,110
+well so and the last thing that once a
+
+587
+00:23:21,110 --> 00:23:23,630
+turn real quick is a century so as I
+
+588
+00:23:23,630 --> 00:23:24,919
+talked about that I'm a core contributor
+
+589
+00:23:24,919 --> 00:23:27,169
+century and we have this library to go
+
+590
+00:23:27,169 --> 00:23:30,679
+along with century called Raven gas so
+
+591
+00:23:30,679 --> 00:23:32,269
+raven genesis job is to do all these
+
+592
+00:23:32,269 --> 00:23:34,340
+terrible things for you we do this
+
+593
+00:23:34,340 --> 00:23:36,470
+through means of monkey patching we
+
+594
+00:23:36,470 --> 00:23:39,559
+patch libraries we patch into libraries
+
+595
+00:23:39,559 --> 00:23:41,600
+exception handlers so for example
+
+596
+00:23:41,600 --> 00:23:43,789
+angular has this global callback which
+
+597
+00:23:43,789 --> 00:23:46,279
+is effectively their windowed on iron we
+
+598
+00:23:46,279 --> 00:23:47,870
+inject into all these things and we try
+
+599
+00:23:47,870 --> 00:23:49,370
+to capture all these things for you and
+
+600
+00:23:49,370 --> 00:23:52,460
+then we send that along to a server so
+
+601
+00:23:52,460 --> 00:23:54,440
+we monkey patch we also monkey patch the
+
+602
+00:23:54,440 --> 00:23:56,659
+native objects so we monkey patch a set
+
+603
+00:23:56,659 --> 00:23:58,789
+timeout set interval like it gets pretty
+
+604
+00:23:58,789 --> 00:24:03,980
+obtrusive but it does this job the raven
+
+605
+00:24:03,980 --> 00:24:05,240
+parses the error reports the information
+
+606
+00:24:05,240 --> 00:24:07,669
+to the central central server the Sentry
+
+607
+00:24:07,669 --> 00:24:08,990
+will fetch your source maps and give you
+
+608
+00:24:08,990 --> 00:24:11,120
+a nice clean view of your error so if
+
+609
+00:24:11,120 --> 00:24:12,860
+you publish your stuff and you have your
+
+610
+00:24:12,860 --> 00:24:14,809
+source maps as well we will see the
+
+611
+00:24:14,809 --> 00:24:16,820
+exception and we say hey here's the
+
+612
+00:24:16,820 --> 00:24:18,080
+source map let's actually make this
+
+613
+00:24:18,080 --> 00:24:19,879
+pretty and if your exception has the
+
+614
+00:24:19,879 --> 00:24:21,260
+line number and the column number we can
+
+615
+00:24:21,260 --> 00:24:23,360
+actually give you a view that looks
+
+616
+00:24:23,360 --> 00:24:24,650
+something like this
+
+617
+00:24:24,650 --> 00:24:26,450
+so this would be a few inside century
+
+618
+00:24:26,450 --> 00:24:28,580
+and we can see that we had some
+
+619
+00:24:28,580 --> 00:24:30,740
+exception we can actually see the nice
+
+620
+00:24:30,740 --> 00:24:33,080
+full stack that you should get if you
+
+621
+00:24:33,080 --> 00:24:34,970
+were trying to debug this yourself but
+
+622
+00:24:34,970 --> 00:24:36,140
+the nice thing is that you didn't
+
+623
+00:24:36,140 --> 00:24:37,880
+actually do this yourself this was
+
+624
+00:24:37,880 --> 00:24:39,530
+something that a user did this user
+
+625
+00:24:39,530 --> 00:24:41,720
+invoke this error somehow we get alerted
+
+626
+00:24:41,720 --> 00:24:45,320
+and we saw this in in century so I'm
+
+627
+00:24:45,320 --> 00:24:46,700
+kind of calling out that I would like to
+
+628
+00:24:46,700 --> 00:24:48,950
+help make this stuff better and by this
+
+629
+00:24:48,950 --> 00:24:51,230
+I mean exception handling in browsers I
+
+630
+00:24:51,230 --> 00:24:52,850
+would like to see if there's some way to
+
+631
+00:24:52,850 --> 00:24:54,680
+get standards going on or trying to make
+
+632
+00:24:54,680 --> 00:24:56,510
+this call site API or something that
+
+633
+00:24:56,510 --> 00:24:58,809
+makes makes this process better
+
+634
+00:24:58,809 --> 00:25:00,440
+exception handling should be pretty
+
+635
+00:25:00,440 --> 00:25:02,480
+simple Python is by far probably the
+
+636
+00:25:02,480 --> 00:25:05,650
+best example of this in my opinion I
+
+637
+00:25:05,650 --> 00:25:08,150
+want to help with this process I want to
+
+638
+00:25:08,150 --> 00:25:10,220
+be involved in Mozilla tickets I want to
+
+639
+00:25:10,220 --> 00:25:11,960
+help Firefox give to par with how these
+
+640
+00:25:11,960 --> 00:25:13,070
+things work and I want to understand why
+
+641
+00:25:13,070 --> 00:25:14,600
+maybe some of these decisions were being
+
+642
+00:25:14,600 --> 00:25:18,200
+made so the kind of summarize I have a
+
+643
+00:25:18,200 --> 00:25:20,929
+few references of of these projects I've
+
+644
+00:25:20,929 --> 00:25:23,780
+talked about so obviously century Raven
+
+645
+00:25:23,780 --> 00:25:26,030
+Jazz then there was this browser Stax
+
+646
+00:25:26,030 --> 00:25:27,880
+project that we put together which was
+
+647
+00:25:27,880 --> 00:25:30,050
+really interesting and what this does is
+
+648
+00:25:30,050 --> 00:25:34,190
+it uses sauce labs to call to capture a
+
+649
+00:25:34,190 --> 00:25:35,809
+call stack across every single browser
+
+650
+00:25:35,809 --> 00:25:38,050
+they support so if you want some laughs
+
+651
+00:25:38,050 --> 00:25:41,420
+check that out we have iPhones Internet
+
+652
+00:25:41,420 --> 00:25:44,870
+Explorer every single browser they all
+
+653
+00:25:44,870 --> 00:25:46,460
+literally do something completely
+
+654
+00:25:46,460 --> 00:25:47,140
+different
+
+655
+00:25:47,140 --> 00:25:48,860
+there's also a really nice library
+
+656
+00:25:48,860 --> 00:25:52,040
+called stacktrace jeaious that helps do
+
+657
+00:25:52,040 --> 00:25:53,720
+some parsing and do some logic that I've
+
+658
+00:25:53,720 --> 00:25:54,410
+talked about
+
+659
+00:25:54,410 --> 00:25:56,630
+zone jeaious is really interesting so
+
+660
+00:25:56,630 --> 00:25:58,460
+das kind of does a lot of what Raven
+
+661
+00:25:58,460 --> 00:26:00,320
+Geist does but zone just takes that to
+
+662
+00:26:00,320 --> 00:26:00,770
+an extreme
+
+663
+00:26:00,770 --> 00:26:02,840
+it literally monkey patches everything
+
+664
+00:26:02,840 --> 00:26:05,110
+and gives you these crazy contexts for
+
+665
+00:26:05,110 --> 00:26:07,309
+so everything so nothing really gets the
+
+666
+00:26:07,309 --> 00:26:08,840
+window down on it every execution has
+
+667
+00:26:08,840 --> 00:26:11,140
+its own context that is captured and
+
+668
+00:26:11,140 --> 00:26:13,610
+then also there's documentation for that
+
+669
+00:26:13,610 --> 00:26:16,730
+new JavaScript factories API at the call
+
+670
+00:26:16,730 --> 00:26:21,679
+site API that's it so apparently I was
+
+671
+00:26:21,679 --> 00:26:23,330
+told that we don't have we don't do
+
+672
+00:26:23,330 --> 00:26:25,700
+questions any more so someone will
+
+673
+00:26:25,700 --> 00:26:28,220
+please pull me aside later and I can
+
+674
+00:26:28,220 --> 00:26:29,420
+talk about this stuff for a really
+

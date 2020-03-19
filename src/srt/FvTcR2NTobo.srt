@@ -1,0 +1,2585 @@
+1
+00:00:00,000 --> 00:00:05,940
+
+Oh
+
+2
+00:00:05,950 --> 00:00:08,840
+titled my talk is detecting time zones
+
+3
+00:00:08,840 --> 00:00:10,940
+in the browser are you a freaking
+
+4
+00:00:10,940 --> 00:00:14,570
+masochist because time zones are hard
+
+5
+00:00:14,570 --> 00:00:17,090
+and time zones have had a lot of
+
+6
+00:00:17,090 --> 00:00:20,150
+problems with developers this joke that
+
+7
+00:00:20,150 --> 00:00:22,420
+goes around Twitter every now and then
+
+8
+00:00:22,420 --> 00:00:24,740
+you can tell the developer by just
+
+9
+00:00:24,740 --> 00:00:26,090
+mentioning the word time zones and
+
+10
+00:00:26,090 --> 00:00:29,210
+watching them cringe I will start with a
+
+11
+00:00:29,210 --> 00:00:31,760
+quick introduction though you'll find on
+
+12
+00:00:31,760 --> 00:00:33,410
+the internet generally looking like one
+
+13
+00:00:33,410 --> 00:00:35,839
+of the top two pictures so I'm Gil more
+
+14
+00:00:35,839 --> 00:00:39,350
+or less in various different systems I
+
+15
+00:00:39,350 --> 00:00:42,409
+am NOT your broom on Twitter and I very
+
+16
+00:00:42,409 --> 00:00:43,729
+occasionally right things at a site that
+
+17
+00:00:43,729 --> 00:00:47,780
+doesn't have a logo so I'll start with a
+
+18
+00:00:47,780 --> 00:00:52,010
+common problem on the web which is the
+
+19
+00:00:52,010 --> 00:00:55,609
+server has a concept of now and outputs
+
+20
+00:00:55,609 --> 00:00:58,159
+a date or a time because all right there
+
+21
+00:00:58,159 --> 00:00:59,510
+you go that's that's what time this
+
+22
+00:00:59,510 --> 00:01:01,609
+thing happened but depending on where
+
+23
+00:01:01,609 --> 00:01:05,210
+your users are that now isn't actually
+
+24
+00:01:05,210 --> 00:01:06,590
+now for them it could be in the future
+
+25
+00:01:06,590 --> 00:01:09,110
+it could be in the past but there's no
+
+26
+00:01:09,110 --> 00:01:11,210
+indication given and this is actually a
+
+27
+00:01:11,210 --> 00:01:12,829
+very common problem in Australia where a
+
+28
+00:01:12,829 --> 00:01:16,520
+lot of servers are in the San Francisco
+
+29
+00:01:16,520 --> 00:01:19,909
+and times that are of 17 hours behind us
+
+30
+00:01:19,909 --> 00:01:23,149
+on particularly useful it's even worse
+
+31
+00:01:23,149 --> 00:01:25,759
+when you're presented with you I that
+
+32
+00:01:25,759 --> 00:01:29,060
+makes you write the time for scheduling
+
+33
+00:01:29,060 --> 00:01:32,659
+system there's some examples there from
+
+34
+00:01:32,659 --> 00:01:35,450
+Bob your software if there's no
+
+35
+00:01:35,450 --> 00:01:36,740
+indication of what time the server
+
+36
+00:01:36,740 --> 00:01:38,810
+thinks that is how you meant to know
+
+37
+00:01:38,810 --> 00:01:41,719
+when something's going to happen so
+
+38
+00:01:41,719 --> 00:01:43,100
+there's actually a very very simple
+
+39
+00:01:43,100 --> 00:01:45,469
+solution to this which is to just not
+
+40
+00:01:45,469 --> 00:01:49,280
+ever show date or time it's perfect
+
+41
+00:01:49,280 --> 00:01:52,820
+we're done thanks for listening except
+
+42
+00:01:52,820 --> 00:01:54,049
+that's not actually particularly
+
+43
+00:01:54,049 --> 00:01:56,630
+practical so we'll try a different
+
+44
+00:01:56,630 --> 00:02:00,740
+solution basically you can make the
+
+45
+00:02:00,740 --> 00:02:03,109
+conscious choice the output only server
+
+46
+00:02:03,109 --> 00:02:06,200
+time and at least indicate what time
+
+47
+00:02:06,200 --> 00:02:08,210
+zone that's in and say alright deal with
+
+48
+00:02:08,210 --> 00:02:11,060
+it you work it out but here's what we've
+
+49
+00:02:11,060 --> 00:02:12,069
+got
+
+50
+00:02:12,069 --> 00:02:14,680
+but really that's not actually a
+
+51
+00:02:14,680 --> 00:02:16,359
+solution either it's just the problem
+
+52
+00:02:16,359 --> 00:02:21,370
+again so to have a look at why this is a
+
+53
+00:02:21,370 --> 00:02:24,189
+problem let's actually look at how time
+
+54
+00:02:24,189 --> 00:02:28,209
+zones work this is this is clearly a
+
+55
+00:02:28,209 --> 00:02:34,780
+draft edition alright so time hundreds
+
+56
+00:02:34,780 --> 00:02:36,879
+of years ago there was just the concept
+
+57
+00:02:36,879 --> 00:02:38,859
+of local time and it was based on the
+
+58
+00:02:38,859 --> 00:02:40,329
+Sun when the sun's at the highest point
+
+59
+00:02:40,329 --> 00:02:43,780
+in the sky it's noon but depending on
+
+60
+00:02:43,780 --> 00:02:45,340
+where you were that everyone had
+
+61
+00:02:45,340 --> 00:02:47,849
+different versions of local time and
+
+62
+00:02:47,849 --> 00:02:50,919
+this wasn't a problem that the village
+
+63
+00:02:50,919 --> 00:02:53,549
+down the road was eight minutes off
+
+64
+00:02:53,549 --> 00:02:56,980
+until you got to Telegraph's and
+
+65
+00:02:56,980 --> 00:02:58,750
+railways and people started traveling
+
+66
+00:02:58,750 --> 00:03:00,310
+long distances and suddenly it actually
+
+67
+00:03:00,310 --> 00:03:03,370
+became a bit of a problem so obviously
+
+68
+00:03:03,370 --> 00:03:05,079
+they need some work out some sort of
+
+69
+00:03:05,079 --> 00:03:09,430
+standardized system and back in eighteen
+
+70
+00:03:09,430 --> 00:03:12,069
+seventy nine I think it was some kind of
+
+71
+00:03:12,069 --> 00:03:14,349
+came up with the idea of well there's 24
+
+72
+00:03:14,349 --> 00:03:16,479
+hours in a day he divided the world up
+
+73
+00:03:16,479 --> 00:03:20,139
+into 24 bands works out to 15 degree
+
+74
+00:03:20,139 --> 00:03:22,689
+longer dude bands you just work out
+
+75
+00:03:22,689 --> 00:03:25,780
+where you are in the world and assign a
+
+76
+00:03:25,780 --> 00:03:28,329
+time based on that so it was a nice
+
+77
+00:03:28,329 --> 00:03:31,209
+perfect solution it was mathematical it
+
+78
+00:03:31,209 --> 00:03:32,650
+was precise it was easy to calculate
+
+79
+00:03:32,650 --> 00:03:35,680
+especially for software later on and
+
+80
+00:03:35,680 --> 00:03:38,169
+like all perfect solutions it remained
+
+81
+00:03:38,169 --> 00:03:40,449
+perfect right up until the time it met
+
+82
+00:03:40,449 --> 00:03:41,709
+reality and became completely
+
+83
+00:03:41,709 --> 00:03:44,319
+impractical because this is what it
+
+84
+00:03:44,319 --> 00:03:48,280
+actually looks like the nice neat bands
+
+85
+00:03:48,280 --> 00:03:50,709
+aren't quite so neat anymore because I
+
+86
+00:03:50,709 --> 00:03:52,389
+hit country boundaries and state
+
+87
+00:03:52,389 --> 00:03:56,620
+boundaries and politics and this doesn't
+
+88
+00:03:56,620 --> 00:03:57,729
+even include daylight saving time
+
+89
+00:03:57,729 --> 00:04:00,790
+differences so obviously there are
+
+90
+00:04:00,790 --> 00:04:02,680
+discrepancies when you're starting to
+
+91
+00:04:02,680 --> 00:04:05,769
+walk boundaries like this and this is
+
+92
+00:04:05,769 --> 00:04:08,049
+actually some great work by a guy called
+
+93
+00:04:08,049 --> 00:04:11,289
+Stefano mo kio low volumes and can
+
+94
+00:04:11,289 --> 00:04:13,620
+assume I'm pronouncing that right
+
+95
+00:04:13,620 --> 00:04:16,479
+basically be the green on this map is
+
+96
+00:04:16,479 --> 00:04:19,419
+where the times only is ahead of means
+
+97
+00:04:19,419 --> 00:04:21,489
+all the time and the red is where it's
+
+98
+00:04:21,489 --> 00:04:23,979
+behind so you can see Russia and China
+
+99
+00:04:23,979 --> 00:04:25,680
+are particularly behind
+
+100
+00:04:25,680 --> 00:04:28,590
+due to using the China touches I think
+
+101
+00:04:28,590 --> 00:04:31,800
+something like eight different time
+
+102
+00:04:31,800 --> 00:04:33,660
+zones across its borders because it
+
+103
+00:04:33,660 --> 00:04:36,479
+comportas 15 countries but it's all on
+
+104
+00:04:36,479 --> 00:04:38,580
+one time zone so the parts in the Far
+
+105
+00:04:38,580 --> 00:04:40,530
+West of China are actually three hours
+
+106
+00:04:40,530 --> 00:04:45,930
+behind means all the time so obviously
+
+107
+00:04:45,930 --> 00:04:47,250
+if you're trying to write a system based
+
+108
+00:04:47,250 --> 00:04:49,949
+on this it's a real headache and you
+
+109
+00:04:49,949 --> 00:04:51,210
+need some sort of common reference
+
+110
+00:04:51,210 --> 00:04:55,139
+reference point now everyone will divert
+
+111
+00:04:55,139 --> 00:04:57,960
+of greenwich mean time but this is a
+
+112
+00:04:57,960 --> 00:05:00,180
+tech conference so we use the technical
+
+113
+00:05:00,180 --> 00:05:04,199
+definition which is UTC so what is UTC
+
+114
+00:05:04,199 --> 00:05:06,300
+actually stand for well the answer is
+
+115
+00:05:06,300 --> 00:05:10,110
+nothing the International
+
+116
+00:05:10,110 --> 00:05:11,789
+Telecommunication Union and the
+
+117
+00:05:11,789 --> 00:05:14,699
+international astronomical union when
+
+118
+00:05:14,699 --> 00:05:15,960
+they were defining the standard they
+
+119
+00:05:15,960 --> 00:05:19,169
+wanted to have the same acronym for
+
+120
+00:05:19,169 --> 00:05:22,020
+every language in the world and the
+
+121
+00:05:22,020 --> 00:05:23,639
+English in the French of course didn't
+
+122
+00:05:23,639 --> 00:05:25,139
+actually agree on what that acronym
+
+123
+00:05:25,139 --> 00:05:27,960
+should be so in the end the compromise
+
+124
+00:05:27,960 --> 00:05:32,980
+was made and everyone is equally wrong
+
+125
+00:05:32,990 --> 00:05:37,070
+so how does UTC actually relate to gmt
+
+126
+00:05:37,070 --> 00:05:39,919
+well if we use javascript notation and
+
+127
+00:05:39,919 --> 00:05:43,260
+equality checks they're pretty much the
+
+128
+00:05:43,260 --> 00:05:45,360
+same it's just that you TC is more
+
+129
+00:05:45,360 --> 00:05:48,090
+scientifically precise if you want to
+
+130
+00:05:48,090 --> 00:05:50,010
+think of it in software terms gmt is
+
+131
+00:05:50,010 --> 00:05:56,340
+deprecated ok so we're gone looked at
+
+132
+00:05:56,340 --> 00:05:58,039
+the history of time zones a little bit
+
+133
+00:05:58,039 --> 00:06:01,050
+so now you think all right I know a
+
+134
+00:06:01,050 --> 00:06:03,360
+solution I can get the user to pick
+
+135
+00:06:03,360 --> 00:06:05,610
+their own time zone and I'll just
+
+136
+00:06:05,610 --> 00:06:10,099
+convert all the dates into that which
+
+137
+00:06:10,099 --> 00:06:14,610
+now presents other problems so my talk
+
+138
+00:06:14,610 --> 00:06:17,250
+is actually briefly it's mostly about
+
+139
+00:06:17,250 --> 00:06:19,229
+the browser but I'll give a quick toke
+
+140
+00:06:19,229 --> 00:06:20,460
+invention to know to make sure my
+
+141
+00:06:20,460 --> 00:06:24,720
+presentation is web-scale you'd set
+
+142
+00:06:24,720 --> 00:06:27,539
+process damage opti z equals x 0 name
+
+143
+00:06:27,539 --> 00:06:29,789
+and all your fake calculations after
+
+144
+00:06:29,789 --> 00:06:32,070
+that we'll be in the appropriate time
+
+145
+00:06:32,070 --> 00:06:36,360
+zone so you can the user an option to
+
+146
+00:06:36,360 --> 00:06:38,330
+select from a nice simple
+
+147
+00:06:38,330 --> 00:06:42,770
+list this is how to pick Sydney time
+
+148
+00:06:42,770 --> 00:06:45,889
+zone for various pieces of popular
+
+149
+00:06:45,889 --> 00:06:49,099
+software so as I mentioned in the slide
+
+150
+00:06:49,099 --> 00:06:51,289
+before there are four hundred and twenty
+
+151
+00:06:51,289 --> 00:06:53,270
+three times no definitions at the moment
+
+152
+00:06:53,270 --> 00:06:55,129
+that's there's still more being added
+
+153
+00:06:55,129 --> 00:06:57,949
+all the time so every time zone picker
+
+154
+00:06:57,949 --> 00:07:00,469
+that you give your user is a trade-off
+
+155
+00:07:00,469 --> 00:07:03,379
+between the ease of use and the actual
+
+156
+00:07:03,379 --> 00:07:07,009
+comprehensiveness of the list so at this
+
+157
+00:07:07,009 --> 00:07:08,960
+point you need to ask yourself do you
+
+158
+00:07:08,960 --> 00:07:10,400
+even really need to store the use of
+
+159
+00:07:10,400 --> 00:07:13,819
+preference because what what are you
+
+160
+00:07:13,819 --> 00:07:15,259
+really trying to achieve you're just
+
+161
+00:07:15,259 --> 00:07:17,419
+trying to take a date and a time and
+
+162
+00:07:17,419 --> 00:07:21,169
+display it in a way that's relative for
+
+163
+00:07:21,169 --> 00:07:25,400
+your users so what you do is you only
+
+164
+00:07:25,400 --> 00:07:28,759
+ever reference UTC your server stores
+
+165
+00:07:28,759 --> 00:07:31,849
+UTC you'll see the output to TC and as a
+
+166
+00:07:31,849 --> 00:07:33,620
+side note you should only ever store UDC
+
+167
+00:07:33,620 --> 00:07:34,940
+anyway because otherwise your day
+
+168
+00:07:34,940 --> 00:07:36,889
+calculations for adding and subtracting
+
+169
+00:07:36,889 --> 00:07:39,919
+data is going to get really hard so the
+
+170
+00:07:39,919 --> 00:07:42,020
+server just output to UTC and then you
+
+171
+00:07:42,020 --> 00:07:44,270
+convert it to local time in the browser
+
+172
+00:07:44,270 --> 00:07:46,580
+without actually knowing what the time
+
+173
+00:07:46,580 --> 00:07:49,490
+zone is this is by far the best solution
+
+174
+00:07:49,490 --> 00:07:52,279
+and it's used by a few popular sites
+
+175
+00:07:52,279 --> 00:07:54,349
+like I'm sure the github people can tell
+
+176
+00:07:54,349 --> 00:07:56,659
+you that's what they use in the web UI
+
+177
+00:07:56,659 --> 00:08:00,319
+and the really really basic
+
+178
+00:08:00,319 --> 00:08:03,169
+implementation looks like this you have
+
+179
+00:08:03,169 --> 00:08:06,800
+a html5 time element which has the
+
+180
+00:08:06,800 --> 00:08:09,500
+date-time attribute this is using the
+
+181
+00:08:09,500 --> 00:08:13,490
+iso standard date time format the Z at
+
+182
+00:08:13,490 --> 00:08:15,379
+the end of the string stands for Zulu
+
+183
+00:08:15,379 --> 00:08:20,690
+which is just another word for UTC this
+
+184
+00:08:20,690 --> 00:08:23,669
+of course it is
+
+185
+00:08:23,669 --> 00:08:26,139
+zillow actually come from a nautical
+
+186
+00:08:26,139 --> 00:08:29,860
+term where they had defined letters of
+
+187
+00:08:29,860 --> 00:08:31,599
+the alphabet for each zone that they
+
+188
+00:08:31,599 --> 00:08:34,229
+went through and Zed was their reference
+
+189
+00:08:34,229 --> 00:08:39,399
+so you grab the elements you quickly
+
+190
+00:08:39,399 --> 00:08:42,550
+look through them you get the date-time
+
+191
+00:08:42,550 --> 00:08:45,370
+attribute pass that straight into a new
+
+192
+00:08:45,370 --> 00:08:48,160
+date object which recognizes the iso
+
+193
+00:08:48,160 --> 00:08:52,240
+format but that is then converted that
+
+194
+00:08:52,240 --> 00:08:54,790
+UTC absolute time stamp into your local
+
+195
+00:08:54,790 --> 00:08:59,500
+time and you can just out put it in some
+
+196
+00:08:59,500 --> 00:09:01,570
+way that probably is more friendly than
+
+197
+00:09:01,570 --> 00:09:04,209
+to string you could use a library like
+
+198
+00:09:04,209 --> 00:09:09,160
+moment to get friendlier dates so do you
+
+199
+00:09:09,160 --> 00:09:12,510
+really need to store user preference
+
+200
+00:09:12,510 --> 00:09:15,040
+unfortunately sometimes you do because
+
+201
+00:09:15,040 --> 00:09:16,899
+you could be working with software that
+
+202
+00:09:16,899 --> 00:09:18,520
+needs to reference it in the back end
+
+203
+00:09:18,520 --> 00:09:20,920
+for some reason it could be scheduling
+
+204
+00:09:20,920 --> 00:09:26,980
+automated alerts so now we come to the
+
+205
+00:09:26,980 --> 00:09:29,290
+part what you really need to ask
+
+206
+00:09:29,290 --> 00:09:32,950
+yourself what you're doing because okay
+
+207
+00:09:32,950 --> 00:09:36,160
+you just put some times and information
+
+208
+00:09:36,160 --> 00:09:37,839
+in the browser surely we can just detect
+
+209
+00:09:37,839 --> 00:09:43,810
+it for them yeah good luck so the idea
+
+210
+00:09:43,810 --> 00:09:49,570
+is simple you grab a new date you use
+
+211
+00:09:49,570 --> 00:09:51,160
+the one method that we have available
+
+212
+00:09:51,160 --> 00:09:53,079
+that has anything to do with time zones
+
+213
+00:09:53,079 --> 00:09:56,230
+just get time zone offset and this
+
+214
+00:09:56,230 --> 00:09:59,440
+returns your local time minus UTC as a
+
+215
+00:09:59,440 --> 00:10:02,079
+value in minutes so for where we are
+
+216
+00:10:02,079 --> 00:10:04,770
+right now that returns minus six hundred
+
+217
+00:10:04,770 --> 00:10:08,170
+if it was a couple of weeks ago before
+
+218
+00:10:08,170 --> 00:10:09,670
+we moved out of daylight savings that
+
+219
+00:10:09,670 --> 00:10:13,600
+would be 660 so the idea is then you
+
+220
+00:10:13,600 --> 00:10:16,329
+just map the offset to a list of time
+
+221
+00:10:16,329 --> 00:10:19,089
+zones and do a quick look up and we're
+
+222
+00:10:19,089 --> 00:10:24,700
+done not at all so to understand why
+
+223
+00:10:24,700 --> 00:10:27,510
+this is a problem we'll take another
+
+224
+00:10:27,510 --> 00:10:33,310
+little detour about four years ago guy
+
+225
+00:10:33,310 --> 00:10:36,040
+called Patrick McKenzie read blog post
+
+226
+00:10:36,040 --> 00:10:37,810
+falsehoods programmers believe about
+
+227
+00:10:37,810 --> 00:10:42,759
+names and this was a very very widely
+
+228
+00:10:42,759 --> 00:10:45,850
+spread article i highly recommend right
+
+229
+00:10:45,850 --> 00:10:48,009
+there highly recommend you go find it if
+
+230
+00:10:48,009 --> 00:10:52,089
+you haven't read it this was based on
+
+231
+00:10:52,089 --> 00:10:53,949
+his experience working in translation
+
+232
+00:10:53,949 --> 00:10:57,550
+software and he's named he went by any
+
+233
+00:10:57,550 --> 00:10:59,500
+one of six different names and he
+
+234
+00:10:59,500 --> 00:11:01,540
+generally broke software whenever he
+
+235
+00:11:01,540 --> 00:11:03,370
+tries to use it because it made certain
+
+236
+00:11:03,370 --> 00:11:04,750
+assumptions about the way names will
+
+237
+00:11:04,750 --> 00:11:08,980
+formatted now this was referenced a
+
+238
+00:11:08,980 --> 00:11:11,430
+couple of years later by Noah Sussman
+
+239
+00:11:11,430 --> 00:11:14,829
+who wrote falsehoods programmers believe
+
+240
+00:11:14,829 --> 00:11:18,160
+about time and this was mostly to do
+
+241
+00:11:18,160 --> 00:11:20,440
+with hours minutes seconds timestamps
+
+242
+00:11:20,440 --> 00:11:23,339
+and include a fun example that
+
+243
+00:11:23,339 --> 00:11:26,649
+particular vm software if it suspended
+
+244
+00:11:26,649 --> 00:11:29,170
+the vm it suspended the clock and when
+
+245
+00:11:29,170 --> 00:11:31,990
+it resumed perhaps an hour later that
+
+246
+00:11:31,990 --> 00:11:34,949
+one second could have lasted an hour
+
+247
+00:11:34,949 --> 00:11:37,690
+this got spread around reddit and
+
+248
+00:11:37,690 --> 00:11:40,000
+metafilter and hacker news and he got
+
+249
+00:11:40,000 --> 00:11:42,970
+overwhelmed with the responses and three
+
+250
+00:11:42,970 --> 00:11:45,870
+days later he wrote his follow-up post
+
+251
+00:11:45,870 --> 00:11:49,540
+which contained 79 different falsehoods
+
+252
+00:11:49,540 --> 00:11:54,940
+all gleamed from user comments all of
+
+253
+00:11:54,940 --> 00:11:57,220
+which were mistakes that people had seen
+
+254
+00:11:57,220 --> 00:12:00,760
+in software dealing with time now I'm
+
+255
+00:12:00,760 --> 00:12:03,069
+not going to there's a full list on the
+
+256
+00:12:03,069 --> 00:12:04,630
+right but I won't read out all of them I
+
+257
+00:12:04,630 --> 00:12:07,449
+will just pick out a few of my favorite
+
+258
+00:12:07,449 --> 00:12:11,410
+ones like the local time will not change
+
+259
+00:12:11,410 --> 00:12:14,610
+during office hours which is wrong
+
+260
+00:12:14,610 --> 00:12:17,170
+reading the clients clock and comparing
+
+261
+00:12:17,170 --> 00:12:18,880
+to UTC is a good way to determine their
+
+262
+00:12:18,880 --> 00:12:22,510
+time zone ya know and i can easily
+
+263
+00:12:22,510 --> 00:12:29,370
+maintain the time zone with myself
+
+264
+00:12:29,380 --> 00:12:32,600
+so problem number one with time zones
+
+265
+00:12:32,600 --> 00:12:36,530
+stay alight saving time first of all
+
+266
+00:12:36,530 --> 00:12:38,630
+some countries use daylight saving some
+
+267
+00:12:38,630 --> 00:12:42,530
+countries time for those countries that
+
+268
+00:12:42,530 --> 00:12:44,420
+do not all the states and territories
+
+269
+00:12:44,420 --> 00:12:46,970
+use daylight saving Australia is a great
+
+270
+00:12:46,970 --> 00:12:50,990
+example of this when they do use it they
+
+271
+00:12:50,990 --> 00:12:53,210
+don't all change at the same time of
+
+272
+00:12:53,210 --> 00:12:55,370
+year and if they do change on the same
+
+273
+00:12:55,370 --> 00:12:56,900
+day they change at different hours of
+
+274
+00:12:56,900 --> 00:13:02,300
+the day some countries don't change only
+
+275
+00:13:02,300 --> 00:13:05,570
+twice a year Morocco for example bases
+
+276
+00:13:05,570 --> 00:13:09,560
+its dates on Ramadan so they go into
+
+277
+00:13:09,560 --> 00:13:11,600
+daylight savings and when Ramadan starts
+
+278
+00:13:11,600 --> 00:13:13,460
+they come out of daylight savings one
+
+279
+00:13:13,460 --> 00:13:15,560
+month so that it's easier to fast during
+
+280
+00:13:15,560 --> 00:13:17,570
+daylight hours and then they go back
+
+281
+00:13:17,570 --> 00:13:20,000
+into daylight savings for about a month
+
+282
+00:13:20,000 --> 00:13:24,760
+and a half and then come out again and
+
+283
+00:13:24,760 --> 00:13:27,530
+not every change into daylight savings
+
+284
+00:13:27,530 --> 00:13:30,920
+is by one hour most of them are but Lord
+
+285
+00:13:30,920 --> 00:13:35,630
+Howe Island changes by half an hour so
+
+286
+00:13:35,630 --> 00:13:37,700
+that for six months of the year in
+
+287
+00:13:37,700 --> 00:13:40,430
+winter it's half an hour ahead of Sydney
+
+288
+00:13:40,430 --> 00:13:42,830
+and for the other half of the year it's
+
+289
+00:13:42,830 --> 00:13:44,600
+on the same time as Sydney when City
+
+290
+00:13:44,600 --> 00:13:46,940
+jumps forward an hour why they do this I
+
+291
+00:13:46,940 --> 00:13:49,730
+have no idea but it's something software
+
+292
+00:13:49,730 --> 00:13:52,640
+has to account for now when i was
+
+293
+00:13:52,640 --> 00:13:55,160
+looking at time zones actually gave
+
+294
+00:13:55,160 --> 00:13:57,380
+myself an excuse to play with d3 and did
+
+295
+00:13:57,380 --> 00:14:01,610
+a visualization of different time zones
+
+296
+00:14:01,610 --> 00:14:02,690
+and their daylight savings
+
+297
+00:14:02,690 --> 00:14:06,440
+implementation now the details aren't
+
+298
+00:14:06,440 --> 00:14:08,570
+really important but what it shows is
+
+299
+00:14:08,570 --> 00:14:13,250
+there a hell of a lot of variation and
+
+300
+00:14:13,250 --> 00:14:15,800
+now we come into the second major
+
+301
+00:14:15,800 --> 00:14:17,870
+problem which is changing the rules
+
+302
+00:14:17,870 --> 00:14:20,810
+because that is make up the rules all
+
+303
+00:14:20,810 --> 00:14:23,920
+the time countries and regions are
+
+304
+00:14:23,920 --> 00:14:26,270
+constantly changing what their base
+
+305
+00:14:26,270 --> 00:14:29,420
+offset from UTC is russia is the prime
+
+306
+00:14:29,420 --> 00:14:31,850
+case of this where they are arguing
+
+307
+00:14:31,850 --> 00:14:33,350
+every year about whether they are in
+
+308
+00:14:33,350 --> 00:14:35,270
+permanent wintertime or permanent
+
+309
+00:14:35,270 --> 00:14:36,890
+summertime and they've changed their
+
+310
+00:14:36,890 --> 00:14:38,390
+minds about three times over the last
+
+311
+00:14:38,390 --> 00:14:40,610
+five years they're still trying to
+
+312
+00:14:40,610 --> 00:14:43,940
+change it again
+
+313
+00:14:43,950 --> 00:14:46,630
+regions can decide to start or stop
+
+314
+00:14:46,630 --> 00:14:49,240
+using daylight saving time even while
+
+315
+00:14:49,240 --> 00:14:52,360
+they were in daylight saving time Jordan
+
+316
+00:14:52,360 --> 00:14:56,829
+for example in March 2012 just before
+
+317
+00:14:56,829 --> 00:14:59,529
+daylight saving time ended always Judah
+
+318
+00:14:59,529 --> 00:15:00,910
+and they decided you know what we're
+
+319
+00:15:00,910 --> 00:15:02,760
+just staying in summer time all the time
+
+320
+00:15:02,760 --> 00:15:06,519
+permanently they actually thought that
+
+321
+00:15:06,519 --> 00:15:08,529
+it would save them electricity costs
+
+322
+00:15:08,529 --> 00:15:11,380
+throughout the year and they wanted to
+
+323
+00:15:11,380 --> 00:15:13,660
+see if it worked a year and a half later
+
+324
+00:15:13,660 --> 00:15:16,630
+after massive protests from amongst
+
+325
+00:15:16,630 --> 00:15:18,100
+others the Jordanian Teachers
+
+326
+00:15:18,100 --> 00:15:19,959
+Association who were worried about
+
+327
+00:15:19,959 --> 00:15:21,639
+students walking to school in the dark
+
+328
+00:15:21,639 --> 00:15:24,339
+in the morning they ended up switching
+
+329
+00:15:24,339 --> 00:15:28,269
+back the start and end dates of daylight
+
+330
+00:15:28,269 --> 00:15:29,769
+saving time they're constantly changing
+
+331
+00:15:29,769 --> 00:15:32,709
+and sometimes you get advance notice and
+
+332
+00:15:32,709 --> 00:15:36,730
+sometimes you don't and then my favorite
+
+333
+00:15:36,730 --> 00:15:41,019
+example is that for Samoa the date of
+
+334
+00:15:41,019 --> 00:15:46,269
+December 30 2011 doesn't exist so they
+
+335
+00:15:46,269 --> 00:15:48,730
+went straight from December 29 across
+
+336
+00:15:48,730 --> 00:15:50,260
+the international date line at midnight
+
+337
+00:15:50,260 --> 00:15:53,380
+and went straight into December 31 the
+
+338
+00:15:53,380 --> 00:15:54,640
+reason they did this actually made
+
+339
+00:15:54,640 --> 00:15:56,440
+senses they wanted to increase the
+
+340
+00:15:56,440 --> 00:15:57,850
+number of days they could trade with
+
+341
+00:15:57,850 --> 00:16:00,279
+Australia New Zealand but their nearest
+
+342
+00:16:00,279 --> 00:16:02,800
+neighbor American Samoa wanted to stay
+
+343
+00:16:02,800 --> 00:16:05,740
+trading with America and so the two
+
+344
+00:16:05,740 --> 00:16:08,019
+neighboring islands are now separated by
+
+345
+00:16:08,019 --> 00:16:14,710
+48 kilometres and 24 hours
+
+346
+00:16:14,720 --> 00:16:17,580
+which brings me to the big point which
+
+347
+00:16:17,580 --> 00:16:19,890
+is politics because this actually just
+
+348
+00:16:19,890 --> 00:16:21,480
+causes most of the other problems we've
+
+349
+00:16:21,480 --> 00:16:25,080
+seen if you want a great example of
+
+350
+00:16:25,080 --> 00:16:27,630
+politics Spain is currently in debate as
+
+351
+00:16:27,630 --> 00:16:31,290
+to whether they should change their UTC
+
+352
+00:16:31,290 --> 00:16:33,120
+offset the currently new TC plus one
+
+353
+00:16:33,120 --> 00:16:36,140
+hour but that only happened because
+
+354
+00:16:36,140 --> 00:16:40,019
+Franco wanted to align with his Nazi
+
+355
+00:16:40,019 --> 00:16:42,029
+allies and so switched at the same time
+
+356
+00:16:42,029 --> 00:16:44,670
+as then a lot of Spaniards don't like
+
+357
+00:16:44,670 --> 00:16:46,769
+this and they want to move back still in
+
+358
+00:16:46,769 --> 00:16:49,829
+debate there are non official rules
+
+359
+00:16:49,829 --> 00:16:53,459
+there's a town called you club near the
+
+360
+00:16:53,459 --> 00:16:54,839
+border of Western Australia and South
+
+361
+00:16:54,839 --> 00:16:58,709
+Australia which actually has decided to
+
+362
+00:16:58,709 --> 00:17:00,540
+pick for itself at I'm halfway between
+
+363
+00:17:00,540 --> 00:17:03,899
+Adelaide and Perth so it's they use UTC
+
+364
+00:17:03,899 --> 00:17:09,480
+plus eight hours and 45 minutes
+
+365
+00:17:09,490 --> 00:17:12,020
+the best thing about this is that the
+
+366
+00:17:12,020 --> 00:17:13,460
+australian government doesn't recognize
+
+367
+00:17:13,460 --> 00:17:16,970
+that time zone so australia actually has
+
+368
+00:17:16,970 --> 00:17:19,070
+eight different time zone rules but the
+
+369
+00:17:19,070 --> 00:17:20,780
+government only recognizes said not them
+
+370
+00:17:20,780 --> 00:17:22,400
+but software still has to account for
+
+371
+00:17:22,400 --> 00:17:23,930
+because this is what the people in that
+
+372
+00:17:23,930 --> 00:17:27,770
+town say they use there are one-off
+
+373
+00:17:27,770 --> 00:17:34,640
+changes sydney decided to extend
+
+374
+00:17:34,640 --> 00:17:38,080
+daylight savings earlier during the
+
+375
+00:17:38,080 --> 00:17:43,340
+2011-12 is one day because they had
+
+376
+00:17:43,340 --> 00:17:49,550
+local elections and then there's the
+
+377
+00:17:49,550 --> 00:17:52,490
+ones that are just made up on a whim so
+
+378
+00:17:52,490 --> 00:17:54,590
+the decision for jordan that i mentioned
+
+379
+00:17:54,590 --> 00:17:57,830
+before ah we're just going to stay in
+
+380
+00:17:57,830 --> 00:17:59,960
+summertime they announced that only two
+
+381
+00:17:59,960 --> 00:18:01,820
+days before daylight savings went to end
+
+382
+00:18:01,820 --> 00:18:03,230
+which actually caused havoc with
+
+383
+00:18:03,230 --> 00:18:06,470
+pre-printed flight tickets and they just
+
+384
+00:18:06,470 --> 00:18:07,820
+had to tell everyone to turn up to the
+
+385
+00:18:07,820 --> 00:18:09,230
+airport an hour earlier than their
+
+386
+00:18:09,230 --> 00:18:14,450
+ticket thankfully the airlines use UTC
+
+387
+00:18:14,450 --> 00:18:18,650
+and they weren't affected morocco
+
+388
+00:18:18,650 --> 00:18:21,140
+extended daylight saving time by a month
+
+389
+00:18:21,140 --> 00:18:23,000
+only one day before it was meant to end
+
+390
+00:18:23,000 --> 00:18:26,270
+and as i mentioned their dates are based
+
+391
+00:18:26,270 --> 00:18:29,270
+on ramadan which is a lunar cycle so the
+
+392
+00:18:29,270 --> 00:18:30,770
+dates in the future are currently does
+
+393
+00:18:30,770 --> 00:18:33,410
+the best guess so how do you keep up
+
+394
+00:18:33,410 --> 00:18:35,780
+with all of this well there is the
+
+395
+00:18:35,780 --> 00:18:38,840
+official iono timezone database which
+
+396
+00:18:38,840 --> 00:18:41,420
+was started by arthur David Olson back
+
+397
+00:18:41,420 --> 00:18:44,470
+in the 80s and has been kept up by
+
+398
+00:18:44,470 --> 00:18:47,530
+steady list of dedicated maintained errs
+
+399
+00:18:47,530 --> 00:18:50,540
+and it moved to iono after there were
+
+400
+00:18:50,540 --> 00:18:52,910
+some legal complications which did get
+
+401
+00:18:52,910 --> 00:18:55,640
+resolved but now it's it's got a better
+
+402
+00:18:55,640 --> 00:18:59,510
+controlling master and this is actually
+
+403
+00:18:59,510 --> 00:19:02,590
+used in most software that we use today
+
+404
+00:19:02,590 --> 00:19:07,460
+so linux and mac operating systems they
+
+405
+00:19:07,460 --> 00:19:09,350
+have this as their standard reference
+
+406
+00:19:09,350 --> 00:19:11,750
+windows of course doesn't they use their
+
+407
+00:19:11,750 --> 00:19:16,070
+own shed but the key thing is that you
+
+408
+00:19:16,070 --> 00:19:17,920
+need to keep your definitions up to date
+
+409
+00:19:17,920 --> 00:19:20,940
+because as we've seen countries a change
+
+410
+00:19:20,940 --> 00:19:24,690
+a dime by my count there are five
+
+411
+00:19:24,690 --> 00:19:27,450
+different places in your website where
+
+412
+00:19:27,450 --> 00:19:29,000
+these definitions could get out of date
+
+413
+00:19:29,000 --> 00:19:31,380
+so you've got the service operating
+
+414
+00:19:31,380 --> 00:19:33,420
+system the software which could just be
+
+415
+00:19:33,420 --> 00:19:35,610
+the programming language the libraries
+
+416
+00:19:35,610 --> 00:19:36,600
+that are built for that which could
+
+417
+00:19:36,600 --> 00:19:39,090
+bundle their own definitions the users
+
+418
+00:19:39,090 --> 00:19:40,500
+operating system and then if you're
+
+419
+00:19:40,500 --> 00:19:43,770
+adding in client-side libraries all of
+
+420
+00:19:43,770 --> 00:19:45,960
+these can have different definitions of
+
+421
+00:19:45,960 --> 00:19:47,610
+what a time zone is and what its rules
+
+422
+00:19:47,610 --> 00:19:50,880
+are so the question I'm asking is do you
+
+423
+00:19:50,880 --> 00:19:52,800
+really need to add in a client-side
+
+424
+00:19:52,800 --> 00:19:56,550
+library the deals with time zones having
+
+425
+00:19:56,550 --> 00:20:01,590
+said that there are there are actually
+
+426
+00:20:01,590 --> 00:20:03,030
+some people who have put an impressive
+
+427
+00:20:03,030 --> 00:20:05,040
+amount of work into trying to get this
+
+428
+00:20:05,040 --> 00:20:08,070
+to work in JavaScript moment time zone
+
+429
+00:20:08,070 --> 00:20:10,950
+for example pulls in the iono database
+
+430
+00:20:10,950 --> 00:20:12,930
+as a get sub module and then compiles it
+
+431
+00:20:12,930 --> 00:20:16,110
+using grunt you can select which zones
+
+432
+00:20:16,110 --> 00:20:18,150
+you want the the Jason definition for
+
+433
+00:20:18,150 --> 00:20:21,030
+but the problem is that if you want all
+
+434
+00:20:21,030 --> 00:20:23,580
+the time zones that JSON file is going
+
+435
+00:20:23,580 --> 00:20:26,010
+to be over a hundred kilobytes and if
+
+436
+00:20:26,010 --> 00:20:27,060
+you're loading that into a mobile
+
+437
+00:20:27,060 --> 00:20:30,260
+browser you can imagine especially
+
+438
+00:20:30,260 --> 00:20:32,310
+there's more definition comes through
+
+439
+00:20:32,310 --> 00:20:35,580
+that's not actually a great thing so I'm
+
+440
+00:20:35,580 --> 00:20:37,520
+trying to avoid the problem completely
+
+441
+00:20:37,520 --> 00:20:40,200
+because this is not just a historical
+
+442
+00:20:40,200 --> 00:20:43,910
+problem this is a list of all the IR
+
+443
+00:20:43,910 --> 00:20:46,560
+database changes in time zone rules
+
+444
+00:20:46,560 --> 00:20:50,130
+since the start of 2012 which doesn't
+
+445
+00:20:50,130 --> 00:20:52,500
+look like a particularly long list until
+
+446
+00:20:52,500 --> 00:20:57,770
+you actually scroll through it
+
+447
+00:20:57,780 --> 00:21:00,010
+there we go but that doesn't actually
+
+448
+00:21:00,010 --> 00:21:02,950
+include the latest change because as I
+
+449
+00:21:02,950 --> 00:21:05,710
+was writing this presentation a change
+
+450
+00:21:05,710 --> 00:21:07,810
+came through which summed up the whole
+
+451
+00:21:07,810 --> 00:21:09,940
+lot of my points really neatly it was a
+
+452
+00:21:09,940 --> 00:21:11,920
+hard to predict in advance and it was
+
+453
+00:21:11,920 --> 00:21:17,240
+really politically motivated
+
+454
+00:21:17,250 --> 00:21:20,260
+so two weeks ago Crimea jump for two
+
+455
+00:21:20,260 --> 00:21:25,220
+hours to align themselves with Moscow
+
+456
+00:21:25,230 --> 00:21:28,690
+but should you actually care well
+
+457
+00:21:28,690 --> 00:21:31,320
+unfortunately the users of your software
+
+458
+00:21:31,320 --> 00:21:34,660
+really might care I can tell you from
+
+459
+00:21:34,660 --> 00:21:40,570
+bitter personal experience so to finish
+
+460
+00:21:40,570 --> 00:21:46,510
+up at lessons issue tracker JIRA it's
+
+461
+00:21:46,510 --> 00:21:49,540
+widely used around the world and just
+
+462
+00:21:49,540 --> 00:21:52,240
+after I started lycian it gained the
+
+463
+00:21:52,240 --> 00:21:53,860
+ability to set a user timezone
+
+464
+00:21:53,860 --> 00:21:56,980
+preference now I felt that this feature
+
+465
+00:21:56,980 --> 00:21:58,960
+wasn't getting enough use of looking at
+
+466
+00:21:58,960 --> 00:22:01,570
+the stats on our biggest public issue
+
+467
+00:22:01,570 --> 00:22:05,470
+instance of JIRA and almost no one was
+
+468
+00:22:05,470 --> 00:22:08,620
+using the timezone feature that is so I
+
+469
+00:22:08,620 --> 00:22:10,990
+am in twenty percent time I wrote a
+
+470
+00:22:10,990 --> 00:22:13,510
+little plug in to try and detect the
+
+471
+00:22:13,510 --> 00:22:16,390
+timezone in the browser before I knew
+
+472
+00:22:16,390 --> 00:22:19,780
+all of this background and just make it
+
+473
+00:22:19,780 --> 00:22:22,150
+a one-click operation so I used one of
+
+474
+00:22:22,150 --> 00:22:23,740
+those libraries I mentioned before Jay's
+
+475
+00:22:23,740 --> 00:22:26,380
+timezone detect which worked really well
+
+476
+00:22:26,380 --> 00:22:29,470
+for what I wanted and showed a little
+
+477
+00:22:29,470 --> 00:22:32,410
+banner saying we think your browsers in
+
+478
+00:22:32,410 --> 00:22:33,670
+a different time zone from what your
+
+479
+00:22:33,670 --> 00:22:36,040
+preference specifies just click here and
+
+480
+00:22:36,040 --> 00:22:41,650
+it's set the lib the library is one
+
+481
+00:22:41,650 --> 00:22:44,350
+hundred percent accurate because it just
+
+482
+00:22:44,350 --> 00:22:46,360
+picks one major city / collection of
+
+483
+00:22:46,360 --> 00:22:49,090
+time zones so most of Western Europe is
+
+484
+00:22:49,090 --> 00:22:51,970
+just detected as Berlin which works fine
+
+485
+00:22:51,970 --> 00:22:54,820
+for what I wanted because the rules are
+
+486
+00:22:54,820 --> 00:22:57,220
+all the same it actually goes through
+
+487
+00:22:57,220 --> 00:22:59,440
+and has some disambiguation code for
+
+488
+00:22:59,440 --> 00:23:01,570
+rules the zones that are similar but
+
+489
+00:23:01,570 --> 00:23:03,070
+have different daylight saving start
+
+490
+00:23:03,070 --> 00:23:05,980
+dates and so can now work on that was
+
+491
+00:23:05,980 --> 00:23:10,059
+certain start and end dates about a year
+
+492
+00:23:10,059 --> 00:23:12,790
+later I wrote a blog post amount
+
+493
+00:23:12,790 --> 00:23:15,630
+developer blog showing statistical
+
+494
+00:23:15,630 --> 00:23:18,580
+analysis of how it had been used the
+
+495
+00:23:18,580 --> 00:23:20,950
+timezone feature usage and increased
+
+496
+00:23:20,950 --> 00:23:23,770
+16-fold in the year that had been
+
+497
+00:23:23,770 --> 00:23:27,610
+implemented during the time I've been
+
+498
+00:23:27,610 --> 00:23:29,750
+aware that the feature Whitney main
+
+499
+00:23:29,750 --> 00:23:32,540
+q his own updates and I've committed
+
+500
+00:23:32,540 --> 00:23:34,940
+back to the library by pull requests
+
+501
+00:23:34,940 --> 00:23:38,540
+when somewhere across the date line but
+
+502
+00:23:38,540 --> 00:23:40,700
+I didn't realize how bad things could
+
+503
+00:23:40,700 --> 00:23:44,960
+actually get so the problem started last
+
+504
+00:23:44,960 --> 00:23:48,050
+year when Israel change the starting
+
+505
+00:23:48,050 --> 00:23:50,960
+date of daylight savings time which
+
+506
+00:23:50,960 --> 00:23:52,520
+wasn't a particularly big deal on its
+
+507
+00:23:52,520 --> 00:23:55,720
+own but when it was combined with the
+
+508
+00:23:55,720 --> 00:23:58,820
+hard-coded date disambiguation code in
+
+509
+00:23:58,820 --> 00:24:02,650
+the library it caused quite a problem
+
+510
+00:24:02,650 --> 00:24:07,550
+but this didn't happen so Israel changed
+
+511
+00:24:07,550 --> 00:24:09,530
+the rules then I had to go into the eye
+
+512
+00:24:09,530 --> 00:24:11,420
+on our database and that had to be
+
+513
+00:24:11,420 --> 00:24:15,110
+compiled into software updates and then
+
+514
+00:24:15,110 --> 00:24:17,630
+it finally came down to the users and
+
+515
+00:24:17,630 --> 00:24:18,920
+when they uploaded their operating
+
+516
+00:24:18,920 --> 00:24:21,620
+system JIRA started telling them they
+
+517
+00:24:21,620 --> 00:24:30,770
+were in Gaza so down the bottom is the
+
+518
+00:24:30,770 --> 00:24:33,080
+the public bug that we raised about in
+
+519
+00:24:33,080 --> 00:24:34,010
+one of the comments where they actually
+
+520
+00:24:34,010 --> 00:24:35,960
+say this is both incorrect and very
+
+521
+00:24:35,960 --> 00:24:38,999
+offensive
+
+522
+00:24:39,009 --> 00:24:41,329
+now I don't know about you but when I
+
+523
+00:24:41,329 --> 00:24:43,609
+started in the tech industry I didn't
+
+524
+00:24:43,609 --> 00:24:45,289
+really have career goals of us that I'd
+
+525
+00:24:45,289 --> 00:24:48,200
+play it by ear but I'm pretty sure that
+
+526
+00:24:48,200 --> 00:24:50,269
+if I did have career goals that on that
+
+527
+00:24:50,269 --> 00:24:52,579
+list would not be increased political
+
+528
+00:24:52,579 --> 00:24:54,409
+tension in the long-standing conflict in
+
+529
+00:24:54,409 --> 00:25:01,039
+the Middle East so obviously couldn't
+
+530
+00:25:01,039 --> 00:25:03,559
+just let this go ahead fix it and the
+
+531
+00:25:03,559 --> 00:25:05,269
+quickest way would just be submit a
+
+532
+00:25:05,269 --> 00:25:08,570
+fixed the JS x undertake library try and
+
+533
+00:25:08,570 --> 00:25:12,079
+work it out two problems with this in
+
+534
+00:25:12,079 --> 00:25:14,269
+the year and a bit since i first wrote
+
+535
+00:25:14,269 --> 00:25:16,369
+the feature the library had had a
+
+536
+00:25:16,369 --> 00:25:18,739
+refactor and had removed an API that I
+
+537
+00:25:18,739 --> 00:25:20,629
+relied on so I couldn't just quickly
+
+538
+00:25:20,629 --> 00:25:23,299
+patch it and the other one was that I
+
+539
+00:25:23,299 --> 00:25:25,639
+realized this could probably happen
+
+540
+00:25:25,639 --> 00:25:27,499
+again in the future with a different set
+
+541
+00:25:27,499 --> 00:25:30,139
+of countries so it was actually time to
+
+542
+00:25:30,139 --> 00:25:33,559
+just completely rethink the approach so
+
+543
+00:25:33,559 --> 00:25:35,809
+some basic architecture is this how it
+
+544
+00:25:35,809 --> 00:25:38,749
+was working I would check the user
+
+545
+00:25:38,749 --> 00:25:40,129
+preference at the head stored in zero
+
+546
+00:25:40,129 --> 00:25:42,799
+call out to the detection library if
+
+547
+00:25:42,799 --> 00:25:46,369
+they differed give the user an option to
+
+548
+00:25:46,369 --> 00:25:50,629
+set the new zone and the way JS x
+
+549
+00:25:50,629 --> 00:25:53,239
+undertake actually worked basically is
+
+550
+00:25:53,239 --> 00:25:55,159
+that it will create a date in January
+
+551
+00:25:55,159 --> 00:25:59,119
+and create a date in june to compare the
+
+552
+00:25:59,119 --> 00:26:02,389
+gene to us or the UTC offset and if they
+
+553
+00:26:02,389 --> 00:26:03,709
+differed well that country had daylight
+
+554
+00:26:03,709 --> 00:26:05,239
+savings and they could be further
+
+555
+00:26:05,239 --> 00:26:08,329
+calculations from there so what I wanted
+
+556
+00:26:08,329 --> 00:26:09,789
+to do is actually get rid of that bit
+
+557
+00:26:09,789 --> 00:26:14,690
+and we already had times and definitions
+
+558
+00:26:14,690 --> 00:26:17,719
+on the server so I started detecting the
+
+559
+00:26:17,719 --> 00:26:22,099
+offsets myself asked JIRA back end to
+
+560
+00:26:22,099 --> 00:26:24,079
+find all the zones that it had defined
+
+561
+00:26:24,079 --> 00:26:26,899
+that matched that offset pair and then
+
+562
+00:26:26,899 --> 00:26:29,329
+show the user list so that I could
+
+563
+00:26:29,329 --> 00:26:33,079
+select which one was relevant to them so
+
+564
+00:26:33,079 --> 00:26:36,889
+this is the newer version not zoom in on
+
+565
+00:26:36,889 --> 00:26:38,149
+that so that's for where we are right
+
+566
+00:26:38,149 --> 00:26:41,690
+now and for anyone wondering curry is a
+
+567
+00:26:41,690 --> 00:26:45,409
+zone for an island in the best rate but
+
+568
+00:26:45,409 --> 00:26:48,409
+all these for zone definitions he have
+
+569
+00:26:48,409 --> 00:26:50,539
+the exact same time switching but they
+
+570
+00:26:50,539 --> 00:26:50,990
+have their
+
+571
+00:26:50,990 --> 00:26:55,070
+own names for historical reasons so
+
+572
+00:26:55,070 --> 00:26:57,110
+obviously we're this working one hundred
+
+573
+00:26:57,110 --> 00:26:58,610
+percent correctly still relies on the
+
+574
+00:26:58,610 --> 00:27:00,470
+backend having the right definitions but
+
+575
+00:27:00,470 --> 00:27:01,990
+we already had that problem anyway and
+
+576
+00:27:01,990 --> 00:27:04,280
+now if things are going to be out of
+
+577
+00:27:04,280 --> 00:27:06,620
+date the front end of the back end or at
+
+578
+00:27:06,620 --> 00:27:11,260
+least add update in a consistent way and
+
+579
+00:27:11,260 --> 00:27:13,550
+there are extra hassles I found while
+
+580
+00:27:13,550 --> 00:27:16,790
+doing this so automated testing you can
+
+581
+00:27:16,790 --> 00:27:18,260
+never be sure what time zone you're
+
+582
+00:27:18,260 --> 00:27:22,640
+build server is running in so I tried to
+
+583
+00:27:22,640 --> 00:27:25,160
+mock the date object and given how many
+
+584
+00:27:25,160 --> 00:27:26,870
+different arguments its constructor can
+
+585
+00:27:26,870 --> 00:27:30,980
+take that not a good idea so in the end
+
+586
+00:27:30,980 --> 00:27:33,140
+i actually just created an abstract
+
+587
+00:27:33,140 --> 00:27:35,630
+method i can called something like get
+
+588
+00:27:35,630 --> 00:27:37,940
+off set for month and then I just mopped
+
+589
+00:27:37,940 --> 00:27:39,679
+that to return hard coded by using my
+
+590
+00:27:39,679 --> 00:27:44,960
+tests manual testing when you change
+
+591
+00:27:44,960 --> 00:27:47,900
+your computer's timezone so you can test
+
+592
+00:27:47,900 --> 00:27:49,010
+that the features working properly
+
+593
+00:27:49,010 --> 00:27:51,530
+firefox gets the update just fine it
+
+594
+00:27:51,530 --> 00:27:53,960
+changes its own in you date calculation
+
+595
+00:27:53,960 --> 00:27:55,580
+to find chrome just ignores it
+
+596
+00:27:55,580 --> 00:27:57,590
+completely but that's actually better
+
+597
+00:27:57,590 --> 00:27:59,720
+than what it used to do which was reset
+
+598
+00:27:59,720 --> 00:28:03,890
+to UTC the worst part though is when you
+
+599
+00:28:03,890 --> 00:28:06,470
+have changed your machine time then you
+
+600
+00:28:06,470 --> 00:28:08,900
+forget to change it back and wonder why
+
+601
+00:28:08,900 --> 00:28:10,730
+all your instant messenger conversations
+
+602
+00:28:10,730 --> 00:28:13,420
+are logged at two o'clock in the morning
+
+603
+00:28:13,420 --> 00:28:15,830
+windows as I say it doesn't use the eye
+
+604
+00:28:15,830 --> 00:28:18,860
+on a database this wasn't specifically a
+
+605
+00:28:18,860 --> 00:28:20,660
+problem for me with the giro
+
+606
+00:28:20,660 --> 00:28:23,210
+implementation but other software
+
+607
+00:28:23,210 --> 00:28:25,130
+providers do actually have to worry
+
+608
+00:28:25,130 --> 00:28:26,900
+about this there's a standardized
+
+609
+00:28:26,900 --> 00:28:30,500
+mapping between windows time zones and
+
+610
+00:28:30,500 --> 00:28:33,440
+iono tongue time zones and then mostly
+
+611
+00:28:33,440 --> 00:28:35,740
+similar but there are some discrepancies
+
+612
+00:28:35,740 --> 00:28:39,590
+and I had some people ask me that I why
+
+613
+00:28:39,590 --> 00:28:40,850
+don't you just try and detect their
+
+614
+00:28:40,850 --> 00:28:47,420
+location yet so if you think timezone
+
+615
+00:28:47,420 --> 00:28:50,150
+disputes are bad don't even start
+
+616
+00:28:50,150 --> 00:28:54,380
+looking into border disputes
+
+617
+00:28:54,390 --> 00:28:58,840
+basically windows used to have a map for
+
+618
+00:28:58,840 --> 00:29:01,270
+selecting a time zone in software they
+
+619
+00:29:01,270 --> 00:29:03,070
+removed that because the number of
+
+620
+00:29:03,070 --> 00:29:05,440
+people who complained from India and
+
+621
+00:29:05,440 --> 00:29:07,540
+Pakistan about where the border should
+
+622
+00:29:07,540 --> 00:29:10,240
+be on the map just four senators go nuts
+
+623
+00:29:10,240 --> 00:29:14,260
+screw it we're just taking it out and if
+
+624
+00:29:14,260 --> 00:29:17,140
+you worry about a hundred K of just time
+
+625
+00:29:17,140 --> 00:29:18,790
+zone definitions I can't imagine what
+
+626
+00:29:18,790 --> 00:29:22,390
+the polygon data for timezone shapes
+
+627
+00:29:22,390 --> 00:29:26,590
+would be so I'll just finish quickly
+
+628
+00:29:26,590 --> 00:29:30,190
+with some big takeaways and as an aside
+
+629
+00:29:30,190 --> 00:29:32,170
+if you do a google image search for
+
+630
+00:29:32,170 --> 00:29:38,630
+world record food it's really disturbing
+
+631
+00:29:38,640 --> 00:29:42,490
+so the first one is do you really need a
+
+632
+00:29:42,490 --> 00:29:46,030
+time zone or do you just need to output
+
+633
+00:29:46,030 --> 00:29:48,370
+the time in a way that's relative for
+
+634
+00:29:48,370 --> 00:29:51,910
+the user most of the time or you're
+
+635
+00:29:51,910 --> 00:29:54,250
+going to need is just relative time but
+
+636
+00:29:54,250 --> 00:29:56,470
+if you are going to do a time zone make
+
+637
+00:29:56,470 --> 00:29:59,350
+sure you do it properly which brings me
+
+638
+00:29:59,350 --> 00:30:01,000
+to the next point which is don't ignore
+
+639
+00:30:01,000 --> 00:30:05,560
+history despite what some people in the
+
+640
+00:30:05,560 --> 00:30:06,910
+JavaScript community might think
+
+641
+00:30:06,910 --> 00:30:08,860
+problems existed before JavaScript and
+
+642
+00:30:08,860 --> 00:30:11,670
+problems were solved before JavaScript
+
+643
+00:30:11,670 --> 00:30:15,220
+we are not special time zones are really
+
+644
+00:30:15,220 --> 00:30:18,280
+freaking hard and a lot of people have
+
+645
+00:30:18,280 --> 00:30:20,680
+spent decades trying to make them easier
+
+646
+00:30:20,680 --> 00:30:22,900
+for everyone and we should learn from
+

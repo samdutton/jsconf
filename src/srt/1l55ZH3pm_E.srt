@@ -1,0 +1,2049 @@
+1
+00:00:00,050 --> 00:00:06,080
+
+[Applause]
+
+2
+00:00:06,080 --> 00:00:11,000
+hello your réguel keeper knock I'll try
+
+3
+00:00:11,000 --> 00:00:15,269
+sir good morning my name is Jorge and
+
+4
+00:00:15,269 --> 00:00:17,430
+today I'm going to talk about testing in
+
+5
+00:00:17,430 --> 00:00:20,850
+production with JavaScript welcome two
+
+6
+00:00:20,850 --> 00:00:22,590
+years conf Budapest and thank you for
+
+7
+00:00:22,590 --> 00:00:25,380
+coming to my talk hidden slide doesn't
+
+8
+00:00:25,380 --> 00:00:27,689
+matter I promise the talk it's not gonna
+
+9
+00:00:27,689 --> 00:00:32,210
+be too heavy and let's get started so
+
+10
+00:00:32,210 --> 00:00:34,980
+quick about me my name is Jorge I'm an
+
+11
+00:00:34,980 --> 00:00:37,290
+engineer I'm from Spain and I'm
+
+12
+00:00:37,290 --> 00:00:40,770
+currently working in Bristol started
+
+13
+00:00:40,770 --> 00:00:42,719
+working on autonomous indoor navigation
+
+14
+00:00:42,719 --> 00:00:45,960
+new abs and money area baekho's fronts
+
+15
+00:00:45,960 --> 00:00:48,510
+and then got back to the cloud space for
+
+16
+00:00:48,510 --> 00:00:50,850
+years working at I start back called
+
+17
+00:00:50,850 --> 00:00:52,770
+bitNami that just got acquired by BM
+
+18
+00:00:52,770 --> 00:00:54,899
+words so kudos to my team and now
+
+19
+00:00:54,899 --> 00:00:58,680
+currently working at Dyson so I always
+
+20
+00:00:58,680 --> 00:01:01,559
+like to store the talks with a quick
+
+21
+00:01:01,559 --> 00:01:04,979
+poll to know how the audience is doing
+
+22
+00:01:04,979 --> 00:01:07,830
+on on this topic I want to know how many
+
+23
+00:01:07,830 --> 00:01:11,580
+of you know what javascript is okay
+
+24
+00:01:11,580 --> 00:01:13,380
+thank you you know raising the hands
+
+25
+00:01:13,380 --> 00:01:17,280
+over there are here for the city the
+
+26
+00:01:17,280 --> 00:01:19,710
+food the party and just a bit of
+
+27
+00:01:19,710 --> 00:01:22,729
+JavaScript okay that's fine
+
+28
+00:01:22,729 --> 00:01:26,490
+know what testing is we're raising the
+
+29
+00:01:26,490 --> 00:01:29,759
+bar know about the testing pyramid or
+
+30
+00:01:29,759 --> 00:01:31,170
+any other way of classifying the
+
+31
+00:01:31,170 --> 00:01:33,930
+different testing levels yeah most of
+
+32
+00:01:33,930 --> 00:01:36,960
+you thank you who has a production
+
+33
+00:01:36,960 --> 00:01:39,990
+environment again every one of you
+
+34
+00:01:39,990 --> 00:01:44,130
+amazing who is afraid of testing in
+
+35
+00:01:44,130 --> 00:01:48,869
+production who is not afraid of testing
+
+36
+00:01:48,869 --> 00:01:52,409
+in production good give this is coming
+
+37
+00:01:52,409 --> 00:01:55,200
+so are you testing your services in
+
+38
+00:01:55,200 --> 00:01:59,159
+production not so many but there are
+
+39
+00:01:59,159 --> 00:02:01,829
+quite a few that's great the final
+
+40
+00:02:01,829 --> 00:02:05,670
+preferred spaces two tops yes spaces
+
+41
+00:02:05,670 --> 00:02:07,470
+right
+
+42
+00:02:07,470 --> 00:02:10,560
+so this this talk about this talk is
+
+43
+00:02:10,560 --> 00:02:13,280
+about I'm gonna try to answer some
+
+44
+00:02:13,280 --> 00:02:16,980
+frequently asked questions about testing
+
+45
+00:02:16,980 --> 00:02:20,610
+and your production workloads not going
+
+46
+00:02:20,610 --> 00:02:22,680
+to be too technical and not going too
+
+47
+00:02:22,680 --> 00:02:25,620
+deep inside any JavaScript code and it's
+
+48
+00:02:25,620 --> 00:02:27,330
+all based on the experience I gained
+
+49
+00:02:27,330 --> 00:02:29,280
+working I dance at Dyson I've been
+
+50
+00:02:29,280 --> 00:02:31,140
+working at Dyson for almost two years
+
+51
+00:02:31,140 --> 00:02:35,160
+now and Anna has been great and we have
+
+52
+00:02:35,160 --> 00:02:36,330
+learned a lot about testing in
+
+53
+00:02:36,330 --> 00:02:39,930
+production so this is a quick summary of
+
+54
+00:02:39,930 --> 00:02:42,960
+where I'm going I'm going to answer why
+
+55
+00:02:42,960 --> 00:02:44,430
+do you need testing testing production
+
+56
+00:02:44,430 --> 00:02:48,210
+was the right testing level how can you
+
+57
+00:02:48,210 --> 00:02:51,000
+escape or noise no js' work help with
+
+58
+00:02:51,000 --> 00:02:53,820
+this how to avoid disrupting the real
+
+59
+00:02:53,820 --> 00:02:55,380
+users because if you're testing in
+
+60
+00:02:55,380 --> 00:02:58,500
+production you're gonna be part of your
+
+61
+00:02:58,500 --> 00:03:00,420
+users and you're going to be using
+
+62
+00:03:00,420 --> 00:03:04,200
+production systems how to keep how to
+
+63
+00:03:04,200 --> 00:03:05,880
+keep your tests out of the statistics
+
+64
+00:03:05,880 --> 00:03:09,030
+reports and out of metrics so when you
+
+65
+00:03:09,030 --> 00:03:12,270
+report your to your manager to hire the
+
+66
+00:03:12,270 --> 00:03:16,910
+business didn't get you results and then
+
+67
+00:03:16,910 --> 00:03:20,310
+why you should clean up and what happens
+
+68
+00:03:20,310 --> 00:03:22,680
+if you don't because that happened to us
+
+69
+00:03:22,680 --> 00:03:27,480
+so yeah let's dive in a bit why do you
+
+70
+00:03:27,480 --> 00:03:29,760
+need testing in production well that's a
+
+71
+00:03:29,760 --> 00:03:31,860
+good question by how most of you can
+
+72
+00:03:31,860 --> 00:03:34,920
+answer that but really what do I mean
+
+73
+00:03:34,920 --> 00:03:36,989
+why what do I mean by testing in
+
+74
+00:03:36,989 --> 00:03:39,330
+production when you deploy your
+
+75
+00:03:39,330 --> 00:03:41,910
+application it could be an application a
+
+76
+00:03:41,910 --> 00:03:43,860
+service could be a lambda whatever thing
+
+77
+00:03:43,860 --> 00:03:46,290
+you deploy to production and has so the
+
+78
+00:03:46,290 --> 00:03:49,260
+public has access to is you need to
+
+79
+00:03:49,260 --> 00:03:53,400
+guarantee it's continues to work over
+
+80
+00:03:53,400 --> 00:03:56,760
+the days and over the hours and it's not
+
+81
+00:03:56,760 --> 00:03:59,280
+just it passed the unit test it passed
+
+82
+00:03:59,280 --> 00:04:01,530
+the service level test or whatever and
+
+83
+00:04:01,530 --> 00:04:03,900
+then I deploy and I don't care about my
+
+84
+00:04:03,900 --> 00:04:05,370
+service the service is running in
+
+85
+00:04:05,370 --> 00:04:07,050
+production and if something happens to
+
+86
+00:04:07,050 --> 00:04:10,320
+it you want to get notified not at the
+
+87
+00:04:10,320 --> 00:04:14,910
+user but by some automated system so the
+
+88
+00:04:14,910 --> 00:04:17,280
+idea about this is to have some kind of
+
+89
+00:04:17,280 --> 00:04:20,190
+testing tool that runs on a scheduled
+
+90
+00:04:20,190 --> 00:04:21,410
+basis
+
+91
+00:04:21,410 --> 00:04:24,750
+so it's testing your service like it was
+
+92
+00:04:24,750 --> 00:04:27,479
+a real user and if something happens so
+
+93
+00:04:27,479 --> 00:04:29,759
+the tests fail it means that a real user
+
+94
+00:04:29,759 --> 00:04:32,400
+wasn't able to do one of the actions you
+
+95
+00:04:32,400 --> 00:04:33,840
+have defined for your production
+
+96
+00:04:33,840 --> 00:04:36,030
+services and and then you get a
+
+97
+00:04:36,030 --> 00:04:38,699
+notification so let's let's dive into it
+
+98
+00:04:38,699 --> 00:04:42,810
+a bit why really do you need a testing
+
+99
+00:04:42,810 --> 00:04:44,940
+you need testing in production so here's
+
+100
+00:04:44,940 --> 00:04:47,910
+a quick sample it might seem dumb but it
+
+101
+00:04:47,910 --> 00:04:49,620
+can happen so imagine you have a lambda
+
+102
+00:04:49,620 --> 00:04:51,199
+function that we change the current date
+
+103
+00:04:51,199 --> 00:04:55,130
+right and it doesn't cut it for the year
+
+104
+00:04:55,130 --> 00:04:57,930
+2038 problem which is when you are
+
+105
+00:04:57,930 --> 00:05:02,120
+storing your date in a sign it 32-bits
+
+106
+00:05:02,120 --> 00:05:05,520
+variable you've run out of space to
+
+107
+00:05:05,520 --> 00:05:08,520
+store the date and then you overflow
+
+108
+00:05:08,520 --> 00:05:13,490
+right on the 16th of january 2038
+
+109
+00:05:13,490 --> 00:05:16,680
+so yeah you do your deployment you write
+
+110
+00:05:16,680 --> 00:05:19,139
+unit tests for it issue which on a date
+
+111
+00:05:19,139 --> 00:05:21,389
+if you query for the date again you
+
+112
+00:05:21,389 --> 00:05:22,979
+should return a different number should
+
+113
+00:05:22,979 --> 00:05:25,830
+return a different date yeah do you know
+
+114
+00:05:25,830 --> 00:05:26,729
+unit tests are fine
+
+115
+00:05:26,729 --> 00:05:28,800
+do you deploy it and after a handful of
+
+116
+00:05:28,800 --> 00:05:32,639
+years is stuff failing and it's because
+
+117
+00:05:32,639 --> 00:05:35,550
+a it has dynamic input/output it depends
+
+118
+00:05:35,550 --> 00:05:40,110
+on the current time on how the users are
+
+119
+00:05:40,110 --> 00:05:42,240
+interacting with the service or what the
+
+120
+00:05:42,240 --> 00:05:44,970
+service is returning dynamically but
+
+121
+00:05:44,970 --> 00:05:48,330
+going to a more real situation imagine
+
+122
+00:05:48,330 --> 00:05:50,340
+one of your stateful services so it's a
+
+123
+00:05:50,340 --> 00:05:52,560
+service that store some state on your
+
+124
+00:05:52,560 --> 00:05:55,889
+users or in your database or on the
+
+125
+00:05:55,889 --> 00:05:58,590
+state of your system then suddenly by a
+
+126
+00:05:58,590 --> 00:06:01,050
+bug or whatever becomes inconsistent and
+
+127
+00:06:01,050 --> 00:06:02,820
+then starts failing for all the
+
+128
+00:06:02,820 --> 00:06:06,750
+customers then when you have is a horde
+
+129
+00:06:06,750 --> 00:06:10,860
+of customers chasing you angry customers
+
+130
+00:06:10,860 --> 00:06:14,090
+saying this is not working I pay for it
+
+131
+00:06:14,090 --> 00:06:17,090
+but you don't want that you want
+
+132
+00:06:17,090 --> 00:06:19,560
+something that it's not going to get
+
+133
+00:06:19,560 --> 00:06:22,259
+angry at you and it's a robot an
+
+134
+00:06:22,259 --> 00:06:25,020
+automated process that's gonna behave
+
+135
+00:06:25,020 --> 00:06:27,300
+like a user it's going to test your
+
+136
+00:06:27,300 --> 00:06:29,760
+things your services in production and
+
+137
+00:06:29,760 --> 00:06:31,919
+tell you when something bad happens so
+
+138
+00:06:31,919 --> 00:06:34,050
+you don't get the feedback
+
+139
+00:06:34,050 --> 00:06:39,479
+from the users and so if you compare
+
+140
+00:06:39,479 --> 00:06:41,729
+these two situations so imagine you are
+
+141
+00:06:41,729 --> 00:06:43,319
+in the first situation where you don't
+
+142
+00:06:43,319 --> 00:06:44,849
+have an automated test system in
+
+143
+00:06:44,849 --> 00:06:47,250
+production and then something bad
+
+144
+00:06:47,250 --> 00:06:49,349
+happens and all your customers come to
+
+145
+00:06:49,349 --> 00:06:51,440
+you saying this is no working and
+
+146
+00:06:51,440 --> 00:06:55,830
+claiming back the money it's gonna take
+
+147
+00:06:55,830 --> 00:06:58,289
+some time for the users to report to you
+
+148
+00:06:58,289 --> 00:07:00,240
+that I know is happening and they have
+
+149
+00:07:00,240 --> 00:07:04,800
+to go to your service helpdesk or log an
+
+150
+00:07:04,800 --> 00:07:07,020
+issue or log a ticket or send you an
+
+151
+00:07:07,020 --> 00:07:09,210
+email or whatever so it's slow you don't
+
+152
+00:07:09,210 --> 00:07:12,090
+know your service is failing until you
+
+153
+00:07:12,090 --> 00:07:15,719
+get the feedback from the users but if
+
+154
+00:07:15,719 --> 00:07:17,520
+you have an automated system that runs
+
+155
+00:07:17,520 --> 00:07:19,830
+every minute every 10 minute every 20
+
+156
+00:07:19,830 --> 00:07:22,620
+minutes every 30 minute you can
+
+157
+00:07:22,620 --> 00:07:24,090
+notifications about your system not
+
+158
+00:07:24,090 --> 00:07:27,810
+working like this and also if you're in
+
+159
+00:07:27,810 --> 00:07:30,659
+the first situation you're losing money
+
+160
+00:07:30,659 --> 00:07:33,509
+because then the more time you last in
+
+161
+00:07:33,509 --> 00:07:35,400
+detecting that your systems are not
+
+162
+00:07:35,400 --> 00:07:37,740
+working that's money that you are losing
+
+163
+00:07:37,740 --> 00:07:40,380
+and and also you're paying the support
+
+164
+00:07:40,380 --> 00:07:43,800
+the supporting a lot for dealing with
+
+165
+00:07:43,800 --> 00:07:45,900
+those things while you could have catch
+
+166
+00:07:45,900 --> 00:07:49,650
+the Europe beforehand and also the final
+
+167
+00:07:49,650 --> 00:07:52,800
+the final comparison is about the
+
+168
+00:07:52,800 --> 00:07:55,259
+company reputation so if you have all
+
+169
+00:07:55,259 --> 00:07:57,330
+the users coming back at you and saying
+
+170
+00:07:57,330 --> 00:07:58,830
+this is not working this is a high pay
+
+171
+00:07:58,830 --> 00:08:00,840
+for this blah blah blah your company
+
+172
+00:08:00,840 --> 00:08:03,449
+reputation is over the over the floor
+
+173
+00:08:03,449 --> 00:08:06,449
+and then if you have an automated system
+
+174
+00:08:06,449 --> 00:08:10,500
+that notifies you by the way of an issue
+
+175
+00:08:10,500 --> 00:08:12,150
+in your production systems
+
+176
+00:08:12,150 --> 00:08:16,289
+nobody needs to notice it and then you
+
+177
+00:08:16,289 --> 00:08:18,810
+fix it quickly and then customers are
+
+178
+00:08:18,810 --> 00:08:21,930
+happy so that's the comparison and why
+
+179
+00:08:21,930 --> 00:08:25,860
+do you need testing in production so
+
+180
+00:08:25,860 --> 00:08:28,409
+what really is the right level of
+
+181
+00:08:28,409 --> 00:08:29,639
+testing you want to perform in
+
+182
+00:08:29,639 --> 00:08:32,849
+production because you don't want to
+
+183
+00:08:32,849 --> 00:08:35,399
+mess with real data but you're using
+
+184
+00:08:35,399 --> 00:08:38,789
+real systems yeah so this is a the
+
+185
+00:08:38,789 --> 00:08:41,399
+testing pyramid well one of the many
+
+186
+00:08:41,399 --> 00:08:47,140
+testing permits are but let me focus
+
+187
+00:08:47,140 --> 00:08:49,630
+let me focus on this one because it's
+
+188
+00:08:49,630 --> 00:08:52,090
+one of the simplest that I found it
+
+189
+00:08:52,090 --> 00:08:54,880
+comes from Superman article in from
+
+190
+00:08:54,880 --> 00:08:56,320
+ultimate from their website ultimate
+
+191
+00:08:56,320 --> 00:09:00,310
+home automation Panda and at the bottom
+
+192
+00:09:00,310 --> 00:09:02,770
+you have unit test then integration test
+
+193
+00:09:02,770 --> 00:09:05,110
+or service level test however you want
+
+194
+00:09:05,110 --> 00:09:06,550
+to call them and then the end-to-end
+
+195
+00:09:06,550 --> 00:09:10,240
+test so what happens when you have a
+
+196
+00:09:10,240 --> 00:09:12,250
+unit test you want a unit test before
+
+197
+00:09:12,250 --> 00:09:14,260
+you deploy your application so you test
+
+198
+00:09:14,260 --> 00:09:16,000
+a single functions of your application
+
+199
+00:09:16,000 --> 00:09:17,980
+or your service and then you deploy your
+
+200
+00:09:17,980 --> 00:09:19,960
+application because you are confident
+
+201
+00:09:19,960 --> 00:09:21,790
+that your application is working fine
+
+202
+00:09:21,790 --> 00:09:25,240
+because you have unit tested it but then
+
+203
+00:09:25,240 --> 00:09:28,480
+when you deploy you perform some
+
+204
+00:09:28,480 --> 00:09:30,310
+integration tests or service level tests
+
+205
+00:09:30,310 --> 00:09:32,620
+so you're focusing on a single service
+
+206
+00:09:32,620 --> 00:09:35,800
+the single service is the minimum unit
+
+207
+00:09:35,800 --> 00:09:37,870
+after deployment for us the engineers
+
+208
+00:09:37,870 --> 00:09:41,020
+you deploy several services and so this
+
+209
+00:09:41,020 --> 00:09:43,780
+end-to-end test so this integration test
+
+210
+00:09:43,780 --> 00:09:46,210
+or survey level test for those single
+
+211
+00:09:46,210 --> 00:09:49,270
+units from the engineering side but what
+
+212
+00:09:49,270 --> 00:09:52,150
+the user sees is like the whole system
+
+213
+00:09:52,150 --> 00:09:54,760
+and the user has user intense user
+
+214
+00:09:54,760 --> 00:09:57,600
+actions or also called user journeys
+
+215
+00:09:57,600 --> 00:10:00,460
+they are testing things across all the
+
+216
+00:10:00,460 --> 00:10:03,250
+system across all your services so
+
+217
+00:10:03,250 --> 00:10:06,460
+that's the kind of level I'm referring
+
+218
+00:10:06,460 --> 00:10:07,750
+when I'm talking about testing in
+
+219
+00:10:07,750 --> 00:10:09,970
+production you want to become a real
+
+220
+00:10:09,970 --> 00:10:11,920
+user you want to be in the skin of a
+
+221
+00:10:11,920 --> 00:10:14,560
+user and try all the possible actions a
+
+222
+00:10:14,560 --> 00:10:16,480
+user can do to make sure your system
+
+223
+00:10:16,480 --> 00:10:22,310
+still works as expected
+
+224
+00:10:22,320 --> 00:10:25,510
+how can JavaScript or Nadia's help with
+
+225
+00:10:25,510 --> 00:10:29,230
+that well this is where my example comes
+
+226
+00:10:29,230 --> 00:10:33,040
+into into show so at the moment I'm
+
+227
+00:10:33,040 --> 00:10:36,430
+working at Tyson and we have more than 1
+
+228
+00:10:36,430 --> 00:10:38,260
+million connected machine performing
+
+229
+00:10:38,260 --> 00:10:41,110
+actions against the cloud and calling
+
+230
+00:10:41,110 --> 00:10:43,030
+our services calling our Web API or
+
+231
+00:10:43,030 --> 00:10:46,150
+lambdas blah blah blah and and also uses
+
+232
+00:10:46,150 --> 00:10:49,450
+all around the globe doing actions and
+
+233
+00:10:49,450 --> 00:10:51,400
+performing actions just like renaming
+
+234
+00:10:51,400 --> 00:10:54,460
+your robot from Dyson 360 i2 mega ii
+
+235
+00:10:54,460 --> 00:11:00,220
+9000 whatever and then what happens is
+
+236
+00:11:00,220 --> 00:11:01,000
+that
+
+237
+00:11:01,000 --> 00:11:04,870
+it's a big system it's a form of several
+
+238
+00:11:04,870 --> 00:11:07,180
+moving parts and I want to make sure
+
+239
+00:11:07,180 --> 00:11:09,310
+that users can change the name of the
+
+240
+00:11:09,310 --> 00:11:11,500
+robot and don't get an error right so I
+
+241
+00:11:11,500 --> 00:11:15,819
+need a tool that's fast that's easy to
+
+242
+00:11:15,819 --> 00:11:18,879
+run in production so when I want to
+
+243
+00:11:18,879 --> 00:11:21,819
+verify that all the user actions all the
+
+244
+00:11:21,819 --> 00:11:23,860
+user journeys are working in production
+
+245
+00:11:23,860 --> 00:11:26,860
+I run the tool like this docker
+
+246
+00:11:26,860 --> 00:11:28,540
+container whatever it's not difficult to
+
+247
+00:11:28,540 --> 00:11:31,050
+deploy I want it to be extendable also
+
+248
+00:11:31,050 --> 00:11:33,670
+so when I write new services I write new
+
+249
+00:11:33,670 --> 00:11:37,000
+web api's whatever I can add new
+
+250
+00:11:37,000 --> 00:11:39,550
+libraries or new files and having those
+
+251
+00:11:39,550 --> 00:11:44,319
+testing situations and also I would like
+
+252
+00:11:44,319 --> 00:11:46,689
+to have the ability to write behavior
+
+253
+00:11:46,689 --> 00:11:49,810
+driven development tests if you want to
+
+254
+00:11:49,810 --> 00:11:53,350
+call them like that so really what I
+
+255
+00:11:53,350 --> 00:11:56,949
+want to find what they a scenario for
+
+256
+00:11:56,949 --> 00:11:59,529
+real user is what real users gonna how I
+
+257
+00:11:59,529 --> 00:12:01,360
+really use is going to interact with my
+
+258
+00:12:01,360 --> 00:12:05,589
+systems and and then try to reproduce
+
+259
+00:12:05,589 --> 00:12:08,829
+that automated simulating those paid to
+
+260
+00:12:08,829 --> 00:12:11,500
+a user simulating everything but no
+
+261
+00:12:11,500 --> 00:12:13,449
+emulates in the cloud emulating my
+
+262
+00:12:13,449 --> 00:12:17,920
+services the solution that we come to a
+
+263
+00:12:17,920 --> 00:12:22,059
+place was a tool written in JavaScript
+
+264
+00:12:22,059 --> 00:12:26,019
+using nodejs and the main libraries that
+
+265
+00:12:26,019 --> 00:12:28,839
+we are using are koo kumba a Jas and the
+
+266
+00:12:28,839 --> 00:12:31,420
+request library was also a bit of the
+
+267
+00:12:31,420 --> 00:12:35,259
+user library and basically what we try
+
+268
+00:12:35,259 --> 00:12:38,350
+to define a lot of singular steps a lot
+
+269
+00:12:38,350 --> 00:12:41,230
+of single actions and then using koo
+
+270
+00:12:41,230 --> 00:12:44,019
+kumba areas and then putting all those
+
+271
+00:12:44,019 --> 00:12:46,569
+actions together into a group to form an
+
+272
+00:12:46,569 --> 00:12:51,009
+x scenario you're gonna see now and yeah
+
+273
+00:12:51,009 --> 00:12:53,019
+then using the request library just to
+
+274
+00:12:53,019 --> 00:12:55,959
+make requests over the Internet HTTP or
+
+275
+00:12:55,959 --> 00:12:58,629
+HTTPS requests and the SL library to
+
+276
+00:12:58,629 --> 00:13:00,279
+assert that the values we are getting
+
+277
+00:13:00,279 --> 00:13:03,870
+back are they the ones that we expect
+
+278
+00:13:03,870 --> 00:13:08,259
+this is an example of of the cucumber of
+
+279
+00:13:08,259 --> 00:13:10,839
+a scenario written in cucumber yes or
+
+280
+00:13:10,839 --> 00:13:13,689
+what our next scenario really I want to
+
+281
+00:13:13,689 --> 00:13:14,440
+test
+
+282
+00:13:14,440 --> 00:13:16,930
+that given an existing user with this
+
+283
+00:13:16,930 --> 00:13:19,389
+configuration and the user locks in and
+
+284
+00:13:19,389 --> 00:13:21,879
+the user changes the robot name to
+
+285
+00:13:21,879 --> 00:13:24,310
+whatever then the one the robot name has
+
+286
+00:13:24,310 --> 00:13:26,589
+changed I want to test that that's a
+
+287
+00:13:26,589 --> 00:13:29,170
+it's an user action I'm not testing one
+
+288
+00:13:29,170 --> 00:13:29,740
+service
+
+289
+00:13:29,740 --> 00:13:31,209
+I'm not test I'm not testing one
+
+290
+00:13:31,209 --> 00:13:33,759
+function I'm testing the use of uranium
+
+291
+00:13:33,759 --> 00:13:36,939
+testing the user intent and that's what
+
+292
+00:13:36,939 --> 00:13:41,199
+we want we want to try and do what the
+
+293
+00:13:41,199 --> 00:13:43,420
+users will be doing in in production
+
+294
+00:13:43,420 --> 00:13:47,800
+with our systems this is a very simple
+
+295
+00:13:47,800 --> 00:13:50,589
+schema of how it works
+
+296
+00:13:50,589 --> 00:13:53,139
+we have the users the users at the
+
+297
+00:13:53,139 --> 00:13:55,480
+moment interact with a smartphone
+
+298
+00:13:55,480 --> 00:13:58,660
+application that smartphone application
+
+299
+00:13:58,660 --> 00:14:01,029
+sends commands to the cloud and then the
+
+300
+00:14:01,029 --> 00:14:03,250
+cloud communicates the comments back to
+
+301
+00:14:03,250 --> 00:14:05,170
+the to the robot to the cleaning robot
+
+302
+00:14:05,170 --> 00:14:08,439
+for example and I was testing to and
+
+303
+00:14:08,439 --> 00:14:14,379
+Mason tested to a ki ATT has built well
+
+304
+00:14:14,379 --> 00:14:16,600
+users because there are no real users
+
+305
+00:14:16,600 --> 00:14:18,819
+have a bitch world a smartphone app and
+
+306
+00:14:18,819 --> 00:14:21,399
+that's making the calls to the cloud and
+
+307
+00:14:21,399 --> 00:14:24,329
+back and it's also emulating the robot
+
+308
+00:14:24,329 --> 00:14:27,880
+so we are simulating all the points in
+
+309
+00:14:27,880 --> 00:14:30,339
+production except the cloud our services
+
+310
+00:14:30,339 --> 00:14:32,290
+in production does we want to behave
+
+311
+00:14:32,290 --> 00:14:41,069
+like users but if you test in production
+
+312
+00:14:41,069 --> 00:14:43,300
+basically you are stressing your
+
+313
+00:14:43,300 --> 00:14:45,279
+production systems you are becoming a
+
+314
+00:14:45,279 --> 00:14:47,350
+user and if you run your testing
+
+315
+00:14:47,350 --> 00:14:49,389
+production very fast or you do a lot of
+
+316
+00:14:49,389 --> 00:14:52,660
+actions you become like a million users
+
+317
+00:14:52,660 --> 00:14:55,209
+talking to your services at a given time
+
+318
+00:14:55,209 --> 00:14:58,240
+and you don't want that so you need to
+
+319
+00:14:58,240 --> 00:15:01,509
+keep a balance between what you are
+
+320
+00:15:01,509 --> 00:15:03,100
+testing in production and what you want
+
+321
+00:15:03,100 --> 00:15:07,750
+to assert you don't want it's good that
+
+322
+00:15:07,750 --> 00:15:09,819
+you are very close to the to the user
+
+323
+00:15:09,819 --> 00:15:11,800
+and to the real actions but you need to
+
+324
+00:15:11,800 --> 00:15:15,220
+to balance it right so for it as an
+
+325
+00:15:15,220 --> 00:15:18,879
+example of this when we were writing the
+
+326
+00:15:18,879 --> 00:15:20,580
+test and
+
+327
+00:15:20,580 --> 00:15:23,640
+we started doing tests like every five
+
+328
+00:15:23,640 --> 00:15:26,910
+minutes I guess if I recall and what
+
+329
+00:15:26,910 --> 00:15:28,190
+happened is that we started getting
+
+330
+00:15:28,190 --> 00:15:31,380
+getting slowdowns on our web api because
+
+331
+00:15:31,380 --> 00:15:33,269
+we were quite in the way API so every
+
+332
+00:15:33,269 --> 00:15:35,070
+five minutes doing a lot of tests and
+
+333
+00:15:35,070 --> 00:15:37,170
+then it was a slowing down our
+
+334
+00:15:37,170 --> 00:15:39,510
+productions services and we don't want
+
+335
+00:15:39,510 --> 00:15:41,519
+we don't want that for the users and
+
+336
+00:15:41,519 --> 00:15:43,470
+also we experienced it
+
+337
+00:15:43,470 --> 00:15:46,740
+some DynamoDB throttling so database
+
+338
+00:15:46,740 --> 00:15:49,500
+throttling as I was testing was doing
+
+339
+00:15:49,500 --> 00:15:52,440
+cost to the API very fast and and today
+
+340
+00:15:52,440 --> 00:15:55,890
+and read and write to DynamoDB or the
+
+341
+00:15:55,890 --> 00:15:58,709
+database then we got throttle and that
+
+342
+00:15:58,709 --> 00:16:01,920
+was affecting users so you need to be
+
+343
+00:16:01,920 --> 00:16:04,050
+careful about that you need to a space a
+
+344
+00:16:04,050 --> 00:16:07,920
+bit your end-to-end test so the more
+
+345
+00:16:07,920 --> 00:16:09,630
+things you run them the faster you're
+
+346
+00:16:09,630 --> 00:16:11,010
+going to realize that you have an issue
+
+347
+00:16:11,010 --> 00:16:15,329
+if there's an issue but then you get
+
+348
+00:16:15,329 --> 00:16:17,399
+more noise because you get more noise
+
+349
+00:16:17,399 --> 00:16:19,620
+unless you get more noise on the matrix
+
+350
+00:16:19,620 --> 00:16:22,279
+you get motion more noise everywhere and
+
+351
+00:16:22,279 --> 00:16:23,519
+slowdowns
+
+352
+00:16:23,519 --> 00:16:26,160
+it slows down your production system and
+
+353
+00:16:26,160 --> 00:16:29,329
+so you want to keep a balance about that
+
+354
+00:16:29,329 --> 00:16:32,970
+and and just this is another another
+
+355
+00:16:32,970 --> 00:16:37,680
+quick bit when for this testing tool we
+
+356
+00:16:37,680 --> 00:16:42,060
+are simulating these users so we have
+
+357
+00:16:42,060 --> 00:16:43,890
+code in JavaScript how a user will
+
+358
+00:16:43,890 --> 00:16:44,399
+behave
+
+359
+00:16:44,399 --> 00:16:47,490
+what API schooled the user hit and what
+
+360
+00:16:47,490 --> 00:16:50,190
+does the user want to do like for
+
+361
+00:16:50,190 --> 00:16:52,140
+example changing the name of the robot
+
+362
+00:16:52,140 --> 00:16:55,470
+and yeah as I said we want to test a
+
+363
+00:16:55,470 --> 00:17:02,579
+real user behavior okay so basically
+
+364
+00:17:02,579 --> 00:17:04,949
+yeah again when you run your test in
+
+365
+00:17:04,949 --> 00:17:08,459
+production you are becoming another user
+
+366
+00:17:08,459 --> 00:17:13,640
+you are becoming part of the system and
+
+367
+00:17:13,640 --> 00:17:19,110
+equal skew your matrix for example the
+
+368
+00:17:19,110 --> 00:17:20,429
+number of users are interacting with
+
+369
+00:17:20,429 --> 00:17:22,620
+your system you want to report to your
+
+370
+00:17:22,620 --> 00:17:25,350
+manager or to the business how many
+
+371
+00:17:25,350 --> 00:17:27,900
+users are using your your production
+
+372
+00:17:27,900 --> 00:17:29,850
+services but if you have this end-to-end
+
+373
+00:17:29,850 --> 00:17:32,790
+test running in production then that's
+
+374
+00:17:32,790 --> 00:17:34,370
+giving your result also
+
+375
+00:17:34,370 --> 00:17:37,309
+if you want to know how many calls to an
+
+376
+00:17:37,309 --> 00:17:41,029
+API and also the error count so for
+
+377
+00:17:41,029 --> 00:17:42,830
+example you are very interested on how
+
+378
+00:17:42,830 --> 00:17:46,730
+many times your API switch on in a 500
+
+379
+00:17:46,730 --> 00:17:48,890
+or switch on in a 400 if you have the
+
+380
+00:17:48,890 --> 00:17:50,809
+end-to-end test that's gonna skew your
+
+381
+00:17:50,809 --> 00:17:53,390
+whistle so you need a way of keeping
+
+382
+00:17:53,390 --> 00:17:56,029
+those tests that you know about them
+
+383
+00:17:56,029 --> 00:17:57,650
+that you are generating them keeping
+
+384
+00:17:57,650 --> 00:18:00,830
+them out of the statistics and you could
+
+385
+00:18:00,830 --> 00:18:02,630
+also get mixed locks so if you have a
+
+386
+00:18:02,630 --> 00:18:04,730
+login utility that's put that puts all
+
+387
+00:18:04,730 --> 00:18:09,140
+the locks together like plank or
+
+388
+00:18:09,140 --> 00:18:13,610
+elasticsearch how do you discern which
+
+389
+00:18:13,610 --> 00:18:15,919
+locks were part of the end-to-end tests
+
+390
+00:18:15,919 --> 00:18:18,590
+or which locks were power of real users
+
+391
+00:18:18,590 --> 00:18:22,580
+doing real actions so yeah you need to
+
+392
+00:18:22,580 --> 00:18:26,539
+be careful with that how can we how can
+
+393
+00:18:26,539 --> 00:18:28,730
+we keep our test out of the stylistics
+
+394
+00:18:28,730 --> 00:18:31,640
+we could use a correlation ID so with
+
+395
+00:18:31,640 --> 00:18:35,299
+every request we would send as part of
+
+396
+00:18:35,299 --> 00:18:37,490
+the request a correlation ID or we will
+
+397
+00:18:37,490 --> 00:18:40,010
+generate a correlation ID that's going
+
+398
+00:18:40,010 --> 00:18:42,169
+to be pass between the different
+
+399
+00:18:42,169 --> 00:18:45,110
+services internally so every service if
+
+400
+00:18:45,110 --> 00:18:47,059
+they see the correlation idea starting
+
+401
+00:18:47,059 --> 00:18:50,899
+by end-to-end ffffff' they gonna know
+
+402
+00:18:50,899 --> 00:18:53,809
+it's part of the test they shouldn't
+
+403
+00:18:53,809 --> 00:18:56,330
+behave differently but at least not log
+
+404
+00:18:56,330 --> 00:18:58,340
+in matrix for example or log in matrix
+
+405
+00:18:58,340 --> 00:19:00,950
+to a different name space we could also
+
+406
+00:19:00,950 --> 00:19:03,799
+change the user alien in case of web api
+
+407
+00:19:03,799 --> 00:19:08,169
+s-- by yeah specifying instead of being
+
+408
+00:19:08,169 --> 00:19:12,649
+mozilla gecko whatever you have your
+
+409
+00:19:12,649 --> 00:19:14,750
+application and twin test and the
+
+410
+00:19:14,750 --> 00:19:17,360
+version and finally you can also add new
+
+411
+00:19:17,360 --> 00:19:22,250
+HTTP headers that nobody is gonna freak
+
+412
+00:19:22,250 --> 00:19:24,500
+about that you just put test to version
+
+413
+00:19:24,500 --> 00:19:27,320
+one point one point two or whatever and
+
+414
+00:19:27,320 --> 00:19:31,909
+then you treat them differently you not
+
+415
+00:19:31,909 --> 00:19:33,770
+treat them differently you don't lock
+
+416
+00:19:33,770 --> 00:19:35,570
+the metrics if you see the header coming
+
+417
+00:19:35,570 --> 00:19:40,940
+in into your production systems right so
+
+418
+00:19:40,940 --> 00:19:45,080
+after everything this this was a quick
+
+419
+00:19:45,080 --> 00:19:46,789
+introduction to how to run end-to-end
+
+420
+00:19:46,789 --> 00:19:48,350
+test and production
+
+421
+00:19:48,350 --> 00:19:50,870
+you now have you end-to-end test running
+
+422
+00:19:50,870 --> 00:19:53,059
+in production they are executing every
+
+423
+00:19:53,059 --> 00:19:55,480
+15 minutes every 20 minutes 30 minutes
+
+424
+00:19:55,480 --> 00:19:59,950
+and they are passing that's great but
+
+425
+00:19:59,950 --> 00:20:02,450
+what about all the fake that they have
+
+426
+00:20:02,450 --> 00:20:05,960
+generated so they they were built well
+
+427
+00:20:05,960 --> 00:20:08,510
+users or built on machines built or
+
+428
+00:20:08,510 --> 00:20:10,820
+smartphone apps that were creating new
+
+429
+00:20:10,820 --> 00:20:14,210
+users that were creating new cleans new
+
+430
+00:20:14,210 --> 00:20:18,400
+new data to our production systems and
+
+431
+00:20:18,400 --> 00:20:21,710
+that's fake data with them really wanted
+
+432
+00:20:21,710 --> 00:20:25,880
+into in the system and it's making some
+
+433
+00:20:25,880 --> 00:20:28,460
+it's it's it's going to cause a problem
+
+434
+00:20:28,460 --> 00:20:33,740
+in the long run so for example we were
+
+435
+00:20:33,740 --> 00:20:38,929
+login when you register a machine into
+
+436
+00:20:38,929 --> 00:20:42,500
+the cloud into the services we store a
+
+437
+00:20:42,500 --> 00:20:46,160
+row in the database saying this machine
+
+438
+00:20:46,160 --> 00:20:49,130
+is now just now six and belongs to this
+
+439
+00:20:49,130 --> 00:20:53,000
+user so as we were executing the
+
+440
+00:20:53,000 --> 00:20:54,380
+end-to-end test in production we were
+
+441
+00:20:54,380 --> 00:20:56,179
+creating new machines with new user
+
+442
+00:20:56,179 --> 00:20:58,790
+random machines random users bla bla bla
+
+443
+00:20:58,790 --> 00:20:58,970
+bla
+
+444
+00:20:58,970 --> 00:21:03,080
+we were filling the database and what
+
+445
+00:21:03,080 --> 00:21:04,760
+happened was that our services in
+
+446
+00:21:04,760 --> 00:21:06,200
+production were querying the database
+
+447
+00:21:06,200 --> 00:21:12,290
+and and getting all those users and the
+
+448
+00:21:12,290 --> 00:21:14,510
+services were expecting to find between
+
+449
+00:21:14,510 --> 00:21:19,010
+one and ninety and twist different
+
+450
+00:21:19,010 --> 00:21:21,170
+entries in production but we were
+
+451
+00:21:21,170 --> 00:21:23,150
+generating a lot of entries every single
+
+452
+00:21:23,150 --> 00:21:25,250
+day so the entries ended up like being
+
+453
+00:21:25,250 --> 00:21:28,100
+in the order of thousand entries what
+
+454
+00:21:28,100 --> 00:21:29,660
+happened that our service was not
+
+455
+00:21:29,660 --> 00:21:32,600
+prepared to do any pagination and then
+
+456
+00:21:32,600 --> 00:21:34,550
+it started failing for the customers
+
+457
+00:21:34,550 --> 00:21:36,710
+because we couldn't find their entries
+
+458
+00:21:36,710 --> 00:21:39,170
+because they were in their page six or
+
+459
+00:21:39,170 --> 00:21:41,480
+page seven because all the tests all the
+
+460
+00:21:41,480 --> 00:21:43,040
+testing production were generating more
+
+461
+00:21:43,040 --> 00:21:45,740
+data and filling up the database under
+
+462
+00:21:45,740 --> 00:21:50,720
+sub problems so yeah you need to clean
+
+463
+00:21:50,720 --> 00:21:54,470
+that data it's very important and you
+
+464
+00:21:54,470 --> 00:21:57,140
+want to do that automatically if
+
+465
+00:21:57,140 --> 00:22:01,370
+possible after every single test run
+
+466
+00:22:01,370 --> 00:22:05,520
+so it it helps to to keep your
+
+467
+00:22:05,520 --> 00:22:07,620
+environment clean it helps to start the
+
+468
+00:22:07,620 --> 00:22:09,840
+test the next test to start them from a
+
+469
+00:22:09,840 --> 00:22:13,590
+clean state avoid cluttering your your
+
+470
+00:22:13,590 --> 00:22:17,660
+databases or cluttering your services or
+
+471
+00:22:17,660 --> 00:22:20,550
+exhausting any of the limited resources
+
+472
+00:22:20,550 --> 00:22:26,130
+like IDs or yeah any any any other
+
+473
+00:22:26,130 --> 00:22:28,050
+limited resources you you could have in
+
+474
+00:22:28,050 --> 00:22:31,020
+your production system and and also
+
+475
+00:22:31,020 --> 00:22:34,320
+avoid as an example I just put about
+
+476
+00:22:34,320 --> 00:22:36,570
+it's making weird hm more difficult to
+
+477
+00:22:36,570 --> 00:22:43,020
+query to retrieve and to search so as a
+
+478
+00:22:43,020 --> 00:22:45,990
+recap testing in production is good and
+
+479
+00:22:45,990 --> 00:22:48,330
+necessary please do it if you are not
+
+480
+00:22:48,330 --> 00:22:51,840
+doing it you need to think as a real use
+
+481
+00:22:51,840 --> 00:22:53,760
+it to put yourself in in the skin of a
+
+482
+00:22:53,760 --> 00:22:56,640
+user and act like a user so that you
+
+483
+00:22:56,640 --> 00:22:58,680
+have really testing your your system
+
+484
+00:22:58,680 --> 00:23:01,620
+then using the framework cucumber yes
+
+485
+00:23:01,620 --> 00:23:04,200
+it's a good start and we found that it
+
+486
+00:23:04,200 --> 00:23:07,650
+work for us and it's it's amazing you
+
+487
+00:23:07,650 --> 00:23:09,120
+need to think also about your system
+
+488
+00:23:09,120 --> 00:23:12,480
+capacity so if your system cannot handle
+
+489
+00:23:12,480 --> 00:23:14,970
+a thousand requests per second then you
+
+490
+00:23:14,970 --> 00:23:16,950
+shouldn't be doing that many end to end
+
+491
+00:23:16,950 --> 00:23:19,920
+test space them a bit every half an hour
+
+492
+00:23:19,920 --> 00:23:24,900
+every 45 minutes whatever fits you you
+
+493
+00:23:24,900 --> 00:23:27,990
+also want to mark your test intents to
+
+494
+00:23:27,990 --> 00:23:30,420
+differentiate them from the from the
+
+495
+00:23:30,420 --> 00:23:32,880
+production load from the real users with
+
+496
+00:23:32,880 --> 00:23:35,790
+a correlation ID or with the HTTP header
+
+497
+00:23:35,790 --> 00:23:39,030
+or any other any other solution and
+
+498
+00:23:39,030 --> 00:23:41,220
+after that you want to clean your test
+
+499
+00:23:41,220 --> 00:23:44,430
+data and we set every connections or
+
+500
+00:23:44,430 --> 00:23:47,310
+every any status you might have changed
+
+501
+00:23:47,310 --> 00:23:52,380
+after after this test and the so
+
+502
+00:23:52,380 --> 00:23:56,750
+basically thank you for for listening
+
+503
+00:23:56,750 --> 00:23:58,890
+one more thing I would like to take a
+
+504
+00:23:58,890 --> 00:24:01,080
+bit boring job I will smile for the gram
+
+505
+00:24:01,080 --> 00:24:04,350
+selfie and then ever now because I have
+
+506
+00:24:04,350 --> 00:24:11,130
+plenty of spare time so now smile I hope
+
+507
+00:24:11,130 --> 00:24:13,610
+I can fit everyone
+
+508
+00:24:13,610 --> 00:24:18,730
+amazing and way
+
+509
+00:24:18,740 --> 00:24:22,169
+thank you but just wait are you brave
+
+510
+00:24:22,169 --> 00:24:25,679
+enough to test in production are you can
+
+511
+00:24:25,679 --> 00:24:30,840
+I hear you well yeah so now the applause
+
+512
+00:24:30,840 --> 00:24:31,440
+thank you
+

@@ -1,0 +1,4789 @@
+1
+00:00:10,130 --> 00:00:12,630
+
+some real-time web is something that
+
+2
+00:00:12,630 --> 00:00:14,340
+I've been working on for I don't know
+
+3
+00:00:14,340 --> 00:00:16,530
+four or five years now this idea that
+
+4
+00:00:16,530 --> 00:00:17,730
+the browser could be a two-way
+
+5
+00:00:17,730 --> 00:00:19,530
+communications channel with very low
+
+6
+00:00:19,530 --> 00:00:21,360
+latency so I'm going to show you guys
+
+7
+00:00:21,360 --> 00:00:24,150
+some explain how we do this stuff with
+
+8
+00:00:24,150 --> 00:00:26,369
+XMPP and in this JavaScript library I'm
+
+9
+00:00:26,369 --> 00:00:27,779
+going to show you guys some code and
+
+10
+00:00:27,779 --> 00:00:32,539
+some demos and stuff like that so so
+
+11
+00:00:32,539 --> 00:00:36,569
+XMPP is the protocol that we sort of
+
+12
+00:00:36,569 --> 00:00:38,399
+used to make this magic happen it's one
+
+13
+00:00:38,399 --> 00:00:39,870
+of a couple of choices that you guys
+
+14
+00:00:39,870 --> 00:00:42,690
+have it happens to be my favorite it
+
+15
+00:00:42,690 --> 00:00:44,639
+stands for the extensible messaging and
+
+16
+00:00:44,639 --> 00:00:46,829
+presence protocol it was initially
+
+17
+00:00:46,829 --> 00:00:50,399
+started in I think 99 by Jeremy Miller
+
+18
+00:00:50,399 --> 00:00:52,709
+and some friends to sort of take on the
+
+19
+00:00:52,709 --> 00:00:55,559
+closed into the messaging systems of AOL
+
+20
+00:00:55,559 --> 00:00:57,479
+and Yahoo and those guys how many people
+
+21
+00:00:57,479 --> 00:00:59,999
+in this room know about XMPP or have
+
+22
+00:00:59,999 --> 00:01:02,280
+used it so quite a few
+
+23
+00:01:02,280 --> 00:01:03,899
+so everybody who has a gmail account and
+
+24
+00:01:03,899 --> 00:01:05,940
+didn't raise your hand you know and love
+
+25
+00:01:05,940 --> 00:01:12,530
+XMPP already so it's originally for
+
+26
+00:01:12,530 --> 00:01:14,730
+originally intended to be instant
+
+27
+00:01:14,730 --> 00:01:17,730
+messaging replacement protocol it can be
+
+28
+00:01:17,730 --> 00:01:19,800
+used for pretty much anything with it
+
+29
+00:01:19,800 --> 00:01:22,200
+can be extended and people have done
+
+30
+00:01:22,200 --> 00:01:24,480
+extensions for publish/subscribe
+
+31
+00:01:24,480 --> 00:01:28,500
+semantics for ad-hoc commands XML RPC
+
+32
+00:01:28,500 --> 00:01:30,390
+pretty much anything you can think of
+
+33
+00:01:30,390 --> 00:01:32,610
+someone's written a spec for how to do
+
+34
+00:01:32,610 --> 00:01:35,250
+it over XMPP these days it's used for a
+
+35
+00:01:35,250 --> 00:01:36,810
+lot more than just instant messaging and
+
+36
+00:01:36,810 --> 00:01:38,490
+in fact most of the applications that I
+
+37
+00:01:38,490 --> 00:01:40,560
+write with XMPP have nothing to do with
+
+38
+00:01:40,560 --> 00:01:44,730
+instant messaging so why do we want XMPP
+
+39
+00:01:44,730 --> 00:01:48,780
+well there's we probably everybody in
+
+40
+00:01:48,780 --> 00:01:51,620
+this room does most stuff with HTTP and
+
+41
+00:01:51,620 --> 00:01:54,420
+HTTPS are great you can do a lot of
+
+42
+00:01:54,420 --> 00:01:59,580
+stuff with them REST API s are great you
+
+43
+00:01:59,580 --> 00:02:00,810
+can do a lot of the functions that you
+
+44
+00:02:00,810 --> 00:02:03,600
+want to do the problem is is that HTTP
+
+45
+00:02:03,600 --> 00:02:06,060
+polling really sucks if you want to get
+
+46
+00:02:06,060 --> 00:02:07,620
+the latest Twitter updates you have to
+
+47
+00:02:07,620 --> 00:02:09,239
+ask Twitter hey is there anything new
+
+48
+00:02:09,239 --> 00:02:10,920
+and then you have to ask them hey is
+
+49
+00:02:10,920 --> 00:02:13,170
+there anything new and like 95% of the
+
+50
+00:02:13,170 --> 00:02:14,130
+time there's nothing
+
+51
+00:02:14,130 --> 00:02:16,470
+- but if you want to get low latency and
+
+52
+00:02:16,470 --> 00:02:18,870
+actually have a conversation you have to
+
+53
+00:02:18,870 --> 00:02:20,970
+do all this polling anyway there's no
+
+54
+00:02:20,970 --> 00:02:22,290
+really escaping it
+
+55
+00:02:22,290 --> 00:02:26,040
+and so real-time applications are
+
+56
+00:02:26,040 --> 00:02:27,630
+different they require you to have this
+
+57
+00:02:27,630 --> 00:02:29,700
+low latency which in the HTTP world
+
+58
+00:02:29,700 --> 00:02:31,170
+means you're pulling the crap out of
+
+59
+00:02:31,170 --> 00:02:34,890
+something an XMPP is sort of a good
+
+60
+00:02:34,890 --> 00:02:39,420
+solution to this it's it's a where HTTP
+
+61
+00:02:39,420 --> 00:02:42,210
+is stateless X and P P is stateful has a
+
+62
+00:02:42,210 --> 00:02:44,580
+long live TCP connection under it and so
+
+63
+00:02:44,580 --> 00:02:47,010
+you're probably all asking because of
+
+64
+00:02:47,010 --> 00:02:49,020
+that how do you do this from the web
+
+65
+00:02:49,020 --> 00:02:52,320
+browser so before I get to that I want
+
+66
+00:02:52,320 --> 00:02:53,940
+to for those of you who probably never
+
+67
+00:02:53,940 --> 00:02:56,100
+seen the actual protocol before I just
+
+68
+00:02:56,100 --> 00:02:57,300
+wanted to go through a couple of the
+
+69
+00:02:57,300 --> 00:03:00,960
+protocol points so there's an XMPP
+
+70
+00:03:00,960 --> 00:03:02,970
+Network the network is federated in an
+
+71
+00:03:02,970 --> 00:03:06,180
+open way it's very similar to email you
+
+72
+00:03:06,180 --> 00:03:08,280
+have a client it talks to a server the
+
+73
+00:03:08,280 --> 00:03:09,810
+protocol that they use is called the
+
+74
+00:03:09,810 --> 00:03:11,370
+client to server protocol it's very
+
+75
+00:03:11,370 --> 00:03:14,580
+creatively named and of course you can
+
+76
+00:03:14,580 --> 00:03:16,050
+have lots of clients talking to the same
+
+77
+00:03:16,050 --> 00:03:18,900
+server you can have two servers talking
+
+78
+00:03:18,900 --> 00:03:20,220
+to each other these speak a slightly
+
+79
+00:03:20,220 --> 00:03:21,780
+different protocol called the server to
+
+80
+00:03:21,780 --> 00:03:25,710
+server protocol and of course all lots
+
+81
+00:03:25,710 --> 00:03:27,120
+of servers can talk to lots of servers
+
+82
+00:03:27,120 --> 00:03:28,620
+and each of these servers can have
+
+83
+00:03:28,620 --> 00:03:29,760
+thousands and millions of clients
+
+84
+00:03:29,760 --> 00:03:31,710
+hanging off of it and it works like
+
+85
+00:03:31,710 --> 00:03:34,140
+email so if I'm on on this server here
+
+86
+00:03:34,140 --> 00:03:36,270
+and I send something to server B it's
+
+87
+00:03:36,270 --> 00:03:37,740
+going to forward the message to server B
+
+88
+00:03:37,740 --> 00:03:39,360
+which will forward it on to the user
+
+89
+00:03:39,360 --> 00:03:39,840
+there
+
+90
+00:03:39,840 --> 00:03:42,900
+unlike email there's only one hop here
+
+91
+00:03:42,900 --> 00:03:45,510
+so I go directly to the pure server I
+
+92
+00:03:45,510 --> 00:03:47,250
+don't go through any intermediate nodes
+
+93
+00:03:47,250 --> 00:03:50,310
+and there's no forgery possible meaning
+
+94
+00:03:50,310 --> 00:03:53,340
+that if this so I can the server can
+
+95
+00:03:53,340 --> 00:03:55,709
+forge local users but nothing can forge
+
+96
+00:03:55,709 --> 00:03:58,320
+an arbitrary user on the network so if
+
+97
+00:03:58,320 --> 00:04:00,270
+it came from a server you know that it
+
+98
+00:04:00,270 --> 00:04:02,130
+came from the server you don't have to
+
+99
+00:04:02,130 --> 00:04:04,430
+worry about some of that SMTP spam
+
+100
+00:04:04,430 --> 00:04:09,150
+vector stuff so to get all this data
+
+101
+00:04:09,150 --> 00:04:11,010
+shuttled around we have an addressing
+
+102
+00:04:11,010 --> 00:04:13,200
+scheme it looks a lot like emails
+
+103
+00:04:13,200 --> 00:04:15,209
+addressing scheme this is a domain this
+
+104
+00:04:15,209 --> 00:04:18,030
+is probably this is the simplest XMPP
+
+105
+00:04:18,030 --> 00:04:20,489
+address you can have this is an address
+
+106
+00:04:20,489 --> 00:04:24,780
+of a server in most cases you can have
+
+107
+00:04:24,780 --> 00:04:27,480
+user add a domain that looks
+
+108
+00:04:27,480 --> 00:04:29,250
+like an email address we call this a jid
+
+109
+00:04:29,250 --> 00:04:32,010
+for jabber ID this is called a barrage
+
+110
+00:04:32,010 --> 00:04:33,990
+it because it's just the user in the
+
+111
+00:04:33,990 --> 00:04:37,350
+domain this is called a full jid we have
+
+112
+00:04:37,350 --> 00:04:39,210
+a user a domain and a resource and we
+
+113
+00:04:39,210 --> 00:04:41,040
+need this because you might have
+
+114
+00:04:41,040 --> 00:04:44,250
+multiple connections to an XMPP server
+
+115
+00:04:44,250 --> 00:04:46,410
+and there disambiguated by this resource
+
+116
+00:04:46,410 --> 00:04:48,180
+bit so for instance my connection where
+
+117
+00:04:48,180 --> 00:04:50,190
+i'm at home might be called home and i
+
+118
+00:04:50,190 --> 00:04:54,000
+might have one for work gmail likes to
+
+119
+00:04:54,000 --> 00:04:56,520
+give really random strings is these
+
+120
+00:04:56,520 --> 00:04:58,290
+resource identifiers it really doesn't
+
+121
+00:04:58,290 --> 00:05:00,750
+matter what they are as long as you know
+
+122
+00:05:00,750 --> 00:05:05,010
+they're unique so the protocol it's
+
+123
+00:05:05,010 --> 00:05:07,950
+based on XML it uses something that most
+
+124
+00:05:07,950 --> 00:05:09,840
+other XML based things doesn't which it
+
+125
+00:05:09,840 --> 00:05:12,840
+uses XML streams essentially this means
+
+126
+00:05:12,840 --> 00:05:14,700
+you have two XML documents that are
+
+127
+00:05:14,700 --> 00:05:16,860
+built continuously on the fly one in
+
+128
+00:05:16,860 --> 00:05:19,770
+each direction over these so for
+
+129
+00:05:19,770 --> 00:05:20,940
+instance when you make the connection
+
+130
+00:05:20,940 --> 00:05:24,300
+you open up the root element you send
+
+131
+00:05:24,300 --> 00:05:26,580
+these messages across as first level
+
+132
+00:05:26,580 --> 00:05:28,050
+children and when the connection is
+
+133
+00:05:28,050 --> 00:05:30,570
+terminated you send the the root close
+
+134
+00:05:30,570 --> 00:05:32,970
+so at the end of an XMPP connection
+
+135
+00:05:32,970 --> 00:05:35,070
+you'll have two completely valid XML
+
+136
+00:05:35,070 --> 00:05:37,260
+documents but during the XMPP connection
+
+137
+00:05:37,260 --> 00:05:40,800
+you work with XML stanzas which of these
+
+138
+00:05:40,800 --> 00:05:44,280
+first level children so there's three
+
+139
+00:05:44,280 --> 00:05:47,640
+main types of these these first level
+
+140
+00:05:47,640 --> 00:05:48,120
+children
+
+141
+00:05:48,120 --> 00:05:50,610
+the first one is a message and we have
+
+142
+00:05:50,610 --> 00:05:53,130
+presents and we have this weird IQ one
+
+143
+00:05:53,130 --> 00:05:55,200
+and IQ one stands for information query
+
+144
+00:05:55,200 --> 00:05:57,300
+this is pretty much exactly equivalent
+
+145
+00:05:57,300 --> 00:05:59,310
+to an HTTP GET request or an HTTP POST
+
+146
+00:05:59,310 --> 00:06:01,380
+request it's the only one that's
+
+147
+00:06:01,380 --> 00:06:04,950
+required to have a response so message
+
+148
+00:06:04,950 --> 00:06:07,200
+stances these are like the basic
+
+149
+00:06:07,200 --> 00:06:09,180
+building blocks when you send messages
+
+150
+00:06:09,180 --> 00:06:10,680
+back and forth they could be chat
+
+151
+00:06:10,680 --> 00:06:12,420
+messages they could be arbitrary bits of
+
+152
+00:06:12,420 --> 00:06:14,880
+data that you're sending around this is
+
+153
+00:06:14,880 --> 00:06:16,410
+pretty much what a normal chat message
+
+154
+00:06:16,410 --> 00:06:21,120
+would look like you have a from in this
+
+155
+00:06:21,120 --> 00:06:22,560
+case the from is always going to be a
+
+156
+00:06:22,560 --> 00:06:24,330
+full jid unless it comes from a server
+
+157
+00:06:24,330 --> 00:06:27,900
+or something you have a - that's where
+
+158
+00:06:27,900 --> 00:06:29,250
+you're sending it to you can send it to
+
+159
+00:06:29,250 --> 00:06:30,960
+a barrage it you can send it to a domain
+
+160
+00:06:30,960 --> 00:06:33,620
+all kinds of stuff and it has a type
+
+161
+00:06:33,620 --> 00:06:35,520
+most of the time this is going to be
+
+162
+00:06:35,520 --> 00:06:37,980
+chat for private messages it might be
+
+163
+00:06:37,980 --> 00:06:39,570
+group chat for group chat messages
+
+164
+00:06:39,570 --> 00:06:41,070
+there's also some other
+
+165
+00:06:41,070 --> 00:06:42,570
+types like headline and things that are
+
+166
+00:06:42,570 --> 00:06:46,410
+used for various weird purposes and then
+
+167
+00:06:46,410 --> 00:06:48,270
+we have the body which just has the text
+
+168
+00:06:48,270 --> 00:06:50,790
+of the message you're sending um and of
+
+169
+00:06:50,790 --> 00:06:51,750
+course if you're sending a message
+
+170
+00:06:51,750 --> 00:06:53,640
+that's not chat you might not have a
+
+171
+00:06:53,640 --> 00:06:56,390
+body you might have something else here
+
+172
+00:06:56,390 --> 00:07:00,450
+presence is how you know somebody is
+
+173
+00:07:00,450 --> 00:07:03,180
+online or a way or busy and that kind of
+
+174
+00:07:03,180 --> 00:07:06,000
+thing in XMPP we use it it's sort of a
+
+175
+00:07:06,000 --> 00:07:09,840
+mini publish/subscribe system here's
+
+176
+00:07:09,840 --> 00:07:12,920
+somebody setting their presence to away
+
+177
+00:07:12,920 --> 00:07:15,660
+we have you know type equals away
+
+178
+00:07:15,660 --> 00:07:17,490
+there's also if you have no type than
+
+179
+00:07:17,490 --> 00:07:19,170
+its type util it's basically available
+
+180
+00:07:19,170 --> 00:07:21,690
+presence there's also do not disturb and
+
+181
+00:07:21,690 --> 00:07:24,630
+some other ones and then the show is is
+
+182
+00:07:24,630 --> 00:07:29,280
+a it's not arbitrary text here there's
+
+183
+00:07:29,280 --> 00:07:30,780
+only a few possible parameters and
+
+184
+00:07:30,780 --> 00:07:31,860
+that's just to give the client
+
+185
+00:07:31,860 --> 00:07:34,560
+developers something I hint at how to
+
+186
+00:07:34,560 --> 00:07:36,660
+show this presence and then the status
+
+187
+00:07:36,660 --> 00:07:38,160
+is just freeform text you can put this
+
+188
+00:07:38,160 --> 00:07:39,690
+is like Facebook status messages or
+
+189
+00:07:39,690 --> 00:07:42,540
+Twitter updates that kind of thing and
+
+190
+00:07:42,540 --> 00:07:44,790
+one last thing on presence is that you
+
+191
+00:07:44,790 --> 00:07:46,320
+have to subscribe to people's presence
+
+192
+00:07:46,320 --> 00:07:48,150
+so for instance if I want to add
+
+193
+00:07:48,150 --> 00:07:51,120
+somebody to my so we can't say buddy
+
+194
+00:07:51,120 --> 00:07:52,770
+list because AOL has trademarked that
+
+195
+00:07:52,770 --> 00:07:55,020
+name so we call them rosters if I want
+
+196
+00:07:55,020 --> 00:07:57,720
+to add somebody to my roster I send them
+
+197
+00:07:57,720 --> 00:07:59,850
+a present subscription request and they
+
+198
+00:07:59,850 --> 00:08:02,280
+can approve it or deny it and then I can
+
+199
+00:08:02,280 --> 00:08:03,900
+see their presence and these presents
+
+200
+00:08:03,900 --> 00:08:06,150
+are two-way just like Twitter follows
+
+201
+00:08:06,150 --> 00:08:08,130
+which means I can subscribe to you but
+
+202
+00:08:08,130 --> 00:08:09,630
+you don't have to be subscribed to me or
+
+203
+00:08:09,630 --> 00:08:11,160
+we can be mutually subscribed to each
+
+204
+00:08:11,160 --> 00:08:19,380
+other so so I queue messages are look
+
+205
+00:08:19,380 --> 00:08:23,070
+just like this there's a there's a two
+
+206
+00:08:23,070 --> 00:08:24,990
+just like everything else has we have a
+
+207
+00:08:24,990 --> 00:08:27,780
+type equals get there's also a type
+
+208
+00:08:27,780 --> 00:08:30,210
+equal set get is sort of like a HTTP GET
+
+209
+00:08:30,210 --> 00:08:31,590
+request and set would be more like a
+
+210
+00:08:31,590 --> 00:08:34,050
+post so this is generally used when
+
+211
+00:08:34,050 --> 00:08:35,520
+you're accessing some information as
+
+212
+00:08:35,520 --> 00:08:37,500
+opposed to you know changing some data
+
+213
+00:08:37,500 --> 00:08:40,410
+all of every IQ has to have this ID
+
+214
+00:08:40,410 --> 00:08:42,180
+attribute they have to be unique for the
+
+215
+00:08:42,180 --> 00:08:44,190
+stream and this is because when you get
+
+216
+00:08:44,190 --> 00:08:46,530
+a response to the IQ it has to have the
+
+217
+00:08:46,530 --> 00:08:48,690
+same ID attribute on the response and
+
+218
+00:08:48,690 --> 00:08:52,260
+then a lot of the different protocols
+
+219
+00:08:52,260 --> 00:08:54,930
+and XMPP use this query child
+
+220
+00:08:54,930 --> 00:08:57,240
+this namespace here I've shortened them
+
+221
+00:08:57,240 --> 00:08:59,400
+so these aren't the real quite the real
+
+222
+00:08:59,400 --> 00:09:01,920
+namespaces tells you which sort of
+
+223
+00:09:01,920 --> 00:09:04,230
+extension protocol is in use here this
+
+224
+00:09:04,230 --> 00:09:07,580
+one for instance is service discovery
+
+225
+00:09:07,580 --> 00:09:10,470
+here's the response to that same IQ that
+
+226
+00:09:10,470 --> 00:09:14,280
+would be sent from the server you can
+
+227
+00:09:14,280 --> 00:09:16,800
+see that we have the same ID there this
+
+228
+00:09:16,800 --> 00:09:18,690
+is type equals result because it's a
+
+229
+00:09:18,690 --> 00:09:20,130
+response we could also have a type
+
+230
+00:09:20,130 --> 00:09:21,860
+equals error if something went wrong and
+
+231
+00:09:21,860 --> 00:09:24,840
+we have the same idea as I said and then
+
+232
+00:09:24,840 --> 00:09:27,630
+this is this is all of the answer stuff
+
+233
+00:09:27,630 --> 00:09:30,570
+so we did a service discovery queries
+
+234
+00:09:30,570 --> 00:09:32,340
+and this is the service discovery result
+
+235
+00:09:32,340 --> 00:09:34,830
+it's telling us about the identity of
+
+236
+00:09:34,830 --> 00:09:37,140
+this thing is an e jeopardy server and
+
+237
+00:09:37,140 --> 00:09:39,240
+it has these features and usually there
+
+238
+00:09:39,240 --> 00:09:42,110
+will be a giant list of these it for a
+
+239
+00:09:42,110 --> 00:09:45,630
+XMPP server various different objects on
+
+240
+00:09:45,630 --> 00:09:47,670
+the XMPP Network will respond to service
+
+241
+00:09:47,670 --> 00:09:49,740
+discovery queries with with different
+
+242
+00:09:49,740 --> 00:09:52,920
+things so now we get to this point where
+
+243
+00:09:52,920 --> 00:09:55,220
+we want to integrate XMPP with the web
+
+244
+00:09:55,220 --> 00:09:57,510
+which is kind of a challenge because as
+
+245
+00:09:57,510 --> 00:09:58,980
+we all know the web is stateless and
+
+246
+00:09:58,980 --> 00:10:02,970
+it's only one way well I mean we can
+
+247
+00:10:02,970 --> 00:10:04,710
+only ask in one direction we can't ask
+
+248
+00:10:04,710 --> 00:10:08,040
+them the other direction so there's a
+
+249
+00:10:08,040 --> 00:10:10,290
+lot of sites that have started using X
+
+250
+00:10:10,290 --> 00:10:11,970
+and PP on the web these are a couple of
+
+251
+00:10:11,970 --> 00:10:14,880
+them these sites are chess Park is a
+
+252
+00:10:14,880 --> 00:10:16,290
+site that I built the other three are
+
+253
+00:10:16,290 --> 00:10:18,750
+not all of these sites use the library
+
+254
+00:10:18,750 --> 00:10:20,510
+that I'm about to show you
+
+255
+00:10:20,510 --> 00:10:24,660
+dropo uses XMPP every collaboration zone
+
+256
+00:10:24,660 --> 00:10:27,180
+and drop yo is a multi-user chatroom so
+
+257
+00:10:27,180 --> 00:10:29,790
+when so when you you know drag a file
+
+258
+00:10:29,790 --> 00:10:31,800
+into the browser to share with your
+
+259
+00:10:31,800 --> 00:10:33,600
+friends it actually sends a message to
+
+260
+00:10:33,600 --> 00:10:35,190
+the group chat room and everyone in the
+
+261
+00:10:35,190 --> 00:10:37,800
+collaboration in the collaboration space
+
+262
+00:10:37,800 --> 00:10:40,230
+will get a message XMPP message saying
+
+263
+00:10:40,230 --> 00:10:43,200
+there's a file dragged there and that
+
+264
+00:10:43,200 --> 00:10:45,360
+kind of thing presently and Yammer both
+
+265
+00:10:45,360 --> 00:10:47,040
+use it for real-time updates on the site
+
+266
+00:10:47,040 --> 00:10:51,500
+to keep the the homepage is dynamic and
+
+267
+00:10:51,500 --> 00:10:54,180
+XMPP on the web is sort of made possible
+
+268
+00:10:54,180 --> 00:10:55,770
+through Bosh which is bi-directional
+
+269
+00:10:55,770 --> 00:10:58,920
+streams over synchronous HTTP you know
+
+270
+00:10:58,920 --> 00:11:01,890
+this is a really fancy name for long
+
+271
+00:11:01,890 --> 00:11:06,240
+polling so I don't know how many of you
+
+272
+00:11:06,240 --> 00:11:08,040
+guys know what long polling is
+
+273
+00:11:08,040 --> 00:11:12,420
+so a couple of you so this is what long
+
+274
+00:11:12,420 --> 00:11:14,520
+polling and normal polling look like in
+
+275
+00:11:14,520 --> 00:11:16,860
+the normal polling situation the top
+
+276
+00:11:16,860 --> 00:11:19,620
+line here with this red stuff the very
+
+277
+00:11:19,620 --> 00:11:22,860
+top of that is the client side so the
+
+278
+00:11:22,860 --> 00:11:24,690
+client makes a request since data to the
+
+279
+00:11:24,690 --> 00:11:26,790
+server hey is there anything new the
+
+280
+00:11:26,790 --> 00:11:28,020
+server responds immediately there's
+
+281
+00:11:28,020 --> 00:11:29,670
+nothing and then we wait for a while
+
+282
+00:11:29,670 --> 00:11:31,710
+maybe it's a minute then we send another
+
+283
+00:11:31,710 --> 00:11:33,540
+request hey is there anything new and
+
+284
+00:11:33,540 --> 00:11:35,070
+you can see this keeps happening over
+
+285
+00:11:35,070 --> 00:11:37,770
+and over and over long polling turns
+
+286
+00:11:37,770 --> 00:11:39,870
+this exactly around so now we send a
+
+287
+00:11:39,870 --> 00:11:41,430
+request to the server hey is there
+
+288
+00:11:41,430 --> 00:11:43,620
+anything new and now the server is smart
+
+289
+00:11:43,620 --> 00:11:45,720
+it says well there's nothing new but
+
+290
+00:11:45,720 --> 00:11:47,460
+there might be soon so I'm just going to
+
+291
+00:11:47,460 --> 00:11:50,370
+hang on to the result as long as I can
+
+292
+00:11:50,370 --> 00:11:52,260
+and that way if something new comes in
+
+293
+00:11:52,260 --> 00:11:54,780
+I'll just fire it back with the new data
+
+294
+00:11:54,780 --> 00:11:57,480
+if nothing new comes in after some time
+
+295
+00:11:57,480 --> 00:11:59,760
+like maybe a minute or so I'll just fire
+
+296
+00:11:59,760 --> 00:12:01,650
+it back empty and at that point the
+
+297
+00:12:01,650 --> 00:12:03,570
+client will re request and it'll sit
+
+298
+00:12:03,570 --> 00:12:05,340
+there so in long polling you have these
+
+299
+00:12:05,340 --> 00:12:07,440
+long periods where the request is on the
+
+300
+00:12:07,440 --> 00:12:09,540
+server end waiting for a response and
+
+301
+00:12:09,540 --> 00:12:10,830
+this allows you to do two-way
+
+302
+00:12:10,830 --> 00:12:12,750
+communication pretty efficiently about
+
+303
+00:12:12,750 --> 00:12:14,250
+as efficiently as you can do anything
+
+304
+00:12:14,250 --> 00:12:19,620
+over HTTP like this and it's the clients
+
+305
+00:12:19,620 --> 00:12:21,870
+responsibility so for instance if you
+
+306
+00:12:21,870 --> 00:12:24,480
+send a request and you wait for a while
+
+307
+00:12:24,480 --> 00:12:26,340
+and now you need to send data to the
+
+308
+00:12:26,340 --> 00:12:29,400
+server when you send the new request the
+
+309
+00:12:29,400 --> 00:12:31,410
+server will release the old one because
+
+310
+00:12:31,410 --> 00:12:32,820
+you only have two requests available in
+
+311
+00:12:32,820 --> 00:12:34,650
+most browsers so we have to you know
+
+312
+00:12:34,650 --> 00:12:36,650
+keep jumping back and forth between them
+
+313
+00:12:36,650 --> 00:12:39,990
+so boss uses this this this bottom
+
+314
+00:12:39,990 --> 00:12:42,000
+version of it - to enable it to have
+
+315
+00:12:42,000 --> 00:12:46,230
+two-way low latency communication and
+
+316
+00:12:46,230 --> 00:12:49,470
+now we get to Stroeve so so before is
+
+317
+00:12:49,470 --> 00:12:54,459
+there a question okay
+
+318
+00:12:54,459 --> 00:13:06,380
+before we get to what comments oh yeah
+
+319
+00:13:06,380 --> 00:13:10,399
+it's like comet yeah sorry um comet and
+
+320
+00:13:10,399 --> 00:13:13,100
+Bosh are are similar technologies and
+
+321
+00:13:13,100 --> 00:13:14,509
+people have written long Polar's that
+
+322
+00:13:14,509 --> 00:13:16,910
+don't do comment or Bosh they'd use
+
+323
+00:13:16,910 --> 00:13:20,269
+custom protocols cut the CouchDB team is
+
+324
+00:13:20,269 --> 00:13:23,870
+working on such a thing for instance so
+
+325
+00:13:23,870 --> 00:13:26,149
+here's some examples of things this is a
+
+326
+00:13:26,149 --> 00:13:27,920
+group chat application that my team
+
+327
+00:13:27,920 --> 00:13:31,009
+wrote that uses this i hope i'm still
+
+328
+00:13:31,009 --> 00:13:33,079
+logged in but you know you can see I can
+
+329
+00:13:33,079 --> 00:13:37,430
+type stuff and it appears instantly we
+
+330
+00:13:37,430 --> 00:13:39,470
+can log in and do all that kind of stuff
+
+331
+00:13:39,470 --> 00:13:41,630
+this is my presence up here these are
+
+332
+00:13:41,630 --> 00:13:44,180
+the other people in the room so they can
+
+333
+00:13:44,180 --> 00:13:48,860
+talk back so you can see the latency is
+
+334
+00:13:48,860 --> 00:13:50,209
+pretty low because I'm actually waiting
+
+335
+00:13:50,209 --> 00:13:51,829
+for the server to reset to send me the
+
+336
+00:13:51,829 --> 00:13:53,569
+message that I just typed to show it on
+
+337
+00:13:53,569 --> 00:13:56,060
+the screen this is another application
+
+338
+00:13:56,060 --> 00:13:58,189
+we wrote chess park where you can play
+
+339
+00:13:58,189 --> 00:14:00,949
+chess games the most popular speed of
+
+340
+00:14:00,949 --> 00:14:02,990
+game on this service is all the moves in
+
+341
+00:14:02,990 --> 00:14:05,540
+one minute per side so we had to get it
+
+342
+00:14:05,540 --> 00:14:07,250
+extremely low latency for this to work
+
+343
+00:14:07,250 --> 00:14:09,769
+at all and maybe I'll give it a second
+
+344
+00:14:09,769 --> 00:14:13,880
+to see if it loads up really fast so you
+
+345
+00:14:13,880 --> 00:14:15,769
+can sort of see the how dynamic the
+
+346
+00:14:15,769 --> 00:14:19,850
+initial interface is so this actually
+
+347
+00:14:19,850 --> 00:14:22,730
+just this is a full XMPP client we have
+
+348
+00:14:22,730 --> 00:14:27,230
+a the roster over here on the left the
+
+349
+00:14:27,230 --> 00:14:29,269
+private chats and group chats will load
+
+350
+00:14:29,269 --> 00:14:31,399
+here on the right this middle list is
+
+351
+00:14:31,399 --> 00:14:32,689
+games that people are actively looking
+
+352
+00:14:32,689 --> 00:14:34,100
+for and it will be changing the whole
+
+353
+00:14:34,100 --> 00:14:35,720
+time we're looking at this page like
+
+354
+00:14:35,720 --> 00:14:37,100
+there's two just disappeared because
+
+355
+00:14:37,100 --> 00:14:39,259
+they started we can watch games and all
+
+356
+00:14:39,259 --> 00:14:40,639
+kinds of stuff like that so this site is
+
+357
+00:14:40,639 --> 00:14:43,009
+incredibly dynamic and it's using the
+
+358
+00:14:43,009 --> 00:14:45,110
+api's that is using our XMPP right in
+
+359
+00:14:45,110 --> 00:14:46,850
+the JavaScript so we're building XMPP
+
+360
+00:14:46,850 --> 00:14:49,009
+protocol messages we're sending them
+
+361
+00:14:49,009 --> 00:14:50,870
+it has latency characteristics similar
+
+362
+00:14:50,870 --> 00:14:53,959
+to a desktop client and its end as far
+
+363
+00:14:53,959 --> 00:14:55,370
+as the developers are concerned they're
+
+364
+00:14:55,370 --> 00:14:58,579
+not that they don't ever see the you
+
+365
+00:14:58,579 --> 00:14:59,959
+know the long polling bits of it it
+
+366
+00:14:59,959 --> 00:15:02,360
+looks like a real stateful XMPP
+
+367
+00:15:02,360 --> 00:15:05,380
+connection to them
+
+368
+00:15:05,390 --> 00:15:08,990
+and so I'll get into the strophe so
+
+369
+00:15:08,990 --> 00:15:10,579
+strophe is the library I wrote the
+
+370
+00:15:10,579 --> 00:15:12,230
+JavaScript library I wrote them to make
+
+371
+00:15:12,230 --> 00:15:16,100
+XMPP in the web browsers possible it is
+
+372
+00:15:16,100 --> 00:15:19,220
+mostly for writing XMPP clients you you
+
+373
+00:15:19,220 --> 00:15:21,670
+can't really write a server with Bosh
+
+374
+00:15:21,670 --> 00:15:24,410
+and in the browser's well I don't know
+
+375
+00:15:24,410 --> 00:15:25,670
+why you would want to but even if you
+
+376
+00:15:25,670 --> 00:15:27,079
+wanted to it's not really possible with
+
+377
+00:15:27,079 --> 00:15:29,959
+the protocol it's it's in pure
+
+378
+00:15:29,959 --> 00:15:31,670
+JavaScript although I'll probably
+
+379
+00:15:31,670 --> 00:15:34,399
+integrate your project over there
+
+380
+00:15:34,399 --> 00:15:35,779
+fliends so there might be in the visible
+
+381
+00:15:35,779 --> 00:15:37,690
+flash thing so we can do cross domain
+
+382
+00:15:37,690 --> 00:15:40,220
+stuff really easily and we made it to
+
+383
+00:15:40,220 --> 00:15:41,959
+power real-time web applications where
+
+384
+00:15:41,959 --> 00:15:44,269
+there's you know lots of collaboration
+
+385
+00:15:44,269 --> 00:15:47,630
+and dynamicism it's fully documented the
+
+386
+00:15:47,630 --> 00:15:49,250
+whole library has documents even for
+
+387
+00:15:49,250 --> 00:15:50,959
+internal structures so if you're not
+
+388
+00:15:50,959 --> 00:15:52,250
+sure how something works you can just
+
+389
+00:15:52,250 --> 00:15:55,579
+look it up and it's highly optimized and
+
+390
+00:15:55,579 --> 00:15:57,230
+what I mean by this is not necessarily
+
+391
+00:15:57,230 --> 00:15:58,940
+that this is the fastest xhr
+
+392
+00:15:58,940 --> 00:16:01,010
+implementation on earth I mean that
+
+393
+00:16:01,010 --> 00:16:03,470
+there's a lot of edge cases in xhr when
+
+394
+00:16:03,470 --> 00:16:05,930
+you're doing lots and XML HTTP requests
+
+395
+00:16:05,930 --> 00:16:08,209
+when you're doing lots of these requests
+
+396
+00:16:08,209 --> 00:16:12,410
+I mean the the xhr object only
+
+397
+00:16:12,410 --> 00:16:14,959
+understands HTTP error codes for
+
+398
+00:16:14,959 --> 00:16:17,390
+instance so it knows if you get a 404 it
+
+399
+00:16:17,390 --> 00:16:19,459
+knows if you get a 500 error if your
+
+400
+00:16:19,459 --> 00:16:21,320
+proxy server drops the request and never
+
+401
+00:16:21,320 --> 00:16:23,120
+returns any data it doesn't know what to
+
+402
+00:16:23,120 --> 00:16:25,100
+do about that if the server never
+
+403
+00:16:25,100 --> 00:16:26,779
+returns anything it doesn't know what to
+
+404
+00:16:26,779 --> 00:16:27,440
+do about that
+
+405
+00:16:27,440 --> 00:16:29,600
+so strophe is highly optimized in the
+
+406
+00:16:29,600 --> 00:16:31,820
+sense that it will detect if we were
+
+407
+00:16:31,820 --> 00:16:34,180
+supposed to get data back and didn't
+
+408
+00:16:34,180 --> 00:16:37,550
+because if you if you don't time out and
+
+409
+00:16:37,550 --> 00:16:40,010
+do fancy stuff like that you're you're
+
+410
+00:16:40,010 --> 00:16:41,930
+low latency dreams will be smashed to
+
+411
+00:16:41,930 --> 00:16:44,029
+bits because you'll be waiting like nine
+
+412
+00:16:44,029 --> 00:16:45,769
+minutes for the proxy server to timeout
+
+413
+00:16:45,769 --> 00:16:47,420
+on the request response and the whole
+
+414
+00:16:47,420 --> 00:16:48,920
+time the user can't do anything so
+
+415
+00:16:48,920 --> 00:16:52,910
+there's a like most of the grueling
+
+416
+00:16:52,910 --> 00:16:55,399
+parts of strophe are all error handling
+
+417
+00:16:55,399 --> 00:16:58,190
+of xhr stuff and it's been well tested
+
+418
+00:16:58,190 --> 00:17:00,019
+we've used it on chess Park for about
+
+419
+00:17:00,019 --> 00:17:01,850
+three and a half years now
+
+420
+00:17:01,850 --> 00:17:03,620
+it works on the Wii it works on the
+
+421
+00:17:03,620 --> 00:17:05,959
+iPhone I mean it literally works pretty
+
+422
+00:17:05,959 --> 00:17:08,870
+much anywhere there's a couple people
+
+423
+00:17:08,870 --> 00:17:11,209
+now on doing Adobe AIR apps that that
+
+424
+00:17:11,209 --> 00:17:14,750
+use the same that you strop we built it
+
+425
+00:17:14,750 --> 00:17:16,520
+for chess park but it's an open source
+
+426
+00:17:16,520 --> 00:17:18,319
+project
+
+427
+00:17:18,319 --> 00:17:20,809
+we use it to power stanczyk which is now
+
+428
+00:17:20,809 --> 00:17:22,370
+collective which is a real-time search
+
+429
+00:17:22,370 --> 00:17:24,020
+engine that I work on and speak which is
+
+430
+00:17:24,020 --> 00:17:25,939
+the group application I showed you guys
+
+431
+00:17:25,939 --> 00:17:28,189
+and and a bunch of different companies
+
+432
+00:17:28,189 --> 00:17:30,230
+use it neuro so st uses it to put in
+
+433
+00:17:30,230 --> 00:17:33,080
+chat where the subtitles go and TV shows
+
+434
+00:17:33,080 --> 00:17:35,030
+so you can chat with all other people
+
+435
+00:17:35,030 --> 00:17:37,010
+you know who have Neuros OSD boxes which
+
+436
+00:17:37,010 --> 00:17:40,010
+is probably not very many so let's let's
+
+437
+00:17:40,010 --> 00:17:41,960
+like actually build something or or at
+
+438
+00:17:41,960 --> 00:17:43,190
+least see how something is built with
+
+439
+00:17:43,190 --> 00:17:45,679
+this library so first we have to manage
+
+440
+00:17:45,679 --> 00:17:48,350
+the connection because each XMPP think
+
+441
+00:17:48,350 --> 00:17:50,210
+has a connection and we have to do a
+
+442
+00:17:50,210 --> 00:17:52,700
+connection so we just do VAR connection
+
+443
+00:17:52,700 --> 00:17:54,530
+equals new stroke connection and this
+
+444
+00:17:54,530 --> 00:17:56,360
+URL is going to be the URL of the Boche
+
+445
+00:17:56,360 --> 00:17:59,270
+connection manager and normally this is
+
+446
+00:17:59,270 --> 00:18:01,520
+you know just someone will tell you what
+
+447
+00:18:01,520 --> 00:18:03,080
+this URL is or you'll set up a Bosch
+
+448
+00:18:03,080 --> 00:18:05,330
+connection manager and you'll give it
+
+449
+00:18:05,330 --> 00:18:08,120
+the URL for that once you have this
+
+450
+00:18:08,120 --> 00:18:09,500
+connection object you can call the
+
+451
+00:18:09,500 --> 00:18:10,730
+connect function and pass it the
+
+452
+00:18:10,730 --> 00:18:13,039
+username and password and there's also a
+
+453
+00:18:13,039 --> 00:18:14,780
+callback and the callback will get
+
+454
+00:18:14,780 --> 00:18:16,669
+called whenever the connection state
+
+455
+00:18:16,669 --> 00:18:19,940
+changes if you pass in a username like
+
+456
+00:18:19,940 --> 00:18:22,039
+user at domain then the server will give
+
+457
+00:18:22,039 --> 00:18:24,559
+you a resource we saw those earlier so
+
+458
+00:18:24,559 --> 00:18:26,030
+every every connection has one of these
+
+459
+00:18:26,030 --> 00:18:28,250
+you can pass in a resource and it'll use
+
+460
+00:18:28,250 --> 00:18:32,330
+that one or you can do what's called
+
+461
+00:18:32,330 --> 00:18:34,429
+sass all anonymous authentication which
+
+462
+00:18:34,429 --> 00:18:36,440
+means you sort of login as a guest you
+
+463
+00:18:36,440 --> 00:18:38,240
+have no authentication credentials
+
+464
+00:18:38,240 --> 00:18:39,980
+you don't need a username and password
+
+465
+00:18:39,980 --> 00:18:42,289
+you just login with the server or the
+
+466
+00:18:42,289 --> 00:18:44,480
+server and the resource and you'll get
+
+467
+00:18:44,480 --> 00:18:46,159
+an account and you can interact with the
+
+468
+00:18:46,159 --> 00:18:48,530
+server we use this for for applications
+
+469
+00:18:48,530 --> 00:18:50,929
+which don't that we don't have user
+
+470
+00:18:50,929 --> 00:18:52,789
+credentials for or for instance on speak
+
+471
+00:18:52,789 --> 00:18:55,039
+if you first come to the site we log you
+
+472
+00:18:55,039 --> 00:18:56,600
+in anonymously and let you use the
+
+473
+00:18:56,600 --> 00:18:58,190
+service without having you sign up and
+
+474
+00:18:58,190 --> 00:19:00,530
+then later if you sign up we you can
+
+475
+00:19:00,530 --> 00:19:02,450
+upgrade your your connection to an
+
+476
+00:19:02,450 --> 00:19:05,809
+authenticated one the connection
+
+477
+00:19:05,809 --> 00:19:08,090
+callback just reports the status so
+
+478
+00:19:08,090 --> 00:19:10,520
+whenever Stroeve it will attempt to
+
+479
+00:19:10,520 --> 00:19:11,840
+connect it will attempt to authenticate
+
+480
+00:19:11,840 --> 00:19:14,270
+it'll and it'll have connection errors
+
+481
+00:19:14,270 --> 00:19:15,919
+and each time one of these states
+
+482
+00:19:15,919 --> 00:19:17,929
+happens you'll get the callback will get
+
+483
+00:19:17,929 --> 00:19:21,230
+notified that it happened it's all the
+
+484
+00:19:21,230 --> 00:19:23,240
+normal stuff that you would expect the
+
+485
+00:19:23,240 --> 00:19:25,429
+main one that you want to work with is
+
+486
+00:19:25,429 --> 00:19:26,780
+you you're sitting around waiting for
+
+487
+00:19:26,780 --> 00:19:28,220
+the connected state and then you can
+
+488
+00:19:28,220 --> 00:19:30,800
+actually do some stuff
+
+489
+00:19:30,800 --> 00:19:32,450
+and this is how you would do that so
+
+490
+00:19:32,450 --> 00:19:35,240
+this is the callback handler for that I
+
+491
+00:19:35,240 --> 00:19:37,160
+would pass to connect and this one's
+
+492
+00:19:37,160 --> 00:19:38,870
+really simple it just waits until I get
+
+493
+00:19:38,870 --> 00:19:41,120
+the status connected and then it does
+
+494
+00:19:41,120 --> 00:19:43,250
+some stuff and I don't have the stuff
+
+495
+00:19:43,250 --> 00:19:45,800
+that it does in here right now but
+
+496
+00:19:45,800 --> 00:19:47,180
+usually you would set an initial
+
+497
+00:19:47,180 --> 00:19:48,800
+presence to the server so you would tell
+
+498
+00:19:48,800 --> 00:19:50,660
+a server server like hey I'm actually
+
+499
+00:19:50,660 --> 00:19:52,460
+here and you would do queries for your
+
+500
+00:19:52,460 --> 00:19:53,720
+roster and stuff like that if you were
+
+501
+00:19:53,720 --> 00:19:56,660
+writing an IM type client and then we
+
+502
+00:19:56,660 --> 00:19:59,600
+need to be able to send data once we're
+
+503
+00:19:59,600 --> 00:20:00,950
+connected and now we can just call
+
+504
+00:20:00,950 --> 00:20:02,570
+connection send and we have to send it
+
+505
+00:20:02,570 --> 00:20:04,880
+XML and the reason we send it these are
+
+506
+00:20:04,880 --> 00:20:06,860
+actually Dom objects and the reason we
+
+507
+00:20:06,860 --> 00:20:10,040
+do that is if we send invalid XML for
+
+508
+00:20:10,040 --> 00:20:11,420
+instance if we craft it by hand and
+
+509
+00:20:11,420 --> 00:20:14,420
+forget to escape something then X and PP
+
+510
+00:20:14,420 --> 00:20:15,890
+will just drop the connection so we
+
+511
+00:20:15,890 --> 00:20:17,390
+don't allow the user to do that we make
+
+512
+00:20:17,390 --> 00:20:19,850
+them give us nice XML and that way we
+
+513
+00:20:19,850 --> 00:20:21,860
+don't have anything to worry about and
+
+514
+00:20:21,860 --> 00:20:23,360
+I'll talk about some about building that
+
+515
+00:20:23,360 --> 00:20:25,220
+later and then disconnecting is really
+
+516
+00:20:25,220 --> 00:20:29,540
+easy we just call disconnect so that's
+
+517
+00:20:29,540 --> 00:20:31,100
+pretty much all of it except for
+
+518
+00:20:31,100 --> 00:20:34,340
+handling events so XMPP is all about
+
+519
+00:20:34,340 --> 00:20:36,220
+being event-driven
+
+520
+00:20:36,220 --> 00:20:39,920
+just like most UI code and we have
+
+521
+00:20:39,920 --> 00:20:42,740
+interaction events we have stamp timed
+
+522
+00:20:42,740 --> 00:20:46,100
+events and we have stanza events now
+
+523
+00:20:46,100 --> 00:20:48,500
+interaction events are sort of like when
+
+524
+00:20:48,500 --> 00:20:50,390
+a user clicks on a button then you need
+
+525
+00:20:50,390 --> 00:20:52,160
+to do something to it so for instance if
+
+526
+00:20:52,160 --> 00:20:54,110
+we have a send button the interaction
+
+527
+00:20:54,110 --> 00:20:56,450
+event gets called and and you know this
+
+528
+00:20:56,450 --> 00:20:58,160
+is just I'm using jQuery here as an
+
+529
+00:20:58,160 --> 00:20:59,750
+example but this is possible in any of
+
+530
+00:20:59,750 --> 00:21:02,330
+the libraries pretty much you build a
+
+531
+00:21:02,330 --> 00:21:04,070
+message stanza send a message for it for
+
+532
+00:21:04,070 --> 00:21:11,450
+instance if you have stanza events that
+
+533
+00:21:11,450 --> 00:21:13,250
+means that you set up a hand you you
+
+534
+00:21:13,250 --> 00:21:14,810
+call this function add handler and you
+
+535
+00:21:14,810 --> 00:21:16,700
+tell what kind of stanzas you're looking
+
+536
+00:21:16,700 --> 00:21:18,590
+for so here we're looking for a message
+
+537
+00:21:18,590 --> 00:21:21,950
+stanza of type chat and when that when
+
+538
+00:21:21,950 --> 00:21:23,570
+we whenever the connection sees one of
+
+539
+00:21:23,570 --> 00:21:25,310
+those it's going to call on message
+
+540
+00:21:25,310 --> 00:21:29,270
+which is a just a callback function and
+
+541
+00:21:29,270 --> 00:21:30,530
+this is what that callback function
+
+542
+00:21:30,530 --> 00:21:32,030
+might look like it gets passed in the
+
+543
+00:21:32,030 --> 00:21:34,430
+message Dom element and we can and we
+
+544
+00:21:34,430 --> 00:21:35,810
+can do whatever we want with that
+
+545
+00:21:35,810 --> 00:21:38,240
+message like for instance extracting out
+
+546
+00:21:38,240 --> 00:21:40,370
+the message body and displaying it on
+
+547
+00:21:40,370 --> 00:21:42,830
+screen and then we return true which
+
+548
+00:21:42,830 --> 00:21:43,900
+means that this handler will
+
+549
+00:21:43,900 --> 00:21:45,550
+keep getting called back if we return
+
+550
+00:21:45,550 --> 00:21:46,990
+false here then the handler will sort of
+
+551
+00:21:46,990 --> 00:21:47,700
+disappear
+
+552
+00:21:47,700 --> 00:21:50,020
+so if you were doing a one-off handler
+
+553
+00:21:50,020 --> 00:21:51,580
+or something that needed chaining you
+
+554
+00:21:51,580 --> 00:21:53,730
+might return a different value there and
+
+555
+00:21:53,730 --> 00:21:56,920
+then IQ stans's which we talked about
+
+556
+00:21:56,920 --> 00:22:00,790
+which have to have results Oh another
+
+557
+00:22:00,790 --> 00:22:02,650
+good example of when you would have a
+
+558
+00:22:02,650 --> 00:22:06,100
+stands a handler if you're answering it
+
+559
+00:22:06,100 --> 00:22:08,740
+is if someone sends you an IQ stanza
+
+560
+00:22:08,740 --> 00:22:10,690
+you're required to return a result and
+
+561
+00:22:10,690 --> 00:22:14,500
+the way you would do that is you would
+
+562
+00:22:14,500 --> 00:22:17,260
+just listen for IQ stanzas so for
+
+563
+00:22:17,260 --> 00:22:19,600
+instance here is type equals get and the
+
+564
+00:22:19,600 --> 00:22:22,180
+the sort of the extension protocol thing
+
+565
+00:22:22,180 --> 00:22:24,250
+they're using is jabber IQ version which
+
+566
+00:22:24,250 --> 00:22:25,720
+is actually the thing that you use to
+
+567
+00:22:25,720 --> 00:22:27,040
+say like what version of the client
+
+568
+00:22:27,040 --> 00:22:29,350
+software are you running so someone
+
+569
+00:22:29,350 --> 00:22:30,670
+might send you this just to see what
+
+570
+00:22:30,670 --> 00:22:33,850
+kind of features you support and then
+
+571
+00:22:33,850 --> 00:22:35,740
+the other side is you might you'll send
+
+572
+00:22:35,740 --> 00:22:37,750
+an IQ and you're going to expect a
+
+573
+00:22:37,750 --> 00:22:39,340
+response that you have to watch for and
+
+574
+00:22:39,340 --> 00:22:41,740
+so here we we're still watching for IQ
+
+575
+00:22:41,740 --> 00:22:43,660
+messages we don't care about what the
+
+576
+00:22:43,660 --> 00:22:45,280
+type is because remember this might be
+
+577
+00:22:45,280 --> 00:22:47,200
+result it might be error and we're going
+
+578
+00:22:47,200 --> 00:22:49,060
+to handle both of them here and we know
+
+579
+00:22:49,060 --> 00:22:50,920
+that we want to handle this disco one
+
+580
+00:22:50,920 --> 00:22:53,440
+because we normally what will happen is
+
+581
+00:22:53,440 --> 00:22:55,480
+you'll you'll create a unique ID you'll
+
+582
+00:22:55,480 --> 00:22:57,160
+send out an IQ stanza and then you'll
+
+583
+00:22:57,160 --> 00:22:58,870
+use that unique ID here and the handler
+
+584
+00:22:58,870 --> 00:23:03,190
+to handle the message and then timed
+
+585
+00:23:03,190 --> 00:23:05,260
+handlers are just this is just a silly
+
+586
+00:23:05,260 --> 00:23:07,510
+wrapper around set timeout so that
+
+587
+00:23:07,510 --> 00:23:10,840
+everything is consistent and you guys
+
+588
+00:23:10,840 --> 00:23:12,580
+can use that one or you can use jquery's
+
+589
+00:23:12,580 --> 00:23:14,530
+or whatever at the time that I
+
+590
+00:23:14,530 --> 00:23:15,880
+originally wrote stuff there wasn't a
+
+591
+00:23:15,880 --> 00:23:17,800
+jQuery so that's why some of this stuff
+
+592
+00:23:17,800 --> 00:23:20,980
+ended up in here and in building stanzas
+
+593
+00:23:20,980 --> 00:23:23,080
+is sort of the last bit so I made this
+
+594
+00:23:23,080 --> 00:23:24,490
+thing called strophe builder because
+
+595
+00:23:24,490 --> 00:23:26,290
+working with the Dom API is sort of
+
+596
+00:23:26,290 --> 00:23:30,730
+gnarly and this is inspired by jQuery it
+
+597
+00:23:30,730 --> 00:23:33,310
+always returns a surf builder or almost
+
+598
+00:23:33,310 --> 00:23:35,170
+always so you can do this chaining like
+
+599
+00:23:35,170 --> 00:23:38,710
+people are familiar with with jQuery and
+
+600
+00:23:38,710 --> 00:23:40,960
+this is what it looks like at the basic
+
+601
+00:23:40,960 --> 00:23:43,480
+level so you have a stanza and you call
+
+602
+00:23:43,480 --> 00:23:45,280
+stroke builder you say message you pass
+
+603
+00:23:45,280 --> 00:23:47,110
+it some attributes and that'll build you
+
+604
+00:23:47,110 --> 00:23:50,740
+a message and all the methods are
+
+605
+00:23:50,740 --> 00:23:52,630
+chainable like I said so for instance
+
+606
+00:23:52,630 --> 00:23:54,970
+you can add a child
+
+607
+00:23:54,970 --> 00:23:56,710
+to the Dom with the name and attributes
+
+608
+00:23:56,710 --> 00:23:59,380
+just like we did there we can add a text
+
+609
+00:23:59,380 --> 00:24:02,980
+node very easily we can add pre-made
+
+610
+00:24:02,980 --> 00:24:04,480
+children so for instance if you have an
+
+611
+00:24:04,480 --> 00:24:05,830
+element already that you receive then
+
+612
+00:24:05,830 --> 00:24:07,360
+you're just you know plucking out some
+
+613
+00:24:07,360 --> 00:24:08,799
+bit of it and putting it back in you can
+
+614
+00:24:08,799 --> 00:24:12,100
+use C node and you can modify the
+
+615
+00:24:12,100 --> 00:24:13,750
+attributes this is really useful if you
+
+616
+00:24:13,750 --> 00:24:15,330
+have something that builds basic
+
+617
+00:24:15,330 --> 00:24:17,620
+attribute you know stanzas and you just
+
+618
+00:24:17,620 --> 00:24:19,870
+have to put a new two attribute on it or
+
+619
+00:24:19,870 --> 00:24:22,780
+something like that and we have a thing
+
+620
+00:24:22,780 --> 00:24:24,640
+that traverses up the tree so when you
+
+621
+00:24:24,640 --> 00:24:26,350
+add a child the next child will be a
+
+622
+00:24:26,350 --> 00:24:28,270
+child of that child so it sort of goes
+
+623
+00:24:28,270 --> 00:24:30,159
+downwards so you need a function to sort
+
+624
+00:24:30,159 --> 00:24:31,630
+of go back up the stack so you can make
+
+625
+00:24:31,630 --> 00:24:34,030
+siblings and here's some examples of how
+
+626
+00:24:34,030 --> 00:24:37,240
+it works this is building a message very
+
+627
+00:24:37,240 --> 00:24:38,620
+similar to the long that we saw earlier
+
+628
+00:24:38,620 --> 00:24:41,590
+so we create a message we send it to
+
+629
+00:24:41,590 --> 00:24:44,049
+somebody it's type equals chat we create
+
+630
+00:24:44,049 --> 00:24:46,210
+a child of type body and within that
+
+631
+00:24:46,210 --> 00:24:48,850
+child we create a text node of hello
+
+632
+00:24:48,850 --> 00:24:52,809
+world here's a slightly more complicated
+
+633
+00:24:52,809 --> 00:24:53,289
+one
+
+634
+00:24:53,289 --> 00:24:54,760
+this one is the same as the one we just
+
+635
+00:24:54,760 --> 00:24:57,220
+saw except that I go back up the stack
+
+636
+00:24:57,220 --> 00:25:00,520
+and I make an HTML child which uses the
+
+637
+00:25:00,520 --> 00:25:02,830
+XHTML I am specification which is a way
+
+638
+00:25:02,830 --> 00:25:07,210
+to send HTML messages over in your XMPP
+
+639
+00:25:07,210 --> 00:25:09,760
+messages and then I make a body tag and
+
+640
+00:25:09,760 --> 00:25:13,360
+Pia and have hi and then there's a bunch
+
+641
+00:25:13,360 --> 00:25:14,950
+of convenience functions for stroke
+
+642
+00:25:14,950 --> 00:25:16,450
+builders because typing new stroke
+
+643
+00:25:16,450 --> 00:25:18,429
+builder is pretty long thing to type so
+
+644
+00:25:18,429 --> 00:25:19,990
+we have dollar sign press dollar sign
+
+645
+00:25:19,990 --> 00:25:22,860
+message dollar sign IQ these will make
+
+646
+00:25:22,860 --> 00:25:27,070
+the three basic XMPP stanzas along with
+
+647
+00:25:27,070 --> 00:25:28,840
+their attributes without having to do
+
+648
+00:25:28,840 --> 00:25:31,360
+any extra work so this is the shortest
+
+649
+00:25:31,360 --> 00:25:33,130
+stroke builder thing that you can do
+
+650
+00:25:33,130 --> 00:25:36,070
+dollar sign pres parens and that's the
+
+651
+00:25:36,070 --> 00:25:39,039
+shortest valid XMPP message you can also
+
+652
+00:25:39,039 --> 00:25:42,130
+send here's the same message that we
+
+653
+00:25:42,130 --> 00:25:43,809
+originally saw like the hello world one
+
+654
+00:25:43,809 --> 00:25:46,299
+with the body and XMPP rocks but with
+
+655
+00:25:46,299 --> 00:25:49,929
+this convenience function and now we get
+
+656
+00:25:49,929 --> 00:25:51,669
+to the unchangeable methods and there's
+
+657
+00:25:51,669 --> 00:25:53,230
+just a couple of these we have two
+
+658
+00:25:53,230 --> 00:25:55,659
+string which serializes the Dom element
+
+659
+00:25:55,659 --> 00:25:57,460
+to a string so you can see what it looks
+
+660
+00:25:57,460 --> 00:25:59,200
+like or printed out somewhere
+
+661
+00:25:59,200 --> 00:26:02,590
+we have dot tree which will return it's
+
+662
+00:26:02,590 --> 00:26:04,330
+sort of like jquery's get it just
+
+663
+00:26:04,330 --> 00:26:08,669
+returns us the actual top-level Dom tree
+
+664
+00:26:08,669 --> 00:26:10,109
+and those that's it for the untrainable
+
+665
+00:26:10,109 --> 00:26:11,999
+ones so let's look at an actual
+
+666
+00:26:11,999 --> 00:26:14,600
+application that uses this stuff and
+
+667
+00:26:14,600 --> 00:26:17,450
+first I'm just going to show you the
+
+668
+00:26:17,450 --> 00:26:21,690
+application so what this application
+
+669
+00:26:21,690 --> 00:26:23,519
+does is I'm going to type a server
+
+670
+00:26:23,519 --> 00:26:25,590
+address in here it's going to connect to
+
+671
+00:26:25,590 --> 00:26:28,980
+the XMPP server it's going to ask it
+
+672
+00:26:28,980 --> 00:26:31,739
+what stuff it supports and then it's
+
+673
+00:26:31,739 --> 00:26:33,269
+going to print it all out to us and
+
+674
+00:26:33,269 --> 00:26:34,830
+we'll get to see what that looks like so
+
+675
+00:26:34,830 --> 00:26:36,600
+I have an XMPP server running on
+
+676
+00:26:36,600 --> 00:26:42,629
+localhost hit connect and here it is
+
+677
+00:26:42,629 --> 00:26:45,509
+here's the answer so it's pretty simple
+
+678
+00:26:45,509 --> 00:26:46,889
+this is just a list of features that it
+
+679
+00:26:46,889 --> 00:26:50,129
+supports it's got a lot of pubsub stuff
+
+680
+00:26:50,129 --> 00:26:52,049
+on it and stuff it's an easy birdie
+
+681
+00:26:52,049 --> 00:26:54,840
+server and then this log tab shows us
+
+682
+00:26:54,840 --> 00:26:57,539
+the actual bosh protocol that got sent
+
+683
+00:26:57,539 --> 00:26:59,970
+so for instance this one right here is
+
+684
+00:26:59,970 --> 00:27:02,009
+the Boche is the initial Bosch thing
+
+685
+00:27:02,009 --> 00:27:04,230
+that sets up the connection and then
+
+686
+00:27:04,230 --> 00:27:05,039
+there's a bunch of stuff for
+
+687
+00:27:05,039 --> 00:27:06,239
+authentication that's not really that
+
+688
+00:27:06,239 --> 00:27:10,169
+interesting and then down here you can
+
+689
+00:27:10,169 --> 00:27:12,980
+see the IQ stands that we created right
+
+690
+00:27:12,980 --> 00:27:17,009
+there a get request to localhost with
+
+691
+00:27:17,009 --> 00:27:19,679
+the Disco info and then this next one is
+
+692
+00:27:19,679 --> 00:27:23,399
+the server's response and as soon as we
+
+693
+00:27:23,399 --> 00:27:24,539
+get the server's response we
+
+694
+00:27:24,539 --> 00:27:26,279
+disconnected and you can see it
+
+695
+00:27:26,279 --> 00:27:28,139
+disconnected and then the code for this
+
+696
+00:27:28,139 --> 00:27:35,380
+is really simple as well
+
+697
+00:27:35,390 --> 00:27:38,030
+so this is the the code for this
+
+698
+00:27:38,030 --> 00:27:40,549
+function so this is all using jQuery so
+
+699
+00:27:40,549 --> 00:27:43,100
+in the in the ready function I use
+
+700
+00:27:43,100 --> 00:27:45,350
+jQuery UI to setup the tabs and then I
+
+701
+00:27:45,350 --> 00:27:47,809
+hook up the connect button the connect
+
+702
+00:27:47,809 --> 00:27:49,850
+function is is right here can everybody
+
+703
+00:27:49,850 --> 00:27:53,210
+read this is it big enough okay so we
+
+704
+00:27:53,210 --> 00:27:54,740
+prevent the default events we create a
+
+705
+00:27:54,740 --> 00:27:56,540
+new strove connection with this raw
+
+706
+00:27:56,540 --> 00:27:58,280
+input and raw output or logging
+
+707
+00:27:58,280 --> 00:28:00,380
+functions so that's what generated that
+
+708
+00:28:00,380 --> 00:28:02,059
+XML strophe will call this whenever it
+
+709
+00:28:02,059 --> 00:28:03,620
+sends or receives anything over the wire
+
+710
+00:28:03,620 --> 00:28:06,190
+so you can use it for protocol debugging
+
+711
+00:28:06,190 --> 00:28:08,480
+we grab the server out of the forum
+
+712
+00:28:08,480 --> 00:28:10,910
+field and then we call here's the
+
+713
+00:28:10,910 --> 00:28:13,100
+connection connect function since we're
+
+714
+00:28:13,100 --> 00:28:15,860
+just making an anonymous connection we
+
+715
+00:28:15,860 --> 00:28:17,179
+don't need a password so that's why
+
+716
+00:28:17,179 --> 00:28:19,700
+that's null and it uses on connect event
+
+717
+00:28:19,700 --> 00:28:23,150
+for the callback on connect event is
+
+718
+00:28:23,150 --> 00:28:27,230
+right here and here it's very simple we
+
+719
+00:28:27,230 --> 00:28:28,910
+only handle two states connected and
+
+720
+00:28:28,910 --> 00:28:31,100
+disconnected and all and and
+
+721
+00:28:31,100 --> 00:28:32,660
+disconnected all we do is print out some
+
+722
+00:28:32,660 --> 00:28:35,679
+stuff and connected we add a handler for
+
+723
+00:28:35,679 --> 00:28:38,679
+this IQ result that we're looking for
+
+724
+00:28:38,679 --> 00:28:41,540
+and you can see here that I don't
+
+725
+00:28:41,540 --> 00:28:43,640
+actually say IQ anywhere because we know
+
+726
+00:28:43,640 --> 00:28:45,890
+it's going to come back with the ID so
+
+727
+00:28:45,890 --> 00:28:47,660
+all we really need to check for is the
+
+728
+00:28:47,660 --> 00:28:49,700
+ID and here you can see I'm looking for
+
+729
+00:28:49,700 --> 00:28:51,830
+the result so the error case is totally
+
+730
+00:28:51,830 --> 00:28:53,750
+not being handled you might have a
+
+731
+00:28:53,750 --> 00:28:55,309
+second handler for the error case to the
+
+732
+00:28:55,309 --> 00:28:56,809
+logic simpler or you might do them both
+
+733
+00:28:56,809 --> 00:28:59,240
+in the same handler I find it's usually
+
+734
+00:28:59,240 --> 00:29:00,980
+better to get as specific as possible
+
+735
+00:29:00,980 --> 00:29:03,230
+with the handlers and then I build the
+
+736
+00:29:03,230 --> 00:29:07,850
+IQ stanza and then I send it out and so
+
+737
+00:29:07,850 --> 00:29:09,799
+once the result comes back if an error
+
+738
+00:29:09,799 --> 00:29:11,150
+comes back nothing will happen if a
+
+739
+00:29:11,150 --> 00:29:12,620
+result comes back this on result
+
+740
+00:29:12,620 --> 00:29:15,410
+callback will get called which is right
+
+741
+00:29:15,410 --> 00:29:17,059
+here which is the longest function in
+
+742
+00:29:17,059 --> 00:29:19,280
+here and this basically just writes a
+
+743
+00:29:19,280 --> 00:29:23,750
+bunch of stuff to a special div here
+
+744
+00:29:23,750 --> 00:29:25,730
+where I'm using jQuery to parse out I'm
+
+745
+00:29:25,730 --> 00:29:27,230
+getting a Dom object back from the
+
+746
+00:29:27,230 --> 00:29:29,929
+handler of the IQ and jQuery makes it
+
+747
+00:29:29,929 --> 00:29:31,520
+really easy to chop this thing up and
+
+748
+00:29:31,520 --> 00:29:34,040
+rip stuff out of it so I grab all the
+
+749
+00:29:34,040 --> 00:29:36,350
+identity nodes which are one of the
+
+750
+00:29:36,350 --> 00:29:37,669
+things that returns in service discovery
+
+751
+00:29:37,669 --> 00:29:39,710
+I build this little table which has a
+
+752
+00:29:39,710 --> 00:29:43,160
+bunch of that stuff here I find all the
+
+753
+00:29:43,160 --> 00:29:44,929
+feature elements in that return that
+
+754
+00:29:44,929 --> 00:29:47,380
+result and I build a little list of
+
+755
+00:29:47,380 --> 00:29:49,130
+feature elements and
+
+756
+00:29:49,130 --> 00:29:50,450
+I call connection disconnect and we
+
+757
+00:29:50,450 --> 00:29:58,490
+disconnect which which we all saw does
+
+758
+00:29:58,490 --> 00:30:08,140
+anybody have any questions on that
+
+759
+00:30:08,150 --> 00:30:10,500
+yeah when you when you see their IQ
+
+760
+00:30:10,500 --> 00:30:11,880
+response this this function gets called
+
+761
+00:30:11,880 --> 00:30:14,039
+and and and it's really easy I mean all
+
+762
+00:30:14,039 --> 00:30:15,720
+I do is use jQuery to pick stuff out of
+
+763
+00:30:15,720 --> 00:30:17,220
+the Dom element that gets returned and
+
+764
+00:30:17,220 --> 00:30:19,039
+then I write a bunch of HTML there um
+
+765
+00:30:19,039 --> 00:30:21,419
+obviously if you are having like the the
+
+766
+00:30:21,419 --> 00:30:22,890
+chest park stuff has a lot of different
+
+767
+00:30:22,890 --> 00:30:24,840
+handlers for different cases so we have
+
+768
+00:30:24,840 --> 00:30:26,400
+handlers for women or private messages
+
+769
+00:30:26,400 --> 00:30:28,320
+receive from one a group chat messages
+
+770
+00:30:28,320 --> 00:30:30,419
+received for when game moves are sent
+
+771
+00:30:30,419 --> 00:30:32,460
+from when you send game moves and all
+
+772
+00:30:32,460 --> 00:30:35,039
+kinds of stuff like that so the and so
+
+773
+00:30:35,039 --> 00:30:36,480
+the handlers you'll have a bunch of them
+
+774
+00:30:36,480 --> 00:30:39,000
+and some of them will only use ones like
+
+775
+00:30:39,000 --> 00:30:41,460
+for instance this this IQ handler right
+
+776
+00:30:41,460 --> 00:30:44,760
+here we only use it once so here it
+
+777
+00:30:44,760 --> 00:30:46,590
+returns null which is a sort of
+
+778
+00:30:46,590 --> 00:30:48,330
+equivalent to false and this handler
+
+779
+00:30:48,330 --> 00:30:51,179
+will go away afterwards because we're
+
+780
+00:30:51,179 --> 00:30:52,740
+never going to get another IQ result
+
+781
+00:30:52,740 --> 00:30:54,210
+that matches this because it's going to
+
+782
+00:30:54,210 --> 00:30:58,320
+the new IQs have to have unique IDs so
+
+783
+00:30:58,320 --> 00:31:07,500
+they'll never be another one
+
+784
+00:31:07,510 --> 00:31:12,530
+so plugins one of the things about XMPP
+
+785
+00:31:12,530 --> 00:31:14,960
+it's very extensible you can write new
+
+786
+00:31:14,960 --> 00:31:17,810
+bits of stanzas and just stick them in
+
+787
+00:31:17,810 --> 00:31:19,700
+there so for instance at chess Park when
+
+788
+00:31:19,700 --> 00:31:21,140
+we want to chess moves in there we just
+
+789
+00:31:21,140 --> 00:31:23,360
+made a special namespace for for our
+
+790
+00:31:23,360 --> 00:31:25,220
+chess stanzas and then we put them in
+
+791
+00:31:25,220 --> 00:31:28,640
+messages there's a lot of extensions
+
+792
+00:31:28,640 --> 00:31:30,890
+defined already just to just to show you
+
+793
+00:31:30,890 --> 00:31:33,530
+guys the number here which hopefully
+
+794
+00:31:33,530 --> 00:31:36,620
+won't scare you you know that there's a
+
+795
+00:31:36,620 --> 00:31:37,880
+there's a couple hundred of these
+
+796
+00:31:37,880 --> 00:31:40,450
+extensions and for all kinds of things
+
+797
+00:31:40,450 --> 00:31:43,730
+some of these are used a lot like for
+
+798
+00:31:43,730 --> 00:31:45,560
+instance multi-user chat is one that's
+
+799
+00:31:45,560 --> 00:31:47,240
+use a lot service discovery is used a
+
+800
+00:31:47,240 --> 00:31:48,530
+lot and there's some that are almost
+
+801
+00:31:48,530 --> 00:31:50,930
+never used like soap over XMPP only a
+
+802
+00:31:50,930 --> 00:31:53,480
+few crazy people are using that but this
+
+803
+00:31:53,480 --> 00:31:56,210
+list keeps going so so for instance I
+
+804
+00:31:56,210 --> 00:31:58,130
+mean there's stuff in here like jingle
+
+805
+00:31:58,130 --> 00:32:00,470
+is is for multimedia conferencing with
+
+806
+00:32:00,470 --> 00:32:03,890
+sip one of the nice things about XMPP if
+
+807
+00:32:03,890 --> 00:32:05,900
+you have some crazy use case you don't
+
+808
+00:32:05,900 --> 00:32:07,550
+actually have to design all the protocol
+
+809
+00:32:07,550 --> 00:32:09,050
+you might have to write the code that
+
+810
+00:32:09,050 --> 00:32:10,430
+supports this protocol but you don't
+
+811
+00:32:10,430 --> 00:32:11,840
+have to think of all the edge cases that
+
+812
+00:32:11,840 --> 00:32:13,580
+can happen because there's a giant group
+
+813
+00:32:13,580 --> 00:32:15,650
+of people that sort of works these out
+
+814
+00:32:15,650 --> 00:32:21,170
+for you so in order to support all that
+
+815
+00:32:21,170 --> 00:32:23,240
+stuff like strophe is very simple you've
+
+816
+00:32:23,240 --> 00:32:24,710
+seen that it only has like half a dozen
+
+817
+00:32:24,710 --> 00:32:26,690
+functions and yet there's this whole
+
+818
+00:32:26,690 --> 00:32:28,910
+page full of extensions that that people
+
+819
+00:32:28,910 --> 00:32:30,560
+do so I wanted to have a way for people
+
+820
+00:32:30,560 --> 00:32:32,780
+to do plugins and the plugins would be
+
+821
+00:32:32,780 --> 00:32:34,640
+things like it would handle the soap
+
+822
+00:32:34,640 --> 00:32:37,190
+over XMPP stuff and it would just give
+
+823
+00:32:37,190 --> 00:32:40,430
+you a simple function to call to do that
+
+824
+00:32:40,430 --> 00:32:42,410
+like soaps and or with publish/subscribe
+
+825
+00:32:42,410 --> 00:32:43,940
+you would want to just do subscribe you
+
+826
+00:32:43,940 --> 00:32:45,200
+don't actually want to have to build the
+
+827
+00:32:45,200 --> 00:32:46,730
+IQ message that gets sent to the server
+
+828
+00:32:46,730 --> 00:32:48,920
+that does the subscription and handle
+
+829
+00:32:48,920 --> 00:32:51,950
+the error cases and so the plug-in
+
+830
+00:32:51,950 --> 00:32:53,990
+infrastructure just has two functions
+
+831
+00:32:53,990 --> 00:32:57,110
+you can add namespaces these are these
+
+832
+00:32:57,110 --> 00:32:59,690
+are as I said these are the things that
+
+833
+00:32:59,690 --> 00:33:02,390
+sort of define the extensions so each
+
+834
+00:33:02,390 --> 00:33:04,010
+extension has to have be name spaced
+
+835
+00:33:04,010 --> 00:33:07,850
+this is for instance the xtml XHTML IM
+
+836
+00:33:07,850 --> 00:33:09,680
+namespace and that's actually the full
+
+837
+00:33:09,680 --> 00:33:12,440
+namespace there so your plug-in can add
+
+838
+00:33:12,440 --> 00:33:14,990
+new namespaces that you can use so you
+
+839
+00:33:14,990 --> 00:33:16,310
+don't have to keep writing on and it has
+
+840
+00:33:16,310 --> 00:33:18,350
+ADD connection plug-in and you have the
+
+841
+00:33:18,350 --> 00:33:19,700
+name of the plug-in and you just
+
+842
+00:33:19,700 --> 00:33:21,500
+pass in an object and what will happen
+
+843
+00:33:21,500 --> 00:33:23,649
+is your connection object will get a new
+
+844
+00:33:23,649 --> 00:33:26,990
+attribute which is would be my plugin in
+
+845
+00:33:26,990 --> 00:33:28,669
+this case which will get initialized
+
+846
+00:33:28,669 --> 00:33:30,590
+whenever your connection is initialized
+
+847
+00:33:30,590 --> 00:33:32,570
+and so you can have all of your fancy
+
+848
+00:33:32,570 --> 00:33:34,250
+functions like subscribe and stuff in
+
+849
+00:33:34,250 --> 00:33:38,200
+this object and I wrote a little
+
+850
+00:33:38,200 --> 00:33:40,460
+identical who here is familiar with
+
+851
+00:33:40,460 --> 00:33:44,450
+identica so identica has an XMPP bot
+
+852
+00:33:44,450 --> 00:33:45,769
+that will send you micro blogging
+
+853
+00:33:45,769 --> 00:33:47,389
+messages just like Twitter used to have
+
+854
+00:33:47,389 --> 00:33:49,490
+and got rid of so I wrote a little
+
+855
+00:33:49,490 --> 00:33:51,580
+plug-in to show you guys that did
+
+856
+00:33:51,580 --> 00:33:55,760
+essentially is an identical client very
+
+857
+00:33:55,760 --> 00:34:05,899
+simple one and here I have two I'm going
+
+858
+00:34:05,899 --> 00:34:07,700
+to use my gmail credentials to login to
+
+859
+00:34:07,700 --> 00:34:11,450
+Gmail because that's where all my
+
+860
+00:34:11,450 --> 00:34:14,060
+identical messages go and you have to
+
+861
+00:34:14,060 --> 00:34:15,440
+forgive me because I'm typing my long
+
+862
+00:34:15,440 --> 00:34:21,649
+password with one hand here so we
+
+863
+00:34:21,649 --> 00:34:23,240
+connect and it'll take a second because
+
+864
+00:34:23,240 --> 00:34:24,740
+the wireless is a little slow here and
+
+865
+00:34:24,740 --> 00:34:26,929
+then it'll say it'll switch to waiting
+
+866
+00:34:26,929 --> 00:34:28,909
+for messages and then there's a handler
+
+867
+00:34:28,909 --> 00:34:30,710
+here and whenever an identical message
+
+868
+00:34:30,710 --> 00:34:33,169
+comes in it will add it to this list
+
+869
+00:34:33,169 --> 00:34:36,740
+here okay so we can look at the log file
+
+870
+00:34:36,740 --> 00:34:39,319
+and see what it's doing so we can see
+
+871
+00:34:39,319 --> 00:34:40,220
+that it's still going through the
+
+872
+00:34:40,220 --> 00:34:41,389
+connection stuff they are finally
+
+873
+00:34:41,389 --> 00:34:44,030
+connected and here's a bunch of stuff
+
+874
+00:34:44,030 --> 00:34:46,040
+that happens when you log in this is all
+
+875
+00:34:46,040 --> 00:34:47,720
+of the people in my roster sending me
+
+876
+00:34:47,720 --> 00:34:51,290
+their capabilities so that I can see if
+
+877
+00:34:51,290 --> 00:34:52,760
+they have music information they want to
+
+878
+00:34:52,760 --> 00:34:54,290
+share with me and stuff and so now it's
+
+879
+00:34:54,290 --> 00:34:56,089
+waiting for messages so now if I go to
+
+880
+00:34:56,089 --> 00:35:03,890
+identica and I type something
+
+881
+00:35:03,900 --> 00:35:20,320
+even this is slow
+
+882
+00:35:20,330 --> 00:35:23,990
+so in any case it will appear in there
+
+883
+00:35:23,990 --> 00:35:25,550
+you'll have to trust me I guess because
+
+884
+00:35:25,550 --> 00:35:27,620
+the Wi-Fi is not not behaving we can
+
+885
+00:35:27,620 --> 00:35:29,180
+also send messages from here like those
+
+886
+00:35:29,180 --> 00:35:30,820
+interaction events I talked about before
+
+887
+00:35:30,820 --> 00:35:33,290
+and we hit Send it'll actually build the
+
+888
+00:35:33,290 --> 00:35:35,630
+stanza and send it and of course it
+
+889
+00:35:35,630 --> 00:35:37,340
+since identicos apparently being really
+
+890
+00:35:37,340 --> 00:35:38,780
+slow right now it'll take a while to
+
+891
+00:35:38,780 --> 00:35:41,570
+show up and I can show you the code for
+
+892
+00:35:41,570 --> 00:35:46,550
+this oh there it is so it shows up there
+
+893
+00:35:46,550 --> 00:35:48,920
+and this is actually using XHTML I M so
+
+894
+00:35:48,920 --> 00:35:50,750
+this is actually a clickable link that
+
+895
+00:35:50,750 --> 00:35:54,710
+will go to my profile page and the code
+
+896
+00:35:54,710 --> 00:35:57,230
+for this is just barely more complicated
+
+897
+00:35:57,230 --> 00:36:04,070
+than the code I just showed you so we
+
+898
+00:36:04,070 --> 00:36:07,310
+have almost the same on the connect
+
+899
+00:36:07,310 --> 00:36:09,560
+function so when we call connect we set
+
+900
+00:36:09,560 --> 00:36:11,150
+up the connection in the same way except
+
+901
+00:36:11,150 --> 00:36:12,650
+now we have a full username and password
+
+902
+00:36:12,650 --> 00:36:14,960
+we call on connect event is the callback
+
+903
+00:36:14,960 --> 00:36:18,140
+when we connect we send initial presence
+
+904
+00:36:18,140 --> 00:36:22,550
+and then when we write that waiting for
+
+905
+00:36:22,550 --> 00:36:28,280
+messages thing and we have there's a
+
+906
+00:36:28,280 --> 00:36:30,530
+missing handler here that I accidentally
+
+907
+00:36:30,530 --> 00:36:33,620
+deleted so we there's a in this on
+
+908
+00:36:33,620 --> 00:36:34,790
+connect the first thing we would have to
+
+909
+00:36:34,790 --> 00:36:36,320
+do is set up the handler that handles
+
+910
+00:36:36,320 --> 00:36:38,810
+messages coming in and for some reason I
+
+911
+00:36:38,810 --> 00:36:40,190
+deleted that right before I walked up
+
+912
+00:36:40,190 --> 00:36:44,030
+here which is crazy but and then here's
+
+913
+00:36:44,030 --> 00:36:45,980
+the stuff that happens when when the
+
+914
+00:36:45,980 --> 00:36:48,770
+handler would have gotten called wait a
+
+915
+00:36:48,770 --> 00:36:55,310
+minute okay somehow I munched two
+
+916
+00:36:55,310 --> 00:36:57,340
+different files oh here it is down here
+
+917
+00:36:57,340 --> 00:37:00,770
+so here's the send so you can see us
+
+918
+00:37:00,770 --> 00:37:01,910
+building the message and we call
+
+919
+00:37:01,910 --> 00:37:05,840
+connection send and send it out I'm not
+
+920
+00:37:05,840 --> 00:37:09,580
+sure what happened to the to the handler
+
+921
+00:37:09,580 --> 00:37:11,930
+but essentially whenever the body comes
+
+922
+00:37:11,930 --> 00:37:13,820
+in all I did was find the div with
+
+923
+00:37:13,820 --> 00:37:17,330
+jQuery and and and extract the HTML I am
+
+924
+00:37:17,330 --> 00:37:23,660
+body and just throw it back in there
+
+925
+00:37:23,670 --> 00:37:32,539
+yep
+
+926
+00:37:32,549 --> 00:37:36,069
+so the authentication so you can do sass
+
+927
+00:37:36,069 --> 00:37:37,960
+little anonymous you can do digest md5
+
+928
+00:37:37,960 --> 00:37:41,380
+you can do text plane all those some
+
+929
+00:37:41,380 --> 00:37:43,119
+server supports ass'll external so you
+
+930
+00:37:43,119 --> 00:37:44,140
+can do things like Kerberos
+
+931
+00:37:44,140 --> 00:37:46,059
+authentication Google uses it for token
+
+932
+00:37:46,059 --> 00:37:47,829
+authentication with with their own
+
+933
+00:37:47,829 --> 00:37:50,619
+instant messaging stuff so pretty much
+
+934
+00:37:50,619 --> 00:37:53,819
+all the SAS whole stuff you can do there
+
+935
+00:37:53,819 --> 00:37:56,619
+now what's coming in the future I want
+
+936
+00:37:56,619 --> 00:37:57,970
+to do XPath matching with strophe
+
+937
+00:37:57,970 --> 00:37:59,589
+because the add handler thing has like
+
+938
+00:37:59,589 --> 00:38:01,119
+four or five parameters and they're
+
+939
+00:38:01,119 --> 00:38:03,460
+really restrictive and I want to just be
+
+940
+00:38:03,460 --> 00:38:05,559
+able to write XPath queries to be very
+
+941
+00:38:05,559 --> 00:38:07,779
+precise with what kind of stanzas I want
+
+942
+00:38:07,779 --> 00:38:09,489
+and this is what it'll look like when it
+
+943
+00:38:09,489 --> 00:38:11,410
+gets done so this would be the message
+
+944
+00:38:11,410 --> 00:38:14,079
+handler for you if you calm and type
+
+945
+00:38:14,079 --> 00:38:17,229
+equals chat so that's that's much better
+
+946
+00:38:17,229 --> 00:38:20,079
+because not only do you get to write
+
+947
+00:38:20,079 --> 00:38:21,789
+this very specific query but it's also
+
+948
+00:38:21,789 --> 00:38:23,440
+sort of error checking it as well right
+
+949
+00:38:23,440 --> 00:38:25,539
+so you can write a really specific query
+
+950
+00:38:25,539 --> 00:38:27,099
+and then random messages won't match
+
+951
+00:38:27,099 --> 00:38:28,719
+whereas with the handler code we have
+
+952
+00:38:28,719 --> 00:38:30,400
+now you have to sort of get all messages
+
+953
+00:38:30,400 --> 00:38:34,539
+from from of a particular type this is
+
+954
+00:38:34,539 --> 00:38:36,039
+actually taking me longer than I wanted
+
+955
+00:38:36,039 --> 00:38:37,749
+because none of the normal Dom XPath
+
+956
+00:38:37,749 --> 00:38:40,210
+stuff works on partial Dom elements that
+
+957
+00:38:40,210 --> 00:38:43,450
+don't already exist in a tree and then
+
+958
+00:38:43,450 --> 00:38:45,880
+there's the multi session problem that
+
+959
+00:38:45,880 --> 00:38:49,390
+some people are having in that uh if
+
+960
+00:38:49,390 --> 00:38:51,219
+you're if you're running an XMPP
+
+961
+00:38:51,219 --> 00:38:52,900
+connection in one tab and you open a new
+
+962
+00:38:52,900 --> 00:38:55,660
+tab now you have to XMPP connection and
+
+963
+00:38:55,660 --> 00:38:57,430
+you have to sort of keep them in sync so
+
+964
+00:38:57,430 --> 00:38:59,799
+we're working on extending bosh with the
+
+965
+00:38:59,799 --> 00:39:01,809
+thing for that so that all of the tabs
+
+966
+00:39:01,809 --> 00:39:03,640
+sort of have the same state without
+
+967
+00:39:03,640 --> 00:39:07,809
+doing any horrible hacks and the code is
+
+968
+00:39:07,809 --> 00:39:09,670
+available at code dot stands EECOM slash
+
+969
+00:39:09,670 --> 00:39:12,670
+Stroeve um the second link is my blog I
+
+970
+00:39:12,670 --> 00:39:13,989
+write about this stuff a lot there's
+
+971
+00:39:13,989 --> 00:39:17,170
+more tutorials there on various XMPP
+
+972
+00:39:17,170 --> 00:39:19,539
+topics and and things like that and my
+
+973
+00:39:19,539 --> 00:39:20,799
+email address if you need to get ahold
+
+974
+00:39:20,799 --> 00:39:24,549
+of me as jacket collector are there any
+
+975
+00:39:24,549 --> 00:39:30,369
+questions all this is true for the boss
+
+976
+00:39:30,369 --> 00:39:31,740
+you're
+
+977
+00:39:31,740 --> 00:39:33,510
+to Duke's level differences between
+
+978
+00:39:33,510 --> 00:39:36,690
+which you just covered it in comedy so
+
+979
+00:39:36,690 --> 00:39:38,310
+comment is only publish/subscribe
+
+980
+00:39:38,310 --> 00:39:41,580
+semantics so that they're very similar
+
+981
+00:39:41,580 --> 00:39:43,110
+in that they both allow you to a low
+
+982
+00:39:43,110 --> 00:39:46,080
+latency communication comment defines
+
+983
+00:39:46,080 --> 00:39:48,270
+the semantics of the communication as
+
+984
+00:39:48,270 --> 00:39:51,060
+subscribing to some path and then you
+
+985
+00:39:51,060 --> 00:39:53,250
+get events for that path that's possible
+
+986
+00:39:53,250 --> 00:39:55,050
+an XMPP through pub/sub and also
+
+987
+00:39:55,050 --> 00:39:56,640
+presence works like that but you can
+
+988
+00:39:56,640 --> 00:39:58,890
+also do many many other things in
+
+989
+00:39:58,890 --> 00:40:01,440
+extensions over X and P P so for
+
+990
+00:40:01,440 --> 00:40:04,200
+instance we can do io data we can do
+
+991
+00:40:04,200 --> 00:40:06,390
+file transfers we can do lots of the
+
+992
+00:40:06,390 --> 00:40:08,250
+stuff that's already baked into X and P
+
+993
+00:40:08,250 --> 00:40:09,450
+P because people have worked on these
+
+994
+00:40:09,450 --> 00:40:11,160
+extensions where as well comment you
+
+995
+00:40:11,160 --> 00:40:12,600
+would have to sort of make a new
+
+996
+00:40:12,600 --> 00:40:14,220
+protocol over the publish/subscribe
+
+997
+00:40:14,220 --> 00:40:15,630
+semantics to accomplish the same thing
+
+998
+00:40:15,630 --> 00:40:17,100
+so if you're if you're looking for
+
+999
+00:40:17,100 --> 00:40:19,410
+something really really simple and you
+
+1000
+00:40:19,410 --> 00:40:22,140
+all you need is pub/sub then comment
+
+1001
+00:40:22,140 --> 00:40:25,500
+works great I found that what happens is
+
+1002
+00:40:25,500 --> 00:40:26,610
+people start with something really
+
+1003
+00:40:26,610 --> 00:40:28,350
+really simple and then all of a sudden
+
+1004
+00:40:28,350 --> 00:40:30,150
+they want file transfers and now they're
+
+1005
+00:40:30,150 --> 00:40:32,220
+designing protocols and so it's easier
+
+1006
+00:40:32,220 --> 00:40:33,750
+to start with this because you already
+
+1007
+00:40:33,750 --> 00:40:35,190
+have all the protocols design because
+
+1008
+00:40:35,190 --> 00:40:37,050
+that's the hard work implementing a
+
+1009
+00:40:37,050 --> 00:40:41,880
+protocol is not too bad yeah so for
+
+1010
+00:40:41,880 --> 00:40:43,380
+instance the Major League Baseball chat
+
+1011
+00:40:43,380 --> 00:40:45,210
+which has millions of concurrent users
+
+1012
+00:40:45,210 --> 00:40:49,700
+is backed by a Jeopardy XMPP server so
+
+1013
+00:40:49,700 --> 00:40:52,950
+it scales pretty well yes it and and
+
+1014
+00:40:52,950 --> 00:40:54,869
+just the other scaling of topic as
+
+1015
+00:40:54,869 --> 00:40:56,910
+google talk has millions of concurrent
+
+1016
+00:40:56,910 --> 00:41:05,430
+users as well and that's XMPP so so
+
+1017
+00:41:05,430 --> 00:41:07,230
+Bosh's is essentially it's kind of like
+
+1018
+00:41:07,230 --> 00:41:09,720
+a web proxy server except a web request
+
+1019
+00:41:09,720 --> 00:41:12,660
+comes in it makes a TCP connection to an
+
+1020
+00:41:12,660 --> 00:41:15,030
+XMPP server a two-way one and holds it
+
+1021
+00:41:15,030 --> 00:41:16,859
+open and then does the long polling
+
+1022
+00:41:16,859 --> 00:41:19,410
+translation between stanzas so for
+
+1023
+00:41:19,410 --> 00:41:22,770
+instance like you can you can see what
+
+1024
+00:41:22,770 --> 00:41:25,470
+this looks like in the log here so the
+
+1025
+00:41:25,470 --> 00:41:28,770
+Boche wraps it in this body tag so
+
+1026
+00:41:28,770 --> 00:41:30,210
+here's this body there's an empty body
+
+1027
+00:41:30,210 --> 00:41:32,730
+tag but somebody find one so here's a
+
+1028
+00:41:32,730 --> 00:41:34,710
+body tag with stuff in it right and this
+
+1029
+00:41:34,710 --> 00:41:36,840
+body tag is just a simple wrapper so the
+
+1030
+00:41:36,840 --> 00:41:39,300
+so the Boche server will get will get
+
+1031
+00:41:39,300 --> 00:41:42,900
+this XML element it will strip off the
+
+1032
+00:41:42,900 --> 00:41:45,150
+body out it takes the body tag checks to
+
+1033
+00:41:45,150 --> 00:41:45,520
+make sure
+
+1034
+00:41:45,520 --> 00:41:47,200
+that some of the security stuff matches
+
+1035
+00:41:47,200 --> 00:41:49,090
+so you can't spoof the connections and
+
+1036
+00:41:49,090 --> 00:41:50,800
+stuff and then the stuff that's inside
+
+1037
+00:41:50,800 --> 00:41:52,930
+the body tag it forwards over the TCP
+
+1038
+00:41:52,930 --> 00:41:55,180
+connection to the XMPP server and then
+
+1039
+00:41:55,180 --> 00:41:56,680
+when stuff comes back it just sends it
+
+1040
+00:41:56,680 --> 00:41:59,020
+to you when it has waiting requests to
+
+1041
+00:41:59,020 --> 00:42:06,700
+fulfill so it's just you can do any of
+
+1042
+00:42:06,700 --> 00:42:08,500
+those things so because of the same
+
+1043
+00:42:08,500 --> 00:42:10,180
+domain policy you usually have to
+
+1044
+00:42:10,180 --> 00:42:12,730
+reverse proxy a Bosch connection manager
+
+1045
+00:42:12,730 --> 00:42:14,560
+under the URL where you're serving index
+
+1046
+00:42:14,560 --> 00:42:16,450
+dot HTML or wherever your app lives and
+
+1047
+00:42:16,450 --> 00:42:19,180
+with something like flensed you can do
+
+1048
+00:42:19,180 --> 00:42:22,600
+cross domain by using the same XML HTTP
+
+1049
+00:42:22,600 --> 00:42:24,640
+request API but using Flash's cross
+
+1050
+00:42:24,640 --> 00:42:29,050
+domain stuff and there are so far for
+
+1051
+00:42:29,050 --> 00:42:30,520
+our applications we run our own Bosch
+
+1052
+00:42:30,520 --> 00:42:32,530
+servers we proxy them under the an
+
+1053
+00:42:32,530 --> 00:42:35,020
+engine X and which serves static content
+
+1054
+00:42:35,020 --> 00:42:40,180
+and we do that that way the comment
+
+1055
+00:42:40,180 --> 00:42:42,460
+requires the same thing you have a comet
+
+1056
+00:42:42,460 --> 00:42:45,130
+comet D running that is equivalent to
+
+1057
+00:42:45,130 --> 00:42:46,810
+sort of the Boche connection manager it
+
+1058
+00:42:46,810 --> 00:42:49,840
+translates your incoming stuff into more
+
+1059
+00:42:49,840 --> 00:42:57,310
+stateful stuff on the server side yes
+
+1060
+00:42:57,310 --> 00:42:58,900
+that's a great question
+
+1061
+00:42:58,900 --> 00:43:01,720
+so locally you don't have to have an
+
+1062
+00:43:01,720 --> 00:43:03,970
+XMPP server locally because because the
+
+1063
+00:43:03,970 --> 00:43:06,250
+connection manager if you run one that's
+
+1064
+00:43:06,250 --> 00:43:07,990
+not built into an XMPP server can
+
+1065
+00:43:07,990 --> 00:43:09,820
+connect to any XMPP server you saw me I
+
+1066
+00:43:09,820 --> 00:43:11,950
+just connected to Gmail for instance so
+
+1067
+00:43:11,950 --> 00:43:13,240
+I have a connection manager running on
+
+1068
+00:43:13,240 --> 00:43:14,860
+this local machine and what I do for
+
+1069
+00:43:14,860 --> 00:43:16,570
+local development is I wrote a simple
+
+1070
+00:43:16,570 --> 00:43:19,090
+utility that will serve the current
+
+1071
+00:43:19,090 --> 00:43:22,270
+directory over HTTP but also keep
+
+1072
+00:43:22,270 --> 00:43:24,280
+reverse proxy configurations and I have
+
+1073
+00:43:24,280 --> 00:43:26,560
+a little text file in there that has a
+
+1074
+00:43:26,560 --> 00:43:28,030
+little configuration for where the
+
+1075
+00:43:28,030 --> 00:43:30,040
+reverse proxies are which reverse proxy
+
+1076
+00:43:30,040 --> 00:43:31,780
+is the bossy so I just type tape in a
+
+1077
+00:43:31,780 --> 00:43:34,540
+directory and it sets up a local HTTP
+
+1078
+00:43:34,540 --> 00:43:37,480
+server just that I short-lived that
+
+1079
+00:43:37,480 --> 00:43:39,340
+serves the directory handles the Boche
+
+1080
+00:43:39,340 --> 00:43:40,480
+stuff and that's how I do local
+
+1081
+00:43:40,480 --> 00:43:42,310
+development and we deploy it there's
+
+1082
+00:43:42,310 --> 00:43:44,080
+usually an engine ax thing reverse
+
+1083
+00:43:44,080 --> 00:43:46,000
+proxying the Boche server and serving
+
+1084
+00:43:46,000 --> 00:43:48,010
+static files or in the case of chess
+
+1085
+00:43:48,010 --> 00:43:50,440
+park there's a django app just wash
+
+1086
+00:43:50,440 --> 00:43:52,569
+server
+
+1087
+00:43:52,569 --> 00:43:55,749
+on the Bosch server I use and the guy on
+
+1088
+00:43:55,749 --> 00:43:57,549
+my team wrote is called Punjab and you
+
+1089
+00:43:57,549 --> 00:43:59,829
+can find it it yeah yeah so code dot
+
+1090
+00:43:59,829 --> 00:44:02,109
+Sanjay Khan flash strophe is the is this
+
+1091
+00:44:02,109 --> 00:44:04,449
+library but slash Punjab is our Bosch
+
+1092
+00:44:04,449 --> 00:44:06,789
+server and the speak site which I showed
+
+1093
+00:44:06,789 --> 00:44:08,499
+you guys is also open source and that's
+
+1094
+00:44:08,499 --> 00:44:13,569
+available at the same site huh you
+
+1095
+00:44:13,569 --> 00:44:17,319
+should've bought this game had a grenade
+
+1096
+00:44:17,319 --> 00:44:20,049
+and have synchronous that mean that the
+
+1097
+00:44:20,049 --> 00:44:23,739
+behavior is called is literally no no
+
+1098
+00:44:23,739 --> 00:44:25,689
+that it's still an asynchronous Ajax
+
+1099
+00:44:25,689 --> 00:44:28,569
+call I'm sure they put synchronous in
+
+1100
+00:44:28,569 --> 00:44:30,400
+there because it made the acronym nice
+
+1101
+00:44:30,400 --> 00:44:33,369
+sounding and but but it is synchronous
+
+1102
+00:44:33,369 --> 00:44:34,869
+in a way that your the long polling is
+
+1103
+00:44:34,869 --> 00:44:35,890
+synchronous right you're leaving a
+
+1104
+00:44:35,890 --> 00:44:37,209
+connection out there on the server and
+
+1105
+00:44:37,209 --> 00:44:38,589
+you're waiting for a response to come
+
+1106
+00:44:38,589 --> 00:44:41,739
+back but but that that's wrapped up for
+
+1107
+00:44:41,739 --> 00:44:43,599
+you in Stroeve so strophe presents you a
+
+1108
+00:44:43,599 --> 00:44:45,819
+completely asynchronous API you define
+
+1109
+00:44:45,819 --> 00:44:47,799
+event handlers stanzas come in and match
+
+1110
+00:44:47,799 --> 00:44:51,599
+and then they trigger events yes Pierre
+
+1111
+00:44:51,599 --> 00:44:54,759
+Bossier shows yes most of the jabber
+
+1112
+00:44:54,759 --> 00:44:56,829
+servers include their own Bosh servers
+
+1113
+00:44:56,829 --> 00:45:00,009
+the difference is there's a good side
+
+1114
+00:45:00,009 --> 00:45:02,259
+and a bad side to that the good sizes is
+
+1115
+00:45:02,259 --> 00:45:04,869
+you have no serialization overhead the
+
+1116
+00:45:04,869 --> 00:45:07,419
+xml comes in it gets serialized for the
+
+1117
+00:45:07,419 --> 00:45:08,979
+server and it goes all through the
+
+1118
+00:45:08,979 --> 00:45:11,349
+server and it only gets to realize when
+
+1119
+00:45:11,349 --> 00:45:13,119
+it comes back out to you with a normal
+
+1120
+00:45:13,119 --> 00:45:15,009
+box server you serialize it to the boss
+
+1121
+00:45:15,009 --> 00:45:17,529
+Bosh connection it realizes it to the
+
+1122
+00:45:17,529 --> 00:45:19,329
+TCP connection to go to the server and
+
+1123
+00:45:19,329 --> 00:45:21,099
+so there's an extra serialization step
+
+1124
+00:45:21,099 --> 00:45:23,439
+what you lose is you can't connect to
+
+1125
+00:45:23,439 --> 00:45:25,869
+arbitrary X and P P servers so if I used
+
+1126
+00:45:25,869 --> 00:45:28,029
+I can switch it to the into my eg
+
+1127
+00:45:28,029 --> 00:45:29,859
+Birdy's Bosh server here by just
+
+1128
+00:45:29,859 --> 00:45:32,559
+switching the URL but what but I'll only
+
+1129
+00:45:32,559 --> 00:45:34,839
+be able to connect locally to that eg
+
+1130
+00:45:34,839 --> 00:45:36,249
+Bertie server I won't be able to make a
+
+1131
+00:45:36,249 --> 00:45:39,699
+connection to Gmail for instance and it
+
+1132
+00:45:39,699 --> 00:45:41,109
+depends on the application which of
+
+1133
+00:45:41,109 --> 00:45:43,659
+these is right for you if you if you
+
+1134
+00:45:43,659 --> 00:45:45,459
+want to support the federated network of
+
+1135
+00:45:45,459 --> 00:45:47,439
+XMPP users so for instance on the speak
+
+1136
+00:45:47,439 --> 00:45:49,390
+site this is a requirement because we
+
+1137
+00:45:49,390 --> 00:45:50,589
+want people to be able to log in with
+
+1138
+00:45:50,589 --> 00:45:53,319
+their Gmail credentials and access their
+
+1139
+00:45:53,319 --> 00:45:55,089
+own Google Talk stuff we don't need want
+
+1140
+00:45:55,089 --> 00:45:56,650
+you to have to have a speak comm account
+
+1141
+00:45:56,650 --> 00:45:59,319
+but for other services I drop a oh and
+
+1142
+00:45:59,319 --> 00:46:01,209
+Yammer and stuff they use anonymous
+
+1143
+00:46:01,209 --> 00:46:03,609
+connections and they just and they do
+
+1144
+00:46:03,609 --> 00:46:05,470
+the authentication at a lower layer
+
+1145
+00:46:05,470 --> 00:46:10,569
+or a higher layer I guess yes
+
+1146
+00:46:10,569 --> 00:46:11,950
+last question back in the picture
+
+1147
+00:46:11,950 --> 00:46:14,140
+everything silk is asynchronous
+
+1148
+00:46:14,140 --> 00:46:17,230
+are you getting partial responses back
+
+1149
+00:46:17,230 --> 00:46:20,140
+from the screen what is every stanza it
+
+1150
+00:46:20,140 --> 00:46:23,200
+someone for us you can send multiple
+
+1151
+00:46:23,200 --> 00:46:24,760
+stanzas but you'll never get a partial
+
+1152
+00:46:24,760 --> 00:46:27,369
+stanza the Bosch connection manager will
+
+1153
+00:46:27,369 --> 00:46:30,250
+only ever send you a complete stanza and
+
+1154
+00:46:30,250 --> 00:46:32,500
+and you can only send complete stanzas
+
+1155
+00:46:32,500 --> 00:46:33,730
+but you can send as many as you want
+
+1156
+00:46:33,730 --> 00:46:36,760
+there's also some neat functions inside
+
+1157
+00:46:36,760 --> 00:46:38,319
+Stroeve if you know you're going to be
+
+1158
+00:46:38,319 --> 00:46:41,200
+sending just a bunch of data from say a
+
+1159
+00:46:41,200 --> 00:46:43,060
+bunch of different pieces of code for
+
+1160
+00:46:43,060 --> 00:46:45,010
+instance that connections start up which
+
+1161
+00:46:45,010 --> 00:46:46,630
+is pretty common you can tell it to
+
+1162
+00:46:46,630 --> 00:46:48,700
+pause it will queue up all of that stuff
+
+1163
+00:46:48,700 --> 00:46:50,380
+and then when you hit start it will send
+
+1164
+00:46:50,380 --> 00:46:52,480
+it all in one request so you can sort of
+
+1165
+00:46:52,480 --> 00:46:58,160
+bootstrap the initialization stuff yes
+
+1166
+00:46:58,170 --> 00:47:02,260
+so you could the thing that XML really
+
+1167
+00:47:02,260 --> 00:47:05,130
+buys you here is that there's no way to
+
+1168
+00:47:05,130 --> 00:47:10,930
+extend a JSON array so say you have say
+
+1169
+00:47:10,930 --> 00:47:13,780
+that this was all Jason and I had a
+
+1170
+00:47:13,780 --> 00:47:16,089
+message stanza and the two is a string
+
+1171
+00:47:16,089 --> 00:47:21,819
+the in XML I can extend attributes by
+
+1172
+00:47:21,819 --> 00:47:24,210
+name spacing them and I can extend any
+
+1173
+00:47:24,210 --> 00:47:29,470
+any tag by putting a child in it and
+
+1174
+00:47:29,470 --> 00:47:31,420
+name spacing that but you can only do
+
+1175
+00:47:31,420 --> 00:47:33,280
+that in parts of JSON so you would have
+
+1176
+00:47:33,280 --> 00:47:35,319
+to have sort of a complicated extensible
+
+1177
+00:47:35,319 --> 00:47:38,500
+JSON format that you would use so you
+
+1178
+00:47:38,500 --> 00:47:39,849
+would lose some of the simplicity I
+
+1179
+00:47:39,849 --> 00:47:41,640
+think of JSON if you went that way
+
+1180
+00:47:41,640 --> 00:47:43,869
+because it's really nice to be able to
+
+1181
+00:47:43,869 --> 00:47:45,339
+send those messages that are bodies
+
+1182
+00:47:45,339 --> 00:47:47,619
+that's standardized write the body tag
+
+1183
+00:47:47,619 --> 00:47:49,390
+is not namespaced but when I send a
+
+1184
+00:47:49,390 --> 00:47:52,329
+chess move for instance it'll be you
+
+1185
+00:47:52,329 --> 00:47:55,030
+know move and they'll have xmlns just
+
+1186
+00:47:55,030 --> 00:47:56,859
+Park / move or something like that and
+
+1187
+00:47:56,859 --> 00:47:58,599
+then I can put whatever I want in there
+
+1188
+00:47:58,599 --> 00:48:00,369
+and the nice thing is the server's if
+
+1189
+00:48:00,369 --> 00:48:01,780
+they don't understand what the data is
+
+1190
+00:48:01,780 --> 00:48:03,579
+they just won't look at it and they'll
+
+1191
+00:48:03,579 --> 00:48:06,099
+pass it all the way to the clients so
+
+1192
+00:48:06,099 --> 00:48:08,170
+with so with JSON you would have to sort
+
+1193
+00:48:08,170 --> 00:48:10,839
+of I'm not sure how you would extend
+
+1194
+00:48:10,839 --> 00:48:13,780
+JSON in the same way unless you decided
+
+1195
+00:48:13,780 --> 00:48:21,060
+to use all objects and no little
+
+1196
+00:48:21,070 --> 00:48:26,450
+any other questions okay thank you very
+
+1197
+00:48:26,450 --> 00:48:36,300
+much
+

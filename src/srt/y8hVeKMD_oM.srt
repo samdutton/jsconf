@@ -1,0 +1,2077 @@
+1
+00:00:15,960 --> 00:00:18,090
+
+so I work on I worked on v8 and I now
+
+2
+00:00:18,090 --> 00:00:20,580
+work on the dart VM and but this is not
+
+3
+00:00:20,580 --> 00:00:23,790
+why I'm here today and I'm going to talk
+
+4
+00:00:23,790 --> 00:00:25,170
+about something completely different
+
+5
+00:00:25,170 --> 00:00:27,210
+though related basically I'm going to
+
+6
+00:00:27,210 --> 00:00:29,700
+talk to you about how you take your hand
+
+7
+00:00:29,700 --> 00:00:31,590
+and you stick it into the guts of the VM
+
+8
+00:00:31,590 --> 00:00:34,379
+where all these sharp things move around
+
+9
+00:00:34,379 --> 00:00:37,430
+and you get it back and scattered and
+
+10
+00:00:37,430 --> 00:00:39,570
+another thing I'm going to talk about
+
+11
+00:00:39,570 --> 00:00:43,020
+today is a very basic thing that all of
+
+12
+00:00:43,020 --> 00:00:45,870
+us desire desire as strongly as we all
+
+13
+00:00:45,870 --> 00:00:48,210
+desire lunch that is going to be after
+
+14
+00:00:48,210 --> 00:00:53,489
+my talk and this thing is toys and some
+
+15
+00:00:53,489 --> 00:00:55,739
+people call would call things that I
+
+16
+00:00:55,739 --> 00:00:58,739
+showed you today prototypes mock-ups
+
+17
+00:00:58,739 --> 00:01:01,920
+mashups experiments but I am calling
+
+18
+00:01:01,920 --> 00:01:04,140
+them just toys because that's
+
+19
+00:01:04,140 --> 00:01:05,339
+essentially what I'm having I'm having
+
+20
+00:01:05,339 --> 00:01:08,250
+some fun and I hope people will have
+
+21
+00:01:08,250 --> 00:01:09,810
+some fun with them and they will learn
+
+22
+00:01:09,810 --> 00:01:12,210
+something because that's how you learn
+
+23
+00:01:12,210 --> 00:01:16,500
+things you play with them and I have
+
+24
+00:01:16,500 --> 00:01:19,530
+been giving quite a number of talks
+
+25
+00:01:19,530 --> 00:01:22,890
+about performance and v8 performance
+
+26
+00:01:22,890 --> 00:01:24,780
+especially and they are all pretty
+
+27
+00:01:24,780 --> 00:01:26,520
+boring they're all like oh like that
+
+28
+00:01:26,520 --> 00:01:31,020
+they go and go and can anybody guess the
+
+29
+00:01:31,020 --> 00:01:34,979
+last line no it's a speculative
+
+30
+00:01:34,979 --> 00:01:39,270
+optimizations obviously so and the most
+
+31
+00:01:39,270 --> 00:01:41,580
+amazing thing about such talks is that
+
+32
+00:01:41,580 --> 00:01:43,170
+people come home and then they heard
+
+33
+00:01:43,170 --> 00:01:45,180
+about inline caches and they try to see
+
+34
+00:01:45,180 --> 00:01:46,920
+what inline caches do to their programs
+
+35
+00:01:46,920 --> 00:01:49,799
+and sorry can't do that you can see
+
+36
+00:01:49,799 --> 00:01:51,689
+they're like pixie dust that makes
+
+37
+00:01:51,689 --> 00:01:53,250
+everything fly with the speed of light
+
+38
+00:01:53,250 --> 00:01:57,000
+but nobody can see it that's a bit
+
+39
+00:01:57,000 --> 00:01:58,650
+annoying it's it's annoying for people
+
+40
+00:01:58,650 --> 00:02:01,770
+and gets me very frustrated so I really
+
+41
+00:02:01,770 --> 00:02:05,400
+wanted to show people how like vm works
+
+42
+00:02:05,400 --> 00:02:07,470
+and how it optimizes things and let them
+
+43
+00:02:07,470 --> 00:02:12,209
+observe and when I approach it I have
+
+44
+00:02:12,209 --> 00:02:14,970
+this principle everybody knows letting
+
+45
+00:02:14,970 --> 00:02:16,950
+obviously if you translate it from
+
+46
+00:02:16,950 --> 00:02:20,010
+legend to a current modern language
+
+47
+00:02:20,010 --> 00:02:21,930
+which is English obviously is that if
+
+48
+00:02:21,930 --> 00:02:24,030
+you are working on some VM for language
+
+49
+00:02:24,030 --> 00:02:26,220
+X Y that try to do everything for this
+
+50
+00:02:26,220 --> 00:02:27,239
+VM in X why's that
+
+51
+00:02:27,239 --> 00:02:29,310
+that's a lot of fun
+
+52
+00:02:29,310 --> 00:02:31,590
+and because I follow this principle
+
+53
+00:02:31,590 --> 00:02:33,540
+everywhere where I go like I worked on
+
+54
+00:02:33,540 --> 00:02:35,520
+the Java VM I tried to do stuff in Java
+
+55
+00:02:35,520 --> 00:02:37,890
+I worked on the ADA tried to do more
+
+56
+00:02:37,890 --> 00:02:40,620
+things in JavaScript I work on Dart
+
+57
+00:02:40,620 --> 00:02:42,840
+I try to do most things in dart so I I
+
+58
+00:02:42,840 --> 00:02:47,069
+get some beating for that I think and so
+
+59
+00:02:47,069 --> 00:02:49,530
+I came up with a plan a the very first
+
+60
+00:02:49,530 --> 00:02:51,630
+plan that I had and there was also a
+
+61
+00:02:51,630 --> 00:02:53,790
+little bit in to note at that point so I
+
+62
+00:02:53,790 --> 00:02:55,980
+just took v8 modified it a little bit
+
+63
+00:02:55,980 --> 00:02:58,680
+then I took no GS then I connected them
+
+64
+00:02:58,680 --> 00:03:01,500
+together and let v8 stream data to know
+
+65
+00:03:01,500 --> 00:03:03,090
+GS and then I connected node.js to the
+
+66
+00:03:03,090 --> 00:03:04,560
+browser through a WebSockets
+
+67
+00:03:04,560 --> 00:03:06,900
+oh my god that feels enterprise-e that's
+
+68
+00:03:06,900 --> 00:03:08,550
+what you deploy in the data center to
+
+69
+00:03:08,550 --> 00:03:09,989
+make all these millions of people see
+
+70
+00:03:09,989 --> 00:03:12,900
+what we ate does and if you stop and
+
+71
+00:03:12,900 --> 00:03:14,250
+think for a moment they're like 3d
+
+72
+00:03:14,250 --> 00:03:16,620
+eights there at least which is like two
+
+73
+00:03:16,620 --> 00:03:19,920
+Vav eights too many for this problem so
+
+74
+00:03:19,920 --> 00:03:21,540
+the plan B is very simple you take one
+
+75
+00:03:21,540 --> 00:03:23,730
+lonely v8 and put it into a duck place
+
+76
+00:03:23,730 --> 00:03:25,739
+into the browser modify it a little bit
+
+77
+00:03:25,739 --> 00:03:27,209
+and let it talk to itself because it's
+
+78
+00:03:27,209 --> 00:03:30,330
+alone and here is what came out of this
+
+79
+00:03:30,330 --> 00:03:32,970
+experiment this is code mirror everybody
+
+80
+00:03:32,970 --> 00:03:34,200
+heard about called mirror I suspect
+
+81
+00:03:34,200 --> 00:03:36,150
+which is a company in to edit code and
+
+82
+00:03:36,150 --> 00:03:38,220
+here it shows its own source these
+
+83
+00:03:38,220 --> 00:03:39,690
+slides are running in the browser it
+
+84
+00:03:39,690 --> 00:03:42,090
+shows its own source and if I press the
+
+85
+00:03:42,090 --> 00:03:44,810
+button here not this button this button
+
+86
+00:03:44,810 --> 00:03:47,670
+then it gets annotated with the state of
+
+87
+00:03:47,670 --> 00:03:50,790
+inline caches inside the code mirror so
+
+88
+00:03:50,790 --> 00:03:52,650
+it's showing its own state essentially
+
+89
+00:03:52,650 --> 00:03:54,900
+the state of the VM on which these
+
+90
+00:03:54,900 --> 00:03:57,299
+slides are running and I can like this
+
+91
+00:03:57,299 --> 00:04:04,739
+green okay let me zoom yeah here can you
+
+92
+00:04:04,739 --> 00:04:09,480
+see it yeah so let me unzoom so this
+
+93
+00:04:09,480 --> 00:04:11,880
+these things here they show like that
+
+94
+00:04:11,880 --> 00:04:14,700
+this function has two versions optimize
+
+95
+00:04:14,700 --> 00:04:16,410
+the non optimized because cold is not
+
+96
+00:04:16,410 --> 00:04:18,570
+optimized and a little bit warmer color
+
+97
+00:04:18,570 --> 00:04:21,150
+is optimized and I can like switch
+
+98
+00:04:21,150 --> 00:04:23,190
+between them like t-this is non
+
+99
+00:04:23,190 --> 00:04:25,169
+optimized version and it has inline
+
+100
+00:04:25,169 --> 00:04:26,850
+cache here which is red and red is bad
+
+101
+00:04:26,850 --> 00:04:29,460
+red is like alarm because it's mega
+
+102
+00:04:29,460 --> 00:04:31,650
+morphic and I can even click here click
+
+103
+00:04:31,650 --> 00:04:34,590
+here click yes and I can see assembly
+
+104
+00:04:34,590 --> 00:04:38,250
+for this stuff which is like the current
+
+105
+00:04:38,250 --> 00:04:40,440
+state and I am using bootstrap because
+
+106
+00:04:40,440 --> 00:04:43,380
+I'm do not do any development in the bra
+
+107
+00:04:43,380 --> 00:04:44,820
+so to show this pop up I use bootstrap
+
+108
+00:04:44,820 --> 00:04:46,620
+oh my god Jesus Christ
+
+109
+00:04:46,620 --> 00:04:49,230
+III don't know what I am doing basically
+
+110
+00:04:49,230 --> 00:04:53,400
+and I can switch to an optimized version
+
+111
+00:04:53,400 --> 00:04:56,880
+and has green here green is good and
+
+112
+00:04:56,880 --> 00:04:59,100
+it's a monomorphic thing it says here
+
+113
+00:04:59,100 --> 00:05:01,640
+store I see monomorphic field here ah
+
+114
+00:05:01,640 --> 00:05:04,350
+yeah so that's cool that's cool
+
+115
+00:05:04,350 --> 00:05:08,790
+okay Andrew how do i zoom it like this
+
+116
+00:05:08,790 --> 00:05:12,030
+yeah so okay cool helps very helpful but
+
+117
+00:05:12,030 --> 00:05:16,140
+it has one problem so oh now we have a
+
+118
+00:05:16,140 --> 00:05:18,720
+trouble let me I need I need to hide
+
+119
+00:05:18,720 --> 00:05:20,820
+this yes and go here oh no don't go here
+
+120
+00:05:20,820 --> 00:05:23,700
+go here yeah thank you so it has a
+
+121
+00:05:23,700 --> 00:05:25,110
+problem so on JavaScript site is pretty
+
+122
+00:05:25,110 --> 00:05:27,060
+easy you expert one function from v8
+
+123
+00:05:27,060 --> 00:05:28,920
+which is called scripts and allows you
+
+124
+00:05:28,920 --> 00:05:31,530
+to like pipe out of it the scripts it
+
+125
+00:05:31,530 --> 00:05:33,960
+knows about and then you can take one
+
+126
+00:05:33,960 --> 00:05:35,760
+script and ask for inline caches that
+
+127
+00:05:35,760 --> 00:05:38,130
+are inside the script and then you its
+
+128
+00:05:38,130 --> 00:05:39,780
+serialized in some form you just realize
+
+129
+00:05:39,780 --> 00:05:42,230
+it and you show it in this editor cool
+
+130
+00:05:42,230 --> 00:05:46,650
+but on the other side like in VV 8 you
+
+131
+00:05:46,650 --> 00:05:49,170
+have a code like that oh my god this is
+
+132
+00:05:49,170 --> 00:05:52,530
+C++ it's horrible and the biggest
+
+133
+00:05:52,530 --> 00:05:54,540
+problem is what it's even C++ I would be
+
+134
+00:05:54,540 --> 00:05:57,570
+upset if it were modular too as well the
+
+135
+00:05:57,570 --> 00:05:58,890
+biggest problem is that if you want to
+
+136
+00:05:58,890 --> 00:06:01,650
+extend it a little bit you have to go
+
+137
+00:06:01,650 --> 00:06:04,050
+this back into v8 and you have to like
+
+138
+00:06:04,050 --> 00:06:06,540
+hack it with a hammer until it gives you
+
+139
+00:06:06,540 --> 00:06:09,000
+what you need and then you have to
+
+140
+00:06:09,000 --> 00:06:11,280
+recompile Chrome and on my laptop it
+
+141
+00:06:11,280 --> 00:06:14,250
+like it I can fry the eggs when they
+
+142
+00:06:14,250 --> 00:06:16,890
+recompile Chrome on it so it's a little
+
+143
+00:06:16,890 --> 00:06:18,360
+bit painful it doesn't allow you to
+
+144
+00:06:18,360 --> 00:06:19,890
+iterate on features quickly and
+
+145
+00:06:19,890 --> 00:06:21,450
+everybody tries to iterate a child
+
+146
+00:06:21,450 --> 00:06:23,160
+basically cool
+
+147
+00:06:23,160 --> 00:06:27,450
+so and I always have a plan and this is
+
+148
+00:06:27,450 --> 00:06:29,640
+a plan Z you can you see I tried a
+
+149
+00:06:29,640 --> 00:06:32,640
+little bit different plans I'm not going
+
+150
+00:06:32,640 --> 00:06:37,350
+to tell you all like B and D they failed
+
+151
+00:06:37,350 --> 00:06:41,280
+but this is plan Z it's valid JavaScript
+
+152
+00:06:41,280 --> 00:06:43,830
+so I take JavaScript and I describe how
+
+153
+00:06:43,830 --> 00:06:46,710
+objects invade heap look like and I have
+
+154
+00:06:46,710 --> 00:06:48,540
+this magical function struct which takes
+
+155
+00:06:48,540 --> 00:06:50,430
+the description of the object which is
+
+156
+00:06:50,430 --> 00:06:52,740
+the object object literal basically and
+
+157
+00:06:52,740 --> 00:06:55,110
+it converts it to a function that can
+
+158
+00:06:55,110 --> 00:06:56,940
+visualize is from the binary stream
+
+159
+00:06:56,940 --> 00:06:59,610
+and give you back like all these fields
+
+160
+00:06:59,610 --> 00:07:01,230
+with some like meaningful getters and
+
+161
+00:07:01,230 --> 00:07:03,690
+setters so if you like ask for size it
+
+162
+00:07:03,690 --> 00:07:05,430
+will find it in this binary stream and
+
+163
+00:07:05,430 --> 00:07:08,280
+pick it out of there and I can describe
+
+164
+00:07:08,280 --> 00:07:10,050
+the heap object I make have inheritance
+
+165
+00:07:10,050 --> 00:07:11,640
+of strux because that's how obviate
+
+166
+00:07:11,640 --> 00:07:13,500
+internally represents objects like there
+
+167
+00:07:13,500 --> 00:07:15,420
+is a heaped object in the root of the
+
+168
+00:07:15,420 --> 00:07:17,430
+here are here and then you have like map
+
+169
+00:07:17,430 --> 00:07:19,370
+which is a heap object and you have like
+
+170
+00:07:19,370 --> 00:07:23,370
+sizes and stuff and given all this stuff
+
+171
+00:07:23,370 --> 00:07:26,220
+I apply one hammer and one hammer only
+
+172
+00:07:26,220 --> 00:07:28,410
+on the v8 side well this is another
+
+173
+00:07:28,410 --> 00:07:30,540
+object we have yeah so this is one
+
+174
+00:07:30,540 --> 00:07:33,330
+hammer the function heap which returns
+
+175
+00:07:33,330 --> 00:07:37,950
+you a type to review into v8 heap so you
+
+176
+00:07:37,950 --> 00:07:40,170
+can just ask you give me all pages in
+
+177
+00:07:40,170 --> 00:07:41,700
+the v8 heap and it will give you this
+
+178
+00:07:41,700 --> 00:07:44,340
+huge type arrays which represent v8 heap
+
+179
+00:07:44,340 --> 00:07:45,750
+and you can read out of them these
+
+180
+00:07:45,750 --> 00:07:47,580
+objects use my functions to do sterilize
+
+181
+00:07:47,580 --> 00:07:49,320
+them and inspect them you can like
+
+182
+00:07:49,320 --> 00:07:51,960
+iterate the heap and take all the
+
+183
+00:07:51,960 --> 00:07:53,970
+objects there cool and you don't need to
+
+184
+00:07:53,970 --> 00:07:56,190
+recompile chrome anymore you have one
+
+185
+00:07:56,190 --> 00:07:58,380
+modified Chrome and you try all that you
+
+186
+00:07:58,380 --> 00:08:00,840
+want because everything that we need is
+
+187
+00:08:00,840 --> 00:08:03,900
+in the v8 heap and here is another life
+
+188
+00:08:03,900 --> 00:08:06,120
+thing embedded into a slide this is like
+
+189
+00:08:06,120 --> 00:08:10,290
+the first 32 kilobytes of the code space
+
+190
+00:08:10,290 --> 00:08:12,480
+in the current we it he poo that is
+
+191
+00:08:12,480 --> 00:08:16,140
+underlined for these slides I can like
+
+192
+00:08:16,140 --> 00:08:18,270
+look at this and I exceed this some free
+
+193
+00:08:18,270 --> 00:08:20,610
+space fragmentation a little bit and
+
+194
+00:08:20,610 --> 00:08:22,740
+it's pretty cool and I can even
+
+195
+00:08:22,740 --> 00:08:24,930
+disassemble but now that is assembler I
+
+196
+00:08:24,930 --> 00:08:26,550
+am using I just took some random from
+
+197
+00:08:26,550 --> 00:08:28,770
+the github written in JavaScript it's
+
+198
+00:08:28,770 --> 00:08:30,960
+not a v8 assembler any model can
+
+199
+00:08:30,960 --> 00:08:32,039
+disassemble everything that gate
+
+200
+00:08:32,039 --> 00:08:34,410
+generates it it's not complete somebody
+
+201
+00:08:34,410 --> 00:08:37,560
+was not probably wanted to finish it so
+
+202
+00:08:37,560 --> 00:08:39,180
+it kind of jumble everything but it can
+
+203
+00:08:39,180 --> 00:08:40,950
+be so simple some stuff like here it
+
+204
+00:08:40,950 --> 00:08:42,120
+disassembled set correctly for example
+
+205
+00:08:42,120 --> 00:08:45,690
+and this is great because now I can
+
+206
+00:08:45,690 --> 00:08:49,320
+iterate stuff and try all things I want
+
+207
+00:08:49,320 --> 00:08:52,320
+without recompiling chrome but because
+
+208
+00:08:52,320 --> 00:08:54,660
+it's a typed array view into the v8 heap
+
+209
+00:08:54,660 --> 00:08:58,680
+I can even write there I can write there
+
+210
+00:08:58,680 --> 00:09:01,350
+I can take the first page in the heap
+
+211
+00:09:01,350 --> 00:09:05,130
+and overwrite it with random stuff a lot
+
+212
+00:09:05,130 --> 00:09:08,190
+of fun and if I press this button I will
+
+213
+00:09:08,190 --> 00:09:10,570
+I will die in pain now
+
+214
+00:09:10,570 --> 00:09:13,120
+so you would usually expect I press the
+
+215
+00:09:13,120 --> 00:09:15,430
+button you will usually expect a set tab
+
+216
+00:09:15,430 --> 00:09:18,640
+but I have foreseen this and I'm running
+
+217
+00:09:18,640 --> 00:09:20,920
+in the debugger which unfortunately you
+
+218
+00:09:20,920 --> 00:09:23,770
+cannot see what the hell I need an zoom
+
+219
+00:09:23,770 --> 00:09:25,360
+but I cannot turn zoom okay that's
+
+220
+00:09:25,360 --> 00:09:31,360
+pretty sad isn't it that's that
+
+221
+00:09:31,360 --> 00:09:36,940
+how do ya but this is X germ can you
+
+222
+00:09:36,940 --> 00:09:38,430
+imagine that
+
+223
+00:09:38,430 --> 00:09:42,640
+okay I will be so okay let's do let's be
+
+224
+00:09:42,640 --> 00:09:46,090
+evil let's be evil I have to be evil and
+
+225
+00:09:46,090 --> 00:09:50,530
+I cannot see I haven't see yes yes yes
+
+226
+00:09:50,530 --> 00:09:56,350
+here okay die okay okay here we go
+
+227
+00:09:56,350 --> 00:09:58,840
+fontsize I I selected a quite a big one
+
+228
+00:09:58,840 --> 00:10:01,060
+because I knew that you are going to to
+
+229
+00:10:01,060 --> 00:10:04,900
+want to see it can you see it 30 what do
+
+230
+00:10:04,900 --> 00:10:12,150
+you want to see 44 24 2008 CVI I hate it
+
+231
+00:10:12,150 --> 00:10:16,600
+okay okay let's here we go here we go
+
+232
+00:10:16,600 --> 00:10:20,640
+again yes it is booting up what you know
+
+233
+00:10:20,640 --> 00:10:24,490
+where is my oh and the light is I kind
+
+234
+00:10:24,490 --> 00:10:32,510
+of see with my mouse okay here it comes
+
+235
+00:10:32,520 --> 00:10:42,060
+oh yes yes okay Runyon running here we
+
+236
+00:10:42,060 --> 00:10:46,170
+are again so and I press the button and
+
+237
+00:10:46,170 --> 00:10:48,899
+I go here yes we got this sick trap here
+
+238
+00:10:48,899 --> 00:10:53,600
+and we can like thank you
+
+239
+00:10:53,600 --> 00:10:56,520
+so they strike the instruction pointer
+
+240
+00:10:56,520 --> 00:10:58,560
+is now pointing into the baby so we
+
+241
+00:10:58,560 --> 00:11:00,570
+written stuff everywhere it's awesome
+
+242
+00:11:00,570 --> 00:11:03,330
+and by quickly bike by coincidence the
+
+243
+00:11:03,330 --> 00:11:05,100
+size of the string like hello GS conf
+
+244
+00:11:05,100 --> 00:11:07,740
+new was just enough that if I put in the
+
+245
+00:11:07,740 --> 00:11:09,330
+beginning this in three instruction
+
+246
+00:11:09,330 --> 00:11:10,890
+which is a sick trial because it's a
+
+247
+00:11:10,890 --> 00:11:13,170
+sick trap it precisely execute this
+
+248
+00:11:13,170 --> 00:11:14,490
+instruction so it doesn't crash at
+
+249
+00:11:14,490 --> 00:11:15,930
+random stop it Christ from the sick trap
+
+250
+00:11:15,930 --> 00:11:23,760
+okay so yeah okay yes die no I said die
+
+251
+00:11:23,760 --> 00:11:27,450
+yes so this guy is dead now I'm sorry
+
+252
+00:11:27,450 --> 00:11:28,970
+Jim
+
+253
+00:11:28,970 --> 00:11:32,399
+the bugger is starting again I know and
+
+254
+00:11:32,399 --> 00:11:34,170
+it starting again I know that's how we
+
+255
+00:11:34,170 --> 00:11:44,339
+developed chrome by the way so yeah two
+
+256
+00:11:44,339 --> 00:11:47,490
+tabs prepared for this but because okay
+
+257
+00:11:47,490 --> 00:11:50,040
+so the question is why we still use it
+
+258
+00:11:50,040 --> 00:11:52,529
+in C++ if we can do all this awesome
+
+259
+00:11:52,529 --> 00:11:54,000
+stuff like overwrite memory with random
+
+260
+00:11:54,000 --> 00:11:57,209
+stuff and stuff yeah so well I have no
+
+261
+00:11:57,209 --> 00:12:05,820
+idea frankly speaking yeah so yeah so
+
+262
+00:12:05,820 --> 00:12:07,649
+oh and this is a time yeah I had this
+
+263
+00:12:07,649 --> 00:12:09,720
+slight embedded to know how long I have
+
+264
+00:12:09,720 --> 00:12:11,790
+to you can see my transcript skills are
+
+265
+00:12:11,790 --> 00:12:13,110
+also not so good you don't have a zero
+
+266
+00:12:13,110 --> 00:12:18,420
+before one awesome clock yeah so this is
+
+267
+00:12:18,420 --> 00:12:21,990
+another plan which I call no GS and I'm
+
+268
+00:12:21,990 --> 00:12:25,610
+going to open source it this is not a VM
+
+269
+00:12:25,610 --> 00:12:28,260
+this is a basically an experiment I'm
+
+270
+00:12:28,260 --> 00:12:30,420
+trying to do bits of pieces of the VM
+
+271
+00:12:30,420 --> 00:12:32,160
+like for example I brought this blog
+
+272
+00:12:32,160 --> 00:12:33,779
+post about how you would try to
+
+273
+00:12:33,779 --> 00:12:35,459
+implement inline caches in JavaScript
+
+274
+00:12:35,459 --> 00:12:38,490
+and this is all parts of this like
+
+275
+00:12:38,490 --> 00:12:40,350
+hidden class is implemented in pure
+
+276
+00:12:40,350 --> 00:12:42,720
+JavaScript and stuff like that and I'm
+
+277
+00:12:42,720 --> 00:12:43,829
+trying to understand how these things
+
+278
+00:12:43,829 --> 00:12:45,860
+fit together so that
+
+279
+00:12:45,860 --> 00:12:48,019
+in fewer JavaScript it has currently a
+
+280
+00:12:48,019 --> 00:12:50,089
+pure indication of pure educational
+
+281
+00:12:50,089 --> 00:12:52,760
+value both for me and for other people
+
+282
+00:12:52,760 --> 00:12:57,140
+who want to understand how VMs work but
+
+283
+00:12:57,140 --> 00:12:58,250
+for me it has the educational value
+
+284
+00:12:58,250 --> 00:13:00,470
+which is like I want to understand if
+
+285
+00:13:00,470 --> 00:13:02,510
+you can make it work properly to get a
+
+286
+00:13:02,510 --> 00:13:05,810
+really awesome VM at the end but to do
+
+287
+00:13:05,810 --> 00:13:07,130
+that I have to do like bits and pieces
+
+288
+00:13:07,130 --> 00:13:10,399
+separately and here is one of these bits
+
+289
+00:13:10,399 --> 00:13:12,709
+and pieces in addition to like hidden
+
+290
+00:13:12,709 --> 00:13:14,839
+class is inline caches I wrote a tracing
+
+291
+00:13:14,839 --> 00:13:19,010
+cheat for this bytecode and so this is
+
+292
+00:13:19,010 --> 00:13:21,950
+my god so I don't do parsers language is
+
+293
+00:13:21,950 --> 00:13:23,600
+a little bit boring for me because like
+
+294
+00:13:23,600 --> 00:13:25,579
+no they're not boring but I mean you
+
+295
+00:13:25,579 --> 00:13:27,260
+have to defend them and say there are
+
+296
+00:13:27,260 --> 00:13:29,029
+list comprehensions in testing that we
+
+297
+00:13:29,029 --> 00:13:33,230
+all need and all like you do not need
+
+298
+00:13:33,230 --> 00:13:35,209
+this this is not the comprehension
+
+299
+00:13:35,209 --> 00:13:37,670
+you're looking for and I don't like that
+
+300
+00:13:37,670 --> 00:13:39,079
+stuff so I like alright I write code
+
+301
+00:13:39,079 --> 00:13:40,910
+like that and it's pretty awesome I
+
+302
+00:13:40,910 --> 00:13:45,500
+think and so if I press this button I
+
+303
+00:13:45,500 --> 00:13:47,540
+hope nothing will crash but because the
+
+304
+00:13:47,540 --> 00:13:51,260
+dreamer is just JavaScript for now yeah
+
+305
+00:13:51,260 --> 00:13:56,540
+here so so the the numbers below is like
+
+306
+00:13:56,540 --> 00:13:58,820
+70 versus 18 milliseconds 18 is like a
+
+307
+00:13:58,820 --> 00:14:00,709
+pure JavaScript version of the same code
+
+308
+00:14:00,709 --> 00:14:03,680
+which is like generate a list of points
+
+309
+00:14:03,680 --> 00:14:05,810
+and then do a vector sum of this we
+
+310
+00:14:05,810 --> 00:14:07,520
+really like generating points and
+
+311
+00:14:07,520 --> 00:14:10,310
+calculating the sum of them in in the VM
+
+312
+00:14:10,310 --> 00:14:11,959
+guys you have seen the points other
+
+313
+00:14:11,959 --> 00:14:14,810
+stuff and it's a little bit like three
+
+314
+00:14:14,810 --> 00:14:16,430
+times slower but actually on the newer
+
+315
+00:14:16,430 --> 00:14:20,810
+v8 it's like only 1.5 times slower so v8
+
+316
+00:14:20,810 --> 00:14:24,079
+people fix something and so generates
+
+317
+00:14:24,079 --> 00:14:26,240
+this trace and the tracing compilers
+
+318
+00:14:26,240 --> 00:14:27,829
+they like they trace loops and they
+
+319
+00:14:27,829 --> 00:14:30,079
+generate this linear ir and you can see
+
+320
+00:14:30,079 --> 00:14:32,180
+what it did with it like how its turn it
+
+321
+00:14:32,180 --> 00:14:34,399
+into a loop so no Java VM actually uses
+
+322
+00:14:34,399 --> 00:14:36,529
+it right now like tracing G trace monkey
+
+323
+00:14:36,529 --> 00:14:39,350
+a little bit diet now they have a method
+
+324
+00:14:39,350 --> 00:14:42,470
+cheat and this is mostly based on what
+
+325
+00:14:42,470 --> 00:14:43,850
+for example you can see in lower cheat
+
+326
+00:14:43,850 --> 00:14:46,370
+and launch it is written and C so if I
+
+327
+00:14:46,370 --> 00:14:48,860
+go there I like see a lot modular to see
+
+328
+00:14:48,860 --> 00:14:53,149
+hmm but to understand what he does it's
+
+329
+00:14:53,149 --> 00:14:54,800
+the easiest way to do it is like
+
+330
+00:14:54,800 --> 00:14:56,959
+implement everything yourself and I
+
+331
+00:14:56,959 --> 00:14:58,490
+didn't want to do it and see I wanted to
+
+332
+00:14:58,490 --> 00:14:59,490
+do it in
+
+333
+00:14:59,490 --> 00:15:01,050
+our script because other people who can
+
+334
+00:15:01,050 --> 00:15:03,120
+also see and even if you don't know see
+
+335
+00:15:03,120 --> 00:15:05,339
+you can understand and you can see oh
+
+336
+00:15:05,339 --> 00:15:08,100
+you can see the pieces of mac OS you can
+
+337
+00:15:08,100 --> 00:15:09,600
+see they like generate it's a JavaScript
+
+338
+00:15:09,600 --> 00:15:11,520
+function out of these and it has like
+
+339
+00:15:11,520 --> 00:15:13,860
+the optimizations well this is a check
+
+340
+00:15:13,860 --> 00:15:15,480
+and the optimization all the stuff you
+
+341
+00:15:15,480 --> 00:15:17,730
+can see in a normal VM and you can learn
+
+342
+00:15:17,730 --> 00:15:22,880
+from this and but now somebody can say
+
+343
+00:15:22,880 --> 00:15:26,160
+ok this is pretty cool but JavaScript
+
+344
+00:15:26,160 --> 00:15:27,899
+I mean you now go to the kindergarten
+
+345
+00:15:27,899 --> 00:15:29,880
+and in Germany and they generate
+
+346
+00:15:29,880 --> 00:15:33,380
+JavaScript all day long basically and
+
+347
+00:15:33,380 --> 00:15:37,709
+this is not so cool and really I mean
+
+348
+00:15:37,709 --> 00:15:39,810
+you are like 26 years old and you still
+
+349
+00:15:39,810 --> 00:15:43,529
+with this stuff so I thought yeah that's
+
+350
+00:15:43,529 --> 00:15:44,430
+true that's true
+
+351
+00:15:44,430 --> 00:15:47,520
+and let's generate some assembly this is
+
+352
+00:15:47,520 --> 00:15:50,760
+not assembly I'm not going to save it
+
+353
+00:15:50,760 --> 00:15:53,399
+yeah so this is it runs inside node as
+
+354
+00:15:53,399 --> 00:15:55,920
+well yeah ok let me make it smaller
+
+355
+00:15:55,920 --> 00:16:00,810
+smaller unzoom yes so obviously how do
+
+356
+00:16:00,810 --> 00:16:03,690
+you start writing a compiler generates
+
+357
+00:16:03,690 --> 00:16:05,180
+assembly you start like doing like her
+
+358
+00:16:05,180 --> 00:16:10,260
+awesome blah awesome blah yeah here it
+
+359
+00:16:10,260 --> 00:16:12,750
+comes yeah if I start like that we were
+
+360
+00:16:12,750 --> 00:16:14,370
+probably like I would have to change my
+
+361
+00:16:14,370 --> 00:16:16,649
+ticket back to or who's on a little bit
+
+362
+00:16:16,649 --> 00:16:18,390
+later date and you will have to stay in
+
+363
+00:16:18,390 --> 00:16:21,000
+this bubble for longer time so I'm not
+
+364
+00:16:21,000 --> 00:16:24,420
+going to do that wait a second wait a
+
+365
+00:16:24,420 --> 00:16:29,430
+second wait for a punchline so and also
+
+366
+00:16:29,430 --> 00:16:30,750
+it's pretty hard to understand if you
+
+367
+00:16:30,750 --> 00:16:32,790
+just coming in and like assembler you
+
+368
+00:16:32,790 --> 00:16:36,029
+need to do like register allocator all
+
+369
+00:16:36,029 --> 00:16:38,310
+this cool stuff but a little bit boring
+
+370
+00:16:38,310 --> 00:16:39,360
+for five minutes
+
+371
+00:16:39,360 --> 00:16:41,910
+and so I thought about that and I said
+
+372
+00:16:41,910 --> 00:16:44,130
+oh wait a second let's tap to the power
+
+373
+00:16:44,130 --> 00:16:48,180
+the power and the power we have access
+
+374
+00:16:48,180 --> 00:16:51,450
+to is áliveá so I took a lot of iam and
+
+375
+00:16:51,450 --> 00:16:53,370
+I bounded to note well strictly speaking
+
+376
+00:16:53,370 --> 00:16:55,709
+I took si Lang and I bounded to note and
+
+377
+00:16:55,709 --> 00:16:57,209
+then I used that to generate bindings
+
+378
+00:16:57,209 --> 00:17:01,500
+for LLVM and then I said okay you these
+
+379
+00:17:01,500 --> 00:17:05,459
+bindings are pretty cool but I cannot
+
+380
+00:17:05,459 --> 00:17:07,410
+work with like v8 Hiba I saw this all
+
+381
+00:17:07,410 --> 00:17:10,949
+exists in v8 keep all these objects and
+
+382
+00:17:10,949 --> 00:17:13,110
+I thought maybe I should be very evil
+
+383
+00:17:13,110 --> 00:17:15,809
+how about I just stick my hand into v8
+
+384
+00:17:15,809 --> 00:17:17,339
+hip and I start messing with objects
+
+385
+00:17:17,339 --> 00:17:20,970
+like I want to do it and sir all this
+
+386
+00:17:20,970 --> 00:17:25,230
+module based on the LLVM Levin sheet
+
+387
+00:17:25,230 --> 00:17:26,640
+because I have only five minutes and
+
+388
+00:17:26,640 --> 00:17:28,470
+even despite that I have all the code
+
+389
+00:17:28,470 --> 00:17:30,420
+like in snippets in the editor I don't
+
+390
+00:17:30,420 --> 00:17:33,270
+want to type it yes so let's let's be
+
+391
+00:17:33,270 --> 00:17:35,540
+cheating let's be cheating so we do like
+
+392
+00:17:35,540 --> 00:17:45,500
+CD engine awesome
+
+393
+00:17:45,500 --> 00:17:51,450
+yes okay yes I want to reload this I was
+
+394
+00:17:51,450 --> 00:17:52,799
+very fast to write this code huh how
+
+395
+00:17:52,799 --> 00:17:56,730
+about that so so I have this code the
+
+396
+00:17:56,730 --> 00:17:58,770
+module called Mel door because it sounds
+
+397
+00:17:58,770 --> 00:18:00,419
+very evil and it does very evil stuff
+
+398
+00:18:00,419 --> 00:18:03,000
+Mel dot so what man and I also used
+
+399
+00:18:03,000 --> 00:18:04,770
+wheels because this makes me feel like
+
+400
+00:18:04,770 --> 00:18:08,940
+very very evil can you see it actually I
+
+401
+00:18:08,940 --> 00:18:11,970
+hope you see so I create this guy called
+
+402
+00:18:11,970 --> 00:18:16,080
+Mel door and he can like access directly
+
+403
+00:18:16,080 --> 00:18:18,360
+like arguments like in v8 if you ever
+
+404
+00:18:18,360 --> 00:18:20,730
+used like nodejs you know this v8 : :
+
+405
+00:18:20,730 --> 00:18:22,470
+argument subject and then you need to
+
+406
+00:18:22,470 --> 00:18:24,929
+cooperate her son need but it allows you
+
+407
+00:18:24,929 --> 00:18:26,669
+just basically go in and stick your hand
+
+408
+00:18:26,669 --> 00:18:29,660
+and take whatever you want like a
+
+409
+00:18:29,660 --> 00:18:34,650
+democracy and and basically you can see
+
+410
+00:18:34,650 --> 00:18:37,590
+so yeah you know the first argument then
+
+411
+00:18:37,590 --> 00:18:39,270
+you like take the zeros property of
+
+412
+00:18:39,270 --> 00:18:40,740
+wheat and taken elements of this
+
+413
+00:18:40,740 --> 00:18:43,500
+property and you take like property with
+
+414
+00:18:43,500 --> 00:18:46,169
+number two and you take the pro argument
+
+415
+00:18:46,169 --> 00:18:48,240
+with number one and you take elements
+
+416
+00:18:48,240 --> 00:18:50,309
+from it and then you create a translator
+
+417
+00:18:50,309 --> 00:18:53,250
+a translator sounds little bit evil as
+
+418
+00:18:53,250 --> 00:18:55,470
+well and the translator is like the
+
+419
+00:18:55,470 --> 00:18:57,150
+generic way to translate their of my
+
+420
+00:18:57,150 --> 00:19:00,059
+tracing compiler I R stands for the
+
+421
+00:19:00,059 --> 00:19:01,950
+intermediate representation internal
+
+422
+00:19:01,950 --> 00:19:03,450
+representation whatever you want it to
+
+423
+00:19:03,450 --> 00:19:05,760
+stand for so and it has like a little
+
+424
+00:19:05,760 --> 00:19:07,830
+bit of points where you can tweak it and
+
+425
+00:19:07,830 --> 00:19:09,360
+translate it to anything like two IR of
+
+426
+00:19:09,360 --> 00:19:11,580
+the LLVM for example like need to
+
+427
+00:19:11,580 --> 00:19:14,190
+translate like a literal we need to
+
+428
+00:19:14,190 --> 00:19:16,500
+translate the constants which are pretty
+
+429
+00:19:16,500 --> 00:19:18,120
+simple because meld allows you to do
+
+430
+00:19:18,120 --> 00:19:21,120
+that and you need like and the tracing
+
+431
+00:19:21,120 --> 00:19:25,110
+Gir is very simple it's like a linear
+
+432
+00:19:25,110 --> 00:19:26,990
+sequence of code a preheater for the
+
+433
+00:19:26,990 --> 00:19:28,850
+and then you have a loop body and that's
+
+434
+00:19:28,850 --> 00:19:33,560
+all no conditions only side exits and so
+
+435
+00:19:33,560 --> 00:19:34,910
+to translate the loop it's pretty simple
+
+436
+00:19:34,910 --> 00:19:36,830
+just create like another block and you
+
+437
+00:19:36,830 --> 00:19:38,390
+enter it and then you need to translate
+
+438
+00:19:38,390 --> 00:19:40,880
+five functions and then you need to
+
+439
+00:19:40,880 --> 00:19:42,740
+connect the back edge to the loop loop
+
+440
+00:19:42,740 --> 00:19:45,500
+is done and that translate function is
+
+441
+00:19:45,500 --> 00:19:47,060
+very boring like you take things and you
+
+442
+00:19:47,060 --> 00:19:48,470
+translate them let's check something
+
+443
+00:19:48,470 --> 00:19:50,780
+simple for example check in is the one
+
+444
+00:19:50,780 --> 00:19:52,340
+the checks number and basically ton
+
+445
+00:19:52,340 --> 00:19:54,020
+boxes the number so Mel do like gives
+
+446
+00:19:54,020 --> 00:19:56,150
+you unbox number which takes a v8 number
+
+447
+00:19:56,150 --> 00:19:58,820
+and haba you get the double out of it
+
+448
+00:19:58,820 --> 00:20:02,420
+and all I can box 32-bit integer or like
+
+449
+00:20:02,420 --> 00:20:04,760
+take this like a pointer to the field
+
+450
+00:20:04,760 --> 00:20:06,560
+and stuff like that so it's very very
+
+451
+00:20:06,560 --> 00:20:09,160
+straightforward multiply numbers and
+
+452
+00:20:09,160 --> 00:20:12,740
+like yeah it allows you to build
+
+453
+00:20:12,740 --> 00:20:14,780
+conditionals very simple like you just
+
+454
+00:20:14,780 --> 00:20:18,110
+say if not value do these otherwise do
+
+455
+00:20:18,110 --> 00:20:21,740
+nothing return so a very basic very
+
+456
+00:20:21,740 --> 00:20:24,140
+basic and then you this dollar I wanted
+
+457
+00:20:24,140 --> 00:20:25,670
+it to look like jQuery to make it very
+
+458
+00:20:25,670 --> 00:20:29,190
+attractive everybody's going to use
+
+459
+00:20:29,200 --> 00:20:31,640
+everybody is going to use it yeah and so
+
+460
+00:20:31,640 --> 00:20:33,590
+then you ask the evil guy to melt stuff
+
+461
+00:20:33,590 --> 00:20:37,970
+meld it now and it is done it is done
+
+462
+00:20:37,970 --> 00:20:41,630
+and let's see how it works so here I
+
+463
+00:20:41,630 --> 00:20:45,350
+have a node and if I run who is like no
+
+464
+00:20:45,350 --> 00:20:49,460
+LLVM it runs like 72 milliseconds
+
+465
+00:20:49,460 --> 00:20:53,080
+compute some number if I run with LLVM
+
+466
+00:20:53,080 --> 00:20:55,760
+it runs in 32 milliseconds whoo ha
+
+467
+00:20:55,760 --> 00:20:58,250
+almost as fast maybe a little bit faster
+
+468
+00:20:58,250 --> 00:21:01,130
+than the latest v8 and now somebody who
+
+469
+00:21:01,130 --> 00:21:02,690
+can say I think you're cheating because
+
+470
+00:21:02,690 --> 00:21:08,300
+you're Russian and some people say that
+
+471
+00:21:08,300 --> 00:21:10,130
+actually you will not believe that so
+
+472
+00:21:10,130 --> 00:21:16,220
+let's make sure that let's make sure
+
+473
+00:21:16,220 --> 00:21:17,930
+that I'm not cheating though you can't
+
+474
+00:21:17,930 --> 00:21:21,860
+prove it
+
+475
+00:21:21,870 --> 00:21:24,540
+I had a debug break so melted also
+
+476
+00:21:24,540 --> 00:21:25,860
+allows you to insert the entry
+
+477
+00:21:25,860 --> 00:21:27,630
+instruction directly into the code you
+
+478
+00:21:27,630 --> 00:21:30,240
+January so I run like that okay let's
+
+479
+00:21:30,240 --> 00:21:37,710
+make it bigger I run it and there is a
+
+480
+00:21:37,710 --> 00:21:42,090
+sick trap and I can disassemble from
+
+481
+00:21:42,090 --> 00:21:43,320
+here sorry
+
+482
+00:21:43,320 --> 00:21:45,630
+not zero of course cannot access so this
+
+483
+00:21:45,630 --> 00:21:47,250
+is the code which Mehldau generated for
+
+484
+00:21:47,250 --> 00:21:49,110
+off function written in this bytecode
+
+485
+00:21:49,110 --> 00:21:50,880
+traced through my compiler and then
+
+486
+00:21:50,880 --> 00:21:52,980
+compiles through LLVM and they transform
+
+487
+00:21:52,980 --> 00:21:54,450
+the node so you can actually use it for
+
+488
+00:21:54,450 --> 00:21:57,540
+doing some useful stuff maybe thank you
+
+489
+00:21:57,540 --> 00:22:00,150
+that's I think well I'm writing on time
+
+490
+00:22:00,150 --> 00:22:05,880
+anyways yes so yeah so the slowdown is
+
+491
+00:22:05,880 --> 00:22:07,860
+mostly because v8 I use intentionally a
+
+492
+00:22:07,860 --> 00:22:10,080
+non efficient representation compared to
+
+493
+00:22:10,080 --> 00:22:11,730
+the a too many in directions does not
+
+494
+00:22:11,730 --> 00:22:14,280
+matter okay and of course in the limit I
+
+495
+00:22:14,280 --> 00:22:16,290
+wanted to become a real VM as I said I
+
+496
+00:22:16,290 --> 00:22:19,620
+like mathematics as well so there is
+
+497
+00:22:19,620 --> 00:22:21,510
+also some stuff can you spot a bark I
+
+498
+00:22:21,510 --> 00:22:24,720
+hope you cannot draw so this is the plan
+
+499
+00:22:24,720 --> 00:22:27,270
+Omega it doesn't matter what the plan is
+
+500
+00:22:27,270 --> 00:22:29,940
+it doesn't help to understand VMs thank
+
+501
+00:22:29,940 --> 00:22:43,710
+you
+
+502
+00:22:43,720 --> 00:22:46,790
+now you can ask some questions but I
+
+503
+00:22:46,790 --> 00:22:51,740
+will not answer you can just skip lunch
+
+504
+00:22:51,740 --> 00:22:54,620
+hey I just I just looked in NPM and I
+
+505
+00:22:54,620 --> 00:22:58,930
+don't see meld oh yeah
+
+506
+00:22:58,940 --> 00:23:00,860
+I will publish yeah I hope I will
+
+507
+00:23:00,860 --> 00:23:02,960
+publish today yeah everything will be
+
+508
+00:23:02,960 --> 00:23:07,130
+open source here someday when I'm 70
+
+509
+00:23:07,130 --> 00:23:10,370
+years old so instead of executing it in
+
+510
+00:23:10,370 --> 00:23:14,180
+the sea level in in via NVH which is get
+
+511
+00:23:14,180 --> 00:23:16,070
+a source and then write an interpreter
+
+512
+00:23:16,070 --> 00:23:19,910
+for the assembly basically run v8 on its
+
+513
+00:23:19,910 --> 00:23:22,880
+own code that gets executed in v8 again
+
+514
+00:23:22,880 --> 00:23:30,500
+with this isn't it what it does every it
+
+515
+00:23:30,500 --> 00:23:36,080
+runs v8 on the codes yeah and then this
+
+516
+00:23:36,080 --> 00:23:38,570
+kind of thing yeah sure everything
+
+517
+00:23:38,570 --> 00:23:39,560
+supposed to I didn't understand the
+
+518
+00:23:39,560 --> 00:23:40,640
+question but I think everything is
+
+519
+00:23:40,640 --> 00:23:49,680
+possible
+

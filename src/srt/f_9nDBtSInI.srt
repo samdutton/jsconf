@@ -1,0 +1,3141 @@
+1
+00:00:19,050 --> 00:00:23,699
+
+so yeah I'm here to talk about my my let
+
+2
+00:00:23,699 --> 00:00:25,259
+the lessons I learned on the
+
+3
+00:00:25,259 --> 00:00:28,230
+experimental edge and it's mostly WebRTC
+
+4
+00:00:28,230 --> 00:00:30,710
+that I worked on a project recently and
+
+5
+00:00:30,710 --> 00:00:33,300
+learn a few things with WebRTC that I
+
+6
+00:00:33,300 --> 00:00:35,879
+want to share originally the talk though
+
+7
+00:00:35,879 --> 00:00:37,379
+wanted to give was about tinnitus and
+
+8
+00:00:37,379 --> 00:00:39,210
+web technology by didn't have enough
+
+9
+00:00:39,210 --> 00:00:41,070
+research to kind of put it all together
+
+10
+00:00:41,070 --> 00:00:42,540
+properly so if any wants to talk to me
+
+11
+00:00:42,540 --> 00:00:44,460
+about that I'm still doing it at some
+
+12
+00:00:44,460 --> 00:00:46,790
+point but talk to me later on in the day
+
+13
+00:00:46,790 --> 00:00:51,030
+so um this whole thing came together
+
+14
+00:00:51,030 --> 00:00:55,500
+with basically Google has some people
+
+15
+00:00:55,500 --> 00:00:59,660
+approached developers and basically said
+
+16
+00:00:59,660 --> 00:01:01,949
+we want you to build an experiment we're
+
+17
+00:01:01,949 --> 00:01:03,870
+going to pay you some money to do it we
+
+18
+00:01:03,870 --> 00:01:06,360
+want you to use cool technology in
+
+19
+00:01:06,360 --> 00:01:08,280
+mobile browsers we're going to show it
+
+20
+00:01:08,280 --> 00:01:11,340
+off at Google i/o you interested so I
+
+21
+00:01:11,340 --> 00:01:15,780
+was like demo where be paid hell yes so
+
+22
+00:01:15,780 --> 00:01:18,360
+pretty easy decision and at that point
+
+23
+00:01:18,360 --> 00:01:20,130
+there was no real spec it was just used
+
+24
+00:01:20,130 --> 00:01:21,899
+whatever technology you want so it could
+
+25
+00:01:21,899 --> 00:01:27,090
+be WebGL it could be 63 d CSS and I
+
+26
+00:01:27,090 --> 00:01:30,630
+chose to use WebRTC i'm running the the
+
+27
+00:01:30,630 --> 00:01:32,009
+game in the background just get me an
+
+28
+00:01:32,009 --> 00:01:35,340
+idea of what I actually built one idea
+
+29
+00:01:35,340 --> 00:01:37,289
+that we had was to use to mobile phones
+
+30
+00:01:37,289 --> 00:01:38,700
+it's kind of lightsabers so you use your
+
+31
+00:01:38,700 --> 00:01:40,410
+orientation events and kind of the web
+
+32
+00:01:40,410 --> 00:01:43,050
+AP the Web Audio API to kind of work out
+
+33
+00:01:43,050 --> 00:01:44,970
+that the two phones are collided in an
+
+34
+00:01:44,970 --> 00:01:47,160
+invisible light saber but in the end I
+
+35
+00:01:47,160 --> 00:01:48,869
+like the idea of them actually putting
+
+36
+00:01:48,869 --> 00:01:51,780
+someone's face inside of the the mobile
+
+37
+00:01:51,780 --> 00:01:54,720
+phone and having having people kind of
+
+38
+00:01:54,720 --> 00:01:57,509
+throw things at that face and it was
+
+39
+00:01:57,509 --> 00:01:59,670
+based off of them I don't know if anyone
+
+40
+00:01:59,670 --> 00:02:01,679
+remembers the the yahoo face ball game
+
+41
+00:02:01,679 --> 00:02:03,989
+we're from about two thousand eight
+
+42
+00:02:03,989 --> 00:02:06,479
+pretty simple game you sit opposite each
+
+43
+00:02:06,479 --> 00:02:07,739
+other and you throw balls at each
+
+44
+00:02:07,739 --> 00:02:10,319
+other's face it's called faceball so I
+
+45
+00:02:10,319 --> 00:02:13,980
+kind of ripped off that idea and the
+
+46
+00:02:13,980 --> 00:02:15,989
+idea is simply throw balls each other
+
+47
+00:02:15,989 --> 00:02:19,769
+space first one or three wins it uses
+
+48
+00:02:19,769 --> 00:02:23,269
+web RTC audio/video peer-to-peer data
+
+49
+00:02:23,269 --> 00:02:25,140
+orientation events and a whole bunch of
+
+50
+00:02:25,140 --> 00:02:26,730
+other bits of technology so it's a real
+
+51
+00:02:26,730 --> 00:02:31,420
+kind of just demo we're basically
+
+52
+00:02:31,420 --> 00:02:33,459
+have got one big caveat for this talk as
+
+53
+00:02:33,459 --> 00:02:35,590
+well I'm not going to be talking about
+
+54
+00:02:35,590 --> 00:02:38,739
+cool words like stun servers which just
+
+55
+00:02:38,739 --> 00:02:42,099
+makes me think Star Trek turn servers or
+
+56
+00:02:42,099 --> 00:02:45,160
+turn the security protocols this is a
+
+57
+00:02:45,160 --> 00:02:47,770
+this is from a web developers point of
+
+58
+00:02:47,770 --> 00:02:51,280
+view it's what we can do with those what
+
+59
+00:02:51,280 --> 00:02:52,510
+I did with those broad in building
+
+60
+00:02:52,510 --> 00:02:53,770
+bricks how I kind of cobbled things
+
+61
+00:02:53,770 --> 00:02:55,450
+together without really fully
+
+62
+00:02:55,450 --> 00:02:56,770
+understanding all the technology there
+
+63
+00:02:56,770 --> 00:02:59,980
+and how I got away with it and like I
+
+64
+00:02:59,980 --> 00:03:02,980
+was watching my son and put some move
+
+65
+00:03:02,980 --> 00:03:04,360
+forward yeah put some bricks into this
+
+66
+00:03:04,360 --> 00:03:07,030
+this this wall he's got and I realized
+
+67
+00:03:07,030 --> 00:03:09,580
+that my development approach is pretty
+
+68
+00:03:09,580 --> 00:03:11,470
+similar where I basically just take a
+
+69
+00:03:11,470 --> 00:03:13,090
+piece of technology I Ram it against the
+
+70
+00:03:13,090 --> 00:03:15,340
+wall until it fits through I just keep
+
+71
+00:03:15,340 --> 00:03:17,170
+turning and pushing and eventually it
+
+72
+00:03:17,170 --> 00:03:19,030
+drops through and that's basically my
+
+73
+00:03:19,030 --> 00:03:21,040
+programming approach he's got it you
+
+74
+00:03:21,040 --> 00:03:22,930
+know age 20 months and then occasionally
+
+75
+00:03:22,930 --> 00:03:24,790
+you take a shape that doesn't quite fit
+
+76
+00:03:24,790 --> 00:03:26,110
+in a hole and just push it in a fits
+
+77
+00:03:26,110 --> 00:03:30,940
+anyway it's like you know it works so it
+
+78
+00:03:30,940 --> 00:03:33,549
+means that I will quite happily take
+
+79
+00:03:33,549 --> 00:03:36,480
+WebRTC and put it into a project without
+
+80
+00:03:36,480 --> 00:03:39,459
+needing to understand how it's doing all
+
+81
+00:03:39,459 --> 00:03:41,590
+its communication just to know that it
+
+82
+00:03:41,590 --> 00:03:44,470
+actually works and this is that this
+
+83
+00:03:44,470 --> 00:03:45,940
+high level version of that talk
+
+84
+00:03:45,940 --> 00:03:48,910
+basically so that doesn't mean that
+
+85
+00:03:48,910 --> 00:03:51,130
+retrospectively I won't get back look at
+
+86
+00:03:51,130 --> 00:03:52,390
+the technology and trying to understand
+
+87
+00:03:52,390 --> 00:03:54,280
+it it's just that it's so new that I
+
+88
+00:03:54,280 --> 00:03:56,430
+just need a kind of a shortcut and
+
+89
+00:03:56,430 --> 00:03:58,060
+wanted to come in at a high level
+
+90
+00:03:58,060 --> 00:04:01,299
+basically so there's there were two
+
+91
+00:04:01,299 --> 00:04:03,190
+tranches of work in this project that
+
+92
+00:04:03,190 --> 00:04:06,100
+urn that caused me pain I guess it's a
+
+93
+00:04:06,100 --> 00:04:09,549
+pretty the best way of putting it the
+
+94
+00:04:09,549 --> 00:04:10,989
+real-time communication side of things
+
+95
+00:04:10,989 --> 00:04:14,560
+so WebRTC which this talk we mostly
+
+96
+00:04:14,560 --> 00:04:17,109
+about and hopefully I'll have time to
+
+97
+00:04:17,109 --> 00:04:19,359
+get onto the graphic stuff a few few
+
+98
+00:04:19,359 --> 00:04:21,370
+notes but graphics and performance and
+
+99
+00:04:21,370 --> 00:04:22,900
+because the target platforms because it
+
+100
+00:04:22,900 --> 00:04:24,280
+was for google i/o it was a you know
+
+101
+00:04:24,280 --> 00:04:26,260
+google nexus 4 and 7 those are their
+
+102
+00:04:26,260 --> 00:04:28,600
+hero products i found out some
+
+103
+00:04:28,600 --> 00:04:30,220
+interesting things in terms of
+
+104
+00:04:30,220 --> 00:04:34,360
+performance there and again because it
+
+105
+00:04:34,360 --> 00:04:36,520
+was a it was demo where only had to at
+
+106
+00:04:36,520 --> 00:04:41,140
+least work in google chrome for android
+
+107
+00:04:41,140 --> 00:04:44,229
+beta and this technology is under a you
+
+108
+00:04:44,229 --> 00:04:44,480
+know
+
+109
+00:04:44,480 --> 00:04:46,130
+settings facts you actually have to
+
+110
+00:04:46,130 --> 00:04:48,440
+physically go in and enable this so it's
+
+111
+00:04:48,440 --> 00:04:50,360
+great for me in terms of a playground
+
+112
+00:04:50,360 --> 00:04:53,000
+but obviously it's not kind of works in
+
+113
+00:04:53,000 --> 00:04:54,410
+every single browse at this point in
+
+114
+00:04:54,410 --> 00:04:58,010
+time but at the moment the game works on
+
+115
+00:04:58,010 --> 00:05:01,670
+chrome for android beta I do plan to add
+
+116
+00:05:01,670 --> 00:05:03,590
+support for iOS you know that old the
+
+117
+00:05:03,590 --> 00:05:07,340
+old browser the older platform and it
+
+118
+00:05:07,340 --> 00:05:08,990
+should work in firefox but I not test it
+
+119
+00:05:08,990 --> 00:05:11,090
+so you know if you do have a look at the
+
+120
+00:05:11,090 --> 00:05:12,620
+links at the end and doesn't work in
+
+121
+00:05:12,620 --> 00:05:14,390
+firefox is because i haven't tested it
+
+122
+00:05:14,390 --> 00:05:21,410
+at all but planting so WebRTC this
+
+123
+00:05:21,410 --> 00:05:25,490
+amazing technology it's a bit too early
+
+124
+00:05:25,490 --> 00:05:27,280
+to do kind of dangerous singing right
+
+125
+00:05:27,280 --> 00:05:29,930
+there's three main api's inside of
+
+126
+00:05:29,930 --> 00:05:32,860
+WebRTC there's get media get user media
+
+127
+00:05:32,860 --> 00:05:36,830
+which is access to the webcam the
+
+128
+00:05:36,830 --> 00:05:39,290
+microphone basically the thing that
+
+129
+00:05:39,290 --> 00:05:42,290
+flash had for you no soy 10 years and I
+
+130
+00:05:42,290 --> 00:05:45,110
+think well certainly getusermedia was
+
+131
+00:05:45,110 --> 00:05:46,820
+kind of starting to emerge last year
+
+132
+00:05:46,820 --> 00:05:50,630
+it's it's the API is kind of stable you
+
+133
+00:05:50,630 --> 00:05:53,510
+can use it in evergreen browsers today
+
+134
+00:05:53,510 --> 00:05:55,670
+quite happily and I've got some example
+
+135
+00:05:55,670 --> 00:05:58,730
+code but the real the the WebRTC side of
+
+136
+00:05:58,730 --> 00:06:00,290
+things are the two other AP eyes which
+
+137
+00:06:00,290 --> 00:06:02,600
+are the peer connection API which is
+
+138
+00:06:02,600 --> 00:06:03,980
+once you've got a stream from your
+
+139
+00:06:03,980 --> 00:06:07,700
+machine we can send off to another user
+
+140
+00:06:07,700 --> 00:06:09,830
+in the room so it's literally
+
+141
+00:06:09,830 --> 00:06:11,210
+peer-to-peer which means there are known
+
+142
+00:06:11,210 --> 00:06:12,710
+that you don't need a server for that
+
+143
+00:06:12,710 --> 00:06:14,630
+day to go from one device to another so
+
+144
+00:06:14,630 --> 00:06:17,420
+my laptop can stream video to your
+
+145
+00:06:17,420 --> 00:06:19,580
+mobile phone inside of this local
+
+146
+00:06:19,580 --> 00:06:21,680
+network without going virus server and
+
+147
+00:06:21,680 --> 00:06:24,080
+then the third API is the data channel
+
+148
+00:06:24,080 --> 00:06:28,640
+API which is the say it it's basically
+
+149
+00:06:28,640 --> 00:06:31,040
+sockets over that peer-to-peer and the
+
+150
+00:06:31,040 --> 00:06:33,740
+interesting part is it's its ability to
+
+151
+00:06:33,740 --> 00:06:36,980
+do UDP which is an appeal for game
+
+152
+00:06:36,980 --> 00:06:39,110
+developers and I appreciate it i built a
+
+153
+00:06:39,110 --> 00:06:41,000
+game and i'm not a games developer i'm
+
+154
+00:06:41,000 --> 00:06:43,040
+i'm very much just a hack and see what
+
+155
+00:06:43,040 --> 00:06:45,710
+sticks but i know that we UDP is is
+
+156
+00:06:45,710 --> 00:06:48,440
+supposed to be good for games so that is
+
+157
+00:06:48,440 --> 00:06:54,600
+landing in browsers now
+
+158
+00:06:54,610 --> 00:06:58,610
+so like any good or bewildered developer
+
+159
+00:06:58,610 --> 00:07:01,100
+I first turned to JavaScript libraries
+
+160
+00:07:01,100 --> 00:07:02,840
+to actually solve the problem for me to
+
+161
+00:07:02,840 --> 00:07:05,090
+give me a head start basically so this
+
+162
+00:07:05,090 --> 00:07:07,370
+isn't extensive and I expect more there
+
+163
+00:07:07,370 --> 00:07:08,660
+are more JavaScript libraries out there
+
+164
+00:07:08,660 --> 00:07:11,420
+now and this will grow but these are
+
+165
+00:07:11,420 --> 00:07:12,650
+some of the ones that came across and I
+
+166
+00:07:12,650 --> 00:07:14,510
+knew that I wanted to do the project in
+
+167
+00:07:14,510 --> 00:07:16,250
+java script from top to bottom so i want
+
+168
+00:07:16,250 --> 00:07:20,030
+to note at the back end and i found you
+
+169
+00:07:20,030 --> 00:07:22,970
+know peered up jess seem to only do data
+
+170
+00:07:22,970 --> 00:07:25,460
+this may not be accurate this may change
+
+171
+00:07:25,460 --> 00:07:26,810
+all this may not be completely accurate
+
+172
+00:07:26,810 --> 00:07:28,040
+because i was working under a deadline
+
+173
+00:07:28,040 --> 00:07:30,890
+but pjs seems to just do data but does
+
+174
+00:07:30,890 --> 00:07:34,160
+it very simply very easily simple a
+
+175
+00:07:34,160 --> 00:07:37,220
+simple web RTC just did video and didn't
+
+176
+00:07:37,220 --> 00:07:38,570
+do data and I wanted both because I want
+
+177
+00:07:38,570 --> 00:07:40,850
+to be 0 send messages saying I've thrown
+
+178
+00:07:40,850 --> 00:07:42,230
+the ball at your face and that be the
+
+179
+00:07:42,230 --> 00:07:45,620
+data part and easier are easy RTC I
+
+180
+00:07:45,620 --> 00:07:46,850
+didn't look out because i found that
+
+181
+00:07:46,850 --> 00:07:51,350
+WebRTC got I ojs was a nice node library
+
+182
+00:07:51,350 --> 00:07:52,910
+that came with a client side library and
+
+183
+00:07:52,910 --> 00:07:54,830
+just kind of dropped in and the really
+
+184
+00:07:54,830 --> 00:07:56,240
+appealing thing for me is there was a
+
+185
+00:07:56,240 --> 00:07:58,190
+nice simple demo that was very very
+
+186
+00:07:58,190 --> 00:08:00,470
+hackable and I got a prototype of this
+
+187
+00:08:00,470 --> 00:08:01,820
+project up and running in a couple of
+
+188
+00:08:01,820 --> 00:08:04,010
+hours by hacking their demo which I'll
+
+189
+00:08:04,010 --> 00:08:07,370
+show you in a moment the thing of it
+
+190
+00:08:07,370 --> 00:08:09,740
+extremely wary of is this is super new
+
+191
+00:08:09,740 --> 00:08:11,330
+technology these were the versions of
+
+192
+00:08:11,330 --> 00:08:12,890
+the modules are working with you know
+
+193
+00:08:12,890 --> 00:08:16,030
+not even not point one this is a very
+
+194
+00:08:16,030 --> 00:08:19,640
+that the libraries are evolving really
+
+195
+00:08:19,640 --> 00:08:21,950
+quickly at this point i'm so pretty sure
+
+196
+00:08:21,950 --> 00:08:24,260
+the libraries i mean i deployed a month
+
+197
+00:08:24,260 --> 00:08:26,180
+ago already out of date now there's been
+
+198
+00:08:26,180 --> 00:08:28,790
+fixes and I Cassie fixes that that I
+
+199
+00:08:28,790 --> 00:08:33,380
+could plug in myself so that side this
+
+200
+00:08:33,380 --> 00:08:38,270
+is my it's my prototype and so this was
+
+201
+00:08:38,270 --> 00:08:39,530
+literally an hour's worth of hacking I
+
+202
+00:08:39,530 --> 00:08:41,120
+just took a photo of a drawing i did and
+
+203
+00:08:41,120 --> 00:08:42,620
+stuck my face on so this is a screencast
+
+204
+00:08:42,620 --> 00:08:45,410
+of my desktop and the video feeds come
+
+205
+00:08:45,410 --> 00:08:48,590
+from my mobile phone and the orientation
+
+206
+00:08:48,590 --> 00:08:50,540
+events are being streamed from the phone
+
+207
+00:08:50,540 --> 00:08:52,730
+directly into the desktop and just doing
+
+208
+00:08:52,730 --> 00:08:55,220
+a CSS rotate very simple and that was my
+
+209
+00:08:55,220 --> 00:08:56,390
+proof of concept that i could build this
+
+210
+00:08:56,390 --> 00:08:59,620
+game easily which was completely
+
+211
+00:08:59,620 --> 00:09:03,410
+underestimate the amount work but it was
+
+212
+00:09:03,410 --> 00:09:06,069
+a nice of proof of concept
+
+213
+00:09:06,069 --> 00:09:08,689
+like I said the this was hacked from the
+
+214
+00:09:08,689 --> 00:09:12,980
+WebRTC IO demo and the nice thing about
+
+215
+00:09:12,980 --> 00:09:14,600
+these libraries is it kind of levels out
+
+216
+00:09:14,600 --> 00:09:16,249
+all the different interoperability
+
+217
+00:09:16,249 --> 00:09:19,879
+issues there's hope several versions of
+
+218
+00:09:19,879 --> 00:09:22,790
+the pier data implementation as time
+
+219
+00:09:22,790 --> 00:09:25,220
+went on if you look at the code that's
+
+220
+00:09:25,220 --> 00:09:27,800
+things like Pierre de 200 or peer data
+
+221
+00:09:27,800 --> 00:09:30,980
+or WebKit peer data and and so on and it
+
+222
+00:09:30,980 --> 00:09:33,379
+does things like try to do interrupt
+
+223
+00:09:33,379 --> 00:09:37,069
+between Firefox's video and Chrome's
+
+224
+00:09:37,069 --> 00:09:38,509
+video as well for you so you don't have
+
+225
+00:09:38,509 --> 00:09:41,929
+to do that yourself so that to replicate
+
+226
+00:09:41,929 --> 00:09:43,309
+this this simple example there's really
+
+227
+00:09:43,309 --> 00:09:46,910
+only three steps first one is creative
+
+228
+00:09:46,910 --> 00:09:49,369
+room for two people to join in because
+
+229
+00:09:49,369 --> 00:09:51,769
+I'm doing a two player game I want some
+
+230
+00:09:51,769 --> 00:09:53,179
+kind of discoverability to say this is
+
+231
+00:09:53,179 --> 00:09:55,189
+in terms of the game i had a pin code so
+
+232
+00:09:55,189 --> 00:09:56,389
+i say write my pimco's one two three
+
+233
+00:09:56,389 --> 00:09:58,040
+four you would join that will play
+
+234
+00:09:58,040 --> 00:10:00,559
+against each other you would listen for
+
+235
+00:10:00,559 --> 00:10:02,839
+remote connections coming in and you
+
+236
+00:10:02,839 --> 00:10:04,369
+would send your own video going up the
+
+237
+00:10:04,369 --> 00:10:07,100
+white and again this is with a library
+
+238
+00:10:07,100 --> 00:10:08,899
+so this isn't all the way down to the
+
+239
+00:10:08,899 --> 00:10:10,160
+Royal JavaScript I'll show you some that
+
+240
+00:10:10,160 --> 00:10:13,040
+in a bit but pretty straightforward here
+
+241
+00:10:13,040 --> 00:10:16,100
+I'm creating a web socket to a secure
+
+242
+00:10:16,100 --> 00:10:17,569
+web socket and giving it the pin number
+
+243
+00:10:17,569 --> 00:10:21,079
+so the room number basically so it has a
+
+244
+00:10:21,079 --> 00:10:23,329
+connection while sat this will emit
+
+245
+00:10:23,329 --> 00:10:26,809
+event saying I'm connected and whilst
+
+246
+00:10:26,809 --> 00:10:28,579
+that's happening I will then add an
+
+247
+00:10:28,579 --> 00:10:31,160
+event listener to listen for when a new
+
+248
+00:10:31,160 --> 00:10:34,369
+stream comes in so I get to two objects
+
+249
+00:10:34,369 --> 00:10:35,509
+coming in more most importantly the
+
+250
+00:10:35,509 --> 00:10:37,459
+actual video stream is that stream
+
+251
+00:10:37,459 --> 00:10:41,420
+object and the the WebRTC i/o library
+
+252
+00:10:41,420 --> 00:10:43,850
+has a helper called attached stream
+
+253
+00:10:43,850 --> 00:10:45,110
+which you give it a stream you give it
+
+254
+00:10:45,110 --> 00:10:46,699
+an idea of an element on the page and I
+
+255
+00:10:46,699 --> 00:10:48,709
+just put the two together but it's as
+
+256
+00:10:48,709 --> 00:10:50,509
+simple as doing video duck sauce equals
+
+257
+00:10:50,509 --> 00:10:54,889
+URL dot create yer ole object I've got a
+
+258
+00:10:54,889 --> 00:10:56,240
+slide in the moment that shows you how
+
+259
+00:10:56,240 --> 00:10:58,610
+to actually do that by hand but that
+
+260
+00:10:58,610 --> 00:11:00,850
+will just put a video feed together and
+
+261
+00:11:00,850 --> 00:11:02,959
+the third part is actually capture the
+
+262
+00:11:02,959 --> 00:11:05,329
+video from your your laptop or your
+
+263
+00:11:05,329 --> 00:11:07,699
+phone or whatever device and send up the
+
+264
+00:11:07,699 --> 00:11:09,619
+stream as well and this is all tucked
+
+265
+00:11:09,619 --> 00:11:11,990
+away for me so I just do RTC got great
+
+266
+00:11:11,990 --> 00:11:16,339
+stream video yes audio yes or no and in
+
+267
+00:11:16,339 --> 00:11:17,990
+the case of my game because only one of
+
+268
+00:11:17,990 --> 00:11:18,499
+the opponent
+
+269
+00:11:18,499 --> 00:11:20,419
+face on the game and not my own I just
+
+270
+00:11:20,419 --> 00:11:21,799
+throw away the actual stream I don't do
+
+271
+00:11:21,799 --> 00:11:23,269
+anything with it and behind the scenes
+
+272
+00:11:23,269 --> 00:11:25,369
+the library is basically set that up the
+
+273
+00:11:25,369 --> 00:11:27,349
+peer to peer connection and it's
+
+274
+00:11:27,349 --> 00:11:31,029
+streaming it to the other user that's it
+
+275
+00:11:31,029 --> 00:11:33,049
+so the lessons for me here where
+
+276
+00:11:33,049 --> 00:11:34,429
+libraries are super good when you're
+
+277
+00:11:34,429 --> 00:11:35,659
+fumbling your way through the actual
+
+278
+00:11:35,659 --> 00:11:37,219
+code right there's not a lot there and
+
+279
+00:11:37,219 --> 00:11:38,749
+I've got that prototype working I've got
+
+280
+00:11:38,749 --> 00:11:41,689
+peer-to-peer data working already but
+
+281
+00:11:41,689 --> 00:11:44,239
+the lesson here is libraries also hide
+
+282
+00:11:44,239 --> 00:11:45,619
+away a lot the technology and there were
+
+283
+00:11:45,619 --> 00:11:47,449
+bugs in my code that I hadn't realized
+
+284
+00:11:47,449 --> 00:11:53,659
+even existed in the first place and in
+
+285
+00:11:53,659 --> 00:11:55,849
+my experience that's the right way to
+
+286
+00:11:55,849 --> 00:11:57,139
+approach like if you don't understand
+
+287
+00:11:57,139 --> 00:11:58,639
+the technology take a library start up
+
+288
+00:11:58,639 --> 00:12:00,289
+with that the older thing and then
+
+289
+00:12:00,289 --> 00:12:02,029
+understand what's going on it's kind of
+
+290
+00:12:02,029 --> 00:12:04,879
+a long blog post about using going
+
+291
+00:12:04,879 --> 00:12:06,499
+beyond jquery it's exactly that i would
+
+292
+00:12:06,499 --> 00:12:07,819
+start with jquery and work my way back
+
+293
+00:12:07,819 --> 00:12:13,099
+to how it all works but the really the
+
+294
+00:12:13,099 --> 00:12:15,559
+big thing for me was peer-to-peer data I
+
+295
+00:12:15,559 --> 00:12:16,759
+seem to have this impression in my head
+
+296
+00:12:16,759 --> 00:12:18,979
+the peer-to-peer must be faster all
+
+297
+00:12:18,979 --> 00:12:20,869
+right and if if we tried it here if I
+
+298
+00:12:20,869 --> 00:12:23,569
+had a the game running here one of you
+
+299
+00:12:23,569 --> 00:12:25,099
+wanted to connect to the game it would
+
+300
+00:12:25,099 --> 00:12:26,929
+work out the rock we're on the same
+
+301
+00:12:26,929 --> 00:12:29,989
+network so be really quick but this game
+
+302
+00:12:29,989 --> 00:12:32,359
+I wanted to work between you know the UK
+
+303
+00:12:32,359 --> 00:12:34,249
+in the US or one of you play people over
+
+304
+00:12:34,249 --> 00:12:37,069
+the open web and that's not particularly
+
+305
+00:12:37,069 --> 00:12:39,409
+faster that's still going a long way
+
+306
+00:12:39,409 --> 00:12:43,189
+over the wire so because my game already
+
+307
+00:12:43,189 --> 00:12:44,599
+has this tiny little face the other end
+
+308
+00:12:44,599 --> 00:12:46,639
+I don't want to be I'm not doing a skype
+
+309
+00:12:46,639 --> 00:12:48,829
+clone right I don't he sent an HD video
+
+310
+00:12:48,829 --> 00:12:50,389
+down the wire don'ts in this massive
+
+311
+00:12:50,389 --> 00:12:55,099
+video down the wire so initially I
+
+312
+00:12:55,099 --> 00:12:56,389
+didn't think it was any way of actually
+
+313
+00:12:56,389 --> 00:12:58,309
+controlling how much data goes over the
+
+314
+00:12:58,309 --> 00:13:00,499
+wire but you do have a way of saying
+
+315
+00:13:00,499 --> 00:13:02,599
+here are some options beyond just saying
+
+316
+00:13:02,599 --> 00:13:05,869
+true I want video you can say i want the
+
+317
+00:13:05,869 --> 00:13:08,059
+max width of the video to be you know
+
+318
+00:13:08,059 --> 00:13:10,339
+160 in my case so that the actual it's
+
+319
+00:13:10,339 --> 00:13:11,569
+kind of like a thumbnail video it goes
+
+320
+00:13:11,569 --> 00:13:14,029
+down the wire less data is if you need
+
+321
+00:13:14,029 --> 00:13:15,319
+if you don't need as much data that's
+
+322
+00:13:15,319 --> 00:13:18,289
+good right it's less data on your mobile
+
+323
+00:13:18,289 --> 00:13:20,689
+device it's less bytes over the wire for
+
+324
+00:13:20,689 --> 00:13:24,169
+your mobile device to process and I
+
+325
+00:13:24,169 --> 00:13:26,389
+looked at on my android looks the amount
+
+326
+00:13:26,389 --> 00:13:27,739
+of data that chrome had gone through and
+
+327
+00:13:27,739 --> 00:13:29,029
+it was gigs worth of data when I was
+
+328
+00:13:29,029 --> 00:13:31,399
+testing so imagine gigs worth of dates
+
+329
+00:13:31,399 --> 00:13:32,150
+are on a
+
+330
+00:13:32,150 --> 00:13:34,730
+normal cell network it's going to get
+
+331
+00:13:34,730 --> 00:13:39,860
+expensive so this is kind of an old good
+
+332
+00:13:39,860 --> 00:13:41,480
+one but you know only serve what you
+
+333
+00:13:41,480 --> 00:13:44,900
+need and in this I found that because i
+
+334
+00:13:44,900 --> 00:13:46,700
+was using a library this didn't work i
+
+335
+00:13:46,700 --> 00:13:48,230
+was giving it these arguments saying
+
+336
+00:13:48,230 --> 00:13:51,620
+only serve this 160 video but inside the
+
+337
+00:13:51,620 --> 00:13:53,450
+library i realized that it was just
+
+338
+00:13:53,450 --> 00:13:55,400
+looking for the presence of a value on
+
+339
+00:13:55,400 --> 00:13:57,110
+video and if i had an object there to
+
+340
+00:13:57,110 --> 00:13:58,280
+said yeah it's true so send the whole
+
+341
+00:13:58,280 --> 00:14:00,980
+thing so it's sending by default 640 by
+
+342
+00:14:00,980 --> 00:14:03,410
+480 which isn't really HD but it's a lot
+
+343
+00:14:03,410 --> 00:14:05,420
+bigger than I needed but I can do you
+
+344
+00:14:05,420 --> 00:14:07,040
+know pull requests and fix it but only
+
+345
+00:14:07,040 --> 00:14:08,690
+found that out after i finished with the
+
+346
+00:14:08,690 --> 00:14:13,010
+the library you probably spot already
+
+347
+00:14:13,010 --> 00:14:14,990
+that it's not entirely client side as
+
+348
+00:14:14,990 --> 00:14:19,190
+well so you do need you don't absolutely
+
+349
+00:14:19,190 --> 00:14:22,910
+need a server you can do it entirely in
+
+350
+00:14:22,910 --> 00:14:25,160
+the client side but you need to be able
+
+351
+00:14:25,160 --> 00:14:26,900
+to know what the IP address of the the
+
+352
+00:14:26,900 --> 00:14:28,100
+person you're trying to connect to and
+
+353
+00:14:28,100 --> 00:14:29,660
+typically you want to be a give someone
+
+354
+00:14:29,660 --> 00:14:31,670
+a pin number or a color to connect
+
+355
+00:14:31,670 --> 00:14:33,860
+through right so the game is enter pin
+
+356
+00:14:33,860 --> 00:14:37,940
+and you have that discoverability so you
+
+357
+00:14:37,940 --> 00:14:40,690
+still need you still need the server and
+
+358
+00:14:40,690 --> 00:14:42,950
+literally this is all the code i have my
+
+359
+00:14:42,950 --> 00:14:45,590
+server side i have not for the entire
+
+360
+00:14:45,590 --> 00:14:47,960
+game but for the WebRTC part I've got an
+
+361
+00:14:47,960 --> 00:14:50,540
+express server once that's created I
+
+362
+00:14:50,540 --> 00:14:52,910
+just wrap it up with the web RTC library
+
+363
+00:14:52,910 --> 00:14:54,380
+and the other library is very similar
+
+364
+00:14:54,380 --> 00:14:55,850
+they just kind of wrap around your your
+
+365
+00:14:55,850 --> 00:14:57,200
+web server and they do all the work for
+
+366
+00:14:57,200 --> 00:15:00,950
+you I in my live production code have no
+
+367
+00:15:00,950 --> 00:15:02,510
+more than that to do with the WebRTC
+
+368
+00:15:02,510 --> 00:15:04,850
+stuff it's just that one line so just
+
+369
+00:15:04,850 --> 00:15:07,490
+handles it for me it create it handles
+
+370
+00:15:07,490 --> 00:15:11,510
+creation of rooms handles trying to work
+
+371
+00:15:11,510 --> 00:15:13,130
+out the discoverability part and it's
+
+372
+00:15:13,130 --> 00:15:15,350
+it's all magic from my point of view and
+
+373
+00:15:15,350 --> 00:15:19,070
+if I wanted to add fullback support for
+
+374
+00:15:19,070 --> 00:15:20,960
+iOS for instance that didn't have the
+
+375
+00:15:20,960 --> 00:15:23,120
+peer connection API I would use this
+
+376
+00:15:23,120 --> 00:15:25,520
+socket to send messages up to it so when
+
+377
+00:15:25,520 --> 00:15:27,770
+someone took a photo there their face it
+
+378
+00:15:27,770 --> 00:15:29,720
+would send up their web socket here I
+
+379
+00:15:29,720 --> 00:15:31,040
+would send it down to the connected
+
+380
+00:15:31,040 --> 00:15:33,830
+client and I could add fullback support
+
+381
+00:15:33,830 --> 00:15:36,890
+using this web socket this was the
+
+382
+00:15:36,890 --> 00:15:39,560
+interesting part to me the RTC data
+
+383
+00:15:39,560 --> 00:15:41,630
+channel there's no permissions for this
+
+384
+00:15:41,630 --> 00:15:44,660
+you just create a PSP connection and at
+
+385
+00:15:44,660 --> 00:15:45,990
+the moment there's there's not
+
+386
+00:15:45,990 --> 00:15:48,839
+shins object that he pass in the sets
+
+387
+00:15:48,839 --> 00:15:50,640
+either reliable to true or reliable to
+
+388
+00:15:50,640 --> 00:15:52,770
+false reliable true means you have a tcp
+
+389
+00:15:52,770 --> 00:15:55,890
+connection which is it according to the
+
+390
+00:15:55,890 --> 00:15:57,690
+spec is default so if you don't pass in
+
+391
+00:15:57,690 --> 00:15:59,820
+that Valley you have a tcp connection if
+
+392
+00:15:59,820 --> 00:16:01,470
+you set reliable to force then it
+
+393
+00:16:01,470 --> 00:16:04,410
+creates a UDP connection ok and I did
+
+394
+00:16:04,410 --> 00:16:06,360
+read a comment inside of some code that
+
+395
+00:16:06,360 --> 00:16:08,459
+says that chrome at the moment doesn't
+
+396
+00:16:08,459 --> 00:16:11,730
+support TCP reliable connections but
+
+397
+00:16:11,730 --> 00:16:13,890
+it's quite likely that if someone's
+
+398
+00:16:13,890 --> 00:16:16,950
+watching this in the future that that's
+
+399
+00:16:16,950 --> 00:16:18,720
+not sure anymore that's fixed it's quite
+
+400
+00:16:18,720 --> 00:16:19,950
+likely that the comments already out of
+
+401
+00:16:19,950 --> 00:16:24,860
+date because it's moving so quickly if
+
+402
+00:16:24,860 --> 00:16:27,089
+if you guys and girls are already using
+
+403
+00:16:27,089 --> 00:16:28,320
+WebSockets hopefully you're doing this
+
+404
+00:16:28,320 --> 00:16:29,459
+already you actually test that the
+
+405
+00:16:29,459 --> 00:16:31,560
+WebSockets open before you start trying
+
+406
+00:16:31,560 --> 00:16:33,390
+to send data over that WebSocket you
+
+407
+00:16:33,390 --> 00:16:35,190
+have to do the same thing with the data
+
+408
+00:16:35,190 --> 00:16:37,950
+the data channel in this case I'm
+
+409
+00:16:37,950 --> 00:16:39,959
+looping over my date channels and saying
+
+410
+00:16:39,959 --> 00:16:42,510
+it is the ready state open and if it is
+
+411
+00:16:42,510 --> 00:16:44,640
+then I will use it if it's not the game
+
+412
+00:16:44,640 --> 00:16:47,370
+isn't ready in the first place right the
+
+413
+00:16:47,370 --> 00:16:48,630
+weird thing is the ready state such as
+
+414
+00:16:48,630 --> 00:16:50,370
+string whereas I'm kind of used to ready
+
+415
+00:16:50,370 --> 00:16:52,079
+so it's being an integer bits it's just
+
+416
+00:16:52,079 --> 00:16:54,720
+part the spec and hopefully you're doing
+
+417
+00:16:54,720 --> 00:16:59,130
+this with WebSockets anyway originally I
+
+418
+00:16:59,130 --> 00:17:00,990
+wanted to stream the orientation events
+
+419
+00:17:00,990 --> 00:17:03,690
+directly over the pier data API which
+
+420
+00:17:03,690 --> 00:17:05,010
+would have I mean if you've ever looked
+
+421
+00:17:05,010 --> 00:17:06,780
+at the orientation events are just it
+
+422
+00:17:06,780 --> 00:17:09,209
+just bombard the device with data just
+
+423
+00:17:09,209 --> 00:17:12,569
+pours out and I was like oh that's a lot
+
+424
+00:17:12,569 --> 00:17:14,100
+of data I'll throttle this and only
+
+425
+00:17:14,100 --> 00:17:16,679
+sender every 250 milliseconds which is
+
+426
+00:17:16,679 --> 00:17:18,569
+in the end there's no point right it
+
+427
+00:17:18,569 --> 00:17:20,490
+there's three states in my game the user
+
+428
+00:17:20,490 --> 00:17:21,929
+is standing up there either left or the
+
+429
+00:17:21,929 --> 00:17:26,040
+right or left or right so why not
+
+430
+00:17:26,040 --> 00:17:27,360
+actually put that in need the client
+
+431
+00:17:27,360 --> 00:17:29,280
+side so instead of sending that data and
+
+432
+00:17:29,280 --> 00:17:30,840
+having the pier work out if they've
+
+433
+00:17:30,840 --> 00:17:33,840
+tilted left to right just I put then all
+
+434
+00:17:33,840 --> 00:17:35,280
+the logic on the client side and try and
+
+435
+00:17:35,280 --> 00:17:36,809
+send as little amount of data over the
+
+436
+00:17:36,809 --> 00:17:39,570
+wire as possible and in this case I say
+
+437
+00:17:39,570 --> 00:17:41,309
+if the user's phone has tilted over to
+
+438
+00:17:41,309 --> 00:17:43,020
+the right then a state has changed send
+
+439
+00:17:43,020 --> 00:17:44,970
+that one message for the pier ok so
+
+440
+00:17:44,970 --> 00:17:47,130
+you're still sending bytes over the over
+
+441
+00:17:47,130 --> 00:17:50,250
+the Internet I had this misconception
+
+442
+00:17:50,250 --> 00:17:52,320
+that pier data would be so much faster
+
+443
+00:17:52,320 --> 00:17:54,600
+and so much eat a such less data but
+
+444
+00:17:54,600 --> 00:17:56,580
+it's it's not it's just closer there's
+
+445
+00:17:56,580 --> 00:17:58,530
+no there's that if we're in the same
+
+446
+00:17:58,530 --> 00:17:59,490
+network than great
+
+447
+00:17:59,490 --> 00:18:03,090
+but it's you should be over the wire so
+
+448
+00:18:03,090 --> 00:18:04,860
+I just want to explain the the mechanics
+
+449
+00:18:04,860 --> 00:18:08,520
+of this game before I kind of show you
+
+450
+00:18:08,520 --> 00:18:11,840
+the biggest ball like I hit basically
+
+451
+00:18:11,840 --> 00:18:13,980
+before the game can start you need I
+
+452
+00:18:13,980 --> 00:18:15,300
+needed to open a web socket for the game
+
+453
+00:18:15,300 --> 00:18:17,850
+discovery connect to the video and audio
+
+454
+00:18:17,850 --> 00:18:20,010
+stream once that was done I test if the
+
+455
+00:18:20,010 --> 00:18:23,100
+the piers the peer connection was
+
+456
+00:18:23,100 --> 00:18:24,660
+actually open and I could talk to it it
+
+457
+00:18:24,660 --> 00:18:25,950
+was an already state and if that's the
+
+458
+00:18:25,950 --> 00:18:27,510
+case then the game is ready to be played
+
+459
+00:18:27,510 --> 00:18:28,940
+and you can throw balls each others face
+
+460
+00:18:28,940 --> 00:18:33,690
+so my game was a multi-page website
+
+461
+00:18:33,690 --> 00:18:36,570
+you'll be you get this welcome page it's
+
+462
+00:18:36,570 --> 00:18:38,130
+had two buttons that's kind of join the
+
+463
+00:18:38,130 --> 00:18:41,400
+game or start game if you start a game
+
+464
+00:18:41,400 --> 00:18:43,380
+then it would automatically create the
+
+465
+00:18:43,380 --> 00:18:44,460
+room before you give you a pin number
+
+466
+00:18:44,460 --> 00:18:46,140
+and your go and tell your friend will
+
+467
+00:18:46,140 --> 00:18:47,970
+the pin number is and your friend will
+
+468
+00:18:47,970 --> 00:18:50,400
+say okay I'm gonna go join a game and
+
+469
+00:18:50,400 --> 00:18:52,470
+they'll enter the pin and when they hit
+
+470
+00:18:52,470 --> 00:18:54,690
+refresh or when I hit submit it will go
+
+471
+00:18:54,690 --> 00:18:57,330
+to this waiting state and the start game
+
+472
+00:18:57,330 --> 00:18:58,470
+would be in a waiting state would have a
+
+473
+00:18:58,470 --> 00:19:01,020
+hanging xhr on the server side and when
+
+474
+00:19:01,020 --> 00:19:04,980
+the server side state machine went from
+
+475
+00:19:04,980 --> 00:19:07,920
+waiting to ready it would close the xhr
+
+476
+00:19:07,920 --> 00:19:09,990
+request which record both pages to
+
+477
+00:19:09,990 --> 00:19:13,380
+reload into the play the game and once
+
+478
+00:19:13,380 --> 00:19:15,240
+we're playing the game I then asked for
+
+479
+00:19:15,240 --> 00:19:16,830
+the streams from both users at the same
+
+480
+00:19:16,830 --> 00:19:21,840
+time and try and connect them but that
+
+481
+00:19:21,840 --> 00:19:24,780
+didn't work what happened is I get to
+
+482
+00:19:24,780 --> 00:19:26,280
+the game I see the video and it would
+
+483
+00:19:26,280 --> 00:19:30,610
+instantly vanish
+
+484
+00:19:30,620 --> 00:19:33,780
+so yet to quite a while to work out what
+
+485
+00:19:33,780 --> 00:19:38,300
+was actually going on I haven't analogy
+
+486
+00:19:38,300 --> 00:19:40,440
+and I've explains to my wife who doesn't
+
+487
+00:19:40,440 --> 00:19:43,170
+do tech at all and she kind of got it so
+
+488
+00:19:43,170 --> 00:19:44,580
+I'm hoping that you guys and girls can
+
+489
+00:19:44,580 --> 00:19:46,530
+get this as well and if I don't just ask
+
+490
+00:19:46,530 --> 00:19:49,550
+me afterwards so this is my analogy I
+
+491
+00:19:49,550 --> 00:19:52,620
+want to make a call to you okay I've got
+
+492
+00:19:52,620 --> 00:19:54,720
+my paper cup phone I got both ends i got
+
+493
+00:19:54,720 --> 00:19:56,790
+my paper cup the string and they paid a
+
+494
+00:19:56,790 --> 00:19:58,350
+cup at the bottom and you have the same
+
+495
+00:19:58,350 --> 00:20:01,050
+thing i put my paper cup up set up to my
+
+496
+00:20:01,050 --> 00:20:03,780
+ear I hand you the other end and you do
+
+497
+00:20:03,780 --> 00:20:05,250
+the same thing you put your paper cup to
+
+498
+00:20:05,250 --> 00:20:07,020
+up to your ear and you hand me the other
+
+499
+00:20:07,020 --> 00:20:09,360
+end I'm like okay right I'll take that
+
+500
+00:20:09,360 --> 00:20:10,980
+and i'll put up to my ear and take out
+
+501
+00:20:10,980 --> 00:20:13,080
+take off the end that I was holding
+
+502
+00:20:13,080 --> 00:20:15,360
+before and you do the same thing you
+
+503
+00:20:15,360 --> 00:20:17,220
+take the phone off me and put up to your
+
+504
+00:20:17,220 --> 00:20:18,960
+ear putting down the other end and we're
+
+505
+00:20:18,960 --> 00:20:20,400
+both standing there with dangling phone
+
+506
+00:20:20,400 --> 00:20:21,720
+so we're not actually talking each other
+
+507
+00:20:21,720 --> 00:20:25,110
+we've just got this kind of longer thing
+
+508
+00:20:25,110 --> 00:20:27,660
+no one's talking to each other the point
+
+509
+00:20:27,660 --> 00:20:29,100
+is it was happening at the same time and
+
+510
+00:20:29,100 --> 00:20:30,480
+the connections were kind of missing
+
+511
+00:20:30,480 --> 00:20:34,020
+each other now I don't know because I
+
+512
+00:20:34,020 --> 00:20:35,610
+haven't dug into this deeply enough if
+
+513
+00:20:35,610 --> 00:20:38,460
+this is a bug in the library that i was
+
+514
+00:20:38,460 --> 00:20:40,590
+using whether it is a bug in the
+
+515
+00:20:40,590 --> 00:20:43,290
+workflow or what's more likely that it
+
+516
+00:20:43,290 --> 00:20:44,700
+was a bug that I was hitting because of
+
+517
+00:20:44,700 --> 00:20:46,290
+the way I was developing and because of
+
+518
+00:20:46,290 --> 00:20:48,300
+the deadline I was against I needed it
+
+519
+00:20:48,300 --> 00:20:49,680
+needed to be live for Google i/o so I
+
+520
+00:20:49,680 --> 00:20:51,090
+need a solution to get around this
+
+521
+00:20:51,090 --> 00:20:52,830
+problem of the two users trying to
+
+522
+00:20:52,830 --> 00:20:57,090
+connect the exact same time so I create
+
+523
+00:20:57,090 --> 00:21:01,430
+a single page app and what that did is
+
+524
+00:21:01,430 --> 00:21:04,770
+it as soon as you go to start the game
+
+525
+00:21:04,770 --> 00:21:06,870
+it would immediately asked you for your
+
+526
+00:21:06,870 --> 00:21:10,140
+your audio and video stream so you say
+
+527
+00:21:10,140 --> 00:21:11,280
+yeah okay and you've got the pin number
+
+528
+00:21:11,280 --> 00:21:12,660
+then you say to your friend here's my
+
+529
+00:21:12,660 --> 00:21:14,760
+pin number and because of that time
+
+530
+00:21:14,760 --> 00:21:17,040
+delay between that those two points the
+
+531
+00:21:17,040 --> 00:21:19,140
+stream is already open and it's the
+
+532
+00:21:19,140 --> 00:21:20,790
+streams already being fed into that room
+
+533
+00:21:20,790 --> 00:21:22,800
+let's imaginary room in the cloud or
+
+534
+00:21:22,800 --> 00:21:25,020
+wherever it is they enter their pin
+
+535
+00:21:25,020 --> 00:21:26,700
+number because it happens not the same
+
+536
+00:21:26,700 --> 00:21:28,380
+time at there's some delay then that
+
+537
+00:21:28,380 --> 00:21:29,730
+user can connect to you properly and
+
+538
+00:21:29,730 --> 00:21:31,230
+there's no both of you trying to connect
+
+539
+00:21:31,230 --> 00:21:35,520
+at the same time it worked that was the
+
+540
+00:21:35,520 --> 00:21:38,440
+important fit
+
+541
+00:21:38,450 --> 00:21:41,730
+but there is some there is a point to a
+
+542
+00:21:41,730 --> 00:21:45,410
+single page app if you have created a
+
+543
+00:21:45,410 --> 00:21:48,180
+web RTC stream or things like going
+
+544
+00:21:48,180 --> 00:21:50,520
+fullscreen and as soon as the page
+
+545
+00:21:50,520 --> 00:21:52,830
+refreshes that gets broken so once if
+
+546
+00:21:52,830 --> 00:21:54,330
+you if your app is in full screen mode
+
+547
+00:21:54,330 --> 00:21:56,730
+when you hit refresh it drops out a full
+
+548
+00:21:56,730 --> 00:21:59,550
+screen so these things that use these
+
+549
+00:21:59,550 --> 00:22:01,290
+kind of persistent states in the browser
+
+550
+00:22:01,290 --> 00:22:03,840
+you might need to actually make a single
+
+551
+00:22:03,840 --> 00:22:05,400
+page app that can loads in each one of
+
+552
+00:22:05,400 --> 00:22:08,550
+these pages now I only my app is still
+
+553
+00:22:08,550 --> 00:22:11,250
+on my site is still a welcome page and
+
+554
+00:22:11,250 --> 00:22:12,600
+then the rest of it is a single page app
+
+555
+00:22:12,600 --> 00:22:14,460
+which meant that I couldn't just add
+
+556
+00:22:14,460 --> 00:22:16,410
+full screen I add a full screen right
+
+557
+00:22:16,410 --> 00:22:17,940
+the end I would have liked to have on
+
+558
+00:22:17,940 --> 00:22:19,770
+the welcome screen go to full screen go
+
+559
+00:22:19,770 --> 00:22:21,570
+to full screen and then start playing
+
+560
+00:22:21,570 --> 00:22:22,710
+the game but because i have a refresh
+
+561
+00:22:22,710 --> 00:22:25,650
+between welcome and join i can do that
+
+562
+00:22:25,650 --> 00:22:28,890
+and also this can get a bit annoying in
+
+563
+00:22:28,890 --> 00:22:31,320
+your game like if you if you do refresh
+
+564
+00:22:31,320 --> 00:22:32,970
+the game so once once the game's over
+
+565
+00:22:32,970 --> 00:22:35,330
+you hit reload and you start again if
+
+566
+00:22:35,330 --> 00:22:38,790
+you add ssl the desktop browsers won't
+
+567
+00:22:38,790 --> 00:22:42,000
+keep asking for permission to access the
+
+568
+00:22:42,000 --> 00:22:45,750
+the webcam on the mobile device this was
+
+569
+00:22:45,750 --> 00:22:47,550
+true when i started the project and it
+
+570
+00:22:47,550 --> 00:22:48,720
+was forced by the time I end of the
+
+571
+00:22:48,720 --> 00:22:50,070
+project and it's not like it took a long
+
+572
+00:22:50,070 --> 00:22:51,390
+time it was probably months worth of
+
+573
+00:22:51,390 --> 00:22:52,980
+death but because i was working in beta
+
+574
+00:22:52,980 --> 00:22:55,260
+this stuff changed underneath my feet
+
+575
+00:22:55,260 --> 00:23:00,480
+and what happens on mobile is because
+
+576
+00:23:00,480 --> 00:23:02,250
+there's no visual cue that there's a
+
+577
+00:23:02,250 --> 00:23:05,070
+video stream open on the phone they
+
+578
+00:23:05,070 --> 00:23:06,660
+can't they always ask you for permission
+
+579
+00:23:06,660 --> 00:23:08,850
+ok on a desktop you have a light
+
+580
+00:23:08,850 --> 00:23:10,890
+generally that tells you your webcams on
+
+581
+00:23:10,890 --> 00:23:12,720
+on a mobile phone you don't have that
+
+582
+00:23:12,720 --> 00:23:14,580
+and even better than that i found that
+
+583
+00:23:14,580 --> 00:23:16,350
+when i had an open stream i could turn
+
+584
+00:23:16,350 --> 00:23:17,790
+my phone off or put it in standby mode
+
+585
+00:23:17,790 --> 00:23:19,680
+put it down and walk away and forget
+
+586
+00:23:19,680 --> 00:23:22,070
+that that's that camera is still on and
+
+587
+00:23:22,070 --> 00:23:25,350
+feeding a stream to the remote peer so
+
+588
+00:23:25,350 --> 00:23:27,720
+your phone can be off and the camera
+
+589
+00:23:27,720 --> 00:23:30,110
+will still be feeding data over the wire
+
+590
+00:23:30,110 --> 00:23:35,460
+makes you phone really really hot so
+
+591
+00:23:35,460 --> 00:23:37,140
+i've got a bit time to talk about the
+
+592
+00:23:37,140 --> 00:23:40,830
+graphics side of things and i'm not i'm
+
+593
+00:23:40,830 --> 00:23:43,770
+a developer in terms of I I know like
+
+594
+00:23:43,770 --> 00:23:46,410
+black white and gray that's as far as my
+
+595
+00:23:46,410 --> 00:23:49,410
+graphic skills go and i'm not a 3d
+
+596
+00:23:49,410 --> 00:23:50,179
+program
+
+597
+00:23:50,179 --> 00:23:54,230
+and it kind of is a bit of a mindfuck so
+
+598
+00:23:54,230 --> 00:23:55,669
+I'm gonna go into that detail basically
+
+599
+00:23:55,669 --> 00:23:59,629
+i knew that i had a 3d scene i had this
+
+600
+00:23:59,629 --> 00:24:00,830
+little character in the background had
+
+601
+00:24:00,830 --> 00:24:02,749
+this idea of like old school 80's Tron
+
+602
+00:24:02,749 --> 00:24:05,480
+style you know floor and you throw balls
+
+603
+00:24:05,480 --> 00:24:07,909
+into the 3d space and hit me in the face
+
+604
+00:24:07,909 --> 00:24:09,649
+and my original plan was to do this all
+
+605
+00:24:09,649 --> 00:24:11,029
+with a Dom I was like well I can just do
+
+606
+00:24:11,029 --> 00:24:12,679
+you know scale on that make it smaller
+
+607
+00:24:12,679 --> 00:24:15,499
+and you'll be fine and I sat down with
+
+608
+00:24:15,499 --> 00:24:17,899
+them I are said lead Lyle who's speaking
+
+609
+00:24:17,899 --> 00:24:20,809
+I think on Friday towards the end if he
+
+610
+00:24:20,809 --> 00:24:22,100
+just kind of give me some advice on the
+
+611
+00:24:22,100 --> 00:24:24,019
+3d stuff and the first thing he said is
+
+612
+00:24:24,019 --> 00:24:26,480
+no that's going to be probably not
+
+613
+00:24:26,480 --> 00:24:30,259
+a direct quote but I need to use 3gs to
+
+614
+00:24:30,259 --> 00:24:31,669
+do this work and I'm not familiar enough
+
+615
+00:24:31,669 --> 00:24:34,129
+with 3gs so I sat down with him he gave
+
+616
+00:24:34,129 --> 00:24:35,269
+me a couple of hours of his time and
+
+617
+00:24:35,269 --> 00:24:37,249
+create this beautiful scene where I had
+
+618
+00:24:37,249 --> 00:24:39,889
+this kind of 3d floor and the caps was
+
+619
+00:24:39,889 --> 00:24:40,700
+in the right place and all the
+
+620
+00:24:40,700 --> 00:24:42,320
+perspective felt right as well like my
+
+621
+00:24:42,320 --> 00:24:44,570
+character wasn't too big for the the
+
+622
+00:24:44,570 --> 00:24:45,980
+angle of the camera and so on it looked
+
+623
+00:24:45,980 --> 00:24:47,659
+great so I went away with that
+
+624
+00:24:47,659 --> 00:24:50,980
+information you know my awesome 3j
+
+625
+00:24:50,980 --> 00:24:56,749
+s-seen put it on my mobile phone and the
+
+626
+00:24:56,749 --> 00:24:58,220
+frames per second went down about seven
+
+627
+00:24:58,220 --> 00:24:59,779
+frames per second everything was like
+
+628
+00:24:59,779 --> 00:25:02,179
+the slow-motion ball throwing through
+
+629
+00:25:02,179 --> 00:25:05,029
+the air is horribly horribly slow and in
+
+630
+00:25:05,029 --> 00:25:06,559
+fact at this point I had two canvases on
+
+631
+00:25:06,559 --> 00:25:07,789
+the screen and one video and everything
+
+632
+00:25:07,789 --> 00:25:10,220
+was going to complete crap but even with
+
+633
+00:25:10,220 --> 00:25:12,710
+one canvas and 30 GS it just wasn't
+
+634
+00:25:12,710 --> 00:25:16,580
+quick enough during that initial initial
+
+635
+00:25:16,580 --> 00:25:18,830
+test and this is on a nexus 4 as well so
+
+636
+00:25:18,830 --> 00:25:20,950
+it's kind of that you know hero product
+
+637
+00:25:20,950 --> 00:25:23,629
+so I started looking at the css3
+
+638
+00:25:23,629 --> 00:25:26,960
+renderers and but because I'm on an
+
+639
+00:25:26,960 --> 00:25:29,360
+experimental browser that says beta on
+
+640
+00:25:29,360 --> 00:25:30,950
+it it's not you know it's not gonna be a
+
+641
+00:25:30,950 --> 00:25:32,570
+perfect perfectly working browser I
+
+642
+00:25:32,570 --> 00:25:34,820
+found that when my floor was in front of
+
+643
+00:25:34,820 --> 00:25:36,679
+me completely you know flat it was fine
+
+644
+00:25:36,679 --> 00:25:38,330
+but as soon as i filtered it forward
+
+645
+00:25:38,330 --> 00:25:41,440
+into a 3d space it was just vanish and
+
+646
+00:25:41,440 --> 00:25:44,929
+kind of a problem but then it turned out
+
+647
+00:25:44,929 --> 00:25:46,610
+that there was just a bug that had been
+
+648
+00:25:46,610 --> 00:25:49,009
+fixed over the weekend at the coming
+
+649
+00:25:49,009 --> 00:25:50,990
+weekend i found the issue and it was
+
+650
+00:25:50,990 --> 00:25:54,139
+just fixed but i decided not to use a 3d
+
+651
+00:25:54,139 --> 00:25:56,389
+render because i had the performance but
+
+652
+00:25:56,389 --> 00:26:00,289
+the floor was missing so I found that
+
+653
+00:26:00,289 --> 00:26:01,789
+actually the problem was I was rendering
+
+654
+00:26:01,789 --> 00:26:04,340
+too much of a canvas constantly honest
+
+655
+00:26:04,340 --> 00:26:06,529
+I was doing I was doing my loop to
+
+656
+00:26:06,529 --> 00:26:08,659
+redraw the entire thing which includes
+
+657
+00:26:08,659 --> 00:26:10,909
+like a big background my character the
+
+658
+00:26:10,909 --> 00:26:13,640
+ball and so on so I basically create 22
+
+659
+00:26:13,640 --> 00:26:16,789
+views one was for the static background
+
+660
+00:26:16,789 --> 00:26:18,950
+that got rendered once or every now and
+
+661
+00:26:18,950 --> 00:26:20,150
+then but I needed to update the
+
+662
+00:26:20,150 --> 00:26:22,039
+background and in one separate canvas
+
+663
+00:26:22,039 --> 00:26:23,659
+that it as little as possible which is
+
+664
+00:26:23,659 --> 00:26:25,130
+basic the ball that bounces down and
+
+665
+00:26:25,130 --> 00:26:28,520
+throws towards the face and I found that
+
+666
+00:26:28,520 --> 00:26:31,220
+putting two videos and a canvas on a
+
+667
+00:26:31,220 --> 00:26:32,900
+mobile phone is probably a little too
+
+668
+00:26:32,900 --> 00:26:34,669
+much with all the streams going on and
+
+669
+00:26:34,669 --> 00:26:37,250
+when I had two videos the frame rates
+
+670
+00:26:37,250 --> 00:26:38,510
+weren't right down I've got rid of one
+
+671
+00:26:38,510 --> 00:26:40,159
+of the videos because I have the local
+
+672
+00:26:40,159 --> 00:26:42,110
+video in there for some reason no just
+
+673
+00:26:42,110 --> 00:26:43,970
+no good reason just it happened to be in
+
+674
+00:26:43,970 --> 00:26:46,490
+the Dom took that out and my frameworks
+
+675
+00:26:46,490 --> 00:26:48,409
+rates went back up to I think actually
+
+676
+00:26:48,409 --> 00:26:51,500
+I've about 50 frames per second on Nexus
+
+677
+00:26:51,500 --> 00:26:54,020
+4 which is which is pretty good the
+
+678
+00:26:54,020 --> 00:26:55,370
+nexus 7 on the other hand is a little
+
+679
+00:26:55,370 --> 00:26:58,630
+bit not as not as strong on the
+
+680
+00:26:58,630 --> 00:27:01,970
+performance side and but I had a lot of
+
+681
+00:27:01,970 --> 00:27:05,000
+this praying like hacking around with 30
+
+682
+00:27:05,000 --> 00:27:08,330
+Jess and and all the real-time stuff
+
+683
+00:27:08,330 --> 00:27:09,710
+going on at the same time and my
+
+684
+00:27:09,710 --> 00:27:13,399
+rendering I would basically get this i
+
+685
+00:27:13,399 --> 00:27:15,289
+just changed something and yeah at work
+
+686
+00:27:15,289 --> 00:27:18,679
+and once I good at that I just move on
+
+687
+00:27:18,679 --> 00:27:19,909
+that's quite happy for me I've got
+
+688
+00:27:19,909 --> 00:27:22,630
+deadlines to work too so I kept going
+
+689
+00:27:22,630 --> 00:27:25,100
+some useful really useful tips i got
+
+690
+00:27:25,100 --> 00:27:26,720
+have stabbed actually was to create
+
+691
+00:27:26,720 --> 00:27:28,520
+meshes to understand what's going to
+
+692
+00:27:28,520 --> 00:27:29,659
+collide with something else sofa
+
+693
+00:27:29,659 --> 00:27:32,029
+collision detection I had this debug
+
+694
+00:27:32,029 --> 00:27:33,350
+view so I could see where the ball was
+
+695
+00:27:33,350 --> 00:27:34,940
+going and if the carrots are tilted to
+
+696
+00:27:34,940 --> 00:27:36,950
+the left occasionally that face thing
+
+697
+00:27:36,950 --> 00:27:38,000
+we're just kind of launched off to the
+
+698
+00:27:38,000 --> 00:27:39,799
+side and I can see I had a bug in my
+
+699
+00:27:39,799 --> 00:27:41,270
+code so it's nice to have a debug view
+
+700
+00:27:41,270 --> 00:27:43,970
+for that that 3d part of the game and
+
+701
+00:27:43,970 --> 00:27:45,380
+probably the hardest part the entire
+
+702
+00:27:45,380 --> 00:27:48,710
+game was taking my mug my face and
+
+703
+00:27:48,710 --> 00:27:50,779
+making it appear at the right height and
+
+704
+00:27:50,779 --> 00:27:54,350
+width in the 3d space Stephen Whitson's
+
+705
+00:27:54,350 --> 00:27:55,730
+who's talking as well try to give me
+
+706
+00:27:55,730 --> 00:27:57,860
+some help in projecting that into a 3d
+
+707
+00:27:57,860 --> 00:28:00,080
+space there was a lot of ugly code that
+
+708
+00:28:00,080 --> 00:28:01,760
+eventually did it and most of it was
+
+709
+00:28:01,760 --> 00:28:04,549
+Serb and some some kind of lead from
+
+710
+00:28:04,549 --> 00:28:08,720
+Stephen as well but 3d is not my space I
+
+711
+00:28:08,720 --> 00:28:10,820
+was good at the the real-time stuff this
+
+712
+00:28:10,820 --> 00:28:13,820
+was really difficult but I managed to
+
+713
+00:28:13,820 --> 00:28:17,480
+submit it and it did go live it did end
+
+714
+00:28:17,480 --> 00:28:18,460
+up
+
+715
+00:28:18,460 --> 00:28:21,410
+being shown at Google i/o as one of the
+
+716
+00:28:21,410 --> 00:28:25,160
+experiments but the biggest lessons I
+
+717
+00:28:25,160 --> 00:28:27,050
+got from this entire project they
+
+718
+00:28:27,050 --> 00:28:29,210
+weren't code base they actually turn our
+
+719
+00:28:29,210 --> 00:28:35,420
+will be planning based the the time to
+
+720
+00:28:35,420 --> 00:28:37,250
+actually work on such a new technology
+
+721
+00:28:37,250 --> 00:28:38,900
+at this point in time there's not that
+
+722
+00:28:38,900 --> 00:28:40,340
+much information out there there's some
+
+723
+00:28:40,340 --> 00:28:42,110
+good videos but they're very deep dive
+
+724
+00:28:42,110 --> 00:28:46,670
+in videos I expect that a change with
+
+725
+00:28:46,670 --> 00:28:50,150
+time the google engineers are actually
+
+726
+00:28:50,150 --> 00:28:51,290
+really good for all this new technology
+
+727
+00:28:51,290 --> 00:28:53,090
+they want developers using this stuff
+
+728
+00:28:53,090 --> 00:28:54,800
+and they won't answer questions and give
+
+729
+00:28:54,800 --> 00:28:56,450
+you a hand I was really surprised at how
+
+730
+00:28:56,450 --> 00:28:58,760
+much help I got it wasn't you know they
+
+731
+00:28:58,760 --> 00:29:00,020
+won't write my code for me but they're
+
+732
+00:29:00,020 --> 00:29:02,150
+giving me feedback and suggestions Paul
+
+733
+00:29:02,150 --> 00:29:03,650
+Kinlan helped me with that the the
+
+734
+00:29:03,650 --> 00:29:05,750
+single page app solution he was looking
+
+735
+00:29:05,750 --> 00:29:07,400
+at it and he managed to work out where
+
+736
+00:29:07,400 --> 00:29:09,170
+it was happening and and and basically
+
+737
+00:29:09,170 --> 00:29:11,120
+said I need to move to a single page app
+
+738
+00:29:11,120 --> 00:29:13,990
+which was a pain but you know I did it
+
+739
+00:29:13,990 --> 00:29:16,400
+and the biggest thing was maybe the
+
+740
+00:29:16,400 --> 00:29:19,430
+horse came before the cart like I think
+
+741
+00:29:19,430 --> 00:29:21,200
+I focused a lot on the technology and
+
+742
+00:29:21,200 --> 00:29:22,670
+didn't really think too much about gains
+
+743
+00:29:22,670 --> 00:29:25,100
+mechanic at the game mechanics I'm not
+
+744
+00:29:25,100 --> 00:29:26,450
+hundred percent sure if it's a good game
+
+745
+00:29:26,450 --> 00:29:29,600
+like I could have quite easily tested
+
+746
+00:29:29,600 --> 00:29:30,920
+the game without any of the technology
+
+747
+00:29:30,920 --> 00:29:33,110
+but I focused on that tech and now I
+
+748
+00:29:33,110 --> 00:29:35,780
+have a game is playable and it's cool as
+
+749
+00:29:35,780 --> 00:29:37,700
+a demo but whether it's like one of
+
+750
+00:29:37,700 --> 00:29:42,990
+those addictive games I'm not sure I
+
+751
+00:29:43,000 --> 00:29:45,500
+really would love to say WebRTC is
+
+752
+00:29:45,500 --> 00:29:47,360
+really ready for prime time I don't
+
+753
+00:29:47,360 --> 00:29:49,760
+think it's quite there yet for
+
+754
+00:29:49,760 --> 00:29:51,590
+developers and the bottom it does say
+
+755
+00:29:51,590 --> 00:29:53,090
+check the expiry date like that's going
+
+756
+00:29:53,090 --> 00:29:55,610
+to change quickly and I'm pretty certain
+
+757
+00:29:55,610 --> 00:29:57,350
+in 12 months time we will be a place
+
+758
+00:29:57,350 --> 00:29:59,990
+where we can quite happily use WebRTC in
+
+759
+00:29:59,990 --> 00:30:02,030
+big projects and we're going to see it
+
+760
+00:30:02,030 --> 00:30:03,980
+in a lot more I'm confident we'll see it
+
+761
+00:30:03,980 --> 00:30:06,590
+a lot more places the resources will
+
+762
+00:30:06,590 --> 00:30:08,830
+there be more tutorial with spring casts
+
+763
+00:30:08,830 --> 00:30:14,540
+more talks on web RTC and Mobile's
+
+764
+00:30:14,540 --> 00:30:17,300
+looking pretty pretty good microsoft
+
+765
+00:30:17,300 --> 00:30:19,070
+support i have no clue what's going on
+
+766
+00:30:19,070 --> 00:30:20,150
+there so i don't know what
+
+767
+00:30:20,150 --> 00:30:23,110
+interoperability to going to look like
+
+768
+00:30:23,110 --> 00:30:28,380
+but it works so you know yay us
+
+769
+00:30:28,380 --> 00:30:31,050
+and I wanted a hit on a high note so
+
+770
+00:30:31,050 --> 00:30:33,570
+that's kind of my way of saying WebRTC
+
+771
+00:30:33,570 --> 00:30:35,010
+is actually pretty cool to play with but
+
+772
+00:30:35,010 --> 00:30:37,770
+it's maybe kind of a playground at the
+
+773
+00:30:37,770 --> 00:30:41,190
+moment there is code and all the source
+
+774
+00:30:41,190 --> 00:30:42,450
+code is online so you can kind of help
+
+775
+00:30:42,450 --> 00:30:45,180
+yourself don't judge me too much when
+
+776
+00:30:45,180 --> 00:30:46,800
+you're kind of like what what really
+
+777
+00:30:46,800 --> 00:30:48,360
+what where the comments that kind of
+
+778
+00:30:48,360 --> 00:30:51,590
+thing there are tests that coming and
+
+779
+00:30:51,590 --> 00:30:53,940
+but it's it's all online you can have a
+
+780
+00:30:53,940 --> 00:30:56,610
+play I don't think I've got time for
+
+781
+00:30:56,610 --> 00:30:59,010
+questions but you can kind of ask me
+
+782
+00:30:59,010 --> 00:31:00,420
+anything later on I'm sure I'll have a
+
+783
+00:31:00,420 --> 00:31:03,210
+beer in my hand at some point Ilana so
+
+784
+00:31:03,210 --> 00:31:05,100
+with that I think my times up and thanks
+
+785
+00:31:05,100 --> 00:31:19,660
+listening
+

@@ -1,0 +1,2333 @@
+1
+00:00:05,680 --> 00:00:08,960
+
+thank you for staying so long and I'm
+
+2
+00:00:08,960 --> 00:00:09,600
+gonna be
+
+3
+00:00:09,600 --> 00:00:12,630
+about how we are embedding v8d
+
+4
+00:00:12,630 --> 00:00:15,240
+javascript engine v8 in the native
+
+5
+00:00:15,240 --> 00:00:18,600
+script project how's the muder it's
+
+6
+00:00:18,600 --> 00:00:23,050
+required
+
+7
+00:00:23,060 --> 00:00:26,090
+[Applause]
+
+8
+00:00:26,090 --> 00:00:28,320
+so before we start just to make sure
+
+9
+00:00:28,320 --> 00:00:30,360
+that we're on the same page we'll
+
+10
+00:00:30,360 --> 00:00:34,350
+explain a few basic terms first what is
+
+11
+00:00:34,350 --> 00:00:37,140
+the JavaScript engine so JavaScript
+
+12
+00:00:37,140 --> 00:00:39,600
+engine is a computer program that
+
+13
+00:00:39,600 --> 00:00:41,309
+executes J's code
+
+14
+00:00:41,309 --> 00:00:45,510
+thanks Wikipedia and also most modern
+
+15
+00:00:45,510 --> 00:00:48,180
+JavaScript engines utilize just-in-time
+
+16
+00:00:48,180 --> 00:00:51,870
+compilation and when I first read that a
+
+17
+00:00:51,870 --> 00:00:55,589
+few years back I was like wait you just
+
+18
+00:00:55,589 --> 00:00:59,550
+say compilation I taught it I was
+
+19
+00:00:59,550 --> 00:01:01,710
+writing in a language that's kind of
+
+20
+00:01:01,710 --> 00:01:05,159
+interpreted and not compiled and I was I
+
+21
+00:01:05,159 --> 00:01:07,290
+was reading through different blog post
+
+22
+00:01:07,290 --> 00:01:08,970
+doing some research trying to figure out
+
+23
+00:01:08,970 --> 00:01:11,490
+what is going on it's my whole life a
+
+24
+00:01:11,490 --> 00:01:15,360
+lie was a was a reading yeah so it turns
+
+25
+00:01:15,360 --> 00:01:18,930
+out that yeah javascript is interpreted
+
+26
+00:01:18,930 --> 00:01:21,560
+but it's not just that the first
+
+27
+00:01:21,560 --> 00:01:24,119
+JavaScript engine that was created was
+
+28
+00:01:24,119 --> 00:01:26,609
+just the interpreter but it turns out
+
+29
+00:01:26,609 --> 00:01:28,859
+that we started choosing jealously for a
+
+30
+00:01:28,859 --> 00:01:31,409
+lot of more things that it was initially
+
+31
+00:01:31,409 --> 00:01:34,710
+thought is gonna be used for so there
+
+32
+00:01:34,710 --> 00:01:37,649
+had to be some performance improvements
+
+33
+00:01:37,649 --> 00:01:40,100
+to the way the JavaScript engine works
+
+34
+00:01:40,100 --> 00:01:45,810
+so this is what actually the modern
+
+35
+00:01:45,810 --> 00:01:50,280
+JavaScript engine engines do and the
+
+36
+00:01:50,280 --> 00:01:52,590
+blog post that I got it from is the jasc
+
+37
+00:01:52,590 --> 00:01:55,020
+if starboard startup performance by eros
+
+38
+00:01:55,020 --> 00:01:57,719
+money you can find the link later but
+
+39
+00:01:57,719 --> 00:01:59,640
+the blog post says that this is actually
+
+40
+00:01:59,640 --> 00:02:02,340
+a simplification of what javascript
+
+41
+00:02:02,340 --> 00:02:05,630
+engine that's under the hood I was like
+
+42
+00:02:05,630 --> 00:02:10,020
+ok cool so why do we actually need that
+
+43
+00:02:10,020 --> 00:02:13,740
+and as I mentioned before well
+
+44
+00:02:13,740 --> 00:02:16,100
+performance that's it
+
+45
+00:02:16,100 --> 00:02:20,640
+so the first just-in-time compiler and
+
+46
+00:02:20,640 --> 00:02:22,490
+very Tina
+
+47
+00:02:22,490 --> 00:02:25,930
+script engine was trace monkey which is
+
+48
+00:02:25,930 --> 00:02:28,630
+actually part of the spider monkey
+
+49
+00:02:28,630 --> 00:02:31,100
+JavaScript engine which was owned by a
+
+50
+00:02:31,100 --> 00:02:35,390
+Mozilla and it was back in 2007 or
+
+51
+00:02:35,390 --> 00:02:37,370
+something like that a little bit after
+
+52
+00:02:37,370 --> 00:02:40,310
+that v8 was released and that was the
+
+53
+00:02:40,310 --> 00:02:42,640
+same time when chrome was released and
+
+54
+00:02:42,640 --> 00:02:45,290
+this really boosted the performance of
+
+55
+00:02:45,290 --> 00:02:48,050
+JavaScript in the browser and everywhere
+
+56
+00:02:48,050 --> 00:02:48,650
+else
+
+57
+00:02:48,650 --> 00:02:53,360
+and that kind of explains how the whole
+
+58
+00:02:53,360 --> 00:02:56,810
+JavaScript engine development happened
+
+59
+00:02:56,810 --> 00:03:01,010
+and why is it I mean we started from
+
+60
+00:03:01,010 --> 00:03:03,860
+just some interpreters and this is what
+
+61
+00:03:03,860 --> 00:03:07,550
+we've got now so if you want to read the
+
+62
+00:03:07,550 --> 00:03:09,890
+proper explanation of what JIT compiler
+
+63
+00:03:09,890 --> 00:03:12,200
+is I really recommend this blog post by
+
+64
+00:03:12,200 --> 00:03:14,630
+link work was here today just two hours
+
+65
+00:03:14,630 --> 00:03:17,870
+before and yeah really excited to be on
+
+66
+00:03:17,870 --> 00:03:22,520
+the same stage anyway and another great
+
+67
+00:03:22,520 --> 00:03:25,760
+great resource is the talk life of a
+
+68
+00:03:25,760 --> 00:03:28,490
+script which is really recent and it's
+
+69
+00:03:28,490 --> 00:03:32,210
+by Satya and Yaqoob from the VA team and
+
+70
+00:03:32,210 --> 00:03:35,030
+they're explaining all the optimizations
+
+71
+00:03:35,030 --> 00:03:37,850
+that the v8 engine does under the hood
+
+72
+00:03:37,850 --> 00:03:43,130
+in order to make JavaScript faster let's
+
+73
+00:03:43,130 --> 00:03:43,640
+move on
+
+74
+00:03:43,640 --> 00:03:45,500
+I'm already mentioned that I'm going to
+
+75
+00:03:45,500 --> 00:03:47,510
+be talking about v8 it is a JavaScript
+
+76
+00:03:47,510 --> 00:03:50,060
+engine it is built at Google for Chrome
+
+77
+00:03:50,060 --> 00:03:56,300
+and it was open sourced in 2008 and here
+
+78
+00:03:56,300 --> 00:03:58,430
+I have this really cool video that you
+
+79
+00:03:58,430 --> 00:04:01,880
+can check out later is by Wars back who
+
+80
+00:04:01,880 --> 00:04:04,220
+was the first tech lead for the v8
+
+81
+00:04:04,220 --> 00:04:06,950
+project and what he said in that video
+
+82
+00:04:06,950 --> 00:04:11,240
+is that v8 is not just something that
+
+83
+00:04:11,240 --> 00:04:14,090
+chrome uses underneath you can actually
+
+84
+00:04:14,090 --> 00:04:17,290
+take v8 as a standalone project and
+
+85
+00:04:17,290 --> 00:04:22,070
+embed it at different place and this
+
+86
+00:04:22,070 --> 00:04:24,650
+kind of worked out well because node.js
+
+87
+00:04:24,650 --> 00:04:27,710
+embedded v8 and this is how we get
+
+88
+00:04:27,710 --> 00:04:30,440
+JavaScript on the server and what we're
+
+89
+00:04:30,440 --> 00:04:32,300
+trying to do in projects like native
+
+90
+00:04:32,300 --> 00:04:34,580
+script is actually bring JavaScript the
+
+91
+00:04:34,580 --> 00:04:37,830
+mobile world as well
+
+92
+00:04:37,840 --> 00:04:41,630
+so native script a few words about me I
+
+93
+00:04:41,630 --> 00:04:43,270
+am developer it's progress
+
+94
+00:04:43,270 --> 00:04:46,460
+part of the native script team and so
+
+95
+00:04:46,460 --> 00:04:48,770
+recently I became a GD for angular and
+
+96
+00:04:48,770 --> 00:04:51,230
+12 technologies are important thing
+
+97
+00:04:51,230 --> 00:04:52,880
+about me is that I love web pack I do
+
+98
+00:04:52,880 --> 00:04:54,890
+quite a lot of web pack things in native
+
+99
+00:04:54,890 --> 00:04:57,530
+script and this is I'm sure this is a
+
+100
+00:04:57,530 --> 00:04:59,480
+wipeout carrier but as you can see I'm
+
+101
+00:04:59,480 --> 00:05:03,050
+smiling because you have to accept these
+
+102
+00:05:03,050 --> 00:05:12,220
+things all right back on native script I
+
+103
+00:05:12,220 --> 00:05:15,050
+want a real story I read a short story
+
+104
+00:05:15,050 --> 00:05:18,080
+and I know I mean it's kind of weird but
+
+105
+00:05:18,080 --> 00:05:21,130
+I kind of had a long flight and then I
+
+106
+00:05:21,130 --> 00:05:25,700
+actually wrote that story and then I
+
+107
+00:05:25,700 --> 00:05:28,550
+could it's like 8% of it because it gets
+
+108
+00:05:28,550 --> 00:05:31,130
+even more weird so that's just an
+
+109
+00:05:31,130 --> 00:05:33,590
+explanation why why why it's like that
+
+110
+00:05:33,590 --> 00:05:34,610
+anyway
+
+111
+00:05:34,610 --> 00:05:36,890
+so we have the JavaScript world and we
+
+112
+00:05:36,890 --> 00:05:39,710
+have these great magical creatures
+
+113
+00:05:39,710 --> 00:05:42,919
+living in the JavaScript world not
+
+114
+00:05:42,919 --> 00:05:45,260
+really technology technologically
+
+115
+00:05:45,260 --> 00:05:47,510
+advanced but they know a lot of spells
+
+116
+00:05:47,510 --> 00:05:51,380
+and they're kind of like elves but not
+
+117
+00:05:51,380 --> 00:05:53,419
+like the Santa Claus
+
+118
+00:05:53,419 --> 00:05:55,760
+kind of type but more like deals from
+
+119
+00:05:55,760 --> 00:05:57,860
+worth of the Rings like magical handsome
+
+120
+00:05:57,860 --> 00:06:01,310
+awesome creatures and so I don't think
+
+121
+00:06:01,310 --> 00:06:02,870
+about the elves is that they're pretty
+
+122
+00:06:02,870 --> 00:06:07,580
+expansive as a nation or tribe and they
+
+123
+00:06:07,580 --> 00:06:10,310
+kinda expanded the browser world but
+
+124
+00:06:10,310 --> 00:06:13,070
+here's the zero difference we shouldn't
+
+125
+00:06:13,070 --> 00:06:17,210
+mix the terms browser and JavaScript
+
+126
+00:06:17,210 --> 00:06:18,700
+because they are not interchangeable
+
+127
+00:06:18,700 --> 00:06:21,260
+they're chinks in the browser which are
+
+128
+00:06:21,260 --> 00:06:22,690
+not part of the JavaScript language
+
+129
+00:06:22,690 --> 00:06:25,910
+obviously the most obvious difference is
+
+130
+00:06:25,910 --> 00:06:30,320
+the DOM and HTML
+
+131
+00:06:30,320 --> 00:06:36,939
+of course the someone say CSS
+
+132
+00:06:36,939 --> 00:06:40,479
+we're gonna come back back to CSS later
+
+133
+00:06:40,479 --> 00:06:43,909
+anyway another important world in our
+
+134
+00:06:43,909 --> 00:06:46,189
+story is the Android world and the
+
+135
+00:06:46,189 --> 00:06:48,579
+androids world obviously is populated by
+
+136
+00:06:48,579 --> 00:06:52,659
+robots which have really great
+
+137
+00:06:52,659 --> 00:06:55,219
+technological knowledge and they have a
+
+138
+00:06:55,219 --> 00:06:59,179
+lot of native resources and native
+
+139
+00:06:59,179 --> 00:07:00,679
+resource what is it
+
+140
+00:07:00,679 --> 00:07:04,849
+so satellites geolocation Bluetooth
+
+141
+00:07:04,849 --> 00:07:08,149
+camera augmented reality kids she
+
+142
+00:07:08,149 --> 00:07:09,619
+warning kids basically everything you
+
+143
+00:07:09,619 --> 00:07:12,919
+have on your phone today the Android
+
+144
+00:07:12,919 --> 00:07:15,349
+people take it for granted and they have
+
+145
+00:07:15,349 --> 00:07:20,359
+access to it so I'm doing a really but
+
+146
+00:07:20,359 --> 00:07:22,849
+metaphor generate world use your mobile
+
+147
+00:07:22,849 --> 00:07:28,639
+phone anyway so what is the deal the
+
+148
+00:07:28,639 --> 00:07:30,769
+folks from the JavaScript world the
+
+149
+00:07:30,769 --> 00:07:33,109
+elves are pretty expansive and they want
+
+150
+00:07:33,109 --> 00:07:34,819
+to use the native resources from the
+
+151
+00:07:34,819 --> 00:07:37,899
+Android world but they're not great
+
+152
+00:07:37,899 --> 00:07:41,360
+diplomats I mean it's probably the whole
+
+153
+00:07:41,360 --> 00:07:46,159
+Java JavaScript think anyway there is
+
+154
+00:07:46,159 --> 00:07:50,029
+not a really easy way to use native
+
+155
+00:07:50,029 --> 00:07:53,269
+resources from the Android world from
+
+156
+00:07:53,269 --> 00:07:56,629
+JavaScript and this is the problem that
+
+157
+00:07:56,629 --> 00:07:58,549
+we're trying to solve in native script
+
+158
+00:07:58,549 --> 00:08:02,509
+and if I say we it's kind of weird
+
+159
+00:08:02,509 --> 00:08:04,969
+because yet neither script has been part
+
+160
+00:08:04,969 --> 00:08:08,269
+of my life for three years and a if I
+
+161
+00:08:08,269 --> 00:08:12,259
+say we I mean the name script team and I
+
+162
+00:08:12,259 --> 00:08:13,789
+know this is the same slide what I was
+
+163
+00:08:13,789 --> 00:08:16,999
+too lazy to change it okay so shortly
+
+164
+00:08:16,999 --> 00:08:19,339
+native script is a framework that allows
+
+165
+00:08:19,339 --> 00:08:21,889
+you to build native mobile apps for
+
+166
+00:08:21,889 --> 00:08:24,549
+Android and iOS with JavaScript or
+
+167
+00:08:24,549 --> 00:08:27,139
+something a bit more sophisticated like
+
+168
+00:08:27,139 --> 00:08:34,550
+your angular really short overview of
+
+169
+00:08:34,550 --> 00:08:36,649
+the architecture obviously we have
+
+170
+00:08:36,649 --> 00:08:38,809
+Android and iOS on the bottom we have
+
+171
+00:08:38,809 --> 00:08:41,719
+may skip runtimes which allow us to have
+
+172
+00:08:41,719 --> 00:08:44,839
+access to the native resources from
+
+173
+00:08:44,839 --> 00:08:47,689
+JavaScript don't top that we have a
+
+174
+00:08:47,689 --> 00:08:50,480
+common layer which unifies the end
+
+175
+00:08:50,480 --> 00:08:54,110
+in the i/os api's so for example you've
+
+176
+00:08:54,110 --> 00:08:57,200
+ever had to build user interface on
+
+177
+00:08:57,200 --> 00:08:59,960
+android and user interface on iOS you
+
+178
+00:08:59,960 --> 00:09:02,330
+would have realized that they're quite
+
+179
+00:09:02,330 --> 00:09:05,870
+different so we provide a common
+
+180
+00:09:05,870 --> 00:09:09,560
+layouting structure or system that
+
+181
+00:09:09,560 --> 00:09:12,140
+allows you to write the same code and it
+
+182
+00:09:12,140 --> 00:09:14,660
+should kind of work the same way on both
+
+183
+00:09:14,660 --> 00:09:18,830
+Android and iOS on top of that we have a
+
+184
+00:09:18,830 --> 00:09:21,410
+really really small layer for the
+
+185
+00:09:21,410 --> 00:09:24,020
+application flavor framework which gives
+
+186
+00:09:24,020 --> 00:09:27,590
+you data bindings and navigation and we
+
+187
+00:09:27,590 --> 00:09:31,100
+also support angular and view and the
+
+188
+00:09:31,100 --> 00:09:33,890
+last important bit is that if there is
+
+189
+00:09:33,890 --> 00:09:37,100
+some library out there in the Android
+
+190
+00:09:37,100 --> 00:09:41,780
+world you can just wrap that as a notes
+
+191
+00:09:41,780 --> 00:09:44,840
+package ship it to NPM and anyone can
+
+192
+00:09:44,840 --> 00:09:48,050
+npm install your package and use it in
+
+193
+00:09:48,050 --> 00:09:51,920
+your native script app but today we're
+
+194
+00:09:51,920 --> 00:09:54,380
+going to be focusing on the name Swift
+
+195
+00:09:54,380 --> 00:09:54,950
+runtimes
+
+196
+00:09:54,950 --> 00:09:57,890
+and how we access the native resources
+
+197
+00:09:57,890 --> 00:10:00,170
+and more specifically we're going to
+
+198
+00:10:00,170 --> 00:10:02,840
+focus on the Android runtime because
+
+199
+00:10:02,840 --> 00:10:06,410
+this is where we embed v8 for iOS we
+
+200
+00:10:06,410 --> 00:10:08,800
+actually embed another JavaScript engine
+
+201
+00:10:08,800 --> 00:10:13,950
+JavaScript core which is used in Safari
+
+202
+00:10:13,960 --> 00:10:20,240
+so native API access important thing
+
+203
+00:10:20,240 --> 00:10:23,890
+about the elves they're not just like
+
+204
+00:10:23,890 --> 00:10:26,480
+not advanced in technology they also
+
+205
+00:10:26,480 --> 00:10:28,340
+don't have great scientific knowledge
+
+206
+00:10:28,340 --> 00:10:31,400
+but that's fine so even if they had
+
+207
+00:10:31,400 --> 00:10:33,290
+access to the native resources they
+
+208
+00:10:33,290 --> 00:10:36,080
+wouldn't really know how to use them so
+
+209
+00:10:36,080 --> 00:10:39,530
+what they do in that case is that they
+
+210
+00:10:39,530 --> 00:10:41,810
+send out some spice in the Android world
+
+211
+00:10:41,810 --> 00:10:45,440
+and these PI's gather information about
+
+212
+00:10:45,440 --> 00:10:48,290
+the native resources so they go back to
+
+213
+00:10:48,290 --> 00:10:49,700
+the JavaScript world with that
+
+214
+00:10:49,700 --> 00:10:53,360
+information and now the elves know how
+
+215
+00:10:53,360 --> 00:10:57,800
+to use the native resources but they
+
+216
+00:10:57,800 --> 00:10:59,840
+have to get there so we're still not
+
+217
+00:10:59,840 --> 00:11:01,910
+quite there but they know how to use the
+
+218
+00:11:01,910 --> 00:11:03,860
+resources
+
+219
+00:11:03,860 --> 00:11:08,459
+how does that look like in more boring
+
+220
+00:11:08,459 --> 00:11:11,430
+way so we have a native library for
+
+221
+00:11:11,430 --> 00:11:14,970
+example Android SDK or some animation
+
+222
+00:11:14,970 --> 00:11:20,399
+library in Android we parse through the
+
+223
+00:11:20,399 --> 00:11:23,449
+whole library to generate metadata
+
+224
+00:11:23,449 --> 00:11:26,670
+basically we get every package every API
+
+225
+00:11:26,670 --> 00:11:29,370
+did that's available and gathering
+
+226
+00:11:29,370 --> 00:11:31,829
+information how we can use it so if
+
+227
+00:11:31,829 --> 00:11:34,860
+there is some method we should know what
+
+228
+00:11:34,860 --> 00:11:37,860
+how many arguments the method accepts
+
+229
+00:11:37,860 --> 00:11:40,680
+what are their types what is the return
+
+230
+00:11:40,680 --> 00:11:43,019
+type so we gather all that information
+
+231
+00:11:43,019 --> 00:11:48,300
+and package that inside the application
+
+232
+00:11:48,300 --> 00:11:54,300
+itself in some binary format and the
+
+233
+00:11:54,300 --> 00:11:57,569
+application package itself is not very
+
+234
+00:11:57,569 --> 00:11:59,970
+different from a regular Android
+
+235
+00:11:59,970 --> 00:12:04,740
+application so we have just the Android
+
+236
+00:12:04,740 --> 00:12:06,990
+application inside it we have the
+
+237
+00:12:06,990 --> 00:12:11,370
+JavaScript code as some assets and 20q
+
+238
+00:12:11,370 --> 00:12:13,920
+the JavaScript code we also have a
+
+239
+00:12:13,920 --> 00:12:15,630
+library which contains the native
+
+240
+00:12:15,630 --> 00:12:18,329
+scripts runtime and v8 which is the
+
+241
+00:12:18,329 --> 00:12:23,610
+engine that can execute JavaScript we
+
+242
+00:12:23,610 --> 00:12:26,329
+run the application the Weibull restarts
+
+243
+00:12:26,329 --> 00:12:30,569
+we initialize v8 then we set up some
+
+244
+00:12:30,569 --> 00:12:31,920
+callbacks that we're going to take a
+
+245
+00:12:31,920 --> 00:12:36,420
+look at right the next slide and then we
+
+246
+00:12:36,420 --> 00:12:42,149
+launch the regular Android activity and
+
+247
+00:12:42,149 --> 00:12:45,329
+we have a normal Android up running so
+
+248
+00:12:45,329 --> 00:12:45,899
+Kovaks
+
+249
+00:12:45,899 --> 00:12:48,240
+very important if you are ever gonna
+
+250
+00:12:48,240 --> 00:12:51,680
+embed v8 callbacks or everywhere
+
+251
+00:12:51,680 --> 00:12:54,779
+first we have a field get a callback so
+
+252
+00:12:54,779 --> 00:12:57,720
+con stop jack Tico's java.lang object is
+
+253
+00:12:57,720 --> 00:13:00,149
+actually a valid JavaScript code in
+
+254
+00:13:00,149 --> 00:13:05,220
+native script Java comes from something
+
+255
+00:13:05,220 --> 00:13:08,130
+that we set on the v8 instance as a
+
+256
+00:13:08,130 --> 00:13:10,980
+global object because it was inside the
+
+257
+00:13:10,980 --> 00:13:14,389
+metadata so we know that we can access
+
+258
+00:13:14,389 --> 00:13:15,920
+the Java
+
+259
+00:13:15,920 --> 00:13:19,670
+or Java because it's available in the
+
+260
+00:13:19,670 --> 00:13:26,509
+Android world java.lang is actually
+
+261
+00:13:26,509 --> 00:13:28,699
+where the field Gator Quebec is attached
+
+262
+00:13:28,699 --> 00:13:31,850
+so whenever someone calls java.lang from
+
+263
+00:13:31,850 --> 00:13:34,309
+the JavaScript world we trigger that
+
+264
+00:13:34,309 --> 00:13:37,069
+field get her callback and the Quebec
+
+265
+00:13:37,069 --> 00:13:40,429
+finds the metadata inside the java.lang
+
+266
+00:13:40,429 --> 00:13:43,639
+package and returns what is exactly
+
+267
+00:13:43,639 --> 00:13:46,850
+there in that package what we can what
+
+268
+00:13:46,850 --> 00:13:48,129
+we can use
+
+269
+00:13:48,129 --> 00:13:51,769
+and finally Java rank object just
+
+270
+00:13:51,769 --> 00:13:54,529
+returns the object class from the
+
+271
+00:13:54,529 --> 00:14:02,299
+java.lang metadata kind of constructor
+
+272
+00:14:02,299 --> 00:14:05,179
+Quebec okay whenever we try to create
+
+273
+00:14:05,179 --> 00:14:07,299
+the new instance of something in the
+
+274
+00:14:07,299 --> 00:14:10,910
+Android world we trigger a constructor
+
+275
+00:14:10,910 --> 00:14:13,160
+callback which was placed there by the
+
+276
+00:14:13,160 --> 00:14:16,100
+name super on time so the constructor
+
+277
+00:14:16,100 --> 00:14:18,109
+Quebec creates the objects in generate
+
+278
+00:14:18,109 --> 00:14:21,679
+world and it also creates a proxy object
+
+279
+00:14:21,679 --> 00:14:24,350
+in the JavaScript world and then returns
+
+280
+00:14:24,350 --> 00:14:28,160
+the proxy object the method Quebec
+
+281
+00:14:28,160 --> 00:14:30,499
+okay so what is special about the proxy
+
+282
+00:14:30,499 --> 00:14:33,110
+javascript object for example if we have
+
+283
+00:14:33,110 --> 00:14:35,779
+two methods in the Java object and we're
+
+284
+00:14:35,779 --> 00:14:37,639
+going to have exactly the same methods
+
+285
+00:14:37,639 --> 00:14:41,389
+in the JavaScript object and in these
+
+286
+00:14:41,389 --> 00:14:45,169
+methods we attach a method call back so
+
+287
+00:14:45,169 --> 00:14:47,629
+whenever someone calls that method on
+
+288
+00:14:47,629 --> 00:14:49,699
+the JavaScript object it's going to
+
+289
+00:14:49,699 --> 00:14:52,220
+trigger that Quebec in the Quebec is
+
+290
+00:14:52,220 --> 00:14:54,019
+actually gonna called the original Java
+
+291
+00:14:54,019 --> 00:14:58,489
+method and after it's caught we're going
+
+292
+00:14:58,489 --> 00:15:02,029
+to get some results and we're gonna pass
+
+293
+00:15:02,029 --> 00:15:04,779
+it back and this is a more of an
+
+294
+00:15:04,779 --> 00:15:07,429
+implementation detail but we can't
+
+295
+00:15:07,429 --> 00:15:09,499
+actually just pass back the return
+
+296
+00:15:09,499 --> 00:15:13,339
+result to the JavaScript function but we
+
+297
+00:15:13,339 --> 00:15:16,850
+have to set the result as a return
+
+298
+00:15:16,850 --> 00:15:20,720
+argument of that proxy function or
+
+299
+00:15:20,720 --> 00:15:26,419
+method okay so so far we know that we
+
+300
+00:15:26,419 --> 00:15:29,870
+have metadata but it is exactly
+
+301
+00:15:29,870 --> 00:15:32,330
+it's actually not enough to have
+
+302
+00:15:32,330 --> 00:15:35,990
+metadata in order to call stuff on the
+
+303
+00:15:35,990 --> 00:15:39,410
+native Android world so we're using
+
+304
+00:15:39,410 --> 00:15:42,050
+something called j'ni or Java native
+
+305
+00:15:42,050 --> 00:15:46,160
+interface and because currently we
+
+306
+00:15:46,160 --> 00:15:48,560
+started v8 this one virtual machine we
+
+307
+00:15:48,560 --> 00:15:50,540
+also have the dalvik virtual machine
+
+308
+00:15:50,540 --> 00:15:55,220
+running on the Android device J&I is the
+
+309
+00:15:55,220 --> 00:15:58,910
+thing that passes all calls from the
+
+310
+00:15:58,910 --> 00:16:01,010
+JavaScript virtual machine down to the
+
+311
+00:16:01,010 --> 00:16:04,160
+Java Virtual Machine and the same way
+
+312
+00:16:04,160 --> 00:16:08,450
+back this is the actual bridge if you
+
+313
+00:16:08,450 --> 00:16:12,830
+ever heard of a bridge inside of native
+
+314
+00:16:12,830 --> 00:16:16,340
+script okay but there's a little
+
+315
+00:16:16,340 --> 00:16:18,800
+complication here what happens if the
+
+316
+00:16:18,800 --> 00:16:21,920
+Java object the Java method returns a
+
+317
+00:16:21,920 --> 00:16:23,320
+string
+
+318
+00:16:23,320 --> 00:16:27,050
+well the shrink is gonna be of type Java
+
+319
+00:16:27,050 --> 00:16:30,680
+long string which is definitely not the
+
+320
+00:16:30,680 --> 00:16:35,090
+same as a JavaScript string or a string
+
+321
+00:16:35,090 --> 00:16:36,980
+object or even a string a string
+
+322
+00:16:36,980 --> 00:16:39,500
+primitive they're just two different
+
+323
+00:16:39,500 --> 00:16:43,250
+data formats that's why we need some
+
+324
+00:16:43,250 --> 00:16:46,190
+kind of marshaling service that can
+
+325
+00:16:46,190 --> 00:16:49,340
+convert data from the Java world to the
+
+326
+00:16:49,340 --> 00:16:53,920
+JavaScript world and vice versa and
+
+327
+00:16:53,920 --> 00:16:57,140
+maybe you'd ask if you think more about
+
+328
+00:16:57,140 --> 00:16:59,750
+it what about objects I mean wouldn't it
+
+329
+00:16:59,750 --> 00:17:03,050
+be terribly slow if we start converting
+
+330
+00:17:03,050 --> 00:17:06,079
+objects from the Java world back to
+
+331
+00:17:06,079 --> 00:17:08,720
+JavaScript well I should this is why we
+
+332
+00:17:08,720 --> 00:17:11,540
+create proxies this and of course
+
+333
+00:17:11,540 --> 00:17:16,130
+attaching method call backs so we use
+
+334
+00:17:16,130 --> 00:17:22,030
+smush ring for primitives and arrays and
+
+335
+00:17:22,030 --> 00:17:24,880
+obviously the marshaling service and
+
+336
+00:17:24,880 --> 00:17:29,210
+j'ni are c-3po in our already weird
+
+337
+00:17:29,210 --> 00:17:31,490
+story because c-3po is a protocol droid
+
+338
+00:17:31,490 --> 00:17:33,620
+so it translates messages back and forth
+
+339
+00:17:33,620 --> 00:17:39,570
+and yeah really proud of that comparison
+
+340
+00:17:39,580 --> 00:17:43,320
+so let's see very quickly how that works
+
+341
+00:17:43,320 --> 00:17:45,990
+we're trying to instantiate a new native
+
+342
+00:17:45,990 --> 00:17:48,980
+object we call the constructor callback
+
+343
+00:17:48,980 --> 00:17:51,509
+this requests an instance of the class
+
+344
+00:17:51,509 --> 00:17:55,799
+from the Android virtual machine we get
+
+345
+00:17:55,799 --> 00:17:59,009
+back the instance of the class we return
+
+346
+00:17:59,009 --> 00:18:00,809
+which way the JavaScript proxy object
+
+347
+00:18:00,809 --> 00:18:04,769
+and return it back then we try to call
+
+348
+00:18:04,769 --> 00:18:08,639
+some method we come Kody method callback
+
+349
+00:18:08,639 --> 00:18:11,480
+that was attached on the proxy object
+
+350
+00:18:11,480 --> 00:18:15,059
+then through the method callback we call
+
+351
+00:18:15,059 --> 00:18:18,419
+the actual native method we get back the
+
+352
+00:18:18,419 --> 00:18:21,120
+result from the Java world and then
+
+353
+00:18:21,120 --> 00:18:25,289
+convert it to a JavaScript data format
+
+354
+00:18:25,289 --> 00:18:29,580
+and assign it to the variable so far so
+
+355
+00:18:29,580 --> 00:18:33,360
+good okay we're ready for I have no idea
+
+356
+00:18:33,360 --> 00:18:36,750
+how much time I have it's just getting
+
+357
+00:18:36,750 --> 00:18:37,529
+interesting
+
+358
+00:18:37,529 --> 00:18:42,720
+cool let's talk about multi-threading in
+
+359
+00:18:42,720 --> 00:18:49,440
+JavaScript weird cool I will try to
+
+360
+00:18:49,440 --> 00:18:54,059
+explain the term junk or there are a lot
+
+361
+00:18:54,059 --> 00:18:58,679
+of ways to code that behavior but here's
+
+362
+00:18:58,679 --> 00:19:00,779
+the thing most of the devices that we're
+
+363
+00:19:00,779 --> 00:19:05,190
+using nowadays have to draw something 60
+
+364
+00:19:05,190 --> 00:19:08,159
+times per second on the screen so this
+
+365
+00:19:08,159 --> 00:19:12,720
+is what we call a frame rate the frame
+
+366
+00:19:12,720 --> 00:19:15,450
+rate of a usual device nowadays is 60
+
+367
+00:19:15,450 --> 00:19:18,299
+frames per second and that means that we
+
+368
+00:19:18,299 --> 00:19:21,480
+basically have 16 milliseconds to draw a
+
+369
+00:19:21,480 --> 00:19:25,009
+single frame on the device and that
+
+370
+00:19:25,009 --> 00:19:27,539
+means that whatever computations we are
+
+371
+00:19:27,539 --> 00:19:30,000
+doing right now we have to finish in 16
+
+372
+00:19:30,000 --> 00:19:31,649
+milliseconds and be ready to draw
+
+373
+00:19:31,649 --> 00:19:32,639
+something on the screen
+
+374
+00:19:32,639 --> 00:19:35,129
+and of course 60 milliseconds is the
+
+375
+00:19:35,129 --> 00:19:37,549
+upper bound because there may be other
+
+376
+00:19:37,549 --> 00:19:40,919
+computations happening and this may be
+
+377
+00:19:40,919 --> 00:19:44,220
+actually down to 10 milliseconds in the
+
+378
+00:19:44,220 --> 00:19:47,340
+browser which is not a lot of time and
+
+379
+00:19:47,340 --> 00:19:51,120
+so what happens if we fail to meet that
+
+380
+00:19:51,120 --> 00:19:56,010
+10 milliseconds well we drop a frame or
+
+381
+00:19:56,010 --> 00:19:57,320
+we skip a frame
+
+382
+00:19:57,320 --> 00:20:03,900
+and when we start skipping frames where
+
+383
+00:20:03,900 --> 00:20:06,360
+things start to happen and this is the
+
+384
+00:20:06,360 --> 00:20:09,900
+term junk I'm gonna put that on a really
+
+385
+00:20:09,900 --> 00:20:15,630
+slow motion so that we can see the
+
+386
+00:20:15,630 --> 00:20:21,600
+actual animation cool awesome so here we
+
+387
+00:20:21,600 --> 00:20:24,210
+have a really smooth animation running
+
+388
+00:20:24,210 --> 00:20:28,790
+in 60 frames per second focus on D I
+
+389
+00:20:28,790 --> 00:20:31,410
+just realized this is a beard
+
+390
+00:20:31,410 --> 00:20:39,059
+I told it's a scarf anyway yeah so focus
+
+391
+00:20:39,059 --> 00:20:42,450
+on the beards 60 frames per seconds
+
+392
+00:20:42,450 --> 00:20:46,080
+looks pretty cool here it kind of keeps
+
+393
+00:20:46,080 --> 00:20:49,740
+a few frames right 15 frames per second
+
+394
+00:20:49,740 --> 00:20:52,260
+you can definitely see the difference
+
+395
+00:20:52,260 --> 00:20:54,480
+between this animation and this
+
+396
+00:20:54,480 --> 00:20:57,240
+animation so this is called junk and
+
+397
+00:20:57,240 --> 00:20:59,520
+it's very obvious when you start
+
+398
+00:20:59,520 --> 00:21:05,700
+scrolling and the list just steps or
+
+399
+00:21:05,700 --> 00:21:11,610
+lags cool why is that important well we
+
+400
+00:21:11,610 --> 00:21:14,220
+run the JavaScript in native script on a
+
+401
+00:21:14,220 --> 00:21:17,070
+single thread and that is obviously the
+
+402
+00:21:17,070 --> 00:21:20,970
+user interface thread so that might
+
+403
+00:21:20,970 --> 00:21:24,270
+cause junk in some cases it won't cause
+
+404
+00:21:24,270 --> 00:21:24,750
+jank
+
+405
+00:21:24,750 --> 00:21:28,650
+if you're using native script the right
+
+406
+00:21:28,650 --> 00:21:32,490
+way no if you're building user interface
+
+407
+00:21:32,490 --> 00:21:34,350
+you won't have any problem because
+
+408
+00:21:34,350 --> 00:21:36,840
+native script is using native components
+
+409
+00:21:36,840 --> 00:21:39,620
+underneath if you're building animations
+
+410
+00:21:39,620 --> 00:21:41,730
+that won't be a problem because
+
+411
+00:21:41,730 --> 00:21:43,830
+underneath we're using native animations
+
+412
+00:21:43,830 --> 00:21:47,130
+and so on and so on but it will cause
+
+413
+00:21:47,130 --> 00:21:49,710
+gen if you're executing CPU intensive
+
+414
+00:21:49,710 --> 00:21:51,990
+operations for example if you're trying
+
+415
+00:21:51,990 --> 00:21:54,809
+to calculate Fibonacci numbers in a very
+
+416
+00:21:54,809 --> 00:21:57,690
+an optimized way which is something we
+
+417
+00:21:57,690 --> 00:21:59,390
+do in our everyday lives
+
+418
+00:21:59,390 --> 00:22:03,240
+perfect example so this would cause Jan
+
+419
+00:22:03,240 --> 00:22:05,220
+because it will stress the main trait
+
+420
+00:22:05,220 --> 00:22:09,660
+and the matron won't be able to to put
+
+421
+00:22:09,660 --> 00:22:10,770
+out
+
+422
+00:22:10,770 --> 00:22:14,370
+you know 60 frames per second so how do
+
+423
+00:22:14,370 --> 00:22:17,130
+we solve that problem in JavaScript
+
+424
+00:22:17,130 --> 00:22:22,170
+well the browser has web workers and in
+
+425
+00:22:22,170 --> 00:22:23,490
+native script we call them worker
+
+426
+00:22:23,490 --> 00:22:25,790
+threads but basically they're just
+
+427
+00:22:25,790 --> 00:22:28,830
+background threads or separate threads
+
+428
+00:22:28,830 --> 00:22:31,680
+than the user interface thread in the
+
+429
+00:22:31,680 --> 00:22:38,070
+JavaScript world okay the deal with the
+
+430
+00:22:38,070 --> 00:22:40,020
+worker threads is that you can create
+
+431
+00:22:40,020 --> 00:22:42,270
+them they can do some computations in
+
+432
+00:22:42,270 --> 00:22:44,910
+the background and then they can return
+
+433
+00:22:44,910 --> 00:22:47,730
+some result that's the whole the whole
+
+434
+00:22:47,730 --> 00:22:52,050
+thing the downsides in a new script is
+
+435
+00:22:52,050 --> 00:22:54,300
+that you can't share JavaScript memory
+
+436
+00:22:54,300 --> 00:22:56,940
+you can actually share native objects
+
+437
+00:22:56,940 --> 00:23:00,090
+and also the communication is limited so
+
+438
+00:23:00,090 --> 00:23:02,460
+you it's not a great idea to return
+
+439
+00:23:02,460 --> 00:23:06,810
+really large objects or recursive
+
+440
+00:23:06,810 --> 00:23:11,400
+objects also can't be returned okay some
+
+441
+00:23:11,400 --> 00:23:14,690
+VA time the really interesting thing
+
+442
+00:23:14,690 --> 00:23:18,300
+what is the nice relate to v8 well this
+
+443
+00:23:18,300 --> 00:23:20,910
+is a running instance of the engine and
+
+444
+00:23:20,910 --> 00:23:23,850
+is actually a v8 way to allocate memory
+
+445
+00:23:23,850 --> 00:23:26,120
+for some script that's running and
+
+446
+00:23:26,120 --> 00:23:29,460
+isolate that memory so it can't be
+
+447
+00:23:29,460 --> 00:23:33,990
+accessed from other processes and also
+
+448
+00:23:33,990 --> 00:23:36,870
+you can have many isolates and they can
+
+449
+00:23:36,870 --> 00:23:42,650
+run in parallel another similar term or
+
+450
+00:23:42,650 --> 00:23:45,690
+related term is a context one isolate
+
+451
+00:23:45,690 --> 00:23:48,770
+can have multiple contexts the context
+
+452
+00:23:48,770 --> 00:23:52,050
+can run in parallel so basically when
+
+453
+00:23:52,050 --> 00:23:54,270
+when you're running a script in an
+
+454
+00:23:54,270 --> 00:23:56,910
+isolate you should explicitly specify
+
+455
+00:23:56,910 --> 00:23:59,280
+the the context what is the constant
+
+456
+00:23:59,280 --> 00:24:03,890
+context right now so how do you think we
+
+457
+00:24:03,890 --> 00:24:06,720
+implemented worker threads with isolates
+
+458
+00:24:06,720 --> 00:24:14,520
+or with context isolates contexts we
+
+459
+00:24:14,520 --> 00:24:16,760
+didn't implement
+
+460
+00:24:16,760 --> 00:24:20,630
+okay well the answer is isolate and
+
+461
+00:24:20,630 --> 00:24:24,460
+everyone raised their hint was no one
+
+462
+00:24:24,460 --> 00:24:33,500
+guessed right cool so worker traits are
+
+463
+00:24:33,500 --> 00:24:35,690
+isolates basically you create a new
+
+464
+00:24:35,690 --> 00:24:39,710
+instance of v8 you attach some callbacks
+
+465
+00:24:39,710 --> 00:24:42,650
+or that G to isolate can communicate and
+
+466
+00:24:42,650 --> 00:24:44,600
+that's how we have worker threads and
+
+467
+00:24:44,600 --> 00:24:47,120
+the way they work in browsers is pretty
+
+468
+00:24:47,120 --> 00:24:49,130
+similar okay
+
+469
+00:24:49,130 --> 00:24:53,960
+lasting snapshots let's talk about time
+
+470
+00:24:53,960 --> 00:24:56,929
+and I don't mean that I'm running out of
+
+471
+00:24:56,929 --> 00:25:01,910
+time although that's true but what takes
+
+472
+00:25:01,910 --> 00:25:05,120
+time in a mobile applications and more
+
+473
+00:25:05,120 --> 00:25:08,390
+specifically what takes time on startup
+
+474
+00:25:08,390 --> 00:25:12,559
+well obviously on the mobile device we
+
+475
+00:25:12,559 --> 00:25:15,280
+don't have Network requests all the
+
+476
+00:25:15,280 --> 00:25:18,830
+scripts that we're running when we're
+
+477
+00:25:18,830 --> 00:25:20,750
+starting the applications are already on
+
+478
+00:25:20,750 --> 00:25:23,030
+the device but we have to get them from
+
+479
+00:25:23,030 --> 00:25:25,160
+the file system so that takes time if
+
+480
+00:25:25,160 --> 00:25:29,480
+there are many files also parsing and
+
+481
+00:25:29,480 --> 00:25:33,370
+compiling JavaScript takes time because
+
+482
+00:25:33,370 --> 00:25:38,809
+JavaScript engines and how do we solve
+
+483
+00:25:38,809 --> 00:25:41,000
+the problem they actually these two
+
+484
+00:25:41,000 --> 00:25:42,860
+things can take quite a lot of time and
+
+485
+00:25:42,860 --> 00:25:45,740
+this is a screenshot from two years ago
+
+486
+00:25:45,740 --> 00:25:49,280
+and at the time that was how much it
+
+487
+00:25:49,280 --> 00:25:52,429
+took to start an a script application in
+
+488
+00:25:52,429 --> 00:25:55,120
+a very an optimized way of course and
+
+489
+00:25:55,120 --> 00:25:58,850
+two seconds just to load the JavaScript
+
+490
+00:25:58,850 --> 00:26:03,679
+up the app it's kind of weird so how do
+
+491
+00:26:03,679 --> 00:26:06,679
+we solve that problem first we can
+
+492
+00:26:06,679 --> 00:26:09,770
+borrow our app so we can use a tool like
+
+493
+00:26:09,770 --> 00:26:12,500
+web pack to get all of our millions of
+
+494
+00:26:12,500 --> 00:26:16,370
+files in our application and output a
+
+495
+00:26:16,370 --> 00:26:20,600
+few files for example - so that way we
+
+496
+00:26:20,600 --> 00:26:22,700
+won't be making millions of file
+
+497
+00:26:22,700 --> 00:26:24,919
+requests on startup we were making just
+
+498
+00:26:24,919 --> 00:26:28,770
+two file requests
+
+499
+00:26:28,780 --> 00:26:31,120
+person compiled obviously we can skip
+
+500
+00:26:31,120 --> 00:26:33,100
+that part we just have to isolate our
+
+501
+00:26:33,100 --> 00:26:35,740
+JavaScript code somehow but there is
+
+502
+00:26:35,740 --> 00:26:38,080
+this trick which is called custom
+
+503
+00:26:38,080 --> 00:26:40,150
+startup snapshots which is a really
+
+504
+00:26:40,150 --> 00:26:42,040
+great feature provided by the v8 engine
+
+505
+00:26:42,040 --> 00:26:45,790
+and I'm not sure if it's the only one
+
+506
+00:26:45,790 --> 00:26:48,750
+but it's definitely not provided by JSC
+
+507
+00:26:48,750 --> 00:26:52,680
+that's why we have it only on Android so
+
+508
+00:26:52,680 --> 00:26:55,750
+the way it works is that you take a
+
+509
+00:26:55,750 --> 00:26:57,580
+JavaScript file you run it through some
+
+510
+00:26:57,580 --> 00:27:01,120
+generation tool that outputs that
+
+511
+00:27:01,120 --> 00:27:03,940
+executes the code and then you take
+
+512
+00:27:03,940 --> 00:27:06,430
+basically a snapshot of the heap at the
+
+513
+00:27:06,430 --> 00:27:09,340
+current time and output that in some
+
+514
+00:27:09,340 --> 00:27:12,940
+binary file and the binary file gets in
+
+515
+00:27:12,940 --> 00:27:14,650
+your file pack in your application
+
+516
+00:27:14,650 --> 00:27:18,190
+package and when you start the app you
+
+517
+00:27:18,190 --> 00:27:21,250
+load the snapshot binary you set some
+
+518
+00:27:21,250 --> 00:27:24,670
+parameters for the isolates passing
+
+519
+00:27:24,670 --> 00:27:27,010
+these snapshots binary and then when you
+
+520
+00:27:27,010 --> 00:27:28,840
+create the new isolate you can basically
+
+521
+00:27:28,840 --> 00:27:31,390
+instruct it to create the new context
+
+522
+00:27:31,390 --> 00:27:34,270
+from the already loaded heap so it
+
+523
+00:27:34,270 --> 00:27:36,610
+doesn't have to load the JavaScript from
+
+524
+00:27:36,610 --> 00:27:37,360
+the filesystem
+
+525
+00:27:37,360 --> 00:27:40,300
+compile it parse it whatever it does
+
+526
+00:27:40,300 --> 00:27:43,660
+underneath and it basically takes these
+
+527
+00:27:43,660 --> 00:27:48,520
+two seconds to zero and this is a little
+
+528
+00:27:48,520 --> 00:27:51,100
+bit of code and if you're interested and
+
+529
+00:27:51,100 --> 00:27:53,950
+not it's not going to read it obviously
+
+530
+00:27:53,950 --> 00:27:56,080
+because I don't have time but you can
+
+531
+00:27:56,080 --> 00:27:57,760
+find it in the slides later I'm going to
+
+532
+00:27:57,760 --> 00:28:01,660
+share them and this section is C++ code
+
+533
+00:28:01,660 --> 00:28:03,970
+but the idea of the that code here was
+
+534
+00:28:03,970 --> 00:28:06,070
+that it's not that hard to get a grasp
+
+535
+00:28:06,070 --> 00:28:10,650
+of how you can embed v8 it's it's free
+
+536
+00:28:10,650 --> 00:28:17,320
+actually understandable API okay what
+
+537
+00:28:17,320 --> 00:28:20,340
+are the limitations of the snapshots
+
+538
+00:28:20,340 --> 00:28:23,020
+basically we are executing the code at
+
+539
+00:28:23,020 --> 00:28:25,660
+Build time so we don't have any access
+
+540
+00:28:25,660 --> 00:28:28,420
+to the native funds rate or whatever API
+
+541
+00:28:28,420 --> 00:28:32,740
+is also we don't have require and I
+
+542
+00:28:32,740 --> 00:28:37,190
+don't have time to explain that but
+
+543
+00:28:37,200 --> 00:28:39,790
+finally later I can talk to you about
+
+544
+00:28:39,790 --> 00:28:41,580
+require where does it
+
+545
+00:28:41,580 --> 00:28:45,840
+from and why it's not a JavaScript
+
+546
+00:28:45,840 --> 00:28:49,230
+Tinky actually anyway also third-party
+
+547
+00:28:49,230 --> 00:28:52,350
+codes can break the snapshots because
+
+548
+00:28:52,350 --> 00:28:54,360
+we're not sure if the third-party code
+
+549
+00:28:54,360 --> 00:28:56,880
+is now trying to access something which
+
+550
+00:28:56,880 --> 00:29:00,450
+is not available at Build time so how
+
+551
+00:29:00,450 --> 00:29:02,820
+can we solve that first we can wrap
+
+552
+00:29:02,820 --> 00:29:06,330
+native API access here obviously we're
+
+553
+00:29:06,330 --> 00:29:09,600
+trying to access new Android text format
+
+554
+00:29:09,600 --> 00:29:12,330
+time and if we execute that in a better
+
+555
+00:29:12,330 --> 00:29:15,240
+context without metadata without j'ni we
+
+556
+00:29:15,240 --> 00:29:17,460
+don't have hundred so this is going to
+
+557
+00:29:17,460 --> 00:29:19,590
+throw an error the way to fix that is
+
+558
+00:29:19,590 --> 00:29:22,230
+just to wrap that in a getter function
+
+559
+00:29:22,230 --> 00:29:26,490
+and you get the time lazily inside the
+
+560
+00:29:26,490 --> 00:29:28,710
+other function that does some
+
+561
+00:29:28,710 --> 00:29:34,830
+complicated things does the audio and if
+
+562
+00:29:34,830 --> 00:29:37,170
+you're really lazy I don't have time to
+
+563
+00:29:37,170 --> 00:29:39,150
+explain that code but you can create
+
+564
+00:29:39,150 --> 00:29:42,570
+getters like that I'm gonna give you
+
+565
+00:29:42,570 --> 00:29:44,790
+just a few seconds to wrap your hand
+
+566
+00:29:44,790 --> 00:29:47,550
+around the first thing it's a very
+
+567
+00:29:47,550 --> 00:29:52,560
+interesting function yeah I still don't
+
+568
+00:29:52,560 --> 00:29:58,230
+get it anyway so it is that you have to
+
+569
+00:29:58,230 --> 00:30:00,690
+be lazy when trying to access in 85
+
+570
+00:30:00,690 --> 00:30:05,390
+years and just really quick reference
+
+571
+00:30:05,390 --> 00:30:09,990
+the editor item is using snapshots to
+
+572
+00:30:09,990 --> 00:30:12,000
+optimize their startup time as well and
+
+573
+00:30:12,000 --> 00:30:14,250
+they have a great blog post on how they
+
+574
+00:30:14,250 --> 00:30:20,360
+used keep snapshots to to do that and
+
+575
+00:30:20,360 --> 00:30:22,770
+garbage collection and obviously if I
+
+576
+00:30:22,770 --> 00:30:24,210
+start talking about garbage collection
+
+577
+00:30:24,210 --> 00:30:27,210
+right now we can just flow into the next
+
+578
+00:30:27,210 --> 00:30:30,180
+day and if you're interesting in how
+
+579
+00:30:30,180 --> 00:30:32,610
+we're trying to synchronize to garbage
+
+580
+00:30:32,610 --> 00:30:37,320
+collectors the v8s one and Avex one you
+
+581
+00:30:37,320 --> 00:30:39,420
+can check out this blog post it's a very
+
+582
+00:30:39,420 --> 00:30:43,470
+interesting problem and that was it
+
+583
+00:30:43,470 --> 00:30:45,400
+thank you
+

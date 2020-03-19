@@ -1,0 +1,2085 @@
+1
+00:00:08,490 --> 00:00:14,740
+
+hello so my talk is about extreme
+
+2
+00:00:14,740 --> 00:00:18,250
+JavaScript performance extreme just
+
+3
+00:00:18,250 --> 00:00:19,689
+sounds better so it's really about
+
+4
+00:00:19,689 --> 00:00:22,270
+JavaScript performance I think it will
+
+5
+00:00:22,270 --> 00:00:27,880
+take this out test test so in in the
+
+6
+00:00:27,880 --> 00:00:31,349
+program it says I will talk about
+
+7
+00:00:31,349 --> 00:00:35,710
+profiling and other stuff I left left
+
+8
+00:00:35,710 --> 00:00:38,830
+out the profiling part because I think
+
+9
+00:00:38,830 --> 00:00:40,570
+30 minutes is a little too short for
+
+10
+00:00:40,570 --> 00:00:44,589
+that instead I will give you a bit of a
+
+11
+00:00:44,589 --> 00:00:47,769
+general information about like how you
+
+12
+00:00:47,769 --> 00:00:50,080
+can make chava script faster and I will
+
+13
+00:00:50,080 --> 00:00:55,869
+show you that on some examples so the
+
+14
+00:00:55,869 --> 00:00:57,879
+first thing about performance which is
+
+15
+00:00:57,879 --> 00:00:59,260
+the most important part about
+
+16
+00:00:59,260 --> 00:01:01,299
+performance but it's JavaScript or
+
+17
+00:01:01,299 --> 00:01:06,250
+anything else is do not ever optimize
+
+18
+00:01:06,250 --> 00:01:14,380
+prematurely just only it's really never
+
+19
+00:01:14,380 --> 00:01:16,420
+optimize anything just because you think
+
+20
+00:01:16,420 --> 00:01:19,540
+it will be a problem in the future just
+
+21
+00:01:19,540 --> 00:01:21,670
+write your code so you can read it and
+
+22
+00:01:21,670 --> 00:01:25,480
+it's manageable in the future and only
+
+23
+00:01:25,480 --> 00:01:28,180
+optimize when you actually do have a
+
+24
+00:01:28,180 --> 00:01:31,720
+performance problem and in that case it
+
+25
+00:01:31,720 --> 00:01:33,630
+will help you to profile your code and
+
+26
+00:01:33,630 --> 00:01:38,080
+see what portions of your code actually
+
+27
+00:01:38,080 --> 00:01:40,180
+cause the problems the performance
+
+28
+00:01:40,180 --> 00:01:45,159
+problems so the code i use in the
+
+29
+00:01:45,159 --> 00:01:47,710
+examples of this talk you can get that
+
+30
+00:01:47,710 --> 00:01:52,570
+at this address trim / extreme j/s it's
+
+31
+00:01:52,570 --> 00:01:56,409
+a github gist so there's some code on
+
+32
+00:01:56,409 --> 00:01:59,890
+there just protein into an HTML file you
+
+33
+00:01:59,890 --> 00:02:04,210
+can look at that in your browser um so
+
+34
+00:02:04,210 --> 00:02:05,620
+JavaScript performance is very
+
+35
+00:02:05,620 --> 00:02:08,250
+interesting because it's not only like
+
+36
+00:02:08,250 --> 00:02:10,479
+you don't really have like a defined
+
+37
+00:02:10,479 --> 00:02:13,470
+environments your JavaScript Ramsey I
+
+38
+00:02:13,470 --> 00:02:16,120
+talk about JavaScript performs in the
+
+39
+00:02:16,120 --> 00:02:17,990
+browser especially
+
+40
+00:02:17,990 --> 00:02:20,210
+it would also apply to server side stuff
+
+41
+00:02:20,210 --> 00:02:22,520
+but let's see what's what browsers are
+
+42
+00:02:22,520 --> 00:02:26,930
+up there and what JavaScript engines to
+
+43
+00:02:26,930 --> 00:02:31,570
+have so first a spider monkey Firefox
+
+44
+00:02:31,570 --> 00:02:35,030
+it's pretty interesting they have done a
+
+45
+00:02:35,030 --> 00:02:37,330
+lot of stuff recently to make it faster
+
+46
+00:02:37,330 --> 00:02:42,080
+this javascriptcore in Safari and some
+
+47
+00:02:42,080 --> 00:02:46,610
+other WebKit browsers also very decent
+
+48
+00:02:46,610 --> 00:02:49,850
+JavaScript engine there is a chase
+
+49
+00:02:49,850 --> 00:02:53,300
+script which is like JavaScript without
+
+50
+00:02:53,300 --> 00:03:04,100
+the other yeah it's it works and we
+
+51
+00:03:04,100 --> 00:03:06,590
+heard already that like the IE guys are
+
+52
+00:03:06,590 --> 00:03:08,180
+like working on the next generation
+
+53
+00:03:08,180 --> 00:03:10,820
+engine that will come out like next
+
+54
+00:03:10,820 --> 00:03:13,940
+century and this of course we ate in in
+
+55
+00:03:13,940 --> 00:03:16,070
+chrome and we ate this is kind of an
+
+56
+00:03:16,070 --> 00:03:19,190
+exception because state Google like
+
+57
+00:03:19,190 --> 00:03:21,140
+really took the step ahead and to make
+
+58
+00:03:21,140 --> 00:03:23,240
+made a JavaScript ancient it like run
+
+59
+00:03:23,240 --> 00:03:25,600
+separately for each browser tab and
+
+60
+00:03:25,600 --> 00:03:27,950
+there's a lot of other features that are
+
+61
+00:03:27,950 --> 00:03:33,500
+very nice surprisingly except for chase
+
+62
+00:03:33,500 --> 00:03:36,440
+script each of those engines is kind of
+
+63
+00:03:36,440 --> 00:03:40,220
+like fastest in some situations so you
+
+64
+00:03:40,220 --> 00:03:41,810
+cannot say that moment is faster than
+
+65
+00:03:41,810 --> 00:03:45,040
+the other or you can like to general
+
+66
+00:03:45,040 --> 00:03:48,010
+that's like a general trend that
+
+67
+00:03:48,010 --> 00:03:51,260
+javascriptcore and v8 are the fastest
+
+68
+00:03:51,260 --> 00:03:53,750
+engines with with spider monkey like
+
+69
+00:03:53,750 --> 00:03:56,330
+trailing in close behind and chase
+
+70
+00:03:56,330 --> 00:04:00,470
+script is like somewhere else it's
+
+71
+00:04:00,470 --> 00:04:01,850
+really interesting if you look at the
+
+72
+00:04:01,850 --> 00:04:07,910
+examples anyway so my first tip is a
+
+73
+00:04:07,910 --> 00:04:09,380
+void function calls this is like the
+
+74
+00:04:09,380 --> 00:04:12,610
+beginners tip if you look at the code
+
+75
+00:04:12,610 --> 00:04:15,350
+here you see you have the square
+
+76
+00:04:15,350 --> 00:04:19,430
+function that returns the square the
+
+77
+00:04:19,430 --> 00:04:21,739
+parameter Square and if you do like
+
+78
+00:04:21,739 --> 00:04:27,290
+10,000 iterations it has to do like
+
+79
+00:04:27,290 --> 00:04:29,249
+10,000 function calls in there
+
+80
+00:04:29,249 --> 00:04:31,409
+except in JavaScript engines that in
+
+81
+00:04:31,409 --> 00:04:35,129
+line the code or like compared to that
+
+82
+00:04:35,129 --> 00:04:37,339
+if you do the statement correctly
+
+83
+00:04:37,339 --> 00:04:39,959
+directly in the code without the
+
+84
+00:04:39,959 --> 00:04:43,519
+function call in the second example so
+
+85
+00:04:43,519 --> 00:04:46,859
+basically what we do here we take the
+
+86
+00:04:46,859 --> 00:04:49,079
+function call and in line it into the
+
+87
+00:04:49,079 --> 00:04:52,309
+code it's it's an obvious performance
+
+88
+00:04:52,309 --> 00:04:55,259
+improvement because the function call
+
+89
+00:04:55,259 --> 00:04:56,999
+just falls away function calls are very
+
+90
+00:04:56,999 --> 00:05:00,239
+expensive in JavaScript normally but
+
+91
+00:05:00,239 --> 00:05:02,309
+this example also put also apply to like
+
+92
+00:05:02,309 --> 00:05:04,969
+basically every other language up there
+
+93
+00:05:04,969 --> 00:05:08,749
+what are the results here you can see
+
+94
+00:05:08,749 --> 00:05:11,399
+Firefox this is like for I don't know a
+
+95
+00:05:11,399 --> 00:05:13,019
+million iterations or something of this
+
+96
+00:05:13,019 --> 00:05:17,099
+code obviously much faster to inline
+
+97
+00:05:17,099 --> 00:05:20,699
+Safari also the difference is not quite
+
+98
+00:05:20,699 --> 00:05:25,139
+as high on aida is like a little bit of
+
+99
+00:05:25,139 --> 00:05:28,699
+a problem with the first method call and
+
+100
+00:05:28,699 --> 00:05:31,709
+but but you can see it's it's actually
+
+101
+00:05:31,709 --> 00:05:34,559
+faster than firefox i'm not quite sure
+
+102
+00:05:34,559 --> 00:05:37,319
+which version i used here but it's like
+
+103
+00:05:37,319 --> 00:05:40,069
+a recent version so interesting and
+
+104
+00:05:40,069 --> 00:05:42,629
+chrome like kind of beats the crap out
+
+105
+00:05:42,629 --> 00:05:45,749
+of the other browsers actually like with
+
+106
+00:05:45,749 --> 00:05:48,679
+with with both methods in of doing this
+
+107
+00:05:48,679 --> 00:05:51,329
+so you can see the differences in
+
+108
+00:05:51,329 --> 00:05:55,169
+browser performance are quite huge so
+
+109
+00:05:55,169 --> 00:05:58,019
+for the IE part but what happens there
+
+110
+00:05:58,019 --> 00:06:02,339
+this happens and interestingly this
+
+111
+00:06:02,339 --> 00:06:04,079
+morning comes up after one second of
+
+112
+00:06:04,079 --> 00:06:07,199
+running and I've got the same boring
+
+113
+00:06:07,199 --> 00:06:09,719
+like sometimes after five seconds of
+
+114
+00:06:09,719 --> 00:06:11,429
+javascript stuff that's running and
+
+115
+00:06:11,429 --> 00:06:14,249
+sometimes it comes up after one second i
+
+116
+00:06:14,249 --> 00:06:16,259
+don't i'm not quite sure what happens
+
+117
+00:06:16,259 --> 00:06:21,089
+there yeah so it'd be very careful with
+
+118
+00:06:21,089 --> 00:06:24,179
+with like tight loops that like
+
+119
+00:06:24,179 --> 00:06:30,239
+calculate a lot of stuff ok so we've
+
+120
+00:06:30,239 --> 00:06:35,159
+seen earlier that there's not a bad
+
+121
+00:06:35,159 --> 00:06:37,319
+worker stuff in some browsers which
+
+122
+00:06:37,319 --> 00:06:39,030
+might help you
+
+123
+00:06:39,030 --> 00:06:43,740
+avoid this kind of thing but you can
+
+124
+00:06:43,740 --> 00:06:45,720
+just optimize your loops and maybe like
+
+125
+00:06:45,720 --> 00:06:48,300
+you get under one second and then you
+
+126
+00:06:48,300 --> 00:06:51,060
+won't get those warnings and these
+
+127
+00:06:51,060 --> 00:06:52,500
+warnings interestingly behave
+
+128
+00:06:52,500 --> 00:06:55,250
+differently in every browser so you
+
+129
+00:06:55,250 --> 00:06:59,390
+manage really may vary with this anyway
+
+130
+00:06:59,390 --> 00:07:04,350
+secondly embrace the language what does
+
+131
+00:07:04,350 --> 00:07:08,160
+it mean really use JavaScript away it's
+
+132
+00:07:08,160 --> 00:07:11,010
+like it offers all those facilities it
+
+133
+00:07:11,010 --> 00:07:14,460
+has don't try to write JavaScript code
+
+134
+00:07:14,460 --> 00:07:16,710
+that looks like Java code or that looks
+
+135
+00:07:16,710 --> 00:07:18,570
+like C code or something right
+
+136
+00:07:18,570 --> 00:07:22,440
+javascript as an example of this if you
+
+137
+00:07:22,440 --> 00:07:25,650
+compare the performance of using
+
+138
+00:07:25,650 --> 00:07:28,680
+literals for arrays or objects with
+
+139
+00:07:28,680 --> 00:07:31,350
+doing new array or new object which is
+
+140
+00:07:31,350 --> 00:07:37,650
+see sometimes in bed code you will see
+
+141
+00:07:37,650 --> 00:07:39,900
+there's differences in performance these
+
+142
+00:07:39,900 --> 00:07:42,030
+things do not do exactly the same thing
+
+143
+00:07:42,030 --> 00:07:45,660
+but for all intents and purposes in
+
+144
+00:07:45,660 --> 00:07:48,380
+normal code they are exactly the same
+
+145
+00:07:48,380 --> 00:07:52,130
+how does this perform you can see
+
+146
+00:07:52,130 --> 00:07:56,930
+slightly faster firefox safari is like
+
+147
+00:07:56,930 --> 00:08:01,890
+much faster than firefox or IE quite
+
+148
+00:08:01,890 --> 00:08:05,910
+fast chrome is interesting you with with
+
+149
+00:08:05,910 --> 00:08:08,520
+like the new stuff it's it's slower than
+
+150
+00:08:08,520 --> 00:08:11,010
+safari but with the literals it's faster
+
+151
+00:08:11,010 --> 00:08:12,840
+than safari and overall it's the fastest
+
+152
+00:08:12,840 --> 00:08:16,710
+browser you can see you can get some
+
+153
+00:08:16,710 --> 00:08:20,490
+performance out of this um but but you
+
+154
+00:08:20,490 --> 00:08:23,160
+can do anymore let's look at this
+
+155
+00:08:23,160 --> 00:08:30,960
+example parse int 12.5 okay 12 that
+
+156
+00:08:30,960 --> 00:08:33,420
+actually should be a string here sorry
+
+157
+00:08:33,420 --> 00:08:38,040
+for that but you can most languages you
+
+158
+00:08:38,040 --> 00:08:39,650
+can do things like in a lot of ways
+
+159
+00:08:39,650 --> 00:08:42,570
+there's four examples pearl where to say
+
+160
+00:08:42,570 --> 00:08:44,840
+you can do everything in a lot of ways
+
+161
+00:08:44,840 --> 00:08:48,800
+probably in like infinitely many ways
+
+162
+00:08:48,800 --> 00:08:50,940
+it's probably not true in JavaScript
+
+163
+00:08:50,940 --> 00:08:52,390
+Patrick you can do stuff
+
+164
+00:08:52,390 --> 00:08:56,020
+differently for parseint its part in
+
+165
+00:08:56,020 --> 00:08:57,190
+this kind of an expensive operation
+
+166
+00:08:57,190 --> 00:08:58,960
+mostly because there's a function call
+
+167
+00:08:58,960 --> 00:09:01,660
+involved so what we can do instead is
+
+168
+00:09:01,660 --> 00:09:06,970
+this this does too for all intents and
+
+169
+00:09:06,970 --> 00:09:09,820
+purposes again the same thing what keg
+
+170
+00:09:09,820 --> 00:09:11,410
+what's what's going on here you might
+
+171
+00:09:11,410 --> 00:09:13,600
+might ask this is kind of like a bit
+
+172
+00:09:13,600 --> 00:09:17,050
+tricky so this is going on you have a
+
+173
+00:09:17,050 --> 00:09:20,380
+double bitwise not which floors the
+
+174
+00:09:20,380 --> 00:09:23,770
+number that it's given and 1 times a
+
+175
+00:09:23,770 --> 00:09:26,320
+string will coerce the string into a
+
+176
+00:09:26,320 --> 00:09:29,920
+float so it returns 12.5 and the double
+
+177
+00:09:29,920 --> 00:09:34,930
+bitwise not force the 12.5 to 12 bitwise
+
+178
+00:09:34,930 --> 00:09:37,390
+operations in JavaScript interesting in
+
+179
+00:09:37,390 --> 00:09:39,130
+this case because a bitwise interation
+
+180
+00:09:39,130 --> 00:09:44,170
+always forces the the input for the
+
+181
+00:09:44,170 --> 00:09:51,880
+operation into a 32-bit integer so you
+
+182
+00:09:51,880 --> 00:09:54,160
+can see sometimes you can use language
+
+183
+00:09:54,160 --> 00:09:57,730
+stuff to kind of abuse it but actually
+
+184
+00:09:57,730 --> 00:10:00,520
+this stuff is faster than just using the
+
+185
+00:10:00,520 --> 00:10:03,580
+powers in it and then some in most cases
+
+186
+00:10:03,580 --> 00:10:09,100
+also shorter code so we can see Firefox
+
+187
+00:10:09,100 --> 00:10:12,100
+faster Safari faster firefox is much
+
+188
+00:10:12,100 --> 00:10:17,530
+faster here it's like lot faster ie yeah
+
+189
+00:10:17,530 --> 00:10:21,340
+and chrome and Chrome actually passing
+
+190
+00:10:21,340 --> 00:10:23,320
+this faster so it seems they have
+
+191
+00:10:23,320 --> 00:10:26,470
+optimized the past and colander engine
+
+192
+00:10:26,470 --> 00:10:29,860
+to probably not be a function call but
+
+193
+00:10:29,860 --> 00:10:33,040
+something else direct coercion into an
+
+194
+00:10:33,040 --> 00:10:36,400
+integer so it's really interesting 5 x
+
+195
+00:10:36,400 --> 00:10:37,930
+50 times faster than safari for this
+
+196
+00:10:37,930 --> 00:10:44,860
+operation loops loops is another like
+
+197
+00:10:44,860 --> 00:10:50,140
+low-hanging performance fruit is a for
+
+198
+00:10:50,140 --> 00:10:54,670
+loop comparator of i loop this is two
+
+199
+00:10:54,670 --> 00:10:56,470
+loops to exactly the same thing except
+
+200
+00:10:56,470 --> 00:10:59,680
+one counts up data comes down
+
+201
+00:10:59,680 --> 00:11:03,830
+the vial I minus minus counts down the I
+
+202
+00:11:03,830 --> 00:11:07,160
+until I hit zero and then the expression
+
+203
+00:11:07,160 --> 00:11:10,690
+is false and then your code continues so
+
+204
+00:11:10,690 --> 00:11:15,370
+for for each code snippets it will add
+
+205
+00:11:15,370 --> 00:11:19,460
+still 10,000 times through the test
+
+206
+00:11:19,460 --> 00:11:24,050
+variable how is the performance as
+
+207
+00:11:24,050 --> 00:11:26,360
+easily explained the province is exactly
+
+208
+00:11:26,360 --> 00:11:33,410
+the same which means in this case you
+
+209
+00:11:33,410 --> 00:11:35,240
+probably should use the by loop because
+
+210
+00:11:35,240 --> 00:11:39,410
+the by loop is just short a code one
+
+211
+00:11:39,410 --> 00:11:44,560
+expression less than the for loop I
+
+212
+00:11:44,560 --> 00:11:47,240
+personally find it easier to read I
+
+213
+00:11:47,240 --> 00:11:50,650
+don't like the for statement that much
+
+214
+00:11:50,650 --> 00:11:55,400
+it's kind of I don't know it feels weird
+
+215
+00:11:55,400 --> 00:12:01,449
+if you can do something more elegantly
+
+216
+00:12:01,459 --> 00:12:05,300
+your mileage may vary but that's worth
+
+217
+00:12:05,300 --> 00:12:07,279
+much more interesting is this so this is
+
+218
+00:12:07,279 --> 00:12:10,850
+like a loop that counts down I 60 times
+
+219
+00:12:10,850 --> 00:12:14,959
+and increases J for each iteration of
+
+220
+00:12:14,959 --> 00:12:16,579
+course this is cole is completely
+
+221
+00:12:16,579 --> 00:12:21,529
+useless but makes nice example of what I
+
+222
+00:12:21,529 --> 00:12:27,110
+mean so here's the same thing so guess
+
+223
+00:12:27,110 --> 00:12:32,660
+what is faster so the unrolled loop is
+
+224
+00:12:32,660 --> 00:12:36,829
+like two times faster in Firefox it's
+
+225
+00:12:36,829 --> 00:12:39,160
+like three times fast ends of RA it's
+
+226
+00:12:39,160 --> 00:12:42,470
+two times faster and I eat like five
+
+227
+00:12:42,470 --> 00:12:46,129
+times faster on Chrome the fun part of
+
+228
+00:12:46,129 --> 00:12:48,679
+this is this even works if there's like
+
+229
+00:12:48,679 --> 00:12:52,939
+two thousand expressions there so the
+
+230
+00:12:52,939 --> 00:12:55,309
+JavaScript parses are very very
+
+231
+00:12:55,309 --> 00:12:58,189
+efficient in passing JavaScript but I
+
+232
+00:12:58,189 --> 00:12:59,420
+guess they are not very efficient in
+
+233
+00:12:59,420 --> 00:13:03,529
+doing loops kind of an interesting
+
+234
+00:13:03,529 --> 00:13:06,079
+finding so I actually did some
+
+235
+00:13:06,079 --> 00:13:09,170
+JavaScript code for in certain cases to
+
+236
+00:13:09,170 --> 00:13:11,480
+make it faster by unrolling loops and
+
+237
+00:13:11,480 --> 00:13:13,519
+just having the same statements repeated
+
+238
+00:13:13,519 --> 00:13:18,549
+over and over again it's very ugly but
+
+239
+00:13:18,549 --> 00:13:22,749
+it really helps in some cases again
+
+240
+00:13:22,749 --> 00:13:25,309
+think about the first slide that do not
+
+241
+00:13:25,309 --> 00:13:31,339
+optimized prematurely for f---ing cage
+
+242
+00:13:31,339 --> 00:13:35,929
+Global's it's kind of interesting if you
+
+243
+00:13:35,929 --> 00:13:37,790
+have this code if you compare it the
+
+244
+00:13:37,790 --> 00:13:40,970
+only thing we do is is Mukesh window in
+
+245
+00:13:40,970 --> 00:13:47,179
+a like local variable this gives very
+
+246
+00:13:47,179 --> 00:13:49,339
+interesting results like Firefox is
+
+247
+00:13:49,339 --> 00:13:53,209
+really slow with this stuff if you
+
+248
+00:13:53,209 --> 00:13:56,509
+compare that the speed it's quite
+
+249
+00:13:56,509 --> 00:14:00,889
+interesting so in this case so far is 20
+
+250
+00:14:00,889 --> 00:14:03,259
+times faster than firefox it's also
+
+251
+00:14:03,259 --> 00:14:06,679
+faster than chrome is in this case IE
+
+252
+00:14:06,679 --> 00:14:09,270
+works with stuff that's
+
+253
+00:14:09,270 --> 00:14:11,550
+kind of I don't know what's going on in
+
+254
+00:14:11,550 --> 00:14:15,720
+AE it ie always like delivers the right
+
+255
+00:14:15,720 --> 00:14:18,800
+results but you never quite sure about
+
+256
+00:14:18,800 --> 00:14:23,220
+the performance so what this stuff shows
+
+257
+00:14:23,220 --> 00:14:25,830
+that you cannot really say born browser
+
+258
+00:14:25,830 --> 00:14:27,930
+is faster than the other except that all
+
+259
+00:14:27,930 --> 00:14:32,540
+browsers are faster than i ii and but
+
+260
+00:14:32,540 --> 00:14:35,010
+actually found some cases where I is
+
+261
+00:14:35,010 --> 00:14:38,040
+faster than than other browsers I ease
+
+262
+00:14:38,040 --> 00:14:39,300
+pretty good with some regular
+
+263
+00:14:39,300 --> 00:14:42,750
+expressions I think the lib regular
+
+264
+00:14:42,750 --> 00:14:46,050
+expression library on Windows is pretty
+
+265
+00:14:46,050 --> 00:14:50,640
+optimized for certain things so it might
+
+266
+00:14:50,640 --> 00:14:52,500
+still not hold true that like all
+
+267
+00:14:52,500 --> 00:14:54,930
+browsers are faster than IE in most
+
+268
+00:14:54,930 --> 00:14:58,710
+cases they are but in some cases I email
+
+269
+00:14:58,710 --> 00:15:02,100
+might even beat them so it's more
+
+270
+00:15:02,100 --> 00:15:04,650
+importantly you really have to test your
+
+271
+00:15:04,650 --> 00:15:07,200
+code and all those problems especially
+
+272
+00:15:07,200 --> 00:15:09,150
+if you know that you have a performance
+
+273
+00:15:09,150 --> 00:15:11,400
+issue in one browser it's very likely
+
+274
+00:15:11,400 --> 00:15:14,460
+that you have similar performance issues
+
+275
+00:15:14,460 --> 00:15:17,730
+in other browsers and also try your code
+
+276
+00:15:17,730 --> 00:15:19,830
+unlike hardware that's like not the
+
+277
+00:15:19,830 --> 00:15:21,480
+latest and greatest stuff that you have
+
+278
+00:15:21,480 --> 00:15:25,290
+for development but that your users
+
+279
+00:15:25,290 --> 00:15:30,660
+might have expression tuning not a
+
+280
+00:15:30,660 --> 00:15:33,270
+low-hanging performance field-proven in
+
+281
+00:15:33,270 --> 00:15:36,840
+some cases it's easily explained it's
+
+282
+00:15:36,840 --> 00:15:39,060
+just like switch around that order a few
+
+283
+00:15:39,060 --> 00:15:41,400
+expressions in the way you expect them
+
+284
+00:15:41,400 --> 00:15:46,250
+to mostly be in most cases in this case
+
+285
+00:15:46,250 --> 00:15:51,270
+B is false so the end times end part of
+
+286
+00:15:51,270 --> 00:15:55,090
+this expression will never get evaluated
+
+287
+00:15:55,100 --> 00:16:01,830
+can see helps quite a bit on IE it's
+
+288
+00:16:01,830 --> 00:16:04,920
+like almost three times as fast on the
+
+289
+00:16:04,920 --> 00:16:07,170
+other browsers it's also slightly faster
+
+290
+00:16:07,170 --> 00:16:10,050
+and it's important to note that this is
+
+291
+00:16:10,050 --> 00:16:12,840
+a language feature it's not like an
+
+292
+00:16:12,840 --> 00:16:14,970
+engine optimization anything that like
+
+293
+00:16:14,970 --> 00:16:16,980
+second part of this expression will
+
+294
+00:16:16,980 --> 00:16:18,290
+never get evaluated
+
+295
+00:16:18,290 --> 00:16:23,639
+so in this code you see I'll define n to
+
+296
+00:16:23,639 --> 00:16:26,779
+be one and I say say if true and N
+
+297
+00:16:26,779 --> 00:16:30,389
+equals 2 which means the second part of
+
+298
+00:16:30,389 --> 00:16:32,100
+this expression will only be evaluated
+
+299
+00:16:32,100 --> 00:16:34,619
+if the first part is true and this is
+
+300
+00:16:34,619 --> 00:16:36,540
+true in this case so n will be set to
+
+301
+00:16:36,540 --> 00:16:41,160
+true but in the second part I say true
+
+302
+00:16:41,160 --> 00:16:47,040
+or N equals 3 so true is already true of
+
+303
+00:16:47,040 --> 00:16:49,949
+course and so the second part of the or
+
+304
+00:16:49,949 --> 00:16:52,110
+expression will not get evaluated and
+
+305
+00:16:52,110 --> 00:16:56,759
+will not get set to free you can use
+
+306
+00:16:56,759 --> 00:16:58,139
+that in some clever ways also to
+
+307
+00:16:58,139 --> 00:17:01,649
+optimize this size if you code and also
+
+308
+00:17:01,649 --> 00:17:03,389
+to make sure that no one ever will
+
+309
+00:17:03,389 --> 00:17:06,839
+understand your code again but in
+
+310
+00:17:06,839 --> 00:17:08,760
+certain cases it might be the right
+
+311
+00:17:08,760 --> 00:17:10,380
+thing to do if you really want to
+
+312
+00:17:10,380 --> 00:17:12,209
+optimize that last bit of performance
+
+313
+00:17:12,209 --> 00:17:19,169
+out if you go and finally we have stuff
+
+314
+00:17:19,169 --> 00:17:24,959
+that you should never ever do let's look
+
+315
+00:17:24,959 --> 00:17:27,480
+at the brief statement the beef
+
+316
+00:17:27,480 --> 00:17:30,270
+statement is kind of cool it allows you
+
+317
+00:17:30,270 --> 00:17:34,799
+to write shorter code but so if this
+
+318
+00:17:34,799 --> 00:17:40,230
+code again does the same thing let's
+
+319
+00:17:40,230 --> 00:17:42,779
+look at this hour Firefox mm-hmm looks
+
+320
+00:17:42,779 --> 00:17:45,809
+like five times faster to power a
+
+321
+00:17:45,809 --> 00:17:47,909
+slightly faster ie the same speech
+
+322
+00:17:47,909 --> 00:17:51,659
+interesting on Chrome it's like more
+
+323
+00:17:51,659 --> 00:17:55,340
+than x 10 times as fast without the Biff
+
+324
+00:17:55,340 --> 00:17:58,470
+it chose an interesting thing which will
+
+325
+00:17:58,470 --> 00:18:01,320
+come to in a second but let's look at
+
+326
+00:18:01,320 --> 00:18:03,799
+another thing that you should avoid
+
+327
+00:18:03,799 --> 00:18:09,299
+try-catch try-catch should probably only
+
+328
+00:18:09,299 --> 00:18:11,159
+be used in cases where you want to test
+
+329
+00:18:11,159 --> 00:18:14,640
+for browser features where you know that
+
+330
+00:18:14,640 --> 00:18:16,830
+like certain code might throw an
+
+331
+00:18:16,830 --> 00:18:20,039
+exception or like in very rare cases
+
+332
+00:18:20,039 --> 00:18:22,409
+where performance is not important but
+
+333
+00:18:22,409 --> 00:18:25,140
+you you really don't know if an
+
+334
+00:18:25,140 --> 00:18:26,580
+expression will succeed or not and you
+
+335
+00:18:26,580 --> 00:18:29,460
+don't have any facility to check
+
+336
+00:18:29,460 --> 00:18:31,159
+your input before you do your
+
+337
+00:18:31,159 --> 00:18:36,179
+expressions so what happens here so with
+
+338
+00:18:36,179 --> 00:18:38,070
+the try-catch you can see in Firefox
+
+339
+00:18:38,070 --> 00:18:39,570
+it's almost the same than firefox it's
+
+340
+00:18:39,570 --> 00:18:44,210
+not really a problem in safari or well
+
+341
+00:18:44,210 --> 00:18:50,340
+on IE same thing chrome again ten times
+
+342
+00:18:50,340 --> 00:18:54,179
+as fast it's more interesting to look at
+
+343
+00:18:54,179 --> 00:18:57,539
+this like this so you can see firefox
+
+344
+00:18:57,539 --> 00:19:04,710
+safari IE chrome what happens there by
+
+345
+00:19:04,710 --> 00:19:06,750
+it is like the same speed for both
+
+346
+00:19:06,750 --> 00:19:09,240
+expressions of football forms Biff try
+
+347
+00:19:09,240 --> 00:19:12,390
+catch without try catch on IE but not in
+
+348
+00:19:12,390 --> 00:19:14,880
+the other browsers the answer to this is
+
+349
+00:19:14,880 --> 00:19:19,289
+relatively simple in the browsers where
+
+350
+00:19:19,289 --> 00:19:21,210
+the difference is these are the modern
+
+351
+00:19:21,210 --> 00:19:23,279
+JavaScript engines that have just in
+
+352
+00:19:23,279 --> 00:19:25,080
+time compilers and like do a lot of
+
+353
+00:19:25,080 --> 00:19:27,809
+optimization on your code translated to
+
+354
+00:19:27,809 --> 00:19:31,710
+native code in most cases but certain
+
+355
+00:19:31,710 --> 00:19:33,390
+features are not supported by them very
+
+356
+00:19:33,390 --> 00:19:37,110
+well among them try catch and the beef
+
+357
+00:19:37,110 --> 00:19:43,049
+statement a a good way to like think
+
+358
+00:19:43,049 --> 00:19:45,390
+about this in a way of like how can I
+
+359
+00:19:45,390 --> 00:19:48,899
+avoid that these modern engines have to
+
+360
+00:19:48,899 --> 00:19:50,880
+switch to their like slower code paths
+
+361
+00:19:50,880 --> 00:19:53,100
+because I use features that they might
+
+362
+00:19:53,100 --> 00:19:54,450
+not support as well for just-in-time
+
+363
+00:19:54,450 --> 00:19:57,169
+compilation is looking at the
+
+364
+00:19:57,169 --> 00:20:00,000
+specification for the next version of
+
+365
+00:20:00,000 --> 00:20:05,669
+JavaScript it's equal to 60 to 50
+
+366
+00:20:05,669 --> 00:20:11,490
+edition draft whatever whatever of
+
+367
+00:20:11,490 --> 00:20:12,630
+course no one ever reads these
+
+368
+00:20:12,630 --> 00:20:15,929
+specifications because you have other
+
+369
+00:20:15,929 --> 00:20:21,340
+stuff to do like make a living stuff
+
+370
+00:20:21,340 --> 00:20:24,100
+it's you don't want to read this stuff
+
+371
+00:20:24,100 --> 00:20:25,660
+if you want to like leave this to other
+
+372
+00:20:25,660 --> 00:20:29,500
+people mostly these are a very good blog
+
+373
+00:20:29,500 --> 00:20:32,380
+post Jean rezek wrote about the features
+
+374
+00:20:32,380 --> 00:20:34,390
+in there especially about the strict
+
+375
+00:20:34,390 --> 00:20:36,610
+mode features and the strict mode is
+
+376
+00:20:36,610 --> 00:20:39,940
+very interesting so here's a link to the
+
+377
+00:20:39,940 --> 00:20:44,470
+Jones blog post basically avoid any
+
+378
+00:20:44,470 --> 00:20:46,210
+stuff that's not supported in the strict
+
+379
+00:20:46,210 --> 00:20:48,070
+mode and you will stand a good chance
+
+380
+00:20:48,070 --> 00:20:50,020
+that the code you write will be very
+
+381
+00:20:50,020 --> 00:20:52,030
+efficient in those new JavaScript
+
+382
+00:20:52,030 --> 00:20:55,600
+engines the strict mode for example does
+
+383
+00:20:55,600 --> 00:20:59,350
+away with the wave statement it still
+
+384
+00:20:59,350 --> 00:21:01,390
+has try-catch fall so it only works
+
+385
+00:21:01,390 --> 00:21:04,330
+partially but if you do write codes
+
+386
+00:21:04,330 --> 00:21:07,420
+that's would work with Java scripts new
+
+387
+00:21:07,420 --> 00:21:09,280
+strict mode you'll send a good chance
+
+388
+00:21:09,280 --> 00:21:13,390
+that Yoko will be very very optimized so
+
+389
+00:21:13,390 --> 00:21:20,490
+does anyone know what this code does
+
+390
+00:21:20,500 --> 00:21:26,690
+No
+
+391
+00:21:26,700 --> 00:21:42,150
+come on it's a JavaScript conference
+
+392
+00:21:42,160 --> 00:21:50,180
+so okay okay so this code outputs itself
+
+393
+00:21:50,190 --> 00:21:52,810
+it's just a little example whipped up
+
+394
+00:21:52,810 --> 00:21:55,060
+because I wanted to show you an
+
+395
+00:21:55,060 --> 00:21:57,310
+interesting so to say feature of
+
+396
+00:21:57,310 --> 00:22:00,490
+javascript javascript is very well
+
+397
+00:22:00,490 --> 00:22:02,470
+suited to meta programming and one
+
+398
+00:22:02,470 --> 00:22:04,080
+feature of meta programming is
+
+399
+00:22:04,080 --> 00:22:06,280
+introspection and one feature of
+
+400
+00:22:06,280 --> 00:22:09,550
+introspection is you can actually get
+
+401
+00:22:09,550 --> 00:22:12,250
+the source code of your code from within
+
+402
+00:22:12,250 --> 00:22:14,980
+your code so in JavaScript if you write
+
+403
+00:22:14,980 --> 00:22:18,280
+a JavaScript function that says
+
+404
+00:22:18,280 --> 00:22:22,330
+arguments dot co-leader to string the
+
+405
+00:22:22,330 --> 00:22:24,910
+function will output itself you will get
+
+406
+00:22:24,910 --> 00:22:28,000
+a string that contains the function and
+
+407
+00:22:28,000 --> 00:22:29,830
+with a little bit of like trickery here
+
+408
+00:22:29,830 --> 00:22:31,600
+we'd like to normalize this output
+
+409
+00:22:31,600 --> 00:22:33,070
+because this output is a little bit
+
+410
+00:22:33,070 --> 00:22:35,560
+different across engines and we can
+
+411
+00:22:35,560 --> 00:22:41,260
+alert the function itself so but what
+
+412
+00:22:41,260 --> 00:22:46,040
+does it mean so here's another function
+
+413
+00:22:46,050 --> 00:22:48,580
+you can see i define a function it
+
+414
+00:22:48,580 --> 00:22:52,360
+returns two times three I want to get at
+
+415
+00:22:52,360 --> 00:22:54,340
+the source code for this function so
+
+416
+00:22:54,340 --> 00:22:56,640
+let's have a look what their engines do
+
+417
+00:22:56,640 --> 00:23:01,000
+so javascriptcore gives you back
+
+418
+00:23:01,000 --> 00:23:04,240
+function return to them sweet Internet
+
+419
+00:23:04,240 --> 00:23:07,360
+Explorer gives you back function return
+
+420
+00:23:07,360 --> 00:23:10,650
+two times free chrome gives you back
+
+421
+00:23:10,650 --> 00:23:13,810
+function return two times three so what
+
+422
+00:23:13,810 --> 00:23:17,269
+does firefox to respect which 16
+
+423
+00:23:17,269 --> 00:23:24,210
+so I think this is WTF so they're in
+
+424
+00:23:24,210 --> 00:23:25,919
+Firefox actually there is another
+
+425
+00:23:25,919 --> 00:23:27,989
+function called to source which is not
+
+426
+00:23:27,989 --> 00:23:30,539
+in the specification but which gives you
+
+427
+00:23:30,539 --> 00:23:32,220
+back what you originally put into the
+
+428
+00:23:32,220 --> 00:23:36,509
+function this is an important thing to
+
+429
+00:23:36,509 --> 00:23:40,440
+say because the problem if this is that
+
+430
+00:23:40,440 --> 00:23:44,009
+if you write benchmarks browsers might
+
+431
+00:23:44,009 --> 00:23:45,899
+like to try to optimize your functions
+
+432
+00:23:45,899 --> 00:23:47,789
+for you and especially for benchmarking
+
+433
+00:23:47,789 --> 00:23:49,889
+this is pretty bad because you want to
+
+434
+00:23:49,889 --> 00:23:52,080
+know exactly what an expression does so
+
+435
+00:23:52,080 --> 00:23:54,989
+be very that like JavaScript engines
+
+436
+00:23:54,989 --> 00:23:59,239
+might rewrite your code actually and
+
+437
+00:23:59,239 --> 00:24:05,789
+yeah just note that this engines are a
+
+438
+00:24:05,789 --> 00:24:11,429
+little bit different so Amy and me wrote
+
+439
+00:24:11,429 --> 00:24:13,859
+a book on JavaScript performance you can
+
+440
+00:24:13,859 --> 00:24:16,830
+get it at xerox com so much for the
+
+441
+00:24:16,830 --> 00:24:21,359
+advertisement are again do not optimized
+
+442
+00:24:21,359 --> 00:24:35,360
+prematurely never ever thank
+
+443
+00:24:35,370 --> 00:24:40,680
+so any questions I can barely see her
+
+444
+00:24:40,680 --> 00:25:01,910
+this thing's a literary yes
+
+445
+00:25:01,920 --> 00:25:03,780
+so so the question was however the
+
+446
+00:25:03,780 --> 00:25:07,050
+measurements done obviously the
+
+447
+00:25:07,050 --> 00:25:08,580
+measurements written in JavaScript
+
+448
+00:25:08,580 --> 00:25:12,300
+itself in JavaScript you can measure
+
+449
+00:25:12,300 --> 00:25:14,850
+like a time period by using mutate get
+
+450
+00:25:14,850 --> 00:25:18,150
+time you get like the time unix
+
+451
+00:25:18,150 --> 00:25:21,420
+timestamp in milliseconds and yet like
+
+452
+00:25:21,420 --> 00:25:24,540
+you do it before and after the test what
+
+453
+00:25:24,540 --> 00:25:27,110
+I do is I do like a really long loop
+
+454
+00:25:27,110 --> 00:25:31,380
+that iterates like execute these
+
+455
+00:25:31,380 --> 00:25:34,340
+functions like a lot and mostly in like
+
+456
+00:25:34,340 --> 00:25:39,030
+100,000 times a million times if you if
+
+457
+00:25:39,030 --> 00:25:40,710
+you look at the sample code the
+
+458
+00:25:40,710 --> 00:25:45,390
+benchmark functions included there as we
+
+459
+00:25:45,390 --> 00:25:47,580
+described in the book we actually also
+
+460
+00:25:47,580 --> 00:25:49,350
+use like a different benchmark function
+
+461
+00:25:49,350 --> 00:25:51,720
+that also that's like a ramp up and ramp
+
+462
+00:25:51,720 --> 00:25:55,140
+down so it does basically they're like
+
+463
+00:25:55,140 --> 00:25:56,820
+1,000,000 executions three times but
+
+464
+00:25:56,820 --> 00:25:59,250
+only measures the second execution so
+
+465
+00:25:59,250 --> 00:26:01,860
+things like garbage collection and stuff
+
+466
+00:26:01,860 --> 00:26:06,450
+in JavaScript the kind of you can like
+
+467
+00:26:06,450 --> 00:26:08,490
+work around that a little bit but it's
+
+468
+00:26:08,490 --> 00:26:10,950
+still not like scientific but if you
+
+469
+00:26:10,950 --> 00:26:13,260
+execute it like ten times then the whole
+
+470
+00:26:13,260 --> 00:26:15,570
+thing you get a pretty good idea about
+
+471
+00:26:15,570 --> 00:26:18,840
+how fast the browser is the problem with
+
+472
+00:26:18,840 --> 00:26:20,580
+this comparisons as you as you have seen
+
+473
+00:26:20,580 --> 00:26:23,340
+sometimes they get very you get very
+
+474
+00:26:23,340 --> 00:26:27,930
+small numbers but because I need to like
+
+475
+00:26:27,930 --> 00:26:31,320
+compare ye to Chrome and stuff I cannot
+
+476
+00:26:31,320 --> 00:26:34,440
+use bigger numbers because i don't know
+
+477
+00:26:34,440 --> 00:26:35,910
+i want to go to bed at the end of the
+
+478
+00:26:35,910 --> 00:26:42,720
+day so and i'm sorry if i'm bashing IE
+
+479
+00:26:42,720 --> 00:26:44,730
+too much but this is like the heart
+
+480
+00:26:44,730 --> 00:26:49,800
+effects of javascript performance any
+
+481
+00:26:49,800 --> 00:27:07,669
+other questions
+
+482
+00:27:07,679 --> 00:27:11,470
+the question was if I like have like a
+
+483
+00:27:11,470 --> 00:27:16,919
+software tool that did like basically
+
+484
+00:27:16,919 --> 00:27:20,040
+optimize this code for me is that right
+
+485
+00:27:20,040 --> 00:27:24,309
+no i don't i just used like all those
+
+486
+00:27:24,309 --> 00:27:26,669
+programmer tools like brain and hands
+
+487
+00:27:26,669 --> 00:27:32,260
+mostly eyes I guess but there is some as
+
+488
+00:27:32,260 --> 00:27:34,510
+I said before if it probably don't have
+
+489
+00:27:34,510 --> 00:27:36,400
+enough time to like cover like profiling
+
+490
+00:27:36,400 --> 00:27:41,770
+tools but the thing is it's actually I
+
+491
+00:27:41,770 --> 00:27:43,570
+think more difficult to determine which
+
+492
+00:27:43,570 --> 00:27:45,910
+parts of your code actually like cause
+
+493
+00:27:45,910 --> 00:27:48,910
+the performance issues and then you can
+
+494
+00:27:48,910 --> 00:27:51,160
+go in and like try different things like
+
+495
+00:27:51,160 --> 00:27:53,559
+some of the things I've shown you today
+
+496
+00:27:53,559 --> 00:27:56,830
+unrolling loops trying to optimize the
+
+497
+00:27:56,830 --> 00:27:58,450
+audio of the expressions it's it's
+
+498
+00:27:58,450 --> 00:28:00,760
+different for every problem anyway I
+
+499
+00:28:00,760 --> 00:28:03,100
+guess you could write some code tools
+
+500
+00:28:03,100 --> 00:28:06,130
+that like just try certain optimizations
+
+501
+00:28:06,130 --> 00:28:08,860
+and compare them and know that like the
+
+502
+00:28:08,860 --> 00:28:12,520
+new like Google closure stuff has like
+
+503
+00:28:12,520 --> 00:28:16,570
+some of this stuff building when you put
+
+504
+00:28:16,570 --> 00:28:19,840
+your JavaScript into their compiler it
+
+505
+00:28:19,840 --> 00:28:23,350
+optimizes certain things I don't know if
+
+506
+00:28:23,350 --> 00:28:25,419
+like if it's exactly these things it's
+
+507
+00:28:25,419 --> 00:28:30,370
+too new for that but but yeah so it's
+
+508
+00:28:30,370 --> 00:28:32,710
+it's a bunch all that's available for
+
+509
+00:28:32,710 --> 00:28:34,270
+this would be like the Google closure
+
+510
+00:28:34,270 --> 00:28:36,549
+compiler actually I've tried it with
+
+511
+00:28:36,549 --> 00:28:39,730
+with some new column I'm writing called
+
+512
+00:28:39,730 --> 00:28:41,350
+Emil chairs which is like this mini
+
+513
+00:28:41,350 --> 00:28:43,900
+JavaScript animation library and it
+
+514
+00:28:43,900 --> 00:28:49,210
+broke the library so go figure by the
+
+515
+00:28:49,210 --> 00:28:51,549
+way I'm tomorrow at twelve-fifteen I
+
+516
+00:28:51,549 --> 00:28:53,590
+think able to talk in the underground
+
+517
+00:28:53,590 --> 00:28:59,549
+track No ok
+
+518
+00:28:59,559 --> 00:29:04,120
+I was told I was doing the talk okay so
+
+519
+00:29:04,120 --> 00:29:07,840
+maybe tomorrow able to a talk about Emil
+
+520
+00:29:07,840 --> 00:29:09,850
+J so you're welcome to that like I've
+
+521
+00:29:09,850 --> 00:29:12,639
+applied some of those things you've seen
+

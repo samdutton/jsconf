@@ -1,0 +1,2717 @@
+1
+00:00:31,869 --> 00:00:36,129
+
+so um I'll be talking about the
+
+2
+00:00:36,129 --> 00:00:39,610
+techniques browser or other engines are
+
+3
+00:00:39,610 --> 00:00:41,650
+using to compile JavaScript to get the
+
+4
+00:00:41,650 --> 00:00:43,510
+kind of impressive performance that
+
+5
+00:00:43,510 --> 00:00:47,670
+we've been getting in the past few years
+
+6
+00:00:47,670 --> 00:00:50,890
+the original title of my talk suggested
+
+7
+00:00:50,890 --> 00:00:54,300
+that I would also be giving practical
+
+8
+00:00:54,300 --> 00:00:56,129
+information about how to write
+
+9
+00:00:56,129 --> 00:00:58,239
+high-performance JavaScript there will
+
+10
+00:00:58,239 --> 00:01:00,690
+be less of that in it because actually
+
+11
+00:01:00,690 --> 00:01:02,800
+the engines are so clever about
+
+12
+00:01:02,800 --> 00:01:04,720
+optimizing that it's hard to break them
+
+13
+00:01:04,720 --> 00:01:06,670
+you have to actively try to break their
+
+14
+00:01:06,670 --> 00:01:08,650
+optimizations so if you're not doing
+
+15
+00:01:08,650 --> 00:01:11,110
+anything stupid you will get usually
+
+16
+00:01:11,110 --> 00:01:15,850
+fast code yeah so Brendan introduced me
+
+17
+00:01:15,850 --> 00:01:18,280
+so you may know me from my book I also
+
+18
+00:01:18,280 --> 00:01:20,350
+wrote a library code mirror which was
+
+19
+00:01:20,350 --> 00:01:22,560
+mentioned in the ACE talk before and
+
+20
+00:01:22,560 --> 00:01:27,100
+last year's J's 1k I wrote the winning
+
+21
+00:01:27,100 --> 00:01:34,490
+platform game demo thank you
+
+22
+00:01:34,500 --> 00:01:37,810
+so first I want to give some perspective
+
+23
+00:01:37,810 --> 00:01:39,579
+about what happens with browser
+
+24
+00:01:39,579 --> 00:01:43,149
+performance in the past say 15 years so
+
+25
+00:01:43,149 --> 00:01:44,920
+here we have the dark ages there was
+
+26
+00:01:44,920 --> 00:01:46,539
+Netscape 4 and there was Internet
+
+27
+00:01:46,539 --> 00:01:48,880
+Explorer 6 and thanks for our 6 is on
+
+28
+00:01:48,880 --> 00:01:50,499
+the benchmarks I said too it actually a
+
+29
+00:01:50,499 --> 00:01:53,770
+little slower than let's get four of us
+
+30
+00:01:53,770 --> 00:01:55,450
+of course it's supported a lot more
+
+31
+00:01:55,450 --> 00:02:00,850
+javascript these are by the way well
+
+32
+00:02:00,850 --> 00:02:03,039
+roughly BAE did the numbers I'm giving
+
+33
+00:02:03,039 --> 00:02:05,499
+here are completely vague and weird and
+
+34
+00:02:05,499 --> 00:02:07,389
+you shouldn't take them too seriously
+
+35
+00:02:07,389 --> 00:02:09,310
+they're based on SunSpider but I
+
+36
+00:02:09,310 --> 00:02:10,899
+couldn't get SunSpider to run in these
+
+37
+00:02:10,899 --> 00:02:14,530
+two browsers at all so I did I ran some
+
+38
+00:02:14,530 --> 00:02:16,000
+of the benchmarks that did run and then
+
+39
+00:02:16,000 --> 00:02:19,209
+interpolate it to a score to be able to
+
+40
+00:02:19,209 --> 00:02:23,470
+put these in my graph um wait so then
+
+41
+00:02:23,470 --> 00:02:26,770
+there's things getting better in the
+
+42
+00:02:26,770 --> 00:02:29,550
+middle zero Sh
+
+43
+00:02:29,550 --> 00:02:31,930
+Ajax happens and people started to
+
+44
+00:02:31,930 --> 00:02:35,640
+actually use JavaScript for more than
+
+45
+00:02:35,640 --> 00:02:39,100
+window open and document writes people
+
+46
+00:02:39,100 --> 00:02:42,010
+started to write big complicated systems
+
+47
+00:02:42,010 --> 00:02:44,460
+in JavaScript and this JavaScript
+
+48
+00:02:44,460 --> 00:02:50,730
+Foreman's became something serious and
+
+49
+00:02:50,730 --> 00:02:52,950
+browsers continue to push the envelope
+
+50
+00:02:52,950 --> 00:02:56,390
+Safari and chrome were very impressive
+
+51
+00:02:56,390 --> 00:03:00,210
+here the the green bar is Safari orange
+
+52
+00:03:00,210 --> 00:03:02,160
+is Firefox well maybe you can read this
+
+53
+00:03:02,160 --> 00:03:05,400
+you can probably read them then we have
+
+54
+00:03:05,400 --> 00:03:07,290
+this tiny little bar for Chrome there
+
+55
+00:03:07,290 --> 00:03:09,690
+and then in the last few years you see
+
+56
+00:03:09,690 --> 00:03:14,760
+all browsers stabilizing on tiny little
+
+57
+00:03:14,760 --> 00:03:17,280
+bars compared to what we historically
+
+58
+00:03:17,280 --> 00:03:22,110
+had part of this is that no one wants to
+
+59
+00:03:22,110 --> 00:03:25,050
+be left behind on this since SunSpider
+
+60
+00:03:25,050 --> 00:03:28,020
+benchmark scores are they all micro
+
+61
+00:03:28,020 --> 00:03:29,970
+optimized for SunSpider and this is
+
+62
+00:03:29,970 --> 00:03:32,880
+should not be taken too seriously but
+
+63
+00:03:32,880 --> 00:03:35,340
+yeah things definitely got faster I got
+
+64
+00:03:35,340 --> 00:03:38,880
+a lot faster if you compare to 2001
+
+65
+00:03:38,880 --> 00:03:45,000
+that's 100 time improvement so of course
+
+66
+00:03:45,000 --> 00:03:47,040
+this is like diminishing returns you
+
+67
+00:03:47,040 --> 00:03:49,560
+won't be expecting this kind of speed
+
+68
+00:03:49,560 --> 00:03:51,180
+ups in the next few years all will be
+
+69
+00:03:51,180 --> 00:03:56,640
+faster than C in two years but there are
+
+70
+00:03:56,640 --> 00:03:58,590
+still some things happening and probably
+
+71
+00:03:58,590 --> 00:04:00,930
+will see another speed-up of two or
+
+72
+00:04:00,930 --> 00:04:04,200
+three times I come from is that I'm not
+
+73
+00:04:04,200 --> 00:04:08,820
+writing JavaScript engines so how do
+
+74
+00:04:08,820 --> 00:04:12,450
+people do this this is also pretty much
+
+75
+00:04:12,450 --> 00:04:16,230
+the outline of my talk there are four
+
+76
+00:04:16,230 --> 00:04:20,790
+main things most browsers are compiling
+
+77
+00:04:20,790 --> 00:04:22,230
+to machine code we're all modern
+
+78
+00:04:22,230 --> 00:04:23,730
+browsers are compiling to machine count
+
+79
+00:04:23,730 --> 00:04:27,180
+one way or another there are some
+
+80
+00:04:27,180 --> 00:04:28,770
+improvements in how values are
+
+81
+00:04:28,770 --> 00:04:32,430
+represented a very big thing is caching
+
+82
+00:04:32,430 --> 00:04:35,820
+access to properties so that you can
+
+83
+00:04:35,820 --> 00:04:37,530
+actually look up object properties
+
+84
+00:04:37,530 --> 00:04:39,570
+without hashing stuff and looking
+
+85
+00:04:39,570 --> 00:04:42,020
+through big tables and things like that
+
+86
+00:04:42,020 --> 00:04:44,240
+garbage collection has been improved
+
+87
+00:04:44,240 --> 00:04:47,550
+tremendously especially in the past few
+
+88
+00:04:47,550 --> 00:04:50,100
+years and of course people are gaming
+
+89
+00:04:50,100 --> 00:04:52,830
+benchmarks for all they can like there
+
+90
+00:04:52,830 --> 00:04:55,740
+was this this scandal with IE 9 doing
+
+91
+00:04:55,740 --> 00:04:57,880
+dead couch
+
+92
+00:04:57,880 --> 00:05:01,840
+but no one knows what exactly happen
+
+93
+00:05:01,840 --> 00:05:03,310
+because it's close source but it seems
+
+94
+00:05:03,310 --> 00:05:06,130
+that it only noticed that something was
+
+95
+00:05:06,130 --> 00:05:08,760
+dead code if it was SunSpider
+
+96
+00:05:08,760 --> 00:05:11,260
+and maybe they've improved maybe they've
+
+97
+00:05:11,260 --> 00:05:13,240
+changed I don't really know watch what's
+
+98
+00:05:13,240 --> 00:05:16,449
+going on there but also brushes are
+
+99
+00:05:16,449 --> 00:05:19,180
+caching the result of method cosine
+
+100
+00:05:19,180 --> 00:05:22,389
+because SunSpider calls cosine a lot but
+
+101
+00:05:22,389 --> 00:05:24,639
+caching that doesn't make any sense in
+
+102
+00:05:24,639 --> 00:05:25,900
+the general case so they're actually
+
+103
+00:05:25,900 --> 00:05:28,510
+probably doing it this service to normal
+
+104
+00:05:28,510 --> 00:05:30,910
+scripts to optimize SunSpider there's
+
+105
+00:05:30,910 --> 00:05:34,169
+some weird things going on first thing
+
+106
+00:05:34,169 --> 00:05:38,830
+compilation now the old way the very
+
+107
+00:05:38,830 --> 00:05:40,660
+simple way to run a JavaScript program
+
+108
+00:05:40,660 --> 00:05:43,389
+is you parse it you build up like a big
+
+109
+00:05:43,389 --> 00:05:45,900
+syntax tree and then you run over that's
+
+110
+00:05:45,900 --> 00:05:52,850
+interpreting the the tree you have
+
+111
+00:05:52,860 --> 00:05:55,510
+that's something you can implement in a
+
+112
+00:05:55,510 --> 00:05:57,850
+few days it's probably what Brendan did
+
+113
+00:05:57,850 --> 00:06:05,350
+back in 1995 but so what you have to do
+
+114
+00:06:05,350 --> 00:06:07,990
+is for example you resolve variables at
+
+115
+00:06:07,990 --> 00:06:09,970
+runtime so you you're you're looking up
+
+116
+00:06:09,970 --> 00:06:12,880
+things in in scopes that you are holding
+
+117
+00:06:12,880 --> 00:06:14,470
+in memory somehow which have the actual
+
+118
+00:06:14,470 --> 00:06:17,530
+variable names and it's it's necessarily
+
+119
+00:06:17,530 --> 00:06:20,229
+terribly slow so no one does that
+
+120
+00:06:20,229 --> 00:06:22,660
+anymore next step up is you compiled to
+
+121
+00:06:22,660 --> 00:06:24,130
+bytecode this is usually a pretty
+
+122
+00:06:24,130 --> 00:06:27,910
+high-level form of code it's relatively
+
+123
+00:06:27,910 --> 00:06:30,900
+easy and fast to compile to it's small
+
+124
+00:06:30,900 --> 00:06:33,370
+and you get a lot of benefits of
+
+125
+00:06:33,370 --> 00:06:35,020
+compilation for examples variables are
+
+126
+00:06:35,020 --> 00:06:37,570
+results at compile time and during
+
+127
+00:06:37,570 --> 00:06:39,280
+runtime you're just referring to for
+
+128
+00:06:39,280 --> 00:06:41,110
+example a stack location and not to a
+
+129
+00:06:41,110 --> 00:06:44,080
+name that has to be looked at of course
+
+130
+00:06:44,080 --> 00:06:46,030
+you're still running it through an
+
+131
+00:06:46,030 --> 00:06:48,370
+interpreter so here's an example there's
+
+132
+00:06:48,370 --> 00:06:50,229
+a trivial function that adds one to its
+
+133
+00:06:50,229 --> 00:06:51,789
+second arguments then multiplies it by
+
+134
+00:06:51,789 --> 00:06:54,360
+its first arguments if we take a
+
+135
+00:06:54,360 --> 00:06:56,910
+non-existing stack based virtual machine
+
+136
+00:06:56,910 --> 00:06:59,530
+the the bytecode could look like this
+
+137
+00:06:59,530 --> 00:07:01,570
+you push one onto the stack you adds the
+
+138
+00:07:01,570 --> 00:07:03,280
+two top numbers of the stack combine
+
+139
+00:07:03,280 --> 00:07:05,770
+them into one and replace them by that
+
+140
+00:07:05,770 --> 00:07:08,110
+number you multiply what's a top of the
+
+141
+00:07:08,110 --> 00:07:10,990
+stack now and you jump out of function
+
+142
+00:07:10,990 --> 00:07:13,720
+so you notice that this is like you
+
+143
+00:07:13,720 --> 00:07:15,880
+reduce a lot of complexity by the
+
+144
+00:07:15,880 --> 00:07:18,430
+compilation process and well it's not
+
+145
+00:07:18,430 --> 00:07:20,110
+hard to imagine that interpretation of
+
+146
+00:07:20,110 --> 00:07:21,430
+this will be much faster than
+
+147
+00:07:21,430 --> 00:07:24,990
+interpretation of the raw ast3
+
+148
+00:07:24,990 --> 00:07:29,080
+next step is machine code because then
+
+149
+00:07:29,080 --> 00:07:30,759
+you don't have any runtime
+
+150
+00:07:30,759 --> 00:07:32,500
+interpretation at all anymore you're
+
+151
+00:07:32,500 --> 00:07:36,009
+just letting the Machine run your code
+
+152
+00:07:36,009 --> 00:07:38,410
+there's there's different approaches I
+
+153
+00:07:38,410 --> 00:07:40,410
+think VI it compiles everything it gets
+
+154
+00:07:40,410 --> 00:07:43,780
+down to machine code right away it's
+
+155
+00:07:43,780 --> 00:07:45,310
+possible to compile on the mount like
+
+156
+00:07:45,310 --> 00:07:47,830
+live your functions in the raw form and
+
+157
+00:07:47,830 --> 00:07:49,599
+when they're actually called compile
+
+158
+00:07:49,599 --> 00:07:51,430
+them what Firefox does is very
+
+159
+00:07:51,430 --> 00:07:53,259
+interesting it's it's compiled to
+
+160
+00:07:53,259 --> 00:07:56,289
+bytecode it interprets that but detects
+
+161
+00:07:56,289 --> 00:07:58,930
+hot loops loops that are run to a lot
+
+162
+00:07:58,930 --> 00:08:01,330
+and then starts compiling those with
+
+163
+00:08:01,330 --> 00:08:03,310
+contextual information about the types
+
+164
+00:08:03,310 --> 00:08:06,099
+of things that are being used there so
+
+165
+00:08:06,099 --> 00:08:09,009
+it can compile to tighter machine code
+
+166
+00:08:09,009 --> 00:08:10,210
+than if you're compiling from the
+
+167
+00:08:10,210 --> 00:08:13,780
+general case but it's a very complicated
+
+168
+00:08:13,780 --> 00:08:16,270
+complicated technique like they try to
+
+169
+00:08:16,270 --> 00:08:18,909
+get a whole loop to compile and then
+
+170
+00:08:18,909 --> 00:08:20,470
+from then on the whole loop can run
+
+171
+00:08:20,470 --> 00:08:25,469
+without entering bytecode at all anymore
+
+172
+00:08:25,469 --> 00:08:28,479
+now the reason why JavaScript can be
+
+173
+00:08:28,479 --> 00:08:30,580
+compiled efficiently at all in contrast
+
+174
+00:08:30,580 --> 00:08:34,029
+to for example Python is that it is in
+
+175
+00:08:34,029 --> 00:08:36,969
+the ends largely statically scoped if we
+
+176
+00:08:36,969 --> 00:08:38,320
+have this card example there are three
+
+177
+00:08:38,320 --> 00:08:41,140
+variables the compiler can see exactly
+
+178
+00:08:41,140 --> 00:08:44,320
+where these variables live acts as a
+
+179
+00:08:44,320 --> 00:08:46,440
+global y&z are arguments to the function
+
+180
+00:08:46,440 --> 00:08:49,390
+it can decide at compile time where it's
+
+181
+00:08:49,390 --> 00:08:51,459
+going to store them in a register on the
+
+182
+00:08:51,459 --> 00:08:53,500
+stack or on some global memory that the
+
+183
+00:08:53,500 --> 00:08:55,029
+global will probably end up in global
+
+184
+00:08:55,029 --> 00:08:58,120
+memory and then at runtime it just has
+
+185
+00:08:58,120 --> 00:09:00,850
+to access that there's some hairiness
+
+186
+00:09:00,850 --> 00:09:02,890
+with the fact that the global object is
+
+187
+00:09:02,890 --> 00:09:04,899
+also an object so you can first one will
+
+188
+00:09:04,899 --> 00:09:06,670
+delete properties from it and it has to
+
+189
+00:09:06,670 --> 00:09:08,190
+check when it's accessing those
+
+190
+00:09:08,190 --> 00:09:10,390
+variables whether they have been deleted
+
+191
+00:09:10,390 --> 00:09:11,950
+but because there's only one global
+
+192
+00:09:11,950 --> 00:09:13,720
+object it knows the object where it will
+
+193
+00:09:13,720 --> 00:09:15,880
+be looking at those variables and it can
+
+194
+00:09:15,880 --> 00:09:19,810
+optimize it pretty well except of course
+
+195
+00:09:19,810 --> 00:09:24,550
+if you do with this became a completely
+
+196
+00:09:24,550 --> 00:09:29,310
+dynamic scope when looking up X&Y
+
+197
+00:09:29,310 --> 00:09:32,080
+it knows that they might be the function
+
+198
+00:09:32,080 --> 00:09:34,390
+parameters but before getting their
+
+199
+00:09:34,390 --> 00:09:37,300
+value it always has to go through this
+
+200
+00:09:37,300 --> 00:09:41,380
+object scope and so it's it's variable
+
+201
+00:09:41,380 --> 00:09:43,029
+reference in the program within this
+
+202
+00:09:43,029 --> 00:09:45,730
+scope it's going to take a big hit but
+
+203
+00:09:45,730 --> 00:09:48,490
+the nice thing is that the compiler can
+
+204
+00:09:48,490 --> 00:09:50,170
+see statically that there is a width
+
+205
+00:09:50,170 --> 00:09:52,329
+there and when there is no width it
+
+206
+00:09:52,329 --> 00:09:53,920
+doesn't have to deal with the whole
+
+207
+00:09:53,920 --> 00:09:55,930
+construct at all so as long as you don't
+
+208
+00:09:55,930 --> 00:10:01,120
+use it you don't pay for it mm then
+
+209
+00:10:01,120 --> 00:10:03,100
+there's of course the other construct
+
+210
+00:10:03,100 --> 00:10:06,329
+that we would like to talk about evil
+
+211
+00:10:06,329 --> 00:10:09,730
+that also because it can introduce new
+
+212
+00:10:09,730 --> 00:10:12,160
+variables into the the scope it
+
+213
+00:10:12,160 --> 00:10:14,050
+complicates scope handling the scope has
+
+214
+00:10:14,050 --> 00:10:16,300
+to be more dynamic Russia actually much
+
+215
+00:10:16,300 --> 00:10:18,070
+faster about handling FL than about
+
+216
+00:10:18,070 --> 00:10:20,649
+handling with probably because evil is
+
+217
+00:10:20,649 --> 00:10:23,500
+used in SunSpider and with is not so
+
+218
+00:10:23,500 --> 00:10:28,209
+there is a motivation for this so then
+
+219
+00:10:28,209 --> 00:10:30,339
+here we have some beautiful moral
+
+220
+00:10:30,339 --> 00:10:33,040
+judgments now the first thing with I
+
+221
+00:10:33,040 --> 00:10:34,930
+actually it's usually turtle to
+
+222
+00:10:34,930 --> 00:10:36,520
+transform your code to an equivalent
+
+223
+00:10:36,520 --> 00:10:38,709
+form that doesn't use with and is no
+
+224
+00:10:38,709 --> 00:10:42,820
+more complicated in it so the only place
+
+225
+00:10:42,820 --> 00:10:46,690
+I use with is in J's 1k demos then
+
+226
+00:10:46,690 --> 00:10:51,339
+evolve actually if all does something
+
+227
+00:10:51,339 --> 00:10:55,630
+that's very useful and you can do
+
+228
+00:10:55,630 --> 00:10:58,360
+dynamic code loading you can do for
+
+229
+00:10:58,360 --> 00:10:59,829
+example compiling your templates to
+
+230
+00:10:59,829 --> 00:11:01,149
+actual scripts and having them be
+
+231
+00:11:01,149 --> 00:11:03,070
+blazing fast you can do metaprogramming
+
+232
+00:11:03,070 --> 00:11:07,060
+of some kind we need Evo and the good
+
+233
+00:11:07,060 --> 00:11:08,920
+news is that there are two kinds of
+
+234
+00:11:08,920 --> 00:11:11,709
+evolve I mentioned before that the
+
+235
+00:11:11,709 --> 00:11:13,300
+compiler can statically see whether your
+
+236
+00:11:13,300 --> 00:11:15,730
+scope is is completely static or not
+
+237
+00:11:15,730 --> 00:11:18,310
+that means only when eval looks like
+
+238
+00:11:18,310 --> 00:11:20,649
+there the red thing at the top here when
+
+239
+00:11:20,649 --> 00:11:22,899
+it's a direct call to the word evolve
+
+240
+00:11:22,899 --> 00:11:26,800
+then it's a local lexical eval which is
+
+241
+00:11:26,800 --> 00:11:28,839
+evaluated in the scope of the function
+
+242
+00:11:28,839 --> 00:11:32,350
+that calls it any other forms like these
+
+243
+00:11:32,350 --> 00:11:37,060
+weird things below here are indirect
+
+244
+00:11:37,060 --> 00:11:38,350
+indirect
+
+245
+00:11:38,350 --> 00:11:41,170
+the compiler can well if it had to
+
+246
+00:11:41,170 --> 00:11:42,880
+statically determine whether something
+
+247
+00:11:42,880 --> 00:11:45,010
+is going to evaluate to the eval
+
+248
+00:11:45,010 --> 00:11:47,800
+function its halting problem so if it
+
+249
+00:11:47,800 --> 00:11:50,050
+cannot so what it does then this is
+
+250
+00:11:50,050 --> 00:11:52,540
+actually not mandated by ACMA script
+
+251
+00:11:52,540 --> 00:11:54,460
+tree but I think ACMA scripts 5 does
+
+252
+00:11:54,460 --> 00:11:57,940
+mandated you get global evolve if you
+
+253
+00:11:57,940 --> 00:12:00,310
+treat evolve like a value you get a
+
+254
+00:12:00,310 --> 00:12:02,470
+function which does a global evolve and
+
+255
+00:12:02,470 --> 00:12:06,310
+globally fall is much nicer than lexical
+
+256
+00:12:06,310 --> 00:12:08,170
+avoid doesn't screw up your compilation
+
+257
+00:12:08,170 --> 00:12:10,030
+it's easier to think about because it
+
+258
+00:12:10,030 --> 00:12:11,860
+won't override variables in your local
+
+259
+00:12:11,860 --> 00:12:13,750
+scope well you're still of course
+
+260
+00:12:13,750 --> 00:12:15,400
+trusting the code that you're evaluating
+
+261
+00:12:15,400 --> 00:12:20,320
+but usually this is what you want when
+
+262
+00:12:20,320 --> 00:12:21,460
+you want evolve
+
+263
+00:12:21,460 --> 00:12:23,950
+the line at the bottom is nicest you
+
+264
+00:12:23,950 --> 00:12:25,030
+just give it a new name
+
+265
+00:12:25,030 --> 00:12:26,740
+and from then on you can use that name
+
+266
+00:12:26,740 --> 00:12:33,040
+to eval things in a more safe way next
+
+267
+00:12:33,040 --> 00:12:35,680
+thing is failure presentation so in a
+
+268
+00:12:35,680 --> 00:12:38,140
+dynamic language each value that is
+
+269
+00:12:38,140 --> 00:12:40,720
+being passed around has to also tell its
+
+270
+00:12:40,720 --> 00:12:44,380
+type somehow because the code doesn't
+
+271
+00:12:44,380 --> 00:12:46,180
+know what type it's going to get them it
+
+272
+00:12:46,180 --> 00:12:47,920
+has to inspect this type to know for
+
+273
+00:12:47,920 --> 00:12:49,660
+example when the plus operator is
+
+274
+00:12:49,660 --> 00:12:51,280
+applies what it should do whether it's
+
+275
+00:12:51,280 --> 00:12:53,610
+concatenating strings or adding numbers
+
+276
+00:12:53,610 --> 00:12:56,470
+the obvious way to do this is to put
+
+277
+00:12:56,470 --> 00:12:58,660
+everything on the heap at a type stag
+
+278
+00:12:58,660 --> 00:13:00,490
+words at the front of the value and then
+
+279
+00:13:00,490 --> 00:13:03,010
+the actual value itself so you can just
+
+280
+00:13:03,010 --> 00:13:06,190
+inspect them problem with this is that
+
+281
+00:13:06,190 --> 00:13:09,160
+you're usually making lots of numbers
+
+282
+00:13:09,160 --> 00:13:11,230
+for example in your programs mostly
+
+283
+00:13:11,230 --> 00:13:13,810
+numbers when you do plus you create a
+
+284
+00:13:13,810 --> 00:13:15,820
+new number and when you're looping
+
+285
+00:13:15,820 --> 00:13:18,310
+through when you have a loop index
+
+286
+00:13:18,310 --> 00:13:19,960
+you're creating thousands of numbers
+
+287
+00:13:19,960 --> 00:13:22,600
+typically allocating those on the heap
+
+288
+00:13:22,600 --> 00:13:29,560
+is utterly unacceptable and so what you
+
+289
+00:13:29,560 --> 00:13:32,320
+can do is now that every pointer you
+
+290
+00:13:32,320 --> 00:13:34,510
+allocate every pointer that is used by
+
+291
+00:13:34,510 --> 00:13:36,040
+the runtime is allocated by the runtime
+
+292
+00:13:36,040 --> 00:13:38,170
+and it can it's probably just want to
+
+293
+00:13:38,170 --> 00:13:41,040
+align those pointers like make sure that
+
+294
+00:13:41,040 --> 00:13:43,990
+they refer to multiples of four or eight
+
+295
+00:13:43,990 --> 00:13:45,850
+depending on whether you're on the 32 or
+
+296
+00:13:45,850 --> 00:13:48,990
+64-bit architecture because accessing
+
+297
+00:13:48,990 --> 00:13:51,550
+memory words is much much faster when
+
+298
+00:13:51,550 --> 00:13:52,120
+these words
+
+299
+00:13:52,120 --> 00:13:54,970
+lines anyway so that means the last two
+
+300
+00:13:54,970 --> 00:13:58,060
+or three bits of your pointers will be
+
+301
+00:13:58,060 --> 00:14:00,790
+zero and you can use that to distinguish
+
+302
+00:14:00,790 --> 00:14:02,380
+between pointers values which have the
+
+303
+00:14:02,380 --> 00:14:05,260
+type Tec in the pointed to structure and
+
+304
+00:14:05,260 --> 00:14:09,580
+other values in this case we're going to
+
+305
+00:14:09,580 --> 00:14:12,279
+represent an integer engines tend to
+
+306
+00:14:12,279 --> 00:14:14,260
+take care to represent numbers as
+
+307
+00:14:14,260 --> 00:14:15,970
+integers as long as they can
+
+308
+00:14:15,970 --> 00:14:17,589
+JavaScript numbers are specified to be
+
+309
+00:14:17,589 --> 00:14:20,350
+floats 64-bit floating-point numbers but
+
+310
+00:14:20,350 --> 00:14:22,839
+as long as they are integers smaller
+
+311
+00:14:22,839 --> 00:14:26,500
+than well in this case 32 bits they can
+
+312
+00:14:26,500 --> 00:14:28,720
+be represented as integers or two-bit as
+
+313
+00:14:28,720 --> 00:14:30,490
+long as you detect overflow and switch
+
+314
+00:14:30,490 --> 00:14:36,130
+to a float at the proper point so what
+
+315
+00:14:36,130 --> 00:14:38,170
+happens here is that you see these bits
+
+316
+00:14:38,170 --> 00:14:40,480
+at the bottom the top bit is set to 1 to
+
+317
+00:14:40,480 --> 00:14:42,220
+indicate if it's an integer and then the
+
+318
+00:14:42,220 --> 00:14:45,790
+rest of the word is the 32 31 bits that
+
+319
+00:14:45,790 --> 00:14:48,010
+are remaining is the representation of
+
+320
+00:14:48,010 --> 00:14:49,870
+the actual numbers shifted to the left
+
+321
+00:14:49,870 --> 00:14:51,790
+by one bit
+
+322
+00:14:51,790 --> 00:14:54,820
+it makes arithmetic a bit more involved
+
+323
+00:14:54,820 --> 00:14:57,400
+but it means you won't have to melech to
+
+324
+00:14:57,400 --> 00:14:58,440
+create a new number
+
+325
+00:14:58,440 --> 00:15:01,300
+what Firefox and possibly other engines
+
+326
+00:15:01,300 --> 00:15:02,770
+is currently doing is representing
+
+327
+00:15:02,770 --> 00:15:06,850
+everything with 64 bits which has a nice
+
+328
+00:15:06,850 --> 00:15:08,950
+property that you won't have to box your
+
+329
+00:15:08,950 --> 00:15:10,870
+floating point numbers heater so those
+
+330
+00:15:10,870 --> 00:15:13,080
+are also really fast and really direct
+
+331
+00:15:13,080 --> 00:15:15,160
+the trick is of course that the floating
+
+332
+00:15:15,160 --> 00:15:17,950
+point number is 64 bits so how do you
+
+333
+00:15:17,950 --> 00:15:21,459
+use where do you put the the type stack
+
+334
+00:15:21,459 --> 00:15:22,810
+if you're already using every single
+
+335
+00:15:22,810 --> 00:15:25,440
+bits for your floating point number
+
+336
+00:15:25,440 --> 00:15:28,270
+the floating the OEE
+
+337
+00:15:28,270 --> 00:15:29,800
+I'd have forgot the number the the
+
+338
+00:15:29,800 --> 00:15:32,020
+standard floating point spec which all
+
+339
+00:15:32,020 --> 00:15:33,730
+modern architectures are using for their
+
+340
+00:15:33,730 --> 00:15:37,720
+machine flows defines not a number of
+
+341
+00:15:37,720 --> 00:15:40,570
+values and actually it defines lots of
+
+342
+00:15:40,570 --> 00:15:45,220
+those like the last anything that starts
+
+343
+00:15:45,220 --> 00:15:49,690
+with 7ff for ffff and has not all zeros
+
+344
+00:15:49,690 --> 00:15:51,250
+after that because all zeros are used
+
+345
+00:15:51,250 --> 00:15:55,120
+for infinity and minus infinity is not a
+
+346
+00:15:55,120 --> 00:15:57,330
+number value there was some region III
+
+347
+00:15:57,330 --> 00:16:00,010
+won't claim to completely understand
+
+348
+00:16:00,010 --> 00:16:02,470
+this floating point specification but
+
+349
+00:16:02,470 --> 00:16:04,600
+there was a reason for this the it's
+
+350
+00:16:04,600 --> 00:16:05,980
+sometimes apparently nice
+
+351
+00:16:05,980 --> 00:16:07,660
+to have lots of different not a number
+
+352
+00:16:07,660 --> 00:16:10,390
+of values javascript only needs one did
+
+353
+00:16:10,390 --> 00:16:14,650
+the average crip standard just says that
+
+354
+00:16:14,650 --> 00:16:16,960
+every not a number is an equal to every
+
+355
+00:16:16,960 --> 00:16:20,020
+other not a number value so that leaves
+
+356
+00:16:20,020 --> 00:16:22,260
+all these other values for representing
+
+357
+00:16:22,260 --> 00:16:26,800
+in this case we put the type tag is that
+
+358
+00:16:26,800 --> 00:16:28,990
+the if you look at the yellow box the
+
+359
+00:16:28,990 --> 00:16:31,270
+one there would be the type tag and then
+
+360
+00:16:31,270 --> 00:16:33,820
+you can just put the integer if you need
+
+361
+00:16:33,820 --> 00:16:35,170
+it certitude bit integer and the
+
+362
+00:16:35,170 --> 00:16:37,600
+remaining 32 bits at the end if you want
+
+363
+00:16:37,600 --> 00:16:39,430
+bigger integers you can even use more
+
+364
+00:16:39,430 --> 00:16:44,350
+bits and then if you use a two type tag
+
+365
+00:16:44,350 --> 00:16:46,780
+and you put the pointer in the rest of
+
+366
+00:16:46,780 --> 00:16:51,430
+the value you don't need to box flows
+
+367
+00:16:51,430 --> 00:16:55,450
+anymore and you have a really convenient
+
+368
+00:16:55,450 --> 00:16:57,370
+uniform representation where the type
+
+369
+00:16:57,370 --> 00:17:00,820
+tag is always present in the word itself
+
+370
+00:17:00,820 --> 00:17:04,030
+without changing pointers I'm told that
+
+371
+00:17:04,030 --> 00:17:05,860
+this is a great win for Firefox that
+
+372
+00:17:05,860 --> 00:17:11,110
+they sped things up with this trick then
+
+373
+00:17:11,110 --> 00:17:14,080
+we proceeded to garbage collection so
+
+374
+00:17:14,080 --> 00:17:16,480
+here I have a schematic picture of a
+
+375
+00:17:16,480 --> 00:17:19,300
+heap you can see that the the the grey
+
+376
+00:17:19,300 --> 00:17:20,980
+rectangle there is supposed to represent
+
+377
+00:17:20,980 --> 00:17:23,640
+the program that the route pointers of
+
+378
+00:17:23,640 --> 00:17:25,510
+things that the program is actually
+
+379
+00:17:25,510 --> 00:17:30,790
+holding onto so I challenge you to tell
+
+380
+00:17:30,790 --> 00:17:32,560
+me which of these blue dots are no
+
+381
+00:17:32,560 --> 00:17:34,090
+longer reachable from blue route
+
+382
+00:17:34,090 --> 00:17:38,410
+pointers here that's not really a
+
+383
+00:17:38,410 --> 00:17:41,410
+problem um and actually we can see that
+
+384
+00:17:41,410 --> 00:17:43,480
+there's like one circle that has no
+
+385
+00:17:43,480 --> 00:17:45,100
+errors at all there because we can just
+
+386
+00:17:45,100 --> 00:17:46,570
+look at the circle and there are no
+
+387
+00:17:46,570 --> 00:17:49,750
+arrows around it the runtime has to
+
+388
+00:17:49,750 --> 00:17:51,460
+actually look at every single one of
+
+389
+00:17:51,460 --> 00:17:53,980
+these blue dots and make sure that
+
+390
+00:17:53,980 --> 00:17:55,690
+there's not a pointer in them pointing
+
+391
+00:17:55,690 --> 00:17:57,190
+at this thing it doesn't have like a
+
+392
+00:17:57,190 --> 00:18:00,270
+nice high-level overview of this it's
+
+393
+00:18:00,270 --> 00:18:03,460
+it's difficult to see which which memory
+
+394
+00:18:03,460 --> 00:18:05,080
+objects are life and which memory
+
+395
+00:18:05,080 --> 00:18:06,670
+objects are no longer reachable and can
+
+396
+00:18:06,670 --> 00:18:09,880
+this be collected the usual way to do
+
+397
+00:18:09,880 --> 00:18:12,010
+this it's called mark-sweep you start at
+
+398
+00:18:12,010 --> 00:18:16,210
+the roots and you just traverse pointers
+
+399
+00:18:16,210 --> 00:18:18,190
+and every time you come across an object
+
+400
+00:18:18,190 --> 00:18:19,090
+you
+
+401
+00:18:19,090 --> 00:18:21,460
+market with a bit somewhere if you come
+
+402
+00:18:21,460 --> 00:18:22,960
+across an object that's already marked
+
+403
+00:18:22,960 --> 00:18:24,850
+you stop otherwise you go through all
+
+404
+00:18:24,850 --> 00:18:26,980
+its children in the same way and then at
+
+405
+00:18:26,980 --> 00:18:28,990
+the end everything that's not been
+
+406
+00:18:28,990 --> 00:18:32,530
+reached is that because you've proven
+
+407
+00:18:32,530 --> 00:18:34,690
+that you can't reach it this thing is
+
+408
+00:18:34,690 --> 00:18:38,170
+that while you're approving this you
+
+409
+00:18:38,170 --> 00:18:41,380
+can't allow anyone to change anything
+
+410
+00:18:41,380 --> 00:18:43,180
+because it might introduce a new error
+
+411
+00:18:43,180 --> 00:18:45,640
+which will hook your whole analysis so
+
+412
+00:18:45,640 --> 00:18:47,530
+typically you are stopping the world
+
+413
+00:18:47,530 --> 00:18:50,950
+during this collection and it's the root
+
+414
+00:18:50,950 --> 00:18:52,840
+of the infamous garbage collection
+
+415
+00:18:52,840 --> 00:18:55,960
+process in JavaScript interpreter while
+
+416
+00:18:55,960 --> 00:18:57,910
+it's going through its whole memory or
+
+417
+00:18:57,910 --> 00:19:00,400
+at least all the live memory it doesn't
+
+418
+00:19:00,400 --> 00:19:02,710
+let the scripts run it doesn't let
+
+419
+00:19:02,710 --> 00:19:05,860
+anything happen so that's bad there's
+
+420
+00:19:05,860 --> 00:19:08,950
+some improvement of techniques which do
+
+421
+00:19:08,950 --> 00:19:12,160
+this incrementally and which detect
+
+422
+00:19:12,160 --> 00:19:14,760
+whether something changes and retrace
+
+423
+00:19:14,760 --> 00:19:18,520
+some parts later that helps another
+
+424
+00:19:18,520 --> 00:19:21,160
+thing that helps is making your heap
+
+425
+00:19:21,160 --> 00:19:26,910
+smaller some browsers use to represents
+
+426
+00:19:26,910 --> 00:19:29,440
+to have one heap for all the JavaScript
+
+427
+00:19:29,440 --> 00:19:30,760
+burning and all the taps that they had
+
+428
+00:19:30,760 --> 00:19:33,190
+opened the taps and iframes and it's
+
+429
+00:19:33,190 --> 00:19:35,860
+actually a very natural thing to split
+
+430
+00:19:35,860 --> 00:19:39,240
+that's per per domain probably because
+
+431
+00:19:39,240 --> 00:19:41,770
+JavaScript sprout programs are allowed
+
+432
+00:19:41,770 --> 00:19:45,160
+to access things running on the same
+
+433
+00:19:45,160 --> 00:19:47,050
+domain so there can be pointers between
+
+434
+00:19:47,050 --> 00:19:49,630
+deaths but something on a different
+
+435
+00:19:49,630 --> 00:19:52,150
+domain is almost completely isolated
+
+436
+00:19:52,150 --> 00:19:54,280
+from from other programs running on
+
+437
+00:19:54,280 --> 00:19:55,900
+other domains so you can just give them
+
+438
+00:19:55,900 --> 00:19:58,300
+their own heat that makes the problem
+
+439
+00:19:58,300 --> 00:20:00,610
+smaller and this makes it much faster to
+
+440
+00:20:00,610 --> 00:20:03,490
+to to do a collection of course if you
+
+441
+00:20:03,490 --> 00:20:08,880
+have giants for example an html5 game
+
+442
+00:20:08,880 --> 00:20:12,580
+which is creating billions of objects in
+
+443
+00:20:12,580 --> 00:20:14,920
+its own tab then this doesn't save you
+
+444
+00:20:14,920 --> 00:20:16,870
+because you still have a huge heap to
+
+445
+00:20:16,870 --> 00:20:22,720
+trash another very successful trick is
+
+446
+00:20:22,720 --> 00:20:27,370
+generational garbage collection that
+
+447
+00:20:27,370 --> 00:20:29,860
+means you split the heap into two or
+
+448
+00:20:29,860 --> 00:20:32,230
+more generations we demonstrated with
+
+449
+00:20:32,230 --> 00:20:32,710
+two here
+
+450
+00:20:32,710 --> 00:20:36,309
+because it's quite simple new objects go
+
+451
+00:20:36,309 --> 00:20:40,210
+into the young generation then when you
+
+452
+00:20:40,210 --> 00:20:42,429
+collect you just collect a young
+
+453
+00:20:42,429 --> 00:20:46,750
+generation you promote those objects
+
+454
+00:20:46,750 --> 00:20:49,000
+sometimes directly sometimes after a few
+
+455
+00:20:49,000 --> 00:20:50,860
+collections after they've reach a
+
+456
+00:20:50,860 --> 00:20:52,779
+certain age you promote them to the old
+
+457
+00:20:52,779 --> 00:20:55,299
+generation and at some point the old
+
+458
+00:20:55,299 --> 00:20:57,070
+generation gets full so you will have to
+
+459
+00:20:57,070 --> 00:20:59,559
+do a more expensive collection on the
+
+460
+00:20:59,559 --> 00:21:02,529
+old generation the problem with this is
+
+461
+00:21:02,529 --> 00:21:04,450
+that to prove that something in the
+
+462
+00:21:04,450 --> 00:21:06,480
+young generation is dead is unreachable
+
+463
+00:21:06,480 --> 00:21:09,610
+you have to be sure that no object in
+
+464
+00:21:09,610 --> 00:21:11,470
+the old generation is pointing to it so
+
+465
+00:21:11,470 --> 00:21:13,059
+you have to somehow keep track of all
+
+466
+00:21:13,059 --> 00:21:14,679
+the pointers going from the old
+
+467
+00:21:14,679 --> 00:21:18,669
+generation to the new generation which
+
+468
+00:21:18,669 --> 00:21:21,760
+is which requires some kind of code
+
+469
+00:21:21,760 --> 00:21:24,130
+around every right you do or a memory
+
+470
+00:21:24,130 --> 00:21:26,289
+barrier on the pages that holds the old
+
+471
+00:21:26,289 --> 00:21:30,130
+generations this is tricky but it still
+
+472
+00:21:30,130 --> 00:21:33,340
+worth it Firefox is planning to move to
+
+473
+00:21:33,340 --> 00:21:35,559
+generational GCV I'd had it from the
+
+474
+00:21:35,559 --> 00:21:41,830
+start and it's it's a huge win so here's
+
+475
+00:21:41,830 --> 00:21:47,830
+some bad pun come saying is is from the
+
+476
+00:21:47,830 --> 00:21:50,549
+Lisp world word that means allocating
+
+477
+00:21:50,549 --> 00:21:52,600
+allocating things on the heap and off
+
+478
+00:21:52,600 --> 00:21:54,940
+lisps you could only create lists on the
+
+479
+00:21:54,940 --> 00:21:57,100
+heap and lists list cells are called
+
+480
+00:21:57,100 --> 00:21:59,830
+constants so in the garbage collection
+
+481
+00:21:59,830 --> 00:22:01,659
+terminology cons is the word for
+
+482
+00:22:01,659 --> 00:22:03,760
+allocating and but to make something
+
+483
+00:22:03,760 --> 00:22:06,610
+fast to have your inner loop not cause
+
+484
+00:22:06,610 --> 00:22:09,220
+GC pauses you should be very careful
+
+485
+00:22:09,220 --> 00:22:11,860
+about allocating objects in a race and
+
+486
+00:22:11,860 --> 00:22:13,539
+anything that's going to end up on the
+
+487
+00:22:13,539 --> 00:22:16,179
+heap they often place to use horrible
+
+488
+00:22:16,179 --> 00:22:18,580
+dirty tricks like reusing objects and
+
+489
+00:22:18,580 --> 00:22:20,100
+setting their properties again or
+
+490
+00:22:20,100 --> 00:22:22,539
+setting Global's instead of returning an
+
+491
+00:22:22,539 --> 00:22:25,720
+object with several fields one thing to
+
+492
+00:22:25,720 --> 00:22:28,240
+be aware of is that local functions are
+
+493
+00:22:28,240 --> 00:22:30,190
+objects which are created every time you
+
+494
+00:22:30,190 --> 00:22:32,649
+call their like inner functions are
+
+495
+00:22:32,649 --> 00:22:34,029
+created every time you call their outer
+
+496
+00:22:34,029 --> 00:22:39,130
+function because they're mutable objects
+
+497
+00:22:39,130 --> 00:22:40,809
+in JavaScript so they have to be their
+
+498
+00:22:40,809 --> 00:22:43,029
+own objects
+
+499
+00:22:43,029 --> 00:22:44,559
+so you have to be careful if you're
+
+500
+00:22:44,559 --> 00:22:46,539
+calling something a lot don't put in our
+
+501
+00:22:46,539 --> 00:22:48,220
+functions in it even if they don't close
+
+502
+00:22:48,220 --> 00:22:50,470
+over anything in the outer function they
+
+503
+00:22:50,470 --> 00:22:52,860
+will still be stack allocated there are
+
+504
+00:22:52,860 --> 00:22:54,909
+possibilities to optimize that but I
+
+505
+00:22:54,909 --> 00:22:57,059
+don't think any engine does it's in my
+
+506
+00:22:57,059 --> 00:23:02,279
+benchmarks the functions that we're
+
+507
+00:23:02,279 --> 00:23:04,990
+using inner functions we're much much
+
+508
+00:23:04,990 --> 00:23:06,460
+lower to call than the function that
+
+509
+00:23:06,460 --> 00:23:12,370
+were free of inner functions so this is
+
+510
+00:23:12,370 --> 00:23:15,990
+possibly the most important thing
+
+511
+00:23:15,990 --> 00:23:20,299
+explaining the current JavaScript speed
+
+512
+00:23:20,309 --> 00:23:23,019
+properties I said before that scopes are
+
+513
+00:23:23,019 --> 00:23:25,179
+starting in JavaScript this is great
+
+514
+00:23:25,179 --> 00:23:27,039
+properties of objects are in no way
+
+515
+00:23:27,039 --> 00:23:31,179
+static you can dereference anything it
+
+516
+00:23:31,179 --> 00:23:33,220
+sits there they're prototypes to deal
+
+517
+00:23:33,220 --> 00:23:35,379
+with it's extremely hard to predict what
+
+518
+00:23:35,379 --> 00:23:39,220
+an object property dereference is going
+
+519
+00:23:39,220 --> 00:23:44,649
+to give you so what people are doing
+
+520
+00:23:44,649 --> 00:23:47,019
+what everyone is doing is inline caching
+
+521
+00:23:47,019 --> 00:23:49,600
+you can imagine that in the compiled
+
+522
+00:23:49,600 --> 00:23:52,269
+code there's like a little space next to
+
+523
+00:23:52,269 --> 00:23:56,429
+each property lookup and when it happens
+
+524
+00:23:56,429 --> 00:23:59,889
+the code writes well it's it's going to
+
+525
+00:23:59,889 --> 00:24:02,889
+look the property open an object somehow
+
+526
+00:24:02,889 --> 00:24:05,289
+and it's going to find the offset into
+
+527
+00:24:05,289 --> 00:24:09,100
+the object redish property lists at that
+
+528
+00:24:09,100 --> 00:24:11,019
+point it stores that the kind of the
+
+529
+00:24:11,019 --> 00:24:12,879
+object and the offset of the property in
+
+530
+00:24:12,879 --> 00:24:15,279
+this inline cache and the next time it
+
+531
+00:24:15,279 --> 00:24:17,289
+hits that point it checks first whether
+
+532
+00:24:17,289 --> 00:24:19,389
+it has a valid cache for this this
+
+533
+00:24:19,389 --> 00:24:23,129
+lookup if it does it can be very fast
+
+534
+00:24:23,129 --> 00:24:24,960
+effects usually there's not just
+
+535
+00:24:24,960 --> 00:24:26,919
+actually in all engines there's not just
+
+536
+00:24:26,919 --> 00:24:28,600
+one cache they use what's called
+
+537
+00:24:28,600 --> 00:24:30,909
+polymorphic inline caches today they
+
+538
+00:24:30,909 --> 00:24:35,679
+have a list of hits so that's even if
+
+539
+00:24:35,679 --> 00:24:37,539
+you have a few kinds of objects coming
+
+540
+00:24:37,539 --> 00:24:40,110
+through there it'll still be
+
+541
+00:24:40,110 --> 00:24:43,899
+successfully cached most of the time the
+
+542
+00:24:43,899 --> 00:24:46,360
+problem is that there are no classes in
+
+543
+00:24:46,360 --> 00:24:49,360
+JavaScript so how do you see whether new
+
+544
+00:24:49,360 --> 00:24:51,220
+objects you get has the same shape as
+
+545
+00:24:51,220 --> 00:24:55,110
+the object you got the last time around
+
+546
+00:24:55,120 --> 00:24:59,890
+what people do is synthesize classes
+
+547
+00:24:59,890 --> 00:25:02,590
+called hidden classes if you know the
+
+548
+00:25:02,590 --> 00:25:05,820
+prototype of an object and the set of
+
+549
+00:25:05,820 --> 00:25:08,650
+properties that it has just actually all
+
+550
+00:25:08,650 --> 00:25:10,330
+you need to know if there are arranged
+
+551
+00:25:10,330 --> 00:25:11,880
+in the same order
+
+552
+00:25:11,880 --> 00:25:15,190
+usually inline caches actually only
+
+553
+00:25:15,190 --> 00:25:19,180
+depend on like the linear order in which
+
+554
+00:25:19,180 --> 00:25:22,000
+the properties were assigned to the
+
+555
+00:25:22,000 --> 00:25:23,680
+object because it's much easier to do
+
+556
+00:25:23,680 --> 00:25:26,170
+what what happens is that such a hidden
+
+557
+00:25:26,170 --> 00:25:30,100
+class has a list of successor classes so
+
+558
+00:25:30,100 --> 00:25:33,220
+in this case we start with I should have
+
+559
+00:25:33,220 --> 00:25:34,510
+capitalized that because it's a
+
+560
+00:25:34,510 --> 00:25:38,380
+constructor but in this case I you get a
+
+561
+00:25:38,380 --> 00:25:40,090
+hidden class for this this function
+
+562
+00:25:40,090 --> 00:25:42,790
+because it this specifies a prototype
+
+563
+00:25:42,790 --> 00:25:48,040
+for four new objects and does it it will
+
+564
+00:25:48,040 --> 00:25:52,120
+be its own class when you have an object
+
+565
+00:25:52,120 --> 00:25:53,440
+of this class so when you call new
+
+566
+00:25:53,440 --> 00:25:55,360
+points it creates an empty objects of
+
+567
+00:25:55,360 --> 00:25:57,850
+this class and you assigned to its X it
+
+568
+00:25:57,850 --> 00:25:59,830
+looks up in this hidden class in the
+
+569
+00:25:59,830 --> 00:26:01,270
+list of successor classes whether
+
+570
+00:26:01,270 --> 00:26:03,910
+there's one that's created by assigning
+
+571
+00:26:03,910 --> 00:26:06,610
+X if it is then it takes that Clause if
+
+572
+00:26:06,610 --> 00:26:08,260
+not it creates a new class and adds it
+
+573
+00:26:08,260 --> 00:26:10,990
+to the list and the same for y so after
+
+574
+00:26:10,990 --> 00:26:14,080
+this you will have uniform objects after
+
+575
+00:26:14,080 --> 00:26:16,660
+running this constructor which have
+
+576
+00:26:16,660 --> 00:26:19,690
+prototype of points and x and y
+
+577
+00:26:19,690 --> 00:26:24,580
+properties and this this class is all
+
+578
+00:26:24,580 --> 00:26:26,610
+you need to know for caching because
+
+579
+00:26:26,610 --> 00:26:28,990
+yeah if you get another object of this
+
+580
+00:26:28,990 --> 00:26:31,000
+type you already know where you're going
+
+581
+00:26:31,000 --> 00:26:35,950
+to find X and we're going to find y this
+
+582
+00:26:35,950 --> 00:26:40,210
+is not completely solid it is possible
+
+583
+00:26:40,210 --> 00:26:42,309
+to break this I did some benchmarks in
+
+584
+00:26:42,309 --> 00:26:44,980
+this this is the results one noticeable
+
+585
+00:26:44,980 --> 00:26:47,700
+thing was that both Firefox for an IE 9
+
+586
+00:26:47,700 --> 00:26:51,400
+don't seem to catch lookup meshes so if
+
+587
+00:26:51,400 --> 00:26:52,720
+you're looking up a property that
+
+588
+00:26:52,720 --> 00:26:58,210
+doesn't exist it's pretty slow probably
+
+589
+00:26:58,210 --> 00:26:59,679
+because some people consider this a
+
+590
+00:26:59,679 --> 00:27:02,200
+programmer error depends on what you're
+
+591
+00:27:02,200 --> 00:27:04,300
+doing I've always happily looked for
+
+592
+00:27:04,300 --> 00:27:05,920
+properties that don't exist in objects
+
+593
+00:27:05,920 --> 00:27:08,230
+but maybe I should stop doing that
+
+594
+00:27:08,230 --> 00:27:11,360
+because you pay a small performance
+
+595
+00:27:11,360 --> 00:27:14,120
+penalty there's deep prototypes change
+
+596
+00:27:14,120 --> 00:27:16,070
+which are not handled that well the
+
+597
+00:27:16,070 --> 00:27:19,850
+Firefox actually deleted property from
+
+598
+00:27:19,850 --> 00:27:23,210
+an object that's pretty hard to get back
+
+599
+00:27:23,210 --> 00:27:24,950
+to some valid class then again because
+
+600
+00:27:24,950 --> 00:27:26,480
+you can delete any property sure they
+
+601
+00:27:26,480 --> 00:27:29,030
+have to be a lot more clever than just
+
+602
+00:27:29,030 --> 00:27:30,830
+dealing with edit properties both
+
+603
+00:27:30,830 --> 00:27:32,930
+Firefox and opera didn't deal that well
+
+604
+00:27:32,930 --> 00:27:36,620
+with it and then I tried just generating
+
+605
+00:27:36,620 --> 00:27:39,760
+more and more variants and at about ten
+
+606
+00:27:39,760 --> 00:27:42,710
+most caches seem to break down if you
+
+607
+00:27:42,710 --> 00:27:44,330
+have ten variants of an object's running
+
+608
+00:27:44,330 --> 00:27:46,190
+through your loop that's actually
+
+609
+00:27:46,190 --> 00:27:50,210
+already pretty rare you yeah you don't
+
+610
+00:27:50,210 --> 00:27:52,490
+usually do that or was striking when
+
+611
+00:27:52,490 --> 00:27:54,650
+doing this that was almost impossible to
+
+612
+00:27:54,650 --> 00:27:57,800
+break the v8 caching I don't know what
+
+613
+00:27:57,800 --> 00:27:59,030
+they're doing maybe I should tweet
+
+614
+00:27:59,030 --> 00:28:00,380
+through the code somehow because it's
+
+615
+00:28:00,380 --> 00:28:07,130
+apparently very clever next as a small
+
+616
+00:28:07,130 --> 00:28:10,070
+note at the end there's type inference I
+
+617
+00:28:10,070 --> 00:28:11,810
+don't think this is being done on a very
+
+618
+00:28:11,810 --> 00:28:14,630
+large scale yet but people are talking
+
+619
+00:28:14,630 --> 00:28:16,280
+about it and it's very promising and it
+
+620
+00:28:16,280 --> 00:28:20,510
+will probably be the next big gain for
+
+621
+00:28:20,510 --> 00:28:24,730
+for JavaScript performance traced
+
+622
+00:28:24,730 --> 00:28:27,800
+compilation already takes it's a bit
+
+623
+00:28:27,800 --> 00:28:29,630
+into account but it's completely runtime
+
+624
+00:28:29,630 --> 00:28:31,880
+dynamic there's actually also a lot of
+
+625
+00:28:31,880 --> 00:28:34,850
+static information about types that you
+
+626
+00:28:34,850 --> 00:28:36,530
+can glean from from a JavaScript program
+
+627
+00:28:36,530 --> 00:28:39,440
+here's a trivial example if we take the
+
+628
+00:28:39,440 --> 00:28:42,260
+I variable is being mutated in two
+
+629
+00:28:42,260 --> 00:28:44,330
+points because it's a local variable we
+
+630
+00:28:44,330 --> 00:28:46,220
+can prove that these are the only two
+
+631
+00:28:46,220 --> 00:28:48,890
+points that are mutated mutating it and
+
+632
+00:28:48,890 --> 00:28:52,040
+they both set it to a number starts at
+
+633
+00:28:52,040 --> 00:28:53,810
+zero and then this increment it's in the
+
+634
+00:28:53,810 --> 00:28:55,550
+increment operation leaves it a number
+
+635
+00:28:55,550 --> 00:28:59,390
+so given that we know that I will always
+
+636
+00:28:59,390 --> 00:29:03,680
+be of type number so it means you can
+
+637
+00:29:03,680 --> 00:29:06,590
+for example optimize this this
+
+638
+00:29:06,590 --> 00:29:08,390
+comparison less than you could even
+
+639
+00:29:08,390 --> 00:29:14,360
+optimize the array look up the code that
+
+640
+00:29:14,360 --> 00:29:16,490
+the output yeah the code that the
+
+641
+00:29:16,490 --> 00:29:19,310
+compiler outputs can be a little smarter
+
+642
+00:29:19,310 --> 00:29:21,380
+because it knows that I is
+
+643
+00:29:21,380 --> 00:29:24,980
+of type number there were optional type
+
+644
+00:29:24,980 --> 00:29:28,160
+annotations being talked about in what
+
+645
+00:29:28,160 --> 00:29:30,470
+was supposed to become a confused for
+
+646
+00:29:30,470 --> 00:29:31,880
+I'm actually kind of sad that those
+
+647
+00:29:31,880 --> 00:29:35,480
+vanished because they would they would
+
+648
+00:29:35,480 --> 00:29:37,400
+help compilers a lot even if other
+
+649
+00:29:37,400 --> 00:29:40,460
+compilers choose to ignore them and well
+
+650
+00:29:40,460 --> 00:29:42,290
+you don't have to use them if you don't
+
+651
+00:29:42,290 --> 00:29:44,540
+want them but I think they would be a
+
+652
+00:29:44,540 --> 00:29:48,110
+great addition of course there are other
+
+653
+00:29:48,110 --> 00:29:49,610
+cases if you have Global's then the
+
+654
+00:29:49,610 --> 00:29:51,440
+whole program can change your type and
+
+655
+00:29:51,440 --> 00:29:53,990
+it's very hard to prove that they are
+
+656
+00:29:53,990 --> 00:29:55,910
+going to be of a certain type same with
+
+657
+00:29:55,910 --> 00:29:57,950
+properties with objects being passed
+
+658
+00:29:57,950 --> 00:30:00,890
+around everywhere function return values
+
+659
+00:30:00,890 --> 00:30:04,850
+you need whole program analysis to to
+
+660
+00:30:04,850 --> 00:30:07,310
+get any kind of reliable information on
+
+661
+00:30:07,310 --> 00:30:11,480
+these kind of values that's exactly what
+
+662
+00:30:11,480 --> 00:30:13,760
+what Brian Hackett at Mozilla is
+
+663
+00:30:13,760 --> 00:30:19,010
+currently doing and it sounds like it's
+
+664
+00:30:19,010 --> 00:30:20,660
+it's going in the right direction and
+
+665
+00:30:20,660 --> 00:30:22,700
+it's very promising I don't know how far
+
+666
+00:30:22,700 --> 00:30:25,520
+other browser vendors are are with this
+
+667
+00:30:25,520 --> 00:30:28,790
+but yeah it's probably going to work to
+
+668
+00:30:28,790 --> 00:30:31,640
+a certain point what he talked about was
+
+669
+00:30:31,640 --> 00:30:34,820
+that you have to dynamically update
+
+670
+00:30:34,820 --> 00:30:36,980
+sometimes and recompile some code if
+
+671
+00:30:36,980 --> 00:30:38,990
+your assumptions about types are broken
+
+672
+00:30:38,990 --> 00:30:41,090
+like anyone can do an eval which changes
+
+673
+00:30:41,090 --> 00:30:43,460
+the type of global and then well you
+
+674
+00:30:43,460 --> 00:30:45,470
+have to go back and recompile some code
+
+675
+00:30:45,470 --> 00:30:48,380
+so it's it's very involved but it helps
+
+676
+00:30:48,380 --> 00:30:54,250
+it speeds things up more that was all
+
+677
+00:30:54,250 --> 00:30:57,260
+I'd be happy to take questions if anyone
+
+678
+00:30:57,260 --> 00:31:10,270
+has one no questions thank you
+
+679
+00:31:10,280 --> 00:31:13,020
+you know there are planes for us we
+

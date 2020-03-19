@@ -1,0 +1,2197 @@
+1
+00:00:11,390 --> 00:00:16,550
+
+hi how is everybody I'm glad everybody
+
+2
+00:00:16,550 --> 00:00:21,290
+knows Netflix so I'm to Bobby imamura
+
+3
+00:00:21,290 --> 00:00:23,119
+senior software engineer from netflix
+
+4
+00:00:23,119 --> 00:00:26,390
+today I'm gonna share our journey how we
+
+5
+00:00:26,390 --> 00:00:28,970
+migrated from you I data API Mona less
+
+6
+00:00:28,970 --> 00:00:32,000
+to well isolated microservice in nodejs
+
+7
+00:00:32,000 --> 00:00:37,400
+darker cantina so why did we have a UI
+
+8
+00:00:37,400 --> 00:00:39,730
+data API model is from the first place
+
+9
+00:00:39,730 --> 00:00:42,890
+to understand that let me start by show
+
+10
+00:00:42,890 --> 00:00:44,840
+some business background about our
+
+11
+00:00:44,840 --> 00:00:47,449
+company you probably already knew we are
+
+12
+00:00:47,449 --> 00:00:49,550
+video streaming company what you might
+
+13
+00:00:49,550 --> 00:00:51,649
+not know is we have over 80 million
+
+14
+00:00:51,649 --> 00:00:54,320
+subscribers worldwide we stream our
+
+15
+00:00:54,320 --> 00:00:58,190
+content more than 125 million hours per
+
+16
+00:00:58,190 --> 00:01:01,160
+day so that stuns a lot of traffic to
+
+17
+00:01:01,160 --> 00:01:04,940
+manage now user can view our content
+
+18
+00:01:04,940 --> 00:01:06,790
+from hundreds of different color device
+
+19
+00:01:06,790 --> 00:01:09,590
+each device has its own performance
+
+20
+00:01:09,590 --> 00:01:12,830
+characteristic and form factor so we
+
+21
+00:01:12,830 --> 00:01:15,050
+need very different kind of data to
+
+22
+00:01:15,050 --> 00:01:18,740
+render each you I screen now the
+
+23
+00:01:18,740 --> 00:01:21,920
+question is how do we fetch the internal
+
+24
+00:01:21,920 --> 00:01:27,920
+paula deta to render it GUI in the past
+
+25
+00:01:27,920 --> 00:01:32,329
+we built a java data API server that
+
+26
+00:01:32,329 --> 00:01:34,700
+will have exposed all the internal power
+
+27
+00:01:34,700 --> 00:01:37,250
+service and we will have all different
+
+28
+00:01:37,250 --> 00:01:40,520
+kind of rest endpoint here so our your
+
+29
+00:01:40,520 --> 00:01:43,159
+client can make multiple requests to
+
+30
+00:01:43,159 --> 00:01:45,860
+this comment java api similar to fetch
+
+31
+00:01:45,860 --> 00:01:49,159
+the internal holiday dough but there's a
+
+32
+00:01:49,159 --> 00:01:51,649
+problem here most of us are you our
+
+33
+00:01:51,649 --> 00:01:53,479
+developer here we all know orchestrate
+
+34
+00:01:53,479 --> 00:01:56,960
+multiple rest api request is cuba's am
+
+35
+00:01:56,960 --> 00:01:58,850
+and not performing from the client
+
+36
+00:01:58,850 --> 00:02:02,360
+device so we improve our Comment our API
+
+37
+00:02:02,360 --> 00:02:04,399
+server you will take the responsibility
+
+38
+00:02:04,399 --> 00:02:08,330
+to orchestrate and fail the request to
+
+39
+00:02:08,330 --> 00:02:13,160
+our internal potter service now our
+
+40
+00:02:13,160 --> 00:02:15,560
+client device has full control of the
+
+41
+00:02:15,560 --> 00:02:18,260
+request response cycle we can just make
+
+42
+00:02:18,260 --> 00:02:20,269
+a word request to fudge the internal
+
+43
+00:02:20,269 --> 00:02:23,330
+pallador back that's awesome
+
+44
+00:02:23,330 --> 00:02:32,630
+oh oops did I skip so however the data
+
+45
+00:02:32,630 --> 00:02:37,100
+returned is in generic format it's a
+
+46
+00:02:37,100 --> 00:02:39,920
+one-size-fits-all device so that music
+
+47
+00:02:39,920 --> 00:02:42,830
+means every device will fetch data that
+
+48
+00:02:42,830 --> 00:02:44,960
+has some puddle and belong to render its
+
+49
+00:02:44,960 --> 00:02:47,930
+screen you also need to pass it that's
+
+50
+00:02:47,930 --> 00:02:57,230
+not very efficient so we decide to let
+
+51
+00:02:57,230 --> 00:02:59,300
+our UI developer to write new idea
+
+52
+00:02:59,300 --> 00:03:02,110
+endpoints crib inside this Java server
+
+53
+00:03:02,110 --> 00:03:04,640
+so inside this you are data endpoints
+
+54
+00:03:04,640 --> 00:03:07,700
+crib that we can write business logic to
+
+55
+00:03:07,700 --> 00:03:09,800
+transform the internal pollinator to the
+
+56
+00:03:09,800 --> 00:03:13,610
+format that fits individual device now
+
+57
+00:03:13,610 --> 00:03:15,890
+UI developer has full control of the
+
+58
+00:03:15,890 --> 00:03:18,130
+data returned back to the client and
+
+59
+00:03:18,130 --> 00:03:21,080
+also all your developer doesn't like to
+
+60
+00:03:21,080 --> 00:03:23,840
+write type the language like Java so we
+
+61
+00:03:23,840 --> 00:03:26,180
+let them right groovy script for this
+
+62
+00:03:26,180 --> 00:03:28,100
+endpoints cliff and we can upload the
+
+63
+00:03:28,100 --> 00:03:29,930
+Google script to a host of java 7 wrong
+
+64
+00:03:29,930 --> 00:03:35,269
+time and compile there now the benefit
+
+65
+00:03:35,269 --> 00:03:38,959
+of having this architecture is we get a
+
+66
+00:03:38,959 --> 00:03:41,450
+service infrastructure oh you are
+
+67
+00:03:41,450 --> 00:03:43,550
+developer that I have to write a server
+
+68
+00:03:43,550 --> 00:03:45,920
+or managing the server wrong time in
+
+69
+00:03:45,920 --> 00:03:50,180
+production and we have good operational
+
+70
+00:03:50,180 --> 00:03:52,040
+insight already building without Java
+
+71
+00:03:52,040 --> 00:03:54,830
+server so UI developer has good
+
+72
+00:03:54,830 --> 00:03:56,930
+visibility into the data endpoint script
+
+73
+00:03:56,930 --> 00:04:01,580
+d right and we have a dedicated packin
+
+74
+00:04:01,580 --> 00:04:03,680
+team they were managing the server
+
+75
+00:04:03,680 --> 00:04:06,530
+dependency for example conquered or
+
+76
+00:04:06,530 --> 00:04:11,870
+groovy version and all our i-team has a
+
+77
+00:04:11,870 --> 00:04:15,080
+consistent development workflow they
+
+78
+00:04:15,080 --> 00:04:16,850
+have the same script to upload their
+
+79
+00:04:16,850 --> 00:04:19,669
+goofy square and we have an atomic
+
+80
+00:04:19,669 --> 00:04:22,250
+deployment workflow because all the data
+
+81
+00:04:22,250 --> 00:04:24,380
+in points crib are deployed together
+
+82
+00:04:24,380 --> 00:04:28,300
+with just our server so it's awesome
+
+83
+00:04:28,300 --> 00:04:31,669
+however over the time we realize there's
+
+84
+00:04:31,669 --> 00:04:34,090
+a problem with this architecture our
+
+85
+00:04:34,090 --> 00:04:37,560
+developer workflow is inefficient
+
+86
+00:04:37,560 --> 00:04:40,390
+during implementation cycle we need to
+
+87
+00:04:40,390 --> 00:04:41,950
+constantly contact switch between
+
+88
+00:04:41,950 --> 00:04:46,920
+JavaScript and groovy script and also
+
+89
+00:04:46,920 --> 00:04:50,590
+when we do in code iteration we need to
+
+90
+00:04:50,590 --> 00:04:52,780
+upload the groovy script to a hosted
+
+91
+00:04:52,780 --> 00:04:55,810
+testing environment each upload takes
+
+92
+00:04:55,810 --> 00:04:58,210
+two to three minutes or maybe you are
+
+93
+00:04:58,210 --> 00:05:01,270
+longer we have 200 you I developers
+
+94
+00:05:01,270 --> 00:05:04,090
+every one of them does this 20 to 30
+
+95
+00:05:04,090 --> 00:05:06,730
+times a day this workflow really slows
+
+96
+00:05:06,730 --> 00:05:09,330
+down our developer and add low pressure
+
+97
+00:05:09,330 --> 00:05:14,560
+to our testing server an even worse we
+
+98
+00:05:14,560 --> 00:05:17,410
+have very limited visibility into the
+
+99
+00:05:17,410 --> 00:05:19,540
+testing server environment the only way
+
+100
+00:05:19,540 --> 00:05:21,490
+to see anything is the traditional
+
+101
+00:05:21,490 --> 00:05:24,610
+printing annotation so you can see our
+
+102
+00:05:24,610 --> 00:05:28,960
+developers in here now and also it's
+
+103
+00:05:28,960 --> 00:05:30,880
+very difficult to reproduce a production
+
+104
+00:05:30,880 --> 00:05:32,590
+problem inside the local machine to
+
+105
+00:05:32,590 --> 00:05:34,600
+debug because we don't have a server
+
+106
+00:05:34,600 --> 00:05:39,610
+setup from the first place and even
+
+107
+00:05:39,610 --> 00:05:41,560
+worse we figure out that we have
+
+108
+00:05:41,560 --> 00:05:44,440
+long-term issue here the problem is
+
+109
+00:05:44,440 --> 00:05:48,550
+inside data endpoint square we have 1000
+
+110
+00:05:48,550 --> 00:05:51,970
+10 points crib and hundreds of update
+
+111
+00:05:51,970 --> 00:05:54,910
+every day all this crap are running
+
+112
+00:05:54,910 --> 00:05:57,400
+inside the Java server without isolation
+
+113
+00:05:57,400 --> 00:06:00,580
+a bug inside one set of data endpoints
+
+114
+00:06:00,580 --> 00:06:02,950
+crib could bring down entire you are
+
+115
+00:06:02,950 --> 00:06:09,160
+data API fleet now if one set of data if
+
+116
+00:06:09,160 --> 00:06:11,650
+you ask web is taking too much cpu or
+
+117
+00:06:11,650 --> 00:06:14,230
+memory you will stop all the other you
+
+118
+00:06:14,230 --> 00:06:17,380
+are data API web so we can scale them
+
+119
+00:06:17,380 --> 00:06:22,210
+independently and also it's difficult to
+
+120
+00:06:22,210 --> 00:06:24,580
+identify which data import script is
+
+121
+00:06:24,580 --> 00:06:26,800
+taking that much resource because all
+
+122
+00:06:26,800 --> 00:06:28,750
+the operational metrics is combined as
+
+123
+00:06:28,750 --> 00:06:33,310
+even worse now it's also complex to
+
+124
+00:06:33,310 --> 00:06:35,830
+offer research platform we need to load
+
+125
+00:06:35,830 --> 00:06:38,380
+it runs on the API into memory compile
+
+126
+00:06:38,380 --> 00:06:40,690
+and warm them before we can start to
+
+127
+00:06:40,690 --> 00:06:43,870
+serve production traffic so the server
+
+128
+00:06:43,870 --> 00:06:46,720
+style time takes 15 minutes we can't
+
+129
+00:06:46,720 --> 00:06:49,300
+scale our server fast enough to handle
+
+130
+00:06:49,300 --> 00:06:50,240
+the large trafficking
+
+131
+00:06:50,240 --> 00:06:53,060
+crees you feel the eternity when you try
+
+132
+00:06:53,060 --> 00:06:57,710
+to start up your server and also we have
+
+133
+00:06:57,710 --> 00:06:59,599
+hundreds of different kind of scrip they
+
+134
+00:06:59,599 --> 00:07:02,090
+are all loaded inside the memory now
+
+135
+00:07:02,090 --> 00:07:05,360
+even the largest amazon instance can run
+
+136
+00:07:05,360 --> 00:07:09,530
+such server and at this point you can
+
+137
+00:07:09,530 --> 00:07:12,410
+see all you advice need to make requests
+
+138
+00:07:12,410 --> 00:07:14,389
+through this java data API server to
+
+139
+00:07:14,389 --> 00:07:16,910
+fetch internal parody de so this server
+
+140
+00:07:16,910 --> 00:07:20,690
+is a mano less and also it's critical if
+
+141
+00:07:20,690 --> 00:07:23,840
+this server goes down the UI give us can
+
+142
+00:07:23,840 --> 00:07:26,090
+search any data which means you can
+
+143
+00:07:26,090 --> 00:07:30,620
+watch your video that's a bummer so it's
+
+144
+00:07:30,620 --> 00:07:33,349
+important that we make this you are data
+
+145
+00:07:33,349 --> 00:07:38,960
+API server resilient and performing now
+
+146
+00:07:38,960 --> 00:07:40,639
+at this point we know the pro and cons
+
+147
+00:07:40,639 --> 00:07:45,740
+of our monolithic data API server we
+
+148
+00:07:45,740 --> 00:07:48,110
+want to decouple our UI data endpoint
+
+149
+00:07:48,110 --> 00:07:50,240
+scrip from this monolithic a server and
+
+150
+00:07:50,240 --> 00:07:53,539
+make a resilient we clock feedback from
+
+151
+00:07:53,539 --> 00:07:56,090
+our different UI team and to see what's
+
+152
+00:07:56,090 --> 00:07:58,639
+their ideal next generation you I did if
+
+153
+00:07:58,639 --> 00:08:01,490
+you have loved one our developer want to
+
+154
+00:08:01,490 --> 00:08:04,009
+continue have the benefit as we had in
+
+155
+00:08:04,009 --> 00:08:06,919
+the old architecture however they want
+
+156
+00:08:06,919 --> 00:08:11,150
+to fix the issue that you have let's see
+
+157
+00:08:11,150 --> 00:08:13,400
+what's our developers ideal development
+
+158
+00:08:13,400 --> 00:08:18,080
+workflow we want to continue
+
+159
+00:08:18,080 --> 00:08:20,690
+half-civilized infrastructure our UI
+
+160
+00:08:20,690 --> 00:08:22,729
+developer doesn't want to implement
+
+161
+00:08:22,729 --> 00:08:25,639
+server or configure the server we want
+
+162
+00:08:25,639 --> 00:08:27,830
+to continue have easy environment setup
+
+163
+00:08:27,830 --> 00:08:31,639
+on the top of that we don't want to
+
+164
+00:08:31,639 --> 00:08:35,000
+contact switch anymore and we wanted to
+
+165
+00:08:35,000 --> 00:08:37,120
+have our code reflecting to the server
+
+166
+00:08:37,120 --> 00:08:39,680
+instantaneously because we are impatient
+
+167
+00:08:39,680 --> 00:08:41,240
+we just want to relo and have things
+
+168
+00:08:41,240 --> 00:08:45,680
+happen and we want to run a local server
+
+169
+00:08:45,680 --> 00:08:49,820
+so we can attach a debug onto it we want
+
+170
+00:08:49,820 --> 00:08:52,279
+to reproduce a production code inside
+
+171
+00:08:52,279 --> 00:08:54,410
+developed local machine precisely to
+
+172
+00:08:54,410 --> 00:08:58,579
+debug problem now let's see what our
+
+173
+00:08:58,579 --> 00:09:02,630
+production go we like the operational
+
+174
+00:09:02,630 --> 00:09:03,950
+visibility into our you
+
+175
+00:09:03,950 --> 00:09:07,730
+api server and our java server has
+
+176
+00:09:07,730 --> 00:09:10,010
+already integrate with our netflix
+
+177
+00:09:10,010 --> 00:09:13,010
+existing infrastructure for example or
+
+178
+00:09:13,010 --> 00:09:15,460
+personal dashboard a loading system
+
+179
+00:09:15,460 --> 00:09:17,990
+discovered crime so that's a nice
+
+180
+00:09:17,990 --> 00:09:19,610
+feature we want to continue have that
+
+181
+00:09:19,610 --> 00:09:23,150
+and we want to have countable deployment
+
+182
+00:09:23,150 --> 00:09:27,140
+workflow so what's on top of it is we
+
+183
+00:09:27,140 --> 00:09:30,770
+want to get wrong time isolation and we
+
+184
+00:09:30,770 --> 00:09:32,870
+want to scale different kind of data API
+
+185
+00:09:32,870 --> 00:09:36,800
+service independently for example our TV
+
+186
+00:09:36,800 --> 00:09:39,350
+you are team has long tail device some
+
+187
+00:09:39,350 --> 00:09:41,180
+old version of data if your service
+
+188
+00:09:41,180 --> 00:09:43,820
+monthly just need one server to handle
+
+189
+00:09:43,820 --> 00:09:46,460
+the traffic however the latest version
+
+190
+00:09:46,460 --> 00:09:50,240
+might need a lot of machines so how do
+
+191
+00:09:50,240 --> 00:09:54,410
+we achieve all these goals here's our
+
+192
+00:09:54,410 --> 00:09:57,920
+solution run no geoserver inside docker
+
+193
+00:09:57,920 --> 00:10:01,970
+container javascript is a language or UI
+
+194
+00:10:01,970 --> 00:10:04,370
+developer a familiar with so normal
+
+195
+00:10:04,370 --> 00:10:06,320
+context switch between JavaScript and
+
+196
+00:10:06,320 --> 00:10:09,560
+groovy script and using dunkle continued
+
+197
+00:10:09,560 --> 00:10:13,160
+we got process isolation to reproduce a
+
+198
+00:10:13,160 --> 00:10:15,650
+version of server become easy just
+
+199
+00:10:15,650 --> 00:10:17,300
+viewed a version of server code as a
+
+200
+00:10:17,300 --> 00:10:20,660
+docker image and deploy anywhere now
+
+201
+00:10:20,660 --> 00:10:25,700
+also style of time become fast now at
+
+202
+00:10:25,700 --> 00:10:27,710
+this point we got an empty darker
+
+203
+00:10:27,710 --> 00:10:30,470
+container how do we build our new server
+
+204
+00:10:30,470 --> 00:10:33,260
+has the same feature parity as we had in
+
+205
+00:10:33,260 --> 00:10:35,630
+our Java server we know we wanted to
+
+206
+00:10:35,630 --> 00:10:37,670
+have operational visibility an
+
+207
+00:10:37,670 --> 00:10:39,650
+integration with existing there for the
+
+208
+00:10:39,650 --> 00:10:43,190
+netflix infrastructure however all UI
+
+209
+00:10:43,190 --> 00:10:44,780
+developer wants to have civil
+
+210
+00:10:44,780 --> 00:10:47,360
+infrastructure they are great fry and
+
+211
+00:10:47,360 --> 00:10:49,550
+developer but they might not have
+
+212
+00:10:49,550 --> 00:10:51,380
+specific knowledge about building a
+
+213
+00:10:51,380 --> 00:10:54,770
+server we obviously don't want to put
+
+214
+00:10:54,770 --> 00:10:56,660
+the burden to have them write a node.js
+
+215
+00:10:56,660 --> 00:11:00,800
+server startup code like this to fill in
+
+216
+00:11:00,800 --> 00:11:03,110
+the gap here we decided to view the
+
+217
+00:11:03,110 --> 00:11:06,260
+common know Gia's platform so we will
+
+218
+00:11:06,260 --> 00:11:08,780
+write comment suicide the code in this
+
+219
+00:11:08,780 --> 00:11:11,440
+problem for example server startup
+
+220
+00:11:11,440 --> 00:11:14,480
+location error handling matrix
+
+221
+00:11:14,480 --> 00:11:18,490
+population and this load balancing
+
+222
+00:11:18,490 --> 00:11:21,050
+so all your developer can focus on
+
+223
+00:11:21,050 --> 00:11:22,940
+implementing business logic without
+
+224
+00:11:22,940 --> 00:11:27,080
+worry about silverside concern now let's
+
+225
+00:11:27,080 --> 00:11:30,140
+see how we view this nodejs platform we
+
+226
+00:11:30,140 --> 00:11:32,030
+use verse 5 framework to build our own
+
+227
+00:11:32,030 --> 00:11:35,090
+OTA server response already building
+
+228
+00:11:35,090 --> 00:11:38,120
+with operational matrix so it has good
+
+229
+00:11:38,120 --> 00:11:41,150
+debug ability we have been used
+
+230
+00:11:41,150 --> 00:11:43,630
+ratifying our website for a couple years
+
+231
+00:11:43,630 --> 00:11:48,130
+so it's well tested in production and
+
+232
+00:11:48,130 --> 00:11:51,260
+also it's one of the fastest no Jerry
+
+233
+00:11:51,260 --> 00:11:56,810
+server it's lightweight its specific
+
+234
+00:11:56,810 --> 00:11:59,390
+phobia dressed API service so we only
+
+235
+00:11:59,390 --> 00:12:03,620
+need a minimum set of dependency now
+
+236
+00:12:03,620 --> 00:12:05,450
+let's see how will allow you our
+
+237
+00:12:05,450 --> 00:12:08,540
+developer to create server out we use
+
+238
+00:12:08,540 --> 00:12:10,820
+red fire in raw module to let our
+
+239
+00:12:10,820 --> 00:12:12,490
+developer to create some around
+
+240
+00:12:12,490 --> 00:12:16,640
+declaratively in JSON format this way
+
+241
+00:12:16,640 --> 00:12:18,530
+our UI developer doesn't have to know
+
+242
+00:12:18,530 --> 00:12:21,080
+response pacifica a p.i and you make
+
+243
+00:12:21,080 --> 00:12:24,710
+rotation easy and also this role
+
+244
+00:12:24,710 --> 00:12:26,570
+configuration file become a single place
+
+245
+00:12:26,570 --> 00:12:29,210
+where we can find out what kind of API
+
+246
+00:12:29,210 --> 00:12:32,390
+is inside our no GL server it can
+
+247
+00:12:32,390 --> 00:12:37,100
+prevent real collision this is an
+
+248
+00:12:37,100 --> 00:12:40,670
+example of the role configuration you
+
+249
+00:12:40,670 --> 00:12:43,820
+can see search is the route past get is
+
+250
+00:12:43,820 --> 00:12:46,490
+the raw method the value of source is
+
+251
+00:12:46,490 --> 00:12:50,240
+the entry point square now what is the
+
+252
+00:12:50,240 --> 00:12:53,540
+entry point square by yourself this is a
+
+253
+00:12:53,540 --> 00:12:56,480
+pseudocode for our search service we
+
+254
+00:12:56,480 --> 00:12:58,310
+will write business logic to fetch
+
+255
+00:12:58,310 --> 00:13:01,270
+search data and transform the data to
+
+256
+00:13:01,270 --> 00:13:04,100
+individual device format in this
+
+257
+00:13:04,100 --> 00:13:06,950
+middleware function now what's important
+
+258
+00:13:06,950 --> 00:13:09,350
+here is we will export this middleware
+
+259
+00:13:09,350 --> 00:13:11,120
+function here in the entry point scrip
+
+260
+00:13:11,120 --> 00:13:13,880
+this is the contract between the usual
+
+261
+00:13:13,880 --> 00:13:18,230
+encode and plop the platform now I just
+
+262
+00:13:18,230 --> 00:13:19,910
+mentioned something called connect style
+
+263
+00:13:19,910 --> 00:13:23,090
+middleware function what is that in no
+
+264
+00:13:23,090 --> 00:13:25,760
+geoserver we use a middleware function
+
+265
+00:13:25,760 --> 00:13:28,340
+or an array of middleware function to
+
+266
+00:13:28,340 --> 00:13:30,680
+handle a request
+
+267
+00:13:30,680 --> 00:13:33,050
+the middle function will take input of
+
+268
+00:13:33,050 --> 00:13:35,330
+request response after and next call
+
+269
+00:13:35,330 --> 00:13:38,240
+back in the end of the function we will
+
+270
+00:13:38,240 --> 00:13:40,430
+invoke the next call back to change to
+
+271
+00:13:40,430 --> 00:13:43,970
+the next request handler now in most of
+
+272
+00:13:43,970 --> 00:13:45,589
+the case we will have very complicated
+
+273
+00:13:45,589 --> 00:13:47,720
+business logic so we will export an
+
+274
+00:13:47,720 --> 00:13:49,520
+array of middleware function in the
+
+275
+00:13:49,520 --> 00:13:52,370
+entry points clip the platform going to
+
+276
+00:13:52,370 --> 00:13:54,110
+take this middle functional ray a
+
+277
+00:13:54,110 --> 00:13:57,649
+injecting to ratify server by doing so
+
+278
+00:13:57,649 --> 00:13:59,810
+our UI developer can focus on
+
+279
+00:13:59,810 --> 00:14:01,459
+implementing business logic and the
+
+280
+00:14:01,459 --> 00:14:03,410
+platform will take care of server-side
+
+281
+00:14:03,410 --> 00:14:08,779
+bootstrap code now how does our platform
+
+282
+00:14:08,779 --> 00:14:13,100
+publish matrix we use verse by audio
+
+283
+00:14:13,100 --> 00:14:15,140
+longer plugging to publish matrix into
+
+284
+00:14:15,140 --> 00:14:18,860
+server log this whole bunch of texts are
+
+285
+00:14:18,860 --> 00:14:21,290
+requests log so what's important here is
+
+286
+00:14:21,290 --> 00:14:23,390
+you can see in a bottom of the screen
+
+287
+00:14:23,390 --> 00:14:25,790
+that read texts a unique request ID and
+
+288
+00:14:25,790 --> 00:14:28,550
+we also publish request header so these
+
+289
+00:14:28,550 --> 00:14:31,339
+are information we can use for debug and
+
+290
+00:14:31,339 --> 00:14:34,160
+most importantly will measure request
+
+291
+00:14:34,160 --> 00:14:36,440
+latency for each middleware handler now
+
+292
+00:14:36,440 --> 00:14:39,080
+we can easily find out where our server
+
+293
+00:14:39,080 --> 00:14:42,230
+is spending time at this actually is a
+
+294
+00:14:42,230 --> 00:14:43,700
+production of class has performance
+
+295
+00:14:43,700 --> 00:14:46,970
+issue I can easily find out the rest I
+
+296
+00:14:46,970 --> 00:14:48,650
+walk around handle is the one take the
+
+297
+00:14:48,650 --> 00:14:51,410
+longest time so I can be very targeted
+
+298
+00:14:51,410 --> 00:14:55,970
+to keep up my performance issue here we
+
+299
+00:14:55,970 --> 00:15:00,260
+also want our server to be resilient so
+
+300
+00:15:00,260 --> 00:15:01,940
+the platform will handle common system
+
+301
+00:15:01,940 --> 00:15:05,360
+level error for example if our upstream
+
+302
+00:15:05,360 --> 00:15:07,790
+server is doing a deployment we might
+
+303
+00:15:07,790 --> 00:15:11,900
+get a network error so the platform will
+
+304
+00:15:11,900 --> 00:15:13,279
+retry our network error using
+
+305
+00:15:13,279 --> 00:15:17,000
+exponential back-off algorithm we also
+
+306
+00:15:17,000 --> 00:15:20,300
+use res file requests expiry plugging to
+
+307
+00:15:20,300 --> 00:15:22,400
+time our requests when the clients no
+
+308
+00:15:22,400 --> 00:15:25,700
+longer interesting while request expiry
+
+309
+00:15:25,700 --> 00:15:28,850
+is important it can improve the server
+
+310
+00:15:28,850 --> 00:15:34,310
+performance now in some case our service
+
+311
+00:15:34,310 --> 00:15:36,620
+can get d dust the event queue will be
+
+312
+00:15:36,620 --> 00:15:38,510
+filled in with a lot of requests that
+
+313
+00:15:38,510 --> 00:15:41,029
+nobody is carrying about so using the
+
+314
+00:15:41,029 --> 00:15:42,709
+request expiry flogging we can quickly
+
+315
+00:15:42,709 --> 00:15:44,120
+discard those
+
+316
+00:15:44,120 --> 00:15:46,339
+active event and starting to serve
+
+317
+00:15:46,339 --> 00:15:49,880
+active request a young another scenario
+
+318
+00:15:49,880 --> 00:15:53,060
+I'll upstream server can have long
+
+319
+00:15:53,060 --> 00:15:55,550
+latency when a data come back to our
+
+320
+00:15:55,550 --> 00:15:57,710
+note a server the client has already
+
+321
+00:15:57,710 --> 00:16:00,080
+turned out so we don't want to waste
+
+322
+00:16:00,080 --> 00:16:03,110
+extra CPU cycle to parse and render the
+
+323
+00:16:03,110 --> 00:16:06,230
+data and send it back to the client so
+
+324
+00:16:06,230 --> 00:16:08,390
+the platform works also kill the middle
+
+325
+00:16:08,390 --> 00:16:13,700
+we're here now we can easily stand up
+
+326
+00:16:13,700 --> 00:16:16,880
+the data API service using on top of the
+
+327
+00:16:16,880 --> 00:16:20,810
+node.js platform the next step is we
+
+328
+00:16:20,810 --> 00:16:22,790
+want to be the tooling to make it easy
+
+329
+00:16:22,790 --> 00:16:24,650
+for our UI developer to set their
+
+330
+00:16:24,650 --> 00:16:26,510
+environment I have a consistent
+
+331
+00:16:26,510 --> 00:16:31,520
+development workflow we have introduced
+
+332
+00:16:31,520 --> 00:16:33,980
+darker into this workflow it's a new
+
+333
+00:16:33,980 --> 00:16:36,290
+technology that can add learning curve
+
+334
+00:16:36,290 --> 00:16:39,589
+and most of our developer are used mac
+
+335
+00:16:39,589 --> 00:16:42,589
+or windows as their development Shing so
+
+336
+00:16:42,589 --> 00:16:45,020
+they need the VirtualBox to run local
+
+337
+00:16:45,020 --> 00:16:48,230
+docker container that can add network
+
+338
+00:16:48,230 --> 00:16:51,500
+complexity so if all this our developer
+
+339
+00:16:51,500 --> 00:16:53,450
+wants to manually install into their
+
+340
+00:16:53,450 --> 00:16:56,270
+local dev box that can take a day or two
+
+341
+00:16:56,270 --> 00:17:00,200
+this is a too painful that's why we
+
+342
+00:17:00,200 --> 00:17:02,240
+decided to build tooling to streamline
+
+343
+00:17:02,240 --> 00:17:05,089
+our developers workflow the tooling will
+
+344
+00:17:05,089 --> 00:17:07,699
+encapsulate darker complexity and make
+
+345
+00:17:07,699 --> 00:17:10,760
+it easy to install build deploy a docker
+
+346
+00:17:10,760 --> 00:17:14,260
+container now this is a common workflow
+
+347
+00:17:14,260 --> 00:17:17,179
+for mac OS users starting to work with
+
+348
+00:17:17,179 --> 00:17:19,819
+our newest aqua container platform we
+
+349
+00:17:19,819 --> 00:17:23,510
+only need is full step first is set up
+
+350
+00:17:23,510 --> 00:17:26,240
+it's obvious we install the darker
+
+351
+00:17:26,240 --> 00:17:29,450
+VirtualBox node npn another related
+
+352
+00:17:29,450 --> 00:17:33,500
+software into developing local box he
+
+353
+00:17:33,500 --> 00:17:36,110
+will set up the darker server to work
+
+354
+00:17:36,110 --> 00:17:40,400
+with internal dhaka registry next up we
+
+355
+00:17:40,400 --> 00:17:43,070
+will generate a simple call repo using
+
+356
+00:17:43,070 --> 00:17:46,190
+human generator now even you develop on
+
+357
+00:17:46,190 --> 00:17:48,380
+board they can quickly start off with
+
+358
+00:17:48,380 --> 00:17:51,050
+their endpoint script just by changing a
+
+359
+00:17:51,050 --> 00:17:54,380
+working sample and a lot of time after
+
+360
+00:17:54,380 --> 00:17:56,929
+we build our code it might take a long
+
+361
+00:17:56,929 --> 00:17:57,770
+time for us
+
+362
+00:17:57,770 --> 00:18:00,620
+the cic d pipeline to push the code to
+
+363
+00:18:00,620 --> 00:18:02,780
+test our products are men so in this
+
+364
+00:18:02,780 --> 00:18:05,210
+initialization step our tooling will
+
+365
+00:18:05,210 --> 00:18:08,270
+create a cic d pipeline for our
+
+366
+00:18:08,270 --> 00:18:12,290
+developer now well we're ready to test
+
+367
+00:18:12,290 --> 00:18:15,740
+we can build a local image the tooling
+
+368
+00:18:15,740 --> 00:18:18,200
+will handle nesting of darker image you
+
+369
+00:18:18,200 --> 00:18:20,420
+will pull the node.js platform image
+
+370
+00:18:20,420 --> 00:18:22,970
+from internal dhaka registry and build a
+
+371
+00:18:22,970 --> 00:18:27,080
+data API server image on top of it the
+
+372
+00:18:27,080 --> 00:18:29,390
+final step is to employ a continued
+
+373
+00:18:29,390 --> 00:18:32,750
+locally a tooling will start an ode to
+
+374
+00:18:32,750 --> 00:18:34,580
+node.js server running inside the docker
+
+375
+00:18:34,580 --> 00:18:37,460
+container and create by man between the
+
+376
+00:18:37,460 --> 00:18:40,360
+host a pre-poll into the darker Cantina
+
+377
+00:18:40,360 --> 00:18:43,570
+now I just said something about by month
+
+378
+00:18:43,570 --> 00:18:47,090
+what is it it's a filesystem mounting
+
+379
+00:18:47,090 --> 00:18:49,640
+between hosts file system and the log
+
+380
+00:18:49,640 --> 00:18:53,680
+taco container why do we need it
+
+381
+00:18:53,680 --> 00:18:56,570
+remember our developer wants to have
+
+382
+00:18:56,570 --> 00:18:58,850
+fast code iteration they want to have
+
+383
+00:18:58,850 --> 00:19:00,680
+their code reflecting side the server
+
+384
+00:19:00,680 --> 00:19:03,920
+instantaneously however a docker image
+
+385
+00:19:03,920 --> 00:19:07,130
+is immutable we don't want to review a
+
+386
+00:19:07,130 --> 00:19:08,900
+new image every time when people change
+
+387
+00:19:08,900 --> 00:19:13,480
+code so using this by mom we can achieve
+
+388
+00:19:13,480 --> 00:19:17,840
+the code change instantaneously the
+
+389
+00:19:17,840 --> 00:19:20,620
+tooling will watch the file system and
+
+390
+00:19:20,620 --> 00:19:23,210
+the change can be reflecting side the
+
+391
+00:19:23,210 --> 00:19:24,830
+docker container and server is restarted
+
+392
+00:19:24,830 --> 00:19:28,310
+now a change can be reflect in a couple
+
+393
+00:19:28,310 --> 00:19:30,170
+second in compared to previously a
+
+394
+00:19:30,170 --> 00:19:34,490
+couple minutes and remember we need to
+
+395
+00:19:34,490 --> 00:19:36,740
+support hundreds of different device a
+
+396
+00:19:36,740 --> 00:19:39,470
+UI developer needs to test from
+
+397
+00:19:39,470 --> 00:19:42,910
+different device to their local data API
+
+398
+00:19:42,910 --> 00:19:45,260
+so it's complicated to set up the
+
+399
+00:19:45,260 --> 00:19:47,240
+network for their local development
+
+400
+00:19:47,240 --> 00:19:50,690
+lemon and the tooling take care of that
+
+401
+00:19:50,690 --> 00:19:53,450
+it will make our local data API server
+
+402
+00:19:53,450 --> 00:19:55,700
+discoverable by a common routing gateway
+
+403
+00:19:55,700 --> 00:19:59,690
+now our developer can test their local
+
+404
+00:19:59,690 --> 00:20:01,580
+data API from any device with an
+
+405
+00:20:01,580 --> 00:20:05,960
+internet
+
+406
+00:20:05,970 --> 00:20:08,130
+now how do we get a better debugging
+
+407
+00:20:08,130 --> 00:20:10,860
+method now since we have a local server
+
+408
+00:20:10,860 --> 00:20:12,930
+running the tooling world set up port
+
+409
+00:20:12,930 --> 00:20:15,270
+forwarding on VirtualBox a gyro the
+
+410
+00:20:15,270 --> 00:20:18,420
+remote debugging now developer can
+
+411
+00:20:18,420 --> 00:20:19,950
+choose their favorite debugger to
+
+412
+00:20:19,950 --> 00:20:22,740
+install no inspector and use our
+
+413
+00:20:22,740 --> 00:20:25,590
+favorite chrome dev tool to debug server
+
+414
+00:20:25,590 --> 00:20:28,440
+side issue as well our developer no
+
+415
+00:20:28,440 --> 00:20:30,090
+longer needs to write console the log
+
+416
+00:20:30,090 --> 00:20:32,040
+over the place inside their code and
+
+417
+00:20:32,040 --> 00:20:38,070
+stirring a testing server now we have a
+
+418
+00:20:38,070 --> 00:20:39,840
+very efficient developer workflow now
+
+419
+00:20:39,840 --> 00:20:43,130
+how do we solve our production problem
+
+420
+00:20:43,130 --> 00:20:46,410
+remember we have we need to achieve
+
+421
+00:20:46,410 --> 00:20:48,990
+long-term isolation and skill different
+
+422
+00:20:48,990 --> 00:20:53,350
+kind of data API service independently
+
+423
+00:20:53,360 --> 00:20:56,580
+in the old architecture or our you are
+
+424
+00:20:56,580 --> 00:20:58,650
+data API service is running inside the
+
+425
+00:20:58,650 --> 00:21:02,160
+same java more no less we want to
+
+426
+00:21:02,160 --> 00:21:04,520
+decouple them out from the Java server
+
+427
+00:21:04,520 --> 00:21:08,700
+each logical set of data endpoint script
+
+428
+00:21:08,700 --> 00:21:11,900
+is running inside at all no Jade server
+
+429
+00:21:11,900 --> 00:21:14,520
+by doing so we can scale them
+
+430
+00:21:14,520 --> 00:21:17,130
+independently and monitor their
+
+431
+00:21:17,130 --> 00:21:20,090
+operational matrix separately and also
+
+432
+00:21:20,090 --> 00:21:22,170
+because the Iranians are different
+
+433
+00:21:22,170 --> 00:21:24,570
+node.js server a bug inside one set of
+
+434
+00:21:24,570 --> 00:21:26,610
+data API service wouldn't affect the
+
+435
+00:21:26,610 --> 00:21:30,210
+other when a client make a request to
+
+436
+00:21:30,210 --> 00:21:32,760
+the no geoserver the node.js server will
+
+437
+00:21:32,760 --> 00:21:34,710
+make another request to a remote service
+
+438
+00:21:34,710 --> 00:21:36,930
+layer which has all the internal prodded
+
+439
+00:21:36,930 --> 00:21:43,080
+atta exposed there this June we have
+
+440
+00:21:43,080 --> 00:21:45,120
+viewed a search service using this new
+
+441
+00:21:45,120 --> 00:21:47,250
+architecture and integrating to our
+
+442
+00:21:47,250 --> 00:21:50,280
+website we are ready to test it in
+
+443
+00:21:50,280 --> 00:21:53,670
+production when the production coming to
+
+444
+00:21:53,670 --> 00:21:56,100
+mind our developers immediate reaction
+
+445
+00:21:56,100 --> 00:21:59,970
+is what happen if I'm on call how do I
+
+446
+00:21:59,970 --> 00:22:03,650
+debug a production issue that's critical
+
+447
+00:22:03,650 --> 00:22:06,660
+we don't want our UI developer to worry
+
+448
+00:22:06,660 --> 00:22:10,020
+about production matrix the platform has
+
+449
+00:22:10,020 --> 00:22:13,040
+already build original matrix in mind
+
+450
+00:22:13,040 --> 00:22:15,840
+the notary server has integral with
+
+451
+00:22:15,840 --> 00:22:18,530
+Netflix or personal dashboard atlas
+
+452
+00:22:18,530 --> 00:22:20,900
+ulta lewis is a tool will aggregate
+
+453
+00:22:20,900 --> 00:22:22,510
+different kind of operational metrics
+
+454
+00:22:22,510 --> 00:22:26,450
+into you I dashboard and it's also an
+
+455
+00:22:26,450 --> 00:22:29,540
+open source now when I know dear server
+
+456
+00:22:29,540 --> 00:22:31,940
+make requests will publish variety
+
+457
+00:22:31,940 --> 00:22:35,750
+matrix into outlets for example will
+
+458
+00:22:35,750 --> 00:22:38,660
+publish request-response count so we
+
+459
+00:22:38,660 --> 00:22:41,030
+will know the historical obvious of our
+
+460
+00:22:41,030 --> 00:22:43,580
+server we can make inform the decision
+
+461
+00:22:43,580 --> 00:22:46,010
+if we want to scale our server up or
+
+462
+00:22:46,010 --> 00:22:50,090
+down we also aggregate the request
+
+463
+00:22:50,090 --> 00:22:52,820
+latency and request q-dubs so we know
+
+464
+00:22:52,820 --> 00:22:56,480
+our server performance and we measure
+
+465
+00:22:56,480 --> 00:22:59,450
+server figlio count and time i'll count
+
+466
+00:22:59,450 --> 00:23:01,550
+and we can set threshold on the error
+
+467
+00:23:01,550 --> 00:23:06,100
+rate so we can alert our developer and
+
+468
+00:23:06,100 --> 00:23:09,860
+we have silver restyle count if our
+
+469
+00:23:09,860 --> 00:23:12,440
+server continuously restarting that's an
+
+470
+00:23:12,440 --> 00:23:14,360
+indication of severe problem inside the
+
+471
+00:23:14,360 --> 00:23:19,370
+data endpoints cliff we also publish a
+
+472
+00:23:19,370 --> 00:23:21,800
+flawed system level metrics for example
+
+473
+00:23:21,800 --> 00:23:25,400
+cpu or heap use it so we can be alerted
+
+474
+00:23:25,400 --> 00:23:27,590
+if there's performance or memory leak
+
+475
+00:23:27,590 --> 00:23:32,690
+going on in production in some time imma
+
+476
+00:23:32,690 --> 00:23:35,290
+get a 500 error for a particular request
+
+477
+00:23:35,290 --> 00:23:39,740
+so I want to see the error log I however
+
+478
+00:23:39,740 --> 00:23:42,050
+we don't want our I developer to take
+
+479
+00:23:42,050 --> 00:23:43,550
+the trouble to log into production
+
+480
+00:23:43,550 --> 00:23:47,300
+server until the server log and also we
+
+481
+00:23:47,300 --> 00:23:48,740
+have hundreds of different colored
+
+482
+00:23:48,740 --> 00:23:51,620
+server we wouldn't know which requests
+
+483
+00:23:51,620 --> 00:23:54,260
+were coming to which server so we view
+
+484
+00:23:54,260 --> 00:23:57,200
+the tooling to aggregate a server into
+
+485
+00:23:57,200 --> 00:24:00,470
+ink we allocate the server log into a UI
+
+486
+00:24:00,470 --> 00:24:04,250
+tool now our UI developer can call it a
+
+487
+00:24:04,250 --> 00:24:09,510
+server log through this UI to real time
+
+488
+00:24:09,520 --> 00:24:11,660
+at this point we have good visibility
+
+489
+00:24:11,660 --> 00:24:15,020
+into a node.js server is that enough to
+
+490
+00:24:15,020 --> 00:24:18,950
+debug a production issue actually it's
+
+491
+00:24:18,950 --> 00:24:22,970
+not we have a distributed system the
+
+492
+00:24:22,970 --> 00:24:24,980
+first step to this debug a production
+
+493
+00:24:24,980 --> 00:24:28,100
+issue is identify which stuck in the
+
+494
+00:24:28,100 --> 00:24:31,200
+requests segment has problem we
+
+495
+00:24:31,200 --> 00:24:33,659
+has come in you will come to a routing
+
+496
+00:24:33,659 --> 00:24:36,240
+gateway the Gateway wore out the request
+
+497
+00:24:36,240 --> 00:24:39,269
+to our no Jo server then no geoserver
+
+498
+00:24:39,269 --> 00:24:41,600
+make requests to a remote service layer
+
+499
+00:24:41,600 --> 00:24:44,779
+finally we fetch the internal holiday de
+
+500
+00:24:44,779 --> 00:24:47,309
+wouldn't be great if we have operational
+
+501
+00:24:47,309 --> 00:24:49,380
+metrics for each individual request
+
+502
+00:24:49,380 --> 00:24:53,250
+segment so we build distributed request
+
+503
+00:24:53,250 --> 00:24:55,919
+treating tool to measure request latency
+
+504
+00:24:55,919 --> 00:24:58,500
+and status for each individual local
+
+505
+00:24:58,500 --> 00:25:02,179
+segment now we have good visibility into
+
+506
+00:25:02,179 --> 00:25:08,820
+entire Netflix API ecosystem at this
+
+507
+00:25:08,820 --> 00:25:11,279
+point we have all the tooling available
+
+508
+00:25:11,279 --> 00:25:14,010
+for us to debug now we are ready to test
+
+509
+00:25:14,010 --> 00:25:17,130
+in production with full scale however
+
+510
+00:25:17,130 --> 00:25:19,789
+any new architecture could cause
+
+511
+00:25:19,789 --> 00:25:23,220
+unexpected issue we have over 80 million
+
+512
+00:25:23,220 --> 00:25:25,740
+subscribers we don't want to test a new
+
+513
+00:25:25,740 --> 00:25:29,059
+architecture while in impacting our
+
+514
+00:25:29,059 --> 00:25:32,429
+subscribers to experience so we decide
+
+515
+00:25:32,429 --> 00:25:35,700
+to run shallow traffic what is the
+
+516
+00:25:35,700 --> 00:25:38,309
+shuttle traffic here when a device make
+
+517
+00:25:38,309 --> 00:25:41,039
+a request to our routing gateway it will
+
+518
+00:25:41,039 --> 00:25:43,320
+duplicate the request when go to the
+
+519
+00:25:43,320 --> 00:25:46,769
+mono list data API server the other go
+
+520
+00:25:46,769 --> 00:25:48,870
+to the new notice taco container
+
+521
+00:25:48,870 --> 00:25:52,139
+platform now only the monolithic data
+
+522
+00:25:52,139 --> 00:25:54,600
+API server will return the data back to
+
+523
+00:25:54,600 --> 00:25:57,210
+our client the note G of stalker
+
+524
+00:25:57,210 --> 00:25:59,190
+container platform will only return the
+
+525
+00:25:59,190 --> 00:26:01,559
+data back to the routing gateway and the
+
+526
+00:26:01,559 --> 00:26:04,470
+data is dropped there this way we can
+
+527
+00:26:04,470 --> 00:26:07,529
+test our new architecture without impact
+
+528
+00:26:07,529 --> 00:26:12,269
+customers experience at this point we
+
+529
+00:26:12,269 --> 00:26:14,250
+have slayed our data API more or less
+
+530
+00:26:14,250 --> 00:26:16,380
+and make it each data API service
+
+531
+00:26:16,380 --> 00:26:18,480
+running inside it's all know Tiesto
+
+532
+00:26:18,480 --> 00:26:21,899
+Cantina in production we have achieved
+
+533
+00:26:21,899 --> 00:26:24,990
+long time isolation we can scale a
+
+534
+00:26:24,990 --> 00:26:26,490
+different calendar if you have service
+
+535
+00:26:26,490 --> 00:26:28,740
+in apparently we have reached
+
+536
+00:26:28,740 --> 00:26:31,049
+operational insight into our notice
+
+537
+00:26:31,049 --> 00:26:35,010
+server during development we have much
+
+538
+00:26:35,010 --> 00:26:38,429
+efficient developer workflow we can
+
+539
+00:26:38,429 --> 00:26:40,679
+reproduce a production problem in
+
+540
+00:26:40,679 --> 00:26:42,809
+developers local machine precisely to
+
+541
+00:26:42,809 --> 00:26:44,790
+debug issue
+
+542
+00:26:44,790 --> 00:26:47,340
+this architecture improvement has made
+
+543
+00:26:47,340 --> 00:26:49,340
+big impact to our business and
+
+544
+00:26:49,340 --> 00:26:54,720
+developers workflow thank you for coming
+
+545
+00:26:54,720 --> 00:26:56,790
+to my talk if you are interested in
+
+546
+00:26:56,790 --> 00:26:58,740
+working in node.js or darker Cantina
+
+547
+00:26:58,740 --> 00:27:01,080
+feel free to reach out to me after the
+
+548
+00:27:01,080 --> 00:27:04,440
+talk and our company is hiring if you
+
+549
+00:27:04,440 --> 00:27:06,840
+are interested please what look for our
+

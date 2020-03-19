@@ -1,0 +1,3009 @@
+1
+00:00:10,630 --> 00:00:21,510
+
+you
+
+2
+00:00:21,520 --> 00:00:24,580
+
+
+3
+00:00:24,590 --> 00:00:27,140
+hey I'm Pete I'm going to talk to you
+
+4
+00:00:27,140 --> 00:00:28,910
+about a library for creating user
+
+5
+00:00:28,910 --> 00:00:32,690
+interfaces that we call react and we
+
+6
+00:00:32,690 --> 00:00:34,850
+open source this at Jas conf us a couple
+
+7
+00:00:34,850 --> 00:00:37,520
+months ago and we got some kind of
+
+8
+00:00:37,520 --> 00:00:40,070
+sarcastic responses on Twitter a little
+
+9
+00:00:40,070 --> 00:00:42,290
+bit of snickering that kind of thing
+
+10
+00:00:42,290 --> 00:00:44,540
+we weren't really communicating what we
+
+11
+00:00:44,540 --> 00:00:46,640
+were doing so I'd like to talk to you
+
+12
+00:00:46,640 --> 00:00:49,010
+today about the design decisions around
+
+13
+00:00:49,010 --> 00:00:51,200
+react what we're doing differently than
+
+14
+00:00:51,200 --> 00:00:52,910
+other frameworks and kind of the
+
+15
+00:00:52,910 --> 00:00:54,770
+implementation that lets us make these
+
+16
+00:00:54,770 --> 00:00:57,140
+decisions and make it really fast so
+
+17
+00:00:57,140 --> 00:00:59,360
+it's not a tutorial it's not an
+
+18
+00:00:59,360 --> 00:01:00,410
+introduction you're not going to learn
+
+19
+00:01:00,410 --> 00:01:02,600
+how to build react acts today but you
+
+20
+00:01:02,600 --> 00:01:03,589
+might be able to use some of the stuff
+
+21
+00:01:03,589 --> 00:01:05,680
+that we've discovered in your own work
+
+22
+00:01:05,680 --> 00:01:07,970
+so I ask that you please just give it
+
+23
+00:01:07,970 --> 00:01:10,220
+five minutes some of the stuff that I'm
+
+24
+00:01:10,220 --> 00:01:12,110
+going to say flies in the face of some
+
+25
+00:01:12,110 --> 00:01:14,930
+established best practices but we found
+
+26
+00:01:14,930 --> 00:01:16,250
+that there are certain best practices
+
+27
+00:01:16,250 --> 00:01:19,700
+that deserve to be challenged so meet
+
+28
+00:01:19,700 --> 00:01:21,650
+react it's a library for creating user
+
+29
+00:01:21,650 --> 00:01:23,990
+interfaces specifically we render your
+
+30
+00:01:23,990 --> 00:01:27,560
+UI and we respond to events a lot of
+
+31
+00:01:27,560 --> 00:01:29,869
+people think of us as the V and MVC
+
+32
+00:01:29,869 --> 00:01:32,149
+maybe we're the controller to really
+
+33
+00:01:32,149 --> 00:01:34,939
+depends on how you use it but we try to
+
+34
+00:01:34,939 --> 00:01:36,950
+play nicely with your stack whatever it
+
+35
+00:01:36,950 --> 00:01:39,560
+may be so for example we're not
+
+36
+00:01:39,560 --> 00:01:41,180
+opinionated about how you fetch data
+
+37
+00:01:41,180 --> 00:01:43,549
+people use us with you know backbone or
+
+38
+00:01:43,549 --> 00:01:45,170
+whatever you use for managing your data
+
+39
+00:01:45,170 --> 00:01:48,920
+client-side so I'm going to talk to you
+
+40
+00:01:48,920 --> 00:01:51,140
+about kind of the initial principles
+
+41
+00:01:51,140 --> 00:01:53,119
+behind react which is all about building
+
+42
+00:01:53,119 --> 00:01:55,969
+components then I'm going to talk about
+
+43
+00:01:55,969 --> 00:01:57,979
+the design decisions that we made that
+
+44
+00:01:57,979 --> 00:01:59,450
+make react a little bit different from
+
+45
+00:01:59,450 --> 00:02:01,549
+other frameworks and finally I'm going
+
+46
+00:02:01,549 --> 00:02:03,619
+to talk about the implementation and how
+
+47
+00:02:03,619 --> 00:02:05,750
+we're able to make our implementation of
+
+48
+00:02:05,750 --> 00:02:07,690
+this framework really really fast
+
+49
+00:02:07,690 --> 00:02:09,770
+so I'm going to start with building
+
+50
+00:02:09,770 --> 00:02:14,600
+components not templates if you want to
+
+51
+00:02:14,600 --> 00:02:16,310
+think about this cynically we're talking
+
+52
+00:02:16,310 --> 00:02:18,140
+about mixing markup and display logic
+
+53
+00:02:18,140 --> 00:02:20,810
+and a lot of people completely disagree
+
+54
+00:02:20,810 --> 00:02:24,020
+with that so this is a much sure if you
+
+55
+00:02:24,020 --> 00:02:25,430
+can read it but this is kind of what
+
+56
+00:02:25,430 --> 00:02:28,040
+react code looks like this is from our
+
+57
+00:02:28,040 --> 00:02:29,780
+to-do list example on the home page
+
+58
+00:02:29,780 --> 00:02:32,840
+react is org it's all about building
+
+59
+00:02:32,840 --> 00:02:34,489
+reusable components that know how to
+
+60
+00:02:34,489 --> 00:02:36,280
+render themselves into the DOM
+
+61
+00:02:36,280 --> 00:02:39,370
+um but like I said I'm not going to go
+
+62
+00:02:39,370 --> 00:02:40,750
+through this line by line because this
+
+63
+00:02:40,750 --> 00:02:42,310
+is not a tutorial this is about design
+
+64
+00:02:42,310 --> 00:02:45,040
+decisions but we all like separation of
+
+65
+00:02:45,040 --> 00:02:48,100
+concerns right this has kind of been a
+
+66
+00:02:48,100 --> 00:02:50,110
+fundamental tenet of building apps on
+
+67
+00:02:50,110 --> 00:02:52,180
+the web ever since like the PHP
+
+68
+00:02:52,180 --> 00:02:55,360
+pocalypse of 1999 where we were putting
+
+69
+00:02:55,360 --> 00:02:56,920
+my sequel fetch row in the middle of our
+
+70
+00:02:56,920 --> 00:02:59,680
+table rendering code but let's talk
+
+71
+00:02:59,680 --> 00:03:01,000
+about what separation of concerns
+
+72
+00:03:01,000 --> 00:03:03,370
+actually means we're talking about
+
+73
+00:03:03,370 --> 00:03:05,830
+reducing coupling and increasing
+
+74
+00:03:05,830 --> 00:03:09,310
+cohesion coupling and cohesion they're
+
+75
+00:03:09,310 --> 00:03:11,170
+very they're two very important
+
+76
+00:03:11,170 --> 00:03:14,070
+principles of software engineering
+
+77
+00:03:14,070 --> 00:03:16,150
+here's the definition I pulled off of
+
+78
+00:03:16,150 --> 00:03:17,590
+Wikipedia about coupling and it's the
+
+79
+00:03:17,590 --> 00:03:19,660
+degree to which program modules rely on
+
+80
+00:03:19,660 --> 00:03:22,090
+each of the other modules now that's
+
+81
+00:03:22,090 --> 00:03:23,770
+kind of like a fluffy definition but
+
+82
+00:03:23,770 --> 00:03:26,650
+more concretely if you want to implement
+
+83
+00:03:26,650 --> 00:03:28,900
+a feature or fix a bug and you make the
+
+84
+00:03:28,900 --> 00:03:30,790
+change to one module be it like a class
+
+85
+00:03:30,790 --> 00:03:33,640
+common j/s module function a packet of
+
+86
+00:03:33,640 --> 00:03:36,070
+functionality how often do you have to
+
+87
+00:03:36,070 --> 00:03:37,810
+go to other parts of your code base and
+
+88
+00:03:37,810 --> 00:03:39,900
+make changes in order for it to work and
+
+89
+00:03:39,900 --> 00:03:43,030
+these sorts of cascading changes are
+
+90
+00:03:43,030 --> 00:03:44,860
+symptoms of coupling and that's what
+
+91
+00:03:44,860 --> 00:03:48,549
+makes software hard to maintain cohesion
+
+92
+00:03:48,549 --> 00:03:50,560
+is somewhat related as well and that's
+
+93
+00:03:50,560 --> 00:03:52,000
+the degree to which elements of a module
+
+94
+00:03:52,000 --> 00:03:53,950
+belong together so if you've heard of
+
+95
+00:03:53,950 --> 00:03:55,560
+the single responsibility principle
+
+96
+00:03:55,560 --> 00:03:58,239
+basically grouping related functionality
+
+97
+00:03:58,239 --> 00:04:00,220
+into modules and not putting extra crap
+
+98
+00:04:00,220 --> 00:04:03,459
+in there you know the kind of the
+
+99
+00:04:03,459 --> 00:04:05,019
+witness' test is like does this class
+
+100
+00:04:05,019 --> 00:04:06,610
+make sense or does this function make
+
+101
+00:04:06,610 --> 00:04:07,989
+sense or is it doing a lot of stuff and
+
+102
+00:04:07,989 --> 00:04:12,190
+can you refactor it into other pieces so
+
+103
+00:04:12,190 --> 00:04:14,380
+I think that templates encourage a poor
+
+104
+00:04:14,380 --> 00:04:16,269
+separation of concerns and it's not just
+
+105
+00:04:16,269 --> 00:04:17,890
+templates specifically it's anything
+
+106
+00:04:17,890 --> 00:04:20,709
+that tries to augment the Dom or HTML
+
+107
+00:04:20,709 --> 00:04:23,140
+with some sort of functionality to make
+
+108
+00:04:23,140 --> 00:04:24,850
+it better at building apps so I think
+
+109
+00:04:24,850 --> 00:04:26,620
+angular directives also fall into this
+
+110
+00:04:26,620 --> 00:04:28,570
+and it's not just client-side either
+
+111
+00:04:28,570 --> 00:04:30,640
+it's some server-side systems as well
+
+112
+00:04:30,640 --> 00:04:32,610
+like Jinja and kind of traditional
+
+113
+00:04:32,610 --> 00:04:35,530
+templating solutions now how can I
+
+114
+00:04:35,530 --> 00:04:36,820
+possibly make the argument that this is
+
+115
+00:04:36,820 --> 00:04:38,770
+a bad separation of concerns right
+
+116
+00:04:38,770 --> 00:04:40,690
+you've got your display plate code in
+
+117
+00:04:40,690 --> 00:04:42,880
+one place like your template and you
+
+118
+00:04:42,880 --> 00:04:44,200
+have other code in other places that
+
+119
+00:04:44,200 --> 00:04:47,500
+does that do different things now
+
+120
+00:04:47,500 --> 00:04:49,420
+normally your controller and your
+
+121
+00:04:49,420 --> 00:04:51,130
+they are tied together with something
+
+122
+00:04:51,130 --> 00:04:53,710
+called a view model and some some
+
+123
+00:04:53,710 --> 00:04:55,480
+frameworks actually the controller is
+
+124
+00:04:55,480 --> 00:04:57,580
+almost the view model so you pull some
+
+125
+00:04:57,580 --> 00:04:59,140
+data out of your database or with like
+
+126
+00:04:59,140 --> 00:05:01,990
+an AJAX call or something and you
+
+127
+00:05:01,990 --> 00:05:03,250
+construct a data structure that looks
+
+128
+00:05:03,250 --> 00:05:04,510
+something like this
+
+129
+00:05:04,510 --> 00:05:05,830
+so if I wanted to show a product grid
+
+130
+00:05:05,830 --> 00:05:07,540
+with the example that everyone uses
+
+131
+00:05:07,540 --> 00:05:11,050
+which is alternating row colors in some
+
+132
+00:05:11,050 --> 00:05:13,030
+templating systems you have to add a
+
+133
+00:05:13,030 --> 00:05:15,280
+table row color attribute to your view
+
+134
+00:05:15,280 --> 00:05:17,110
+model and we say that that's fine
+
+135
+00:05:17,110 --> 00:05:18,640
+because it's a view model it's not the
+
+136
+00:05:18,640 --> 00:05:20,110
+model and it's not the view it's in view
+
+137
+00:05:20,110 --> 00:05:22,960
+model now the problem is this tightly
+
+138
+00:05:22,960 --> 00:05:25,270
+couples your controller to your template
+
+139
+00:05:25,270 --> 00:05:27,490
+so if I want to make a change to how I
+
+140
+00:05:27,490 --> 00:05:30,430
+render those row colors while it feels
+
+141
+00:05:30,430 --> 00:05:32,020
+like I'm making it change the template
+
+142
+00:05:32,020 --> 00:05:33,910
+there's an implicit dependency between
+
+143
+00:05:33,910 --> 00:05:36,490
+the template and the controller because
+
+144
+00:05:36,490 --> 00:05:38,590
+they both agreed on that template row
+
+145
+00:05:38,590 --> 00:05:41,500
+color attribute in my example so you
+
+146
+00:05:41,500 --> 00:05:43,060
+actually have to make cascading changes
+
+147
+00:05:43,060 --> 00:05:45,300
+throughout your modules so it's not real
+
+148
+00:05:45,300 --> 00:05:48,430
+decoupling and I think that the display
+
+149
+00:05:48,430 --> 00:05:50,650
+mod the display logic and markup are
+
+150
+00:05:50,650 --> 00:05:54,970
+inevitably tightly coupled so if you're
+
+151
+00:05:54,970 --> 00:05:56,470
+building apps on the web that manipulate
+
+152
+00:05:56,470 --> 00:05:58,120
+the Dom you have to figure out where in
+
+153
+00:05:58,120 --> 00:06:01,030
+the Dom you're going to change and what
+
+154
+00:06:01,030 --> 00:06:03,040
+parts need to be updated and what nodes
+
+155
+00:06:03,040 --> 00:06:05,140
+are receiving events but the good news
+
+156
+00:06:05,140 --> 00:06:07,470
+is is that this is highly cohesive logic
+
+157
+00:06:07,470 --> 00:06:10,090
+so the the JavaScript code that that
+
+158
+00:06:10,090 --> 00:06:12,370
+drives your UI and the markup that
+
+159
+00:06:12,370 --> 00:06:14,200
+displays it to the user are both doing
+
+160
+00:06:14,200 --> 00:06:15,460
+basically the same thing they're
+
+161
+00:06:15,460 --> 00:06:16,960
+handling user events and the rendering
+
+162
+00:06:16,960 --> 00:06:21,070
+data to the to the user so I would like
+
+163
+00:06:21,070 --> 00:06:22,810
+to argue that templates separate
+
+164
+00:06:22,810 --> 00:06:26,560
+technologies and not concerns it's not a
+
+165
+00:06:26,560 --> 00:06:28,360
+real separation of concerns the
+
+166
+00:06:28,360 --> 00:06:29,920
+separation of technologies you're using
+
+167
+00:06:29,920 --> 00:06:32,880
+to implement the same concern and
+
+168
+00:06:32,880 --> 00:06:34,510
+unfortunately the way that we're doing
+
+169
+00:06:34,510 --> 00:06:36,550
+this today they tend to be deliberately
+
+170
+00:06:36,550 --> 00:06:40,840
+underpowered so I'm going to show you a
+
+171
+00:06:40,840 --> 00:06:42,130
+couple of examples of what I mean by
+
+172
+00:06:42,130 --> 00:06:44,380
+being underpowered and the first
+
+173
+00:06:44,380 --> 00:06:45,490
+technology I'm going to pick on is
+
+174
+00:06:45,490 --> 00:06:48,670
+handlebars sorry Tom so first of all
+
+175
+00:06:48,670 --> 00:06:50,320
+handlebars is an excellent
+
+176
+00:06:50,320 --> 00:06:52,030
+implementation of templating it's really
+
+177
+00:06:52,030 --> 00:06:54,280
+fast it's really easy to understand and
+
+178
+00:06:54,280 --> 00:06:55,420
+it drops right into a lot of different
+
+179
+00:06:55,420 --> 00:06:59,170
+frameworks but it's an implementation of
+
+180
+00:06:59,170 --> 00:07:00,880
+kind of a classical way you build
+
+181
+00:07:00,880 --> 00:07:02,350
+templates so they
+
+182
+00:07:02,350 --> 00:07:03,640
+actions you have available are fairly
+
+183
+00:07:03,640 --> 00:07:06,190
+primitive so the the easiest one to
+
+184
+00:07:06,190 --> 00:07:07,690
+think of is partials if you want to
+
+185
+00:07:07,690 --> 00:07:09,250
+reuse a template you tend to use
+
+186
+00:07:09,250 --> 00:07:12,640
+partials and a partial basically takes
+
+187
+00:07:12,640 --> 00:07:14,080
+one template and embeds it in another
+
+188
+00:07:14,080 --> 00:07:17,950
+template now that embedding puts all of
+
+189
+00:07:17,950 --> 00:07:19,720
+the puts that template in the parents
+
+190
+00:07:19,720 --> 00:07:21,460
+scope so if you want to make a change to
+
+191
+00:07:21,460 --> 00:07:24,550
+a child template or a partial you need
+
+192
+00:07:24,550 --> 00:07:26,320
+to track down every single call site
+
+193
+00:07:26,320 --> 00:07:28,690
+that uses that template and make sure
+
+194
+00:07:28,690 --> 00:07:30,010
+that you don't break anything because
+
+195
+00:07:30,010 --> 00:07:32,050
+there isn't a strict contract between
+
+196
+00:07:32,050 --> 00:07:33,760
+the partial and the template that
+
+197
+00:07:33,760 --> 00:07:37,210
+includes it this is going to be a
+
+198
+00:07:37,210 --> 00:07:40,450
+recurring theme of my talk another
+
+199
+00:07:40,450 --> 00:07:42,360
+example of an underpowered technology
+
+200
+00:07:42,360 --> 00:07:46,300
+and here is each it's like oh it's like
+
+201
+00:07:46,300 --> 00:07:47,680
+doing functional programming but you
+
+202
+00:07:47,680 --> 00:07:49,510
+only have map you don't have filter you
+
+203
+00:07:49,510 --> 00:07:50,950
+don't have reduce it's it's hard to do
+
+204
+00:07:50,950 --> 00:07:53,500
+branching and frameworks have solved
+
+205
+00:07:53,500 --> 00:07:54,460
+some of these problems that I've
+
+206
+00:07:54,460 --> 00:07:55,840
+mentioned but they're kind of hacking
+
+207
+00:07:55,840 --> 00:07:59,050
+around the idea that we want to pull
+
+208
+00:07:59,050 --> 00:08:01,660
+certain parts of our display logic apart
+
+209
+00:08:01,660 --> 00:08:06,440
+and artificially separate technologies
+
+210
+00:08:06,450 --> 00:08:08,950
+another symptom is if you're continually
+
+211
+00:08:08,950 --> 00:08:13,360
+inventing new concepts so JavaScript is
+
+212
+00:08:13,360 --> 00:08:16,690
+based on a rich history of Vonn demand
+
+213
+00:08:16,690 --> 00:08:18,970
+based programming model language aming
+
+214
+00:08:18,970 --> 00:08:21,850
+languages and has kind of battle-tested
+
+215
+00:08:21,850 --> 00:08:23,740
+philosophies right like we understand
+
+216
+00:08:23,740 --> 00:08:24,940
+how functions work it's very clear
+
+217
+00:08:24,940 --> 00:08:26,530
+prototypical inheritance most people
+
+218
+00:08:26,530 --> 00:08:29,110
+understand but when you start to build
+
+219
+00:08:29,110 --> 00:08:32,710
+abstractions on top of you know HTML you
+
+220
+00:08:32,710 --> 00:08:34,990
+start to have to invent a lot of things
+
+221
+00:08:34,990 --> 00:08:36,820
+in order to get to the level of
+
+222
+00:08:36,820 --> 00:08:38,560
+expressiveness you need to build real
+
+223
+00:08:38,560 --> 00:08:41,050
+applications so now I'm going to pick on
+
+224
+00:08:41,050 --> 00:08:43,660
+angular and I just pulled this this
+
+225
+00:08:43,660 --> 00:08:45,520
+quote out from the angular docs and I've
+
+226
+00:08:45,520 --> 00:08:47,710
+highlighted every concept that they've
+
+227
+00:08:47,710 --> 00:08:50,170
+created that I'm not I'm either not
+
+228
+00:08:50,170 --> 00:08:51,580
+really sure what it means as a new user
+
+229
+00:08:51,580 --> 00:08:53,530
+of angular or it sort of exists in
+
+230
+00:08:53,530 --> 00:08:56,620
+JavaScript and it's based on the idea
+
+231
+00:08:56,620 --> 00:08:59,350
+that they want to augment HTML to
+
+232
+00:08:59,350 --> 00:09:01,480
+support two-way data-binding and in
+
+233
+00:09:01,480 --> 00:09:02,920
+order to do that you have to rethink the
+
+234
+00:09:02,920 --> 00:09:05,110
+idea of scopes and if you think the idea
+
+235
+00:09:05,110 --> 00:09:06,580
+of scopes you have to rethink the idea
+
+236
+00:09:06,580 --> 00:09:08,650
+of composability
+
+237
+00:09:08,650 --> 00:09:10,900
+and modularity and you start building
+
+238
+00:09:10,900 --> 00:09:12,070
+directives and train
+
+239
+00:09:12,070 --> 00:09:16,750
+lucien and all this other stuff but i
+
+240
+00:09:16,750 --> 00:09:18,850
+think the framework cannot know how to
+
+241
+00:09:18,850 --> 00:09:22,420
+separate your concerns for you it should
+
+242
+00:09:22,420 --> 00:09:24,820
+only provide powerful and expressive
+
+243
+00:09:24,820 --> 00:09:28,019
+tools to let you do it
+
+244
+00:09:28,019 --> 00:09:31,089
+what I mean by that is that a lot of
+
+245
+00:09:31,089 --> 00:09:33,250
+frameworks force you into this MVC style
+
+246
+00:09:33,250 --> 00:09:37,329
+of development and MVC is great however
+
+247
+00:09:37,329 --> 00:09:39,160
+your controllers tend to get really fat
+
+248
+00:09:39,160 --> 00:09:40,779
+or maybe your models get really fat if
+
+249
+00:09:40,779 --> 00:09:42,100
+that's your style of building or maybe
+
+250
+00:09:42,100 --> 00:09:45,160
+even your views the reason for that is
+
+251
+00:09:45,160 --> 00:09:46,240
+the framework is telling you how to
+
+252
+00:09:46,240 --> 00:09:47,529
+separate your components and the
+
+253
+00:09:47,529 --> 00:09:49,180
+vocabulary you're speaking is that of
+
+254
+00:09:49,180 --> 00:09:50,620
+the framework and not of your
+
+255
+00:09:50,620 --> 00:09:53,709
+application so we want to change that
+
+256
+00:09:53,709 --> 00:09:55,630
+and we think the best tool for this is a
+
+257
+00:09:55,630 --> 00:09:57,790
+react component which is a highly
+
+258
+00:09:57,790 --> 00:09:59,470
+cohesive building block for you is
+
+259
+00:09:59,470 --> 00:10:01,180
+that's loosely coupled with other
+
+260
+00:10:01,180 --> 00:10:03,389
+components coupling and cohesion
+
+261
+00:10:03,389 --> 00:10:07,839
+constant theme here so we want you to
+
+262
+00:10:07,839 --> 00:10:09,810
+use components to separate your concerns
+
+263
+00:10:09,810 --> 00:10:12,190
+with the full power of JavaScript and
+
+264
+00:10:12,190 --> 00:10:14,889
+not a cripple templating language so I'm
+
+265
+00:10:14,889 --> 00:10:16,569
+going to pull up that example I showed
+
+266
+00:10:16,569 --> 00:10:18,490
+earlier briefly and just highlight a
+
+267
+00:10:18,490 --> 00:10:21,790
+couple of things we wanted to reuse some
+
+268
+00:10:21,790 --> 00:10:24,790
+functionality so in react we created a
+
+269
+00:10:24,790 --> 00:10:27,190
+function which is how you reuse
+
+270
+00:10:27,190 --> 00:10:30,610
+functionality in JavaScript we wanted to
+
+271
+00:10:30,610 --> 00:10:33,279
+reuse um we wanted to reuse some code
+
+272
+00:10:33,279 --> 00:10:35,470
+and pass different parameters in each
+
+273
+00:10:35,470 --> 00:10:38,199
+time and have it render to the Dom so we
+
+274
+00:10:38,199 --> 00:10:41,110
+used composition and we composed a to-do
+
+275
+00:10:41,110 --> 00:10:43,930
+application out of a to-do list object
+
+276
+00:10:43,930 --> 00:10:48,010
+component again this is just regular
+
+277
+00:10:48,010 --> 00:10:49,389
+JavaScript software engineering
+
+278
+00:10:49,389 --> 00:10:51,970
+principles and we also have the full
+
+279
+00:10:51,970 --> 00:10:54,670
+expressive power of JavaScript so for
+
+280
+00:10:54,670 --> 00:10:58,120
+example I wanted to add 1/2 to the
+
+281
+00:10:58,120 --> 00:10:59,860
+length of this list when I render it I
+
+282
+00:10:59,860 --> 00:11:01,389
+didn't have to jump through any hoops I
+
+283
+00:11:01,389 --> 00:11:03,189
+just put a javascript expression in
+
+284
+00:11:03,189 --> 00:11:08,709
+there reusable components are great code
+
+285
+00:11:08,709 --> 00:11:10,720
+reuse we all we all we all can recognize
+
+286
+00:11:10,720 --> 00:11:14,050
+how awesome could reuse is composability
+
+287
+00:11:14,050 --> 00:11:17,079
+another big one you build the component
+
+288
+00:11:17,079 --> 00:11:18,819
+once you reuse it you can build more and
+
+289
+00:11:18,819 --> 00:11:21,730
+more complex components and it actually
+
+290
+00:11:21,730 --> 00:11:23,230
+you get kind of a linear increasing
+
+291
+00:11:23,230 --> 00:11:24,090
+complexity
+
+292
+00:11:24,090 --> 00:11:27,090
+then you know that giant curve of
+
+293
+00:11:27,090 --> 00:11:29,670
+complexity because you isolate your
+
+294
+00:11:29,670 --> 00:11:32,610
+complexity into separate components it's
+
+295
+00:11:32,610 --> 00:11:34,140
+kind of implied but these are unit
+
+296
+00:11:34,140 --> 00:11:35,940
+testable when you break your application
+
+297
+00:11:35,940 --> 00:11:38,910
+down into small units you can just unit
+
+298
+00:11:38,910 --> 00:11:40,050
+test them like you would unit test any
+
+299
+00:11:40,050 --> 00:11:41,520
+other piece of code you don't need some
+
+300
+00:11:41,520 --> 00:11:43,650
+sort of big you know test harness or
+
+301
+00:11:43,650 --> 00:11:45,090
+dependency injection framework unless
+
+302
+00:11:45,090 --> 00:11:46,320
+that's how you prefer to structure your
+
+303
+00:11:46,320 --> 00:11:50,940
+application so you're probably thinking
+
+304
+00:11:50,940 --> 00:11:52,380
+about spaghetti code right now I've
+
+305
+00:11:52,380 --> 00:11:53,880
+talked about mixing JavaScript
+
+306
+00:11:53,880 --> 00:11:56,420
+expressions in the Dom I've talked about
+
+307
+00:11:56,420 --> 00:11:59,130
+co-locating or display logic with it the
+
+308
+00:11:59,130 --> 00:12:00,330
+logic that generates the mark-up that
+
+309
+00:12:00,330 --> 00:12:01,470
+sounds like it's going to be a mess
+
+310
+00:12:01,470 --> 00:12:05,430
+right my answer to that is just don't
+
+311
+00:12:05,430 --> 00:12:06,420
+write spaghetti code
+
+312
+00:12:06,420 --> 00:12:09,120
+we're software engineers we can shoot
+
+313
+00:12:09,120 --> 00:12:10,350
+ourselves in the foot and I'm sure that
+
+314
+00:12:10,350 --> 00:12:11,550
+everybody's taken down something in
+
+315
+00:12:11,550 --> 00:12:13,740
+production before you can keep your
+
+316
+00:12:13,740 --> 00:12:15,780
+components small because we're trained
+
+317
+00:12:15,780 --> 00:12:17,130
+to do it we do it all the time with our
+
+318
+00:12:17,130 --> 00:12:18,690
+other JavaScript code why can't we do it
+
+319
+00:12:18,690 --> 00:12:21,900
+with our front end code only put display
+
+320
+00:12:21,900 --> 00:12:23,460
+logic in your components I'm not
+
+321
+00:12:23,460 --> 00:12:25,680
+advocating putting all of your your
+
+322
+00:12:25,680 --> 00:12:28,110
+model validation code and fetching and
+
+323
+00:12:28,110 --> 00:12:30,570
+data access in components you might want
+
+324
+00:12:30,570 --> 00:12:31,860
+to put them in third-party libraries
+
+325
+00:12:31,860 --> 00:12:34,500
+that have some sort of bridge to your
+
+326
+00:12:34,500 --> 00:12:37,020
+components but only put you know logic
+
+327
+00:12:37,020 --> 00:12:39,630
+that makes sense in your components and
+
+328
+00:12:39,630 --> 00:12:41,490
+this kind of reminds me of that
+
+329
+00:12:41,490 --> 00:12:43,590
+Spiderman quote that is always repeated
+
+330
+00:12:43,590 --> 00:12:45,450
+at software conferences with great power
+
+331
+00:12:45,450 --> 00:12:49,360
+comes great responsibility
+
+332
+00:12:49,370 --> 00:12:51,150
+another thing that people think about
+
+333
+00:12:51,150 --> 00:12:52,770
+when you're talking about generating DOM
+
+334
+00:12:52,770 --> 00:12:56,300
+and JavaScript is cross-site scripting
+
+335
+00:12:56,300 --> 00:13:00,270
+vulnerabilities so a lot of times people
+
+336
+00:13:00,270 --> 00:13:02,040
+do string concatenation to generate
+
+337
+00:13:02,040 --> 00:13:03,680
+markup and then insert that in the Dom
+
+338
+00:13:03,680 --> 00:13:06,240
+we've created a very lightweight library
+
+339
+00:13:06,240 --> 00:13:08,010
+that we call react Dom to make
+
+340
+00:13:08,010 --> 00:13:09,900
+generating a description of the Dom very
+
+341
+00:13:09,900 --> 00:13:13,110
+easily this is calling a method called a
+
+342
+00:13:13,110 --> 00:13:16,340
+which generates a link you pass your
+
+343
+00:13:16,340 --> 00:13:18,780
+JavaScript object of attributes in and
+
+344
+00:13:18,780 --> 00:13:21,390
+then a child which is the second
+
+345
+00:13:21,390 --> 00:13:23,490
+argument that can be you know other
+
+346
+00:13:23,490 --> 00:13:26,220
+react components other react Dom calls
+
+347
+00:13:26,220 --> 00:13:28,200
+strings collections that kind of thing
+
+348
+00:13:28,200 --> 00:13:30,930
+and this makes it really safe for us to
+
+349
+00:13:30,930 --> 00:13:33,780
+generate descriptions of the Dom the
+
+350
+00:13:33,780 --> 00:13:34,710
+next thing you're thinking about is
+
+351
+00:13:34,710 --> 00:13:36,630
+probably what about working with
+
+352
+00:13:36,630 --> 00:13:37,680
+designers
+
+353
+00:13:37,680 --> 00:13:39,270
+we're not the first people to come up
+
+354
+00:13:39,270 --> 00:13:41,339
+with the idea of generating Dom using
+
+355
+00:13:41,339 --> 00:13:43,560
+function calls but a lot of times it's a
+
+356
+00:13:43,560 --> 00:13:45,360
+little bit cumbersome to work with you
+
+357
+00:13:45,360 --> 00:13:46,830
+know we've actually found that if you're
+
+358
+00:13:46,830 --> 00:13:48,540
+just trying to balance parentheses
+
+359
+00:13:48,540 --> 00:13:50,550
+visually it can be kind of annoying to
+
+360
+00:13:50,550 --> 00:13:53,760
+do that and also designers tend to not
+
+361
+00:13:53,760 --> 00:13:56,640
+like that so we built JSX
+
+362
+00:13:56,640 --> 00:13:59,550
+which is an optional preprocessor it's a
+
+363
+00:13:59,550 --> 00:14:01,320
+syntax extension that lets you write
+
+364
+00:14:01,320 --> 00:14:04,710
+code that looks like this and translates
+
+365
+00:14:04,710 --> 00:14:06,089
+it into code that looks like that and
+
+366
+00:14:06,089 --> 00:14:08,580
+that's all it does we're not reinventing
+
+367
+00:14:08,580 --> 00:14:11,220
+a 4x there's no runtime that supports
+
+368
+00:14:11,220 --> 00:14:13,320
+this we're simply taking expressions
+
+369
+00:14:13,320 --> 00:14:15,450
+that look like HTML and turning them
+
+370
+00:14:15,450 --> 00:14:17,940
+into function calls so you get all the
+
+371
+00:14:17,940 --> 00:14:20,160
+semantics of JavaScript you get the same
+
+372
+00:14:20,160 --> 00:14:22,200
+line numbers as you would before the
+
+373
+00:14:22,200 --> 00:14:23,910
+transformation so you can actually run
+
+374
+00:14:23,910 --> 00:14:25,680
+your linting tools on your markup and
+
+375
+00:14:25,680 --> 00:14:28,110
+you know get all the same rich debugging
+
+376
+00:14:28,110 --> 00:14:30,620
+information that you otherwise would and
+
+377
+00:14:30,620 --> 00:14:32,940
+with JSX we've just found that it's very
+
+378
+00:14:32,940 --> 00:14:35,460
+easy for designers to contribute code I
+
+379
+00:14:35,460 --> 00:14:37,350
+personally don't want to spend hours
+
+380
+00:14:37,350 --> 00:14:39,270
+tweaking the box-shadow of all of my
+
+381
+00:14:39,270 --> 00:14:40,830
+elements I'd like to just have my
+
+382
+00:14:40,830 --> 00:14:42,150
+designer come in there and tweak them
+
+383
+00:14:42,150 --> 00:14:45,480
+for me and so we've actually had found
+
+384
+00:14:45,480 --> 00:14:47,700
+that this is very successful and we
+
+385
+00:14:47,700 --> 00:14:48,570
+think of it like this
+
+386
+00:14:48,570 --> 00:14:50,940
+it's the accessibility of templates and
+
+387
+00:14:50,940 --> 00:14:56,400
+the power of JavaScript the
+
+388
+00:14:56,400 --> 00:14:57,900
+accessibility of templates in the power
+
+389
+00:14:57,900 --> 00:14:59,339
+of JavaScript you can use all the
+
+390
+00:14:59,339 --> 00:15:01,230
+regular JavaScript code to generate
+
+391
+00:15:01,230 --> 00:15:02,550
+these because they're just function
+
+392
+00:15:02,550 --> 00:15:04,470
+calls but it looks kind of like markup
+
+393
+00:15:04,470 --> 00:15:07,350
+so you can go in there and kind of still
+
+394
+00:15:07,350 --> 00:15:12,060
+have your flow so react is all about
+
+395
+00:15:12,060 --> 00:15:14,250
+components and it's not about templates
+
+396
+00:15:14,250 --> 00:15:15,570
+and that's how we want you to separate
+
+397
+00:15:15,570 --> 00:15:17,490
+concerns so I'm going to talk to you
+
+398
+00:15:17,490 --> 00:15:19,770
+about what I think makes react awesome
+
+399
+00:15:19,770 --> 00:15:23,040
+and the key design decision that makes
+
+400
+00:15:23,040 --> 00:15:24,330
+react awesome is that we basically
+
+401
+00:15:24,330 --> 00:15:26,730
+rerender your entire app every on every
+
+402
+00:15:26,730 --> 00:15:30,420
+single data change we all know that
+
+403
+00:15:30,420 --> 00:15:32,279
+building UIs is hard and that's because
+
+404
+00:15:32,279 --> 00:15:35,550
+there's so much State you've got lots of
+
+405
+00:15:35,550 --> 00:15:38,040
+UI elements designers can't make up
+
+406
+00:15:38,040 --> 00:15:39,810
+their mind you ship one one version the
+
+407
+00:15:39,810 --> 00:15:41,459
+a/b test comes back and you want to ship
+
+408
+00:15:41,459 --> 00:15:45,660
+another one crazy environments if a dom
+
+409
+00:15:45,660 --> 00:15:47,280
+is up for a long time you may write to
+
+410
+00:15:47,280 --> 00:15:48,690
+the dom somewhere and forgot that you
+
+411
+00:15:48,690 --> 00:15:49,510
+wrote there and then
+
+412
+00:15:49,510 --> 00:15:51,120
+you know you forgot to keep track of it
+
+413
+00:15:51,120 --> 00:15:54,070
+and we've identified that data changing
+
+414
+00:15:54,070 --> 00:15:56,820
+over time is the root of all evil and
+
+415
+00:15:56,820 --> 00:16:00,370
+it's really hard for us as engineers to
+
+416
+00:16:00,370 --> 00:16:03,970
+reason about this and you know we're not
+
+417
+00:16:03,970 --> 00:16:05,110
+the first people that think this up
+
+418
+00:16:05,110 --> 00:16:06,430
+actually Dijkstra thought it up first
+
+419
+00:16:06,430 --> 00:16:09,010
+our intellectual powers are rather
+
+420
+00:16:09,010 --> 00:16:11,230
+geared to master static relations and
+
+421
+00:16:11,230 --> 00:16:13,480
+our powers to visualize processes
+
+422
+00:16:13,480 --> 00:16:15,190
+evolving in time are relatively poorly
+
+423
+00:16:15,190 --> 00:16:18,370
+developed what he's basically saying is
+
+424
+00:16:18,370 --> 00:16:20,079
+that it's really hard for us to think of
+
+425
+00:16:20,079 --> 00:16:21,820
+processes over time but it's fairly
+
+426
+00:16:21,820 --> 00:16:23,199
+straightforward for us to trace the flow
+
+427
+00:16:23,199 --> 00:16:26,560
+of a program he continues with for that
+
+428
+00:16:26,560 --> 00:16:28,389
+reason we should do our utmost to
+
+429
+00:16:28,389 --> 00:16:30,519
+shorten the conceptual gap between the
+
+430
+00:16:30,519 --> 00:16:32,470
+static program and the dynamic process
+
+431
+00:16:32,470 --> 00:16:34,300
+to make correspondence between the
+
+432
+00:16:34,300 --> 00:16:36,040
+program and the process as trivial as
+
+433
+00:16:36,040 --> 00:16:39,040
+possible now Dijkstra's advice is that
+
+434
+00:16:39,040 --> 00:16:40,690
+we should take processes that go over
+
+435
+00:16:40,690 --> 00:16:42,910
+time and build abstractions that make
+
+436
+00:16:42,910 --> 00:16:45,790
+them look like programs that execute in
+
+437
+00:16:45,790 --> 00:16:49,269
+a single point of time and that's what
+
+438
+00:16:49,269 --> 00:16:51,190
+it was like in the 90s when we were
+
+439
+00:16:51,190 --> 00:16:53,230
+building server rendered apps we hit the
+
+440
+00:16:53,230 --> 00:16:55,199
+database and we'd render a page and
+
+441
+00:16:55,199 --> 00:16:57,250
+let's say it's a you know a to-do list
+
+442
+00:16:57,250 --> 00:16:59,920
+example because that's the another theme
+
+443
+00:16:59,920 --> 00:17:02,440
+of this presentation I guess you render
+
+444
+00:17:02,440 --> 00:17:04,630
+the list of items and account and when
+
+445
+00:17:04,630 --> 00:17:06,220
+you submit another to-do item you just
+
+446
+00:17:06,220 --> 00:17:08,260
+select from the database again your
+
+447
+00:17:08,260 --> 00:17:09,699
+account and your list are up to date and
+
+448
+00:17:09,699 --> 00:17:11,679
+you just refresh the whole page very
+
+449
+00:17:11,679 --> 00:17:13,449
+simple we don't have any of these
+
+450
+00:17:13,449 --> 00:17:15,040
+problems with data being out of date and
+
+451
+00:17:15,040 --> 00:17:18,970
+stuff so when the data changes react
+
+452
+00:17:18,970 --> 00:17:20,620
+does this react tree renders the entire
+
+453
+00:17:20,620 --> 00:17:23,620
+component this basically makes it really
+
+454
+00:17:23,620 --> 00:17:25,750
+easy for you to think about what state
+
+455
+00:17:25,750 --> 00:17:27,610
+your application is in set another way
+
+456
+00:17:27,610 --> 00:17:30,160
+react components are just item potent
+
+457
+00:17:30,160 --> 00:17:32,410
+functions that describe your UI at any
+
+458
+00:17:32,410 --> 00:17:34,419
+point in time just like a server
+
+459
+00:17:34,419 --> 00:17:37,990
+rendered at again because they're just
+
+460
+00:17:37,990 --> 00:17:39,700
+functions that take some parameters and
+
+461
+00:17:39,700 --> 00:17:42,309
+output a description of the UI they're
+
+462
+00:17:42,309 --> 00:17:46,360
+very easy to unit test so here's a
+
+463
+00:17:46,360 --> 00:17:48,070
+here's a very brief example this is a
+
+464
+00:17:48,070 --> 00:17:49,690
+link that I can click and the count goes
+
+465
+00:17:49,690 --> 00:17:55,240
+up we've isolated the mutable state in a
+
+466
+00:17:55,240 --> 00:17:56,890
+get initial state method and we've
+
+467
+00:17:56,890 --> 00:17:58,780
+isolated all the state transitions in
+
+468
+00:17:58,780 --> 00:18:00,400
+state and set state methods and set
+
+469
+00:18:00,400 --> 00:18:02,980
+state is basically how you tell react
+
+470
+00:18:02,980 --> 00:18:05,920
+that the data has changed and it doesn't
+
+471
+00:18:05,920 --> 00:18:07,450
+matter where your data came from we've
+
+472
+00:18:07,450 --> 00:18:09,460
+done bindings for meteor that are 14
+
+473
+00:18:09,460 --> 00:18:11,020
+lines bindings for backbone that are 5
+
+474
+00:18:11,020 --> 00:18:13,540
+lines that kind of thing but you'll
+
+475
+00:18:13,540 --> 00:18:16,120
+notice that render describes how the UI
+
+476
+00:18:16,120 --> 00:18:18,910
+looks at any point in time so no where
+
+477
+00:18:18,910 --> 00:18:21,790
+do we look in the DOM and find where we
+
+478
+00:18:21,790 --> 00:18:24,070
+should update the count or where that
+
+479
+00:18:24,070 --> 00:18:26,770
+node lives or do we we don't even set up
+
+480
+00:18:26,770 --> 00:18:29,260
+a binding between the state variable and
+
+481
+00:18:29,260 --> 00:18:33,820
+the Dom and this is actually really
+
+482
+00:18:33,820 --> 00:18:36,430
+simple because it's so declarative every
+
+483
+00:18:36,430 --> 00:18:38,080
+place we display data is guaranteed to
+
+484
+00:18:38,080 --> 00:18:41,080
+be up-to-date and we do it without
+
+485
+00:18:41,080 --> 00:18:44,020
+magical data binding without dirty
+
+486
+00:18:44,020 --> 00:18:45,310
+checking the model which can be
+
+487
+00:18:45,310 --> 00:18:48,550
+expensive and of course this is a modern
+
+488
+00:18:48,550 --> 00:18:50,620
+framework there's no more explicit Dom
+
+489
+00:18:50,620 --> 00:18:55,130
+operations and everything is declarative
+
+490
+00:18:55,140 --> 00:18:58,810
+this seems like a pretty bad idea right
+
+491
+00:18:58,810 --> 00:19:01,150
+it'd be great if we could do all this
+
+492
+00:19:01,150 --> 00:19:04,510
+declarative work but re-rendering all of
+
+493
+00:19:04,510 --> 00:19:06,760
+the the dom nodes on your page is way
+
+494
+00:19:06,760 --> 00:19:09,760
+too expensive so we decided to build a
+
+495
+00:19:09,760 --> 00:19:11,680
+virtual Dom to make rear-ending on every
+
+496
+00:19:11,680 --> 00:19:16,270
+change fast you can't just throw at the
+
+497
+00:19:16,270 --> 00:19:18,070
+Dom so if I'm typing into a text field
+
+498
+00:19:18,070 --> 00:19:19,720
+and another piece of data updates I
+
+499
+00:19:19,720 --> 00:19:21,220
+don't want to lose what I'm typing into
+
+500
+00:19:21,220 --> 00:19:23,140
+the text field I don't want that flash
+
+501
+00:19:23,140 --> 00:19:26,560
+and reflow of my UI I don't want to use
+
+502
+00:19:26,560 --> 00:19:28,470
+lose my scroll position all that stuff
+
+503
+00:19:28,470 --> 00:19:30,640
+so what we did is we built this virtual
+
+504
+00:19:30,640 --> 00:19:33,340
+DOM and virtual event system that's
+
+505
+00:19:33,340 --> 00:19:35,320
+optimized for performance and memory
+
+506
+00:19:35,320 --> 00:19:37,480
+footprint so I'm just going to walk you
+
+507
+00:19:37,480 --> 00:19:41,110
+through how this works so on every
+
+508
+00:19:41,110 --> 00:19:43,090
+update which we get from that state that
+
+509
+00:19:43,090 --> 00:19:45,540
+set state call that I mentioned earlier
+
+510
+00:19:45,540 --> 00:19:48,610
+we build a new virtual dom subtree and
+
+511
+00:19:48,610 --> 00:19:51,790
+we dip it with the old one so if you
+
+512
+00:19:51,790 --> 00:19:53,470
+guys caught that talk on brackets
+
+513
+00:19:53,470 --> 00:19:55,120
+there'd actually doing similar things
+
+514
+00:19:55,120 --> 00:19:57,970
+with how we do the diffs we compute the
+
+515
+00:19:57,970 --> 00:19:59,890
+minimal set of dom mutations and we'd
+
+516
+00:19:59,890 --> 00:20:02,560
+like drop them into a queue and then we
+
+517
+00:20:02,560 --> 00:20:03,910
+back to execute all of the updates
+
+518
+00:20:03,910 --> 00:20:08,800
+together this looks a lot like the doom
+
+519
+00:20:08,800 --> 00:20:11,860
+3 engine there's a great series of blog
+
+520
+00:20:11,860 --> 00:20:14,660
+posts about how the doom 3 engine works
+
+521
+00:20:14,660 --> 00:20:17,060
+but you start with a game state and user
+
+522
+00:20:17,060 --> 00:20:19,400
+input so network events user input
+
+523
+00:20:19,400 --> 00:20:21,590
+events your knowledge of where everybody
+
+524
+00:20:21,590 --> 00:20:23,510
+is on the map what gun you have open you
+
+525
+00:20:23,510 --> 00:20:25,700
+know that kind of thing and then that
+
+526
+00:20:25,700 --> 00:20:27,470
+gets passed into the the front end of
+
+527
+00:20:27,470 --> 00:20:30,590
+the Dhoom 3 engine which executes the
+
+528
+00:20:30,590 --> 00:20:32,540
+game logic so there are scripts in the
+
+529
+00:20:32,540 --> 00:20:34,130
+levels there are certain rules about how
+
+530
+00:20:34,130 --> 00:20:35,840
+you can move throughout doom and that's
+
+531
+00:20:35,840 --> 00:20:38,180
+all in the front end and that creates an
+
+532
+00:20:38,180 --> 00:20:40,390
+intermediate representation of the scene
+
+533
+00:20:40,390 --> 00:20:43,400
+that intermediate representation gets
+
+534
+00:20:43,400 --> 00:20:45,140
+passed to the back end of the renderer
+
+535
+00:20:45,140 --> 00:20:47,450
+which generates the OpenGL operations
+
+536
+00:20:47,450 --> 00:20:48,740
+that then get flushed to the graphics
+
+537
+00:20:48,740 --> 00:20:53,390
+card here's how react works you have
+
+538
+00:20:53,390 --> 00:20:55,220
+your application state you have browser
+
+539
+00:20:55,220 --> 00:20:57,380
+events those go into your react
+
+540
+00:20:57,380 --> 00:20:59,750
+component tree which describes how your
+
+541
+00:20:59,750 --> 00:21:00,950
+application should work it's the
+
+542
+00:21:00,950 --> 00:21:02,690
+business logic of your application just
+
+543
+00:21:02,690 --> 00:21:04,430
+like the front-end of Doom three is a
+
+544
+00:21:04,430 --> 00:21:07,520
+business logic of Doom three we create
+
+545
+00:21:07,520 --> 00:21:08,810
+rather than a scene intermediate
+
+546
+00:21:08,810 --> 00:21:10,550
+representation we create a virtual Dom
+
+547
+00:21:10,550 --> 00:21:12,230
+which is an intermediate representation
+
+548
+00:21:12,230 --> 00:21:14,980
+of how your app should eventually look
+
+549
+00:21:14,980 --> 00:21:17,570
+we pass that to our back-end which
+
+550
+00:21:17,570 --> 00:21:19,220
+computes the operations that we need to
+
+551
+00:21:19,220 --> 00:21:20,990
+perform and then we flush those to the
+
+552
+00:21:20,990 --> 00:21:23,510
+Dom at the appropriate time and that's
+
+553
+00:21:23,510 --> 00:21:24,890
+actually pluggable how we flush it if
+
+554
+00:21:24,890 --> 00:21:26,270
+you want to use your own strategy you
+
+555
+00:21:26,270 --> 00:21:28,880
+can do that and this is actually
+
+556
+00:21:28,880 --> 00:21:31,520
+extremely fast primarily because most
+
+557
+00:21:31,520 --> 00:21:34,480
+Dom operations tend to be slow and
+
+558
+00:21:34,480 --> 00:21:36,560
+there's been a lot of performance work
+
+559
+00:21:36,560 --> 00:21:38,930
+on the Dom but you most operations tend
+
+560
+00:21:38,930 --> 00:21:41,630
+to drop frames because we can reason
+
+561
+00:21:41,630 --> 00:21:42,950
+about the global state of your
+
+562
+00:21:42,950 --> 00:21:45,620
+application at any point in time we can
+
+563
+00:21:45,620 --> 00:21:46,970
+compute the minimal set of Dom
+
+564
+00:21:46,970 --> 00:21:48,710
+operations and use heuristics to do
+
+565
+00:21:48,710 --> 00:21:51,140
+optimizations that reasoning about it at
+
+566
+00:21:51,140 --> 00:21:54,740
+a incremental level you can't and
+
+567
+00:21:54,740 --> 00:21:56,930
+because you're building components and
+
+568
+00:21:56,930 --> 00:21:59,270
+we enforce a strict life cycle on those
+
+569
+00:21:59,270 --> 00:22:01,520
+components we batch reads and writes for
+
+570
+00:22:01,520 --> 00:22:03,380
+the optimal performance so you're never
+
+571
+00:22:03,380 --> 00:22:05,060
+going to get in a situation where you do
+
+572
+00:22:05,060 --> 00:22:06,980
+a read do a write to the Dom then do a
+
+573
+00:22:06,980 --> 00:22:08,390
+read from the Dom again which triggers a
+
+574
+00:22:08,390 --> 00:22:11,060
+reflow now this is all stuff that you've
+
+575
+00:22:11,060 --> 00:22:13,040
+probably already heard about but
+
+576
+00:22:13,040 --> 00:22:14,870
+enforcing this at scale with a large
+
+577
+00:22:14,870 --> 00:22:16,250
+number of engineers building a large
+
+578
+00:22:16,250 --> 00:22:17,540
+number of components is actually
+
+579
+00:22:17,540 --> 00:22:19,730
+extremely difficult and react enforces
+
+580
+00:22:19,730 --> 00:22:22,640
+that for you and we found that this is
+
+581
+00:22:22,640 --> 00:22:24,170
+usually faster than manual Dom
+
+582
+00:22:24,170 --> 00:22:25,380
+operations
+
+583
+00:22:25,380 --> 00:22:29,880
+so react is not magic just like you can
+
+584
+00:22:29,880 --> 00:22:32,580
+drop into assembler with C and beat cm
+
+585
+00:22:32,580 --> 00:22:35,250
+beat the C compiler you can drop into
+
+586
+00:22:35,250 --> 00:22:37,410
+raw Dom operations and Dom API calls and
+
+587
+00:22:37,410 --> 00:22:38,960
+beat react if you wanted to
+
+588
+00:22:38,960 --> 00:22:43,049
+however using C or you know Java or
+
+589
+00:22:43,049 --> 00:22:44,400
+JavaScript is an order of magnitude
+
+590
+00:22:44,400 --> 00:22:46,020
+performance improvement because you
+
+591
+00:22:46,020 --> 00:22:47,429
+don't have to worry about you know in
+
+592
+00:22:47,429 --> 00:22:49,620
+Java or JavaScript managing memory and
+
+593
+00:22:49,620 --> 00:22:52,260
+in C you know the very specifics of the
+
+594
+00:22:52,260 --> 00:22:56,070
+platform and so with react you can build
+
+595
+00:22:56,070 --> 00:22:57,419
+applications without even thinking about
+
+596
+00:22:57,419 --> 00:22:58,919
+performance and the default state is
+
+597
+00:22:58,919 --> 00:23:03,240
+fast and we don't just stop at at you
+
+598
+00:23:03,240 --> 00:23:04,710
+know computing the minimal set of Dom
+
+599
+00:23:04,710 --> 00:23:06,059
+operations and making the Dom operations
+
+600
+00:23:06,059 --> 00:23:09,090
+fast we do automatic top-level event
+
+601
+00:23:09,090 --> 00:23:11,039
+delegation we basically re implemented
+
+602
+00:23:11,039 --> 00:23:14,130
+an event system so we have event
+
+603
+00:23:14,130 --> 00:23:15,630
+plug-ins that you know you can write
+
+604
+00:23:15,630 --> 00:23:17,630
+it's it's a pluggable part of our core
+
+605
+00:23:17,630 --> 00:23:20,850
+that read the raw stream of browser
+
+606
+00:23:20,850 --> 00:23:23,429
+events that come in and generate
+
+607
+00:23:23,429 --> 00:23:25,559
+synthetic events and these synthetic
+
+608
+00:23:25,559 --> 00:23:27,720
+events are compliant to the w3c
+
+609
+00:23:27,720 --> 00:23:30,809
+specification in all browsers and then
+
+610
+00:23:30,809 --> 00:23:32,370
+we have our own implementation of
+
+611
+00:23:32,370 --> 00:23:34,919
+bubbling and capturing which works
+
+612
+00:23:34,919 --> 00:23:36,809
+consistently across all browsers now we
+
+613
+00:23:36,809 --> 00:23:39,690
+have a great side effect of this which
+
+614
+00:23:39,690 --> 00:23:42,659
+is you get some cool html5 events in IE
+
+615
+00:23:42,659 --> 00:23:44,700
+8 for example because we have an
+
+616
+00:23:44,700 --> 00:23:49,140
+entirely synthetic event system another
+
+617
+00:23:49,140 --> 00:23:52,020
+thing about performance is we provide
+
+618
+00:23:52,020 --> 00:23:53,580
+some hooks to help you get even more
+
+619
+00:23:53,580 --> 00:23:55,799
+performance so there was a great talk
+
+620
+00:23:55,799 --> 00:23:57,720
+yesterday about two-way data-binding
+
+621
+00:23:57,720 --> 00:23:59,309
+performance and comparing and
+
+622
+00:23:59,309 --> 00:24:03,179
+contrasting the techniques and any sort
+
+623
+00:24:03,179 --> 00:24:05,730
+of automatic management of your UI
+
+624
+00:24:05,730 --> 00:24:07,789
+can be made to be slow if there's a
+
+625
+00:24:07,789 --> 00:24:12,210
+crazy enough example what makes react
+
+626
+00:24:12,210 --> 00:24:14,610
+special in this even though it's fast
+
+627
+00:24:14,610 --> 00:24:15,419
+out of the box
+
+628
+00:24:15,419 --> 00:24:17,850
+we provide optimisation hooks that don't
+
+629
+00:24:17,850 --> 00:24:20,280
+require you to refactor your application
+
+630
+00:24:20,280 --> 00:24:22,799
+to get speed boosts what this mean is
+
+631
+00:24:22,799 --> 00:24:25,049
+what this means is that you can write a
+
+632
+00:24:25,049 --> 00:24:28,080
+function that can tell react not to diff
+
+633
+00:24:28,080 --> 00:24:30,630
+a certain part of the tree and this is
+
+634
+00:24:30,630 --> 00:24:32,370
+this doesn't require you to change the
+
+635
+00:24:32,370 --> 00:24:34,080
+coupling between components rethink how
+
+636
+00:24:34,080 --> 00:24:35,640
+you fundamentally architected your app
+
+637
+00:24:35,640 --> 00:24:38,630
+and these hints to react are usually
+
+638
+00:24:38,630 --> 00:24:42,800
+just one line of code and we built demos
+
+639
+00:24:42,800 --> 00:24:45,890
+that run at 60 frames per second in non
+
+640
+00:24:45,890 --> 00:24:50,330
+JIT iPhone 5 web views and that's the
+
+641
+00:24:50,330 --> 00:24:51,350
+environment that a lot of you know
+
+642
+00:24:51,350 --> 00:24:56,120
+PhoneGap users would use the bottleneck
+
+643
+00:24:56,120 --> 00:24:58,430
+is almost never the diffing it's always
+
+644
+00:24:58,430 --> 00:25:03,470
+the Dom operations so the virtual Dom
+
+645
+00:25:03,470 --> 00:25:04,790
+let's just do some other cool things so
+
+646
+00:25:04,790 --> 00:25:09,350
+we can run in node.js so we're talking
+
+647
+00:25:09,350 --> 00:25:10,760
+about not breaking the web in the last
+
+648
+00:25:10,760 --> 00:25:13,790
+presentation and I think there was
+
+649
+00:25:13,790 --> 00:25:15,950
+mention of Google not crawling single
+
+650
+00:25:15,950 --> 00:25:17,360
+page applications that are all rendered
+
+651
+00:25:17,360 --> 00:25:20,630
+in JavaScript so what a lot of people
+
+652
+00:25:20,630 --> 00:25:21,650
+are doing today is they're running
+
+653
+00:25:21,650 --> 00:25:23,510
+phantom j/s they're running their
+
+654
+00:25:23,510 --> 00:25:24,860
+JavaScript and then they're dumping a
+
+655
+00:25:24,860 --> 00:25:26,810
+static HTML file and serving it to
+
+656
+00:25:26,810 --> 00:25:29,600
+Google what we do is we can actually
+
+657
+00:25:29,600 --> 00:25:32,990
+render an entirely static HTML page
+
+658
+00:25:32,990 --> 00:25:35,360
+without a Dom on the server so it's
+
+659
+00:25:35,360 --> 00:25:36,950
+actually really really fast and you can
+
+660
+00:25:36,950 --> 00:25:38,420
+serve all of your production traffic
+
+661
+00:25:38,420 --> 00:25:40,850
+with it so there's obvious C SEO
+
+662
+00:25:40,850 --> 00:25:43,460
+benefits here but we can do some other
+
+663
+00:25:43,460 --> 00:25:46,070
+cool things too you run the same code on
+
+664
+00:25:46,070 --> 00:25:48,590
+the client in the server and you send
+
+665
+00:25:48,590 --> 00:25:51,740
+down some markup react boots up on the
+
+666
+00:25:51,740 --> 00:25:53,810
+client and looks to see if markup is
+
+667
+00:25:53,810 --> 00:25:57,440
+there if the markup is there all it does
+
+668
+00:25:57,440 --> 00:25:59,120
+is attach event listeners and initialize
+
+669
+00:25:59,120 --> 00:26:01,760
+itself so you get a faster page load
+
+670
+00:26:01,760 --> 00:26:04,640
+experience your users will get the speed
+
+671
+00:26:04,640 --> 00:26:08,150
+and of being able to interact with a you
+
+672
+00:26:08,150 --> 00:26:10,400
+know static HTML page and by the time
+
+673
+00:26:10,400 --> 00:26:11,720
+the JavaScript is downloaded the
+
+674
+00:26:11,720 --> 00:26:14,810
+interactivity will pop in for you so you
+
+675
+00:26:14,810 --> 00:26:16,220
+can imagine the first page load
+
+676
+00:26:16,220 --> 00:26:17,510
+experience is a static page you start
+
+677
+00:26:17,510 --> 00:26:19,460
+typing a comment in a comment box and by
+
+678
+00:26:19,460 --> 00:26:20,810
+the time you're done typing the comment
+
+679
+00:26:20,810 --> 00:26:22,550
+and you press submit the JavaScript is
+
+680
+00:26:22,550 --> 00:26:23,720
+loaded in the background and you're
+
+681
+00:26:23,720 --> 00:26:26,440
+ready to go it's completely seamless
+
+682
+00:26:26,440 --> 00:26:29,080
+there's some other cool things we can do
+
+683
+00:26:29,080 --> 00:26:32,620
+because you're building components that
+
+684
+00:26:32,620 --> 00:26:34,820
+separate your concerns and represent
+
+685
+00:26:34,820 --> 00:26:36,770
+your application structure we have
+
+686
+00:26:36,770 --> 00:26:38,510
+knowledge of what your application looks
+
+687
+00:26:38,510 --> 00:26:40,580
+like and what it's going to do so your
+
+688
+00:26:40,580 --> 00:26:42,530
+components tend to reflect the structure
+
+689
+00:26:42,530 --> 00:26:44,540
+of your application and the information
+
+690
+00:26:44,540 --> 00:26:46,760
+architecture of the UI you're showing so
+
+691
+00:26:46,760 --> 00:26:48,770
+we can say you know hey if the if a
+
+692
+00:26:48,770 --> 00:26:50,660
+large subset of this virtual
+
+693
+00:26:50,660 --> 00:26:51,549
+representation
+
+694
+00:26:51,549 --> 00:26:53,379
+about to change maybe we should use a
+
+695
+00:26:53,379 --> 00:26:54,909
+different method of emptying dom nodes
+
+696
+00:26:54,909 --> 00:26:57,249
+than one for a smaller subset of the of
+
+697
+00:26:57,249 --> 00:27:00,850
+the dom and this is something that you
+
+698
+00:27:00,850 --> 00:27:04,289
+can't do just with dom manipulation and
+
+699
+00:27:04,289 --> 00:27:09,759
+finally testability for free I mentioned
+
+700
+00:27:09,759 --> 00:27:11,139
+before that these are just idempotent
+
+701
+00:27:11,139 --> 00:27:12,580
+components that take in some data and
+
+702
+00:27:12,580 --> 00:27:15,340
+output a description of the DOM and it's
+
+703
+00:27:15,340 --> 00:27:18,220
+a description of the Dom so you don't
+
+704
+00:27:18,220 --> 00:27:20,619
+actually have to run a s DOM or phantom
+
+705
+00:27:20,619 --> 00:27:22,450
+j/s to test your components you can if
+
+706
+00:27:22,450 --> 00:27:24,429
+you want and there are some useful use
+
+707
+00:27:24,429 --> 00:27:25,899
+cases for actually testing in a real
+
+708
+00:27:25,899 --> 00:27:28,929
+engine but you can just pass in some
+
+709
+00:27:28,929 --> 00:27:32,049
+data and then assert what your component
+
+710
+00:27:32,049 --> 00:27:33,999
+returned from its render method it's
+
+711
+00:27:33,999 --> 00:27:35,919
+very fast and you don't need a set of a
+
+712
+00:27:35,919 --> 00:27:39,309
+convoluted test environment for it a
+
+713
+00:27:39,309 --> 00:27:41,519
+week or two ago we also open source
+
+714
+00:27:41,519 --> 00:27:45,009
+SVG vml and canvas support via our
+
+715
+00:27:45,009 --> 00:27:47,980
+bindings to the art library we think
+
+716
+00:27:47,980 --> 00:27:49,899
+that you should be able to render your
+
+717
+00:27:49,899 --> 00:27:51,759
+interactive charts in the same
+
+718
+00:27:51,759 --> 00:27:54,190
+declarative way that you render your
+
+719
+00:27:54,190 --> 00:27:57,070
+interactive UI on the same you just
+
+720
+00:27:57,070 --> 00:27:58,179
+create a component that renders to a
+
+721
+00:27:58,179 --> 00:28:01,840
+canvas instead of to the DOM and finally
+
+722
+00:28:01,840 --> 00:28:03,730
+we have an experimental branch that
+
+723
+00:28:03,730 --> 00:28:05,460
+renders your whole app in a webworker
+
+724
+00:28:05,460 --> 00:28:08,340
+I'm not sure that this is a great idea
+
+725
+00:28:08,340 --> 00:28:12,399
+but the point is when you have a virtual
+
+726
+00:28:12,399 --> 00:28:14,619
+Dom representation you're not tied to
+
+727
+00:28:14,619 --> 00:28:16,779
+the browser you can run anywhere in any
+
+728
+00:28:16,779 --> 00:28:18,489
+sort of environment and it's extremely
+
+729
+00:28:18,489 --> 00:28:23,169
+valuable and while this was kind of a
+
+730
+00:28:23,169 --> 00:28:24,789
+cool hack it wasn't really that much
+
+731
+00:28:24,789 --> 00:28:28,029
+work to do we just send the events over
+
+732
+00:28:28,029 --> 00:28:30,429
+the boundary into the web worker and it
+
+733
+00:28:30,429 --> 00:28:31,869
+sends Dom operations back over to the
+
+734
+00:28:31,869 --> 00:28:34,299
+web worker like I said not sure this is
+
+735
+00:28:34,299 --> 00:28:35,590
+a great idea but it has some cool
+
+736
+00:28:35,590 --> 00:28:39,759
+implications so let's talk about the key
+
+737
+00:28:39,759 --> 00:28:42,070
+takeaways that I just mentioned I want
+
+738
+00:28:42,070 --> 00:28:43,899
+you to build components not templates
+
+739
+00:28:43,899 --> 00:28:46,029
+because I want you to separate your
+
+740
+00:28:46,029 --> 00:28:47,350
+concerns in the language of your
+
+741
+00:28:47,350 --> 00:28:48,970
+application not in the language of the
+
+742
+00:28:48,970 --> 00:28:52,570
+framework it's really hard to think
+
+743
+00:28:52,570 --> 00:28:54,519
+about mutation so just throw out your
+
+744
+00:28:54,519 --> 00:28:56,350
+old application re render the whole
+
+745
+00:28:56,350 --> 00:28:58,389
+thing and then have the implementation
+
+746
+00:28:58,389 --> 00:28:59,950
+take care of it for you and that
+
+747
+00:28:59,950 --> 00:29:02,200
+implementation is a virtual DOM and it's
+
+748
+00:29:02,200 --> 00:29:04,010
+actually not very complicated
+
+749
+00:29:04,010 --> 00:29:05,840
+extremely fast thanks to the great
+
+750
+00:29:05,840 --> 00:29:10,280
+JavaScript engines we have today so with
+
+751
+00:29:10,280 --> 00:29:12,620
+that I'd like to say thanks to Jay s
+
+752
+00:29:12,620 --> 00:29:28,290
+Khan for having me that's it
+

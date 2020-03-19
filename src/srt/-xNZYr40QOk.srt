@@ -1,0 +1,3165 @@
+1
+00:00:37,660 --> 00:00:41,449
+
+we need native code on the web right now
+
+2
+00:00:41,449 --> 00:00:44,300
+you can write applications in any
+
+3
+00:00:44,300 --> 00:00:46,550
+language you want as long as it's
+
+4
+00:00:46,550 --> 00:00:49,309
+JavaScript so this is a funny thing to
+
+5
+00:00:49,309 --> 00:00:52,609
+complain about as this is jas conf but
+
+6
+00:00:52,609 --> 00:00:54,949
+if you think a look at the larger arc
+
+7
+00:00:54,949 --> 00:00:57,640
+right now javascript has a very
+
+8
+00:00:57,640 --> 00:01:01,519
+privileged position on the web and all
+
+9
+00:01:01,519 --> 00:01:03,620
+other platforms usually have a way that
+
+10
+00:01:03,620 --> 00:01:06,530
+they can call out to C or C++ or some
+
+11
+00:01:06,530 --> 00:01:10,490
+other language and this creates a lot of
+
+12
+00:01:10,490 --> 00:01:12,350
+lost opportunity costs such as
+
+13
+00:01:12,350 --> 00:01:14,990
+integrating with existing libraries or
+
+14
+00:01:14,990 --> 00:01:17,659
+making it easy to port between cell
+
+15
+00:01:17,659 --> 00:01:19,640
+phone applications and the web and
+
+16
+00:01:19,640 --> 00:01:21,979
+things along those lines so before we
+
+17
+00:01:21,979 --> 00:01:24,710
+get into the Nitty Gritty of native code
+
+18
+00:01:24,710 --> 00:01:28,369
+it's worth remembering why we love the
+
+19
+00:01:28,369 --> 00:01:32,390
+web the web is secure and by secure we
+
+20
+00:01:32,390 --> 00:01:33,920
+mean that you can point your web browser
+
+21
+00:01:33,920 --> 00:01:37,130
+at nearly any website run the
+
+22
+00:01:37,130 --> 00:01:39,259
+application and not worry that will
+
+23
+00:01:39,259 --> 00:01:41,030
+upload your financial information to
+
+24
+00:01:41,030 --> 00:01:44,570
+some arbitrary website so cat videos no
+
+25
+00:01:44,570 --> 00:01:47,299
+theft that's a good thing the web is
+
+26
+00:01:47,299 --> 00:01:50,570
+portable you can view it on any computer
+
+27
+00:01:50,570 --> 00:01:51,829
+in the operating system as long as
+
+28
+00:01:51,829 --> 00:01:53,030
+there's a web browser you can view it
+
+29
+00:01:53,030 --> 00:01:55,729
+from your cell phone it's it just runs
+
+30
+00:01:55,729 --> 00:01:57,170
+everywhere there's a web browser this is
+
+31
+00:01:57,170 --> 00:02:00,170
+great it's ephemeral so you don't have
+
+32
+00:02:00,170 --> 00:02:02,329
+to install anything you just point your
+
+33
+00:02:02,329 --> 00:02:03,920
+web browser go you don't have to
+
+34
+00:02:03,920 --> 00:02:05,630
+uninstall anything you don't have to
+
+35
+00:02:05,630 --> 00:02:07,729
+have automatic computer clean up or
+
+36
+00:02:07,729 --> 00:02:10,369
+anything like that that's all done in
+
+37
+00:02:10,369 --> 00:02:11,440
+the cache
+
+38
+00:02:11,440 --> 00:02:15,010
+and the web is well not very compatible
+
+39
+00:02:15,010 --> 00:02:16,630
+with other platforms it's kind of it's
+
+40
+00:02:16,630 --> 00:02:20,350
+an own Island so the reason this is is
+
+41
+00:02:20,350 --> 00:02:21,640
+because of all the things that make the
+
+42
+00:02:21,640 --> 00:02:25,000
+web good so the web is secure well this
+
+43
+00:02:25,000 --> 00:02:27,250
+doesn't mean that native applications
+
+44
+00:02:27,250 --> 00:02:29,170
+are insecure it just means that they
+
+45
+00:02:29,170 --> 00:02:31,030
+have an entirely different definition of
+
+46
+00:02:31,030 --> 00:02:33,970
+what this means so on the web it assumes
+
+47
+00:02:33,970 --> 00:02:35,620
+your application is running on behalf of
+
+48
+00:02:35,620 --> 00:02:37,630
+where you get it from whereas when you
+
+49
+00:02:37,630 --> 00:02:39,310
+run your native application it assumes
+
+50
+00:02:39,310 --> 00:02:41,440
+it's running on behalf of you so the
+
+51
+00:02:41,440 --> 00:02:43,120
+native application can access your
+
+52
+00:02:43,120 --> 00:02:45,640
+financial information because it's you
+
+53
+00:02:45,640 --> 00:02:48,070
+and native applications are typically
+
+54
+00:02:48,070 --> 00:02:50,530
+compiled down onto the machine so they
+
+55
+00:02:50,530 --> 00:02:52,450
+aren't they haven't traditionally been
+
+56
+00:02:52,450 --> 00:02:54,400
+built for portability and you typically
+
+57
+00:02:54,400 --> 00:02:57,730
+install these so we'll get the plugins
+
+58
+00:02:57,730 --> 00:02:59,020
+in a moment but if you have to install
+
+59
+00:02:59,020 --> 00:03:01,240
+something on the web you lose ninety
+
+60
+00:03:01,240 --> 00:03:02,830
+percent of your user seventy ninety
+
+61
+00:03:02,830 --> 00:03:05,200
+percent of you users right there so if
+
+62
+00:03:05,200 --> 00:03:07,510
+we want native code to work on the web
+
+63
+00:03:07,510 --> 00:03:09,460
+it has to behave like the web it has to
+
+64
+00:03:09,460 --> 00:03:13,000
+be secure portable and ephemeral we've
+
+65
+00:03:13,000 --> 00:03:15,730
+tried this so everyone remembers NPAPI
+
+66
+00:03:15,730 --> 00:03:20,290
+flash java activex some people even even
+
+67
+00:03:20,290 --> 00:03:22,180
+tried to hack the browser in order to
+
+68
+00:03:22,180 --> 00:03:24,340
+get this working and these ultimately
+
+69
+00:03:24,340 --> 00:03:27,280
+these approaches fall down because it's
+
+70
+00:03:27,280 --> 00:03:30,370
+JavaScript its web content which calls
+
+71
+00:03:30,370 --> 00:03:32,140
+into native code and then the native
+
+72
+00:03:32,140 --> 00:03:34,420
+code tries to do its best job pretending
+
+73
+00:03:34,420 --> 00:03:36,760
+it's just as secure as JavaScript but
+
+74
+00:03:36,760 --> 00:03:38,350
+ultimately there are security exploits
+
+75
+00:03:38,350 --> 00:03:40,300
+and you only get security that's as good
+
+76
+00:03:40,300 --> 00:03:43,209
+as the weakest link in the chain so gen
+
+77
+00:03:43,209 --> 00:03:46,030
+2 is people finally learn from the pain
+
+78
+00:03:46,030 --> 00:03:47,560
+and said why don't we try to do things
+
+79
+00:03:47,560 --> 00:03:49,870
+which behave as if they are web content
+
+80
+00:03:49,870 --> 00:03:52,360
+they're secure portable ephemeral so
+
+81
+00:03:52,360 --> 00:03:55,060
+there is portable Native Client which is
+
+82
+00:03:55,060 --> 00:03:58,269
+in chrome and allows you to take a
+
+83
+00:03:58,269 --> 00:04:02,530
+portable binary essentially and run it
+
+84
+00:04:02,530 --> 00:04:04,540
+inside your web browser and then there's
+
+85
+00:04:04,540 --> 00:04:08,200
+Emscripten which compiles native code
+
+86
+00:04:08,200 --> 00:04:10,540
+into JavaScript and this is one of the
+
+87
+00:04:10,540 --> 00:04:12,430
+main reasons that this is going to be
+
+88
+00:04:12,430 --> 00:04:14,620
+talked about at JS conf is because it
+
+89
+00:04:14,620 --> 00:04:17,980
+concerns JavaScript and what the future
+
+90
+00:04:17,980 --> 00:04:19,720
+of JavaScript could be to support this
+
+91
+00:04:19,720 --> 00:04:22,030
+kind of workflow and a lot of you have
+
+92
+00:04:22,030 --> 00:04:24,280
+probably heard of as MJ s and this is
+
+93
+00:04:24,280 --> 00:04:24,970
+actually
+
+94
+00:04:24,970 --> 00:04:26,740
+what happens after em scripting gets a
+
+95
+00:04:26,740 --> 00:04:28,780
+hold of it is it describes a specific
+
+96
+00:04:28,780 --> 00:04:30,850
+format that M script and generates so
+
+97
+00:04:30,850 --> 00:04:32,350
+for this talk I will be talking about
+
+98
+00:04:32,350 --> 00:04:34,210
+Emscripten but in your mind you can
+
+99
+00:04:34,210 --> 00:04:37,590
+wildcard that too as MJS if you wish
+
+100
+00:04:37,590 --> 00:04:41,110
+pinnacle portable Native Client works
+
+101
+00:04:41,110 --> 00:04:42,910
+like a traditional compiler is you take
+
+102
+00:04:42,910 --> 00:04:45,700
+a bunch of C++ source files you pass it
+
+103
+00:04:45,700 --> 00:04:47,830
+to a slightly modified version of llvm
+
+104
+00:04:47,830 --> 00:04:49,870
+and it produces a portable executable
+
+105
+00:04:49,870 --> 00:04:51,970
+this portable executable is a
+
+106
+00:04:51,970 --> 00:04:54,970
+serialization of lv M's internal format
+
+107
+00:04:54,970 --> 00:04:57,820
+then inside the browser your web page
+
+108
+00:04:57,820 --> 00:04:59,920
+says hey I want to embed this portable
+
+109
+00:04:59,920 --> 00:05:03,040
+executable so chrome grabs it downloads
+
+110
+00:05:03,040 --> 00:05:05,590
+it and then looks at it and says hey I
+
+111
+00:05:05,590 --> 00:05:07,870
+can't actually run portable code you
+
+112
+00:05:07,870 --> 00:05:09,640
+know my processor isn't portable it's a
+
+113
+00:05:09,640 --> 00:05:11,650
+real processor so then it goes and
+
+114
+00:05:11,650 --> 00:05:14,050
+translates it into what the local code
+
+115
+00:05:14,050 --> 00:05:16,090
+is and it does a few tricks to make sure
+
+116
+00:05:16,090 --> 00:05:18,610
+we can verify the code is safe so at
+
+117
+00:05:18,610 --> 00:05:20,260
+runtime you get a set up that's a little
+
+118
+00:05:20,260 --> 00:05:23,080
+bit like this is that there is a Knakal
+
+119
+00:05:23,080 --> 00:05:24,400
+process running these specially
+
+120
+00:05:24,400 --> 00:05:26,620
+generating machine instructions which is
+
+121
+00:05:26,620 --> 00:05:28,780
+your native code executing and then when
+
+122
+00:05:28,780 --> 00:05:30,250
+one is interact when it wants to
+
+123
+00:05:30,250 --> 00:05:32,050
+interact with the web page it does
+
+124
+00:05:32,050 --> 00:05:34,960
+postmessage so javascript is sitting
+
+125
+00:05:34,960 --> 00:05:36,400
+there can send messages back and forth
+
+126
+00:05:36,400 --> 00:05:39,160
+and one of the issues is that you don't
+
+127
+00:05:39,160 --> 00:05:41,350
+have direct access to the dome so the
+
+128
+00:05:41,350 --> 00:05:43,390
+dom is very much single threaded only
+
+129
+00:05:43,390 --> 00:05:45,430
+accessible by javascript and it's very
+
+130
+00:05:45,430 --> 00:05:47,500
+jealous of this fact so you typically
+
+131
+00:05:47,500 --> 00:05:48,880
+have to have some glue if you want to
+
+132
+00:05:48,880 --> 00:05:50,229
+modify the actual web page an
+
+133
+00:05:50,229 --> 00:05:52,510
+interesting thing is that when you have
+
+134
+00:05:52,510 --> 00:05:54,310
+an apple process it can only talk to the
+
+135
+00:05:54,310 --> 00:05:56,740
+browser it cannot talk directly to the
+
+136
+00:05:56,740 --> 00:05:58,780
+operating system and this means that the
+
+137
+00:05:58,780 --> 00:06:01,180
+browser notion of security is preserved
+
+138
+00:06:01,180 --> 00:06:04,150
+so you can't access an arbitrary file on
+
+139
+00:06:04,150 --> 00:06:06,460
+the disk but you can get any Earl that
+
+140
+00:06:06,460 --> 00:06:09,100
+JavaScript would be able to get and the
+
+141
+00:06:09,100 --> 00:06:10,810
+API that this done with is called pepper
+
+142
+00:06:10,810 --> 00:06:12,760
+and it's essentially functionally
+
+143
+00:06:12,760 --> 00:06:14,470
+equivalent with what javascript has in
+
+144
+00:06:14,470 --> 00:06:18,070
+terms of xml httprequest WebGL it's just
+
+145
+00:06:18,070 --> 00:06:20,979
+a different language binding for that M
+
+146
+00:06:20,979 --> 00:06:22,510
+scripting on the other hand takes the
+
+147
+00:06:22,510 --> 00:06:24,729
+approach where it says here's some C
+
+148
+00:06:24,729 --> 00:06:26,500
+code and I'm going to do some
+
+149
+00:06:26,500 --> 00:06:28,090
+transformations on it so it's actually
+
+150
+00:06:28,090 --> 00:06:30,640
+semantically equivalent JavaScript so
+
+151
+00:06:30,640 --> 00:06:32,530
+this is an add function which is pretty
+
+152
+00:06:32,530 --> 00:06:34,390
+dup a little bit to use pointers so we
+
+153
+00:06:34,390 --> 00:06:35,979
+actually see some memory operations in
+
+154
+00:06:35,979 --> 00:06:37,870
+the output but it's more or less what
+
+155
+00:06:37,870 --> 00:06:38,710
+you'd expect
+
+156
+00:06:38,710 --> 00:06:39,910
+if you kind of squint through all the
+
+157
+00:06:39,910 --> 00:06:42,010
+cruft in there there's a load from
+
+158
+00:06:42,010 --> 00:06:44,560
+memory another load from memory and then
+
+159
+00:06:44,560 --> 00:06:46,600
+it adds together so you'll see there's a
+
+160
+00:06:46,600 --> 00:06:49,540
+lot of or zeros in there and these are
+
+161
+00:06:49,540 --> 00:06:51,490
+bitwise operations where you're doing a
+
+162
+00:06:51,490 --> 00:06:54,400
+bitwise or with 0 which if you know how
+
+163
+00:06:54,400 --> 00:06:56,500
+or works that should be a no op you know
+
+164
+00:06:56,500 --> 00:06:58,900
+or with zero equals what you put in but
+
+165
+00:06:58,900 --> 00:07:01,030
+the trick is is that JavaScript coerces
+
+166
+00:07:01,030 --> 00:07:03,700
+anything you or with 0 into a 32-bit
+
+167
+00:07:03,700 --> 00:07:07,240
+integer so if you have a string or if
+
+168
+00:07:07,240 --> 00:07:10,300
+you have a double it'll mangle it until
+
+169
+00:07:10,300 --> 00:07:12,010
+it looks like an integer and then you
+
+170
+00:07:12,010 --> 00:07:13,540
+can do operations on it so this is what
+
+171
+00:07:13,540 --> 00:07:15,970
+azimuth is they've essentially smuggled
+
+172
+00:07:15,970 --> 00:07:18,970
+in type annotations to language by
+
+173
+00:07:18,970 --> 00:07:21,100
+exploiting the semantics of JavaScript
+
+174
+00:07:21,100 --> 00:07:24,340
+really weird corner cases another thing
+
+175
+00:07:24,340 --> 00:07:26,050
+to pay attention to is that a memory
+
+176
+00:07:26,050 --> 00:07:27,670
+access where you're just saying hey I
+
+177
+00:07:27,670 --> 00:07:29,130
+want this address in memory is
+
+178
+00:07:29,130 --> 00:07:32,950
+transformed into an indexed operation in
+
+179
+00:07:32,950 --> 00:07:35,260
+index operation into a typed array so if
+
+180
+00:07:35,260 --> 00:07:36,730
+you're familiar with the ray buffers and
+
+181
+00:07:36,730 --> 00:07:38,650
+typed array views that's what's going on
+
+182
+00:07:38,650 --> 00:07:40,470
+the bottom is it's taking a pointer and
+
+183
+00:07:40,470 --> 00:07:43,660
+because the array view the indexing
+
+184
+00:07:43,660 --> 00:07:45,460
+isn't bite for bite instead like if it's
+
+185
+00:07:45,460 --> 00:07:47,620
+a 32-bit integer it's indexing four
+
+186
+00:07:47,620 --> 00:07:49,420
+bytes at a time you have to drop the
+
+187
+00:07:49,420 --> 00:07:51,070
+lower two bits of the address divide it
+
+188
+00:07:51,070 --> 00:07:53,440
+by 4 so that turns a pointer address and
+
+189
+00:07:53,440 --> 00:07:55,240
+do an array index interesting
+
+190
+00:07:55,240 --> 00:07:57,670
+consequences of this is that the address
+
+191
+00:07:57,670 --> 00:08:00,010
+you look up isn't exactly the address
+
+192
+00:08:00,010 --> 00:08:02,140
+you'd normally get a native code usually
+
+193
+00:08:02,140 --> 00:08:03,460
+it doesn't matter but there's a few
+
+194
+00:08:03,460 --> 00:08:04,900
+corner cases we're dropping the lower
+
+195
+00:08:04,900 --> 00:08:06,910
+two bits can bite you there's also the
+
+196
+00:08:06,910 --> 00:08:08,770
+question of null pointers so see
+
+197
+00:08:08,770 --> 00:08:12,070
+typically says the the pointer 0 is in
+
+198
+00:08:12,070 --> 00:08:13,510
+some ways equivalent to null or
+
+199
+00:08:13,510 --> 00:08:15,640
+undefined in javascript is it just means
+
+200
+00:08:15,640 --> 00:08:17,500
+there's nothing there and you should
+
+201
+00:08:17,500 --> 00:08:19,570
+always check if it's know before you use
+
+202
+00:08:19,570 --> 00:08:21,880
+it but if you use null in this case it's
+
+203
+00:08:21,880 --> 00:08:24,340
+like well let me get address it data
+
+204
+00:08:24,340 --> 00:08:26,770
+address 0 oh here's the data at address
+
+205
+00:08:26,770 --> 00:08:28,750
+0 so it doesn't complain usually with
+
+206
+00:08:28,750 --> 00:08:30,910
+native code it will kill the process or
+
+207
+00:08:30,910 --> 00:08:33,850
+something along those lines at runtime
+
+208
+00:08:33,850 --> 00:08:35,560
+when you use I'm script it looks like
+
+209
+00:08:35,560 --> 00:08:37,690
+this is your compiled code is actually
+
+210
+00:08:37,690 --> 00:08:41,470
+running inside the very same thread as
+
+211
+00:08:41,470 --> 00:08:43,510
+the rest of the JavaScript code and when
+
+212
+00:08:43,510 --> 00:08:45,280
+you want to call out of the compiled
+
+213
+00:08:45,280 --> 00:08:46,540
+code it's just calling a javascript
+
+214
+00:08:46,540 --> 00:08:48,550
+function so it's a very quick
+
+215
+00:08:48,550 --> 00:08:50,770
+synchronous bridge so with a little bit
+
+216
+00:08:50,770 --> 00:08:51,490
+of wrapping you
+
+217
+00:08:51,490 --> 00:08:53,110
+get synchronous access to the dom and
+
+218
+00:08:53,110 --> 00:08:55,570
+both the compiled code and the j s code
+
+219
+00:08:55,570 --> 00:08:58,360
+has access to this big array which it
+
+220
+00:08:58,360 --> 00:08:59,709
+says is equivalent to the native
+
+221
+00:08:59,709 --> 00:09:02,500
+machines memory the consequences of this
+
+222
+00:09:02,500 --> 00:09:04,300
+approach is that your native code is
+
+223
+00:09:04,300 --> 00:09:07,200
+sharing the same thread as javascript
+
+224
+00:09:07,200 --> 00:09:09,550
+which means that it has to obey the same
+
+225
+00:09:09,550 --> 00:09:12,730
+rules as javascript it can't block you
+
+226
+00:09:12,730 --> 00:09:14,680
+have to periodically relinquish control
+
+227
+00:09:14,680 --> 00:09:17,050
+and there's no other threads so this
+
+228
+00:09:17,050 --> 00:09:18,730
+means that if you're porting to use on
+
+229
+00:09:18,730 --> 00:09:21,160
+script and you have to potential e spend
+
+230
+00:09:21,160 --> 00:09:23,440
+a lot of time refactoring your code so
+
+231
+00:09:23,440 --> 00:09:25,750
+that it behaves like JavaScript it's
+
+232
+00:09:25,750 --> 00:09:28,000
+asynchronous callback driven and for
+
+233
+00:09:28,000 --> 00:09:29,920
+some native applications this is a step
+
+234
+00:09:29,920 --> 00:09:31,990
+too far so a lot of the stuff we see
+
+235
+00:09:31,990 --> 00:09:33,580
+nowadays that's being compiled to the
+
+236
+00:09:33,580 --> 00:09:36,160
+web is the stuff that works easily but
+
+237
+00:09:36,160 --> 00:09:37,779
+there's still a lot of stuff we haven't
+
+238
+00:09:37,779 --> 00:09:39,880
+been able to do because of the blocking
+
+239
+00:09:39,880 --> 00:09:42,459
+and threading issues this leaves you
+
+240
+00:09:42,459 --> 00:09:45,339
+with the dilemma is you can go pinnacle
+
+241
+00:09:45,339 --> 00:09:48,100
+and you say hey it has threads it's a
+
+242
+00:09:48,100 --> 00:09:50,529
+little bit faster it's closer to what we
+
+243
+00:09:50,529 --> 00:09:52,810
+expect there's fewer gotchas but on the
+
+244
+00:09:52,810 --> 00:09:54,040
+other hand if we go the unscripted
+
+245
+00:09:54,040 --> 00:09:56,050
+approach it runs everywhere javascript
+
+246
+00:09:56,050 --> 00:09:59,410
+runs and in many cases it's easier just
+
+247
+00:09:59,410 --> 00:10:01,060
+to synchronously access the Dom you
+
+248
+00:10:01,060 --> 00:10:02,610
+don't have a synchronous post messages
+
+249
+00:10:02,610 --> 00:10:06,250
+so it's a dilemma is we have to not yet
+
+250
+00:10:06,250 --> 00:10:10,899
+perfect solutions and what can we do it
+
+251
+00:10:10,899 --> 00:10:12,490
+turns out that these solutions are
+
+252
+00:10:12,490 --> 00:10:14,560
+actually closer in many ways than you'd
+
+253
+00:10:14,560 --> 00:10:16,510
+expect they're both built on top of the
+
+254
+00:10:16,510 --> 00:10:20,350
+lvm tool chain and they both are trying
+
+255
+00:10:20,350 --> 00:10:22,720
+to produce portable native code so a lot
+
+256
+00:10:22,720 --> 00:10:24,520
+of the tricks you have to do to get
+
+257
+00:10:24,520 --> 00:10:26,050
+portable native code working they're
+
+258
+00:10:26,050 --> 00:10:28,720
+both doing the same thing so I thought
+
+259
+00:10:28,720 --> 00:10:32,370
+why not create a polyfill that provides
+
+260
+00:10:32,370 --> 00:10:35,890
+pinnacles interface to M script them so
+
+261
+00:10:35,890 --> 00:10:37,240
+if you're willing to get rid of your
+
+262
+00:10:37,240 --> 00:10:39,490
+threads and you're willing to make sure
+
+263
+00:10:39,490 --> 00:10:41,890
+your programs asynchronous then you can
+
+264
+00:10:41,890 --> 00:10:44,230
+take the same code base and compile it
+
+265
+00:10:44,230 --> 00:10:46,750
+using both technologies and I call this
+
+266
+00:10:46,750 --> 00:10:49,149
+pepper jazz because it's ajs polyfill of
+
+267
+00:10:49,149 --> 00:10:53,440
+the pepper interface abstractly that's
+
+268
+00:10:53,440 --> 00:10:55,540
+fairly straightforward but actually
+
+269
+00:10:55,540 --> 00:10:57,790
+seeing into action these are Native
+
+270
+00:10:57,790 --> 00:11:00,520
+Client examples SDK examples this is a
+
+271
+00:11:00,520 --> 00:11:02,320
+ray traced earth that's doing this on
+
+272
+00:11:02,320 --> 00:11:04,240
+the CPU there's no GPU involved
+
+273
+00:11:04,240 --> 00:11:07,540
+and here's the pinnacle version of the
+
+274
+00:11:07,540 --> 00:11:09,610
+same thing you don't notice many
+
+275
+00:11:09,610 --> 00:11:11,440
+differences the one difference of course
+
+276
+00:11:11,440 --> 00:11:13,750
+is that if you go to the pinnacle
+
+277
+00:11:13,750 --> 00:11:15,700
+version over here you can turn on more
+
+278
+00:11:15,700 --> 00:11:17,320
+threads and it's very hard to see on the
+
+279
+00:11:17,320 --> 00:11:20,770
+VC but you do get a speed up when you're
+
+280
+00:11:20,770 --> 00:11:23,709
+doing that and you know there's other
+
+281
+00:11:23,709 --> 00:11:27,070
+cpu examples where you can just crank on
+
+282
+00:11:27,070 --> 00:11:30,430
+the threads see it go faster exactly the
+
+283
+00:11:30,430 --> 00:11:34,630
+same code working with them scriptum but
+
+284
+00:11:34,630 --> 00:11:36,399
+there's corner cases like this is if
+
+285
+00:11:36,399 --> 00:11:38,649
+your GPU bound it really doesn't matter
+
+286
+00:11:38,649 --> 00:11:41,440
+how fast you are so exactly the same
+
+287
+00:11:41,440 --> 00:11:43,630
+application mostly driving the CPU so in
+
+288
+00:11:43,630 --> 00:11:45,670
+terms of performance is Emscripten
+
+289
+00:11:45,670 --> 00:11:47,560
+actually does very good especially with
+
+290
+00:11:47,560 --> 00:11:49,089
+numerical kernels so things like earth
+
+291
+00:11:49,089 --> 00:11:52,149
+it's usually within 1 X you know it's
+
+292
+00:11:52,149 --> 00:11:54,370
+like twenty percent slower whereas when
+
+293
+00:11:54,370 --> 00:11:55,810
+you have more structured code you're
+
+294
+00:11:55,810 --> 00:11:58,300
+kind of in the two to three X range in
+
+295
+00:11:58,300 --> 00:12:00,520
+terms of performance so the performance
+
+296
+00:12:00,520 --> 00:12:03,370
+is mostly there it's more an issue of
+
+297
+00:12:03,370 --> 00:12:05,920
+developer time and structure how much
+
+298
+00:12:05,920 --> 00:12:08,230
+time are you willing to death how much
+
+299
+00:12:08,230 --> 00:12:10,180
+time are you willing to spend 2d thread
+
+300
+00:12:10,180 --> 00:12:15,430
+your code well why would you want
+
+301
+00:12:15,430 --> 00:12:18,070
+threads so I've been pounding on this is
+
+302
+00:12:18,070 --> 00:12:20,770
+that it's structure is modern developers
+
+303
+00:12:20,770 --> 00:12:22,329
+they want to target as many platforms as
+
+304
+00:12:22,329 --> 00:12:23,560
+possible that you know they want to run
+
+305
+00:12:23,560 --> 00:12:24,880
+on cell phones they'd like to run on the
+
+306
+00:12:24,880 --> 00:12:27,760
+web but it's all a return on investment
+
+307
+00:12:27,760 --> 00:12:29,860
+issue is how much time are you willing
+
+308
+00:12:29,860 --> 00:12:31,540
+to get that next platform and support
+
+309
+00:12:31,540 --> 00:12:33,940
+that next platform if that I if that
+
+310
+00:12:33,940 --> 00:12:35,220
+cost is too much you just don't do it
+
+311
+00:12:35,220 --> 00:12:38,020
+there's throughput we'll see in a moment
+
+312
+00:12:38,020 --> 00:12:39,430
+that if you have more threads you can
+
+313
+00:12:39,430 --> 00:12:41,860
+just crunch more numbers and do more
+
+314
+00:12:41,860 --> 00:12:44,589
+calculations there's also latency so if
+
+315
+00:12:44,589 --> 00:12:46,120
+you're doing audio or rendering or
+
+316
+00:12:46,120 --> 00:12:48,700
+real-time stuff throughput is kind of
+
+317
+00:12:48,700 --> 00:12:50,110
+the equation but you want to get it done
+
+318
+00:12:50,110 --> 00:12:51,820
+is kind of the question but you want to
+
+319
+00:12:51,820 --> 00:12:53,470
+get done as fast as possible so you
+
+320
+00:12:53,470 --> 00:12:55,089
+never want have dropouts in your audio
+
+321
+00:12:55,089 --> 00:12:57,130
+you never want to drop frames in your
+
+322
+00:12:57,130 --> 00:12:59,920
+real time application there's also a
+
+323
+00:12:59,920 --> 00:13:01,270
+trend in Hardware where we're getting
+
+324
+00:13:01,270 --> 00:13:04,329
+more and more cores and an individual
+
+325
+00:13:04,329 --> 00:13:07,089
+core can run code about the same speed
+
+326
+00:13:07,089 --> 00:13:08,950
+as it always has and if you want at your
+
+327
+00:13:08,950 --> 00:13:10,690
+overall application to run faster you
+
+328
+00:13:10,690 --> 00:13:12,730
+have to take advantage of the parallel
+
+329
+00:13:12,730 --> 00:13:16,449
+resources in your hardware I should
+
+330
+00:13:16,449 --> 00:13:18,130
+clarify before I go on
+
+331
+00:13:18,130 --> 00:13:20,800
+kind of using the definition that the go
+
+332
+00:13:20,800 --> 00:13:23,230
+programming language has done for
+
+333
+00:13:23,230 --> 00:13:24,850
+concurrency and parallelism is that
+
+334
+00:13:24,850 --> 00:13:26,380
+they're not the same thing so
+
+335
+00:13:26,380 --> 00:13:30,100
+parallelism is about doing things at the
+
+336
+00:13:30,100 --> 00:13:32,980
+same time so if you have multiple CPUs
+
+337
+00:13:32,980 --> 00:13:34,330
+you're running things on multiple sea
+
+338
+00:13:34,330 --> 00:13:36,100
+views that's parallels them whereas
+
+339
+00:13:36,100 --> 00:13:38,020
+concurrency is really about dealing with
+
+340
+00:13:38,020 --> 00:13:40,990
+the conflicts that arise when you're
+
+341
+00:13:40,990 --> 00:13:43,000
+doing things that interact so even if
+
+342
+00:13:43,000 --> 00:13:44,800
+you're running on single CPU you can
+
+343
+00:13:44,800 --> 00:13:46,900
+think in JavaScript you have problems
+
+344
+00:13:46,900 --> 00:13:48,640
+with concurrency when you load a bunch
+
+345
+00:13:48,640 --> 00:13:51,010
+of files and then they may come back not
+
+346
+00:13:51,010 --> 00:13:53,620
+quite in the order that you expect so
+
+347
+00:13:53,620 --> 00:13:55,750
+you have to deal with the Oh they've
+
+348
+00:13:55,750 --> 00:13:57,520
+resolved in different orders let me
+
+349
+00:13:57,520 --> 00:13:59,410
+order them then let me go on things
+
+350
+00:13:59,410 --> 00:14:01,180
+along those lines whereas parallel ISM
+
+351
+00:14:01,180 --> 00:14:02,410
+you get that when you actually load the
+
+352
+00:14:02,410 --> 00:14:04,420
+file so well the system is actually
+
+353
+00:14:04,420 --> 00:14:05,710
+grabbing the bites off the network
+
+354
+00:14:05,710 --> 00:14:07,660
+that's parallelism but it doesn't
+
+355
+00:14:07,660 --> 00:14:09,340
+interact with JavaScript until you get
+
+356
+00:14:09,340 --> 00:14:13,240
+the event back and that's concurrency so
+
+357
+00:14:13,240 --> 00:14:15,550
+what if we changed how the browser
+
+358
+00:14:15,550 --> 00:14:17,770
+worked a little bit what instead what if
+
+359
+00:14:17,770 --> 00:14:19,990
+instead of just running everything
+
+360
+00:14:19,990 --> 00:14:22,300
+inside the main thread we spun up a few
+
+361
+00:14:22,300 --> 00:14:25,710
+workers so a web worker is essentially a
+
+362
+00:14:25,710 --> 00:14:29,800
+thread but you can't interact with all
+
+363
+00:14:29,800 --> 00:14:31,270
+the other threads the way you'd want to
+
+364
+00:14:31,270 --> 00:14:33,130
+with native code because you can only
+
+365
+00:14:33,130 --> 00:14:35,230
+communicate through messages so what if
+
+366
+00:14:35,230 --> 00:14:36,850
+we just gave it a big chunk of memory
+
+367
+00:14:36,850 --> 00:14:38,980
+and said this chunk of memory can be
+
+368
+00:14:38,980 --> 00:14:41,770
+simultaneously read and written to from
+
+369
+00:14:41,770 --> 00:14:43,900
+all of these different workers and then
+
+370
+00:14:43,900 --> 00:14:45,640
+you provide some mechanisms along the
+
+371
+00:14:45,640 --> 00:14:47,440
+lines of locks and semaphores to make
+
+372
+00:14:47,440 --> 00:14:48,760
+sure that you're never reading or
+
+373
+00:14:48,760 --> 00:14:50,200
+writing from the same memory at the same
+
+374
+00:14:50,200 --> 00:14:52,270
+time instead you're passing ownership
+
+375
+00:14:52,270 --> 00:14:55,690
+back and forth between the threads so
+
+376
+00:14:55,690 --> 00:14:57,730
+this should horrify a few people in this
+
+377
+00:14:57,730 --> 00:15:01,030
+audience is that shared memory is known
+
+378
+00:15:01,030 --> 00:15:04,240
+to be hard and a lot of the design of
+
+379
+00:15:04,240 --> 00:15:06,180
+javascript has been shared nothing
+
+380
+00:15:06,180 --> 00:15:09,190
+instead of dealing with all these
+
+381
+00:15:09,190 --> 00:15:11,230
+concurrency issues the only way you can
+
+382
+00:15:11,230 --> 00:15:12,520
+communicate back and forth is over
+
+383
+00:15:12,520 --> 00:15:14,980
+messages so this is the downside of
+
+384
+00:15:14,980 --> 00:15:16,930
+shared memory is it kind of is going
+
+385
+00:15:16,930 --> 00:15:18,460
+another direction at saying if we really
+
+386
+00:15:18,460 --> 00:15:20,470
+want native code on the web we have to
+
+387
+00:15:20,470 --> 00:15:23,290
+deal with the issues of shared memory so
+
+388
+00:15:23,290 --> 00:15:25,270
+people will often say well there's all
+
+389
+00:15:25,270 --> 00:15:27,250
+these other ways we could do it and I
+
+390
+00:15:27,250 --> 00:15:29,170
+don't have time to go through these one
+
+391
+00:15:29,170 --> 00:15:31,190
+by one but always comes down to theirs
+
+392
+00:15:31,190 --> 00:15:32,900
+thing missing and usually what it comes
+
+393
+00:15:32,900 --> 00:15:35,720
+down to is that whatever solution we do
+
+394
+00:15:35,720 --> 00:15:37,430
+has to be incremental an incremental
+
+395
+00:15:37,430 --> 00:15:40,640
+evolution of JavaScript and it also has
+
+396
+00:15:40,640 --> 00:15:42,860
+to require minimal changes to the native
+
+397
+00:15:42,860 --> 00:15:44,870
+code and there's very few solutions
+
+398
+00:15:44,870 --> 00:15:46,790
+which solve both those for instance you
+
+399
+00:15:46,790 --> 00:15:48,710
+say well why does JavaScript have to
+
+400
+00:15:48,710 --> 00:15:49,820
+have anything to do this why are we
+
+401
+00:15:49,820 --> 00:15:51,590
+compiling to JavaScript why not just use
+
+402
+00:15:51,590 --> 00:15:54,380
+pinnacle well that's another technology
+
+403
+00:15:54,380 --> 00:15:57,350
+stack and getting other browsers to
+
+404
+00:15:57,350 --> 00:15:59,270
+adopt it is much harder than
+
+405
+00:15:59,270 --> 00:16:00,710
+incrementally evolving java suit
+
+406
+00:16:00,710 --> 00:16:03,050
+javascript so i think in the future
+
+407
+00:16:03,050 --> 00:16:05,000
+we're going to see a convergence is that
+
+408
+00:16:05,000 --> 00:16:06,230
+what's happening in m script and what's
+
+409
+00:16:06,230 --> 00:16:08,360
+happening in pinnacle will start to look
+
+410
+00:16:08,360 --> 00:16:10,250
+similar and similar but we potentially
+
+411
+00:16:10,250 --> 00:16:12,080
+have to evolve javascript to get to that
+
+412
+00:16:12,080 --> 00:16:16,520
+point so how do we prove that this all
+
+413
+00:16:16,520 --> 00:16:20,540
+works well I put together prohibition
+
+414
+00:16:20,540 --> 00:16:24,140
+apapa a fluid simulator and I'm wiggling
+
+415
+00:16:24,140 --> 00:16:26,830
+with my mouse here and it's tiled and
+
+416
+00:16:26,830 --> 00:16:28,820
+everything like that so what's happening
+
+417
+00:16:28,820 --> 00:16:31,250
+is underneath all this there is a grid
+
+418
+00:16:31,250 --> 00:16:33,620
+of velocities and this is a
+
+419
+00:16:33,620 --> 00:16:35,480
+visualization of the velocity grid right
+
+420
+00:16:35,480 --> 00:16:37,940
+there and as you swirl it around with
+
+421
+00:16:37,940 --> 00:16:39,380
+the mouse the fluid flows with it and
+
+422
+00:16:39,380 --> 00:16:42,440
+this is a grid it's a two-by-two grid of
+
+423
+00:16:42,440 --> 00:16:44,900
+image data essentially in velocity data
+
+424
+00:16:44,900 --> 00:16:47,180
+and every step it's doing a lot of
+
+425
+00:16:47,180 --> 00:16:48,920
+calculation to move it forward so this
+
+426
+00:16:48,920 --> 00:16:51,830
+is all cpu driven this is one of these
+
+427
+00:16:51,830 --> 00:16:53,480
+things that you think could be very
+
+428
+00:16:53,480 --> 00:16:56,810
+easily paralyzed and so i tried to do it
+
+429
+00:16:56,810 --> 00:16:58,760
+with the existing workers api's so
+
+430
+00:16:58,760 --> 00:17:00,830
+here's a version where i'm splitting it
+
+431
+00:17:00,830 --> 00:17:03,170
+up into multiple workers and one thing
+
+432
+00:17:03,170 --> 00:17:05,270
+we'll get back to is you'll kind of see
+
+433
+00:17:05,270 --> 00:17:07,550
+although it's very hard you'll have to
+
+434
+00:17:07,550 --> 00:17:09,620
+squint is that the velocity buffers when
+
+435
+00:17:09,620 --> 00:17:12,699
+I draw into it the lines are now kind of
+
+436
+00:17:12,699 --> 00:17:15,860
+lumpy as they aren't as smooth as they
+
+437
+00:17:15,860 --> 00:17:17,270
+were the first time and we'll get to why
+
+438
+00:17:17,270 --> 00:17:19,400
+that was but this is running on multiple
+
+439
+00:17:19,400 --> 00:17:21,050
+workers right now it's in fact running
+
+440
+00:17:21,050 --> 00:17:23,300
+on four workers and if you look at the
+
+441
+00:17:23,300 --> 00:17:26,900
+actual bottom graph you see virtually no
+
+442
+00:17:26,900 --> 00:17:28,760
+improvement in fact you'll see a lot of
+
+443
+00:17:28,760 --> 00:17:31,220
+spikes popping up and those are due to
+
+444
+00:17:31,220 --> 00:17:32,390
+garbage collection pressure because
+
+445
+00:17:32,390 --> 00:17:33,620
+you're copying things to the worker
+
+446
+00:17:33,620 --> 00:17:35,990
+every time well what if you can reduce
+
+447
+00:17:35,990 --> 00:17:38,930
+the copying so this version says that
+
+448
+00:17:38,930 --> 00:17:41,810
+instead of copying the same data to all
+
+449
+00:17:41,810 --> 00:17:44,330
+four workers you copy it once and say
+
+450
+00:17:44,330 --> 00:17:45,110
+here's a read on
+
+451
+00:17:45,110 --> 00:17:47,150
+buffer that everyone can access so it
+
+452
+00:17:47,150 --> 00:17:49,640
+reduces the number of copies and you'll
+
+453
+00:17:49,640 --> 00:17:51,980
+see that a lot of the spikes go away so
+
+454
+00:17:51,980 --> 00:17:56,540
+as it turns out the big win from not
+
+455
+00:17:56,540 --> 00:17:57,920
+having to broadcast the same day that
+
+456
+00:17:57,920 --> 00:18:00,140
+everyone is not actually the cost of
+
+457
+00:18:00,140 --> 00:18:02,030
+copying the data it's the copy of
+
+458
+00:18:02,030 --> 00:18:04,700
+cleaning the data up afterwards so read
+
+459
+00:18:04,700 --> 00:18:06,290
+only memory gives you a performance
+
+460
+00:18:06,290 --> 00:18:09,710
+boost due to being friendly for GC what
+
+461
+00:18:09,710 --> 00:18:11,690
+if we go a step further and say have
+
+462
+00:18:11,690 --> 00:18:13,490
+shared memory and instead of using
+
+463
+00:18:13,490 --> 00:18:15,650
+postmessage talk back and forth we use
+
+464
+00:18:15,650 --> 00:18:17,450
+traditional native mechanisms like
+
+465
+00:18:17,450 --> 00:18:19,490
+blocks to coordinate between the threads
+
+466
+00:18:19,490 --> 00:18:22,220
+so at this point we see actually see our
+
+467
+00:18:22,220 --> 00:18:25,250
+first performance improvement and as it
+
+468
+00:18:25,250 --> 00:18:27,610
+turns out this is due to communication
+
+469
+00:18:27,610 --> 00:18:30,410
+or there's anything else so when you
+
+470
+00:18:30,410 --> 00:18:31,760
+have a lock that allows you to
+
+471
+00:18:31,760 --> 00:18:33,049
+communicate with the other threads much
+
+472
+00:18:33,049 --> 00:18:36,350
+quicker than postmessage does we'll get
+
+473
+00:18:36,350 --> 00:18:39,230
+into the actual performance numbers when
+
+474
+00:18:39,230 --> 00:18:43,730
+we in a future slide so this is what's
+
+475
+00:18:43,730 --> 00:18:46,820
+going on behind the scenes is that it's
+
+476
+00:18:46,820 --> 00:18:48,320
+doing a bunch of computations you don't
+
+477
+00:18:48,320 --> 00:18:49,549
+have to know exactly what these are but
+
+478
+00:18:49,549 --> 00:18:51,530
+like the effect stages through moving
+
+479
+00:18:51,530 --> 00:18:53,960
+things around the fuse velocity that
+
+480
+00:18:53,960 --> 00:18:56,299
+simulates viscosity and then it has to
+
+481
+00:18:56,299 --> 00:18:57,799
+make sure that there's no fluid
+
+482
+00:18:57,799 --> 00:18:59,600
+appearing from nowhere or disappearing
+
+483
+00:18:59,600 --> 00:19:01,669
+so make sure that the pressure is equal
+
+484
+00:19:01,669 --> 00:19:05,390
+at all times and then it'll draw how you
+
+485
+00:19:05,390 --> 00:19:06,830
+paralyze this is you take the
+
+486
+00:19:06,830 --> 00:19:09,260
+computationally intensive stages and you
+
+487
+00:19:09,260 --> 00:19:11,150
+move them out to a worker so you're
+
+488
+00:19:11,150 --> 00:19:13,280
+doing post message out the worker says
+
+489
+00:19:13,280 --> 00:19:14,390
+thank you for the data does the
+
+490
+00:19:14,390 --> 00:19:16,040
+computation sends the results back and
+
+491
+00:19:16,040 --> 00:19:18,320
+you periodically have to resynchronize
+
+492
+00:19:18,320 --> 00:19:20,720
+back I mentioned that some of the lines
+
+493
+00:19:20,720 --> 00:19:24,020
+become blotchy and it's because as soon
+
+494
+00:19:24,020 --> 00:19:25,460
+as you start paralyzing it there's these
+
+495
+00:19:25,460 --> 00:19:27,169
+gaps that open up on the main thread and
+
+496
+00:19:27,169 --> 00:19:29,540
+these gaps are potentially places where
+
+497
+00:19:29,540 --> 00:19:31,850
+things like Mouse events can fire so I
+
+498
+00:19:31,850 --> 00:19:33,710
+did a lot of beautiful abstraction i use
+
+499
+00:19:33,710 --> 00:19:35,990
+promises i said here are all the things
+
+500
+00:19:35,990 --> 00:19:38,270
+the fluid simulation is doing and then I
+
+501
+00:19:38,270 --> 00:19:40,100
+changed the backend implementation
+
+502
+00:19:40,100 --> 00:19:42,440
+detail and suddenly events started
+
+503
+00:19:42,440 --> 00:19:44,480
+firing in places I didn't even think
+
+504
+00:19:44,480 --> 00:19:46,370
+about that they'd fire so this is a
+
+505
+00:19:46,370 --> 00:19:48,340
+concurrency bug is we're dealing with
+
+506
+00:19:48,340 --> 00:19:50,750
+unexpected events in places we didn't
+
+507
+00:19:50,750 --> 00:19:52,760
+expect so the great irony is when
+
+508
+00:19:52,760 --> 00:19:54,470
+dealing with shared memory my
+
+509
+00:19:54,470 --> 00:19:56,179
+concurrency bug that I ran into was
+
+510
+00:19:56,179 --> 00:19:57,519
+JavaScript
+
+511
+00:19:57,519 --> 00:20:00,580
+when you actually look at the speed-up
+
+512
+00:20:00,580 --> 00:20:02,809
+shared nothing in read-only memory they
+
+513
+00:20:02,809 --> 00:20:04,999
+give modest improvements and then we
+
+514
+00:20:04,999 --> 00:20:06,679
+start using these fast synchronization
+
+515
+00:20:06,679 --> 00:20:08,840
+primitives you can actually start to use
+
+516
+00:20:08,840 --> 00:20:11,210
+all the cores so on eight cores only for
+
+517
+00:20:11,210 --> 00:20:12,649
+XP dup so that's fifty percent
+
+518
+00:20:12,649 --> 00:20:14,690
+efficiency so it's not quite where we
+
+519
+00:20:14,690 --> 00:20:16,100
+want to be and there's other things that
+
+520
+00:20:16,100 --> 00:20:17,899
+need to be done but this is a kind of
+
+521
+00:20:17,899 --> 00:20:19,309
+quick hand waving hack to show that
+
+522
+00:20:19,309 --> 00:20:21,259
+shared memory does work and it does give
+
+523
+00:20:21,259 --> 00:20:23,389
+you a parallel speed up in performance
+
+524
+00:20:23,389 --> 00:20:25,789
+improvement I'm going to skip these
+
+525
+00:20:25,789 --> 00:20:28,249
+slides for the sake of time but the
+
+526
+00:20:28,249 --> 00:20:30,710
+message or the the lesson learned is
+
+527
+00:20:30,710 --> 00:20:33,440
+that the main thread is actually more
+
+528
+00:20:33,440 --> 00:20:36,230
+special than you'd expect so the workers
+
+529
+00:20:36,230 --> 00:20:37,850
+aren't entirely independent with the
+
+530
+00:20:37,850 --> 00:20:39,590
+main thread and if you block the main
+
+531
+00:20:39,590 --> 00:20:41,720
+thread you can for instance prevent a
+
+532
+00:20:41,720 --> 00:20:43,999
+worker from ever creating our from ever
+
+533
+00:20:43,999 --> 00:20:46,039
+being created so when you initially
+
+534
+00:20:46,039 --> 00:20:49,279
+create it it creates a stub and it also
+
+535
+00:20:49,279 --> 00:20:50,960
+launches off an earl request to get the
+
+536
+00:20:50,960 --> 00:20:52,369
+script that's supposed to run inside the
+
+537
+00:20:52,369 --> 00:20:54,590
+stub so if you block the main thread the
+
+538
+00:20:54,590 --> 00:20:56,360
+script itself is never loaded and the
+
+539
+00:20:56,360 --> 00:20:58,669
+worker never becomes active and there's
+
+540
+00:20:58,669 --> 00:21:00,679
+similar issues where if you block the
+
+541
+00:21:00,679 --> 00:21:01,999
+main thread while workers doing
+
+542
+00:21:01,999 --> 00:21:05,149
+something the console log gets proxied
+
+543
+00:21:05,149 --> 00:21:06,740
+through the main thread to wherever the
+
+544
+00:21:06,740 --> 00:21:10,220
+console is and this means you'll lose
+
+545
+00:21:10,220 --> 00:21:11,960
+output if the main thread is blocked so
+
+546
+00:21:11,960 --> 00:21:13,970
+for programmers you shouldn't worry
+
+547
+00:21:13,970 --> 00:21:15,980
+about this but in terms of the browser
+
+548
+00:21:15,980 --> 00:21:17,659
+implementation it turns out there's all
+
+549
+00:21:17,659 --> 00:21:19,249
+sorts of complexities we're blocking the
+
+550
+00:21:19,249 --> 00:21:20,990
+main thread will kill you and this is a
+
+551
+00:21:20,990 --> 00:21:22,999
+problem for running native code because
+
+552
+00:21:22,999 --> 00:21:27,259
+it's a blocking API another thing that
+
+553
+00:21:27,259 --> 00:21:29,169
+freaks people out about native code is
+
+554
+00:21:29,169 --> 00:21:32,360
+data races and this is a classic
+
+555
+00:21:32,360 --> 00:21:34,460
+textbook I took CSI took operating
+
+556
+00:21:34,460 --> 00:21:36,470
+systems thing as you say I have these
+
+557
+00:21:36,470 --> 00:21:38,720
+two threads they each have two
+
+558
+00:21:38,720 --> 00:21:40,100
+instructions in them and I'm going to
+
+559
+00:21:40,100 --> 00:21:41,629
+run them at the same time what happens
+
+560
+00:21:41,629 --> 00:21:45,649
+so one thread assigns the value one to a
+
+561
+00:21:45,649 --> 00:21:47,869
+so assume that a and B are both 0 to
+
+562
+00:21:47,869 --> 00:21:49,909
+start out with so one thread assigns one
+
+563
+00:21:49,909 --> 00:21:52,669
+to a then prints be the other thread
+
+564
+00:21:52,669 --> 00:21:56,450
+assigns to to be and then prints a so
+
+565
+00:21:56,450 --> 00:21:59,299
+what's the end result if you look at the
+
+566
+00:21:59,299 --> 00:22:01,279
+inner leavings of these threads you get
+
+567
+00:22:01,279 --> 00:22:03,350
+six possible results it can print to it
+
+568
+00:22:03,350 --> 00:22:05,330
+can print one then one it can print one
+
+569
+00:22:05,330 --> 00:22:07,639
+than two if one of the threads runs much
+
+570
+00:22:07,639 --> 00:22:08,990
+faster than the other ones you get a
+
+571
+00:22:08,990 --> 00:22:10,050
+zero than a one
+
+572
+00:22:10,050 --> 00:22:12,240
+or a zero than it too so this is the
+
+573
+00:22:12,240 --> 00:22:14,070
+worst thing in the world is you got two
+
+574
+00:22:14,070 --> 00:22:15,810
+threads to instructions six possible in
+
+575
+00:22:15,810 --> 00:22:18,320
+our leavings we can deal with that I
+
+576
+00:22:18,320 --> 00:22:22,610
+wide so it's all worse than that is that
+
+577
+00:22:22,610 --> 00:22:25,380
+the compiler and the CPU there's all
+
+578
+00:22:25,380 --> 00:22:26,760
+sorts of things down the stack which
+
+579
+00:22:26,760 --> 00:22:28,350
+will try to make the code run faster in
+
+580
+00:22:28,350 --> 00:22:30,150
+one of the normal things they'll say is
+
+581
+00:22:30,150 --> 00:22:32,310
+well you're signing to a then you're
+
+582
+00:22:32,310 --> 00:22:34,440
+printing be these two operations are
+
+583
+00:22:34,440 --> 00:22:36,840
+totally unrelated so I can reorder them
+
+584
+00:22:36,840 --> 00:22:38,850
+as I wish and the other fed will say the
+
+585
+00:22:38,850 --> 00:22:40,710
+same thing is assigning to be than
+
+586
+00:22:40,710 --> 00:22:42,570
+printing a no relation I can reorder
+
+587
+00:22:42,570 --> 00:22:45,450
+them so instead you have 24 different
+
+588
+00:22:45,450 --> 00:22:47,340
+operations and some of them will produce
+
+589
+00:22:47,340 --> 00:22:50,430
+things which are intuitively silly like
+
+590
+00:22:50,430 --> 00:22:53,250
+one you can print 00 which never should
+
+591
+00:22:53,250 --> 00:22:55,290
+happen because by the time you hit the
+
+592
+00:22:55,290 --> 00:22:56,850
+other print you would have thought that
+
+593
+00:22:56,850 --> 00:22:58,290
+the other thread would have assigned to
+
+594
+00:22:58,290 --> 00:22:59,820
+what you're printing so there should
+
+595
+00:22:59,820 --> 00:23:01,440
+never be a second zero and you can
+
+596
+00:23:01,440 --> 00:23:02,940
+sometimes get 20 again these are
+
+597
+00:23:02,940 --> 00:23:06,120
+physically unrealizable but it gets
+
+598
+00:23:06,120 --> 00:23:08,250
+worse is for optimization purposes
+
+599
+00:23:08,250 --> 00:23:10,470
+either the CP or the compiler can
+
+600
+00:23:10,470 --> 00:23:12,690
+duplicate instructions it can remove
+
+601
+00:23:12,690 --> 00:23:14,730
+instructions it can transform the
+
+602
+00:23:14,730 --> 00:23:16,410
+instructions so instead of 24
+
+603
+00:23:16,410 --> 00:23:17,610
+interleaving there's actually
+
+604
+00:23:17,610 --> 00:23:20,370
+effectively an uncountable number of
+
+605
+00:23:20,370 --> 00:23:21,690
+inner leavings that can occur with these
+
+606
+00:23:21,690 --> 00:23:24,720
+threads and even worse is different
+
+607
+00:23:24,720 --> 00:23:26,940
+threads may not agree on what the inner
+
+608
+00:23:26,940 --> 00:23:29,340
+leavings are so if the memory operations
+
+609
+00:23:29,340 --> 00:23:31,680
+aren't dependent they can say hey a got
+
+610
+00:23:31,680 --> 00:23:33,120
+assigned to then be and the others I
+
+611
+00:23:33,120 --> 00:23:35,510
+know you got assigned to you then a and
+
+612
+00:23:35,510 --> 00:23:38,070
+not every computer will run the same way
+
+613
+00:23:38,070 --> 00:23:40,530
+so different CPUs will show some
+
+614
+00:23:40,530 --> 00:23:42,330
+orderings but not all of them and
+
+615
+00:23:42,330 --> 00:23:44,250
+different compilers will show some
+
+616
+00:23:44,250 --> 00:23:46,020
+orderings not all of them and this is
+
+617
+00:23:46,020 --> 00:23:47,490
+especially a problem for JavaScript
+
+618
+00:23:47,490 --> 00:23:50,430
+because the JIT actually behaves as
+
+619
+00:23:50,430 --> 00:23:52,590
+multiple co compilers so as you run it
+
+620
+00:23:52,590 --> 00:23:54,840
+will recompile the code and potentially
+
+621
+00:23:54,840 --> 00:23:56,280
+reorder things in different ways every
+
+622
+00:23:56,280 --> 00:23:59,520
+time it optimizes the code so this is
+
+623
+00:23:59,520 --> 00:24:01,680
+hopeless write it when it comes down to
+
+624
+00:24:01,680 --> 00:24:04,410
+it if you have a data race your program
+
+625
+00:24:04,410 --> 00:24:06,450
+is broken so you'll see a lot of people
+
+626
+00:24:06,450 --> 00:24:08,430
+they'll squint and say okay there's a
+
+627
+00:24:08,430 --> 00:24:11,250
+data race there but it'll be okay and
+
+628
+00:24:11,250 --> 00:24:14,160
+the answer is no is that the compiler
+
+629
+00:24:14,160 --> 00:24:16,110
+the CPU is going to do the worst
+
+630
+00:24:16,110 --> 00:24:18,990
+possible thing in some cases and you
+
+631
+00:24:18,990 --> 00:24:21,090
+can't reason about it so you must
+
+632
+00:24:21,090 --> 00:24:22,770
+defensively not have data races in your
+
+633
+00:24:22,770 --> 00:24:23,310
+program
+
+634
+00:24:23,310 --> 00:24:25,330
+well this would be a good argument
+
+635
+00:24:25,330 --> 00:24:26,890
+against native code on the web right
+
+636
+00:24:26,890 --> 00:24:29,290
+data data races are often but really
+
+637
+00:24:29,290 --> 00:24:31,030
+this is about concurrency is we're
+
+638
+00:24:31,030 --> 00:24:32,770
+talking about doing interacting things
+
+639
+00:24:32,770 --> 00:24:34,900
+at the same time and if you don't
+
+640
+00:24:34,900 --> 00:24:37,360
+account for these interactions your
+
+641
+00:24:37,360 --> 00:24:39,640
+program is broken this also occurs in
+
+642
+00:24:39,640 --> 00:24:41,830
+JavaScript and I think one of the things
+
+643
+00:24:41,830 --> 00:24:43,900
+that will be learning over the next five
+
+644
+00:24:43,900 --> 00:24:45,760
+years is that concurrency is a bigger
+
+645
+00:24:45,760 --> 00:24:47,140
+problem for JavaScript than we currently
+
+646
+00:24:47,140 --> 00:24:49,780
+understand things like Earl requests
+
+647
+00:24:49,780 --> 00:24:51,130
+coming back in the order we didn't
+
+648
+00:24:51,130 --> 00:24:53,110
+expect is we've dealt with a synchrony
+
+649
+00:24:53,110 --> 00:24:55,180
+with promises but if you have to promise
+
+650
+00:24:55,180 --> 00:24:56,830
+chains their inner leaving with each
+
+651
+00:24:56,830 --> 00:24:59,140
+other and odd ways how do you deal with
+
+652
+00:24:59,140 --> 00:25:00,580
+that what primitives do you use and
+
+653
+00:25:00,580 --> 00:25:02,710
+right now this is mostly put upon the
+
+654
+00:25:02,710 --> 00:25:04,630
+programmer to deal with so this is a
+
+655
+00:25:04,630 --> 00:25:06,310
+wicked problem but it's a generically
+
+656
+00:25:06,310 --> 00:25:09,970
+wicked problem and so can we do better
+
+657
+00:25:09,970 --> 00:25:11,260
+is there a way that we can eliminate
+
+658
+00:25:11,260 --> 00:25:13,000
+data races and having thought about it
+
+659
+00:25:13,000 --> 00:25:14,650
+for a while I can say no not really is
+
+660
+00:25:14,650 --> 00:25:17,230
+if you want to emulate a platform if you
+
+661
+00:25:17,230 --> 00:25:18,640
+want to be compatible with a platform
+
+662
+00:25:18,640 --> 00:25:20,410
+you also be have to be compatible with
+
+663
+00:25:20,410 --> 00:25:23,800
+their bugs some extent and what this
+
+664
+00:25:23,800 --> 00:25:25,600
+means is that JavaScript may have to
+
+665
+00:25:25,600 --> 00:25:27,850
+have a shared memory api for compile the
+
+666
+00:25:27,850 --> 00:25:29,680
+JavaScript which you probably shouldn't
+
+667
+00:25:29,680 --> 00:25:32,470
+use otherwise and that scares people so
+
+668
+00:25:32,470 --> 00:25:34,480
+where is this going is there anything
+
+669
+00:25:34,480 --> 00:25:36,160
+certain at this point there is nothing
+
+670
+00:25:36,160 --> 00:25:38,100
+certain there is going to be a bit of a
+
+671
+00:25:38,100 --> 00:25:40,570
+discussion / war for the soul of
+
+672
+00:25:40,570 --> 00:25:42,250
+JavaScript whether we want to support
+
+673
+00:25:42,250 --> 00:25:44,110
+native code on the web whether we're
+
+674
+00:25:44,110 --> 00:25:47,760
+willing to expose shared memory if the
+
+675
+00:25:47,760 --> 00:25:52,180
+ultimate gain from it is supporting
+
+676
+00:25:52,180 --> 00:25:54,100
+multi-threaded native code so you can
+
+677
+00:25:54,100 --> 00:25:56,500
+just mash together everything you can
+
+678
+00:25:56,500 --> 00:25:58,720
+mash see with JavaScript it's not just
+
+679
+00:25:58,720 --> 00:26:00,580
+mashing different web apps together
+
+680
+00:26:00,580 --> 00:26:04,030
+anymore I got through that faster than I
+
+681
+00:26:04,030 --> 00:26:06,670
+expected but if you want to know more
+
+682
+00:26:06,670 --> 00:26:08,470
+there's websites for Knakal and script
+
+683
+00:26:08,470 --> 00:26:12,730
+in try pepper j/s appspot com for some
+
+684
+00:26:12,730 --> 00:26:14,860
+of the examples I was showing tweet at
+
+685
+00:26:14,860 --> 00:26:16,210
+Native Client one of my co-workers a
+
+686
+00:26:16,210 --> 00:26:19,690
+troll he'll enjoy it and email me if you
+
+687
+00:26:19,690 --> 00:26:22,450
+have any thing to talk about and I think
+
+688
+00:26:22,450 --> 00:26:24,070
+we have four minutes and we might
+
+689
+00:26:24,070 --> 00:26:25,450
+actually be able to take questions for
+
+690
+00:26:25,450 --> 00:26:28,180
+the first time ever so anyone curious
+
+691
+00:26:28,180 --> 00:26:31,150
+about anything ok so the question is are
+
+692
+00:26:31,150 --> 00:26:33,460
+there potential optimizations where you
+
+693
+00:26:33,460 --> 00:26:36,220
+can just copy stuff into shared memory
+
+694
+00:26:36,220 --> 00:26:36,400
+and
+
+695
+00:26:36,400 --> 00:26:38,080
+has a pointer to workers and that's
+
+696
+00:26:38,080 --> 00:26:39,760
+essentially what the fluid simulator was
+
+697
+00:26:39,760 --> 00:26:43,750
+doing is that it had this grid of data
+
+698
+00:26:43,750 --> 00:26:46,630
+and it was saying each of these threads
+
+699
+00:26:46,630 --> 00:26:49,300
+you're responsible for calculating the
+
+700
+00:26:49,300 --> 00:26:51,400
+next version of this data for this
+
+701
+00:26:51,400 --> 00:26:53,650
+specific sub square so is it was
+
+702
+00:26:53,650 --> 00:26:55,930
+essentially handing the pointer off to
+
+703
+00:26:55,930 --> 00:26:58,060
+the worker and you know kind of a reason
+
+704
+00:26:58,060 --> 00:26:59,980
+of memory and said process this and give
+
+705
+00:26:59,980 --> 00:27:02,890
+me the result so for the non shared
+
+706
+00:27:02,890 --> 00:27:05,020
+memory version what it was doing it was
+
+707
+00:27:05,020 --> 00:27:07,600
+actually copying out that chunk and
+
+708
+00:27:07,600 --> 00:27:10,270
+sending it over and it was a little
+
+709
+00:27:10,270 --> 00:27:12,130
+worse than that because postmessage
+
+710
+00:27:12,130 --> 00:27:16,300
+takes about a millisecond to do a full
+
+711
+00:27:16,300 --> 00:27:17,980
+round-trip you know it has a high
+
+712
+00:27:17,980 --> 00:27:19,510
+throughput but potentially also high
+
+713
+00:27:19,510 --> 00:27:21,910
+latency and because of the high latency
+
+714
+00:27:21,910 --> 00:27:23,020
+when you're actually doing the fluid
+
+715
+00:27:23,020 --> 00:27:25,840
+simulator like every update your having
+
+716
+00:27:25,840 --> 00:27:28,180
+to iterate about a hundred and twenty
+
+717
+00:27:28,180 --> 00:27:30,490
+times on a specific calculation called
+
+718
+00:27:30,490 --> 00:27:32,590
+the Jacobian so if you do that all over
+
+719
+00:27:32,590 --> 00:27:34,480
+postmessage then that means you're
+
+720
+00:27:34,480 --> 00:27:37,300
+taking about a hundred and twenty
+
+721
+00:27:37,300 --> 00:27:38,980
+milliseconds just for communication
+
+722
+00:27:38,980 --> 00:27:41,320
+which obviously doesn't work so instead
+
+723
+00:27:41,320 --> 00:27:43,390
+you have to do things like actually send
+
+724
+00:27:43,390 --> 00:27:45,250
+it more data than it needs it says
+
+725
+00:27:45,250 --> 00:27:46,900
+ultimately you're responsible for this
+
+726
+00:27:46,900 --> 00:27:49,030
+little square but i'm going to give you
+
+727
+00:27:49,030 --> 00:27:50,950
+data for this much and you're going to
+
+728
+00:27:50,950 --> 00:27:53,320
+calculate a region that's about twice as
+
+729
+00:27:53,320 --> 00:27:55,750
+big just so you can predict what your
+
+730
+00:27:55,750 --> 00:27:57,490
+neighbors are doing and you don't have
+
+731
+00:27:57,490 --> 00:27:59,650
+to communicate so when you look at those
+
+732
+00:27:59,650 --> 00:28:01,510
+numbers where you see no speed up what's
+
+733
+00:28:01,510 --> 00:28:03,690
+actually going on is you're having to do
+
+734
+00:28:03,690 --> 00:28:06,250
+pretty much twice the computation and
+
+735
+00:28:06,250 --> 00:28:07,960
+all the workers just to avoid
+
+736
+00:28:07,960 --> 00:28:10,120
+communicating because communicating is
+
+737
+00:28:10,120 --> 00:28:11,920
+so slow so when you're talking about
+
+738
+00:28:11,920 --> 00:28:13,900
+avoiding copy by passing pointers to
+
+739
+00:28:13,900 --> 00:28:16,030
+workers the big win is actually
+
+740
+00:28:16,030 --> 00:28:18,040
+communication speed is on modern
+
+741
+00:28:18,040 --> 00:28:20,860
+processors copying isn't too bad as long
+
+742
+00:28:20,860 --> 00:28:22,630
+as you don't have to GC afterwards and
+
+743
+00:28:22,630 --> 00:28:24,370
+if you can't avoid it you get an
+
+744
+00:28:24,370 --> 00:28:25,990
+additional improvement but the big
+
+745
+00:28:25,990 --> 00:28:27,100
+improvement is with synchronization
+
+746
+00:28:27,100 --> 00:28:31,390
+speed aha so why are we backwards
+
+747
+00:28:31,390 --> 00:28:33,370
+looking why are we worried about all
+
+748
+00:28:33,370 --> 00:28:37,390
+this legacy code well this is often
+
+749
+00:28:37,390 --> 00:28:39,070
+brought up in these wars about should we
+
+750
+00:28:39,070 --> 00:28:42,640
+have shared memory or not and my answer
+
+751
+00:28:42,640 --> 00:28:46,480
+to that is that people are still writing
+
+752
+00:28:46,480 --> 00:28:47,720
+new native code every
+
+753
+00:28:47,720 --> 00:28:50,120
+you know everyone talks about native on
+
+754
+00:28:50,120 --> 00:28:52,460
+mobile so if we're talking about
+
+755
+00:28:52,460 --> 00:28:54,530
+compatibility with native code we're
+
+756
+00:28:54,530 --> 00:28:56,390
+really talking about can mobile
+
+757
+00:28:56,390 --> 00:28:58,400
+developers easily port back and forth to
+
+758
+00:28:58,400 --> 00:29:00,679
+the web you know can we make the web as
+
+759
+00:29:00,679 --> 00:29:03,110
+a last bastion of not being a walled
+
+760
+00:29:03,110 --> 00:29:04,520
+garden you know if you want to be really
+
+761
+00:29:04,520 --> 00:29:05,780
+political about it or something like
+
+762
+00:29:05,780 --> 00:29:09,440
+that so it's about compatibility with
+
+763
+00:29:09,440 --> 00:29:10,909
+different platforms one other thing else
+
+764
+00:29:10,909 --> 00:29:13,190
+and people are saying well why don't we
+
+765
+00:29:13,190 --> 00:29:15,049
+provide an eye slits API you know why
+
+766
+00:29:15,049 --> 00:29:17,150
+don't we say that native code just gets
+
+767
+00:29:17,150 --> 00:29:18,650
+web workers and you have to send
+
+768
+00:29:18,650 --> 00:29:20,030
+messages between the different threads
+
+769
+00:29:20,030 --> 00:29:23,750
+in native code in how are you going to
+
+770
+00:29:23,750 --> 00:29:25,039
+get people to do that you know that's a
+
+771
+00:29:25,039 --> 00:29:27,260
+huge change so you're still asking for a
+
+772
+00:29:27,260 --> 00:29:29,299
+world where people have designed for the
+
+773
+00:29:29,299 --> 00:29:31,669
+web first is they have to say well I am
+
+774
+00:29:31,669 --> 00:29:33,049
+taking on these constraints where
+
+775
+00:29:33,049 --> 00:29:34,730
+everything goes in web workers and I'm
+
+776
+00:29:34,730 --> 00:29:36,650
+not using any library which happens to
+
+777
+00:29:36,650 --> 00:29:38,600
+use a thread so there's a fairly
+
+778
+00:29:38,600 --> 00:29:41,120
+hilarious discussion I saw on the M
+
+779
+00:29:41,120 --> 00:29:43,400
+script in IRC or someone's like I can't
+
+780
+00:29:43,400 --> 00:29:45,140
+compile this library it's saying not
+
+781
+00:29:45,140 --> 00:29:47,510
+finding win threads H or something along
+
+782
+00:29:47,510 --> 00:29:50,270
+those lines and then the person is like
+
+783
+00:29:50,270 --> 00:29:51,620
+well you can't have threads and they're
+
+784
+00:29:51,620 --> 00:29:54,169
+like I don't care if I have threads I
+
+785
+00:29:54,169 --> 00:29:56,360
+just want the library to work so there
+
+786
+00:29:56,360 --> 00:29:58,130
+there is certain mash ability things is
+
+787
+00:29:58,130 --> 00:30:00,409
+you just want to put the libraries
+
+788
+00:30:00,409 --> 00:30:01,760
+together and have it work and not worry
+
+789
+00:30:01,760 --> 00:30:03,650
+about the underlying things so requiring
+
+790
+00:30:03,650 --> 00:30:05,900
+a massive rewrite of everything that's a
+
+791
+00:30:05,900 --> 00:30:14,360
+bit of a non-starter thanks Nick
+

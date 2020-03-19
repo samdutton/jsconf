@@ -1,0 +1,2673 @@
+1
+00:00:37,530 --> 00:00:40,240
+
+thanks for the introduction
+
+2
+00:00:40,240 --> 00:00:44,890
+all right so I'm spike I like like he
+
+3
+00:00:44,890 --> 00:00:46,420
+said I work at Airbnb based out of San
+
+4
+00:00:46,420 --> 00:00:47,950
+Francisco I've been there for three
+
+5
+00:00:47,950 --> 00:00:51,100
+years writing JavaScript of Ruby and I
+
+6
+00:00:51,100 --> 00:00:52,810
+just wanna say I'm super stoked to be
+
+7
+00:00:52,810 --> 00:00:55,240
+here really proud this is such a great
+
+8
+00:00:55,240 --> 00:00:56,440
+event the best tech event I've ever been
+
+9
+00:00:56,440 --> 00:00:57,970
+to and just really happy to be part of
+
+10
+00:00:57,970 --> 00:01:00,970
+it so let's get started we're gonna talk
+
+11
+00:01:00,970 --> 00:01:05,500
+about isomorphic JavaScript and so
+
+12
+00:01:05,500 --> 00:01:07,390
+probably if I were you the first thing
+
+13
+00:01:07,390 --> 00:01:09,429
+I'd be thinking is wTF is isomorphic
+
+14
+00:01:09,429 --> 00:01:12,219
+JavaScript what is this big fancy
+
+15
+00:01:12,219 --> 00:01:14,380
+sounding word well it's simple really
+
+16
+00:01:14,380 --> 00:01:16,539
+the way I see it it's just JavaScript
+
+17
+00:01:16,539 --> 00:01:18,280
+code that can be shared between
+
+18
+00:01:18,280 --> 00:01:22,359
+different environments so I'm mostly
+
+19
+00:01:22,359 --> 00:01:23,889
+interested in the client in the server
+
+20
+00:01:23,889 --> 00:01:25,810
+I'm a web engineer so sharing code
+
+21
+00:01:25,810 --> 00:01:27,909
+between the web browser and something
+
+22
+00:01:27,909 --> 00:01:30,759
+like nodejs but as we've seen the last
+
+23
+00:01:30,759 --> 00:01:31,659
+few days there's a million different
+
+24
+00:01:31,659 --> 00:01:33,340
+JavaScript environments these days
+
+25
+00:01:33,340 --> 00:01:35,469
+JavaScript runtimes so you can imagine
+
+26
+00:01:35,469 --> 00:01:38,200
+also something like narwhal sharing code
+
+27
+00:01:38,200 --> 00:01:39,609
+with Narwhal because I've heard of
+
+28
+00:01:39,609 --> 00:01:41,579
+Narwhal it's the new Java eight
+
+29
+00:01:41,579 --> 00:01:43,990
+JavaScript runtime it's a successor to
+
+30
+00:01:43,990 --> 00:01:46,509
+rhino just to note there's not actually
+
+31
+00:01:46,509 --> 00:01:48,189
+an official Marvel logo so I thought
+
+32
+00:01:48,189 --> 00:01:52,209
+that was appropriate also native
+
+33
+00:01:52,209 --> 00:01:54,700
+platforms so Android iOS these can run
+
+34
+00:01:54,700 --> 00:01:55,990
+JavaScript really well these days and so
+
+35
+00:01:55,990 --> 00:01:57,399
+you can imagine we need to share code
+
+36
+00:01:57,399 --> 00:01:59,799
+between your web app or your server and
+
+37
+00:01:59,799 --> 00:02:03,189
+native platforms but also things like
+
+38
+00:02:03,189 --> 00:02:06,729
+spark and tehsil these are we've heard
+
+39
+00:02:06,729 --> 00:02:08,500
+about these last few days little devices
+
+40
+00:02:08,500 --> 00:02:10,150
+that can run JavaScript why can't we
+
+41
+00:02:10,150 --> 00:02:12,040
+share a piece of code with those two and
+
+42
+00:02:12,040 --> 00:02:13,120
+you want to get really crazy and
+
+43
+00:02:13,120 --> 00:02:14,460
+futuristic
+
+44
+00:02:14,460 --> 00:02:16,560
+you can share code with your cars so I
+
+45
+00:02:16,560 --> 00:02:18,500
+don't know if anyone's heard at the qmk
+
+46
+00:02:18,500 --> 00:02:21,000
+specification I learned about this a
+
+47
+00:02:21,000 --> 00:02:23,160
+couple months ago there's actually the
+
+48
+00:02:23,160 --> 00:02:24,420
+the automotive industry is coming up
+
+49
+00:02:24,420 --> 00:02:26,460
+with a spec to use web technologies to
+
+50
+00:02:26,460 --> 00:02:28,200
+build displays in cars so I'd like your
+
+51
+00:02:28,200 --> 00:02:30,360
+driving directions your radio
+
+52
+00:02:30,360 --> 00:02:33,600
+air-conditioning all that so but really
+
+53
+00:02:33,600 --> 00:02:34,920
+today we're just going to focus on
+
+54
+00:02:34,920 --> 00:02:39,270
+client-server so a really high-level
+
+55
+00:02:39,270 --> 00:02:41,760
+kind of overview of how I imagine this
+
+56
+00:02:41,760 --> 00:02:44,340
+works is you've got some code that runs
+
+57
+00:02:44,340 --> 00:02:46,290
+in the client side you've got some code
+
+58
+00:02:46,290 --> 00:02:47,910
+that runs in your back-end and there's
+
+59
+00:02:47,910 --> 00:02:49,500
+some layer that's shared between the
+
+60
+00:02:49,500 --> 00:02:51,690
+client and server so there's certain
+
+61
+00:02:51,690 --> 00:02:52,530
+things that would only exist in the
+
+62
+00:02:52,530 --> 00:02:54,150
+client side make certain you know user
+
+63
+00:02:54,150 --> 00:02:56,700
+interactions logging whatever and your
+
+64
+00:02:56,700 --> 00:02:59,250
+back-end could be node but it could be
+
+65
+00:02:59,250 --> 00:03:02,250
+Ruby or Python or you know peach whoever
+
+66
+00:03:02,250 --> 00:03:03,690
+the idea is it's just a persistence
+
+67
+00:03:03,690 --> 00:03:05,430
+layer in an API and then there's this
+
+68
+00:03:05,430 --> 00:03:07,410
+shared layer in between which can be
+
+69
+00:03:07,410 --> 00:03:08,820
+running both sides and this could be
+
+70
+00:03:08,820 --> 00:03:11,550
+views so templates or components or view
+
+71
+00:03:11,550 --> 00:03:13,350
+logic whatever it could be application
+
+72
+00:03:13,350 --> 00:03:16,140
+logic so models or whatever arbitrary
+
+73
+00:03:16,140 --> 00:03:19,620
+logic and it could be routes for example
+
+74
+00:03:19,620 --> 00:03:21,420
+but by the way that timer hasn't started
+
+75
+00:03:21,420 --> 00:03:27,030
+so I'm just gonna keep going forever so
+
+76
+00:03:27,030 --> 00:03:29,070
+let's talk about briefly the etymology
+
+77
+00:03:29,070 --> 00:03:32,990
+give the term isomorphic JavaScript so
+
+78
+00:03:32,990 --> 00:03:35,580
+just to be really authentic here's the
+
+79
+00:03:35,580 --> 00:03:37,490
+dictionary definition of isomorphic
+
+80
+00:03:37,490 --> 00:03:39,570
+corresponding or similar in form and
+
+81
+00:03:39,570 --> 00:03:43,350
+relations right that makes sense so if
+
+82
+00:03:43,350 --> 00:03:44,880
+we look at the latin forms to be further
+
+83
+00:03:44,880 --> 00:03:48,390
+pedantic ISO means same and morph means
+
+84
+00:03:48,390 --> 00:03:51,960
+form so same form so code that can share
+
+85
+00:03:51,960 --> 00:03:53,850
+a form between these different
+
+86
+00:03:53,850 --> 00:03:55,590
+environments but really we've got to
+
+87
+00:03:55,590 --> 00:03:57,090
+give credit to Charlie Robbins for
+
+88
+00:03:57,090 --> 00:03:59,670
+popularizing this is the first time I
+
+89
+00:03:59,670 --> 00:04:01,500
+ever heard of isomorphic JavaScript was
+
+90
+00:04:01,500 --> 00:04:03,270
+in his blog post scaling isomorphic
+
+91
+00:04:03,270 --> 00:04:06,930
+JavaScript code back in 2011 so charlie
+
+92
+00:04:06,930 --> 00:04:09,270
+is index zero on Twitter he's one of the
+
+93
+00:04:09,270 --> 00:04:11,550
+founders of new Jitsu and is he's got a
+
+94
+00:04:11,550 --> 00:04:13,230
+great blog post kind of describing the
+
+95
+00:04:13,230 --> 00:04:16,010
+different MVC versus mvvm versus MVP
+
+96
+00:04:16,010 --> 00:04:18,060
+patterns and how it could apply to
+
+97
+00:04:18,060 --> 00:04:21,300
+isomorphic code
+
+98
+00:04:21,310 --> 00:04:23,139
+but when I when I first started talking
+
+99
+00:04:23,139 --> 00:04:24,610
+about isomorphic JavaScript I released a
+
+100
+00:04:24,610 --> 00:04:27,130
+blog post last year and on Hacker News
+
+101
+00:04:27,130 --> 00:04:28,900
+most people were saying you're using it
+
+102
+00:04:28,900 --> 00:04:30,730
+wrong like isomorphic comes from
+
+103
+00:04:30,730 --> 00:04:33,040
+mathematics or it's a chemistry term or
+
+104
+00:04:33,040 --> 00:04:34,720
+it's this or that and they're saying
+
+105
+00:04:34,720 --> 00:04:36,900
+really what you mean is monomorphic or
+
+106
+00:04:36,900 --> 00:04:38,980
+actually hetero morphic is more
+
+107
+00:04:38,980 --> 00:04:40,030
+appropriate for what you're describing
+
+108
+00:04:40,030 --> 00:04:43,360
+or homomorphic is more correct or
+
+109
+00:04:43,360 --> 00:04:44,980
+polymorphic and I'm gonna say I don't
+
+110
+00:04:44,980 --> 00:04:48,010
+like whatever it's a word you can refer
+
+111
+00:04:48,010 --> 00:04:51,130
+all questions to Charlie Robbins there's
+
+112
+00:04:51,130 --> 00:04:53,680
+some more playful trolling as well I
+
+113
+00:04:53,680 --> 00:04:55,150
+don't know if you know Dee Shaw
+
+114
+00:04:55,150 --> 00:04:56,979
+if he might be in the audience today but
+
+115
+00:04:56,979 --> 00:04:59,410
+uh he he likes to make fun of me
+
+116
+00:04:59,410 --> 00:05:00,850
+whenever I use that term he calls it a
+
+117
+00:05:00,850 --> 00:05:03,400
+five-dollar word and every time I say it
+
+118
+00:05:03,400 --> 00:05:05,410
+he finds me five dollars in virtual
+
+119
+00:05:05,410 --> 00:05:08,410
+currency and so by the end of today I'm
+
+120
+00:05:08,410 --> 00:05:11,480
+gonna own him a couple thousand dollars
+
+121
+00:05:11,490 --> 00:05:14,620
+so just as an introduction let's let's
+
+122
+00:05:14,620 --> 00:05:17,229
+look at some apps that are using this
+
+123
+00:05:17,229 --> 00:05:18,940
+approach today and then we'll dive into
+
+124
+00:05:18,940 --> 00:05:21,940
+how you can build isomorphic apps so a
+
+125
+00:05:21,940 --> 00:05:23,650
+great example is Flickr I don't know if
+
+126
+00:05:23,650 --> 00:05:24,669
+you've seen that Flickr redesign
+
+127
+00:05:24,669 --> 00:05:26,080
+recently after they were bought by Yahoo
+
+128
+00:05:26,080 --> 00:05:28,300
+but this is their photo page so this is
+
+129
+00:05:28,300 --> 00:05:30,580
+like you search for silly cat and you
+
+130
+00:05:30,580 --> 00:05:32,440
+get this this list page and then you
+
+131
+00:05:32,440 --> 00:05:35,800
+click on one of one of these and it's
+
+132
+00:05:35,800 --> 00:05:37,000
+rear-ended in the client side right it's
+
+133
+00:05:37,000 --> 00:05:38,740
+like a single page app client side app
+
+134
+00:05:38,740 --> 00:05:40,539
+whatever rear Enders but the cool part
+
+135
+00:05:40,539 --> 00:05:42,610
+is if you were to refresh either this
+
+136
+00:05:42,610 --> 00:05:44,470
+page or the previous page it would all
+
+137
+00:05:44,470 --> 00:05:47,380
+come rendered from the server so each
+
+138
+00:05:47,380 --> 00:05:49,350
+page can be rendered fully on the server
+
+139
+00:05:49,350 --> 00:05:51,720
+or can be rendered in the client side
+
+140
+00:05:51,720 --> 00:05:54,789
+and Flickr does this using Yahoo's
+
+141
+00:05:54,789 --> 00:05:57,010
+modown libraries I think there's some
+
+142
+00:05:57,010 --> 00:05:58,260
+mowed down developers in the audience
+
+143
+00:05:58,260 --> 00:06:00,400
+from Yahoo but basically it's a
+
+144
+00:06:00,400 --> 00:06:04,300
+collection of loosely coupled modules
+
+145
+00:06:04,300 --> 00:06:06,190
+kind of based around Express that lets
+
+146
+00:06:06,190 --> 00:06:07,570
+you build apps like this and it's a
+
+147
+00:06:07,570 --> 00:06:09,880
+successor to mojito mojito was Yahoo's
+
+148
+00:06:09,880 --> 00:06:14,350
+really ambitious large project that that
+
+149
+00:06:14,350 --> 00:06:16,270
+attempted to build the isomorphic apps
+
+150
+00:06:16,270 --> 00:06:17,560
+it's something they used internally a
+
+151
+00:06:17,560 --> 00:06:19,060
+few years ago but it never really caught
+
+152
+00:06:19,060 --> 00:06:20,650
+on more broadly because it's so
+
+153
+00:06:20,650 --> 00:06:25,120
+monolithic and it's very Yui ish so
+
+154
+00:06:25,120 --> 00:06:27,370
+Instagram is another cool example you
+
+155
+00:06:27,370 --> 00:06:28,360
+might not have realized this but
+
+156
+00:06:28,360 --> 00:06:30,310
+Instagram comm is all built using react
+
+157
+00:06:30,310 --> 00:06:33,010
+and if you land on someone's histogram
+
+158
+00:06:33,010 --> 00:06:33,900
+page
+
+159
+00:06:33,900 --> 00:06:36,000
+it would be rendered on the server-side
+
+160
+00:06:36,000 --> 00:06:38,790
+you click on a photo would be rendered
+
+161
+00:06:38,790 --> 00:06:39,990
+client-side you refresh rendered
+
+162
+00:06:39,990 --> 00:06:42,690
+server-side it's same thing and so this
+
+163
+00:06:42,690 --> 00:06:45,270
+was built using Facebook's react library
+
+164
+00:06:45,270 --> 00:06:48,090
+as someone mentioned earlier today react
+
+165
+00:06:48,090 --> 00:06:50,100
+can be executed both on the client and
+
+166
+00:06:50,100 --> 00:06:52,830
+the server on the server it emits HTML
+
+167
+00:06:52,830 --> 00:06:54,840
+on this on the client it emits Dom notes
+
+168
+00:06:54,840 --> 00:06:56,550
+but what's really interesting about this
+
+169
+00:06:56,550 --> 00:06:58,860
+case is Instagram calm is a django app
+
+170
+00:06:58,860 --> 00:07:01,830
+so it's written in Python and they used
+
+171
+00:07:01,830 --> 00:07:03,960
+a node service running on the web on the
+
+172
+00:07:03,960 --> 00:07:06,690
+Python box and you would hand it a
+
+173
+00:07:06,690 --> 00:07:07,919
+template and some data and it would come
+
+174
+00:07:07,919 --> 00:07:09,870
+back at you with some HTML but there's
+
+175
+00:07:09,870 --> 00:07:12,960
+an asterisk here because instagram.com
+
+176
+00:07:12,960 --> 00:07:15,090
+no longer uses this they disabled the
+
+177
+00:07:15,090 --> 00:07:16,889
+node process from what I understand it's
+
+178
+00:07:16,889 --> 00:07:18,930
+because they there were bunch of Python
+
+179
+00:07:18,930 --> 00:07:21,060
+developers didn't want the overhead of
+
+180
+00:07:21,060 --> 00:07:23,760
+maintaining the node service but it's
+
+181
+00:07:23,760 --> 00:07:27,840
+possible another example I have to plug
+
+182
+00:07:27,840 --> 00:07:29,760
+Airbnb this is our mobile website and
+
+183
+00:07:29,760 --> 00:07:32,940
+about Airbnb com same story server
+
+184
+00:07:32,940 --> 00:07:36,030
+rendered but it's also a single page app
+
+185
+00:07:36,030 --> 00:07:38,190
+so as you navigate around and to be
+
+186
+00:07:38,190 --> 00:07:41,070
+rendered client-side and so we developed
+
+187
+00:07:41,070 --> 00:07:43,380
+a library called render based off of
+
+188
+00:07:43,380 --> 00:07:46,620
+this experience and render lets you take
+
+189
+00:07:46,620 --> 00:07:48,240
+it back one app and pull it down to the
+
+190
+00:07:48,240 --> 00:07:50,280
+server side and run your your models and
+
+191
+00:07:50,280 --> 00:07:51,930
+your views and your templates on the
+
+192
+00:07:51,930 --> 00:07:53,520
+server using Express but it's also a
+
+193
+00:07:53,520 --> 00:07:56,970
+full client side app and one of my
+
+194
+00:07:56,970 --> 00:07:59,610
+favorite examples is asana has anyone
+
+195
+00:07:59,610 --> 00:08:01,380
+heard of asana it's a really awesome
+
+196
+00:08:01,380 --> 00:08:04,590
+task management project management app
+
+197
+00:08:04,590 --> 00:08:06,180
+and it's all real time and super
+
+198
+00:08:06,180 --> 00:08:07,800
+advanced and stuff but what's really
+
+199
+00:08:07,800 --> 00:08:09,180
+special about asana is it takes a
+
+200
+00:08:09,180 --> 00:08:10,110
+different approach than these other
+
+201
+00:08:10,110 --> 00:08:12,389
+things that we've seen the entire
+
+202
+00:08:12,389 --> 00:08:14,010
+application runtime is synced between
+
+203
+00:08:14,010 --> 00:08:17,250
+the client in the server so they've
+
+204
+00:08:17,250 --> 00:08:19,110
+spent a couple years and rd on this and
+
+205
+00:08:19,110 --> 00:08:21,060
+what they come up with was a system
+
+206
+00:08:21,060 --> 00:08:23,400
+whereby every single user session has a
+
+207
+00:08:23,400 --> 00:08:25,620
+corresponding javascript process on the
+
+208
+00:08:25,620 --> 00:08:28,260
+server a dedicated process on the server
+
+209
+00:08:28,260 --> 00:08:29,970
+for every user session and as the user
+
+210
+00:08:29,970 --> 00:08:33,120
+navigates around in the app those those
+
+211
+00:08:33,120 --> 00:08:34,500
+actions are synchronized to the server
+
+212
+00:08:34,500 --> 00:08:36,959
+side and the server side will compute
+
+213
+00:08:36,959 --> 00:08:38,580
+all the same stuff it'll execute the
+
+214
+00:08:38,580 --> 00:08:41,159
+views and it'll fetch data and and do
+
+215
+00:08:41,159 --> 00:08:42,659
+all the same stuff it throws away the
+
+216
+00:08:42,659 --> 00:08:45,810
+HTML what at once is the state so they
+
+217
+00:08:45,810 --> 00:08:46,769
+have got they've got off
+
+218
+00:08:46,769 --> 00:08:48,269
+picture of the application state on the
+
+219
+00:08:48,269 --> 00:08:50,670
+server side as it exists on the client
+
+220
+00:08:50,670 --> 00:08:53,009
+side and it enables some cool stuff now
+
+221
+00:08:53,009 --> 00:08:55,709
+this took them a few years we can't all
+
+222
+00:08:55,709 --> 00:08:59,309
+do this because we were not all founded
+
+223
+00:08:59,309 --> 00:09:00,689
+by the youngest billionaire in the world
+
+224
+00:09:00,689 --> 00:09:02,579
+asana was founded by one of the Facebook
+
+225
+00:09:02,579 --> 00:09:04,769
+co-founders and so they they had a bit
+
+226
+00:09:04,769 --> 00:09:08,220
+of a runway to work with there but for
+
+227
+00:09:08,220 --> 00:09:10,350
+the rest of us we can use meteor so in
+
+228
+00:09:10,350 --> 00:09:13,499
+many ways I see meteor as a kind of an
+
+229
+00:09:13,499 --> 00:09:16,049
+open source take on what a saunas
+
+230
+00:09:16,049 --> 00:09:18,689
+building and if when I understand a few
+
+231
+00:09:18,689 --> 00:09:20,399
+of their engineers used to work at a
+
+232
+00:09:20,399 --> 00:09:21,389
+sauna and they brought over some of the
+
+233
+00:09:21,389 --> 00:09:23,670
+concepts but I'm sure most of you have
+
+234
+00:09:23,670 --> 00:09:25,049
+heard about meteor by now but it's a
+
+235
+00:09:25,049 --> 00:09:27,360
+real-time app framework and it does some
+
+236
+00:09:27,360 --> 00:09:28,829
+really cool stuff with sharing code
+
+237
+00:09:28,829 --> 00:09:32,819
+between client server so why would you
+
+238
+00:09:32,819 --> 00:09:35,850
+go to the trouble of doing this there is
+
+239
+00:09:35,850 --> 00:09:36,929
+some trouble you got to jump through
+
+240
+00:09:36,929 --> 00:09:39,199
+some hoops to share your code properly
+
+241
+00:09:39,199 --> 00:09:42,029
+so the first thing for me in my opinion
+
+242
+00:09:42,029 --> 00:09:44,670
+would be performance and this applies
+
+243
+00:09:44,670 --> 00:09:47,129
+mostly to the cases like Flickr where
+
+244
+00:09:47,129 --> 00:09:48,480
+you're rendering the whole page on the
+
+245
+00:09:48,480 --> 00:09:50,069
+server side even though it's a single
+
+246
+00:09:50,069 --> 00:09:52,470
+page app now that that comes from the
+
+247
+00:09:52,470 --> 00:09:54,600
+the initial page low speed is so much
+
+248
+00:09:54,600 --> 00:09:55,920
+faster and it feels so much faster
+
+249
+00:09:55,920 --> 00:09:57,209
+because you're not waiting in all the
+
+250
+00:09:57,209 --> 00:09:59,069
+assets to download and fetch and
+
+251
+00:09:59,069 --> 00:10:01,110
+initialize and and fetch data before you
+
+252
+00:10:01,110 --> 00:10:02,879
+render the page and you might remember
+
+253
+00:10:02,879 --> 00:10:04,559
+that Twitter used to be client-side
+
+254
+00:10:04,559 --> 00:10:06,179
+rendered right there's a hash bang in
+
+255
+00:10:06,179 --> 00:10:08,339
+the URL and a couple years ago they
+
+256
+00:10:08,339 --> 00:10:09,869
+switch back to server-side rendering and
+
+257
+00:10:09,869 --> 00:10:12,470
+they said they saw a five times
+
+258
+00:10:12,470 --> 00:10:16,589
+improvement and perceived performance so
+
+259
+00:10:16,589 --> 00:10:19,679
+that's that's great another reason could
+
+260
+00:10:19,679 --> 00:10:23,129
+be SEO so many of us I'm sure I have
+
+261
+00:10:23,129 --> 00:10:25,619
+built a single page app just to be told
+
+262
+00:10:25,619 --> 00:10:28,049
+that any needs to be crawlable by a web
+
+263
+00:10:28,049 --> 00:10:31,019
+crawler and if by default your entire
+
+264
+00:10:31,019 --> 00:10:32,639
+app can be rendered on both sides it's
+
+265
+00:10:32,639 --> 00:10:35,100
+not really concerned there's an asterisk
+
+266
+00:10:35,100 --> 00:10:36,990
+here because you may have seen last week
+
+267
+00:10:36,990 --> 00:10:39,389
+Google wrote a public blog post saying
+
+268
+00:10:39,389 --> 00:10:42,119
+that actually their web crawler has the
+
+269
+00:10:42,119 --> 00:10:43,980
+capability to execute JavaScript it's a
+
+270
+00:10:43,980 --> 00:10:45,629
+headless browser we've kind of known
+
+271
+00:10:45,629 --> 00:10:47,610
+this for a while but they've their
+
+272
+00:10:47,610 --> 00:10:50,160
+explicit about it now so it's this is
+
+273
+00:10:50,160 --> 00:10:52,410
+less of an issue but I'm sure there's
+
+274
+00:10:52,410 --> 00:10:54,299
+still a long tail of both crawlers that
+
+275
+00:10:54,299 --> 00:10:57,860
+don't have that capability
+
+276
+00:10:57,870 --> 00:11:01,270
+flexibility is another one because you
+
+277
+00:11:01,270 --> 00:11:03,070
+could run your code on either sides it
+
+278
+00:11:03,070 --> 00:11:04,810
+opens up a lot of doors for doing new
+
+279
+00:11:04,810 --> 00:11:07,450
+things and I think that meteor and asana
+
+280
+00:11:07,450 --> 00:11:09,550
+wouldn't have been possible if it
+
+281
+00:11:09,550 --> 00:11:12,150
+weren't for this ability and
+
+282
+00:11:12,150 --> 00:11:15,120
+maintainability I think a lot of us have
+
+283
+00:11:15,120 --> 00:11:17,860
+tried to share templates between client
+
+284
+00:11:17,860 --> 00:11:19,510
+and server for example in different
+
+285
+00:11:19,510 --> 00:11:21,190
+languages say in a ruby or in Python but
+
+286
+00:11:21,190 --> 00:11:22,960
+you end up duplicating either part of
+
+287
+00:11:22,960 --> 00:11:24,460
+the template or the template engine or
+
+288
+00:11:24,460 --> 00:11:26,710
+your view helpers or at some point
+
+289
+00:11:26,710 --> 00:11:28,090
+you're duplicating code and that's never
+
+290
+00:11:28,090 --> 00:11:30,920
+a good thing
+
+291
+00:11:30,930 --> 00:11:33,640
+so there's a number of use cases for why
+
+292
+00:11:33,640 --> 00:11:37,140
+you might want to use isomorphic code
+
+293
+00:11:37,140 --> 00:11:40,780
+the first would be templating I think a
+
+294
+00:11:40,780 --> 00:11:43,660
+lot of us when we first explore this we
+
+295
+00:11:43,660 --> 00:11:45,400
+look at templating we look at sharing
+
+296
+00:11:45,400 --> 00:11:46,660
+our code between the client and server
+
+297
+00:11:46,660 --> 00:11:48,700
+and so I think of templating as the
+
+298
+00:11:48,700 --> 00:11:51,700
+gateway drug to isomorphic JavaScript
+
+299
+00:11:51,700 --> 00:11:53,830
+because you start with sharing a
+
+300
+00:11:53,830 --> 00:11:54,940
+handlebars template or a mustache
+
+301
+00:11:54,940 --> 00:11:57,370
+template or whatever but pretty soon
+
+302
+00:11:57,370 --> 00:11:59,320
+everything that goes into populating
+
+303
+00:11:59,320 --> 00:12:00,460
+those templates needs to be shared so
+
+304
+00:12:00,460 --> 00:12:03,520
+things like internationalization you
+
+305
+00:12:03,520 --> 00:12:05,020
+need to translate strings on the client
+
+306
+00:12:05,020 --> 00:12:07,870
+and on the server date and currency
+
+307
+00:12:07,870 --> 00:12:10,330
+formatting at Airbnb we had a bunch of
+
+308
+00:12:10,330 --> 00:12:11,950
+handlebars helpers that helped us do
+
+309
+00:12:11,950 --> 00:12:13,600
+stuff like this and once you try to
+
+310
+00:12:13,600 --> 00:12:16,120
+share that you know you need to you want
+
+311
+00:12:16,120 --> 00:12:17,320
+to be able to render that on both sides
+
+312
+00:12:17,320 --> 00:12:24,670
+to arbitrary application logic that's it
+
+313
+00:12:24,670 --> 00:12:25,510
+could be anything right it could be
+
+314
+00:12:25,510 --> 00:12:28,300
+model logic or any sort of application
+
+315
+00:12:28,300 --> 00:12:32,320
+logic routing once you start sharing
+
+316
+00:12:32,320 --> 00:12:33,640
+your view layer between the client and
+
+317
+00:12:33,640 --> 00:12:35,470
+server you don't want to have to
+
+318
+00:12:35,470 --> 00:12:37,090
+duplicate your routes between say
+
+319
+00:12:37,090 --> 00:12:39,070
+backbone router and your rails app right
+
+320
+00:12:39,070 --> 00:12:41,140
+you want to have a single set of a
+
+321
+00:12:41,140 --> 00:12:44,760
+single source of truth for your routes
+
+322
+00:12:44,760 --> 00:12:47,980
+model validation how many of us have
+
+323
+00:12:47,980 --> 00:12:49,810
+written form validation in the client
+
+324
+00:12:49,810 --> 00:12:52,030
+side so there was instantaneous
+
+325
+00:12:52,030 --> 00:12:53,920
+you know feedback good user experience
+
+326
+00:12:53,920 --> 00:12:57,670
+but then duplicated some sort of like
+
+327
+00:12:57,670 --> 00:12:59,290
+form about our model validation in your
+
+328
+00:12:59,290 --> 00:13:03,640
+API I think it's pretty common API
+
+329
+00:13:03,640 --> 00:13:06,670
+interactions a lot of times we want to
+
+330
+00:13:06,670 --> 00:13:08,890
+make calls to an API either a first
+
+331
+00:13:08,890 --> 00:13:11,260
+party or a third party API using
+
+332
+00:13:11,260 --> 00:13:13,930
+EP or some other transport and we might
+
+333
+00:13:13,930 --> 00:13:15,640
+need to make that call on the client for
+
+334
+00:13:15,640 --> 00:13:16,960
+whatever reason we might need to make
+
+335
+00:13:16,960 --> 00:13:19,330
+that call on the server but if it's all
+
+336
+00:13:19,330 --> 00:13:20,590
+in the same language and we can share
+
+337
+00:13:20,590 --> 00:13:22,780
+that then there's only there's a single
+
+338
+00:13:22,780 --> 00:13:27,240
+a single set of semantics for doing that
+
+339
+00:13:27,240 --> 00:13:30,310
+and then anything else I mean whatever
+
+340
+00:13:30,310 --> 00:13:32,710
+you can imagine whatever is necessary
+
+341
+00:13:32,710 --> 00:13:35,170
+for your app your use case potentially
+
+342
+00:13:35,170 --> 00:13:37,180
+you could share some code between client
+
+343
+00:13:37,180 --> 00:13:41,260
+and server so it's important to note
+
+344
+00:13:41,260 --> 00:13:43,540
+that isomorphic javascript is a spectrum
+
+345
+00:13:43,540 --> 00:13:46,090
+there's no one way to do it there's this
+
+346
+00:13:46,090 --> 00:13:48,340
+a lot of different approaches so if this
+
+347
+00:13:48,340 --> 00:13:50,950
+is our spectrum if the blue side is like
+
+348
+00:13:50,950 --> 00:13:53,890
+the side where you shared just a few
+
+349
+00:13:53,890 --> 00:13:56,020
+bits of a view layer or a little bit of
+
+350
+00:13:56,020 --> 00:14:00,100
+logic and the pink side is the entire
+
+351
+00:14:00,100 --> 00:14:01,900
+view layer is shared right your entire
+
+352
+00:14:01,900 --> 00:14:04,660
+application is shared your African kind
+
+353
+00:14:04,660 --> 00:14:06,490
+of fall anywhere along the spectrum
+
+354
+00:14:06,490 --> 00:14:08,860
+depending on your use case in your
+
+355
+00:14:08,860 --> 00:14:14,050
+ambition and so for this side you don't
+
+356
+00:14:14,050 --> 00:14:15,550
+really need a lot of abstractions if
+
+357
+00:14:15,550 --> 00:14:16,930
+you're just sharing like some templates
+
+358
+00:14:16,930 --> 00:14:18,130
+for something it's pretty
+
+359
+00:14:18,130 --> 00:14:19,570
+straightforward to do that but the
+
+360
+00:14:19,570 --> 00:14:22,510
+further you go along that spectrum you
+
+361
+00:14:22,510 --> 00:14:25,330
+need to build more abstractions because
+
+362
+00:14:25,330 --> 00:14:26,980
+the client and the server are very
+
+363
+00:14:26,980 --> 00:14:29,040
+different environments you need to
+
+364
+00:14:29,040 --> 00:14:31,540
+abstract away those differences whether
+
+365
+00:14:31,540 --> 00:14:33,550
+it's like accessing cookies or or
+
+366
+00:14:33,550 --> 00:14:35,380
+anything and we'll get into that a bit
+
+367
+00:14:35,380 --> 00:14:39,970
+more and so for some examples Instagram
+
+368
+00:14:39,970 --> 00:14:42,670
+comm would be would be on this side of
+
+369
+00:14:42,670 --> 00:14:43,990
+the spectrum where they just shared
+
+370
+00:14:43,990 --> 00:14:45,700
+their view layer they had a totally
+
+371
+00:14:45,700 --> 00:14:47,740
+different server-side technology for
+
+372
+00:14:47,740 --> 00:14:50,380
+their most of their app whereas asana is
+
+373
+00:14:50,380 --> 00:14:53,080
+like all the way like the extreme where
+
+374
+00:14:53,080 --> 00:14:58,760
+the entire application is is Sheridan I
+
+375
+00:14:58,770 --> 00:15:01,240
+also see two categories for isomorphic
+
+376
+00:15:01,240 --> 00:15:05,140
+JavaScript code it could be environment
+
+377
+00:15:05,140 --> 00:15:09,490
+agnostic or it can be shimmed per
+
+378
+00:15:09,490 --> 00:15:14,290
+environment so an environment agnostic
+
+379
+00:15:14,290 --> 00:15:16,300
+code does not depend on any browser
+
+380
+00:15:16,300 --> 00:15:18,820
+specific properties like the window or
+
+381
+00:15:18,820 --> 00:15:21,490
+any server specific properties like the
+
+382
+00:15:21,490 --> 00:15:23,680
+process or request or response
+
+383
+00:15:23,680 --> 00:15:28,600
+stuff like that and an easy example
+
+384
+00:15:28,600 --> 00:15:30,459
+would be handlebars or probably any
+
+385
+00:15:30,459 --> 00:15:32,019
+templating library
+
+386
+00:15:32,019 --> 00:15:33,970
+it's just dealing with primitives
+
+387
+00:15:33,970 --> 00:15:37,089
+strings arrays objects functions so
+
+388
+00:15:37,089 --> 00:15:38,680
+there's no reason this shouldn't be able
+
+389
+00:15:38,680 --> 00:15:40,990
+to be executed in any any environment
+
+390
+00:15:40,990 --> 00:15:44,459
+that's like a proper JavaScript runtime
+
+391
+00:15:44,459 --> 00:15:46,689
+so here we're creating a template which
+
+392
+00:15:46,689 --> 00:15:48,720
+is a string compiling it to a function
+
+393
+00:15:48,720 --> 00:15:51,579
+and executing the function getting back
+
+394
+00:15:51,579 --> 00:15:57,399
+the rendered HTML so the other category
+
+395
+00:15:57,399 --> 00:15:58,899
+and the more interesting category is
+
+396
+00:15:58,899 --> 00:16:02,290
+shimmed per environment so these
+
+397
+00:16:02,290 --> 00:16:04,149
+libraries provide shims for accessing
+
+398
+00:16:04,149 --> 00:16:07,749
+environment specific properties so your
+
+399
+00:16:07,749 --> 00:16:10,809
+module can expose a single API for use
+
+400
+00:16:10,809 --> 00:16:14,860
+on both sides so this could be let's say
+
+401
+00:16:14,860 --> 00:16:16,389
+you're you're writing like a routing
+
+402
+00:16:16,389 --> 00:16:19,449
+library and the client side if you want
+
+403
+00:16:19,449 --> 00:16:22,569
+to see what the current page URL is you
+
+404
+00:16:22,569 --> 00:16:23,980
+would do something like window dot
+
+405
+00:16:23,980 --> 00:16:26,800
+location dot path name and on the server
+
+406
+00:16:26,800 --> 00:16:28,449
+side you'd have to access the request
+
+407
+00:16:28,449 --> 00:16:31,620
+request that path or or that this isn't
+
+408
+00:16:31,620 --> 00:16:36,819
+what you do in Express and a great
+
+409
+00:16:36,819 --> 00:16:38,860
+example of a library like this would be
+
+410
+00:16:38,860 --> 00:16:43,959
+super agent so super agent is an HTTP
+
+411
+00:16:43,959 --> 00:16:46,870
+client library lets you make HTTP
+
+412
+00:16:46,870 --> 00:16:49,689
+requests and in this example we're
+
+413
+00:16:49,689 --> 00:16:51,790
+saying super agent get so it's a get
+
+414
+00:16:51,790 --> 00:16:55,480
+request to some JSON endpoint and end
+
+415
+00:16:55,480 --> 00:16:58,720
+and we pass in a callback and the
+
+416
+00:16:58,720 --> 00:17:00,819
+callback takes the response and the
+
+417
+00:17:00,819 --> 00:17:02,589
+response has properties like the status
+
+418
+00:17:02,589 --> 00:17:06,579
+code HTTP headers the body all this
+
+419
+00:17:06,579 --> 00:17:08,439
+stuff and it's great to be able to use
+
+420
+00:17:08,439 --> 00:17:09,970
+the same API on the client in the server
+
+421
+00:17:09,970 --> 00:17:12,339
+so how many times I mean typically we
+
+422
+00:17:12,339 --> 00:17:16,809
+use like jQuery AJAX for our Ajax needs
+
+423
+00:17:16,809 --> 00:17:19,000
+in the client side and then on the
+
+424
+00:17:19,000 --> 00:17:21,220
+server we've used HTTP module or that
+
+425
+00:17:21,220 --> 00:17:23,169
+request module or or whatever and so
+
+426
+00:17:23,169 --> 00:17:26,500
+this is a great example of a module
+
+427
+00:17:26,500 --> 00:17:27,850
+that's shimmed per environment and it
+
+428
+00:17:27,850 --> 00:17:29,169
+actually provides under the hood
+
+429
+00:17:29,169 --> 00:17:30,880
+different implementations for the two
+
+430
+00:17:30,880 --> 00:17:33,279
+different environments but it exposes a
+
+431
+00:17:33,279 --> 00:17:37,610
+single API to the developer
+
+432
+00:17:37,620 --> 00:17:39,970
+so there's a few HAP's tractions that
+
+433
+00:17:39,970 --> 00:17:43,870
+I'll mention a simple one would be the
+
+434
+00:17:43,870 --> 00:17:45,970
+user-agent so let's say you're doing
+
+435
+00:17:45,970 --> 00:17:48,490
+something you're writing like some
+
+436
+00:17:48,490 --> 00:17:50,020
+mobile web app or something and you need
+
+437
+00:17:50,020 --> 00:17:52,029
+to determine what platform the user is
+
+438
+00:17:52,029 --> 00:17:54,299
+on and the client side you'd say
+
+439
+00:17:54,299 --> 00:17:56,980
+navigator.useragent on the server you
+
+440
+00:17:56,980 --> 00:17:59,049
+actually have to look at the HTTP header
+
+441
+00:17:59,049 --> 00:18:01,659
+the user agent header that's attached to
+
+442
+00:18:01,659 --> 00:18:07,230
+the request cookies is a great example
+
+443
+00:18:07,230 --> 00:18:09,850
+if you're trying to set a cookie in the
+
+444
+00:18:09,850 --> 00:18:11,919
+web browser you just say document dot
+
+445
+00:18:11,919 --> 00:18:15,120
+cookie equals and then some string some
+
+446
+00:18:15,120 --> 00:18:19,450
+specially formatted string on the server
+
+447
+00:18:19,450 --> 00:18:22,600
+side you got a set a header set an HTTP
+
+448
+00:18:22,600 --> 00:18:25,029
+header and the header name is set cookie
+
+449
+00:18:25,029 --> 00:18:26,950
+so you would say response that set
+
+450
+00:18:26,950 --> 00:18:29,590
+header set cookie and then the cookie
+
+451
+00:18:29,590 --> 00:18:33,669
+string and you can imagine why we'd want
+
+452
+00:18:33,669 --> 00:18:35,470
+to do this on both sides like a lot of
+
+453
+00:18:35,470 --> 00:18:37,720
+times you need to set a cookie on the
+
+454
+00:18:37,720 --> 00:18:39,370
+client side in response to some user
+
+455
+00:18:39,370 --> 00:18:41,320
+interaction and we're constantly setting
+
+456
+00:18:41,320 --> 00:18:46,720
+cookies on the server side redirects is
+
+457
+00:18:46,720 --> 00:18:50,049
+another example so but if you're doing a
+
+458
+00:18:50,049 --> 00:18:52,240
+full page redirect in the browser you'd
+
+459
+00:18:52,240 --> 00:18:54,159
+say document dot location dot href
+
+460
+00:18:54,159 --> 00:18:57,880
+equals and then the URL or if it's a
+
+461
+00:18:57,880 --> 00:19:00,250
+push state application you might use the
+
+462
+00:19:00,250 --> 00:19:03,190
+html5 history API and say window dot
+
+463
+00:19:03,190 --> 00:19:06,399
+push state some arguments and then the
+
+464
+00:19:06,399 --> 00:19:09,399
+URL but on the server side we need to do
+
+465
+00:19:09,399 --> 00:19:11,980
+a full HTTP redirect response that
+
+466
+00:19:11,980 --> 00:19:13,990
+redirect and there's an additional
+
+467
+00:19:13,990 --> 00:19:16,240
+complication and that on the server
+
+468
+00:19:16,240 --> 00:19:18,429
+there's there's different HTTP status
+
+469
+00:19:18,429 --> 00:19:19,960
+codes right so there could be a 301
+
+470
+00:19:19,960 --> 00:19:22,090
+redirect 4-3 to redirect and so if
+
+471
+00:19:22,090 --> 00:19:23,770
+you're trying to build an abstraction
+
+472
+00:19:23,770 --> 00:19:26,169
+around a redirect in your app you need
+
+473
+00:19:26,169 --> 00:19:31,270
+to accommodate for those differences so
+
+474
+00:19:31,270 --> 00:19:33,370
+let's get to the fun part how to ice
+
+475
+00:19:33,370 --> 00:19:35,440
+some morph how you can build isomorphic
+
+476
+00:19:35,440 --> 00:19:39,909
+JavaScript today so what we're gonna do
+
+477
+00:19:39,909 --> 00:19:41,350
+together is we're going to write a
+
+478
+00:19:41,350 --> 00:19:44,140
+module that that solves the cookie case
+
+479
+00:19:44,140 --> 00:19:45,789
+that abstracts out the setting of
+
+480
+00:19:45,789 --> 00:19:48,789
+cookies and provides the same api on the
+
+481
+00:19:48,789 --> 00:19:52,659
+client in the server
+
+482
+00:19:52,669 --> 00:19:55,919
+so we want to make you an API that looks
+
+483
+00:19:55,919 --> 00:19:59,640
+like this set cookie cookie name the
+
+484
+00:19:59,640 --> 00:20:05,850
+cookie value that's it super simple so
+
+485
+00:20:05,850 --> 00:20:07,710
+as we mentioned before this would turn
+
+486
+00:20:07,710 --> 00:20:09,960
+into in the browser return it to
+
+487
+00:20:09,960 --> 00:20:13,049
+document dot cookie equals my serialized
+
+488
+00:20:13,049 --> 00:20:17,039
+cookie string and on the server it would
+
+489
+00:20:17,039 --> 00:20:19,490
+be we'd be setting an HTTP header
+
+490
+00:20:19,490 --> 00:20:22,169
+response that set header set cookie and
+
+491
+00:20:22,169 --> 00:20:24,620
+then this that same exact serialized
+
+492
+00:20:24,620 --> 00:20:29,690
+string but it gets more complicated
+
+493
+00:20:29,690 --> 00:20:31,980
+cookies have additional options there's
+
+494
+00:20:31,980 --> 00:20:34,110
+a path you can set a domain you can set
+
+495
+00:20:34,110 --> 00:20:39,620
+an expert header or expert property and
+
+496
+00:20:39,620 --> 00:20:42,030
+so then the cookie string can look
+
+497
+00:20:42,030 --> 00:20:43,530
+something like this document dot cookie
+
+498
+00:20:43,530 --> 00:20:47,100
+equals my cookie the value you know all
+
+499
+00:20:47,100 --> 00:20:48,900
+the stuff and when I see that you know
+
+500
+00:20:48,900 --> 00:20:51,000
+what I think I think yeah like I don't
+
+501
+00:20:51,000 --> 00:20:53,669
+want to do that like that's a lot of
+
+502
+00:20:53,669 --> 00:20:54,720
+edge cases there probably it's probably
+
+503
+00:20:54,720 --> 00:20:57,270
+years of RFC's to weed through and try
+
+504
+00:20:57,270 --> 00:21:01,049
+to do that right so luckily there's a
+
+505
+00:21:01,049 --> 00:21:03,480
+module that does this for us already the
+
+506
+00:21:03,480 --> 00:21:06,179
+cookie module on NPM is used by Express
+
+507
+00:21:06,179 --> 00:21:09,929
+and connect and 108 other libraries
+
+508
+00:21:09,929 --> 00:21:12,330
+according to NPM so let's just use this
+
+509
+00:21:12,330 --> 00:21:15,260
+because someone's already written it so
+
+510
+00:21:15,260 --> 00:21:19,260
+NPM and browserify to the rescue we've
+
+511
+00:21:19,260 --> 00:21:21,780
+heard a bit today about how awesome it
+
+512
+00:21:21,780 --> 00:21:23,700
+is to use browserify NPM and your
+
+513
+00:21:23,700 --> 00:21:25,380
+funding code and we're gonna we're gonna
+
+514
+00:21:25,380 --> 00:21:31,470
+continue along that among that theme so
+
+515
+00:21:31,470 --> 00:21:34,620
+a browser fie lets you use common js2
+
+516
+00:21:34,620 --> 00:21:36,960
+require your modules in the browser but
+
+517
+00:21:36,960 --> 00:21:39,150
+more interestingly it lets you package
+
+518
+00:21:39,150 --> 00:21:40,770
+up your dependencies from your node
+
+519
+00:21:40,770 --> 00:21:43,380
+modules directory so we can npm install
+
+520
+00:21:43,380 --> 00:21:46,260
+the cookie module into our into our
+
+521
+00:21:46,260 --> 00:21:48,240
+application added to our package JSON
+
+522
+00:21:48,240 --> 00:21:51,510
+and then we when we do a browser if I
+
+523
+00:21:51,510 --> 00:21:54,659
+build that will being pulled out of our
+
+524
+00:21:54,659 --> 00:21:56,010
+node modules directory and insert it
+
+525
+00:21:56,010 --> 00:21:59,450
+into our build
+
+526
+00:21:59,460 --> 00:22:02,680
+so the next step is we need to figure
+
+527
+00:22:02,680 --> 00:22:04,270
+out how we can make a shrimper
+
+528
+00:22:04,270 --> 00:22:06,820
+environment module so we're building a
+
+529
+00:22:06,820 --> 00:22:09,100
+little module that provides a single API
+
+530
+00:22:09,100 --> 00:22:11,740
+to the client and server but there's
+
+531
+00:22:11,740 --> 00:22:15,090
+different implementations under the hood
+
+532
+00:22:15,090 --> 00:22:18,700
+and the solution is to use the
+
+533
+00:22:18,700 --> 00:22:21,610
+package.json browser field so there's a
+
+534
+00:22:21,610 --> 00:22:26,170
+little-known feature of the of
+
+535
+00:22:26,170 --> 00:22:28,300
+package.json and the way it interacts
+
+536
+00:22:28,300 --> 00:22:30,220
+with browserify that lets you actually
+
+537
+00:22:30,220 --> 00:22:32,560
+specify different behaviors for browser
+
+538
+00:22:32,560 --> 00:22:36,850
+versus server so if this is our package
+
+539
+00:22:36,850 --> 00:22:39,580
+dot JSON are a real bare-bones package
+
+540
+00:22:39,580 --> 00:22:44,830
+JSON for our setcookie module what we
+
+541
+00:22:44,830 --> 00:22:47,110
+can do is we can add a browser field
+
+542
+00:22:47,110 --> 00:22:50,940
+here and it takes a few different forms
+
+543
+00:22:50,940 --> 00:22:54,220
+so if it's a string if it's if it's just
+
+544
+00:22:54,220 --> 00:22:57,280
+a single file name then it'll swap out
+
+545
+00:22:57,280 --> 00:23:00,130
+the entire implementation for the client
+
+546
+00:23:00,130 --> 00:23:03,490
+side so it'll ignore all of the rest of
+
+547
+00:23:03,490 --> 00:23:07,060
+the code and your your package and when
+
+548
+00:23:07,060 --> 00:23:09,250
+you browserify that bundle it will use
+
+549
+00:23:09,250 --> 00:23:14,230
+the Lib client das file instead but you
+
+550
+00:23:14,230 --> 00:23:16,990
+can get more fine-grained to so in this
+
+551
+00:23:16,990 --> 00:23:21,040
+example we've got an object and so you
+
+552
+00:23:21,040 --> 00:23:23,980
+can swap out a specific file for a
+
+553
+00:23:23,980 --> 00:23:25,300
+different file so if you've got like a
+
+554
+00:23:25,300 --> 00:23:28,930
+Lib nodejs module and you're within your
+
+555
+00:23:28,930 --> 00:23:30,970
+package you can swap that out for Lib
+
+556
+00:23:30,970 --> 00:23:36,700
+client yes
+
+557
+00:23:36,710 --> 00:23:39,409
+and you can also swap out dependencies
+
+558
+00:23:39,409 --> 00:23:42,169
+so we're gonna be depending on the
+
+559
+00:23:42,169 --> 00:23:44,029
+cookie module but let's say for whatever
+
+560
+00:23:44,029 --> 00:23:47,090
+reason the cookie module will work too
+
+561
+00:23:47,090 --> 00:23:48,679
+well on the server side but it had a
+
+562
+00:23:48,679 --> 00:23:50,690
+quick or it you know tried to do
+
+563
+00:23:50,690 --> 00:23:53,210
+something it shouldn't and it didn't
+
+564
+00:23:53,210 --> 00:23:54,830
+work well in the client side well if
+
+565
+00:23:54,830 --> 00:23:57,139
+there's an alternative module on NPM or
+
+566
+00:23:57,139 --> 00:24:00,019
+within your node modules you can swap
+
+567
+00:24:00,019 --> 00:24:02,450
+out that entire module for a different
+
+568
+00:24:02,450 --> 00:24:05,749
+one and so with with this with the
+
+569
+00:24:05,749 --> 00:24:08,539
+browser field we can do all sorts of
+
+570
+00:24:08,539 --> 00:24:09,799
+cool stuff and it opens up a lot of
+
+571
+00:24:09,799 --> 00:24:11,840
+doors on how you package up your modules
+
+572
+00:24:11,840 --> 00:24:15,019
+for different environments so what we're
+
+573
+00:24:15,019 --> 00:24:15,950
+gonna do is we're going to build the
+
+574
+00:24:15,950 --> 00:24:17,960
+setcookie module I actually already
+
+575
+00:24:17,960 --> 00:24:20,749
+built it you can look at the source code
+
+576
+00:24:20,749 --> 00:24:23,840
+if you want it's at my github page but
+
+577
+00:24:23,840 --> 00:24:25,159
+we're gonna we're gonna step through it
+
+578
+00:24:25,159 --> 00:24:29,450
+here so this is the structure of our
+
+579
+00:24:29,450 --> 00:24:32,360
+really basic set cookie module we've got
+
+580
+00:24:32,360 --> 00:24:34,190
+an index that is which is like the main
+
+581
+00:24:34,190 --> 00:24:37,009
+entry point for the node module we've
+
+582
+00:24:37,009 --> 00:24:39,350
+got a Lib directory and and I live
+
+583
+00:24:39,350 --> 00:24:40,669
+directory we're gonna have a setter
+
+584
+00:24:40,669 --> 00:24:43,100
+directory and that setter is gonna
+
+585
+00:24:43,100 --> 00:24:44,659
+that's going to be the implementation
+
+586
+00:24:44,659 --> 00:24:46,549
+that actually sets the cookie and we've
+
+587
+00:24:46,549 --> 00:24:50,379
+got one file for node and one for the
+
+588
+00:24:50,379 --> 00:24:54,409
+browser and so the index dot JSP the
+
+589
+00:24:54,409 --> 00:24:56,059
+node version and the client chest will
+
+590
+00:24:56,059 --> 00:24:57,679
+be the browser version and then of
+
+591
+00:24:57,679 --> 00:25:00,110
+course we're using cookie as a
+
+592
+00:25:00,110 --> 00:25:01,429
+dependency so that's going to exist on
+
+593
+00:25:01,429 --> 00:25:07,580
+our node modules directory so this is
+
+594
+00:25:07,580 --> 00:25:09,320
+what our index KS will look like the
+
+595
+00:25:09,320 --> 00:25:12,019
+entry point at the top we're requiring
+
+596
+00:25:12,019 --> 00:25:14,480
+the cookie dependency and then we're
+
+597
+00:25:14,480 --> 00:25:16,669
+requiring setter and you can see where
+
+598
+00:25:16,669 --> 00:25:20,299
+it's a relative path require Lib setter
+
+599
+00:25:20,299 --> 00:25:24,080
+and so as I'm sure you know if you if
+
+600
+00:25:24,080 --> 00:25:27,200
+you require if setter is a directory and
+
+601
+00:25:27,200 --> 00:25:29,179
+there's an index file inside of it
+
+602
+00:25:29,179 --> 00:25:31,759
+you can just use that semantics and it
+
+603
+00:25:31,759 --> 00:25:36,860
+will require that so by default it'll
+
+604
+00:25:36,860 --> 00:25:38,330
+use the index dot J is the node
+
+605
+00:25:38,330 --> 00:25:40,309
+implementation and then all we do here
+
+606
+00:25:40,309 --> 00:25:43,909
+we export our public API it's a function
+
+607
+00:25:43,909 --> 00:25:45,590
+that takes the name the value and an
+
+608
+00:25:45,590 --> 00:25:48,169
+options argument and so because the
+
+609
+00:25:48,169 --> 00:25:49,700
+cookie string is the same on the client
+
+610
+00:25:49,700 --> 00:25:50,450
+in the server
+
+611
+00:25:50,450 --> 00:25:51,680
+right the way that we see realized that
+
+612
+00:25:51,680 --> 00:25:53,630
+cookie string is exactly the same so
+
+613
+00:25:53,630 --> 00:25:55,460
+here we can use our cookie module and
+
+614
+00:25:55,460 --> 00:25:58,220
+say var cookie string equals cookie dot
+
+615
+00:25:58,220 --> 00:26:00,590
+serialize and pass it the name value in
+
+616
+00:26:00,590 --> 00:26:04,550
+options and then we hand it off to the
+
+617
+00:26:04,550 --> 00:26:09,590
+setter to actually set that string so
+
+618
+00:26:09,590 --> 00:26:10,910
+here's what the note version looks like
+
+619
+00:26:10,910 --> 00:26:14,990
+Lib setter index thas so it takes that
+
+620
+00:26:14,990 --> 00:26:20,360
+cookie string and the options and and
+
+621
+00:26:20,360 --> 00:26:22,850
+what it does is so so one thing I didn't
+
+622
+00:26:22,850 --> 00:26:26,330
+mention is with a node you can't just
+
+623
+00:26:26,330 --> 00:26:27,920
+like set a cookie right you I mean you
+
+624
+00:26:27,920 --> 00:26:30,260
+can't set do anything with HTTP without
+
+625
+00:26:30,260 --> 00:26:31,940
+the context of a specific request a
+
+626
+00:26:31,940 --> 00:26:34,490
+response so that's one big difference
+
+627
+00:26:34,490 --> 00:26:35,960
+between the client the server and the
+
+628
+00:26:35,960 --> 00:26:37,880
+client it's all global right like you're
+
+629
+00:26:37,880 --> 00:26:40,760
+only ever dealing with one context one
+
+630
+00:26:40,760 --> 00:26:42,590
+user session on the server side you've
+
+631
+00:26:42,590 --> 00:26:44,210
+got you could have hundreds of user
+
+632
+00:26:44,210 --> 00:26:45,560
+sessions happening at the same time on
+
+633
+00:26:45,560 --> 00:26:46,910
+your server and so you always have to
+
+634
+00:26:46,910 --> 00:26:49,100
+inject through the request or the
+
+635
+00:26:49,100 --> 00:26:52,700
+response so the API for the server side
+
+636
+00:26:52,700 --> 00:26:56,240
+you would add a re s a response option
+
+637
+00:26:56,240 --> 00:26:59,960
+to the options argument and if you don't
+
+638
+00:26:59,960 --> 00:27:03,170
+supply that will throw an error but
+
+639
+00:27:03,170 --> 00:27:04,460
+basically we're just saying response
+
+640
+00:27:04,460 --> 00:27:06,020
+that set header set cookie in the cookie
+
+641
+00:27:06,020 --> 00:27:11,090
+string and then here's what the client
+
+642
+00:27:11,090 --> 00:27:12,800
+version looks like it's pretty
+
+643
+00:27:12,800 --> 00:27:17,910
+complicated it just sets document.cookie
+
+644
+00:27:17,920 --> 00:27:23,930
+and so in our package JSON the browser
+
+645
+00:27:23,930 --> 00:27:25,490
+field would look like this we're
+
+646
+00:27:25,490 --> 00:27:29,990
+swapping out live setter index js4 live
+
+647
+00:27:29,990 --> 00:27:31,760
+set our client j s and this is exactly
+
+648
+00:27:31,760 --> 00:27:34,160
+what super agent does so a super agent
+
+649
+00:27:34,160 --> 00:27:35,630
+actually has two completely different
+
+650
+00:27:35,630 --> 00:27:38,930
+implementations for node versus the
+
+651
+00:27:38,930 --> 00:27:44,240
+browser and just to highlight if you
+
+652
+00:27:44,240 --> 00:27:45,950
+look back at our entry point our index
+
+653
+00:27:45,950 --> 00:27:49,010
+is there's there's our require this is
+
+654
+00:27:49,010 --> 00:27:50,630
+the require that will be affected by
+
+655
+00:27:50,630 --> 00:27:55,930
+that package JSON field
+
+656
+00:27:55,940 --> 00:27:58,429
+so in a nutshell that's how to ice um or
+
+657
+00:27:58,429 --> 00:28:02,070
+does it seem pretty easy so far that's
+
+658
+00:28:02,070 --> 00:28:03,799
+obviously a kind of a trivial example
+
+659
+00:28:03,799 --> 00:28:06,720
+it's a rich topic with many ins and outs
+
+660
+00:28:06,720 --> 00:28:09,779
+and I encourage you to reach out about
+
+661
+00:28:09,779 --> 00:28:11,159
+it and we can we could dive into the
+
+662
+00:28:11,159 --> 00:28:14,039
+nuts and bolts and all that but for now
+
+663
+00:28:14,039 --> 00:28:16,620
+that's all I have so I want to say thank
+
+664
+00:28:16,620 --> 00:28:18,629
+you and there's more resources about
+
+665
+00:28:18,629 --> 00:28:20,909
+isomorphic JavaScript at spike
+
+666
+00:28:20,909 --> 00:28:25,460
+technology which is my my website and I
+
+667
+00:28:25,460 --> 00:28:27,600
+since I have 5 minutes so if you've any
+
+668
+00:28:27,600 --> 00:28:30,750
+questions you can tweet them at me but
+

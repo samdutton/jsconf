@@ -1,0 +1,2125 @@
+1
+00:00:01,100 --> 00:00:20,510
+
+[Music]
+
+2
+00:00:20,520 --> 00:00:21,760
+Thanks
+
+3
+00:00:21,760 --> 00:00:25,410
+how is everybody are you still tired
+
+4
+00:00:25,410 --> 00:00:28,450
+thanks John
+
+5
+00:00:28,450 --> 00:00:30,490
+so I'm gonna do how to talk to Hardware
+
+6
+00:00:30,490 --> 00:00:33,249
+JavaScript firmware in 30 minutes which
+
+7
+00:00:33,249 --> 00:00:36,309
+is a tall order so please forgive me if
+
+8
+00:00:36,309 --> 00:00:38,710
+I speed through some concept or if I
+
+9
+00:00:38,710 --> 00:00:41,980
+abbreviate like I won't go over all of
+
+10
+00:00:41,980 --> 00:00:43,839
+how you do firmware in JavaScript in 30
+
+11
+00:00:43,839 --> 00:00:47,050
+minutes this is actually kind of a hard
+
+12
+00:00:47,050 --> 00:00:48,609
+concept for a lot of people including
+
+13
+00:00:48,609 --> 00:00:50,980
+experienced engineers so if there's
+
+14
+00:00:50,980 --> 00:00:53,050
+anything in here that just completely
+
+15
+00:00:53,050 --> 00:00:56,530
+flies by that I say really fast or that
+
+16
+00:00:56,530 --> 00:00:57,370
+you haven't been introduced to you
+
+17
+00:00:57,370 --> 00:00:59,139
+before I won't probably have time for
+
+18
+00:00:59,139 --> 00:01:01,899
+Q&A here but please approach me
+
+19
+00:01:01,899 --> 00:01:03,309
+afterwards if there's something you want
+
+20
+00:01:03,309 --> 00:01:05,110
+to learn more about I would be delighted
+
+21
+00:01:05,110 --> 00:01:08,680
+to fill in the gaps on what I didn't
+
+22
+00:01:08,680 --> 00:01:12,030
+have time for in here so I'm kelcie as
+
+23
+00:01:12,030 --> 00:01:15,369
+CJ mentioned I am one of the creators of
+
+24
+00:01:15,369 --> 00:01:19,030
+this thing called the tehsil which you
+
+25
+00:01:19,030 --> 00:01:21,729
+can basically think of as a node API for
+
+26
+00:01:21,729 --> 00:01:26,560
+the physical world and today we're going
+
+27
+00:01:26,560 --> 00:01:28,810
+to solve a problem and the problem that
+
+28
+00:01:28,810 --> 00:01:30,640
+we're gonna solve is I want my project
+
+29
+00:01:30,640 --> 00:01:32,189
+to be able to tell me whether it is
+
+30
+00:01:32,189 --> 00:01:34,509
+oriented right-side up or if I flip it
+
+31
+00:01:34,509 --> 00:01:36,399
+over and it's right side down and I lost
+
+32
+00:01:36,399 --> 00:01:40,030
+all my probes don't worry about that
+
+33
+00:01:40,030 --> 00:01:44,590
+so today's talk is not about tehsil it
+
+34
+00:01:44,590 --> 00:01:45,909
+includes a tehsil for the sake of
+
+35
+00:01:45,909 --> 00:01:47,380
+convenience because I want to write my
+
+36
+00:01:47,380 --> 00:01:50,920
+firmware in JavaScript but this is what
+
+37
+00:01:50,920 --> 00:01:52,630
+it looks like to solve my problem with
+
+38
+00:01:52,630 --> 00:01:56,259
+tehsil I've got two node requires I say
+
+39
+00:01:56,259 --> 00:01:59,020
+that I'm going to use this Tussle thing
+
+40
+00:01:59,020 --> 00:02:00,609
+I'm going to plug in this accelerometer
+
+41
+00:02:00,609 --> 00:02:03,039
+module in 4a and when it gives me data
+
+42
+00:02:03,039 --> 00:02:06,039
+I'm going to print it out and because
+
+43
+00:02:06,039 --> 00:02:08,020
+acceleration as you all know is a
+
+44
+00:02:08,020 --> 00:02:10,000
+constant down or because gravity is a
+
+45
+00:02:10,000 --> 00:02:12,550
+constant downward acceleration I'll get
+
+46
+00:02:12,550 --> 00:02:14,440
+a different z-axis
+
+47
+00:02:14,440 --> 00:02:16,930
+sign negative versus positive if I'm
+
+48
+00:02:16,930 --> 00:02:21,010
+like this versus like that we were like
+
+49
+00:02:21,010 --> 00:02:23,920
+one minute into my talk so that's why
+
+50
+00:02:23,920 --> 00:02:27,209
+I'm not telling you about tussle today
+
+51
+00:02:27,209 --> 00:02:29,920
+because it's much more interesting if we
+
+52
+00:02:29,920 --> 00:02:32,739
+take a look further in and don't use the
+
+53
+00:02:32,739 --> 00:02:35,230
+api's that we've already written so what
+
+54
+00:02:35,230 --> 00:02:37,209
+I'm gonna do is show you the basics of
+
+55
+00:02:37,209 --> 00:02:40,930
+how we go from a piece of hardware like
+
+56
+00:02:40,930 --> 00:02:43,930
+this with this little black chip on it
+
+57
+00:02:43,930 --> 00:02:47,290
+the Mme 84 accelerometer how we look at
+
+58
+00:02:47,290 --> 00:02:49,390
+the datasheet and interpret the signals
+
+59
+00:02:49,390 --> 00:02:51,640
+and talk to it in order to get useful
+
+60
+00:02:51,640 --> 00:02:55,090
+information so if you look at the full
+
+61
+00:02:55,090 --> 00:02:57,489
+stack which is not in this case a mean
+
+62
+00:02:57,489 --> 00:03:02,380
+stack we're gonna talk today basically
+
+63
+00:03:02,380 --> 00:03:05,620
+from signals on a wire to zeros and ones
+
+64
+00:03:05,620 --> 00:03:10,090
+binary and Hexen ting information in
+
+65
+00:03:10,090 --> 00:03:13,930
+English and if any of you are able to
+
+66
+00:03:13,930 --> 00:03:15,370
+come to the workshop tomorrow I think it
+
+67
+00:03:15,370 --> 00:03:18,670
+might be full but essentially pay
+
+68
+00:03:18,670 --> 00:03:20,290
+attention because we're gonna make you
+
+69
+00:03:20,290 --> 00:03:25,390
+do this tomorrow so jumping right in how
+
+70
+00:03:25,390 --> 00:03:27,579
+talking to hardware works there are many
+
+71
+00:03:27,579 --> 00:03:29,260
+ways that a signal can play on a wire
+
+72
+00:03:29,260 --> 00:03:30,700
+you've got your analog you've got your
+
+73
+00:03:30,700 --> 00:03:32,890
+pulse width modulation today we're only
+
+74
+00:03:32,890 --> 00:03:34,630
+going to talk about digital signals and
+
+75
+00:03:34,630 --> 00:03:37,329
+the reason for that is a microcontroller
+
+76
+00:03:37,329 --> 00:03:39,820
+will typically use just a digital signal
+
+77
+00:03:39,820 --> 00:03:42,130
+it's very simple it's either on or it's
+
+78
+00:03:42,130 --> 00:03:46,209
+off right and this is the
+
+79
+00:03:46,209 --> 00:03:49,930
+microcontroller trip on here and that's
+
+80
+00:03:49,930 --> 00:03:53,920
+what it speaks is ones and zeros so we
+
+81
+00:03:53,920 --> 00:03:56,709
+need to figure out how to use ones and
+
+82
+00:03:56,709 --> 00:03:58,359
+zeros to convey more information than
+
+83
+00:03:58,359 --> 00:04:02,579
+just on and off because we only have
+
+84
+00:04:02,579 --> 00:04:05,680
+that very simple information we have to
+
+85
+00:04:05,680 --> 00:04:08,410
+add the third dimension of time right
+
+86
+00:04:08,410 --> 00:04:10,959
+and take you all are probably familiar
+
+87
+00:04:10,959 --> 00:04:13,810
+with Morse code what we use as
+
+88
+00:04:13,810 --> 00:04:16,180
+communication protocols so a toggle ones
+
+89
+00:04:16,180 --> 00:04:18,250
+and zeroes with specific timing on
+
+90
+00:04:18,250 --> 00:04:20,859
+specific wires in encoding so that
+
+91
+00:04:20,859 --> 00:04:23,890
+create messages that are more complex so
+
+92
+00:04:23,890 --> 00:04:25,570
+for example over here in this diagram
+
+93
+00:04:25,570 --> 00:04:27,370
+this is using a
+
+94
+00:04:27,370 --> 00:04:28,990
+wrote a call called spy which we aren't
+
+95
+00:04:28,990 --> 00:04:31,780
+going to use for this accelerometer but
+
+96
+00:04:31,780 --> 00:04:35,560
+it's got four different wires clock one
+
+97
+00:04:35,560 --> 00:04:37,840
+that talks from the master device to the
+
+98
+00:04:37,840 --> 00:04:39,280
+slave device I apologize for the
+
+99
+00:04:39,280 --> 00:04:41,199
+terminology it's like ingrained in here
+
+100
+00:04:41,199 --> 00:04:42,880
+but it means that this device has
+
+101
+00:04:42,880 --> 00:04:44,800
+complete control and this device has no
+
+102
+00:04:44,800 --> 00:04:50,530
+control and so we've got one where the
+
+103
+00:04:50,530 --> 00:04:52,150
+master device talks to the slave and one
+
+104
+00:04:52,150 --> 00:04:53,740
+where the slave device responds to the
+
+105
+00:04:53,740 --> 00:04:56,680
+master and this other line which I won't
+
+106
+00:04:56,680 --> 00:04:59,590
+go into right now different protocols
+
+107
+00:04:59,590 --> 00:05:00,970
+use different numbers of wires and
+
+108
+00:05:00,970 --> 00:05:04,240
+different specific and coatings so let's
+
+109
+00:05:04,240 --> 00:05:05,770
+try one so this is a different one this
+
+110
+00:05:05,770 --> 00:05:08,039
+is called UART also known as serial and
+
+111
+00:05:08,039 --> 00:05:11,530
+what we're gonna do is we're gonna send
+
+112
+00:05:11,530 --> 00:05:16,840
+the words hello world over the wire here
+
+113
+00:05:16,840 --> 00:05:20,680
+hold on I lost all my probes when I
+
+114
+00:05:20,680 --> 00:05:22,030
+picked this up so you get to watch me
+
+115
+00:05:22,030 --> 00:05:33,460
+painfully attach this
+
+116
+00:05:33,470 --> 00:05:39,530
+alright so cereal is a protocol that
+
+117
+00:05:39,530 --> 00:05:42,020
+uses two wires and the third wire is
+
+118
+00:05:42,020 --> 00:05:48,030
+just ground which you need in everything
+
+119
+00:05:48,040 --> 00:05:50,210
+so by the way the device that I'm
+
+120
+00:05:50,210 --> 00:05:51,710
+hooking in is called a logic analyzer
+
+121
+00:05:51,710 --> 00:05:53,450
+and this is a really nice one it's by
+
+122
+00:05:53,450 --> 00:05:57,680
+this company called sale ei and what a
+
+123
+00:05:57,680 --> 00:06:00,650
+logic analyzer does is it lets you have
+
+124
+00:06:00,650 --> 00:06:03,080
+a look specifically at what the signals
+
+125
+00:06:03,080 --> 00:06:06,470
+are saying on the pins so you actually
+
+126
+00:06:06,470 --> 00:06:10,670
+get to watch and record the message is
+
+127
+00:06:10,670 --> 00:06:12,230
+that it's sending and it even does stuff
+
+128
+00:06:12,230 --> 00:06:13,790
+like interpret it and I'll show you in a
+
+129
+00:06:13,790 --> 00:06:14,540
+second
+
+130
+00:06:14,540 --> 00:06:21,270
+I think that's come on
+
+131
+00:06:21,280 --> 00:06:24,710
+sorry Hardware on stages like this at
+
+132
+00:06:24,710 --> 00:06:31,630
+the best of times there we go alright so
+
+133
+00:06:31,630 --> 00:06:35,360
+what I'm going to do essentially what
+
+134
+00:06:35,360 --> 00:06:39,680
+we're taking is a a message and we're
+
+135
+00:06:39,680 --> 00:06:41,990
+sending it from the tehsil and
+
+136
+00:06:41,990 --> 00:06:43,790
+communicating it outward and in this
+
+137
+00:06:43,790 --> 00:06:45,440
+case I don't even have a microchip
+
+138
+00:06:45,440 --> 00:06:47,419
+attached to it so it's not communicating
+
+139
+00:06:47,419 --> 00:06:49,250
+with anything except for this logic
+
+140
+00:06:49,250 --> 00:06:51,440
+analyzer here and the important bit is
+
+141
+00:06:51,440 --> 00:06:53,180
+what I'm showing here is this is the
+
+142
+00:06:53,180 --> 00:06:55,330
+JavaScript code I'm going to send and
+
+143
+00:06:55,330 --> 00:06:59,570
+this stuff over here is settings in the
+
+144
+00:06:59,570 --> 00:07:02,800
+logic analyzer which is over here
+
+145
+00:07:02,800 --> 00:07:05,000
+which tell it how to interpret it and
+
+146
+00:07:05,000 --> 00:07:06,560
+the important part is that they match
+
+147
+00:07:06,560 --> 00:07:10,970
+right so here we've got data bits 8 baud
+
+148
+00:07:10,970 --> 00:07:13,040
+rate this is the speed at which it's
+
+149
+00:07:13,040 --> 00:07:16,070
+sent and you can see that we've got the
+
+150
+00:07:16,070 --> 00:07:20,150
+same baud rate at 8 bits etc if we had
+
+151
+00:07:20,150 --> 00:07:21,500
+more time I'd tell you what those mean
+
+152
+00:07:21,500 --> 00:07:22,940
+but it honestly doesn't matter very much
+
+153
+00:07:22,940 --> 00:07:26,840
+in this context so what I'm going to do
+
+154
+00:07:26,840 --> 00:07:34,460
+is run this code and at the same time
+
+155
+00:07:34,460 --> 00:07:37,100
+I'm going to capture it and so this is
+
+156
+00:07:37,100 --> 00:07:38,390
+going to wait for something to happen
+
+157
+00:07:38,390 --> 00:07:42,560
+over on the tehsil and I've set it so
+
+158
+00:07:42,560 --> 00:07:44,510
+that when channel 3 which is this orange
+
+159
+00:07:44,510 --> 00:07:46,969
+wire goes high it'll
+
+160
+00:07:46,969 --> 00:07:50,659
+collecting samples so it's found my
+
+161
+00:07:50,659 --> 00:07:52,519
+tussle and it's writing and it's running
+
+162
+00:07:52,519 --> 00:08:06,639
+and oh oh something's not connected oops
+
+163
+00:08:06,639 --> 00:08:08,659
+that's what you get uploaded in
+
+164
+00:08:08,659 --> 00:08:23,909
+backwards
+
+165
+00:08:23,919 --> 00:08:30,429
+I'll try that again
+
+166
+00:08:30,439 --> 00:08:37,819
+right connected writing running waiting
+
+167
+00:08:37,819 --> 00:08:42,159
+for trigger and it took samples perfect
+
+168
+00:08:42,159 --> 00:08:45,050
+so I can pause it early and so what you
+
+169
+00:08:45,050 --> 00:08:49,819
+can see here is we've got this async
+
+170
+00:08:49,819 --> 00:08:54,079
+serial wine something happened to start
+
+171
+00:08:54,079 --> 00:08:55,399
+it so that was the initialization of the
+
+172
+00:08:55,399 --> 00:08:57,470
+code when I required tehsil and if we
+
+173
+00:08:57,470 --> 00:09:00,110
+zoom way in we can see that some up and
+
+174
+00:09:00,110 --> 00:09:01,550
+down motion happened and that's the ones
+
+175
+00:09:01,550 --> 00:09:03,769
+and zeros and if you zoom even further
+
+176
+00:09:03,769 --> 00:09:06,019
+in you probably can't read this very
+
+177
+00:09:06,019 --> 00:09:08,149
+well because this program doesn't let
+
+178
+00:09:08,149 --> 00:09:10,670
+you change font sizes but it says hello
+
+179
+00:09:10,670 --> 00:09:14,600
+world and I will take a screenshot and
+
+180
+00:09:14,600 --> 00:09:25,250
+let you see and bigger yeah so that's
+
+181
+00:09:25,250 --> 00:09:29,750
+pretty cool right now I've seen how you
+
+182
+00:09:29,750 --> 00:09:33,310
+can take ones and zeros and really
+
+183
+00:09:33,310 --> 00:09:35,899
+obscure looking bits like this and over
+
+184
+00:09:35,899 --> 00:09:39,410
+a wire talk to something getting back to
+
+185
+00:09:39,410 --> 00:09:41,689
+our problem solving so we want to
+
+186
+00:09:41,689 --> 00:09:43,160
+determine whether this is upside down or
+
+187
+00:09:43,160 --> 00:09:47,720
+right side up right so I mentioned this
+
+188
+00:09:47,720 --> 00:09:49,880
+earlier very briefly but the easiest
+
+189
+00:09:49,880 --> 00:09:52,040
+thing to do to determine right side up
+
+190
+00:09:52,040 --> 00:09:55,670
+and upside down is to find gravity one
+
+191
+00:09:55,670 --> 00:09:56,930
+of the fun bits about working with
+
+192
+00:09:56,930 --> 00:09:58,490
+hardware is that you get to choose your
+
+193
+00:09:58,490 --> 00:09:59,930
+different sensors right so you could do
+
+194
+00:09:59,930 --> 00:10:00,860
+this in a bunch of different ways you
+
+195
+00:10:00,860 --> 00:10:03,620
+could have some kind of electronic level
+
+196
+00:10:03,620 --> 00:10:05,959
+or you could have some like magnetic
+
+197
+00:10:05,959 --> 00:10:07,279
+switch that teaches it what's
+
+198
+00:10:07,279 --> 00:10:09,079
+upside-down up right side up you could
+
+199
+00:10:09,079 --> 00:10:11,060
+have a light sensor that gets covered if
+
+200
+00:10:11,060 --> 00:10:13,670
+it gets flipped over but what I've
+
+201
+00:10:13,670 --> 00:10:16,459
+decided is the most reliable and what
+
+202
+00:10:16,459 --> 00:10:18,380
+your smartphone manufacturers have also
+
+203
+00:10:18,380 --> 00:10:20,809
+decided this the right answer is an
+
+204
+00:10:20,809 --> 00:10:22,639
+accelerometer because you can very
+
+205
+00:10:22,639 --> 00:10:24,889
+consistently get the direction of
+
+206
+00:10:24,889 --> 00:10:27,920
+gravity right so in your smartphone it's
+
+207
+00:10:27,920 --> 00:10:30,079
+the thing that lets your phone know
+
+208
+00:10:30,079 --> 00:10:32,029
+whether it's portrait or landscape it's
+
+209
+00:10:32,029 --> 00:10:34,819
+just an accelerometer finding gravity so
+
+210
+00:10:34,819 --> 00:10:37,639
+we're gonna do that use an accelerometer
+
+211
+00:10:37,639 --> 00:10:40,250
+and because I want to use JavaScript and
+
+212
+00:10:40,250 --> 00:10:41,870
+because maybe in the future I want my
+
+213
+00:10:41,870 --> 00:10:43,170
+project to have internet connect
+
+214
+00:10:43,170 --> 00:10:48,660
+I'm gonna write on a tehsil - so how do
+
+215
+00:10:48,660 --> 00:10:50,339
+I actually do that so I've taken this
+
+216
+00:10:50,339 --> 00:10:52,320
+thing here so this is my accelerometer
+
+217
+00:10:52,320 --> 00:10:55,170
+module which is tehsils but what I'm
+
+218
+00:10:55,170 --> 00:10:57,000
+actually gonna try and talk to is this
+
+219
+00:10:57,000 --> 00:10:59,160
+little black chip and if you look really
+
+220
+00:10:59,160 --> 00:11:01,260
+close on it in tiny tiny font which you
+
+221
+00:11:01,260 --> 00:11:04,620
+definitely can't read it says Mme 84
+
+222
+00:11:04,620 --> 00:11:07,860
+which is it's part number and this whole
+
+223
+00:11:07,860 --> 00:11:09,570
+red board is what's called a breakout
+
+224
+00:11:09,570 --> 00:11:11,519
+board and it just makes it easier for it
+
+225
+00:11:11,519 --> 00:11:13,170
+to get plugged in and it's got a couple
+
+226
+00:11:13,170 --> 00:11:15,000
+of resistors and capacitors that it can
+
+227
+00:11:15,000 --> 00:11:17,850
+handle charge so it can have the right
+
+228
+00:11:17,850 --> 00:11:20,190
+address which will talk to you a bit so
+
+229
+00:11:20,190 --> 00:11:21,269
+what we're looking at is that little
+
+230
+00:11:21,269 --> 00:11:25,320
+back black bit and as you can see here
+
+231
+00:11:25,320 --> 00:11:27,839
+it looks like this and it has this
+
+232
+00:11:27,839 --> 00:11:30,089
+datasheet it's pretty cool hardware bits
+
+233
+00:11:30,089 --> 00:11:32,570
+come with manuals in the general case
+
+234
+00:11:32,570 --> 00:11:35,459
+what's sort of unfortunate and also nice
+
+235
+00:11:35,459 --> 00:11:38,820
+is that it's a 54 page document that you
+
+236
+00:11:38,820 --> 00:11:40,320
+have to look through and the thing is
+
+237
+00:11:40,320 --> 00:11:41,430
+you actually have to read the whole
+
+238
+00:11:41,430 --> 00:11:44,160
+thing if you're gonna do this stuff it's
+
+239
+00:11:44,160 --> 00:11:45,930
+a really good idea to actually read the
+
+240
+00:11:45,930 --> 00:11:50,820
+entire data sheet I won't make you
+
+241
+00:11:50,820 --> 00:11:53,910
+read the entire thing but I'll show it
+
+242
+00:11:53,910 --> 00:11:56,459
+to you here and we're gonna reference it
+
+243
+00:11:56,459 --> 00:11:57,660
+during this talk there's a bunch of
+
+244
+00:11:57,660 --> 00:12:00,709
+different stuff in here it talks about
+
+245
+00:12:00,709 --> 00:12:02,550
+you know here's what each of the
+
+246
+00:12:02,550 --> 00:12:05,160
+different pins do it's got a table of
+
+247
+00:12:05,160 --> 00:12:07,740
+contents it tells you exactly how it's
+
+248
+00:12:07,740 --> 00:12:08,670
+gonna work
+
+249
+00:12:08,670 --> 00:12:10,649
+talking about earth gravity which we've
+
+250
+00:12:10,649 --> 00:12:13,980
+talked about ourselves basically
+
+251
+00:12:13,980 --> 00:12:15,570
+everything you could possibly want to
+
+252
+00:12:15,570 --> 00:12:17,010
+know about this part is supposed to be
+
+253
+00:12:17,010 --> 00:12:22,709
+in this document so the first thing you
+
+254
+00:12:22,709 --> 00:12:24,899
+want to figure out is how does this talk
+
+255
+00:12:24,899 --> 00:12:27,140
+to this and this is looking for our
+
+256
+00:12:27,140 --> 00:12:29,220
+communication protocol so we already saw
+
+257
+00:12:29,220 --> 00:12:31,709
+cereal we saw spy
+
+258
+00:12:31,709 --> 00:12:34,290
+this one has i2c and how do I know that
+
+259
+00:12:34,290 --> 00:12:35,880
+because it says so in the table of
+
+260
+00:12:35,880 --> 00:12:40,260
+contents so I know that I need I to see
+
+261
+00:12:40,260 --> 00:12:42,480
+then I need to talk from the JavaScript
+
+262
+00:12:42,480 --> 00:12:46,829
+side so I go to Tesla dot io / Docs and
+
+263
+00:12:46,829 --> 00:12:48,420
+it redirects over here a look in
+
+264
+00:12:48,420 --> 00:12:53,430
+Hardware API and find I to see right so
+
+265
+00:12:53,430 --> 00:12:55,649
+we need to be able to specify from both
+
+266
+00:12:55,649 --> 00:12:57,540
+directions
+
+267
+00:12:57,540 --> 00:13:00,330
+so that as remember when we had the the
+
+268
+00:13:00,330 --> 00:13:03,720
+baud rate remember when we had the baud
+
+269
+00:13:03,720 --> 00:13:05,580
+rate of one one five two hundred and
+
+270
+00:13:05,580 --> 00:13:07,440
+eight data bits and all that sort of
+
+271
+00:13:07,440 --> 00:13:07,890
+stuff
+
+272
+00:13:07,890 --> 00:13:10,940
+we need the same sort of stuff for ITC
+
+273
+00:13:10,940 --> 00:13:12,899
+but a little different because it's a
+
+274
+00:13:12,899 --> 00:13:15,540
+different protocol so in the case of I D
+
+275
+00:13:15,540 --> 00:13:17,700
+I to see each hardware thing will have a
+
+276
+00:13:17,700 --> 00:13:21,540
+built in address and in this case the
+
+277
+00:13:21,540 --> 00:13:28,020
+address is in this case the address for
+
+278
+00:13:28,020 --> 00:13:29,550
+the accelerometer which you can find the
+
+279
+00:13:29,550 --> 00:13:30,959
+datasheet but I won't dig through it for
+
+280
+00:13:30,959 --> 00:13:35,310
+the sake of your time is 0 x1 D so we're
+
+281
+00:13:35,310 --> 00:13:37,920
+then going to initialize I to C is a new
+
+282
+00:13:37,920 --> 00:13:43,440
+I to seaport on port a and we're gonna
+
+283
+00:13:43,440 --> 00:13:45,630
+do the very first thing that you
+
+284
+00:13:45,630 --> 00:13:50,640
+typically will do is that there should
+
+285
+00:13:50,640 --> 00:13:55,980
+be a Who am I so this is a this is a
+
+286
+00:13:55,980 --> 00:13:57,420
+thing that lets you say well I've hooked
+
+287
+00:13:57,420 --> 00:13:58,860
+it up correctly and my software
+
+288
+00:13:58,860 --> 00:14:01,110
+communication is set to the appropriate
+
+289
+00:14:01,110 --> 00:14:03,959
+levels right so I've just plugged in the
+
+290
+00:14:03,959 --> 00:14:07,440
+accelerometer on port a and I'm going to
+
+291
+00:14:07,440 --> 00:14:09,450
+need to move this over to read on this
+
+292
+00:14:09,450 --> 00:14:15,750
+the i2c lines which are SCL and SDA one
+
+293
+00:14:15,750 --> 00:14:17,040
+of them is clock and the other one is
+
+294
+00:14:17,040 --> 00:14:31,830
+data
+
+295
+00:14:31,840 --> 00:14:33,790
+make a really confused face if you're
+
+296
+00:14:33,790 --> 00:14:37,029
+lost okay you all see them either fine
+
+297
+00:14:37,029 --> 00:14:47,580
+or asleep
+
+298
+00:14:47,590 --> 00:14:50,950
+okay cool so I'm gonna do the hello
+
+299
+00:14:50,950 --> 00:14:52,510
+world for this particular part which is
+
+300
+00:14:52,510 --> 00:14:55,060
+not writing the words hello world onto
+
+301
+00:14:55,060 --> 00:14:58,090
+it but actually looking for this thing
+
+302
+00:14:58,090 --> 00:14:59,020
+called Who am I
+
+303
+00:14:59,020 --> 00:15:01,060
+which you can find in the datasheet one
+
+304
+00:15:01,060 --> 00:15:02,529
+of the most useful bits of the datasheet
+
+305
+00:15:02,529 --> 00:15:05,560
+is this thing called register
+
+306
+00:15:05,560 --> 00:15:10,240
+descriptions and it tells me if I want
+
+307
+00:15:10,240 --> 00:15:11,830
+to get different kinds of data like
+
+308
+00:15:11,830 --> 00:15:16,060
+status or out X or out Z or Who am I it
+
+309
+00:15:16,060 --> 00:15:18,580
+says that the address of the register
+
+310
+00:15:18,580 --> 00:15:20,950
+that has that information is here at 0
+
+311
+00:15:20,950 --> 00:15:24,040
+at X 0 D and it should return
+
+312
+00:15:24,040 --> 00:15:25,900
+information and in this case it'll
+
+313
+00:15:25,900 --> 00:15:28,960
+always just return 0 X 2 a that's just
+
+314
+00:15:28,960 --> 00:15:33,940
+what this particular device says so I'm
+
+315
+00:15:33,940 --> 00:15:46,809
+going to ask it to tell me
+
+316
+00:15:46,819 --> 00:15:49,069
+I'm going to ask it to tell me what is
+
+317
+00:15:49,069 --> 00:15:51,499
+at that zero X zero D and we expect the
+
+318
+00:15:51,499 --> 00:15:57,769
+answer to be zero X to a so it's
+
+319
+00:15:57,769 --> 00:16:00,319
+connected it's running it's looking for
+
+320
+00:16:00,319 --> 00:16:04,939
+a trigger and it's sampling cool so
+
+321
+00:16:04,939 --> 00:16:06,199
+let's go find it
+
+322
+00:16:06,199 --> 00:16:10,609
+ah here we are some things happened this
+
+323
+00:16:10,609 --> 00:16:15,379
+one says zero X to a cool and it says to
+
+324
+00:16:15,379 --> 00:16:17,269
+weigh over here as well because I told
+
+325
+00:16:17,269 --> 00:16:20,509
+it to excellent so we know that our
+
+326
+00:16:20,509 --> 00:16:26,600
+seller ometer hooked up correctly let's
+
+327
+00:16:26,600 --> 00:16:30,199
+get this back so we know our
+
+328
+00:16:30,199 --> 00:16:31,819
+accelerometer is hooked up correctly and
+
+329
+00:16:31,819 --> 00:16:33,139
+we're able to talk to it so that was the
+
+330
+00:16:33,139 --> 00:16:34,999
+first time that the tehsil here has
+
+331
+00:16:34,999 --> 00:16:38,419
+talked to this little Mme 84 device on
+
+332
+00:16:38,419 --> 00:16:40,519
+here and this talked back to it so
+
+333
+00:16:40,519 --> 00:16:44,299
+communications working so back to the
+
+334
+00:16:44,299 --> 00:16:47,089
+problem we know that we only need the
+
+335
+00:16:47,089 --> 00:16:49,609
+z-axis and this is this little image of
+
+336
+00:16:49,609 --> 00:16:51,049
+on the side here is from the datasheet
+
+337
+00:16:51,049 --> 00:16:52,639
+and it says that if it's upside down
+
+338
+00:16:52,639 --> 00:16:55,129
+you'll get a negative Z and if it's
+
+339
+00:16:55,129 --> 00:16:58,549
+right side up you'll get a positive Z so
+
+340
+00:16:58,549 --> 00:17:00,319
+how do we learn whether the Z is
+
+341
+00:17:00,319 --> 00:17:02,059
+negative or positive well we're gonna
+
+342
+00:17:02,059 --> 00:17:03,499
+look these are copied and pasted from
+
+343
+00:17:03,499 --> 00:17:06,919
+the datasheet so this is the out z
+
+344
+00:17:06,919 --> 00:17:08,720
+there's two of them that say out see and
+
+345
+00:17:08,720 --> 00:17:11,629
+there's MSB and LSB and that stands for
+
+346
+00:17:11,629 --> 00:17:13,250
+most significant and lis significant
+
+347
+00:17:13,250 --> 00:17:17,980
+bits maybe those of you with classical
+
+348
+00:17:17,980 --> 00:17:20,329
+computer science education already know
+
+349
+00:17:20,329 --> 00:17:24,829
+these things but most significant bits
+
+350
+00:17:24,829 --> 00:17:27,110
+are gonna be the like if you had a
+
+351
+00:17:27,110 --> 00:17:29,779
+hundred or if you had 123 the most
+
+352
+00:17:29,779 --> 00:17:31,429
+significant part of that would be the
+
+353
+00:17:31,429 --> 00:17:34,129
+100 and the least significant would be
+
+354
+00:17:34,129 --> 00:17:38,960
+the 3 right so since we only care about
+
+355
+00:17:38,960 --> 00:17:40,879
+the negative versus positive we'll
+
+356
+00:17:40,879 --> 00:17:42,379
+expect this to be in the most
+
+357
+00:17:42,379 --> 00:17:45,019
+significant digit and specifically
+
+358
+00:17:45,019 --> 00:17:46,159
+there's this thing called two's
+
+359
+00:17:46,159 --> 00:17:47,629
+complement which according to the
+
+360
+00:17:47,629 --> 00:17:50,779
+datasheet is what this device with this
+
+361
+00:17:50,779 --> 00:17:54,940
+Mme 84 accelerometer device uses and
+
+362
+00:17:54,940 --> 00:17:57,169
+two's complement which I'm going to
+
+363
+00:17:57,169 --> 00:18:00,340
+grossly simplify right here
+
+364
+00:18:00,340 --> 00:18:03,549
+is a way to say negative versus positive
+
+365
+00:18:03,549 --> 00:18:05,770
+by using the most significant bit as a
+
+366
+00:18:05,770 --> 00:18:07,330
+placeholder for a negative or positive
+
+367
+00:18:07,330 --> 00:18:09,370
+service a negative or positive sign
+
+368
+00:18:09,370 --> 00:18:12,549
+right so if it's a 1 there is a minus
+
+369
+00:18:12,549 --> 00:18:14,529
+sign present and if it's a 0 there's no
+
+370
+00:18:14,529 --> 00:18:17,140
+minus sign present there's more to two's
+
+371
+00:18:17,140 --> 00:18:18,580
+complement but that's the important bit
+
+372
+00:18:18,580 --> 00:18:22,900
+for this demo so in this case the most
+
+373
+00:18:22,900 --> 00:18:26,950
+significant bit is bit 7 and if bit 7
+
+374
+00:18:26,950 --> 00:18:30,730
+gives us back a 0 then it is positive
+
+375
+00:18:30,730 --> 00:18:33,159
+and if it's 7 is 1 then we have a
+
+376
+00:18:33,159 --> 00:18:36,730
+negative number ok so let's start with
+
+377
+00:18:36,730 --> 00:18:43,570
+we need to read out Z MSB so if we look
+
+378
+00:18:43,570 --> 00:18:46,570
+back at the registers here this one it
+
+379
+00:18:46,570 --> 00:18:48,880
+says out z the most significant bits are
+
+380
+00:18:48,880 --> 00:18:52,870
+located at 0 X 0 5 so so far so good
+
+381
+00:18:52,870 --> 00:18:54,970
+we'll go we've got the same stuff up
+
+382
+00:18:54,970 --> 00:18:56,590
+here now we're looking at different
+
+383
+00:18:56,590 --> 00:18:58,600
+register to read we only need the one
+
+384
+00:18:58,600 --> 00:19:01,480
+register and within an interval of one
+
+385
+00:19:01,480 --> 00:19:03,429
+second we're going to ask it for that
+
+386
+00:19:03,429 --> 00:19:10,419
+register ok and usually I'd like to do a
+
+387
+00:19:10,419 --> 00:19:13,149
+demo here that shows you the importance
+
+388
+00:19:13,149 --> 00:19:17,590
+of reading the datasheet if I ran this
+
+389
+00:19:17,590 --> 00:19:20,380
+as it is I would get this repeating
+
+390
+00:19:20,380 --> 00:19:22,510
+value over here of 94 no matter how I
+
+391
+00:19:22,510 --> 00:19:23,830
+move this around whether it flip it
+
+392
+00:19:23,830 --> 00:19:25,510
+upside down or not
+
+393
+00:19:25,510 --> 00:19:27,399
+and that is because I didn't read the
+
+394
+00:19:27,399 --> 00:19:30,279
+part where it says oh the system is in a
+
+395
+00:19:30,279 --> 00:19:31,960
+low power mode when you turn it on so
+
+396
+00:19:31,960 --> 00:19:33,279
+you actually have to tell it to start
+
+397
+00:19:33,279 --> 00:19:34,630
+reading data for it to start reading
+
+398
+00:19:34,630 --> 00:19:37,090
+data read the datasheet that's the moral
+
+399
+00:19:37,090 --> 00:19:40,510
+we'll skip to it and all you have to do
+
+400
+00:19:40,510 --> 00:19:42,220
+there is you get this diagram that says
+
+401
+00:19:42,220 --> 00:19:44,080
+go to the control register and set the
+
+402
+00:19:44,080 --> 00:19:48,429
+active bit to one of course and so you
+
+403
+00:19:48,429 --> 00:19:50,710
+go google around in the or a search
+
+404
+00:19:50,710 --> 00:19:51,970
+around in the datasheet and you find
+
+405
+00:19:51,970 --> 00:19:53,380
+this thing called the control register
+
+406
+00:19:53,380 --> 00:19:57,940
+and set the active bit to one so let's
+
+407
+00:19:57,940 --> 00:20:00,640
+go ahead and do that so we've got the
+
+408
+00:20:00,640 --> 00:20:02,350
+same stuff we had before right that
+
+409
+00:20:02,350 --> 00:20:04,419
+active interval address route to read
+
+410
+00:20:04,419 --> 00:20:06,520
+but before that we're gonna do this set
+
+411
+00:20:06,520 --> 00:20:09,399
+active where we send the buffer that
+
+412
+00:20:09,399 --> 00:20:14,150
+says of these 8 bits set the last one
+
+413
+00:20:14,150 --> 00:20:18,740
+to be one great zealot good you look
+
+414
+00:20:18,740 --> 00:20:31,020
+good great
+
+415
+00:20:31,030 --> 00:20:34,070
+so what we're expecting right now and
+
+416
+00:20:34,070 --> 00:20:35,270
+I'll take these off we don't need them
+
+417
+00:20:35,270 --> 00:20:35,750
+anymore
+
+418
+00:20:35,750 --> 00:20:37,970
+what we're expecting right now is that
+
+419
+00:20:37,970 --> 00:20:41,780
+if I take this device and I have it one
+
+420
+00:20:41,780 --> 00:20:44,960
+way and then I move it another way we're
+
+421
+00:20:44,960 --> 00:20:46,670
+gonna get different data coming out oh
+
+422
+00:20:46,670 --> 00:20:50,210
+and if we go back to the console here
+
+423
+00:20:50,210 --> 00:20:52,310
+you can see that in fact data looks
+
+424
+00:20:52,310 --> 00:20:54,170
+different if I've got upside or if I've
+
+425
+00:20:54,170 --> 00:20:55,430
+got it right side up it looks pretty
+
+426
+00:20:55,430 --> 00:20:57,170
+similar over here I flip it over
+
+427
+00:20:57,170 --> 00:20:59,450
+something different is happening so
+
+428
+00:20:59,450 --> 00:21:04,010
+that's good what is that what is that
+
+429
+00:21:04,010 --> 00:21:07,010
+number so the system's awake we're
+
+430
+00:21:07,010 --> 00:21:13,070
+getting data what we haven't done is
+
+431
+00:21:13,070 --> 00:21:16,390
+interpreted the 8 bits that we get back
+
+432
+00:21:16,390 --> 00:21:18,740
+for just this first bit what we're
+
+433
+00:21:18,740 --> 00:21:20,630
+seeing right now is the number created
+
+434
+00:21:20,630 --> 00:21:22,940
+if you interpret the for the top eight
+
+435
+00:21:22,940 --> 00:21:27,110
+most significant bits as a number which
+
+436
+00:21:27,110 --> 00:21:30,080
+turns into a hex value which is the same
+
+437
+00:21:30,080 --> 00:21:32,900
+as it yeah don't worry about it what we
+
+438
+00:21:32,900 --> 00:21:34,580
+need to do is isolate whether or not
+
+439
+00:21:34,580 --> 00:21:39,410
+this first bit is a 0 or a 1 and we're
+
+440
+00:21:39,410 --> 00:21:41,480
+gonna do some sort of weird trick here
+
+441
+00:21:41,480 --> 00:21:44,840
+where we need to find out if the number
+
+442
+00:21:44,840 --> 00:21:50,660
+that we get back is bigger than 0 1 1 1
+
+443
+00:21:50,660 --> 00:21:52,550
+1 1 11 because anything bigger than that
+
+444
+00:21:52,550 --> 00:21:54,830
+is gonna have to have a 1 in the most
+
+445
+00:21:54,830 --> 00:21:58,760
+significant digit you asked me about
+
+446
+00:21:58,760 --> 00:22:00,530
+this later if it's confusing to you this
+
+447
+00:22:00,530 --> 00:22:05,030
+was like a weird mental trick for me but
+
+448
+00:22:05,030 --> 00:22:07,520
+basically that's isolating whether this
+
+449
+00:22:07,520 --> 00:22:13,010
+is a 0 or a 1 and so we'll be able to
+
+450
+00:22:13,010 --> 00:22:15,230
+print out if it is a 1 here then we know
+
+451
+00:22:15,230 --> 00:22:16,880
+it's negative and if it's a 0 here we
+
+452
+00:22:16,880 --> 00:22:30,630
+know it's positive so t2 run oh 7
+
+453
+00:22:30,640 --> 00:22:34,430
+I'd like to encourage you again if I I
+
+454
+00:22:34,430 --> 00:22:36,260
+think I might actually have time to take
+
+455
+00:22:36,260 --> 00:22:38,110
+questions at the end here which is great
+
+456
+00:22:38,110 --> 00:22:40,790
+so please if I have confused you here
+
+457
+00:22:40,790 --> 00:22:42,290
+please raise your hand and let me know
+
+458
+00:22:42,290 --> 00:22:45,110
+so we're getting a result and this says
+
+459
+00:22:45,110 --> 00:22:57,230
+positive right-side up and yeah cool so
+
+460
+00:22:57,230 --> 00:23:01,160
+it works and I'm hoping that last bit
+
+461
+00:23:01,160 --> 00:23:08,770
+wasn't terribly mystifying but we've got
+
+462
+00:23:08,770 --> 00:23:11,720
+basically the problem solved here if we
+
+463
+00:23:11,720 --> 00:23:13,160
+want to tell whether it's right side up
+
+464
+00:23:13,160 --> 00:23:16,430
+or upside down without using a built in
+
+465
+00:23:16,430 --> 00:23:19,850
+API so that's just the very start of it
+
+466
+00:23:19,850 --> 00:23:22,760
+right so what I've done with this this
+
+467
+00:23:22,760 --> 00:23:27,680
+is the Excel Mme 84 module on node it's
+
+468
+00:23:27,680 --> 00:23:29,450
+got more functions than this you can
+
+469
+00:23:29,450 --> 00:23:31,970
+tell it how fast you want to do it you
+
+470
+00:23:31,970 --> 00:23:33,380
+can take all these different register
+
+471
+00:23:33,380 --> 00:23:35,030
+descriptions and break them out into the
+
+472
+00:23:35,030 --> 00:23:36,830
+JavaScript software they're all like
+
+473
+00:23:36,830 --> 00:23:39,230
+part of the node API there's just
+
+474
+00:23:39,230 --> 00:23:40,880
+endless stuff that you can do once
+
+475
+00:23:40,880 --> 00:23:42,620
+you've gotten your basic information out
+
+476
+00:23:42,620 --> 00:23:47,030
+of it but that's all I'm gonna do up
+
+477
+00:23:47,030 --> 00:23:49,700
+here on stage and I hope if you want to
+
+478
+00:23:49,700 --> 00:23:52,610
+come to the workshop tomorrow I hope you
+
+479
+00:23:52,610 --> 00:23:53,780
+can come up with some interesting
+
+480
+00:23:53,780 --> 00:23:56,090
+interpretations we've got sensors that
+
+481
+00:23:56,090 --> 00:23:57,500
+aren't on pretty breakout boards like
+
+482
+00:23:57,500 --> 00:24:00,860
+this so you can learn how to do alcohol
+
+483
+00:24:00,860 --> 00:24:03,260
+sensing and load force and all those
+
+484
+00:24:03,260 --> 00:24:05,030
+type of stuff that we actually don't
+
+485
+00:24:05,030 --> 00:24:06,800
+have any node modules for us you'll be
+
+486
+00:24:06,800 --> 00:24:13,730
+inventing it that's all my demo if you'd
+
+487
+00:24:13,730 --> 00:24:15,230
+like to look at these slides I actually
+
+488
+00:24:15,230 --> 00:24:18,740
+have a few other demos that I didn't
+
+489
+00:24:18,740 --> 00:24:22,310
+show today I showed these ones and if
+
+490
+00:24:22,310 --> 00:24:24,230
+you want to look at a slower step
+
+491
+00:24:24,230 --> 00:24:25,700
+through these other ones are available
+
+492
+00:24:25,700 --> 00:24:28,100
+to you and you can find my slides if you
+
+493
+00:24:28,100 --> 00:24:31,450
+go to github free whole Singapore demos
+
+494
+00:24:31,450 --> 00:24:34,490
+oh and I have a book that's recently out
+
+495
+00:24:34,490 --> 00:24:36,200
+if you'd like to get into it it's not
+
+496
+00:24:36,200 --> 00:24:37,639
+just tehsil it's all sorts
+
+497
+00:24:37,639 --> 00:24:41,029
+different boards does anybody have
+
+498
+00:24:41,029 --> 00:24:45,619
+questions there's no way I explained it
+
+499
+00:24:45,619 --> 00:24:50,059
+that well yeah
+
+500
+00:24:50,059 --> 00:24:58,879
+oh do we have a microphone over here so
+
+501
+00:24:58,879 --> 00:25:01,219
+maybe for the last part when you're
+
+502
+00:25:01,219 --> 00:25:03,799
+compared is off-site that is up or done
+
+503
+00:25:03,799 --> 00:25:08,269
+you can just shift the bits seven-digit
+
+504
+00:25:08,269 --> 00:25:09,950
+just check the most significant
+
+505
+00:25:09,950 --> 00:25:13,249
+significant bit it's a mental area is
+
+506
+00:25:13,249 --> 00:25:15,619
+easier to understand that than comparing
+
+507
+00:25:15,619 --> 00:25:17,989
+with where the binary number
+
+508
+00:25:17,989 --> 00:25:20,539
+you understand why me yeah you're right
+
+509
+00:25:20,539 --> 00:25:22,099
+so it depends on what kind of mental
+
+510
+00:25:22,099 --> 00:25:25,039
+aerobics are easier for you he was
+
+511
+00:25:25,039 --> 00:25:27,649
+suggesting that instead of comparing
+
+512
+00:25:27,649 --> 00:25:30,709
+this 0 1 1 1 1 1 number I could just
+
+513
+00:25:30,709 --> 00:25:32,539
+shift the bits down in order to just get
+
+514
+00:25:32,539 --> 00:25:34,369
+rid of these extra numbers that I don't
+
+515
+00:25:34,369 --> 00:25:38,389
+care about yeah for me this was easier
+
+516
+00:25:38,389 --> 00:25:40,729
+for you it might be it might be easier
+
+517
+00:25:40,729 --> 00:25:43,190
+to do it a different way and that's kind
+
+518
+00:25:43,190 --> 00:25:45,969
+of what's fun is if you start with
+
+519
+00:25:45,969 --> 00:25:48,859
+looking up sensors online you have just
+
+520
+00:25:48,859 --> 00:25:51,440
+a ton of freedom to to mess around and
+
+521
+00:25:51,440 --> 00:25:53,179
+decide what implementation you would
+
+522
+00:25:53,179 --> 00:25:57,829
+like a little bit more time if you have
+
+523
+00:25:57,829 --> 00:26:04,969
+another pressing question you left
+
+524
+00:26:04,969 --> 00:26:07,489
+everybody speechless well alright then
+
+525
+00:26:07,489 --> 00:26:09,409
+I'll expect all of you to make me a
+
+526
+00:26:09,409 --> 00:26:10,579
+firmware thing tomorrow
+
+527
+00:26:10,579 --> 00:26:12,859
+go and meet Kelsey afterwards right and
+
+528
+00:26:12,859 --> 00:26:14,479
+maybe take a look at the hard way
+
+529
+00:26:14,479 --> 00:26:19,190
+yourself - all right give a round of
+
+530
+00:26:19,190 --> 00:26:20,750
+applause to Cassie
+
+531
+00:26:20,750 --> 00:26:22,190
+[Music]
+

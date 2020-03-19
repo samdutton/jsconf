@@ -1,0 +1,1885 @@
+1
+00:00:00,000 --> 00:00:10,250
+
+ah
+
+2
+00:00:10,260 --> 00:00:13,920
+my name is had a more i work at yahoo i
+
+3
+00:00:13,920 --> 00:00:18,939
+work in a Yui team and I was going to
+
+4
+00:00:18,939 --> 00:00:20,949
+talk about something that's been going
+
+5
+00:00:20,949 --> 00:00:22,689
+on for the last about two or three weeks
+
+6
+00:00:22,689 --> 00:00:26,499
+Dave glass many of you probably familiar
+
+7
+00:00:26,499 --> 00:00:29,140
+with him he he's an engineer on the Yui
+
+8
+00:00:29,140 --> 00:00:32,010
+team and he's been experimenting with
+
+9
+00:00:32,010 --> 00:00:34,140
+running Yui on the server side
+
+10
+00:00:34,140 --> 00:00:39,850
+specifically Yui 3 and really he made a
+
+11
+00:00:39,850 --> 00:00:41,469
+lot of progress in a short amount of
+
+12
+00:00:41,469 --> 00:00:42,789
+time in fact if you think and I'm
+
+13
+00:00:42,789 --> 00:00:44,980
+talking about events today I changed in
+
+14
+00:00:44,980 --> 00:00:47,769
+the last minute because because this was
+
+15
+00:00:47,769 --> 00:00:48,969
+a lot more interesting a lot more
+
+16
+00:00:48,969 --> 00:00:59,320
+topical for today so we chose nodejs I
+
+17
+00:00:59,320 --> 00:01:00,760
+think everyone knows what it is you saw
+
+18
+00:01:00,760 --> 00:01:04,660
+Ryan's presentation yesterday it was it
+
+19
+00:01:04,660 --> 00:01:08,410
+was basically it's fast and it's
+
+20
+00:01:08,410 --> 00:01:12,310
+JavaScript server-side process we're not
+
+21
+00:01:12,310 --> 00:01:14,350
+looking at nodejs as being the only
+
+22
+00:01:14,350 --> 00:01:16,060
+thing we're going to try this on but but
+
+23
+00:01:16,060 --> 00:01:19,979
+this is what we've done so far so we
+
+24
+00:01:19,979 --> 00:01:22,570
+wanted we wanted to try this because we
+
+25
+00:01:22,570 --> 00:01:27,700
+think it is time to to basically take
+
+26
+00:01:27,700 --> 00:01:28,930
+advantage of all the code that we've
+
+27
+00:01:28,930 --> 00:01:30,759
+been writing on the client the AP is
+
+28
+00:01:30,759 --> 00:01:33,520
+that we have in Yui people are writing
+
+29
+00:01:33,520 --> 00:01:37,180
+more complicated applications that that
+
+30
+00:01:37,180 --> 00:01:39,820
+can't be translated to the server and
+
+31
+00:01:39,820 --> 00:01:42,490
+hopefully we can do some really cool
+
+32
+00:01:42,490 --> 00:01:44,439
+things and one of the things I want to
+
+33
+00:01:44,439 --> 00:01:47,740
+talk about in particular is progressive
+
+34
+00:01:47,740 --> 00:01:50,079
+enhancement what it means to be able to
+
+35
+00:01:50,079 --> 00:01:52,180
+take the same code that we're currently
+
+36
+00:01:52,180 --> 00:01:55,360
+generating controls with on a client and
+
+37
+00:01:55,360 --> 00:01:57,939
+moving it to the server as part of our
+
+38
+00:01:57,939 --> 00:02:03,280
+progressive enhancement strategy so why
+
+39
+00:02:03,280 --> 00:02:07,479
+do I three it's pretty new some of you
+
+40
+00:02:07,479 --> 00:02:09,399
+might be familiar with Yui to one of the
+
+41
+00:02:09,399 --> 00:02:11,860
+fundamental differences is that it's
+
+42
+00:02:11,860 --> 00:02:15,550
+very modular it has a as a module format
+
+43
+00:02:15,550 --> 00:02:17,370
+that's similar to the common jayus
+
+44
+00:02:17,370 --> 00:02:19,270
+module format
+
+45
+00:02:19,270 --> 00:02:23,590
+it the the strategy for loading Yui is a
+
+46
+00:02:23,590 --> 00:02:26,680
+is a small seed file 7k Steve file which
+
+47
+00:02:26,680 --> 00:02:30,220
+knows how to bootstrap the Yui loader
+
+48
+00:02:30,220 --> 00:02:32,860
+and and complete itself whatever
+
+49
+00:02:32,860 --> 00:02:34,870
+dependency those dependencies that you
+
+50
+00:02:34,870 --> 00:02:38,980
+need and one thing about the core of the
+
+51
+00:02:38,980 --> 00:02:41,050
+library it's not just about manipulating
+
+52
+00:02:41,050 --> 00:02:44,500
+DOM and that's important because when we
+
+53
+00:02:44,500 --> 00:02:46,120
+talk about nodejs we're talking about a
+
+54
+00:02:46,120 --> 00:02:48,130
+JavaScript runtime we're not talking
+
+55
+00:02:48,130 --> 00:02:51,060
+about a full browser implementation so
+
+56
+00:02:51,060 --> 00:02:57,490
+so what can we do with just the core we
+
+57
+00:02:57,490 --> 00:03:00,010
+can do I oh we have we do data
+
+58
+00:03:00,010 --> 00:03:02,170
+communication we have we have an
+
+59
+00:03:02,170 --> 00:03:05,080
+abstraction for managing our data sets
+
+60
+00:03:05,080 --> 00:03:08,230
+and and communicated communicating with
+
+61
+00:03:08,230 --> 00:03:09,940
+remote resources and getting that data
+
+62
+00:03:09,940 --> 00:03:13,180
+in JSON format or other ways we have a
+
+63
+00:03:13,180 --> 00:03:15,250
+custom event system and custom attribute
+
+64
+00:03:15,250 --> 00:03:18,070
+system if you look over at nodejs
+
+65
+00:03:18,070 --> 00:03:20,760
+there's module there's a modules
+
+66
+00:03:20,760 --> 00:03:24,310
+directory that has a lot of these these
+
+67
+00:03:24,310 --> 00:03:26,640
+sorts of things on that sit on top of
+
+68
+00:03:26,640 --> 00:03:29,709
+node.js today but you know these are
+
+69
+00:03:29,709 --> 00:03:32,200
+different API Z may be good we already
+
+70
+00:03:32,200 --> 00:03:33,640
+have code that's written with all this
+
+71
+00:03:33,640 --> 00:03:36,160
+stuff that that we can actually use it
+
+72
+00:03:36,160 --> 00:03:39,790
+today on the server side with the way
+
+73
+00:03:39,790 --> 00:03:43,150
+that node with Yui the way that Yui
+
+74
+00:03:43,150 --> 00:03:46,209
+works on node today we also have a
+
+75
+00:03:46,209 --> 00:03:49,260
+lightweight template template engine
+
+76
+00:03:49,260 --> 00:03:52,300
+it's kind of related to last talk if you
+
+77
+00:03:52,300 --> 00:03:55,540
+were if you were here the idea is that
+
+78
+00:03:55,540 --> 00:03:58,720
+the same thing that we might we might
+
+79
+00:03:58,720 --> 00:04:01,690
+used to generate strings can be used on
+
+80
+00:04:01,690 --> 00:04:06,730
+client server situationally so just a
+
+81
+00:04:06,730 --> 00:04:08,459
+little bit about how we made it work
+
+82
+00:04:08,459 --> 00:04:15,580
+first of all as of Yui 3 10 we we are
+
+83
+00:04:15,580 --> 00:04:20,100
+exporting the Yui object where we're
+
+84
+00:04:20,100 --> 00:04:22,630
+basically complying with the specs so
+
+85
+00:04:22,630 --> 00:04:24,550
+that any implementation that's going
+
+86
+00:04:24,550 --> 00:04:26,770
+against common J's bakit it should just
+
+87
+00:04:26,770 --> 00:04:30,100
+work at least the core part of the
+
+88
+00:04:30,100 --> 00:04:32,050
+library the rest of our modules are used
+
+89
+00:04:32,050 --> 00:04:33,100
+are marginal
+
+90
+00:04:33,100 --> 00:04:35,350
+module format Yui knows how to load
+
+91
+00:04:35,350 --> 00:04:38,170
+those modules but we don't have explicit
+
+92
+00:04:38,170 --> 00:04:42,790
+exports for each one of those modules so
+
+93
+00:04:42,790 --> 00:04:45,430
+once we did it pretty much worked but we
+
+94
+00:04:45,430 --> 00:04:46,810
+didn't really know what it was doing so
+
+95
+00:04:46,810 --> 00:04:49,990
+what we what we did is we configured Yui
+
+96
+00:04:49,990 --> 00:04:54,070
+to use a no GS way of actually
+
+97
+00:04:54,070 --> 00:04:57,160
+outputting whatever log messages that
+
+98
+00:04:57,160 --> 00:05:00,250
+are coming out of the Yui system Yui has
+
+99
+00:05:00,250 --> 00:05:02,170
+a bit built in log or that will do the
+
+100
+00:05:02,170 --> 00:05:07,260
+will log to the browser console but it
+
+101
+00:05:07,260 --> 00:05:10,510
+but in this case we can pass this this
+
+102
+00:05:10,510 --> 00:05:12,040
+configuration attribute to make its
+
+103
+00:05:12,040 --> 00:05:14,260
+biggest so that we can see what it's
+
+104
+00:05:14,260 --> 00:05:18,550
+doing and we can do a simple program I
+
+105
+00:05:18,550 --> 00:05:21,820
+know it's boring but this is how this is
+
+106
+00:05:21,820 --> 00:05:24,220
+how we get why you I running there's a
+
+107
+00:05:24,220 --> 00:05:29,590
+project called node node J s hyphen Yui
+
+108
+00:05:29,590 --> 00:05:33,460
+3 and that that projects available on
+
+109
+00:05:33,460 --> 00:05:37,990
+github under Dave glasses account and by
+
+110
+00:05:37,990 --> 00:05:41,110
+the way you can both nodejs and Yui 3
+
+111
+00:05:41,110 --> 00:05:45,670
+can support SHANY so you can chain it if
+
+112
+00:05:45,670 --> 00:05:47,380
+you like that kind of thing that first
+
+113
+00:05:47,380 --> 00:05:50,470
+line is is actually not required just
+
+114
+00:05:50,470 --> 00:05:53,410
+makes it simple more simple to execute
+
+115
+00:05:53,410 --> 00:05:56,560
+the program so this program can be
+
+116
+00:05:56,560 --> 00:06:00,700
+written in one line but then it works
+
+117
+00:06:00,700 --> 00:06:03,130
+does what you expect it to if we execute
+
+118
+00:06:03,130 --> 00:06:08,020
+it and and so that's cool but it doesn't
+
+119
+00:06:08,020 --> 00:06:09,670
+really do anything with the rest of the
+
+120
+00:06:09,670 --> 00:06:14,320
+library so the next part was to get the
+
+121
+00:06:14,320 --> 00:06:15,880
+loader to work and so the way that
+
+122
+00:06:15,880 --> 00:06:19,000
+loader works in a browser is it goes out
+
+123
+00:06:19,000 --> 00:06:20,800
+fetches remote well it calculates the
+
+124
+00:06:20,800 --> 00:06:22,960
+dependencies Fitch's remote resources
+
+125
+00:06:22,960 --> 00:06:27,100
+and and insert script nodes into the
+
+126
+00:06:27,100 --> 00:06:31,180
+document and then sets everything up so
+
+127
+00:06:31,180 --> 00:06:33,040
+all we had to do is replace the
+
+128
+00:06:33,040 --> 00:06:35,110
+transport that Yui normally uses to
+
+129
+00:06:35,110 --> 00:06:39,300
+something that is more that that uses a
+
+130
+00:06:39,300 --> 00:06:44,870
+nodes either remote
+
+131
+00:06:44,870 --> 00:06:49,040
+HTTP requests or local file reads to get
+
+132
+00:06:49,040 --> 00:06:50,630
+these resources instead of trying to
+
+133
+00:06:50,630 --> 00:06:52,670
+answer script notes that point
+
+134
+00:06:52,670 --> 00:06:55,430
+everything our system that that relies
+
+135
+00:06:55,430 --> 00:06:58,820
+on script note inserts just work so
+
+136
+00:06:58,820 --> 00:07:01,970
+loading these resources also things like
+
+137
+00:07:01,970 --> 00:07:03,920
+JSON p where we're using where we're
+
+138
+00:07:03,920 --> 00:07:07,790
+fetching remote data and and processing
+
+139
+00:07:07,790 --> 00:07:13,250
+that data so we can test that out this
+
+140
+00:07:13,250 --> 00:07:15,470
+was the first little simple test that
+
+141
+00:07:15,470 --> 00:07:17,590
+says okay we're going to get why you I
+
+142
+00:07:17,590 --> 00:07:20,870
+we're going to have it fetch the custom
+
+143
+00:07:20,870 --> 00:07:22,310
+event system and all the dependencies
+
+144
+00:07:22,310 --> 00:07:24,410
+that are required we're going to test
+
+145
+00:07:24,410 --> 00:07:28,220
+out the the custom event system and now
+
+146
+00:07:28,220 --> 00:07:30,740
+we see basically this is the output of
+
+147
+00:07:30,740 --> 00:07:34,430
+it it analyzes the dependencies it gets
+
+148
+00:07:34,430 --> 00:07:38,720
+the loader it it fetches all the
+
+149
+00:07:38,720 --> 00:07:41,930
+individual components this in this case
+
+150
+00:07:41,930 --> 00:07:43,640
+on the local file system it could get it
+
+151
+00:07:43,640 --> 00:07:47,120
+remotely as well hooks everything up and
+
+152
+00:07:47,120 --> 00:07:49,490
+then finally execute that custom event
+
+153
+00:07:49,490 --> 00:07:55,380
+so it works fine and that's cool
+
+154
+00:07:55,390 --> 00:07:59,600
+something more more sophisticated so why
+
+155
+00:07:59,600 --> 00:08:02,660
+you i knows how to load itself but it
+
+156
+00:08:02,660 --> 00:08:05,510
+also knows how to load Yui 3 gallery r
+
+157
+00:08:05,510 --> 00:08:07,220
+mod gallery modules and if you don't
+
+158
+00:08:07,220 --> 00:08:09,410
+know about the gallery basically you're
+
+159
+00:08:09,410 --> 00:08:12,200
+you can submit your code you know onto
+
+160
+00:08:12,200 --> 00:08:15,770
+our gallery and request to have it on
+
+161
+00:08:15,770 --> 00:08:19,250
+the CDN if you if you you have to it has
+
+162
+00:08:19,250 --> 00:08:20,900
+to be released under the same license
+
+163
+00:08:20,900 --> 00:08:22,760
+that Yui is and all this but we will put
+
+164
+00:08:22,760 --> 00:08:25,430
+it on the Yahoo CDN and then interest
+
+165
+00:08:25,430 --> 00:08:28,490
+intrinsically Yui 3 knows how to load
+
+166
+00:08:28,490 --> 00:08:31,100
+that and so in this case I'm actually
+
+167
+00:08:31,100 --> 00:08:33,950
+going to request a Yui 3 gallery module
+
+168
+00:08:33,950 --> 00:08:37,340
+for white YQL and JSON so it's going to
+
+169
+00:08:37,340 --> 00:08:40,190
+go out it's going to get yql from the
+
+170
+00:08:40,190 --> 00:08:43,280
+gallery so from the yahoo CDN analyze
+
+171
+00:08:43,280 --> 00:08:46,160
+its dependencies along with the JSON
+
+172
+00:08:46,160 --> 00:08:48,440
+dependencies do another combo URL to get
+
+173
+00:08:48,440 --> 00:08:51,590
+all those or get actually in this case I
+
+174
+00:08:51,590 --> 00:08:54,080
+think I'm getting them I'm configured to
+
+175
+00:08:54,080 --> 00:08:57,740
+get it locally yet and then finally I
+
+176
+00:08:57,740 --> 00:08:58,640
+can do
+
+177
+00:08:58,640 --> 00:09:01,070
+ql query i should get you know the
+
+178
+00:09:01,070 --> 00:09:02,780
+results on this expected in this case
+
+179
+00:09:02,780 --> 00:09:07,750
+I'm I'm Quarian my github user data and
+
+180
+00:09:07,750 --> 00:09:12,170
+I cut out all the all the boilerplate
+
+181
+00:09:12,170 --> 00:09:24,110
+but if I ran this look like this
+
+182
+00:09:24,120 --> 00:09:26,709
+so it goes out it's going to fetch it's
+
+183
+00:09:26,709 --> 00:09:30,550
+going to go and do all that dependency
+
+184
+00:09:30,550 --> 00:09:31,839
+processing like I was talking about
+
+185
+00:09:31,839 --> 00:09:34,990
+finally execute that query so on my
+
+186
+00:09:34,990 --> 00:09:38,350
+machine right here running nodejs I've
+
+187
+00:09:38,350 --> 00:09:42,279
+gotten remote data local data for the
+
+188
+00:09:42,279 --> 00:09:45,579
+library put it all together executed YQL
+
+189
+00:09:45,579 --> 00:09:47,620
+query which in turn use the new script
+
+190
+00:09:47,620 --> 00:09:50,890
+transport that I replaced and execute
+
+191
+00:09:50,890 --> 00:09:52,690
+that query I got everything back and it
+
+192
+00:09:52,690 --> 00:09:57,120
+works fine so pretty pleased with that
+
+193
+00:09:57,120 --> 00:10:00,010
+but that's but that's a good that's a
+
+194
+00:10:00,010 --> 00:10:04,149
+good start got some other ideas why you
+
+195
+00:10:04,149 --> 00:10:05,560
+want like I said why do I knows how it
+
+196
+00:10:05,560 --> 00:10:10,779
+will itself so why not have Yui load
+
+197
+00:10:10,779 --> 00:10:13,899
+itself from the server so now let's talk
+
+198
+00:10:13,899 --> 00:10:16,899
+about putting Yui behind a web server or
+
+199
+00:10:16,899 --> 00:10:19,120
+are actually exposing it as a web server
+
+200
+00:10:19,120 --> 00:10:28,060
+and and using the built-in loader have
+
+201
+00:10:28,060 --> 00:10:32,529
+it emit script and for Yui so in this
+
+202
+00:10:32,529 --> 00:10:35,470
+case what I've got here is a is a loader
+
+203
+00:10:35,470 --> 00:10:37,959
+service that actually will provide combo
+
+204
+00:10:37,959 --> 00:10:42,040
+handling locally all i'm doing is i'm
+
+205
+00:10:42,040 --> 00:10:45,790
+configuring yui to look for the
+
+206
+00:10:45,790 --> 00:10:49,000
+resources in a different location which
+
+207
+00:10:49,000 --> 00:10:52,540
+in this case this is a working a web
+
+208
+00:10:52,540 --> 00:10:58,810
+server on Dave glasses test machine so
+
+209
+00:10:58,810 --> 00:11:08,940
+and it should still be working
+
+210
+00:11:08,950 --> 00:11:13,600
+so I execute that code looks like this I
+
+211
+00:11:13,600 --> 00:11:15,790
+pointed out his combo server this is
+
+212
+00:11:15,790 --> 00:11:22,630
+drag and drop it works if we look at the
+
+213
+00:11:22,630 --> 00:11:26,380
+head of the document you can maybe see
+
+214
+00:11:26,380 --> 00:11:28,270
+if I can fit it that this is actually
+
+215
+00:11:28,270 --> 00:11:32,140
+one combo URL or combo handled script
+
+216
+00:11:32,140 --> 00:11:35,140
+that was served from his machine so
+
+217
+00:11:35,140 --> 00:11:40,150
+that's cool taking a step further
+
+218
+00:11:40,150 --> 00:11:43,720
+because Yui knows about the dependencies
+
+219
+00:11:43,720 --> 00:11:46,120
+that are requires we can take it one
+
+220
+00:11:46,120 --> 00:11:47,860
+step further and say when I request that
+
+221
+00:11:47,860 --> 00:11:50,920
+Yui script tag I can also fill in the
+
+222
+00:11:50,920 --> 00:11:52,600
+dependency trees i know i need upfront
+
+223
+00:11:52,600 --> 00:11:55,570
+so in this case i'm saying i'm passing
+
+224
+00:11:55,570 --> 00:11:59,200
+in module names that are Yui module
+
+225
+00:11:59,200 --> 00:12:02,950
+names drag and drop in I oh and it's
+
+226
+00:12:02,950 --> 00:12:04,540
+it's on the server side is going to
+
+227
+00:12:04,540 --> 00:12:06,760
+analyze all the dependencies give you
+
+228
+00:12:06,760 --> 00:12:09,700
+one combo URL for everything and now I
+
+229
+00:12:09,700 --> 00:12:11,620
+can immediately access that there'll be
+
+230
+00:12:11,620 --> 00:12:14,890
+no further HTTP requests if I'm not if I
+
+231
+00:12:14,890 --> 00:12:20,500
+if I don't need anything else one step
+
+232
+00:12:20,500 --> 00:12:23,650
+further quick Yui is a little extra
+
+233
+00:12:23,650 --> 00:12:25,480
+service on top of it says okay well
+
+234
+00:12:25,480 --> 00:12:28,300
+let's make it as easy as possible to use
+
+235
+00:12:28,300 --> 00:12:33,160
+Yui with this combo service so I need
+
+236
+00:12:33,160 --> 00:12:36,580
+these components I'll go ahead and get
+
+237
+00:12:36,580 --> 00:12:38,590
+all these components combo handle them
+
+238
+00:12:38,590 --> 00:12:43,540
+deliver them and also create a global y
+
+239
+00:12:43,540 --> 00:12:46,620
+variable create that instance for you
+
+240
+00:12:46,620 --> 00:12:49,290
+now you can get rid of that boilerplate
+
+241
+00:12:49,290 --> 00:12:54,540
+code that wraps the actual application
+
+242
+00:12:54,540 --> 00:12:57,220
+trying to reduce the barrier entry 2 by
+
+243
+00:12:57,220 --> 00:13:00,090
+2 to get in your application running so
+
+244
+00:13:00,090 --> 00:13:03,400
+all that works you know great it's
+
+245
+00:13:03,400 --> 00:13:09,400
+working right now
+
+246
+00:13:09,410 --> 00:13:20,640
+so it's same deal by the way why do I
+
+247
+00:13:20,640 --> 00:13:23,100
+that loader service is still on this on
+
+248
+00:13:23,100 --> 00:13:26,280
+the client side here so if i once i do
+
+249
+00:13:26,280 --> 00:13:28,020
+that the initial request and get that
+
+250
+00:13:28,020 --> 00:13:29,880
+payload i can always add more stuff that
+
+251
+00:13:29,880 --> 00:13:33,390
+isn't already on the page and the same
+
+252
+00:13:33,390 --> 00:13:35,970
+syntax you used to set up your instance
+
+253
+00:13:35,970 --> 00:13:39,210
+can be used later in this case i can ask
+
+254
+00:13:39,210 --> 00:13:42,420
+for slider the syntax for Yui use is
+
+255
+00:13:42,420 --> 00:13:44,970
+okay here's here's the component give me
+
+256
+00:13:44,970 --> 00:13:47,100
+give me a function to execute at the end
+
+257
+00:13:47,100 --> 00:13:48,900
+of it so whether or not i already have
+
+258
+00:13:48,900 --> 00:13:50,700
+the component available or i have to
+
+259
+00:13:50,700 --> 00:13:54,300
+fetch it so it's asynchronous my code
+
+260
+00:13:54,300 --> 00:13:56,490
+can run right then and it's all it's all
+
+261
+00:13:56,490 --> 00:14:01,310
+good by the way we can also combine
+
+262
+00:14:01,310 --> 00:14:03,540
+custom resources depending on your
+
+263
+00:14:03,540 --> 00:14:04,920
+configuration there's a there are a lot
+
+264
+00:14:04,920 --> 00:14:08,340
+of configurations for you to serve your
+
+265
+00:14:08,340 --> 00:14:10,410
+own components from your server or like
+
+266
+00:14:10,410 --> 00:14:12,960
+I was talking about with the gallery if
+
+267
+00:14:12,960 --> 00:14:15,210
+you submit it to gallery get it on CDN
+
+268
+00:14:15,210 --> 00:14:17,400
+and trinsic lee it will know how to pull
+
+269
+00:14:17,400 --> 00:14:24,000
+those resources let me back up a second
+
+270
+00:14:24,000 --> 00:14:27,180
+I know that there's I've heard that
+
+271
+00:14:27,180 --> 00:14:28,770
+there's a few people that prefer jquery
+
+272
+00:14:28,770 --> 00:14:31,440
+so i thought i'd try to see what happens
+
+273
+00:14:31,440 --> 00:14:34,530
+this morning if to get a jquery in here
+
+274
+00:14:34,530 --> 00:14:45,010
+so i ran this so i put this together
+
+275
+00:14:45,020 --> 00:14:46,670
+so this is actually how you can
+
+276
+00:14:46,670 --> 00:14:48,260
+configure those external resources is
+
+277
+00:14:48,260 --> 00:14:50,870
+one way and i'm just saying that i have
+
+278
+00:14:50,870 --> 00:14:55,190
+a jquery module that that's located here
+
+279
+00:14:55,190 --> 00:14:57,920
+then i can use it and it will pull it
+
+280
+00:14:57,920 --> 00:15:01,090
+and then try to execute that code and
+
+281
+00:15:01,090 --> 00:15:10,610
+you know it's actually run that it fails
+
+282
+00:15:10,610 --> 00:15:12,980
+it fails it's not surprising it's
+
+283
+00:15:12,980 --> 00:15:15,980
+looking for a window why you i would
+
+284
+00:15:15,980 --> 00:15:18,800
+have failed that way at one point in
+
+285
+00:15:18,800 --> 00:15:23,260
+time as well before I i mentioned that
+
+286
+00:15:23,260 --> 00:15:26,990
+Yui isn't all about the Dom but it but
+
+287
+00:15:26,990 --> 00:15:29,150
+it is a lot about the Dom so those
+
+288
+00:15:29,150 --> 00:15:32,690
+jquery and other these other libraries
+
+289
+00:15:32,690 --> 00:15:36,380
+and so the next step after all this is
+
+290
+00:15:36,380 --> 00:15:38,300
+like how cool would it be if we could we
+
+291
+00:15:38,300 --> 00:15:41,000
+can have some kind of Dom so on the
+
+292
+00:15:41,000 --> 00:15:43,670
+server side along with the nodejs if and
+
+293
+00:15:43,670 --> 00:15:47,660
+and and be able to use more components
+
+294
+00:15:47,660 --> 00:15:51,980
+from our library so Dave got on the case
+
+295
+00:15:51,980 --> 00:15:54,440
+I think that that was after the first
+
+296
+00:15:54,440 --> 00:15:56,480
+two days of everything I did hear the
+
+297
+00:15:56,480 --> 00:15:58,880
+next two days I think he got I got he
+
+298
+00:15:58,880 --> 00:16:04,310
+got the rest of it done but he put
+
+299
+00:16:04,310 --> 00:16:07,100
+together a couple of projects that are
+
+300
+00:16:07,100 --> 00:16:10,460
+out there j/s Dom both of these are
+
+301
+00:16:10,460 --> 00:16:12,620
+available on github jay is done he
+
+302
+00:16:12,620 --> 00:16:15,140
+worked with the with the author that one
+
+303
+00:16:15,140 --> 00:16:16,970
+to get it to work the way he needed to
+
+304
+00:16:16,970 --> 00:16:20,660
+work and HTML parser he he kind of
+
+305
+00:16:20,660 --> 00:16:22,130
+hacked that fork didn't acted a little
+
+306
+00:16:22,130 --> 00:16:26,480
+bit we needed it for inner HTML the Jazz
+
+307
+00:16:26,480 --> 00:16:28,610
+dump provides fooled on level one
+
+308
+00:16:28,610 --> 00:16:32,920
+support and these are generic JavaScript
+
+309
+00:16:32,920 --> 00:16:35,660
+implementations for developing a fake
+
+310
+00:16:35,660 --> 00:16:41,660
+Tom and and it works all of our Dom
+
+311
+00:16:41,660 --> 00:16:43,540
+related components can run under this
+
+312
+00:16:43,540 --> 00:16:48,320
+thing's like selector API that are no
+
+313
+00:16:48,320 --> 00:16:51,650
+wrapper around the around HTML elements
+
+314
+00:16:51,650 --> 00:16:55,970
+Dom creation manipulation styles all
+
+315
+00:16:55,970 --> 00:16:58,610
+these things actually work
+
+316
+00:16:58,610 --> 00:17:05,870
+are our test suites pass it looks a
+
+317
+00:17:05,870 --> 00:17:07,250
+little bit like this you know that
+
+318
+00:17:07,250 --> 00:17:09,770
+basically each this server that we we
+
+319
+00:17:09,770 --> 00:17:11,809
+have now this HTML service can actually
+
+320
+00:17:11,809 --> 00:17:14,449
+create individual requests with their
+
+321
+00:17:14,449 --> 00:17:16,370
+own document and we can start working
+
+322
+00:17:16,370 --> 00:17:18,020
+with the Dom after we have all that
+
+323
+00:17:18,020 --> 00:17:20,150
+boilerplate set up and it's running
+
+324
+00:17:20,150 --> 00:17:24,350
+right now on that test server you can
+
+325
+00:17:24,350 --> 00:17:27,049
+take a look calendar control not that
+
+326
+00:17:27,049 --> 00:17:29,330
+interesting by itself but this is this
+
+327
+00:17:29,330 --> 00:17:33,080
+this is a this is a control that is in
+
+328
+00:17:33,080 --> 00:17:35,330
+Yui too so first of all we're pulling
+
+329
+00:17:35,330 --> 00:17:38,419
+the that combo loader is also pulling in
+
+330
+00:17:38,419 --> 00:17:42,380
+Yui Yui to resources via the two and
+
+331
+00:17:42,380 --> 00:17:45,320
+three project that that we put up a rep
+
+332
+00:17:45,320 --> 00:17:49,280
+with 3.1 oh so this is rendering the
+
+333
+00:17:49,280 --> 00:17:52,160
+HTML for this calendar control exactly
+
+334
+00:17:52,160 --> 00:17:55,490
+the same HTML that would be rendered if
+
+335
+00:17:55,490 --> 00:17:59,960
+you ran this code on the client but the
+
+336
+00:17:59,960 --> 00:18:01,580
+difference is is now each time I do
+
+337
+00:18:01,580 --> 00:18:08,030
+something here from clicking pieces of
+
+338
+00:18:08,030 --> 00:18:10,400
+the calendar control each time it is
+
+339
+00:18:10,400 --> 00:18:12,679
+going back to the server and in fact if
+
+340
+00:18:12,679 --> 00:18:14,450
+you look at the source we're not
+
+341
+00:18:14,450 --> 00:18:17,919
+delivering any script at all it's all
+
+342
+00:18:17,919 --> 00:18:22,790
+just HTML and CSS well what's cool about
+
+343
+00:18:22,790 --> 00:18:30,980
+this is is that this can be a part of
+
+344
+00:18:30,980 --> 00:18:32,150
+our strategy for progressive enhancement
+
+345
+00:18:32,150 --> 00:18:34,030
+you know a progressive enhancement is
+
+346
+00:18:34,030 --> 00:18:36,710
+basically your content should be
+
+347
+00:18:36,710 --> 00:18:39,410
+available to everybody all device's
+
+348
+00:18:39,410 --> 00:18:42,440
+browser new browser old browser assisted
+
+349
+00:18:42,440 --> 00:18:48,080
+to assistive technology devices and we
+
+350
+00:18:48,080 --> 00:18:49,970
+can use CSS if we have it to make it
+
+351
+00:18:49,970 --> 00:18:53,480
+pretty and jazz to make it work more
+
+352
+00:18:53,480 --> 00:18:56,540
+fancy if we want but the core thing is
+
+353
+00:18:56,540 --> 00:18:59,740
+that everybody can get that content and
+
+354
+00:18:59,740 --> 00:19:03,169
+this what what we just saw was that this
+
+355
+00:19:03,169 --> 00:19:06,429
+calendar control is the exact code that
+
+356
+00:19:06,429 --> 00:19:09,350
+that almost rendered from the server as
+
+357
+00:19:09,350 --> 00:19:11,720
+we would render on the client that
+
+358
+00:19:11,720 --> 00:19:12,440
+calendar
+
+359
+00:19:12,440 --> 00:19:15,920
+can also render itself from pre-existing
+
+360
+00:19:15,920 --> 00:19:17,990
+markup in order to support progressive
+
+361
+00:19:17,990 --> 00:19:20,680
+enhancement so basically that can that
+
+362
+00:19:20,680 --> 00:19:24,080
+that calendar control has all the
+
+363
+00:19:24,080 --> 00:19:25,790
+engineering you need in it to get
+
+364
+00:19:25,790 --> 00:19:27,500
+progressive enhancement out of the box
+
+365
+00:19:27,500 --> 00:19:29,930
+you don't have to build you don't have
+
+366
+00:19:29,930 --> 00:19:32,990
+to build a server-side application that
+
+367
+00:19:32,990 --> 00:19:35,630
+generates markup in PHP or whatever it
+
+368
+00:19:35,630 --> 00:19:39,380
+is for the for the for the core markup
+
+369
+00:19:39,380 --> 00:19:40,790
+that's going to be enhanced by that
+
+370
+00:19:40,790 --> 00:19:42,590
+JavaScript code it's the same JavaScript
+
+371
+00:19:42,590 --> 00:19:51,830
+code on both sides so here's another
+
+372
+00:19:51,830 --> 00:19:54,770
+example it's a not very pretty but it
+
+373
+00:19:54,770 --> 00:19:57,680
+actually illustrates another aspect of
+
+374
+00:19:57,680 --> 00:20:00,890
+that that's cool so this is a this is a
+
+375
+00:20:00,890 --> 00:20:04,150
+template system we have say we have a
+
+376
+00:20:04,150 --> 00:20:07,520
+multi pain view that we want to that we
+
+377
+00:20:07,520 --> 00:20:10,040
+want to render well first thing that we
+
+378
+00:20:10,040 --> 00:20:12,560
+might do is is you know pulled out that
+
+379
+00:20:12,560 --> 00:20:17,900
+entire HTML content down but subsequent
+
+380
+00:20:17,900 --> 00:20:19,940
+requests we don't need all the chrome
+
+381
+00:20:19,940 --> 00:20:21,530
+around and we don't need anything but
+
+382
+00:20:21,530 --> 00:20:24,190
+the new content generated so we can
+
+383
+00:20:24,190 --> 00:20:26,420
+situationally say okay I just want that
+
+384
+00:20:26,420 --> 00:20:30,560
+that content area or in another
+
+385
+00:20:30,560 --> 00:20:32,750
+situation we might not need any HTML
+
+386
+00:20:32,750 --> 00:20:36,890
+rendering on a server at all we maybe we
+
+387
+00:20:36,890 --> 00:20:39,050
+just want the data and we can get that
+
+388
+00:20:39,050 --> 00:20:41,810
+with the same code and just a little bit
+
+389
+00:20:41,810 --> 00:20:44,630
+of a switch in there we can have that
+
+390
+00:20:44,630 --> 00:20:46,640
+same code output three different outputs
+
+391
+00:20:46,640 --> 00:20:50,090
+and what does that get us well in this
+
+392
+00:20:50,090 --> 00:20:51,980
+third situation this is where I say okay
+
+393
+00:20:51,980 --> 00:20:54,350
+I have a client component that knows how
+
+394
+00:20:54,350 --> 00:20:57,380
+to render itself this is the the
+
+395
+00:20:57,380 --> 00:21:00,740
+enhanced experience each click is going
+
+396
+00:21:00,740 --> 00:21:02,390
+to ask for the JSON data so i can
+
+397
+00:21:02,390 --> 00:21:07,250
+rebuild the the the page on the client i
+
+398
+00:21:07,250 --> 00:21:09,920
+can generate the HTML but what if I have
+
+399
+00:21:09,920 --> 00:21:12,770
+you know I want to deliver it to to a
+
+400
+00:21:12,770 --> 00:21:16,370
+mobile device having all that script on
+
+401
+00:21:16,370 --> 00:21:19,070
+that client is expensive Val time
+
+402
+00:21:19,070 --> 00:21:21,650
+execution time maybe I just want to
+
+403
+00:21:21,650 --> 00:21:24,530
+deliver a small JavaScript piece that
+
+404
+00:21:24,530 --> 00:21:26,480
+that knows how to ask for
+
+405
+00:21:26,480 --> 00:21:29,299
+just a Content area each time and then
+
+406
+00:21:29,299 --> 00:21:31,280
+of course that first example this one
+
+407
+00:21:31,280 --> 00:21:33,740
+here when it renders the entire HTML
+
+408
+00:21:33,740 --> 00:21:37,700
+piece is is the degraded experience it's
+
+409
+00:21:37,700 --> 00:21:40,120
+it's the one that's available to anyone
+
+410
+00:21:40,120 --> 00:21:51,290
+so three different responses the same
+
+411
+00:21:51,290 --> 00:21:54,440
+code a bunch of tools in their built-in
+
+412
+00:21:54,440 --> 00:21:59,780
+already engineered for you two to help
+
+413
+00:21:59,780 --> 00:22:01,540
+you do progressive enhancement without
+
+414
+00:22:01,540 --> 00:22:04,309
+without extra engineering costs and
+
+415
+00:22:04,309 --> 00:22:06,169
+that's a big deal if you watch the
+
+416
+00:22:06,169 --> 00:22:07,880
+presentation Gems presentation yesterday
+
+417
+00:22:07,880 --> 00:22:09,860
+see all the sites that don't that don't
+
+418
+00:22:09,860 --> 00:22:11,480
+do progressive enhancement at all
+
+419
+00:22:11,480 --> 00:22:14,299
+because it's not easy but it's but you
+
+420
+00:22:14,299 --> 00:22:17,179
+need to do it so that's that's why I
+
+421
+00:22:17,179 --> 00:22:18,470
+think this is cool there's other things
+
+422
+00:22:18,470 --> 00:22:21,580
+you might do with this you can you can
+
+423
+00:22:21,580 --> 00:22:24,500
+to have the Dom available we can maybe
+
+424
+00:22:24,500 --> 00:22:26,919
+do some fast testing along with my build
+
+425
+00:22:26,919 --> 00:22:29,330
+it's not it's not a replacement for a
+
+426
+00:22:29,330 --> 00:22:31,460
+browser testing but but you can actually
+
+427
+00:22:31,460 --> 00:22:33,320
+do a lot with the utility layer that
+
+428
+00:22:33,320 --> 00:22:35,900
+doesn't actually do any Dom manipulation
+
+429
+00:22:35,900 --> 00:22:40,070
+and I could even smoke test a Dom you
+
+430
+00:22:40,070 --> 00:22:41,540
+know Dom manipulation because we do have
+
+431
+00:22:41,540 --> 00:22:43,340
+a complete Dom we can do a lot of stuff
+
+432
+00:22:43,340 --> 00:22:45,590
+there we could we could hack it we can
+
+433
+00:22:45,590 --> 00:22:47,240
+provide any kind of document who wants
+
+434
+00:22:47,240 --> 00:22:49,030
+so we could actually like try to emulate
+
+435
+00:22:49,030 --> 00:22:51,620
+things we know that are broken in IE
+
+436
+00:22:51,620 --> 00:22:53,750
+just to smoke test it before we do the
+
+437
+00:22:53,750 --> 00:22:56,299
+full before we do the full browser
+
+438
+00:22:56,299 --> 00:22:59,960
+testing also validation code is an
+
+439
+00:22:59,960 --> 00:23:01,400
+obvious one we have to we have to
+
+440
+00:23:01,400 --> 00:23:05,559
+validate form fields on a client-server
+
+441
+00:23:05,559 --> 00:23:10,000
+writing that code once is better and so
+
+442
+00:23:10,000 --> 00:23:14,419
+Yui 3 it got working under node really
+
+443
+00:23:14,419 --> 00:23:18,380
+pretty easily we're excited about you
+
+444
+00:23:18,380 --> 00:23:20,720
+know being able to run some of the code
+
+445
+00:23:20,720 --> 00:23:22,250
+that we have already have running on the
+
+446
+00:23:22,250 --> 00:23:25,100
+client on the server just like
+
+447
+00:23:25,100 --> 00:23:27,110
+presentation before and I've heard many
+
+448
+00:23:27,110 --> 00:23:28,730
+times were a little bit lazy we don't
+
+449
+00:23:28,730 --> 00:23:29,900
+want to have to write same thing twice
+
+450
+00:23:29,900 --> 00:23:34,210
+in different languages and and the and
+
+451
+00:23:34,210 --> 00:23:38,140
+the Dom work that's gone on so far is
+
+452
+00:23:38,140 --> 00:23:40,310
+has really
+
+453
+00:23:40,310 --> 00:23:42,740
+actually surprising to have its performs
+
+454
+00:23:42,740 --> 00:23:44,390
+pretty well even though it's rendered it
+
+455
+00:23:44,390 --> 00:23:47,120
+in it's rendered in script rather than
+
+456
+00:23:47,120 --> 00:23:49,340
+in C space but there's other people that
+
+457
+00:23:49,340 --> 00:23:50,690
+are working on projects where they might
+
+458
+00:23:50,690 --> 00:23:54,890
+they might build the same sort of
+
+459
+00:23:54,890 --> 00:23:57,950
+functionality and live xml or Xerces or
+
+460
+00:23:57,950 --> 00:24:00,320
+maybe even try to get a WebKit
+
+461
+00:24:00,320 --> 00:24:02,960
+implementation hooked up to the to it to
+
+462
+00:24:02,960 --> 00:24:05,450
+make it faster but today it works really
+
+463
+00:24:05,450 --> 00:24:08,420
+well and if you're interested in this
+
+464
+00:24:08,420 --> 00:24:11,630
+stuff at all I talked about the gallery
+
+465
+00:24:11,630 --> 00:24:16,220
+I mean try it out submitted to the
+
+466
+00:24:16,220 --> 00:24:20,210
+gallery be part of that community help
+
+467
+00:24:20,210 --> 00:24:23,630
+us out it's it's there will serve it
+
+468
+00:24:23,630 --> 00:24:26,170
+will serve it from our CDN for free and
+
+469
+00:24:26,170 --> 00:24:30,370
+that's all i have are they any questions
+
+470
+00:24:30,370 --> 00:24:34,010
+that might reduce d movies what's that
+
+471
+00:24:34,010 --> 00:24:40,730
+pleasure yes it's PSD all right thank
+

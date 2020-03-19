@@ -1,0 +1,3345 @@
+1
+00:00:20,510 --> 00:00:24,599
+
+everybody here to talk about promises a
+
+2
+00:00:24,599 --> 00:00:28,740
+plus and a story behind that so i'm
+
+3
+00:00:28,740 --> 00:00:31,770
+dominic and thanks for having me happy
+
+4
+00:00:31,770 --> 00:00:34,590
+to be here i want to start out by
+
+5
+00:00:34,590 --> 00:00:36,059
+talking about what I think the
+
+6
+00:00:36,059 --> 00:00:37,440
+JavaScript community is greatest
+
+7
+00:00:37,440 --> 00:00:40,110
+strength is and I think it's that what
+
+8
+00:00:40,110 --> 00:00:42,180
+we do a lot is we we turn tiny
+
+9
+00:00:42,180 --> 00:00:44,519
+primitives into into powerful patterns
+
+10
+00:00:44,519 --> 00:00:46,350
+and I think one of the most amazing
+
+11
+00:00:46,350 --> 00:00:49,170
+examples of this in recent times is the
+
+12
+00:00:49,170 --> 00:00:51,510
+the es5 module systems that we've seen
+
+13
+00:00:51,510 --> 00:00:54,180
+crop up things like commonjs modules or
+
+14
+00:00:54,180 --> 00:00:56,460
+AMD modules where we've taken these
+
+15
+00:00:56,460 --> 00:00:59,100
+these hacks really built on top of
+
+16
+00:00:59,100 --> 00:01:01,199
+function factory functions and objects
+
+17
+00:01:01,199 --> 00:01:03,629
+and turn them into a language feature
+
+18
+00:01:03,629 --> 00:01:05,460
+that was missing from our language and
+
+19
+00:01:05,460 --> 00:01:07,140
+allowed us to create you know package
+
+20
+00:01:07,140 --> 00:01:09,180
+managers and an amazing ecosystem on top
+
+21
+00:01:09,180 --> 00:01:11,130
+of that but we see this over and over
+
+22
+00:01:11,130 --> 00:01:12,869
+this is a general pattern that we do
+
+23
+00:01:12,869 --> 00:01:15,990
+something like just modules but also we
+
+24
+00:01:15,990 --> 00:01:17,490
+have classes built on this prototype
+
+25
+00:01:17,490 --> 00:01:20,070
+hack and we have callbacks that that are
+
+26
+00:01:20,070 --> 00:01:21,510
+building on we pass functions to other
+
+27
+00:01:21,510 --> 00:01:23,159
+functions and we have streams and we
+
+28
+00:01:23,159 --> 00:01:25,320
+have events event emitter is not part of
+
+29
+00:01:25,320 --> 00:01:26,789
+the language there's no like actor
+
+30
+00:01:26,789 --> 00:01:28,710
+pattern built-in but we're able to do
+
+31
+00:01:28,710 --> 00:01:30,240
+this I mean something as small as J
+
+32
+00:01:30,240 --> 00:01:32,219
+queries chainable API is an example of
+
+33
+00:01:32,219 --> 00:01:33,420
+this that's not a language feature
+
+34
+00:01:33,420 --> 00:01:36,450
+that's something we've built and
+
+35
+00:01:36,450 --> 00:01:38,249
+essentially we just use these function
+
+36
+00:01:38,249 --> 00:01:40,189
+and object primitives to cobble together
+
+37
+00:01:40,189 --> 00:01:42,719
+amazing applications and it propagate
+
+38
+00:01:42,719 --> 00:01:43,979
+like the wisdom of our patterns
+
+39
+00:01:43,979 --> 00:01:46,740
+throughout the community and I mean it's
+
+40
+00:01:46,740 --> 00:01:47,969
+a bunch of hacks but it's a bunch of
+
+41
+00:01:47,969 --> 00:01:49,530
+practical hacks and that really fits
+
+42
+00:01:49,530 --> 00:01:51,329
+with the spirit of JavaScript itself you
+
+43
+00:01:51,329 --> 00:01:54,299
+know as as its genesis in 1995 and
+
+44
+00:01:54,299 --> 00:01:55,909
+Brendan Ike's like hey let's put this
+
+45
+00:01:55,909 --> 00:01:59,130
+lisps semantics in some java syntax and
+
+46
+00:01:59,130 --> 00:02:00,990
+cool let's go I mean that's that's how
+
+47
+00:02:00,990 --> 00:02:03,119
+JavaScript works but I think this is
+
+48
+00:02:03,119 --> 00:02:06,689
+also our greatest weakness I think we
+
+49
+00:02:06,689 --> 00:02:09,420
+become prideful in our ability to shape
+
+50
+00:02:09,420 --> 00:02:11,940
+worlds out of the primordial Stardust of
+
+51
+00:02:11,940 --> 00:02:17,130
+function we get stuck in patterns we say
+
+52
+00:02:17,130 --> 00:02:19,290
+that because a certain thing is easiest
+
+53
+00:02:19,290 --> 00:02:22,200
+to express in terms of function it's
+
+54
+00:02:22,200 --> 00:02:24,660
+therefore the best pattern to use in
+
+55
+00:02:24,660 --> 00:02:27,360
+JavaScript and more generally I think
+
+56
+00:02:27,360 --> 00:02:30,030
+that we assume that the best ideas are
+
+57
+00:02:30,030 --> 00:02:31,980
+those that can be expressed most e
+
+58
+00:02:31,980 --> 00:02:34,260
+Lee in terms of JavaScript and most
+
+59
+00:02:34,260 --> 00:02:36,299
+naturally in JavaScript and we often
+
+60
+00:02:36,299 --> 00:02:38,819
+refuse to learn from other languages and
+
+61
+00:02:38,819 --> 00:02:40,470
+the lessons that have come from other
+
+62
+00:02:40,470 --> 00:02:43,590
+spaces so the promise is a plus story
+
+63
+00:02:43,590 --> 00:02:45,840
+that i want to tell you today is a story
+
+64
+00:02:45,840 --> 00:02:47,489
+where we actually as a community
+
+65
+00:02:47,489 --> 00:02:50,519
+overcame this weakness and i want to
+
+66
+00:02:50,519 --> 00:02:53,280
+kind of talk about how that went and why
+
+67
+00:02:53,280 --> 00:02:56,129
+it's important for the future of lily
+
+68
+00:02:56,129 --> 00:02:59,040
+the web and the language in general so
+
+69
+00:02:59,040 --> 00:03:00,120
+of course we first have to have a
+
+70
+00:03:00,120 --> 00:03:02,909
+minimal introduction or talk about a
+
+71
+00:03:02,909 --> 00:03:05,099
+sink programming but you know i want to
+
+72
+00:03:05,099 --> 00:03:06,360
+take a step back and be more general
+
+73
+00:03:06,360 --> 00:03:08,160
+about this than the usual just a sink
+
+74
+00:03:08,160 --> 00:03:09,870
+and JavaScript da callbacks whatever
+
+75
+00:03:09,870 --> 00:03:12,269
+right the async programming revolution
+
+76
+00:03:12,269 --> 00:03:13,769
+is something that's been going on for a
+
+77
+00:03:13,769 --> 00:03:15,930
+long time and a lot of programming
+
+78
+00:03:15,930 --> 00:03:18,329
+languages JavaScript may have made it
+
+79
+00:03:18,329 --> 00:03:20,370
+popular but it's not the first place
+
+80
+00:03:20,370 --> 00:03:23,310
+these easy ideas have been you know it's
+
+81
+00:03:23,310 --> 00:03:25,349
+it's popular because javascript is
+
+82
+00:03:25,349 --> 00:03:28,290
+popular but but that's not that's not
+
+83
+00:03:28,290 --> 00:03:31,140
+the foundation of these ideas and and
+
+84
+00:03:31,140 --> 00:03:32,940
+actually javascript is actually one of
+
+85
+00:03:32,940 --> 00:03:34,200
+the worst languages for a sink
+
+86
+00:03:34,200 --> 00:03:36,540
+programming and I think the reason for
+
+87
+00:03:36,540 --> 00:03:39,720
+this is largely historical you know Java
+
+88
+00:03:39,720 --> 00:03:41,880
+scripts initial asynchronous api's came
+
+89
+00:03:41,880 --> 00:03:44,669
+from this this wonderful set of API is
+
+90
+00:03:44,669 --> 00:03:46,680
+called the DOM and we all know how
+
+91
+00:03:46,680 --> 00:03:48,930
+pleasant Dom API czar to work with but
+
+92
+00:03:48,930 --> 00:03:51,620
+that's that's where they came from so
+
+93
+00:03:51,620 --> 00:03:54,000
+you know essentially all JavaScript
+
+94
+00:03:54,000 --> 00:03:56,040
+asynchronous API is end up being in this
+
+95
+00:03:56,040 --> 00:03:58,049
+thing called continuation passing style
+
+96
+00:03:58,049 --> 00:04:01,410
+I mean here's an oj s example because
+
+97
+00:04:01,410 --> 00:04:03,030
+nodejs kind of tried to clean up the
+
+98
+00:04:03,030 --> 00:04:05,160
+doms legacy but they really they just
+
+99
+00:04:05,160 --> 00:04:07,560
+latched on to that train where you want
+
+100
+00:04:07,560 --> 00:04:09,660
+to do something asynchronous you pass a
+
+101
+00:04:09,660 --> 00:04:11,730
+function to another function and you
+
+102
+00:04:11,730 --> 00:04:13,380
+stuff all the rest of your code in there
+
+103
+00:04:13,380 --> 00:04:15,269
+we call this continuation passing style
+
+104
+00:04:15,269 --> 00:04:17,250
+you pass a continuation of your program
+
+105
+00:04:17,250 --> 00:04:20,700
+to somewhere else I mean no decided on
+
+106
+00:04:20,700 --> 00:04:22,169
+the common signature for its callbacks
+
+107
+00:04:22,169 --> 00:04:23,760
+kind of getting away from the doms mess
+
+108
+00:04:23,760 --> 00:04:25,200
+of you know sometimes we use events
+
+109
+00:04:25,200 --> 00:04:26,580
+sometimes we use callbacks sometimes
+
+110
+00:04:26,580 --> 00:04:29,880
+we'll just do whatever and and but in
+
+111
+00:04:29,880 --> 00:04:31,320
+and then you know most of the time it's
+
+112
+00:04:31,320 --> 00:04:33,449
+consistent but it never took a step back
+
+113
+00:04:33,449 --> 00:04:36,270
+and said what's the landscape of design
+
+114
+00:04:36,270 --> 00:04:37,770
+patterns for asynchronous programming
+
+115
+00:04:37,770 --> 00:04:40,469
+how could we kind of look at what other
+
+116
+00:04:40,469 --> 00:04:41,789
+languages are doing or what other
+
+117
+00:04:41,789 --> 00:04:43,620
+frameworks are doing or what's possible
+
+118
+00:04:43,620 --> 00:04:45,569
+when you want to do asynchronous program
+
+119
+00:04:45,569 --> 00:04:47,039
+it just stuck with what the Dom was
+
+120
+00:04:47,039 --> 00:04:49,080
+doing which is just continuation passing
+
+121
+00:04:49,080 --> 00:04:51,629
+style and I think this is generally part
+
+122
+00:04:51,629 --> 00:04:53,369
+of the trap that we often fall into the
+
+123
+00:04:53,369 --> 00:04:55,860
+the more functions trap I like to call
+
+124
+00:04:55,860 --> 00:04:59,309
+it you spell it MOA are and where you do
+
+125
+00:04:59,309 --> 00:05:00,869
+literally the the simplest thing
+
+126
+00:05:00,869 --> 00:05:04,379
+possible so continuation passing style
+
+127
+00:05:04,379 --> 00:05:07,919
+in my opinion is easy right everyone can
+
+128
+00:05:07,919 --> 00:05:09,509
+do it callbacks are easy but it is not
+
+129
+00:05:09,509 --> 00:05:12,869
+simple so easy in this sense i mean it's
+
+130
+00:05:12,869 --> 00:05:14,069
+like the nearest thing you reach for
+
+131
+00:05:14,069 --> 00:05:16,499
+it's it's a very familiar tool you reach
+
+132
+00:05:16,499 --> 00:05:18,629
+out and functions are there and you pass
+
+133
+00:05:18,629 --> 00:05:21,180
+function to other functions and you need
+
+134
+00:05:21,180 --> 00:05:22,740
+to do an async operation you just stuff
+
+135
+00:05:22,740 --> 00:05:23,990
+the rest your code in a function
+
+136
+00:05:23,990 --> 00:05:26,249
+everyone can do this like if you can't
+
+137
+00:05:26,249 --> 00:05:27,749
+do this you're kind of a JavaScript new
+
+138
+00:05:27,749 --> 00:05:29,189
+band and like people will make fun of
+
+139
+00:05:29,189 --> 00:05:30,899
+you but they kind of should because this
+
+140
+00:05:30,899 --> 00:05:33,589
+is a very javascript thing to do like
+
+141
+00:05:33,589 --> 00:05:38,339
+I'm not kidding but the thing about
+
+142
+00:05:38,339 --> 00:05:41,009
+continuation passing style is it is not
+
+143
+00:05:41,009 --> 00:05:44,039
+simple okay it is not what what do I
+
+144
+00:05:44,039 --> 00:05:46,169
+mean by that exactly like what what's
+
+145
+00:05:46,169 --> 00:05:47,309
+the difference here that I'm trying to
+
+146
+00:05:47,309 --> 00:05:50,580
+get at well I think the way that I've
+
+147
+00:05:50,580 --> 00:05:51,839
+kind of come to think about this over
+
+148
+00:05:51,839 --> 00:05:54,479
+the the years is that continuation
+
+149
+00:05:54,479 --> 00:05:56,669
+passing style traps you in something
+
+150
+00:05:56,669 --> 00:05:58,559
+called the Turing tar pit and this is
+
+151
+00:05:58,559 --> 00:06:00,689
+one of my favorite conceptual entities
+
+152
+00:06:00,689 --> 00:06:03,119
+it's the idea that you know because you
+
+153
+00:06:03,119 --> 00:06:05,189
+have a turing-complete language you can
+
+154
+00:06:05,189 --> 00:06:06,749
+just cobble together whatever program
+
+155
+00:06:06,749 --> 00:06:09,539
+you want you rebuild whatever you need
+
+156
+00:06:09,539 --> 00:06:11,519
+and this is often seen in the Dom or in
+
+157
+00:06:11,519 --> 00:06:13,050
+you know in the browser where you're
+
+158
+00:06:13,050 --> 00:06:14,369
+like oh I have JavaScript i'm just going
+
+159
+00:06:14,369 --> 00:06:16,079
+to redo all of the browser's primitives
+
+160
+00:06:16,079 --> 00:06:17,430
+in terms of javascript like that's
+
+161
+00:06:17,430 --> 00:06:18,569
+you're getting trapped in the trying
+
+162
+00:06:18,569 --> 00:06:21,119
+carpet but it's the same thing you're in
+
+163
+00:06:21,119 --> 00:06:22,709
+you're in asynchronous programming in
+
+164
+00:06:22,709 --> 00:06:24,389
+JavaScript land you're like oh well I
+
+165
+00:06:24,389 --> 00:06:25,709
+have JavaScript I have a turing-complete
+
+166
+00:06:25,709 --> 00:06:27,839
+language let me just cobble together an
+
+167
+00:06:27,839 --> 00:06:29,939
+asynchronous abstraction like using the
+
+168
+00:06:29,939 --> 00:06:32,610
+basic JavaScript stuff and the problem
+
+169
+00:06:32,610 --> 00:06:34,709
+is that as with altering carpet things
+
+170
+00:06:34,709 --> 00:06:37,469
+you end up reinventing basic features of
+
+171
+00:06:37,469 --> 00:06:39,389
+the language something like returning a
+
+172
+00:06:39,389 --> 00:06:42,119
+value or throwing an error or a call
+
+173
+00:06:42,119 --> 00:06:44,550
+stack you lose those and you try and
+
+174
+00:06:44,550 --> 00:06:46,499
+reinvent them by cobbling together these
+
+175
+00:06:46,499 --> 00:06:49,110
+crazy Combinator functions that just tie
+
+176
+00:06:49,110 --> 00:06:50,669
+together other functions to try and
+
+177
+00:06:50,669 --> 00:06:53,969
+express your basic ideas and and of
+
+178
+00:06:53,969 --> 00:06:55,800
+course it's not hard right everyone can
+
+179
+00:06:55,800 --> 00:06:58,499
+do this this is easy stuff but it's not
+
+180
+00:06:58,499 --> 00:06:59,040
+simple
+
+181
+00:06:59,040 --> 00:07:01,890
+at all and this kind of complexity that
+
+182
+00:07:01,890 --> 00:07:03,690
+comes out really has the kind of
+
+183
+00:07:03,690 --> 00:07:05,700
+maintenance and cognitive burdens that
+
+184
+00:07:05,700 --> 00:07:08,160
+you would expect from a complex system
+
+185
+00:07:08,160 --> 00:07:09,840
+you know you're always making asking
+
+186
+00:07:09,840 --> 00:07:11,460
+questions or you know second-guessing
+
+187
+00:07:11,460 --> 00:07:12,690
+yourself you're saying did somebody
+
+188
+00:07:12,690 --> 00:07:14,790
+accidentally call my call back twice or
+
+189
+00:07:14,790 --> 00:07:16,380
+you know did they call it with both an
+
+190
+00:07:16,380 --> 00:07:18,240
+error and a value or what's the value of
+
+191
+00:07:18,240 --> 00:07:19,650
+that thing I use to do things in
+
+192
+00:07:19,650 --> 00:07:21,360
+parallel it's like a counter sometimes
+
+193
+00:07:21,360 --> 00:07:23,160
+with some of this is a map but I don't
+
+194
+00:07:23,160 --> 00:07:25,350
+know like what did I remember to pass
+
+195
+00:07:25,350 --> 00:07:27,270
+with the heirs to my collar like the
+
+196
+00:07:27,270 --> 00:07:28,410
+answer to all these questions should
+
+197
+00:07:28,410 --> 00:07:30,450
+always be I don't know and I don't want
+
+198
+00:07:30,450 --> 00:07:32,220
+to know I don't care i just want to do
+
+199
+00:07:32,220 --> 00:07:35,160
+an asynchronous function call and i
+
+200
+00:07:35,160 --> 00:07:36,810
+don't care how like that would be
+
+201
+00:07:36,810 --> 00:07:38,390
+something that was simple but
+
+202
+00:07:38,390 --> 00:07:40,800
+continuation passing style and callbacks
+
+203
+00:07:40,800 --> 00:07:43,830
+in general are not simple so the way
+
+204
+00:07:43,830 --> 00:07:45,240
+that other languages have solved this
+
+205
+00:07:45,240 --> 00:07:47,910
+asynchronous function call paradigm if
+
+206
+00:07:47,910 --> 00:07:49,980
+you want to look to them for four
+
+207
+00:07:49,980 --> 00:07:52,530
+lessons is by a concept called promises
+
+208
+00:07:52,530 --> 00:07:54,330
+and it comes from some very old
+
+209
+00:07:54,330 --> 00:07:56,760
+languages jewel and e are kind of the
+
+210
+00:07:56,760 --> 00:07:57,840
+originator of these and these are
+
+211
+00:07:57,840 --> 00:08:00,600
+somewhat academic languages that that
+
+212
+00:08:00,600 --> 00:08:01,590
+haven't seen that much practical
+
+213
+00:08:01,590 --> 00:08:02,430
+application but they're really
+
+214
+00:08:02,430 --> 00:08:04,140
+interesting and they have some first
+
+215
+00:08:04,140 --> 00:08:05,220
+class to support for this kind of
+
+216
+00:08:05,220 --> 00:08:08,010
+asynchronous function call idea but it's
+
+217
+00:08:08,010 --> 00:08:09,450
+made its way into a lot more mainstream
+
+218
+00:08:09,450 --> 00:08:11,520
+languages as you can see you know it's
+
+219
+00:08:11,520 --> 00:08:13,200
+in Java it's in Python it's an f-sharp
+
+220
+00:08:13,200 --> 00:08:15,720
+and VF charter got into the net in
+
+221
+00:08:15,720 --> 00:08:18,480
+general it's in C++ now it's of course
+
+222
+00:08:18,480 --> 00:08:19,500
+it's in dark because dark have
+
+223
+00:08:19,500 --> 00:08:21,330
+everything it's and it's it's in
+
+224
+00:08:21,330 --> 00:08:24,090
+javascript in the form of promises a
+
+225
+00:08:24,090 --> 00:08:27,120
+plus and so I think it's interesting
+
+226
+00:08:27,120 --> 00:08:28,620
+seeing this list because generally when
+
+227
+00:08:28,620 --> 00:08:30,240
+you see a list like this where all these
+
+228
+00:08:30,240 --> 00:08:32,700
+languages have adopted this feature it
+
+229
+00:08:32,700 --> 00:08:34,140
+generally means either one of two things
+
+230
+00:08:34,140 --> 00:08:36,210
+it means that the idea is so good that
+
+231
+00:08:36,210 --> 00:08:38,790
+everyone had to copy it or it means that
+
+232
+00:08:38,790 --> 00:08:40,349
+there's some convergent evolution on a
+
+233
+00:08:40,349 --> 00:08:42,210
+solution that everyone agreed was a
+
+234
+00:08:42,210 --> 00:08:44,460
+really good one and promises I think are
+
+235
+00:08:44,460 --> 00:08:48,480
+a bit of both so you know to convince
+
+236
+00:08:48,480 --> 00:08:50,070
+you this I I don't really want to show
+
+237
+00:08:50,070 --> 00:08:52,020
+you how to use promises in JavaScript I
+
+238
+00:08:52,020 --> 00:08:53,340
+think there's there's a lot of good blog
+
+239
+00:08:53,340 --> 00:08:56,220
+posts on that it's it's fun it's I'd
+
+240
+00:08:56,220 --> 00:08:57,690
+love to you know do a little tutorial
+
+241
+00:08:57,690 --> 00:08:59,790
+but I think I want to kind of blow you
+
+242
+00:08:59,790 --> 00:09:01,950
+out of the water here and say why you
+
+243
+00:09:01,950 --> 00:09:03,660
+should use promises of JavaScript with
+
+244
+00:09:03,660 --> 00:09:06,210
+some really compelling examples so the
+
+245
+00:09:06,210 --> 00:09:07,770
+essential point of promises that i want
+
+246
+00:09:07,770 --> 00:09:10,230
+to show with these examples is to give
+
+247
+00:09:10,230 --> 00:09:11,670
+you bat is that you're going to get back
+
+248
+00:09:11,670 --> 00:09:12,870
+asynchronous versions
+
+249
+00:09:12,870 --> 00:09:15,750
+of return and throw so instead of
+
+250
+00:09:15,750 --> 00:09:18,000
+thrashing wildly in this Turing carpet
+
+251
+00:09:18,000 --> 00:09:20,190
+only to sink further into this callback
+
+252
+00:09:20,190 --> 00:09:22,050
+molasses we're going to turn our
+
+253
+00:09:22,050 --> 00:09:24,480
+attention to an abstraction that can
+
+254
+00:09:24,480 --> 00:09:25,980
+bring us back into the semantics of
+
+255
+00:09:25,980 --> 00:09:28,080
+JavaScript the language the one that
+
+256
+00:09:28,080 --> 00:09:29,700
+we're used to we're going to create an
+
+257
+00:09:29,700 --> 00:09:31,290
+asynchronous call stack with these
+
+258
+00:09:31,290 --> 00:09:33,750
+promises regaining all the semantics of
+
+259
+00:09:33,750 --> 00:09:35,790
+the language as just like with
+
+260
+00:09:35,790 --> 00:09:36,930
+synchronous return and throw an we're
+
+261
+00:09:36,930 --> 00:09:38,310
+going to integrate well with synchronous
+
+262
+00:09:38,310 --> 00:09:40,770
+return well throw and so I think for
+
+263
+00:09:40,770 --> 00:09:42,839
+this reason promises are fundamentally a
+
+264
+00:09:42,839 --> 00:09:45,930
+simple thing they allow us to compose
+
+265
+00:09:45,930 --> 00:09:47,670
+our stuff in the same way that a normal
+
+266
+00:09:47,670 --> 00:09:50,130
+language constructs would and you can
+
+267
+00:09:50,130 --> 00:09:51,570
+compose a string or dysfunction calls
+
+268
+00:09:51,570 --> 00:09:53,850
+with promises without having to entangle
+
+269
+00:09:53,850 --> 00:09:56,070
+your concern of calling the asynchronous
+
+270
+00:09:56,070 --> 00:09:58,260
+function with the functions concern of
+
+271
+00:09:58,260 --> 00:10:00,510
+calling your call back and so I think
+
+272
+00:10:00,510 --> 00:10:02,279
+the first really drastic demonstration
+
+273
+00:10:02,279 --> 00:10:04,650
+of this is available to you actually if
+
+274
+00:10:04,650 --> 00:10:07,020
+you go to Chrome Canary and turn on some
+
+275
+00:10:07,020 --> 00:10:09,630
+experimental JavaScript flags so let me
+
+276
+00:10:09,630 --> 00:10:10,680
+show you about something called
+
+277
+00:10:10,680 --> 00:10:12,779
+generators so this is this is actually
+
+278
+00:10:12,779 --> 00:10:16,070
+not promises related at the moment but
+
+279
+00:10:16,070 --> 00:10:18,750
+so so the idea here is you declare the
+
+280
+00:10:18,750 --> 00:10:20,010
+special type of function called
+
+281
+00:10:20,010 --> 00:10:22,410
+generator function which gets a little
+
+282
+00:10:22,410 --> 00:10:26,940
+star next to its name not a typo and in
+
+283
+00:10:26,940 --> 00:10:28,080
+the middle of these you can put
+
+284
+00:10:28,080 --> 00:10:30,959
+statements like yield so in this example
+
+285
+00:10:30,959 --> 00:10:33,000
+this function yields up a few numbers
+
+286
+00:10:33,000 --> 00:10:35,130
+and in between the yielding it logs some
+
+287
+00:10:35,130 --> 00:10:38,160
+console statements ABCD and so I when
+
+288
+00:10:38,160 --> 00:10:39,959
+you call the function it doesn't
+
+289
+00:10:39,959 --> 00:10:41,790
+actually execute any code right away but
+
+290
+00:10:41,790 --> 00:10:42,990
+instead it gives you this iterator
+
+291
+00:10:42,990 --> 00:10:45,959
+object and then when you call next on
+
+292
+00:10:45,959 --> 00:10:47,730
+that iterator object it'll execute the
+
+293
+00:10:47,730 --> 00:10:50,160
+code it'll log a and yield you this one
+
+294
+00:10:50,160 --> 00:10:52,080
+and what that translates to is this
+
+295
+00:10:52,080 --> 00:10:54,300
+object value one done false because
+
+296
+00:10:54,300 --> 00:10:56,279
+there's no still more code to run but
+
+297
+00:10:56,279 --> 00:10:58,320
+the rest of the code doesn't run yet so
+
+298
+00:10:58,320 --> 00:10:59,310
+this is starting to look really
+
+299
+00:10:59,310 --> 00:11:00,810
+interesting this is something we have
+
+300
+00:11:00,810 --> 00:11:02,190
+don't have in JavaScript the ability a
+
+301
+00:11:02,190 --> 00:11:04,980
+pause execution of a function I mean
+
+302
+00:11:04,980 --> 00:11:06,209
+it's still completely single threaded
+
+303
+00:11:06,209 --> 00:11:07,560
+and there's no like blocking thread
+
+304
+00:11:07,560 --> 00:11:08,700
+stuff going on here but we've paused
+
+305
+00:11:08,700 --> 00:11:10,950
+execution and said well let's just not
+
+306
+00:11:10,950 --> 00:11:13,589
+execute the rest of the code and so you
+
+307
+00:11:13,589 --> 00:11:14,910
+know you keep calling next do you keep
+
+308
+00:11:14,910 --> 00:11:16,589
+executing more pieces of the code all
+
+309
+00:11:16,589 --> 00:11:18,420
+the way down until you get to the end
+
+310
+00:11:18,420 --> 00:11:20,880
+when after you've yielded three and got
+
+311
+00:11:20,880 --> 00:11:23,130
+value three done false you call next
+
+312
+00:11:23,130 --> 00:11:25,890
+again and you get D value undefined done
+
+313
+00:11:25,890 --> 00:11:26,610
+true
+
+314
+00:11:26,610 --> 00:11:28,920
+so this is pretty magic and I think
+
+315
+00:11:28,920 --> 00:11:30,329
+what's really fun is that if you go to
+
+316
+00:11:30,329 --> 00:11:32,220
+this J's bin link and turn on your
+
+317
+00:11:32,220 --> 00:11:34,470
+Chrome Canary flags you can actually see
+
+318
+00:11:34,470 --> 00:11:36,209
+this in action you can write this code
+
+319
+00:11:36,209 --> 00:11:38,700
+and it works and so that's that's pretty
+
+320
+00:11:38,700 --> 00:11:40,649
+amazing and I'm really excited about
+
+321
+00:11:40,649 --> 00:11:42,779
+next version of javascript in general
+
+322
+00:11:42,779 --> 00:11:43,800
+but I think this is really powerful
+
+323
+00:11:43,800 --> 00:11:45,990
+because this idea where we pause
+
+324
+00:11:45,990 --> 00:11:47,910
+function execution go off and do
+
+325
+00:11:47,910 --> 00:11:49,290
+something else and then come back is
+
+326
+00:11:49,290 --> 00:11:51,420
+exactly what we need to implement
+
+327
+00:11:51,420 --> 00:11:53,610
+something like a synchronous code that
+
+328
+00:11:53,610 --> 00:11:54,959
+integrates well with our language and
+
+329
+00:11:54,959 --> 00:11:57,029
+with promises because they're an
+
+330
+00:11:57,029 --> 00:11:58,529
+abstraction for asynchronous functions
+
+331
+00:11:58,529 --> 00:12:00,480
+that integrate well with our language we
+
+332
+00:12:00,480 --> 00:12:03,149
+can do exactly that so using the cue
+
+333
+00:12:03,149 --> 00:12:05,190
+library and this is also code that works
+
+334
+00:12:05,190 --> 00:12:07,829
+today in this jas bin you can do
+
+335
+00:12:07,829 --> 00:12:10,079
+something where you do an asynchronous
+
+336
+00:12:10,079 --> 00:12:12,120
+function call to this get repo events
+
+337
+00:12:12,120 --> 00:12:13,920
+function I wrote which is also written
+
+338
+00:12:13,920 --> 00:12:16,350
+with promises and generators and you
+
+339
+00:12:16,350 --> 00:12:18,060
+call this you use the yield keyword to
+
+340
+00:12:18,060 --> 00:12:20,579
+suspend execution until it's ready to
+
+341
+00:12:20,579 --> 00:12:23,430
+come back and then it goes then updates
+
+342
+00:12:23,430 --> 00:12:25,260
+the UI and so on and i'm also using
+
+343
+00:12:25,260 --> 00:12:27,899
+yield down there to delay for 500 5000
+
+344
+00:12:27,899 --> 00:12:30,420
+milliseconds and what's amazing here and
+
+345
+00:12:30,420 --> 00:12:31,560
+what you don't see in a lot of these
+
+346
+00:12:31,560 --> 00:12:33,870
+solutions is we integrate well with the
+
+347
+00:12:33,870 --> 00:12:35,640
+surrounding language constructs and in
+
+348
+00:12:35,640 --> 00:12:37,230
+this case i'm using try-catch finally
+
+349
+00:12:37,230 --> 00:12:39,060
+this is not something you can see you no
+
+350
+00:12:39,060 --> 00:12:40,410
+longer have to do these crazy like
+
+351
+00:12:40,410 --> 00:12:42,240
+Combinator's to say oh well sometimes
+
+352
+00:12:42,240 --> 00:12:43,890
+there's an error let me handle that well
+
+353
+00:12:43,890 --> 00:12:45,570
+but in both cases I want to execute the
+
+354
+00:12:45,570 --> 00:12:46,890
+finally function but if addicts and
+
+355
+00:12:46,890 --> 00:12:48,029
+could throws an error that i do want to
+
+356
+00:12:48,029 --> 00:12:50,640
+propagate that and so on you get all
+
+357
+00:12:50,640 --> 00:12:52,470
+that for free because promises as a
+
+358
+00:12:52,470 --> 00:12:54,240
+solution integrate well with the
+
+359
+00:12:54,240 --> 00:12:56,760
+language and they they can be directly
+
+360
+00:12:56,760 --> 00:12:59,130
+dropped into a generator solution for
+
+361
+00:12:59,130 --> 00:13:00,720
+the when the language evolves that and
+
+362
+00:13:00,720 --> 00:13:06,269
+so yeah it's pretty awesome all right so
+
+363
+00:13:06,269 --> 00:13:08,070
+the other major thing about promises
+
+364
+00:13:08,070 --> 00:13:09,480
+that I think is really cool and kind of
+
+365
+00:13:09,480 --> 00:13:12,089
+gives you an idea of their power is it
+
+366
+00:13:12,089 --> 00:13:14,670
+as a bonus to just this fitting well
+
+367
+00:13:14,670 --> 00:13:16,290
+with the language abstraction we get
+
+368
+00:13:16,290 --> 00:13:18,810
+time travel as i like to call it because
+
+369
+00:13:18,810 --> 00:13:20,610
+promises are objects that represent
+
+370
+00:13:20,610 --> 00:13:22,620
+another object that will eventually be
+
+371
+00:13:22,620 --> 00:13:24,420
+available it's an object from another
+
+372
+00:13:24,420 --> 00:13:29,010
+time and so you can get a really fun
+
+373
+00:13:29,010 --> 00:13:31,320
+like example of this with this this unit
+
+374
+00:13:31,320 --> 00:13:32,880
+testing assertion I've put down at the
+
+375
+00:13:32,880 --> 00:13:34,560
+bottom and I have a library that does
+
+376
+00:13:34,560 --> 00:13:35,910
+exactly this it's called chai as
+
+377
+00:13:35,910 --> 00:13:37,560
+promised where you can say like I
+
+378
+00:13:37,560 --> 00:13:40,259
+eventually expect this object
+
+379
+00:13:40,259 --> 00:13:42,359
+too deep equal these things so if you've
+
+380
+00:13:42,359 --> 00:13:44,100
+ever done asynchronous unit testing its
+
+381
+00:13:44,100 --> 00:13:46,649
+mean it's easy but it's not simple as
+
+382
+00:13:46,649 --> 00:13:49,379
+you as I emphasized like it's just it's
+
+383
+00:13:49,379 --> 00:13:50,790
+a pain it's not as simple as it should
+
+384
+00:13:50,790 --> 00:13:54,470
+be um but you know let's let's actually
+
+385
+00:13:54,470 --> 00:13:57,479
+step back a second and let Justin
+
+386
+00:13:57,479 --> 00:13:59,479
+Timberlake tell us what school because
+
+387
+00:13:59,479 --> 00:14:03,359
+time travel isn't cool really I mean I
+
+388
+00:14:03,359 --> 00:14:05,100
+don't know what well I kind of disagree
+
+389
+00:14:05,100 --> 00:14:06,720
+with him but but he thinks that space
+
+390
+00:14:06,720 --> 00:14:10,589
+travels much cooler so so let's look at
+
+391
+00:14:10,589 --> 00:14:12,269
+this example so this goes a bit beyond
+
+392
+00:14:12,269 --> 00:14:13,949
+basic promise stuff which is usually
+
+393
+00:14:13,949 --> 00:14:16,019
+just then but the idea is you have is
+
+394
+00:14:16,019 --> 00:14:17,669
+something like a promise for a user and
+
+395
+00:14:17,669 --> 00:14:20,669
+you call its get method and to get a
+
+396
+00:14:20,669 --> 00:14:22,769
+property called repose and that actually
+
+397
+00:14:22,769 --> 00:14:24,119
+gives you a promise for the property
+
+398
+00:14:24,119 --> 00:14:26,129
+called repose and you keep chaining off
+
+399
+00:14:26,129 --> 00:14:27,179
+of that you say oh we're going to get
+
+400
+00:14:27,179 --> 00:14:28,919
+the promise for the property 0 of the
+
+401
+00:14:28,919 --> 00:14:30,809
+repos get a promise for the property
+
+402
+00:14:30,809 --> 00:14:32,729
+commit history of the zeroth repo and
+
+403
+00:14:32,729 --> 00:14:34,709
+then I'm going to invoke this function
+
+404
+00:14:34,709 --> 00:14:36,359
+so I'm going to promise for the results
+
+405
+00:14:36,359 --> 00:14:38,339
+of the invocation of the to HTML
+
+406
+00:14:38,339 --> 00:14:40,589
+function on that chemistry history and
+
+407
+00:14:40,589 --> 00:14:42,389
+then I'm going to display it in the UI
+
+408
+00:14:42,389 --> 00:14:44,339
+and then I'm going to get done and you
+
+409
+00:14:44,339 --> 00:14:45,569
+want to point out that in ECMO script
+
+410
+00:14:45,569 --> 00:14:47,489
+six with the proxies feature this is
+
+411
+00:14:47,489 --> 00:14:48,959
+going to look really pretty just like
+
+412
+00:14:48,959 --> 00:14:50,369
+all our backbone code where we do get
+
+413
+00:14:50,369 --> 00:14:52,139
+set blah blah blah blah well or ember
+
+414
+00:14:52,139 --> 00:14:53,309
+code and so on is going to look a lot
+
+415
+00:14:53,309 --> 00:14:58,169
+prettier but it's not just like okay
+
+416
+00:14:58,169 --> 00:14:59,699
+here's some nice and tactic sugar for
+
+417
+00:14:59,699 --> 00:15:01,259
+some common promised operations like
+
+418
+00:15:01,259 --> 00:15:03,949
+getting properties and invoking methods
+
+419
+00:15:03,949 --> 00:15:06,929
+what if i told you that the user promise
+
+420
+00:15:06,929 --> 00:15:09,089
+was actually a promise for a remote
+
+421
+00:15:09,089 --> 00:15:11,899
+object an object on another computer
+
+422
+00:15:11,899 --> 00:15:14,249
+right so everything here takes on a new
+
+423
+00:15:14,249 --> 00:15:17,069
+meaning right what's happening is not
+
+424
+00:15:17,069 --> 00:15:18,569
+just that we're saying oq up these
+
+425
+00:15:18,569 --> 00:15:20,730
+actions to be taken in the future we're
+
+426
+00:15:20,730 --> 00:15:23,819
+saying cue up these actions to happen on
+
+427
+00:15:23,819 --> 00:15:26,639
+another computer and then the computer
+
+428
+00:15:26,639 --> 00:15:28,829
+will say oh well he called then let me
+
+429
+00:15:28,829 --> 00:15:30,539
+send back what I've currently computed
+
+430
+00:15:30,539 --> 00:15:33,629
+the the HTML rendered on the server so
+
+431
+00:15:33,629 --> 00:15:34,949
+if your Twitter and you don't believe in
+
+432
+00:15:34,949 --> 00:15:36,479
+rendering things on this client this
+
+433
+00:15:36,479 --> 00:15:40,559
+might be a good way to go so I think
+
+434
+00:15:40,559 --> 00:15:42,209
+this is really neat because we've we've
+
+435
+00:15:42,209 --> 00:15:43,859
+got an abstraction that was originally
+
+436
+00:15:43,859 --> 00:15:44,669
+meant for kind of asynchronous
+
+437
+00:15:44,669 --> 00:15:46,079
+programming but essentially it can be
+
+438
+00:15:46,079 --> 00:15:47,729
+used for distributed programming so we
+
+439
+00:15:47,729 --> 00:15:48,959
+really know we're onto something kind of
+
+440
+00:15:48,959 --> 00:15:53,579
+fundamental here all right and you can
+
+441
+00:15:53,579 --> 00:15:54,209
+actually do this
+
+442
+00:15:54,209 --> 00:15:56,790
+today we're using a library by Chris
+
+443
+00:15:56,790 --> 00:15:59,519
+Cole who's sitting right there called Q
+
+444
+00:15:59,519 --> 00:16:01,860
+connection and in this case the remote
+
+445
+00:16:01,860 --> 00:16:04,470
+sources can be a web socket a web worker
+
+446
+00:16:04,470 --> 00:16:06,360
+or a message port which is a way of
+
+447
+00:16:06,360 --> 00:16:09,959
+communicating among iframes usually and
+
+448
+00:16:09,959 --> 00:16:12,449
+so you can get a promise using today's
+
+449
+00:16:12,449 --> 00:16:15,119
+like using libraries today for a remote
+
+450
+00:16:15,119 --> 00:16:16,800
+user object and then you can queue
+
+451
+00:16:16,800 --> 00:16:18,360
+messages to send across these boundaries
+
+452
+00:16:18,360 --> 00:16:21,749
+to remote computers or remote iframes or
+
+453
+00:16:21,749 --> 00:16:25,199
+whatever and so this is I think really
+
+454
+00:16:25,199 --> 00:16:27,329
+neat demonstration of promises that goes
+
+455
+00:16:27,329 --> 00:16:30,839
+beyond the normal stuff so that's kind
+
+456
+00:16:30,839 --> 00:16:33,749
+of the end of the promises are really
+
+457
+00:16:33,749 --> 00:16:36,660
+cool part of the talk and now I want to
+
+458
+00:16:36,660 --> 00:16:38,100
+talk about something that I think is
+
+459
+00:16:38,100 --> 00:16:42,389
+really impactful for kind of how how
+
+460
+00:16:42,389 --> 00:16:44,369
+JavaScript as a community and a language
+
+461
+00:16:44,369 --> 00:16:47,100
+evolves the prop the story I promised
+
+462
+00:16:47,100 --> 00:16:48,959
+you earlier where we overcame our
+
+463
+00:16:48,959 --> 00:16:51,029
+greatest weakness of the desire to build
+
+464
+00:16:51,029 --> 00:16:52,529
+everything and reach for the easiest
+
+465
+00:16:52,529 --> 00:16:56,730
+thing and and so on and so the story of
+
+466
+00:16:56,730 --> 00:17:00,360
+promise is a plus it it all started with
+
+467
+00:17:00,360 --> 00:17:02,279
+this thing called common J's promises a
+
+468
+00:17:02,279 --> 00:17:04,289
+and actually if you look at this message
+
+469
+00:17:04,289 --> 00:17:06,870
+it's it's by a guy on the the common J's
+
+470
+00:17:06,870 --> 00:17:09,569
+mailing list proposing to base it off of
+
+471
+00:17:09,569 --> 00:17:11,250
+dojos so it actually all started with
+
+472
+00:17:11,250 --> 00:17:13,559
+dojo which as we learned two days ago it
+
+473
+00:17:13,559 --> 00:17:17,279
+started everything but but the idea of
+
+474
+00:17:17,279 --> 00:17:19,500
+promises a and dojo promises before them
+
+475
+00:17:19,500 --> 00:17:22,199
+just captured the core idea of promises
+
+476
+00:17:22,199 --> 00:17:23,730
+from all those other languages we saw
+
+477
+00:17:23,730 --> 00:17:25,740
+the idea of an asynchronous computation
+
+478
+00:17:25,740 --> 00:17:28,799
+in an object but it had some problems as
+
+479
+00:17:28,799 --> 00:17:32,130
+a community created spec it was under
+
+480
+00:17:32,130 --> 00:17:33,990
+specified it was it was missing some key
+
+481
+00:17:33,990 --> 00:17:35,490
+features that all implementations
+
+482
+00:17:35,490 --> 00:17:38,039
+actually ended up in planting I'm it was
+
+483
+00:17:38,039 --> 00:17:40,350
+written in some paragraphs of prose that
+
+484
+00:17:40,350 --> 00:17:42,990
+were really easy to misinterpret and one
+
+485
+00:17:42,990 --> 00:17:44,820
+of the unfortunate consequences of this
+
+486
+00:17:44,820 --> 00:17:46,799
+easy to misinterpret nature of the spec
+
+487
+00:17:46,799 --> 00:17:49,919
+was as i like to call it moneybags
+
+488
+00:17:49,919 --> 00:17:54,330
+deferred so moneybags dot deferred you
+
+489
+00:17:54,330 --> 00:17:57,090
+know this is a this is a screenshot of a
+
+490
+00:17:57,090 --> 00:17:59,159
+issue tracker while I'm arguing with its
+
+491
+00:17:59,159 --> 00:18:00,720
+maintainer kind of saying hey it would
+
+492
+00:18:00,720 --> 00:18:02,250
+be really cool if you guys adopted the
+
+493
+00:18:02,250 --> 00:18:03,720
+promises a standard instead of this
+
+494
+00:18:03,720 --> 00:18:06,600
+misinterpretation of it you have and the
+
+495
+00:18:06,600 --> 00:18:08,110
+response is like sorry it was too
+
+496
+00:18:08,110 --> 00:18:09,790
+I am when I was reading that spec and I
+
+497
+00:18:09,790 --> 00:18:11,140
+got it wrong and now we're stuck with it
+
+498
+00:18:11,140 --> 00:18:15,730
+so so do too late and so they had a
+
+499
+00:18:15,730 --> 00:18:17,950
+really bad reading comprehension issue
+
+500
+00:18:17,950 --> 00:18:19,690
+they're like they missed the whole a
+
+501
+00:18:19,690 --> 00:18:22,600
+sink sink parallel and so these these
+
+502
+00:18:22,600 --> 00:18:25,750
+deferred like whatever like they they
+
+503
+00:18:25,750 --> 00:18:27,730
+don't match promises conceptually at all
+
+504
+00:18:27,730 --> 00:18:29,350
+they don't integrate all of the language
+
+505
+00:18:29,350 --> 00:18:30,910
+they don't do the async return throw
+
+506
+00:18:30,910 --> 00:18:33,580
+thing at all so they failed reading
+
+507
+00:18:33,580 --> 00:18:34,690
+comprehension and I think the only
+
+508
+00:18:34,690 --> 00:18:37,600
+realistic response to that is a Godzilla
+
+509
+00:18:37,600 --> 00:18:41,290
+facepalm so whatever I'll do my own
+
+510
+00:18:41,290 --> 00:18:44,080
+thing I recently been added to this Q
+
+511
+00:18:44,080 --> 00:18:47,200
+library by Chris Cole on but ice or a
+
+512
+00:18:47,200 --> 00:18:50,049
+solemn vow on the the grave of the Dead
+
+513
+00:18:50,049 --> 00:18:52,419
+callbacks that I buried that I'm not
+
+514
+00:18:52,419 --> 00:18:56,799
+going to let this happen again so when
+
+515
+00:18:56,799 --> 00:18:59,200
+you know some sometime later this this
+
+516
+00:18:59,200 --> 00:19:00,160
+library you may have heard of called
+
+517
+00:19:00,160 --> 00:19:03,610
+ember got a pull request that said adam
+
+518
+00:19:03,610 --> 00:19:05,320
+berg deferred mix in which implements
+
+519
+00:19:05,320 --> 00:19:07,690
+the promises i spec i took a look at the
+
+520
+00:19:07,690 --> 00:19:10,150
+code and i found out that actually those
+
+521
+00:19:10,150 --> 00:19:13,450
+are horrible horrible lies then and you
+
+522
+00:19:13,450 --> 00:19:15,400
+know we'd seen like like this this
+
+523
+00:19:15,400 --> 00:19:17,679
+misinterpretation of promises a had gone
+
+524
+00:19:17,679 --> 00:19:20,020
+on again you know and then it's really a
+
+525
+00:19:20,020 --> 00:19:22,630
+systemic problem and so you know the the
+
+526
+00:19:22,630 --> 00:19:24,280
+first appropriate response to that is of
+
+527
+00:19:24,280 --> 00:19:28,450
+course a double bunny face bomber but
+
+528
+00:19:28,450 --> 00:19:31,450
+after i was done done with that i got
+
+529
+00:19:31,450 --> 00:19:34,690
+really angry and i wrote wrote this this
+
+530
+00:19:34,690 --> 00:19:36,460
+rant called you're missing the point of
+
+531
+00:19:36,460 --> 00:19:38,440
+promises and this this kind of had
+
+532
+00:19:38,440 --> 00:19:40,690
+surprisingly large circulation which was
+
+533
+00:19:40,690 --> 00:19:42,250
+cool so people were listening to what i
+
+534
+00:19:42,250 --> 00:19:43,720
+wrote and people really seem to
+
+535
+00:19:43,720 --> 00:19:45,429
+understand it like the idea that oh wow
+
+536
+00:19:45,429 --> 00:19:47,110
+these libraries are missing the point of
+
+537
+00:19:47,110 --> 00:19:48,400
+promises they're just using it for like
+
+538
+00:19:48,400 --> 00:19:50,380
+callback aggregation they're not trying
+
+539
+00:19:50,380 --> 00:19:51,700
+to integrate well below the language and
+
+540
+00:19:51,700 --> 00:19:53,770
+provide a sane asynchronous primitive
+
+541
+00:19:53,770 --> 00:19:56,919
+for a value that represents like a
+
+542
+00:19:56,919 --> 00:19:59,770
+synchronous computation and at the
+
+543
+00:19:59,770 --> 00:20:01,419
+bottom of the guests i wanted to end on
+
+544
+00:20:01,419 --> 00:20:03,070
+a positive productive note not just like
+
+545
+00:20:03,070 --> 00:20:04,510
+i'm ranting on the internet i said i
+
+546
+00:20:04,510 --> 00:20:06,520
+would produce a test suite and once you
+
+547
+00:20:06,520 --> 00:20:07,510
+put something on the internet with a
+
+548
+00:20:07,510 --> 00:20:08,620
+promise you really have to do it
+
+549
+00:20:08,620 --> 00:20:10,419
+otherwise people hate you forever so i
+
+550
+00:20:10,419 --> 00:20:13,540
+did I produced a promises a test suite
+
+551
+00:20:13,540 --> 00:20:15,730
+which people started using which I
+
+552
+00:20:15,730 --> 00:20:17,530
+thought was really cool and at this
+
+553
+00:20:17,530 --> 00:20:19,630
+point actually you who to cats one of
+
+554
+00:20:19,630 --> 00:20:21,670
+the main people behind number J us
+
+555
+00:20:21,670 --> 00:20:23,410
+with me and he said yes we totally want
+
+556
+00:20:23,410 --> 00:20:25,180
+promises a compliant promises an ember
+
+557
+00:20:25,180 --> 00:20:26,530
+we don't want to make that jQuery
+
+558
+00:20:26,530 --> 00:20:28,930
+mistake and he created this library
+
+559
+00:20:28,930 --> 00:20:31,360
+called RSVP jas which is one of the more
+
+560
+00:20:31,360 --> 00:20:34,150
+popular promised libraries today and I
+
+561
+00:20:34,150 --> 00:20:35,380
+think this this was really kind of the
+
+562
+00:20:35,380 --> 00:20:38,050
+start of something great so here's a
+
+563
+00:20:38,050 --> 00:20:39,160
+screenshot of that test suite that I
+
+564
+00:20:39,160 --> 00:20:42,460
+created and I mean it's if I'm very
+
+565
+00:20:42,460 --> 00:20:44,350
+happy with with how many people started
+
+566
+00:20:44,350 --> 00:20:46,390
+conforming to that but then the real
+
+567
+00:20:46,390 --> 00:20:49,180
+magic happened so so what happened next
+
+568
+00:20:49,180 --> 00:20:51,340
+is this guy called Brian cavalier it
+
+569
+00:20:51,340 --> 00:20:52,510
+should be in the audience but I haven't
+
+570
+00:20:52,510 --> 00:20:56,620
+seen him there is yeah he he created
+
+571
+00:20:56,620 --> 00:21:00,780
+this jist or guest a gift to something
+
+572
+00:21:00,780 --> 00:21:05,410
+we're called promises a plus which you
+
+573
+00:21:05,410 --> 00:21:07,180
+know is a brilliant name I wish I
+
+574
+00:21:07,180 --> 00:21:08,830
+thought of it where you know we're going
+
+575
+00:21:08,830 --> 00:21:10,420
+to take promises a and we're going to
+
+576
+00:21:10,420 --> 00:21:12,370
+clarify it we're going to say how let's
+
+577
+00:21:12,370 --> 00:21:14,290
+put this in in like real language not a
+
+578
+00:21:14,290 --> 00:21:15,670
+few paragraphs let's put this in likes
+
+579
+00:21:15,670 --> 00:21:18,340
+peckish ty bullet points and kind of say
+
+580
+00:21:18,340 --> 00:21:20,290
+what exactly are the requirements that
+
+581
+00:21:20,290 --> 00:21:22,210
+have emerged over the last few years of
+
+582
+00:21:22,210 --> 00:21:23,710
+promise to implementation in JavaScript
+
+583
+00:21:23,710 --> 00:21:25,480
+what do we need to create an
+
+584
+00:21:25,480 --> 00:21:27,010
+interoperable set of promise
+
+585
+00:21:27,010 --> 00:21:29,770
+implementations a man and from that that
+
+586
+00:21:29,770 --> 00:21:32,140
+little gist we ended up with this
+
+587
+00:21:32,140 --> 00:21:34,870
+beautiful github pages website you can
+
+588
+00:21:34,870 --> 00:21:38,350
+tell that I'm a designer and it a bit in
+
+589
+00:21:38,350 --> 00:21:40,120
+oh really it's like it's it's a pretty
+
+590
+00:21:40,120 --> 00:21:43,180
+nice you know spec that we created and
+
+591
+00:21:43,180 --> 00:21:44,380
+it's got its own domain name now
+
+592
+00:21:44,380 --> 00:21:47,650
+promises a plus calm and this time we
+
+593
+00:21:47,650 --> 00:21:49,000
+actually made a test suite unlike the
+
+594
+00:21:49,000 --> 00:21:51,550
+poor promises a guys if if only they'd
+
+595
+00:21:51,550 --> 00:21:54,190
+known how important that was and then
+
+596
+00:21:54,190 --> 00:21:59,470
+jQuery well okay but so what so we
+
+597
+00:21:59,470 --> 00:22:01,090
+created this this spec and we put it up
+
+598
+00:22:01,090 --> 00:22:02,320
+on the internet and has its own domain
+
+599
+00:22:02,320 --> 00:22:04,840
+name Lou but it turns out that when you
+
+600
+00:22:04,840 --> 00:22:06,220
+write a clear and thoughtful
+
+601
+00:22:06,220 --> 00:22:08,290
+specification for something that people
+
+602
+00:22:08,290 --> 00:22:10,060
+like to do like prawns people have been
+
+603
+00:22:10,060 --> 00:22:12,220
+doing for a while like promises and you
+
+604
+00:22:12,220 --> 00:22:13,900
+create a nice test suite for it that's
+
+605
+00:22:13,900 --> 00:22:15,610
+very thorough then people get really
+
+606
+00:22:15,610 --> 00:22:17,950
+excited about implementing that so you
+
+607
+00:22:17,950 --> 00:22:19,870
+end up with we've ended up with over 30
+
+608
+00:22:19,870 --> 00:22:22,870
+implementations of promises a plus spec
+
+609
+00:22:22,870 --> 00:22:25,060
+and we've actually ended up ones with
+
+610
+00:22:25,060 --> 00:22:27,100
+actionscript Python and Objective C
+
+611
+00:22:27,100 --> 00:22:30,130
+which i think is pretty amazing and
+
+612
+00:22:30,130 --> 00:22:32,020
+what's great about this is is not that
+
+613
+00:22:32,020 --> 00:22:33,460
+like yes we've forced everyone to
+
+614
+00:22:33,460 --> 00:22:34,890
+conform because we really made
+
+615
+00:22:34,890 --> 00:22:37,950
+do only specify the core piece of the
+
+616
+00:22:37,950 --> 00:22:39,480
+promised implementation that's important
+
+617
+00:22:39,480 --> 00:22:41,940
+the then method and every implementation
+
+618
+00:22:41,940 --> 00:22:43,650
+now has a good then method which means
+
+619
+00:22:43,650 --> 00:22:45,030
+you can build libraries that work with
+
+620
+00:22:45,030 --> 00:22:46,920
+any implementation if you don't have to
+
+621
+00:22:46,920 --> 00:22:49,320
+choose one and say oh everybody has to
+
+622
+00:22:49,320 --> 00:22:51,120
+use my promises a plus implementation if
+
+623
+00:22:51,120 --> 00:22:54,030
+they want a benefit from my library so
+
+624
+00:22:54,030 --> 00:22:55,590
+this is pretty awesome and actually
+
+625
+00:22:55,590 --> 00:22:56,490
+there's there's another implementation
+
+626
+00:22:56,490 --> 00:22:59,190
+of these that ended up in the Dom spec
+
+627
+00:22:59,190 --> 00:23:02,370
+under the wonderful name Dom futures not
+
+628
+00:23:02,370 --> 00:23:04,860
+sure what that's about but Dom futures
+
+629
+00:23:04,860 --> 00:23:08,010
+are kind of like Dom promises and the
+
+630
+00:23:08,010 --> 00:23:09,720
+notes but seriously we have promises in
+
+631
+00:23:09,720 --> 00:23:12,210
+the Dom now and there's been major work
+
+632
+00:23:12,210 --> 00:23:15,630
+throughout the the what WG and the w3c
+
+633
+00:23:15,630 --> 00:23:17,460
+to encourage the use of these these Dom
+
+634
+00:23:17,460 --> 00:23:19,830
+promises these Dom futures in upcoming
+
+635
+00:23:19,830 --> 00:23:21,600
+api's I mean it's actually gotten kind
+
+636
+00:23:21,600 --> 00:23:22,920
+of ridiculous the amount of times the
+
+637
+00:23:22,920 --> 00:23:24,450
+mailing this post's get responded to
+
+638
+00:23:24,450 --> 00:23:26,700
+with oh you should use futures like
+
+639
+00:23:26,700 --> 00:23:29,250
+there's if you don't have an API that's
+
+640
+00:23:29,250 --> 00:23:30,690
+using futures you might as well just
+
+641
+00:23:30,690 --> 00:23:33,180
+sets them up just in case this is from
+
+642
+00:23:33,180 --> 00:23:37,590
+an amazing site called w3c memes com so
+
+643
+00:23:37,590 --> 00:23:40,440
+that's that but even more cool than that
+
+644
+00:23:40,440 --> 00:23:42,090
+I think even more cool than getting our
+
+645
+00:23:42,090 --> 00:23:45,690
+promises a plus spec into the DOM is for
+
+646
+00:23:45,690 --> 00:23:47,610
+es7 this is a presentation that was
+
+647
+00:23:47,610 --> 00:23:50,130
+recently given at a tc39 meaning there's
+
+648
+00:23:50,130 --> 00:23:52,200
+a slide saying we're going to try and
+
+649
+00:23:52,200 --> 00:23:53,760
+get these kind of cool concurrency
+
+650
+00:23:53,760 --> 00:23:55,500
+things in there and as part of that
+
+651
+00:23:55,500 --> 00:23:57,510
+we're going to try and create a promise
+
+652
+00:23:57,510 --> 00:23:59,700
+implementation standardize it in ECMO
+
+653
+00:23:59,700 --> 00:24:02,040
+script 7 in the language based on
+
+654
+00:24:02,040 --> 00:24:05,400
+promises a plus so so what just happened
+
+655
+00:24:05,400 --> 00:24:07,860
+somehow promise is a plus this little
+
+656
+00:24:07,860 --> 00:24:09,180
+thing we put up on github became the
+
+657
+00:24:09,180 --> 00:24:10,980
+starting point for any conversation
+
+658
+00:24:10,980 --> 00:24:13,890
+about promises in JavaScript how did we
+
+659
+00:24:13,890 --> 00:24:16,020
+end up like so planting promises a so
+
+660
+00:24:16,020 --> 00:24:17,940
+dramatically and and why am I getting
+
+661
+00:24:17,940 --> 00:24:19,710
+weekly queries about whether jQuery will
+
+662
+00:24:19,710 --> 00:24:21,510
+fix their broken promises like that blog
+
+663
+00:24:21,510 --> 00:24:23,070
+jquery they have so many users but
+
+664
+00:24:23,070 --> 00:24:24,540
+people want them to conform to my spec
+
+665
+00:24:24,540 --> 00:24:26,850
+like you know how did we go from some
+
+666
+00:24:26,850 --> 00:24:28,650
+nerd rage over a pull request to ember
+
+667
+00:24:28,650 --> 00:24:31,170
+22 to something that's influencing the
+
+668
+00:24:31,170 --> 00:24:33,660
+dom and even ECMO script 7 like how did
+
+669
+00:24:33,660 --> 00:24:34,680
+how do a bunch of implementers
+
+670
+00:24:34,680 --> 00:24:36,660
+congregating on github and doing our own
+
+671
+00:24:36,660 --> 00:24:38,790
+thing suddenly end up influencing the
+
+672
+00:24:38,790 --> 00:24:41,820
+what would in the w3c and tc39 like this
+
+673
+00:24:41,820 --> 00:24:44,820
+is amazing so to end my talk I want to
+
+674
+00:24:44,820 --> 00:24:47,460
+kind of point to some principles of this
+
+675
+00:24:47,460 --> 00:24:48,360
+thing
+
+676
+00:24:48,360 --> 00:24:50,040
+following open specification development
+
+677
+00:24:50,040 --> 00:24:52,170
+so so it's it's the answer the question
+
+678
+00:24:52,170 --> 00:24:54,120
+what made this promise is a plus effort
+
+679
+00:24:54,120 --> 00:24:56,100
+works so well and be so influential I
+
+680
+00:24:56,100 --> 00:24:58,230
+think it boils down to a few principles
+
+681
+00:24:58,230 --> 00:25:01,530
+of this this idea so going through them
+
+682
+00:25:01,530 --> 00:25:04,770
+in term like our cause of bringing sane
+
+683
+00:25:04,770 --> 00:25:06,660
+asynchronous programming to javascript
+
+684
+00:25:06,660 --> 00:25:08,670
+is this is the stuff we talked about
+
+685
+00:25:08,670 --> 00:25:10,950
+earlier like this is important you know
+
+686
+00:25:10,950 --> 00:25:12,750
+this is this is you know if something
+
+687
+00:25:12,750 --> 00:25:14,280
+people can get behind you can't build a
+
+688
+00:25:14,280 --> 00:25:16,350
+specification like this around things
+
+689
+00:25:16,350 --> 00:25:18,090
+nobody cares about you need to solve
+
+690
+00:25:18,090 --> 00:25:19,860
+real problems and you just solve them
+
+691
+00:25:19,860 --> 00:25:21,270
+with coherent solutions you need to have
+
+692
+00:25:21,270 --> 00:25:22,860
+something that people really can get
+
+693
+00:25:22,860 --> 00:25:24,570
+behind it have been using and need to
+
+694
+00:25:24,570 --> 00:25:27,270
+solve in the real world the next thing
+
+695
+00:25:27,270 --> 00:25:28,980
+the people right we have a really strong
+
+696
+00:25:28,980 --> 00:25:30,929
+and cooperative community working on
+
+697
+00:25:30,929 --> 00:25:33,630
+promises a plus it's led by Brian who
+
+698
+00:25:33,630 --> 00:25:35,970
+really did a great job you know hurting
+
+699
+00:25:35,970 --> 00:25:38,100
+all of us sheep into the into the github
+
+700
+00:25:38,100 --> 00:25:40,290
+repo to talk to each other on a good
+
+701
+00:25:40,290 --> 00:25:42,299
+round and we all care deeply about these
+
+702
+00:25:42,299 --> 00:25:43,799
+issues and we all were willing to make
+
+703
+00:25:43,799 --> 00:25:46,730
+sacrifices and and change our own
+
+704
+00:25:46,730 --> 00:25:48,660
+implementations to conform to something
+
+705
+00:25:48,660 --> 00:25:51,090
+that would be a core set of behaviors we
+
+706
+00:25:51,090 --> 00:25:55,110
+could all agree on the code so so this
+
+707
+00:25:55,110 --> 00:25:57,840
+is a probably the biggest reason and
+
+708
+00:25:57,840 --> 00:25:59,190
+this is all about what I was saying at
+
+709
+00:25:59,190 --> 00:26:00,630
+the beginning how we harness the
+
+710
+00:26:00,630 --> 00:26:03,210
+JavaScript developers you know desire to
+
+711
+00:26:03,210 --> 00:26:04,679
+create everything from function and
+
+712
+00:26:04,679 --> 00:26:06,090
+object you know we'd already done this
+
+713
+00:26:06,090 --> 00:26:08,730
+we had implementations like when and Q
+
+714
+00:26:08,730 --> 00:26:10,740
+and RSVP was starting to get some buzz
+
+715
+00:26:10,740 --> 00:26:12,840
+where we implemented promises in
+
+716
+00:26:12,840 --> 00:26:15,960
+JavaScript itself and we did this before
+
+717
+00:26:15,960 --> 00:26:18,840
+we manded together so so the idea that
+
+718
+00:26:18,840 --> 00:26:20,640
+we have these existing of limitations
+
+719
+00:26:20,640 --> 00:26:22,200
+that are already explored the problem
+
+720
+00:26:22,200 --> 00:26:24,660
+space and decided oh well this is kind
+
+721
+00:26:24,660 --> 00:26:26,190
+of where we're converging it all ends up
+
+722
+00:26:26,190 --> 00:26:27,630
+looking kind of like this let's just get
+
+723
+00:26:27,630 --> 00:26:29,100
+all the edge cases narrowed down and
+
+724
+00:26:29,100 --> 00:26:32,400
+create something we can agree on and in
+
+725
+00:26:32,400 --> 00:26:34,380
+short like this is code before pros
+
+726
+00:26:34,380 --> 00:26:37,200
+right get your code made going to get a
+
+727
+00:26:37,200 --> 00:26:40,169
+prolly fill as they call it like a this
+
+728
+00:26:40,169 --> 00:26:41,669
+is what the web api of the future
+
+729
+00:26:41,669 --> 00:26:44,070
+probably should look like out there
+
+730
+00:26:44,070 --> 00:26:45,900
+before you write down a spec it's a
+
+731
+00:26:45,900 --> 00:26:48,870
+everybody should follow this the
+
+732
+00:26:48,870 --> 00:26:50,760
+contract right so the contract of
+
+733
+00:26:50,760 --> 00:26:53,610
+promises a plus is a very small thing we
+
+734
+00:26:53,610 --> 00:26:56,190
+only spare specify the core then method
+
+735
+00:26:56,190 --> 00:26:58,530
+because that's enough that's enough to
+
+736
+00:26:58,530 --> 00:27:00,240
+get interoperable promises that everyone
+
+737
+00:27:00,240 --> 00:27:01,710
+can use we
+
+738
+00:27:01,710 --> 00:27:03,059
+been fighting over who's API to
+
+739
+00:27:03,059 --> 00:27:04,890
+standardize now I want the queue API and
+
+740
+00:27:04,890 --> 00:27:07,020
+I want the when API we didn't even
+
+741
+00:27:07,020 --> 00:27:08,700
+specify how do you create a promise we
+
+742
+00:27:08,700 --> 00:27:10,559
+just specified once you have one how
+
+743
+00:27:10,559 --> 00:27:13,169
+does it have to behave and this is why I
+
+744
+00:27:13,169 --> 00:27:14,909
+like to say that the Dom future is a
+
+745
+00:27:14,909 --> 00:27:16,919
+promise is a plus promise implementation
+
+746
+00:27:16,919 --> 00:27:19,890
+even though it is Excel for spec because
+
+747
+00:27:19,890 --> 00:27:21,840
+just like Q or when it's building on
+
+748
+00:27:21,840 --> 00:27:23,669
+this core interoperable then method that
+
+749
+00:27:23,669 --> 00:27:24,990
+can work with other than methods and
+
+750
+00:27:24,990 --> 00:27:27,029
+other libraries to create a larger
+
+751
+00:27:27,029 --> 00:27:28,710
+surface area that its consumers can use
+
+752
+00:27:28,710 --> 00:27:29,970
+and as consumers are in this case
+
+753
+00:27:29,970 --> 00:27:33,539
+browsers finally and this can't be
+
+754
+00:27:33,539 --> 00:27:35,490
+underestimated the setting of github
+
+755
+00:27:35,490 --> 00:27:37,890
+plays a large part in in our success
+
+756
+00:27:37,890 --> 00:27:40,620
+right github is where we as a community
+
+757
+00:27:40,620 --> 00:27:43,770
+work and play you know it encourages
+
+758
+00:27:43,770 --> 00:27:46,399
+like easy forking pull requests reviews
+
+759
+00:27:46,399 --> 00:27:48,950
+it has marked down which you know
+
+760
+00:27:48,950 --> 00:27:51,360
+markdown diffs are really easy to read
+
+761
+00:27:51,360 --> 00:27:53,070
+so if you come into a repo and you want
+
+762
+00:27:53,070 --> 00:27:54,600
+to see it's see what's been going on
+
+763
+00:27:54,600 --> 00:27:56,340
+with the specification you can actually
+
+764
+00:27:56,340 --> 00:27:58,380
+tell what's going on if you look at some
+
+765
+00:27:58,380 --> 00:28:01,740
+of the history for the w3c api's it's
+
+766
+00:28:01,740 --> 00:28:04,169
+this massive HTML and you have no idea
+
+767
+00:28:04,169 --> 00:28:07,169
+what's going on but everybody like just
+
+768
+00:28:07,169 --> 00:28:08,850
+that's part of like everybody knows how
+
+769
+00:28:08,850 --> 00:28:10,080
+to interface with github in this
+
+770
+00:28:10,080 --> 00:28:11,429
+community we all know how to look
+
+771
+00:28:11,429 --> 00:28:13,559
+through old issues how to send a pull
+
+772
+00:28:13,559 --> 00:28:16,169
+request how to look at diffs like this
+
+773
+00:28:16,169 --> 00:28:18,630
+is where we congregate and this is how
+
+774
+00:28:18,630 --> 00:28:22,649
+weary how we should be working and even
+
+775
+00:28:22,649 --> 00:28:24,299
+the w3c and the what load are starting
+
+776
+00:28:24,299 --> 00:28:25,559
+to get in on this they're starting to
+
+777
+00:28:25,559 --> 00:28:27,029
+see this they put some of their specs on
+
+778
+00:28:27,029 --> 00:28:28,860
+github but they haven't really made the
+
+779
+00:28:28,860 --> 00:28:31,110
+transition because they still cling to
+
+780
+00:28:31,110 --> 00:28:33,779
+these archaic old mailing lists where
+
+781
+00:28:33,779 --> 00:28:35,909
+with these archives that are impossible
+
+782
+00:28:35,909 --> 00:28:38,820
+to navigate and it's you can't really
+
+783
+00:28:38,820 --> 00:28:40,020
+jump into the middle of conversation
+
+784
+00:28:40,020 --> 00:28:42,000
+very easily and it's very frustrating
+
+785
+00:28:42,000 --> 00:28:43,590
+trying to get involved in the standards
+
+786
+00:28:43,590 --> 00:28:44,970
+process when you have to subscribe to
+
+787
+00:28:44,970 --> 00:28:46,620
+these things that bombard your inbox in
+
+788
+00:28:46,620 --> 00:28:50,850
+this like you know 1990s way so I think
+
+789
+00:28:50,850 --> 00:28:53,190
+github is a is a big part of why we were
+
+790
+00:28:53,190 --> 00:28:56,279
+able to collaborate so well so to close
+
+791
+00:28:56,279 --> 00:28:58,950
+I want to take a look at our our slogan
+
+792
+00:28:58,950 --> 00:29:01,559
+for that our tagline for promises a plus
+
+793
+00:29:01,559 --> 00:29:03,419
+you know we spent a lot of time getting
+
+794
+00:29:03,419 --> 00:29:05,730
+this right actually I mean it's it's a
+
+795
+00:29:05,730 --> 00:29:08,580
+bit bit silly and sometimes but in the
+
+796
+00:29:08,580 --> 00:29:10,139
+end I think it's perfect we end up
+
+797
+00:29:10,139 --> 00:29:12,840
+meaning every word the promise is a plus
+
+798
+00:29:12,840 --> 00:29:15,539
+organization and the standard we're open
+
+799
+00:29:15,539 --> 00:29:16,979
+do everything on github it's out in the
+
+800
+00:29:16,979 --> 00:29:20,129
+open were sound that's our cause we want
+
+801
+00:29:20,129 --> 00:29:21,899
+say in asynchronous e in JavaScript
+
+802
+00:29:21,899 --> 00:29:24,330
+we're interoperable that's the the core
+
+803
+00:29:24,330 --> 00:29:26,070
+contract we're providing for everyone
+
+804
+00:29:26,070 --> 00:29:28,499
+and we're by implementers and for
+
+805
+00:29:28,499 --> 00:29:30,600
+implementers reflecting our commitment
+
+806
+00:29:30,600 --> 00:29:32,999
+to build on existing code and to
+
+807
+00:29:32,999 --> 00:29:34,229
+leverage the strengths of the community
+
+808
+00:29:34,229 --> 00:29:36,809
+we already had so if you have all these
+
+809
+00:29:36,809 --> 00:29:38,279
+open specification development
+
+810
+00:29:38,279 --> 00:29:40,559
+ingredients in place then I think you're
+
+811
+00:29:40,559 --> 00:29:43,289
+in a place to extend the web forward and
+
+812
+00:29:43,289 --> 00:29:45,479
+this is referring to a concept that
+
+813
+00:29:45,479 --> 00:29:48,090
+started becoming popular recently it's a
+
+814
+00:29:48,090 --> 00:29:49,799
+specific philosophy champion by the
+
+815
+00:29:49,799 --> 00:29:52,440
+newly reformed w3c technical
+
+816
+00:29:52,440 --> 00:29:54,539
+architecture group and in particular by
+
+817
+00:29:54,539 --> 00:29:57,059
+yehuda katz brian ross or alex russell
+
+818
+00:29:57,059 --> 00:30:00,929
+and brian cardell who and the essential
+
+819
+00:30:00,929 --> 00:30:02,519
+idea is that when we build things on the
+
+820
+00:30:02,519 --> 00:30:05,009
+web platform it shouldn't be magic
+
+821
+00:30:05,009 --> 00:30:07,919
+browser ap is that go into c++ and do
+
+822
+00:30:07,919 --> 00:30:10,259
+crazy things and we don't have any idea
+
+823
+00:30:10,259 --> 00:30:12,450
+how to interface with it should be core
+
+824
+00:30:12,450 --> 00:30:14,759
+primitives in JavaScript that then build
+
+825
+00:30:14,759 --> 00:30:16,799
+on each other and allow us to create the
+
+826
+00:30:16,799 --> 00:30:19,169
+next version and so then we have this
+
+827
+00:30:19,169 --> 00:30:21,059
+virtuous cycle just like in promises a
+
+828
+00:30:21,059 --> 00:30:23,369
+plus where the community says oh I have
+
+829
+00:30:23,369 --> 00:30:25,470
+these tools I'm going to build a new API
+
+830
+00:30:25,470 --> 00:30:27,599
+on top of them and then the community
+
+831
+00:30:27,599 --> 00:30:29,460
+can compete between themselves and
+
+832
+00:30:29,460 --> 00:30:31,399
+refine and converge around something and
+
+833
+00:30:31,399 --> 00:30:33,450
+eventually a common primitive is gets
+
+834
+00:30:33,450 --> 00:30:35,009
+established and we can take that back
+
+835
+00:30:35,009 --> 00:30:38,149
+into the web platform itself all right
+
+836
+00:30:38,149 --> 00:30:54,780
+thanks
+

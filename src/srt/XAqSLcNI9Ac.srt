@@ -1,0 +1,3053 @@
+1
+00:00:19,060 --> 00:00:23,750
+
+let's get started so BPM and Jas the
+
+2
+00:00:23,750 --> 00:00:26,600
+thing is most of us already know have an
+
+3
+00:00:26,600 --> 00:00:28,400
+idea of what BPM is it's beats per
+
+4
+00:00:28,400 --> 00:00:30,740
+minute and you know we know it's a
+
+5
+00:00:30,740 --> 00:00:33,320
+generalized tempo measurement for songs
+
+6
+00:00:33,320 --> 00:00:35,840
+see how fast or slow it is but if you
+
+7
+00:00:35,840 --> 00:00:37,370
+really look around historically it's
+
+8
+00:00:37,370 --> 00:00:39,559
+been a very manual process you have
+
+9
+00:00:39,559 --> 00:00:42,430
+people labeling the actual beats and
+
+10
+00:00:42,430 --> 00:00:44,809
+uploading profiles to databases to make
+
+11
+00:00:44,809 --> 00:00:46,790
+this data available to applications and
+
+12
+00:00:46,790 --> 00:00:49,580
+you know that's just not ideal in a
+
+13
+00:00:49,580 --> 00:00:50,720
+world where things are changing so
+
+14
+00:00:50,720 --> 00:00:52,430
+quickly and we want this data available
+
+15
+00:00:52,430 --> 00:00:55,430
+readily so I wanted to look into number
+
+16
+00:00:55,430 --> 00:00:57,769
+one how to make this an automatic
+
+17
+00:00:57,769 --> 00:01:00,409
+detection process and second of all you
+
+18
+00:01:00,409 --> 00:01:01,879
+know just trying to bring it into the
+
+19
+00:01:01,879 --> 00:01:03,409
+JavaScript world so that we can all use
+
+20
+00:01:03,409 --> 00:01:07,310
+it first things just a little bit about
+
+21
+00:01:07,310 --> 00:01:09,740
+myself right now i'm working at twitter
+
+22
+00:01:09,740 --> 00:01:11,090
+in the new york office as a software
+
+23
+00:01:11,090 --> 00:01:13,820
+engineer on the web team my name is
+
+24
+00:01:13,820 --> 00:01:15,260
+janessa debt if you didn't catch that
+
+25
+00:01:15,260 --> 00:01:17,860
+from the first slide and the program and
+
+26
+00:01:17,860 --> 00:01:20,299
+previously from that I come from the
+
+27
+00:01:20,299 --> 00:01:21,860
+background of computer graphics and
+
+28
+00:01:21,860 --> 00:01:24,049
+vision and then before that a lot of bio
+
+29
+00:01:24,049 --> 00:01:26,509
+engineering where I mostly hated the bio
+
+30
+00:01:26,509 --> 00:01:31,369
+and mostly like to the engineering so so
+
+31
+00:01:31,369 --> 00:01:33,049
+what are we really talking about here in
+
+32
+00:01:33,049 --> 00:01:35,180
+terms of what's behind automatic
+
+33
+00:01:35,180 --> 00:01:37,939
+detection of BPM well in research they
+
+34
+00:01:37,939 --> 00:01:40,130
+call it on set detection so if you look
+
+35
+00:01:40,130 --> 00:01:42,170
+at the signal that I have here what we
+
+36
+00:01:42,170 --> 00:01:43,969
+have is we're looking for this thing
+
+37
+00:01:43,969 --> 00:01:46,009
+we're looking for when the beat happens
+
+38
+00:01:46,009 --> 00:01:48,320
+there's a really sharp signal change and
+
+39
+00:01:48,320 --> 00:01:50,570
+we want to see where that is to know
+
+40
+00:01:50,570 --> 00:01:52,880
+where beats are happening so what this
+
+41
+00:01:52,880 --> 00:01:54,829
+is fundamental to is like a million
+
+42
+00:01:54,829 --> 00:01:58,100
+different fields and that includes sonar
+
+43
+00:01:58,100 --> 00:02:00,979
+speech EKGs movement detection and you
+
+44
+00:02:00,979 --> 00:02:03,499
+know some things maybe like Iron Man I
+
+45
+00:02:03,499 --> 00:02:05,659
+think I secretly wanted to put him in
+
+46
+00:02:05,659 --> 00:02:08,450
+slide the student something but
+
+47
+00:02:08,450 --> 00:02:11,150
+seriously sort of so discover ran an
+
+48
+00:02:11,150 --> 00:02:12,950
+interesting article about becoming iron
+
+49
+00:02:12,950 --> 00:02:14,569
+man how close is research to really
+
+50
+00:02:14,569 --> 00:02:16,370
+making these suits that you can control
+
+51
+00:02:16,370 --> 00:02:18,170
+you know with your nerves if you're into
+
+52
+00:02:18,170 --> 00:02:19,910
+the comic books that he installs stuff
+
+53
+00:02:19,910 --> 00:02:23,900
+into his body to interface and you know
+
+54
+00:02:23,900 --> 00:02:25,550
+that involves things like EEG or
+
+55
+00:02:25,550 --> 00:02:29,360
+electroencephalogram EEG on sets for the
+
+56
+00:02:29,360 --> 00:02:31,190
+nerve signals and you do a lot of
+
+57
+00:02:31,190 --> 00:02:32,040
+analysis after
+
+58
+00:02:32,040 --> 00:02:33,540
+but you get the point this is a very
+
+59
+00:02:33,540 --> 00:02:35,370
+fundamental sort of applicable thing not
+
+60
+00:02:35,370 --> 00:02:36,930
+just to music but a lot of things but
+
+61
+00:02:36,930 --> 00:02:39,989
+since I'm a music nerd personally I like
+
+62
+00:02:39,989 --> 00:02:42,599
+to think of it this is a much more
+
+63
+00:02:42,599 --> 00:02:44,280
+interesting application that I want to
+
+64
+00:02:44,280 --> 00:02:46,019
+look at which is a automatic
+
+65
+00:02:46,019 --> 00:02:48,510
+transcription of music the first step is
+
+66
+00:02:48,510 --> 00:02:50,340
+you know detecting your beats of course
+
+67
+00:02:50,340 --> 00:02:52,409
+but there's also things like instrument
+
+68
+00:02:52,409 --> 00:02:54,269
+identification instrument isolation
+
+69
+00:02:54,269 --> 00:02:56,370
+pitch dejection dynamics all things that
+
+70
+00:02:56,370 --> 00:02:58,019
+I plan to hopefully in the future look
+
+71
+00:02:58,019 --> 00:03:01,109
+into as well and by reading lots of
+
+72
+00:03:01,109 --> 00:03:04,709
+research papers and stuff so so why did
+
+73
+00:03:04,709 --> 00:03:06,120
+I want to bring into the browser like
+
+74
+00:03:06,120 --> 00:03:08,010
+you know there's see implementations in
+
+75
+00:03:08,010 --> 00:03:09,480
+research being passed around of this
+
+76
+00:03:09,480 --> 00:03:12,540
+stuff well the biggest thing is I find
+
+77
+00:03:12,540 --> 00:03:14,609
+research papers in this whole academic
+
+78
+00:03:14,609 --> 00:03:17,579
+research area to be so niche and closed
+
+79
+00:03:17,579 --> 00:03:19,919
+and you know entwined in the politics
+
+80
+00:03:19,919 --> 00:03:21,720
+and people never really look at research
+
+81
+00:03:21,720 --> 00:03:23,790
+papers I wanted to bring that sort of
+
+82
+00:03:23,790 --> 00:03:25,590
+engineering and make it accessible and
+
+83
+00:03:25,590 --> 00:03:28,049
+shareable and cross-platform and make it
+
+84
+00:03:28,049 --> 00:03:30,090
+easy for all of us here to just use and
+
+85
+00:03:30,090 --> 00:03:32,459
+play with and the other thing that
+
+86
+00:03:32,459 --> 00:03:34,079
+enables this is that you know the
+
+87
+00:03:34,079 --> 00:03:36,479
+browser's javascript is seriously fast
+
+88
+00:03:36,479 --> 00:03:39,239
+now like it's no joke like this article
+
+89
+00:03:39,239 --> 00:03:44,359
+that ran earlier and that's really just
+
+90
+00:03:44,359 --> 00:03:46,560
+it's just helping us to do things that
+
+91
+00:03:46,560 --> 00:03:48,239
+are really computationally heavy without
+
+92
+00:03:48,239 --> 00:03:49,919
+having to worry about delays and lag
+
+93
+00:03:49,919 --> 00:03:52,440
+time as much and with things like you
+
+94
+00:03:52,440 --> 00:03:53,909
+know we just saw so much going on with
+
+95
+00:03:53,909 --> 00:03:56,819
+WebGL and web audio and digital signals
+
+96
+00:03:56,819 --> 00:03:58,290
+processing is really enabled in the
+
+97
+00:03:58,290 --> 00:03:59,879
+browser now it's pushing that forward we
+
+98
+00:03:59,879 --> 00:04:01,470
+can do a lot of these computational
+
+99
+00:04:01,470 --> 00:04:02,879
+things which you know makes the
+
+100
+00:04:02,879 --> 00:04:04,769
+browser's really powerful you can do so
+
+101
+00:04:04,769 --> 00:04:07,349
+much awesome stuff so the caveat of
+
+102
+00:04:07,349 --> 00:04:09,419
+course is you know all these things are
+
+103
+00:04:09,419 --> 00:04:10,680
+great but they only work in the latest
+
+104
+00:04:10,680 --> 00:04:13,049
+and greatest canary beta you know new
+
+105
+00:04:13,049 --> 00:04:17,430
+shiny builds of I'm sorry about that I'm
+
+106
+00:04:17,430 --> 00:04:21,419
+in chrome firefox safari and opera and
+
+107
+00:04:21,419 --> 00:04:22,530
+that was a little bit mean because i ii
+
+108
+00:04:22,530 --> 00:04:25,070
+really is coming along with that but
+
+109
+00:04:25,070 --> 00:04:28,289
+also why in the browser well you know
+
+110
+00:04:28,289 --> 00:04:29,580
+when i was thinking about doing this
+
+111
+00:04:29,580 --> 00:04:31,199
+honestly this was the biggest reason I
+
+112
+00:04:31,199 --> 00:04:32,669
+think javascript is fun I think this
+
+113
+00:04:32,669 --> 00:04:33,930
+stuff is fun and it would be cool to
+
+114
+00:04:33,930 --> 00:04:35,340
+play with and I think that's the best
+
+115
+00:04:35,340 --> 00:04:38,340
+reason to start working on something and
+
+116
+00:04:38,340 --> 00:04:40,469
+another thing to know is that the
+
+117
+00:04:40,469 --> 00:04:42,599
+browser is really diverse now you know
+
+118
+00:04:42,599 --> 00:04:44,909
+it's not the 90s anymore for document
+
+119
+00:04:44,909 --> 00:04:45,540
+display
+
+120
+00:04:45,540 --> 00:04:47,040
+most interesting thing I could find was
+
+121
+00:04:47,040 --> 00:04:50,100
+you know unlimited gifs of Sailor Moon
+
+122
+00:04:50,100 --> 00:04:53,670
+or gifts or whatever and more
+
+123
+00:04:53,670 --> 00:04:55,170
+importantly the community is really
+
+124
+00:04:55,170 --> 00:04:57,000
+diverse like we've seen such a great
+
+125
+00:04:57,000 --> 00:04:58,620
+subset here of the JavaScript community
+
+126
+00:04:58,620 --> 00:05:00,030
+everyone comes from such different
+
+127
+00:05:00,030 --> 00:05:02,160
+backgrounds and art background music
+
+128
+00:05:02,160 --> 00:05:04,320
+backgrounds you know all sorts of
+
+129
+00:05:04,320 --> 00:05:06,390
+engineering and because of that we're
+
+130
+00:05:06,390 --> 00:05:07,830
+really pushing the use cases of the
+
+131
+00:05:07,830 --> 00:05:09,270
+browser and what we can do with it and
+
+132
+00:05:09,270 --> 00:05:11,790
+what it's becoming enabled for you know
+
+133
+00:05:11,790 --> 00:05:14,340
+we're influencing it by making people
+
+134
+00:05:14,340 --> 00:05:16,020
+who are on the standards community think
+
+135
+00:05:16,020 --> 00:05:17,490
+about the different things that we want
+
+136
+00:05:17,490 --> 00:05:18,960
+to do it that besides you know
+
+137
+00:05:18,960 --> 00:05:20,910
+displaying all the animated gifs you
+
+138
+00:05:20,910 --> 00:05:25,230
+could possibly find on the Internet my
+
+139
+00:05:25,230 --> 00:05:27,570
+personal mission in terms of this little
+
+140
+00:05:27,570 --> 00:05:29,580
+diversity thing is I come up from an
+
+141
+00:05:29,580 --> 00:05:31,470
+engineering background from my undergrad
+
+142
+00:05:31,470 --> 00:05:34,410
+I'm a huge music nerd and you know now
+
+143
+00:05:34,410 --> 00:05:36,120
+I'm doing full-fledged computer science
+
+144
+00:05:36,120 --> 00:05:38,730
+web development so I like to put this my
+
+145
+00:05:38,730 --> 00:05:41,490
+bio finding ways to breed engineering
+
+146
+00:05:41,490 --> 00:05:43,560
+research music and art with a trusty
+
+147
+00:05:43,560 --> 00:05:45,000
+steed of JavaScript that's JavaScript
+
+148
+00:05:45,000 --> 00:05:47,970
+not horse GS to make the magical
+
+149
+00:05:47,970 --> 00:05:50,370
+unicorns of my imagination reality so I
+
+150
+00:05:50,370 --> 00:05:51,960
+found an image that sort of like
+
+151
+00:05:51,960 --> 00:05:54,120
+captured my mental image I wanted to
+
+152
+00:05:54,120 --> 00:05:56,280
+share with you so just in case you
+
+153
+00:05:56,280 --> 00:05:58,380
+didn't know this this is magical unicorn
+
+154
+00:05:58,380 --> 00:06:00,630
+I'm going for breathing fire like epics
+
+155
+00:06:00,630 --> 00:06:04,290
+eyes and that's me that's the cat riding
+
+156
+00:06:04,290 --> 00:06:06,570
+the epic magical unicorn and there's a
+
+157
+00:06:06,570 --> 00:06:08,100
+little nyan cat in the back from the set
+
+158
+00:06:08,100 --> 00:06:09,480
+I thought that was like really awesome
+
+159
+00:06:09,480 --> 00:06:11,550
+but you know this is like living the
+
+160
+00:06:11,550 --> 00:06:13,290
+dream like I you know I'm going to take
+
+161
+00:06:13,290 --> 00:06:15,180
+engineering it's smash it with art and
+
+162
+00:06:15,180 --> 00:06:16,950
+music and JavaScript and it's going to
+
+163
+00:06:16,950 --> 00:06:19,260
+like look awesome but so far because
+
+164
+00:06:19,260 --> 00:06:21,210
+things are coming along a lot of my
+
+165
+00:06:21,210 --> 00:06:22,980
+projects end up looking like that you
+
+166
+00:06:22,980 --> 00:06:25,320
+know what is he saying there I must eat
+
+167
+00:06:25,320 --> 00:06:27,660
+more rainbows like it's it's there a
+
+168
+00:06:27,660 --> 00:06:29,100
+little bit lumpy and awkward right now
+
+169
+00:06:29,100 --> 00:06:30,240
+but we're getting there you know and
+
+170
+00:06:30,240 --> 00:06:32,040
+it's still a lot of fun you still have a
+
+171
+00:06:32,040 --> 00:06:33,690
+unicorn it's just you know in kind of
+
+172
+00:06:33,690 --> 00:06:36,810
+you know awkward and derping but anyways
+
+173
+00:06:36,810 --> 00:06:38,280
+let's jump in let's breathe some
+
+174
+00:06:38,280 --> 00:06:40,590
+unicron's so this is a big question
+
+175
+00:06:40,590 --> 00:06:42,600
+right how do we do onset detection like
+
+176
+00:06:42,600 --> 00:06:45,510
+what is this first I want to take a
+
+177
+00:06:45,510 --> 00:06:48,030
+quick step back and think about you know
+
+178
+00:06:48,030 --> 00:06:49,620
+BPM we think about it because DJ's are
+
+179
+00:06:49,620 --> 00:06:52,500
+like all popular now and you know BPM
+
+180
+00:06:52,500 --> 00:06:54,330
+it's like that you know some pump that
+
+181
+00:06:54,330 --> 00:06:56,190
+you hear on the bottom but
+
+182
+00:06:56,190 --> 00:06:57,600
+it can mean a lot of things it's really
+
+183
+00:06:57,600 --> 00:07:00,270
+tied to human psychology and it's can be
+
+184
+00:07:00,270 --> 00:07:01,830
+anything from percussive beats which is
+
+185
+00:07:01,830 --> 00:07:03,780
+what we think of it could also be
+
+186
+00:07:03,780 --> 00:07:05,520
+pitching notes you know you have like a
+
+187
+00:07:05,520 --> 00:07:07,920
+flute piece from the classical music era
+
+188
+00:07:07,920 --> 00:07:10,140
+and it's like you don't have a drum in
+
+189
+00:07:10,140 --> 00:07:11,760
+the back like you know and seeing you
+
+190
+00:07:11,760 --> 00:07:15,420
+know like in a club so on sets this is
+
+191
+00:07:15,420 --> 00:07:16,230
+just a little bit of research
+
+192
+00:07:16,230 --> 00:07:18,240
+terminology they like to categorize it
+
+193
+00:07:18,240 --> 00:07:20,970
+into a lot of different names because it
+
+194
+00:07:20,970 --> 00:07:22,710
+is more complex than just detecting
+
+195
+00:07:22,710 --> 00:07:24,600
+where the drums are so there's you know
+
+196
+00:07:24,600 --> 00:07:27,180
+pitched or not pitch percussive and more
+
+197
+00:07:27,180 --> 00:07:29,700
+commonly now it's complex mix which is
+
+198
+00:07:29,700 --> 00:07:31,140
+basically like everything else because
+
+199
+00:07:31,140 --> 00:07:34,650
+we can't label everything some quick
+
+200
+00:07:34,650 --> 00:07:37,920
+sort of just scoping a lot of times V
+
+201
+00:07:37,920 --> 00:07:39,690
+pm's are associated with genres these
+
+202
+00:07:39,690 --> 00:07:41,670
+days for an example you know drum and
+
+203
+00:07:41,670 --> 00:07:44,670
+bass they like to say it's like 160 to
+
+204
+00:07:44,670 --> 00:07:47,340
+180 and etc etc and you know if we're
+
+205
+00:07:47,340 --> 00:07:49,530
+talking about classical music if you
+
+206
+00:07:49,530 --> 00:07:51,600
+have a background did it I did piano for
+
+207
+00:07:51,600 --> 00:07:54,570
+14 years so this adagio for an example
+
+208
+00:07:54,570 --> 00:07:59,280
+66 276 BPM it's not just this new DJ
+
+209
+00:07:59,280 --> 00:08:00,990
+thing like matching bpms in the quote
+
+210
+00:08:00,990 --> 00:08:05,880
+you know so detection method so how do
+
+211
+00:08:05,880 --> 00:08:07,680
+we do this and how did I learn how to do
+
+212
+00:08:07,680 --> 00:08:10,530
+this well I read a lot of research
+
+213
+00:08:10,530 --> 00:08:13,320
+papers and I'm not going to read this up
+
+214
+00:08:13,320 --> 00:08:16,890
+to you right now but I think this part
+
+215
+00:08:16,890 --> 00:08:17,850
+was actually a lot of fun and
+
+216
+00:08:17,850 --> 00:08:20,400
+interesting understanding some esoteric
+
+217
+00:08:20,400 --> 00:08:22,320
+language so I'll break it down into
+
+218
+00:08:22,320 --> 00:08:24,419
+something sort of bite-sized for this
+
+219
+00:08:24,419 --> 00:08:28,470
+talk so first what we're doing there's
+
+220
+00:08:28,470 --> 00:08:30,540
+some general steps we're doing an SD ft
+
+221
+00:08:30,540 --> 00:08:32,820
+short-time fourier transform which
+
+222
+00:08:32,820 --> 00:08:34,349
+basically the purpose of it is to prep
+
+223
+00:08:34,349 --> 00:08:37,380
+the signal for detection functions then
+
+224
+00:08:37,380 --> 00:08:38,940
+we do the detection function what these
+
+225
+00:08:38,940 --> 00:08:41,210
+are our functions that are meant to
+
+226
+00:08:41,210 --> 00:08:43,469
+selectively maximize for on sort
+
+227
+00:08:43,469 --> 00:08:44,760
+properties that we're looking for and
+
+228
+00:08:44,760 --> 00:08:46,710
+turn them into strong signals we can
+
+229
+00:08:46,710 --> 00:08:50,010
+peak pick out in peak picking which
+
+230
+00:08:50,010 --> 00:08:52,790
+after you have those highlighted on set
+
+231
+00:08:52,790 --> 00:08:55,890
+times you can pick out those times from
+
+232
+00:08:55,890 --> 00:08:57,360
+the signal that you've now got all I
+
+233
+00:08:57,360 --> 00:09:00,870
+processed and from there it's the you
+
+234
+00:09:00,870 --> 00:09:05,330
+know home free you calculate the BPM so
+
+235
+00:09:05,330 --> 00:09:07,589
+I'm not going to go too much into the
+
+236
+00:09:07,589 --> 00:09:09,209
+mathematical detail of things but
+
+237
+00:09:09,209 --> 00:09:11,399
+I do want to show you a high level view
+
+238
+00:09:11,399 --> 00:09:13,649
+of what this looks like just so you have
+
+239
+00:09:13,649 --> 00:09:15,449
+an idea of what I've tried to stuff into
+
+240
+00:09:15,449 --> 00:09:20,220
+javascript st ft does a number of steps
+
+241
+00:09:20,220 --> 00:09:21,929
+it's not just a fourier transform it
+
+242
+00:09:21,929 --> 00:09:23,970
+does window slicing slicing the signal
+
+243
+00:09:23,970 --> 00:09:26,369
+into overlapping windows often for this
+
+244
+00:09:26,369 --> 00:09:28,529
+application as small as 50 milliseconds
+
+245
+00:09:28,529 --> 00:09:31,439
+80 milliseconds and then you apply
+
+246
+00:09:31,439 --> 00:09:34,850
+Hamming window to trim off the edges of
+
+247
+00:09:34,850 --> 00:09:37,490
+bad stuff basically discontinuities and
+
+248
+00:09:37,490 --> 00:09:39,809
+normalization normalizing the magnitude
+
+249
+00:09:39,809 --> 00:09:42,149
+and zero padding because it needs to be
+
+250
+00:09:42,149 --> 00:09:44,129
+a power of two to do an F of T on it and
+
+251
+00:09:44,129 --> 00:09:45,929
+it clarifies the signal and get into
+
+252
+00:09:45,929 --> 00:09:48,119
+that if you want on your own and then
+
+253
+00:09:48,119 --> 00:09:50,970
+finally you do your FFT and get a bunch
+
+254
+00:09:50,970 --> 00:09:54,740
+of complex numbers in a matrix so
+
+255
+00:09:54,740 --> 00:09:57,209
+detection functions what these look like
+
+256
+00:09:57,209 --> 00:10:00,149
+I'm going to go over the ones that were
+
+257
+00:10:00,149 --> 00:10:02,610
+frequency based because they were more
+
+258
+00:10:02,610 --> 00:10:04,470
+robust out of some of the ones I looked
+
+259
+00:10:04,470 --> 00:10:06,869
+at and also these seem to be the ones
+
+260
+00:10:06,869 --> 00:10:08,579
+that are more prevalent more robust
+
+261
+00:10:08,579 --> 00:10:11,519
+Scott recognition high frequency content
+
+262
+00:10:11,519 --> 00:10:14,399
+and spectral difference I stuck the math
+
+263
+00:10:14,399 --> 00:10:15,929
+in there if their math and engineering
+
+264
+00:10:15,929 --> 00:10:17,670
+nerds and want to like dig into the
+
+265
+00:10:17,670 --> 00:10:21,689
+exclamations but these to maximize on
+
+266
+00:10:21,689 --> 00:10:24,660
+energy which you know tends to be those
+
+267
+00:10:24,660 --> 00:10:27,959
+percussive beats phase deviation is more
+
+268
+00:10:27,959 --> 00:10:30,589
+sensitive to things like pitch and
+
+269
+00:10:30,589 --> 00:10:32,999
+euclidean distance tries to smash these
+
+270
+00:10:32,999 --> 00:10:34,740
+two things together into something a
+
+271
+00:10:34,740 --> 00:10:37,199
+little bit more balanced so you know
+
+272
+00:10:37,199 --> 00:10:38,790
+we're looking for that onset they're
+
+273
+00:10:38,790 --> 00:10:41,639
+trying to highlight it peak picking
+
+274
+00:10:41,639 --> 00:10:45,660
+there's a few it's not as simple as you
+
+275
+00:10:45,660 --> 00:10:47,279
+would think be just because these
+
+276
+00:10:47,279 --> 00:10:48,660
+signals are noisy and you're doing
+
+277
+00:10:48,660 --> 00:10:49,740
+processing on them they're still going
+
+278
+00:10:49,740 --> 00:10:51,480
+to be noisy so you're building an
+
+279
+00:10:51,480 --> 00:10:54,389
+adaptive threshold which you'll kind of
+
+280
+00:10:54,389 --> 00:10:56,129
+see the visualizations later that I have
+
+281
+00:10:56,129 --> 00:10:58,829
+for this and by applying that threshold
+
+282
+00:10:58,829 --> 00:11:00,839
+we try to cut out the noise and actually
+
+283
+00:11:00,839 --> 00:11:02,220
+pick out where the on sets are so
+
+284
+00:11:02,220 --> 00:11:04,499
+initial peak finding you threshold them
+
+285
+00:11:04,499 --> 00:11:06,990
+out and refractory period is another way
+
+286
+00:11:06,990 --> 00:11:10,259
+of filtering where you say oh there's no
+
+287
+00:11:10,259 --> 00:11:11,639
+way that there can be a beat between
+
+288
+00:11:11,639 --> 00:11:13,079
+this time at this time cuz it's too
+
+289
+00:11:13,079 --> 00:11:14,790
+short and it's probably noise because
+
+290
+00:11:14,790 --> 00:11:16,769
+they're right next to each other so this
+
+291
+00:11:16,769 --> 00:11:18,720
+helps to cut out some of those noisy
+
+292
+00:11:18,720 --> 00:11:20,129
+signals if you pick some of your windows
+
+293
+00:11:20,129 --> 00:11:20,750
+wrong
+
+294
+00:11:20,750 --> 00:11:25,400
+um and not to bore you too much with the
+
+295
+00:11:25,400 --> 00:11:27,650
+nitty gritty details of this but peak
+
+296
+00:11:27,650 --> 00:11:30,740
+times this is a trivial example but say
+
+297
+00:11:30,740 --> 00:11:33,650
+I have a bunch of peak times so it's
+
+298
+00:11:33,650 --> 00:11:36,320
+really simple from here it's about 0.5
+
+299
+00:11:36,320 --> 00:11:38,720
+across the way I average it and there's
+
+300
+00:11:38,720 --> 00:11:40,670
+a beat every half second and that's
+
+301
+00:11:40,670 --> 00:11:42,890
+about 120 BPM you missed the happy
+
+302
+00:11:42,890 --> 00:11:45,140
+unicorn I press next well I think the
+
+303
+00:11:45,140 --> 00:11:47,680
+unicorn I had high hopes for my unicorn
+
+304
+00:11:47,680 --> 00:11:50,750
+how do you do it in JavaScript I'm going
+
+305
+00:11:50,750 --> 00:11:52,040
+to go over some of the fun things I ran
+
+306
+00:11:52,040 --> 00:11:54,860
+into their kind of fun oh but before
+
+307
+00:11:54,860 --> 00:11:57,410
+that I tried to think of some
+
+308
+00:11:57,410 --> 00:11:59,420
+interesting things I could do with this
+
+309
+00:11:59,420 --> 00:12:01,970
+you know initial implementation and i
+
+310
+00:12:01,970 --> 00:12:05,320
+found one song that i particularly like
+
+311
+00:12:05,320 --> 00:12:07,520
+if you don't listen to discovery they're
+
+312
+00:12:07,520 --> 00:12:09,320
+fantastic you should look them up but so
+
+313
+00:12:09,320 --> 00:12:11,090
+insane by discovery they do an
+
+314
+00:12:11,090 --> 00:12:13,190
+interesting thing where and two in two
+
+315
+00:12:13,190 --> 00:12:15,020
+spots in the song they kind of dip it
+
+316
+00:12:15,020 --> 00:12:16,910
+down into a lower BPM and like slow it
+
+317
+00:12:16,910 --> 00:12:18,830
+down make it like all you know groovy
+
+318
+00:12:18,830 --> 00:12:21,740
+and I wanted to see if I can maybe pick
+
+319
+00:12:21,740 --> 00:12:23,630
+that up by slicing it into 10 second
+
+320
+00:12:23,630 --> 00:12:26,450
+signals or 10 second windows of signals
+
+321
+00:12:26,450 --> 00:12:28,130
+and pushing it through and seeing if I
+
+322
+00:12:28,130 --> 00:12:30,020
+could see a modulation I signed some
+
+323
+00:12:30,020 --> 00:12:35,240
+colors to it where darker means a slower
+
+324
+00:12:35,240 --> 00:12:39,110
+BPM and lighter means a lighter a higher
+
+325
+00:12:39,110 --> 00:12:41,540
+BPM and I found that these two patches
+
+326
+00:12:41,540 --> 00:12:43,790
+you know there tends to second signal so
+
+327
+00:12:43,790 --> 00:12:45,680
+it's still pretty granular but it
+
+328
+00:12:45,680 --> 00:12:47,480
+actually picked up pretty closely to the
+
+329
+00:12:47,480 --> 00:12:49,250
+timestamps on the bottom where these
+
+330
+00:12:49,250 --> 00:12:50,420
+were happening so I was really excited
+
+331
+00:12:50,420 --> 00:12:54,589
+about that one to show you so tools that
+
+332
+00:12:54,589 --> 00:12:56,600
+I use that were really helpful just
+
+333
+00:12:56,600 --> 00:12:58,940
+being like how do i bring this research
+
+334
+00:12:58,940 --> 00:13:02,540
+paper and put it into javascript and DSP
+
+335
+00:13:02,540 --> 00:13:05,060
+jas was really helpful I didn't have to
+
+336
+00:13:05,060 --> 00:13:07,490
+run my own fft algorithm it's been done
+
+337
+00:13:07,490 --> 00:13:09,380
+it's been out there and people have been
+
+338
+00:13:09,380 --> 00:13:11,570
+using it I used it also for my windowing
+
+339
+00:13:11,570 --> 00:13:13,240
+function so that was super helpful
+
+340
+00:13:13,240 --> 00:13:16,100
+there's a note actually you know there
+
+341
+00:13:16,100 --> 00:13:17,900
+wasn't an NPM version I've had to do
+
+342
+00:13:17,900 --> 00:13:19,640
+some interesting wrapping of the stuff
+
+343
+00:13:19,640 --> 00:13:22,839
+only that I needed and taking it out but
+
+344
+00:13:22,839 --> 00:13:27,140
+Web Audio does great things like how i
+
+345
+00:13:27,140 --> 00:13:29,000
+used it in its most rudimentary form is
+
+346
+00:13:29,000 --> 00:13:31,640
+you take a signal you throw the file at
+
+347
+00:13:31,640 --> 00:13:33,779
+Web Audio and it will spit out a sample
+
+348
+00:13:33,779 --> 00:13:35,519
+and a float 32 array for me to work with
+
+349
+00:13:35,519 --> 00:13:38,879
+which is great complex arithmetic you do
+
+350
+00:13:38,879 --> 00:13:40,860
+have to do complex math with this so i
+
+351
+00:13:40,860 --> 00:13:43,259
+found a handy npm module so that I
+
+352
+00:13:43,259 --> 00:13:44,459
+didn't have to write that too because
+
+353
+00:13:44,459 --> 00:13:46,499
+that would just be silly to reinvent the
+
+354
+00:13:46,499 --> 00:13:49,230
+wheel and a lot of the other stuff I
+
+355
+00:13:49,230 --> 00:13:51,240
+just had to kind of write a lot of math
+
+356
+00:13:51,240 --> 00:13:54,120
+and stick it in a lot of loops so for
+
+357
+00:13:54,120 --> 00:13:56,610
+that browserify was a huge help for me
+
+358
+00:13:56,610 --> 00:13:58,170
+just being able to keep my code
+
+359
+00:13:58,170 --> 00:13:59,730
+organized and sane so I could see what
+
+360
+00:13:59,730 --> 00:14:01,230
+was going on see how things were
+
+361
+00:14:01,230 --> 00:14:05,339
+connecting clear a thing about how it
+
+362
+00:14:05,339 --> 00:14:07,290
+actually connected together BPM that was
+
+363
+00:14:07,290 --> 00:14:09,569
+my like main driver module web audio as
+
+364
+00:14:09,569 --> 00:14:11,490
+I said feeds a signal and information in
+
+365
+00:14:11,490 --> 00:14:14,100
+and these were the three things i went
+
+366
+00:14:14,100 --> 00:14:16,589
+over before so I separated them out
+
+367
+00:14:16,589 --> 00:14:20,220
+according to what I saw and a lot of the
+
+368
+00:14:20,220 --> 00:14:23,100
+math was happening there so connecting
+
+369
+00:14:23,100 --> 00:14:24,720
+up all of those things there and
+
+370
+00:14:24,720 --> 00:14:26,519
+detection I had the for detection
+
+371
+00:14:26,519 --> 00:14:29,220
+function so this is much easier to you
+
+372
+00:14:29,220 --> 00:14:31,499
+know browser fighters I just really like
+
+373
+00:14:31,499 --> 00:14:36,089
+it and source maps are awesome so so
+
+374
+00:14:36,089 --> 00:14:37,980
+interesting challenges that Iran to this
+
+375
+00:14:37,980 --> 00:14:41,279
+is a little anecdotal I suppose I've
+
+376
+00:14:41,279 --> 00:14:43,050
+never really had to work with float32
+
+377
+00:14:43,050 --> 00:14:45,300
+arrays before this so that was
+
+378
+00:14:45,300 --> 00:14:47,579
+interesting because I realized you know
+
+379
+00:14:47,579 --> 00:14:49,230
+you can't just add zeros on to the end
+
+380
+00:14:49,230 --> 00:14:51,360
+you have to like slice it and like copy
+
+381
+00:14:51,360 --> 00:14:53,100
+be a ray buffer and stick it in a thing
+
+382
+00:14:53,100 --> 00:14:55,259
+that's bigger and so that was
+
+383
+00:14:55,259 --> 00:14:57,720
+interesting to learn about and I mean
+
+384
+00:14:57,720 --> 00:14:59,519
+that's the best thing if you're learning
+
+385
+00:14:59,519 --> 00:15:00,959
+when you're building new projects so it
+
+386
+00:15:00,959 --> 00:15:04,230
+was fun but compatibility you know Web
+
+387
+00:15:04,230 --> 00:15:05,819
+Audio is enabled right now in chrome and
+
+388
+00:15:05,819 --> 00:15:07,559
+now also in beta versions of everything
+
+389
+00:15:07,559 --> 00:15:10,529
+else which is great but that's something
+
+390
+00:15:10,529 --> 00:15:13,350
+that you kind of have to be realistic
+
+391
+00:15:13,350 --> 00:15:15,569
+about and then complex arithmetic in
+
+392
+00:15:15,569 --> 00:15:17,610
+matrices like you know coming from
+
+393
+00:15:17,610 --> 00:15:19,110
+engineering where like MATLAB does
+
+394
+00:15:19,110 --> 00:15:20,370
+everything for you they have like a
+
+395
+00:15:20,370 --> 00:15:22,230
+function do the most complex things and
+
+396
+00:15:22,230 --> 00:15:24,089
+matrices and just spits out answers like
+
+397
+00:15:24,089 --> 00:15:26,220
+Java scripts not built for that so I had
+
+398
+00:15:26,220 --> 00:15:28,110
+a lot of like verbose like pushing stuff
+
+399
+00:15:28,110 --> 00:15:29,639
+around like beating it into like
+
+400
+00:15:29,639 --> 00:15:31,829
+JavaScript form to make it really like
+
+401
+00:15:31,829 --> 00:15:34,309
+pop out the complex stuff that I needed
+
+402
+00:15:34,309 --> 00:15:36,720
+and the biggest thing was just figuring
+
+403
+00:15:36,720 --> 00:15:38,579
+out how not to break chrome I have an
+
+404
+00:15:38,579 --> 00:15:41,249
+optimization slide later where I know I
+
+405
+00:15:41,249 --> 00:15:42,929
+haven't addressed a lot of optimizations
+
+406
+00:15:42,929 --> 00:15:44,399
+things that I wanted to do but didn't
+
+407
+00:15:44,399 --> 00:15:46,889
+quite get to so I'm aware but
+
+408
+00:15:46,889 --> 00:15:49,589
+was really interesting so there was a
+
+409
+00:15:49,589 --> 00:15:52,379
+lot of this where I actually put t bug
+
+410
+00:15:52,379 --> 00:15:54,209
+statement in a place that I probably
+
+411
+00:15:54,209 --> 00:15:55,619
+shouldn't have put a debug statement but
+
+412
+00:15:55,619 --> 00:15:57,149
+it was late at night these are those
+
+413
+00:15:57,149 --> 00:15:59,369
+complex objects from that library and it
+
+414
+00:15:59,369 --> 00:16:01,230
+was like for windows in it was like put
+
+415
+00:16:01,230 --> 00:16:03,389
+and you know I tweeted it out of
+
+416
+00:16:03,389 --> 00:16:04,709
+frustration of course my snarky
+
+417
+00:16:04,709 --> 00:16:06,119
+coworkers are like well we could just
+
+418
+00:16:06,119 --> 00:16:07,290
+doing something complex well there's
+
+419
+00:16:07,290 --> 00:16:09,209
+your problem like saying sits like four
+
+420
+00:16:09,209 --> 00:16:10,980
+in the morning not encouraging but like
+
+421
+00:16:10,980 --> 00:16:12,809
+literally it would get to the point
+
+422
+00:16:12,809 --> 00:16:14,879
+where you know chrome started showing me
+
+423
+00:16:14,879 --> 00:16:16,439
+like measurement rulers randomly and
+
+424
+00:16:16,439 --> 00:16:18,269
+they would get like stuck it be like by
+
+425
+00:16:18,269 --> 00:16:19,709
+the way your window is blah blah and
+
+426
+00:16:19,709 --> 00:16:21,029
+like I've never seen this before I have
+
+427
+00:16:21,029 --> 00:16:22,679
+what did I do to it like you know my
+
+428
+00:16:22,679 --> 00:16:24,540
+poor chrome is like crying at me and
+
+429
+00:16:24,540 --> 00:16:27,149
+like after a while like yeah I would hit
+
+430
+00:16:27,149 --> 00:16:29,009
+localhost 3000 and literally it would
+
+431
+00:16:29,009 --> 00:16:30,720
+just meet a crash be like no I know what
+
+432
+00:16:30,720 --> 00:16:32,009
+you do at this dress like you can't do
+
+433
+00:16:32,009 --> 00:16:35,040
+this anymore to either stop but that was
+
+434
+00:16:35,040 --> 00:16:36,779
+interesting and you know looking at
+
+435
+00:16:36,779 --> 00:16:38,519
+these arrays there's a lot of dots
+
+436
+00:16:38,519 --> 00:16:40,049
+behind this tweet where it's like
+
+437
+00:16:40,049 --> 00:16:42,839
+thousands of you know indices that I was
+
+438
+00:16:42,839 --> 00:16:44,549
+kind of scraping through it and you know
+
+439
+00:16:44,549 --> 00:16:46,769
+you make mistakes doing like math.pow
+
+440
+00:16:46,769 --> 00:16:49,079
+late at night doing math pow number two
+
+441
+00:16:49,079 --> 00:16:53,429
+instead of two number and etc so I was
+
+442
+00:16:53,429 --> 00:16:55,350
+getting a lot of these like no no no no
+
+443
+00:16:55,350 --> 00:17:00,299
+no no no and when you're you know seeing
+
+444
+00:17:00,299 --> 00:17:01,559
+a lot of these late at night my head I
+
+445
+00:17:01,559 --> 00:17:04,169
+was like nananananana batman i was like
+
+446
+00:17:04,169 --> 00:17:06,299
+god i'm going crazy like someone save me
+
+447
+00:17:06,299 --> 00:17:09,839
+from the nand's so these were some
+
+448
+00:17:09,839 --> 00:17:12,360
+interesting nights me and you know
+
+449
+00:17:12,360 --> 00:17:16,429
+chrome happy together in Batman um
+
+450
+00:17:16,429 --> 00:17:20,269
+anyways enough of that you get the point
+
+451
+00:17:20,269 --> 00:17:22,559
+all right so here's where I'm going to
+
+452
+00:17:22,559 --> 00:17:25,079
+kind of I stuck a lot of little plotter
+
+453
+00:17:25,079 --> 00:17:26,819
+things in there to help debug and I
+
+454
+00:17:26,819 --> 00:17:28,679
+think it really illustrates what's going
+
+455
+00:17:28,679 --> 00:17:30,809
+on in the signal and to see you know all
+
+456
+00:17:30,809 --> 00:17:32,370
+the math stuff that I did before in
+
+457
+00:17:32,370 --> 00:17:33,480
+action so I thought that would be
+
+458
+00:17:33,480 --> 00:17:35,639
+helpful to kind of show my code working
+
+459
+00:17:35,639 --> 00:17:37,139
+and crunching these numbers and shaping
+
+460
+00:17:37,139 --> 00:17:40,649
+them so this is what the original signal
+
+461
+00:17:40,649 --> 00:17:42,570
+something like this would look like it's
+
+462
+00:17:42,570 --> 00:17:45,690
+just plotting the signal Hamming window
+
+463
+00:17:45,690 --> 00:17:49,049
+trimming off the edges as I said then
+
+464
+00:17:49,049 --> 00:17:51,210
+the normalization the numbers are like
+
+465
+00:17:51,210 --> 00:17:53,130
+tiny but there's like one at the top of
+
+466
+00:17:53,130 --> 00:17:57,960
+that and zero padding as much as you
+
+467
+00:17:57,960 --> 00:17:59,070
+want and then FF
+
+468
+00:17:59,070 --> 00:18:00,509
+tease it you know you saw in the
+
+469
+00:18:00,509 --> 00:18:01,950
+previous screen shots just complex
+
+470
+00:18:01,950 --> 00:18:05,299
+Cumberland complex their complex numbers
+
+471
+00:18:05,299 --> 00:18:07,460
+this might be a little bit small but
+
+472
+00:18:07,460 --> 00:18:11,190
+they're actually not that many lines of
+
+473
+00:18:11,190 --> 00:18:12,299
+code it was just a little bit of
+
+474
+00:18:12,299 --> 00:18:14,250
+wrangling working with float32 arrays as
+
+475
+00:18:14,250 --> 00:18:15,690
+I said you know padding the signal it's
+
+476
+00:18:15,690 --> 00:18:17,340
+not just like push punches ears at the
+
+477
+00:18:17,340 --> 00:18:18,840
+end it's like no there's like an array
+
+478
+00:18:18,840 --> 00:18:21,929
+buffer and then a view on top so things
+
+479
+00:18:21,929 --> 00:18:23,759
+like that FFT this would have been so
+
+480
+00:18:23,759 --> 00:18:26,460
+much longer if I didn't have DSP so you
+
+481
+00:18:26,460 --> 00:18:30,870
+know god bless Diaz pjs same here for
+
+482
+00:18:30,870 --> 00:18:33,059
+the detection functions I'm just going
+
+483
+00:18:33,059 --> 00:18:35,340
+to bring them all out here so these are
+
+484
+00:18:35,340 --> 00:18:36,809
+the four that I covered before kept the
+
+485
+00:18:36,809 --> 00:18:38,940
+math there they're actually not that bad
+
+486
+00:18:38,940 --> 00:18:41,009
+you know once you learn how to read
+
+487
+00:18:41,009 --> 00:18:43,080
+mathematical and you know discrete
+
+488
+00:18:43,080 --> 00:18:45,539
+notation like you could do so much with
+
+489
+00:18:45,539 --> 00:18:48,000
+it so maybe I'm echoing other people but
+
+490
+00:18:48,000 --> 00:18:49,320
+like don't be afraid of this stuff it's
+
+491
+00:18:49,320 --> 00:18:53,710
+it's just a couple lines coat you know
+
+492
+00:18:53,720 --> 00:18:56,039
+not bad unicorns still looking pretty
+
+493
+00:18:56,039 --> 00:19:00,720
+good I thought peak picking so this is
+
+494
+00:19:00,720 --> 00:19:02,460
+what it looks like after I've applauded
+
+495
+00:19:02,460 --> 00:19:03,659
+detection function I've done that
+
+496
+00:19:03,659 --> 00:19:06,360
+Euclidean distance one here so you see
+
+497
+00:19:06,360 --> 00:19:07,860
+that you have some like strong peaks
+
+498
+00:19:07,860 --> 00:19:10,679
+going up here and that's detecting where
+
+499
+00:19:10,679 --> 00:19:11,970
+those on sets are happening and it's
+
+500
+00:19:11,970 --> 00:19:13,440
+really like spiking the signal up there
+
+501
+00:19:13,440 --> 00:19:16,100
+so that you can pick this out afterwards
+
+502
+00:19:16,100 --> 00:19:18,929
+here is the median filter step which is
+
+503
+00:19:18,929 --> 00:19:21,990
+part of the threshold assuming over the
+
+504
+00:19:21,990 --> 00:19:24,179
+signal according to a window size that
+
+505
+00:19:24,179 --> 00:19:25,710
+you can kind of filter out a lot of that
+
+506
+00:19:25,710 --> 00:19:28,110
+noise that's going on that's just
+
+507
+00:19:28,110 --> 00:19:30,000
+interrupting like seeing clear Peaks
+
+508
+00:19:30,000 --> 00:19:32,460
+like that so after its filtered it's a
+
+509
+00:19:32,460 --> 00:19:34,350
+lot clearer it's flat it's flat like
+
+510
+00:19:34,350 --> 00:19:36,450
+that and you basically choose out the
+
+511
+00:19:36,450 --> 00:19:40,590
+peaks and etc etc and you have an array
+
+512
+00:19:40,590 --> 00:19:43,080
+of times and like I showed before you
+
+513
+00:19:43,080 --> 00:19:44,850
+take those and what I do is I take the
+
+514
+00:19:44,850 --> 00:19:47,669
+gaps average them and do a little bit of
+
+515
+00:19:47,669 --> 00:19:52,460
+math and you have a BPM for your sample
+
+516
+00:19:52,460 --> 00:19:55,230
+so here's my optimization and
+
+517
+00:19:55,230 --> 00:19:56,460
+performance slide how not to break
+
+518
+00:19:56,460 --> 00:19:58,139
+Chrome I know there are ways and I just
+
+519
+00:19:58,139 --> 00:20:00,750
+have it quite delved into it yet but I'm
+
+520
+00:20:00,750 --> 00:20:03,509
+excited too soon because I want to fix a
+
+521
+00:20:03,509 --> 00:20:06,779
+couple things but web workers I think
+
+522
+00:20:06,779 --> 00:20:08,269
+are just ripe for this sort of thing
+
+523
+00:20:08,269 --> 00:20:10,590
+especially for the short-time fourier
+
+524
+00:20:10,590 --> 00:20:11,490
+transforms
+
+525
+00:20:11,490 --> 00:20:14,130
+step where and have like a gazillion 50
+
+526
+00:20:14,130 --> 00:20:15,720
+millisecond windows and doing the exact
+
+527
+00:20:15,720 --> 00:20:17,190
+same thing to every single one of them
+
+528
+00:20:17,190 --> 00:20:19,920
+so you know pass them into a web worker
+
+529
+00:20:19,920 --> 00:20:22,080
+I'm as far as i know i know there's like
+
+530
+00:20:22,080 --> 00:20:23,940
+an exception for typed arrays as well
+
+531
+00:20:23,940 --> 00:20:25,410
+where you don't have to serialize and
+
+532
+00:20:25,410 --> 00:20:26,640
+deserialize it which just slows
+
+533
+00:20:26,640 --> 00:20:28,470
+everything down and i'm using typed
+
+534
+00:20:28,470 --> 00:20:30,120
+arrays so if i can just pass that
+
+535
+00:20:30,120 --> 00:20:32,850
+through process all the crap and pass it
+
+536
+00:20:32,850 --> 00:20:34,440
+back like that'll be a huge performance
+
+537
+00:20:34,440 --> 00:20:39,840
+gain for me most music songs don't
+
+538
+00:20:39,840 --> 00:20:43,980
+change in tempo or BPM so if I slice
+
+539
+00:20:43,980 --> 00:20:45,480
+well-selected windows I don't have to
+
+540
+00:20:45,480 --> 00:20:47,520
+process like a 10 minute song all at
+
+541
+00:20:47,520 --> 00:20:49,470
+once like you know take it one from the
+
+542
+00:20:49,470 --> 00:20:51,630
+beginning middle and end like I think I
+
+543
+00:20:51,630 --> 00:20:53,520
+could basically figure it out and that
+
+544
+00:20:53,520 --> 00:20:57,950
+would save just a ton of computation oh
+
+545
+00:20:57,950 --> 00:21:00,870
+I have a third point that didn't show up
+
+546
+00:21:00,870 --> 00:21:04,590
+but it's basically about you know as I'm
+
+547
+00:21:04,590 --> 00:21:08,670
+jas you know and L ljs it's perfect for
+
+548
+00:21:08,670 --> 00:21:09,840
+this and I've just started learning
+
+549
+00:21:09,840 --> 00:21:12,179
+about it so I might go back and like
+
+550
+00:21:12,179 --> 00:21:13,650
+rewrite the whole thing and LLL and see
+
+551
+00:21:13,650 --> 00:21:16,230
+what happens so we'll see but I thought
+
+552
+00:21:16,230 --> 00:21:17,880
+this was interesting so I tried out a
+
+553
+00:21:17,880 --> 00:21:19,650
+matlab implementation and MATLAB is like
+
+554
+00:21:19,650 --> 00:21:21,270
+you know the engineering dream it does
+
+555
+00:21:21,270 --> 00:21:23,220
+all the things with matrices all at once
+
+556
+00:21:23,220 --> 00:21:24,990
+for me you know median filter like I
+
+557
+00:21:24,990 --> 00:21:26,340
+wrote a median filter that one it's like
+
+558
+00:21:26,340 --> 00:21:29,520
+median one signal window size it's like
+
+559
+00:21:29,520 --> 00:21:30,960
+one line I'm like wow wish I could do
+
+560
+00:21:30,960 --> 00:21:32,220
+that in JavaScript I guess love to make
+
+561
+00:21:32,220 --> 00:21:34,770
+it so people can do it dresser but it
+
+562
+00:21:34,770 --> 00:21:37,470
+was cool because you know I was testing
+
+563
+00:21:37,470 --> 00:21:39,690
+the signals on both of them and they
+
+564
+00:21:39,690 --> 00:21:41,370
+actually take about the same time it's
+
+565
+00:21:41,370 --> 00:21:43,650
+not like MATLAB is like exponentially
+
+566
+00:21:43,650 --> 00:21:45,030
+faster like I thought it would be I
+
+567
+00:21:45,030 --> 00:21:48,150
+think a 10 second signal I tried it was
+
+568
+00:21:48,150 --> 00:21:50,010
+like an uncompressed wave or something
+
+569
+00:21:50,010 --> 00:21:52,080
+it took a couple seconds in the browser
+
+570
+00:21:52,080 --> 00:21:54,390
+just not bad matlab was about the same
+
+571
+00:21:54,390 --> 00:21:55,860
+you know it's like busy busy busy and it
+
+572
+00:21:55,860 --> 00:21:57,780
+spit out some stuff so i was really
+
+573
+00:21:57,780 --> 00:21:59,790
+encouraged by that you know like go Jess
+
+574
+00:21:59,790 --> 00:22:04,470
+love it and you know the dream here is
+
+575
+00:22:04,470 --> 00:22:06,420
+if I can make it fast enough like all of
+
+576
+00:22:06,420 --> 00:22:07,920
+this processing stuff with like the
+
+577
+00:22:07,920 --> 00:22:09,090
+heavy computation has always been like
+
+578
+00:22:09,090 --> 00:22:10,860
+something I post back and it generates
+
+579
+00:22:10,860 --> 00:22:12,270
+and generates like it's been a couple
+
+580
+00:22:12,270 --> 00:22:14,070
+hours can I accept it yet like there's a
+
+581
+00:22:14,070 --> 00:22:16,350
+queue can't fetch it yet but if we could
+
+582
+00:22:16,350 --> 00:22:18,210
+do this like all the client side and
+
+583
+00:22:18,210 --> 00:22:20,550
+just like process almost real time I
+
+584
+00:22:20,550 --> 00:22:22,169
+think that would be super powerful just
+
+585
+00:22:22,169 --> 00:22:23,020
+for
+
+586
+00:22:23,020 --> 00:22:24,250
+you know anything you think of to do
+
+587
+00:22:24,250 --> 00:22:27,580
+this with oh there it is as inscripted
+
+588
+00:22:27,580 --> 00:22:29,560
+ljs if you're a here for Brendan's chalk
+
+589
+00:22:29,560 --> 00:22:34,370
+which was epic you know about all that
+
+590
+00:22:34,380 --> 00:22:37,600
+alright so there are some weaknesses
+
+591
+00:22:37,600 --> 00:22:39,190
+that I need to be realistic about and
+
+592
+00:22:39,190 --> 00:22:40,630
+these come straight from the research on
+
+593
+00:22:40,630 --> 00:22:43,450
+onset detection you might have heard me
+
+594
+00:22:43,450 --> 00:22:44,950
+mentioning things like the median filter
+
+595
+00:22:44,950 --> 00:22:47,020
+window time you know the window slicing
+
+596
+00:22:47,020 --> 00:22:48,310
+could be 50 milliseconds or 80
+
+597
+00:22:48,310 --> 00:22:50,530
+milliseconds and the thing is if you use
+
+598
+00:22:50,530 --> 00:22:52,330
+those wrong like you just make really
+
+599
+00:22:52,330 --> 00:22:54,220
+giant windows or you filter out that
+
+600
+00:22:54,220 --> 00:22:55,600
+thing so it's so smooth like you
+
+601
+00:22:55,600 --> 00:22:57,550
+eliminate all the on sets like you are
+
+602
+00:22:57,550 --> 00:22:59,200
+going to break this like it will give
+
+603
+00:22:59,200 --> 00:23:01,450
+you crazy numbers that make you know
+
+604
+00:23:01,450 --> 00:23:04,840
+zero sense so that's just something to
+
+605
+00:23:04,840 --> 00:23:06,730
+be aware of and something that you know
+
+606
+00:23:06,730 --> 00:23:07,810
+I still need to test different
+
+607
+00:23:07,810 --> 00:23:09,370
+parameters for different detection
+
+608
+00:23:09,370 --> 00:23:12,610
+functions to see kind of where I can
+
+609
+00:23:12,610 --> 00:23:16,320
+apply them and where I can't and so also
+
+610
+00:23:16,320 --> 00:23:19,150
+previous feeds into that prior knowledge
+
+611
+00:23:19,150 --> 00:23:20,830
+is often helpful to selecting the right
+
+612
+00:23:20,830 --> 00:23:22,960
+detection functions like I said some of
+
+613
+00:23:22,960 --> 00:23:24,820
+them are pitch based so if you have like
+
+614
+00:23:24,820 --> 00:23:26,950
+a flute piece like the pricasso one is
+
+615
+00:23:26,950 --> 00:23:28,330
+probably not going to do that well on
+
+616
+00:23:28,330 --> 00:23:30,520
+that but you know phase deviation might
+
+617
+00:23:30,520 --> 00:23:33,850
+and there's still a lot going on
+
+618
+00:23:33,850 --> 00:23:35,590
+research so there's lots of reading to
+
+619
+00:23:35,590 --> 00:23:40,320
+do and just more things to look into so
+
+620
+00:23:40,320 --> 00:23:42,580
+future work just on the more general
+
+621
+00:23:42,580 --> 00:23:44,460
+side besides wanting to make it faster
+
+622
+00:23:44,460 --> 00:23:47,950
+is this is really only scratching the
+
+623
+00:23:47,950 --> 00:23:49,930
+surface of research like I read a couple
+
+624
+00:23:49,930 --> 00:23:51,790
+of papers found some good summary papers
+
+625
+00:23:51,790 --> 00:23:53,860
+that summarize a lot of things going on
+
+626
+00:23:53,860 --> 00:23:56,380
+in the fields but there's so many more
+
+627
+00:23:56,380 --> 00:23:57,700
+detection functions that people are
+
+628
+00:23:57,700 --> 00:23:59,530
+developing every day like this is their
+
+629
+00:23:59,530 --> 00:24:01,600
+full time job they're phd's like
+
+630
+00:24:01,600 --> 00:24:03,730
+underfed underpaid and this is what they
+
+631
+00:24:03,730 --> 00:24:06,250
+do all day in the lab and you know I
+
+632
+00:24:06,250 --> 00:24:07,870
+almost went into research and I'm glad I
+
+633
+00:24:07,870 --> 00:24:09,040
+did because I don't have the personality
+
+634
+00:24:09,040 --> 00:24:11,170
+for that but god bless lot of people who
+
+635
+00:24:11,170 --> 00:24:13,710
+do like this is crazy awesome stuff and
+
+636
+00:24:13,710 --> 00:24:16,270
+as I mentioned previously for different
+
+637
+00:24:16,270 --> 00:24:18,190
+applications you know onset detection
+
+638
+00:24:18,190 --> 00:24:20,710
+exists it's just for signals so really
+
+639
+00:24:20,710 --> 00:24:22,270
+the only differences is yanking out the
+
+640
+00:24:22,270 --> 00:24:23,860
+detection functions I'm using for music
+
+641
+00:24:23,860 --> 00:24:25,960
+and sticking other ones in and maybe
+
+642
+00:24:25,960 --> 00:24:27,850
+other things I just haven't read up on
+
+643
+00:24:27,850 --> 00:24:30,340
+you know on such detection for nerve
+
+644
+00:24:30,340 --> 00:24:33,150
+signals and stuff like that
+
+645
+00:24:33,150 --> 00:24:37,390
+so grating time so how did I do was my
+
+646
+00:24:37,390 --> 00:24:39,700
+JavaScript music engineering you know
+
+647
+00:24:39,700 --> 00:24:41,650
+stuck together and taped with scotch
+
+648
+00:24:41,650 --> 00:24:44,920
+tape unicorn beautiful well it's a
+
+649
+00:24:44,920 --> 00:24:46,660
+little bit forced like I have to admit
+
+650
+00:24:46,660 --> 00:24:48,280
+like it's I felt like I was like
+
+651
+00:24:48,280 --> 00:24:51,160
+sticking you know like cuz engineering
+
+652
+00:24:51,160 --> 00:24:53,620
+is a cute pug and into like a JavaScript
+
+653
+00:24:53,620 --> 00:24:55,540
+horse suit and it grew a horn and some
+
+654
+00:24:55,540 --> 00:24:57,910
+like fudz like it was it was okay like
+
+655
+00:24:57,910 --> 00:24:59,380
+there's a lot of things I can do better
+
+656
+00:24:59,380 --> 00:25:00,730
+hopefully that I clean it up you know
+
+657
+00:25:00,730 --> 00:25:02,320
+put more skin on it and it's like it'll
+
+658
+00:25:02,320 --> 00:25:04,660
+be good like we're really getting an air
+
+659
+00:25:04,660 --> 00:25:07,290
+with the browser the web is changing
+
+660
+00:25:07,290 --> 00:25:10,450
+aggressively and you know just as a
+
+661
+00:25:10,450 --> 00:25:12,460
+quick example i was just searching
+
+662
+00:25:12,460 --> 00:25:14,830
+around mpm for stuff to use and just to
+
+663
+00:25:14,830 --> 00:25:16,480
+see what i could find when you know very
+
+664
+00:25:16,480 --> 00:25:18,820
+like basic engineering certain keywords
+
+665
+00:25:18,820 --> 00:25:21,100
+DSP digital signal processing FFT which
+
+666
+00:25:21,100 --> 00:25:23,890
+is the fast Fourier transform filters a
+
+667
+00:25:23,890 --> 00:25:27,310
+little less there but there's a lot of
+
+668
+00:25:27,310 --> 00:25:29,200
+stuff out there for free that people are
+
+669
+00:25:29,200 --> 00:25:31,330
+using every day downloading maintaining
+
+670
+00:25:31,330 --> 00:25:33,040
+you know like this is really awesome
+
+671
+00:25:33,040 --> 00:25:35,140
+stuff like it's available for us to play
+
+672
+00:25:35,140 --> 00:25:36,640
+with and use and improve upon and
+
+673
+00:25:36,640 --> 00:25:40,600
+contribute to in god bless em p.m.
+
+674
+00:25:40,600 --> 00:25:42,100
+because I just did a search and I found
+
+675
+00:25:42,100 --> 00:25:46,300
+everything I needed so and things like
+
+676
+00:25:46,300 --> 00:25:48,730
+you know web audio and you know the w3c
+
+677
+00:25:48,730 --> 00:25:50,440
+really pushing forward on a lot of these
+
+678
+00:25:50,440 --> 00:25:52,810
+really powerful tools and you know des
+
+679
+00:25:52,810 --> 00:25:54,370
+pjs who's like written forever ago but
+
+680
+00:25:54,370 --> 00:25:56,110
+glad I didn't have to go to someone else
+
+681
+00:25:56,110 --> 00:25:59,710
+did so and it's a lot about you know
+
+682
+00:25:59,710 --> 00:26:01,750
+rethinking web engineering it's like I
+
+683
+00:26:01,750 --> 00:26:04,090
+thought that when I left biomedical
+
+684
+00:26:04,090 --> 00:26:05,770
+engineering so I hated bio it's like oh
+
+685
+00:26:05,770 --> 00:26:07,110
+god I like learned all of this
+
+686
+00:26:07,110 --> 00:26:09,130
+electrical engineering stuff for nothing
+
+687
+00:26:09,130 --> 00:26:10,840
+like what am I gonna do but you know
+
+688
+00:26:10,840 --> 00:26:12,850
+today you know yesterday I built a robot
+
+689
+00:26:12,850 --> 00:26:14,530
+with like a breadboard like the old days
+
+690
+00:26:14,530 --> 00:26:17,290
+and like you know now I get to use this
+
+691
+00:26:17,290 --> 00:26:19,510
+stuff in the web like you know I didn't
+
+692
+00:26:19,510 --> 00:26:21,970
+have to leave all that behind so what
+
+693
+00:26:21,970 --> 00:26:23,440
+does it mean to be a web engineer these
+
+694
+00:26:23,440 --> 00:26:25,780
+days how about more engineering like you
+
+695
+00:26:25,780 --> 00:26:27,790
+can bring all these things that you've
+
+696
+00:26:27,790 --> 00:26:29,650
+learned or if you want to learn like
+
+697
+00:26:29,650 --> 00:26:32,080
+there's stuff out there to learn and you
+
+698
+00:26:32,080 --> 00:26:33,430
+know we're all smart people that's why
+
+699
+00:26:33,430 --> 00:26:37,410
+we're here so how about more engineering
+
+700
+00:26:37,410 --> 00:26:39,910
+this kind of stuff with vendor prefixes
+
+701
+00:26:39,910 --> 00:26:42,040
+is not the final frontier anymore i know
+
+702
+00:26:42,040 --> 00:26:43,840
+a lot of people you know friends in New
+
+703
+00:26:43,840 --> 00:26:45,220
+York who have come over from finance
+
+704
+00:26:45,220 --> 00:26:46,190
+like completely different
+
+705
+00:26:46,190 --> 00:26:48,080
+Fields having no idea and they're like
+
+706
+00:26:48,080 --> 00:26:50,149
+oh my god okay look I found like CSS
+
+707
+00:26:50,149 --> 00:26:51,500
+transitions and I'm like that's really
+
+708
+00:26:51,500 --> 00:26:53,360
+nice now let me show you something on
+
+709
+00:26:53,360 --> 00:26:55,220
+NPM that it's really fun to play with
+
+710
+00:26:55,220 --> 00:26:56,480
+that you should play with like that
+
+711
+00:26:56,480 --> 00:26:58,429
+whole connect talk earlier like they
+
+712
+00:26:58,429 --> 00:26:59,570
+would have so much fun with that like
+
+713
+00:26:59,570 --> 00:27:01,129
+you know these are cool and they're
+
+714
+00:27:01,129 --> 00:27:02,899
+important but like it's not the final
+
+715
+00:27:02,899 --> 00:27:04,850
+frontier like there is things beyond the
+
+716
+00:27:04,850 --> 00:27:07,250
+vendor prefix cacti and it's thorny in
+
+717
+00:27:07,250 --> 00:27:09,049
+the vendor prefix cacti but that's
+
+718
+00:27:09,049 --> 00:27:13,909
+another topic I think it's just really
+
+719
+00:27:13,909 --> 00:27:16,820
+important and I mean now at tort you
+
+720
+00:27:16,820 --> 00:27:18,379
+know towards the end of this conference
+
+721
+00:27:18,379 --> 00:27:19,700
+I feel like this is not even necessary
+
+722
+00:27:19,700 --> 00:27:21,830
+to say anymore but you know there have
+
+723
+00:27:21,830 --> 00:27:24,379
+been so many diverse talks just you know
+
+724
+00:27:24,379 --> 00:27:26,450
+today and all the other days and it's
+
+725
+00:27:26,450 --> 00:27:28,220
+really important for us I think to
+
+726
+00:27:28,220 --> 00:27:31,190
+embrace diversity like I think that this
+
+727
+00:27:31,190 --> 00:27:33,470
+field is young enough like you know web
+
+728
+00:27:33,470 --> 00:27:35,659
+engineering and JavaScript that a lot of
+
+729
+00:27:35,659 --> 00:27:37,610
+the people that I've met here are really
+
+730
+00:27:37,610 --> 00:27:39,259
+diverse they come from engineering
+
+731
+00:27:39,259 --> 00:27:41,929
+backgrounds art history background music
+
+732
+00:27:41,929 --> 00:27:44,240
+you know like fine arts anything you can
+
+733
+00:27:44,240 --> 00:27:46,789
+think of they've done it and I think
+
+734
+00:27:46,789 --> 00:27:48,799
+because we're such an open community
+
+735
+00:27:48,799 --> 00:27:50,659
+like that's what we're known for we
+
+736
+00:27:50,659 --> 00:27:52,220
+really need to embrace that and bring it
+
+737
+00:27:52,220 --> 00:27:53,690
+together and collaborate on all of our
+
+738
+00:27:53,690 --> 00:27:54,919
+different talents you know knowledge
+
+739
+00:27:54,919 --> 00:27:56,629
+really builds upon itself and combining
+
+740
+00:27:56,629 --> 00:27:58,370
+these fields generates a lot of powerful
+
+741
+00:27:58,370 --> 00:28:00,080
+tools like you know you don't have to
+
+742
+00:28:00,080 --> 00:28:01,669
+figure out everything yourself like your
+
+743
+00:28:01,669 --> 00:28:03,830
+peers have done this like you know like
+
+744
+00:28:03,830 --> 00:28:07,129
+Raquel she worked on robots for years
+
+745
+00:28:07,129 --> 00:28:08,990
+and years like she can answer all of
+
+746
+00:28:08,990 --> 00:28:12,649
+your questions just ask you know and you
+
+747
+00:28:12,649 --> 00:28:13,879
+know just thinking outside of the box
+
+748
+00:28:13,879 --> 00:28:16,129
+like i said before like you know i do
+
+749
+00:28:16,129 --> 00:28:17,659
+web engineering at work all the time
+
+750
+00:28:17,659 --> 00:28:20,360
+every day but in my free time you know i
+
+751
+00:28:20,360 --> 00:28:21,860
+want to do something different but it's
+
+752
+00:28:21,860 --> 00:28:23,360
+still things that i know the web and
+
+753
+00:28:23,360 --> 00:28:25,279
+other things but it's really exciting
+
+754
+00:28:25,279 --> 00:28:27,200
+and a lot more fun i think for my free
+
+755
+00:28:27,200 --> 00:28:28,820
+time to just think outside the box so
+
+756
+00:28:28,820 --> 00:28:35,090
+you know breed on unicorn and that's all
+
+757
+00:28:35,090 --> 00:28:36,710
+I've got and I just wanted to say again
+
+758
+00:28:36,710 --> 00:28:39,409
+like I really look forward to seeing all
+
+759
+00:28:39,409 --> 00:28:41,120
+the diversity you can bring to web
+
+760
+00:28:41,120 --> 00:28:43,070
+engineering and you know show me what
+
+761
+00:28:43,070 --> 00:28:46,039
+you want to do and what you can do and I
+
+762
+00:28:46,039 --> 00:28:49,789
+think we'll all be better for it so yeah
+
+763
+00:28:49,789 --> 00:29:05,710
+that's it thank
+

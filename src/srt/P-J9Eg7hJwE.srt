@@ -1,0 +1,2689 @@
+1
+00:00:06,009 --> 00:00:10,219
+
+Aloha my name is Bree and I work at
+
+2
+00:00:10,219 --> 00:00:13,250
+Airbnb big changes at big organizations
+
+3
+00:00:13,250 --> 00:00:14,900
+is hard there's a lot of people to
+
+4
+00:00:14,900 --> 00:00:16,940
+convince and a lot of code to migrate
+
+5
+00:00:16,940 --> 00:00:18,800
+I'd like to share with you how we
+
+6
+00:00:18,800 --> 00:00:21,040
+brought typescript to Airbnb I
+
+7
+00:00:21,040 --> 00:00:23,330
+appreciate you all being here with me I
+
+8
+00:00:23,330 --> 00:00:24,650
+know you could be out at the beach with
+
+9
+00:00:24,650 --> 00:00:26,990
+your snazzy new towel but I hope there's
+
+10
+00:00:26,990 --> 00:00:28,700
+something in here for everyone whether
+
+11
+00:00:28,700 --> 00:00:30,200
+you're navigating a big change at your
+
+12
+00:00:30,200 --> 00:00:31,760
+company and this could be used as a sort
+
+13
+00:00:31,760 --> 00:00:33,680
+of case study whether you're actively
+
+14
+00:00:33,680 --> 00:00:35,809
+migrating to typescript now and there
+
+15
+00:00:35,809 --> 00:00:37,010
+are tools and techniques that we'll talk
+
+16
+00:00:37,010 --> 00:00:38,780
+about that can help or if you've heard a
+
+17
+00:00:38,780 --> 00:00:40,850
+bit about typescript and want to learn
+
+18
+00:00:40,850 --> 00:00:44,089
+more first we'll cover what typescript
+
+19
+00:00:44,089 --> 00:00:48,229
+is what we mean by at scale the process
+
+20
+00:00:48,229 --> 00:00:50,769
+of proposing typescript at this scale
+
+21
+00:00:50,769 --> 00:00:52,909
+addressing questions and concerns along
+
+22
+00:00:52,909 --> 00:00:55,940
+the way in response to the proposal how
+
+23
+00:00:55,940 --> 00:00:57,589
+we gradually adopted typescript and
+
+24
+00:00:57,589 --> 00:01:00,139
+migration strategies that we're using to
+
+25
+00:01:00,139 --> 00:01:03,469
+move from JavaScript to typescript by a
+
+26
+00:01:03,469 --> 00:01:05,120
+quick show of hands how many people have
+
+27
+00:01:05,120 --> 00:01:07,880
+used typescript before oh cool that's a
+
+28
+00:01:07,880 --> 00:01:10,250
+big number of you not everybody raise
+
+29
+00:01:10,250 --> 00:01:11,360
+our hands so let's give a quick
+
+30
+00:01:11,360 --> 00:01:13,369
+introductions so that everybody is on
+
+31
+00:01:13,369 --> 00:01:14,149
+the same page
+
+32
+00:01:14,149 --> 00:01:16,759
+suppose we had this greeter function it
+
+33
+00:01:16,759 --> 00:01:18,860
+takes a name and returns hello that name
+
+34
+00:01:18,860 --> 00:01:20,479
+so if we pass it in J's cough it would
+
+35
+00:01:20,479 --> 00:01:24,380
+say hello J's cough how friendly here's
+
+36
+00:01:24,380 --> 00:01:25,490
+what that code would look like in
+
+37
+00:01:25,490 --> 00:01:27,259
+typescript notice that it's quite
+
+38
+00:01:27,259 --> 00:01:28,549
+similar the only difference is that
+
+39
+00:01:28,549 --> 00:01:30,289
+we've annotated the parameter with what
+
+40
+00:01:30,289 --> 00:01:32,320
+type it is
+
+41
+00:01:32,320 --> 00:01:34,939
+so if we use this function in our
+
+42
+00:01:34,939 --> 00:01:37,189
+typescript project and we pass a string
+
+43
+00:01:37,189 --> 00:01:39,740
+everything compiles fine but if we pass
+
+44
+00:01:39,740 --> 00:01:41,479
+something that's not a string in this
+
+45
+00:01:41,479 --> 00:01:43,340
+case an array of strings typescript will
+
+46
+00:01:43,340 --> 00:01:45,829
+give us an error that a string array is
+
+47
+00:01:45,829 --> 00:01:47,149
+not assignable to a parameter of type
+
+48
+00:01:47,149 --> 00:01:49,939
+string we didn't have to refresh the
+
+49
+00:01:49,939 --> 00:01:52,280
+page click through our flow look at the
+
+50
+00:01:52,280 --> 00:01:53,600
+error in our console and trace back
+
+51
+00:01:53,600 --> 00:01:55,429
+through where the error happened we got
+
+52
+00:01:55,429 --> 00:01:57,409
+this era immediately in our editor right
+
+53
+00:01:57,409 --> 00:02:01,429
+after we typed it we can express the
+
+54
+00:02:01,429 --> 00:02:02,960
+type of other objects as well
+
+55
+00:02:02,960 --> 00:02:04,549
+this interface describes a shape of a
+
+56
+00:02:04,549 --> 00:02:06,109
+person object that has a first name and
+
+57
+00:02:06,109 --> 00:02:08,030
+a last name and you can describe types
+
+58
+00:02:08,030 --> 00:02:11,410
+for more complicated constructs
+
+59
+00:02:11,410 --> 00:02:13,250
+typescript normally comes with a
+
+60
+00:02:13,250 --> 00:02:15,590
+compiler that can tell you when
+
+61
+00:02:15,590 --> 00:02:17,330
+something has gone wrong it also has a
+
+62
+00:02:17,330 --> 00:02:19,130
+language server that editors can hook
+
+63
+00:02:19,130 --> 00:02:21,680
+- for things like auto-completion find
+
+64
+00:02:21,680 --> 00:02:23,840
+usages for factoring and more in this
+
+65
+00:02:23,840 --> 00:02:26,000
+example we've hooked up the type for our
+
+66
+00:02:26,000 --> 00:02:27,860
+with styles react higher cut order
+
+67
+00:02:27,860 --> 00:02:29,960
+component so we get autocomplete for the
+
+68
+00:02:29,960 --> 00:02:31,940
+hundreds of CSS properties it accepts
+
+69
+00:02:31,940 --> 00:02:34,820
+including inline documentation amazing I
+
+70
+00:02:34,820 --> 00:02:36,410
+didn't have to flip back and forth to
+
+71
+00:02:36,410 --> 00:02:38,090
+the docs pages I got all of this in my
+
+72
+00:02:38,090 --> 00:02:40,820
+editor with types with types throughout
+
+73
+00:02:40,820 --> 00:02:42,830
+our code we can do more as it's being
+
+74
+00:02:42,830 --> 00:02:45,500
+authored this just scratches the surface
+
+75
+00:02:45,500 --> 00:02:48,410
+of what typescript is capable of but
+
+76
+00:02:48,410 --> 00:02:49,790
+gives you a sense of the kind of areas
+
+77
+00:02:49,790 --> 00:02:51,470
+that can help catch and the tooling it
+
+78
+00:02:51,470 --> 00:02:55,940
+enables so that's the typescript part
+
+79
+00:02:55,940 --> 00:02:59,720
+what about the at scale part Oh is there
+
+80
+00:02:59,720 --> 00:03:06,320
+a problem oh thanks tied scripts I'm not
+
+81
+00:03:06,320 --> 00:03:08,210
+actually making all this up if you did
+
+82
+00:03:08,210 --> 00:03:09,770
+typo a variable that would give you an
+
+83
+00:03:09,770 --> 00:03:11,210
+area that looked like that so it
+
+84
+00:03:11,210 --> 00:03:15,610
+actually is real thing so let's fix that
+
+85
+00:03:15,610 --> 00:03:19,370
+so the scale changes a conversation I've
+
+86
+00:03:19,370 --> 00:03:21,380
+been on small teams before where it was
+
+87
+00:03:21,380 --> 00:03:23,390
+just hey you wanna use typescript yeah
+
+88
+00:03:23,390 --> 00:03:25,820
+sounds cool let's use it but as you
+
+89
+00:03:25,820 --> 00:03:27,950
+scale up to hundreds of engineers and
+
+90
+00:03:27,950 --> 00:03:29,750
+more and more code that conversation
+
+91
+00:03:29,750 --> 00:03:32,510
+changes we would have changed that we
+
+92
+00:03:32,510 --> 00:03:34,190
+were proposing is using typescript in
+
+93
+00:03:34,190 --> 00:03:35,870
+our main repo the one that powers
+
+94
+00:03:35,870 --> 00:03:36,920
+airbnb.com
+
+95
+00:03:36,920 --> 00:03:38,900
+and making it a primary language for
+
+96
+00:03:38,900 --> 00:03:41,210
+front-end development more people are
+
+97
+00:03:41,210 --> 00:03:42,830
+affected by the change and more code
+
+98
+00:03:42,830 --> 00:03:44,960
+would have to be migrated let's quantify
+
+99
+00:03:44,960 --> 00:03:47,840
+what we mean by at scale an error maybe
+
+100
+00:03:47,840 --> 00:03:50,090
+we have lots of JavaScript there's over
+
+101
+00:03:50,090 --> 00:03:51,320
+two billion lines with JavaScript
+
+102
+00:03:51,320 --> 00:03:53,780
+checked into our main repo and over 100
+
+103
+00:03:53,780 --> 00:03:56,240
+internal NPM packages these are separate
+
+104
+00:03:56,240 --> 00:03:57,500
+repos that we've packaged up to an
+
+105
+00:03:57,500 --> 00:03:59,720
+internal NPM registry that we can share
+
+106
+00:03:59,720 --> 00:04:00,590
+across repos
+
+107
+00:04:00,590 --> 00:04:02,810
+that's a lot of code we still got some
+
+108
+00:04:02,810 --> 00:04:04,010
+backbone in there talk about Shaun's
+
+109
+00:04:04,010 --> 00:04:05,570
+history of JavaScript we got some
+
+110
+00:04:05,570 --> 00:04:09,080
+history over the the Airbnb decade so we
+
+111
+00:04:09,080 --> 00:04:10,610
+we also have lots of Engineers
+
+112
+00:04:10,610 --> 00:04:12,530
+interacting with this code there are
+
+113
+00:04:12,530 --> 00:04:15,050
+over 1300 at the company 200 of which
+
+114
+00:04:15,050 --> 00:04:17,060
+are fronting the majority of these
+
+115
+00:04:17,060 --> 00:04:18,680
+front-end engineers contribute to that
+
+116
+00:04:18,680 --> 00:04:22,550
+main mono repo those numbers paint a
+
+117
+00:04:22,550 --> 00:04:24,020
+picture of the environment in which we
+
+118
+00:04:24,020 --> 00:04:26,540
+were proposing typescript and what did
+
+119
+00:04:26,540 --> 00:04:28,990
+it what did it look like at that scale
+
+120
+00:04:28,990 --> 00:04:32,000
+every month we have a fun meeting where
+
+121
+00:04:32,000 --> 00:04:32,780
+all the front-end
+
+122
+00:04:32,780 --> 00:04:33,889
+engineers around the company get
+
+123
+00:04:33,889 --> 00:04:35,960
+together and we geek out about new
+
+124
+00:04:35,960 --> 00:04:38,180
+front-end technologies and patterns for
+
+125
+00:04:38,180 --> 00:04:39,590
+things we want to consider in more depth
+
+126
+00:04:39,590 --> 00:04:42,020
+we draft proposals that outline things
+
+127
+00:04:42,020 --> 00:04:43,790
+like benefits trade-offs alternatives
+
+128
+00:04:43,790 --> 00:04:45,950
+considered exit strategy and long-term
+
+129
+00:04:45,950 --> 00:04:48,290
+owners people weigh in on the pros and
+
+130
+00:04:48,290 --> 00:04:50,180
+cons of these proposals and we decided
+
+131
+00:04:50,180 --> 00:04:51,950
+as a group whether it makes sense to
+
+132
+00:04:51,950 --> 00:04:53,840
+move forward this ensures we make
+
+133
+00:04:53,840 --> 00:04:55,190
+deliberate decisions about what we
+
+134
+00:04:55,190 --> 00:04:56,840
+commit to as a broader team and avoid
+
+135
+00:04:56,840 --> 00:04:58,760
+hopping on the hype train without
+
+136
+00:04:58,760 --> 00:05:02,180
+legitimate technical justification we've
+
+137
+00:05:02,180 --> 00:05:03,620
+been exploring typescript at Airbnb
+
+138
+00:05:03,620 --> 00:05:06,620
+since 2016 on smaller teams and a static
+
+139
+00:05:06,620 --> 00:05:08,390
+type system was a top request from a
+
+140
+00:05:08,390 --> 00:05:10,820
+20-17 front end survey given this
+
+141
+00:05:10,820 --> 00:05:13,070
+positive signal Joe and I shout out to
+
+142
+00:05:13,070 --> 00:05:16,970
+Joe second row there we drafted a
+
+143
+00:05:16,970 --> 00:05:18,890
+proposal for typescript and presented it
+
+144
+00:05:18,890 --> 00:05:20,900
+to the front end working group the
+
+145
+00:05:20,900 --> 00:05:22,669
+proposal detailed why typescript made
+
+146
+00:05:22,669 --> 00:05:24,530
+sense at Airbnb let's highlight some of
+
+147
+00:05:24,530 --> 00:05:27,770
+the main reasons everybody's mission is
+
+148
+00:05:27,770 --> 00:05:30,729
+to make it so anyone can belong anywhere
+
+149
+00:05:30,729 --> 00:05:33,200
+every issue a user encounters with our
+
+150
+00:05:33,200 --> 00:05:34,520
+product gets in the way of that mission
+
+151
+00:05:34,520 --> 00:05:36,680
+the same is true of the products you all
+
+152
+00:05:36,680 --> 00:05:39,020
+are working on typescript helps prevent
+
+153
+00:05:39,020 --> 00:05:42,460
+bugs which in turn helps our end users
+
+154
+00:05:42,460 --> 00:05:44,419
+typescript also enables a wealth of
+
+155
+00:05:44,419 --> 00:05:46,070
+developer productivity benefits and
+
+156
+00:05:46,070 --> 00:05:48,050
+tooling like editor auto completion and
+
+157
+00:05:48,050 --> 00:05:49,970
+refactoring like we saw earlier with
+
+158
+00:05:49,970 --> 00:05:51,650
+typescript engineers can move faster
+
+159
+00:05:51,650 --> 00:05:55,400
+more safely we're investing in graph QL
+
+160
+00:05:55,400 --> 00:05:57,650
+and Apollo at Airbnb which lets us
+
+161
+00:05:57,650 --> 00:05:59,750
+generate typescript types from our graph
+
+162
+00:05:59,750 --> 00:06:02,600
+ul schemas this means that we can get
+
+163
+00:06:02,600 --> 00:06:04,789
+end to end size type safety because the
+
+164
+00:06:04,789 --> 00:06:06,320
+types used by the back end and the front
+
+165
+00:06:06,320 --> 00:06:08,120
+end share a single source of truth a
+
+166
+00:06:08,120 --> 00:06:10,220
+back-end engineer can make a change to
+
+167
+00:06:10,220 --> 00:06:12,289
+the API without unknowingly breaking
+
+168
+00:06:12,289 --> 00:06:14,210
+clients and front-end engineers can be
+
+169
+00:06:14,210 --> 00:06:16,100
+confident about what data will be coming
+
+170
+00:06:16,100 --> 00:06:18,200
+back from the server type mismatches
+
+171
+00:06:18,200 --> 00:06:19,789
+have been a major source of bugs for us
+
+172
+00:06:19,789 --> 00:06:22,010
+so this end-to-end type safety was a
+
+173
+00:06:22,010 --> 00:06:25,690
+major selling point sounds great right
+
+174
+00:06:25,690 --> 00:06:29,660
+but there were lots of questions and
+
+175
+00:06:29,660 --> 00:06:31,280
+concerns in response to our initial
+
+176
+00:06:31,280 --> 00:06:34,370
+proposal let's look at a few of them in
+
+177
+00:06:34,370 --> 00:06:37,560
+more depth
+
+178
+00:06:37,570 --> 00:06:40,280
+our mono repo depends on our internal
+
+179
+00:06:40,280 --> 00:06:42,620
+NPM packages do we need to convert those
+
+180
+00:06:42,620 --> 00:06:44,330
+to typescript first in order to get
+
+181
+00:06:44,330 --> 00:06:46,250
+autocomplete and type checking
+
+182
+00:06:46,250 --> 00:06:48,260
+so this is the predicament we have we
+
+183
+00:06:48,260 --> 00:06:50,270
+have our tiger project that depends on a
+
+184
+00:06:50,270 --> 00:06:53,240
+jsm PM package how do we get types for
+
+185
+00:06:53,240 --> 00:06:55,250
+that package it would seem like the
+
+186
+00:06:55,250 --> 00:06:56,570
+package needs to be converted to
+
+187
+00:06:56,570 --> 00:06:57,620
+typescript first
+
+188
+00:06:57,620 --> 00:06:59,330
+but that's problematic because we be
+
+189
+00:06:59,330 --> 00:07:00,800
+blocked on the maintainer converting it
+
+190
+00:07:00,800 --> 00:07:02,600
+and maybe they're reluctant to do so
+
+191
+00:07:02,600 --> 00:07:03,980
+because at the early phases of our
+
+192
+00:07:03,980 --> 00:07:05,360
+proposal it wasn't sure we were going to
+
+193
+00:07:05,360 --> 00:07:07,790
+move forward with it but on the flip
+
+194
+00:07:07,790 --> 00:07:09,260
+side in order for developers to have a
+
+195
+00:07:09,260 --> 00:07:10,880
+good experience with typescript we
+
+196
+00:07:10,880 --> 00:07:13,910
+needed that type safety so how do we get
+
+197
+00:07:13,910 --> 00:07:15,260
+around the seeming chicken and egg
+
+198
+00:07:15,260 --> 00:07:16,840
+problem
+
+199
+00:07:16,840 --> 00:07:18,650
+typescript has a feature called
+
+200
+00:07:18,650 --> 00:07:21,530
+declaration files files with a DTS
+
+201
+00:07:21,530 --> 00:07:23,960
+extension which we can define types for
+
+202
+00:07:23,960 --> 00:07:26,480
+JavaScript files let's look at an
+
+203
+00:07:26,480 --> 00:07:28,250
+example so we have the greeter function
+
+204
+00:07:28,250 --> 00:07:29,690
+that we saw earlier and the
+
+205
+00:07:29,690 --> 00:07:32,510
+corresponding DTS file on the top there
+
+206
+00:07:32,510 --> 00:07:34,100
+are no implementation details here it
+
+207
+00:07:34,100 --> 00:07:36,400
+only describes what the types are
+
+208
+00:07:36,400 --> 00:07:39,020
+typescript stitches these together such
+
+209
+00:07:39,020 --> 00:07:40,669
+that the Declaration file is used at
+
+210
+00:07:40,669 --> 00:07:42,680
+compile time and the original JavaScript
+
+211
+00:07:42,680 --> 00:07:45,530
+is used at runtime so let's go back to
+
+212
+00:07:45,530 --> 00:07:47,000
+our original scenario and see how
+
+213
+00:07:47,000 --> 00:07:50,690
+declaration files can help sure if that
+
+214
+00:07:50,690 --> 00:07:52,640
+project had been converted to typescript
+
+215
+00:07:52,640 --> 00:07:55,669
+we couldn't generate a DDS file as part
+
+216
+00:07:55,669 --> 00:07:57,110
+of the typescript build but we were
+
+217
+00:07:57,110 --> 00:07:59,080
+considering that that wasn't an option
+
+218
+00:07:59,080 --> 00:08:01,760
+so instead we could put the declaration
+
+219
+00:08:01,760 --> 00:08:05,360
+file in our typescript project another
+
+220
+00:08:05,360 --> 00:08:07,010
+choice is that we can create a separate
+
+221
+00:08:07,010 --> 00:08:08,720
+NPM package and put the declaration
+
+222
+00:08:08,720 --> 00:08:10,760
+files there this is nice because now we
+
+223
+00:08:10,760 --> 00:08:12,590
+can share the declaration files across
+
+224
+00:08:12,590 --> 00:08:15,890
+several repos and this is how types for
+
+225
+00:08:15,890 --> 00:08:17,930
+things like react work you have a you
+
+226
+00:08:17,930 --> 00:08:19,669
+install react and you can install a
+
+227
+00:08:19,669 --> 00:08:23,300
+types react package the types for react
+
+228
+00:08:23,300 --> 00:08:25,520
+along with those for 5,000 other
+
+229
+00:08:25,520 --> 00:08:27,650
+packages live indefinitely types a
+
+230
+00:08:27,650 --> 00:08:30,710
+community maintained repository the vast
+
+231
+00:08:30,710 --> 00:08:32,330
+majority of public dependencies we had
+
+232
+00:08:32,330 --> 00:08:33,919
+in our main repo were already typed and
+
+233
+00:08:33,919 --> 00:08:35,810
+definitely typed the active community
+
+234
+00:08:35,810 --> 00:08:37,190
+around typescript was a major selling
+
+235
+00:08:37,190 --> 00:08:39,140
+point and we've contribute back I'm sure
+
+236
+00:08:39,140 --> 00:08:40,339
+they're people around this room that
+
+237
+00:08:40,339 --> 00:08:42,490
+have contributed back thank you
+
+238
+00:08:42,490 --> 00:08:45,020
+type definitely typed works great for
+
+239
+00:08:45,020 --> 00:08:47,570
+public NPM packages but what about the
+
+240
+00:08:47,570 --> 00:08:51,220
+internal ones we mirrored this
+
+241
+00:08:51,220 --> 00:08:53,660
+definitely type setup internally by
+
+242
+00:08:53,660 --> 00:08:56,209
+creating a separate NPM scope so instead
+
+243
+00:08:56,209 --> 00:08:57,770
+of installing from types you did install
+
+244
+00:08:57,770 --> 00:08:59,120
+from Airbnb types
+
+245
+00:08:59,120 --> 00:09:01,070
+and the repo is set up similar to how
+
+246
+00:09:01,070 --> 00:09:02,960
+definitely type is so we could add our
+
+247
+00:09:02,960 --> 00:09:05,150
+types there and publish these types
+
+248
+00:09:05,150 --> 00:09:09,950
+internally and we've open-sourced a
+
+249
+00:09:09,950 --> 00:09:11,720
+starter kit if you are interested in
+
+250
+00:09:11,720 --> 00:09:13,250
+setting up this sort of thing it doesn't
+
+251
+00:09:13,250 --> 00:09:14,660
+have any types in it it's more just the
+
+252
+00:09:14,660 --> 00:09:16,700
+setup for how you can add tests and
+
+253
+00:09:16,700 --> 00:09:21,350
+publish your own types how many bugs can
+
+254
+00:09:21,350 --> 00:09:25,220
+typescript help prevent a recent study
+
+255
+00:09:25,220 --> 00:09:28,400
+to type or not to type show that 15% of
+
+256
+00:09:28,400 --> 00:09:30,320
+bugs in a selection of github repos were
+
+257
+00:09:30,320 --> 00:09:33,650
+preventable with typescript internally
+
+258
+00:09:33,650 --> 00:09:35,600
+we have a process for documenting
+
+259
+00:09:35,600 --> 00:09:37,520
+incidents that occur in production this
+
+260
+00:09:37,520 --> 00:09:39,560
+is a blameless process the point is so
+
+261
+00:09:39,560 --> 00:09:40,880
+that we can learn from our mistakes so
+
+262
+00:09:40,880 --> 00:09:43,370
+we don't repeat them in the future so I
+
+263
+00:09:43,370 --> 00:09:45,470
+literally sat down and read through six
+
+264
+00:09:45,470 --> 00:09:47,900
+months worth of post mortems super-fun
+
+265
+00:09:47,900 --> 00:09:50,960
+reading right so my favorites like tale
+
+266
+00:09:50,960 --> 00:09:54,320
+of the uncut type error the peril of the
+
+267
+00:09:54,320 --> 00:09:56,720
+per muted parameters okay maybe they
+
+268
+00:09:56,720 --> 00:09:59,060
+didn't have such exciting names in any
+
+269
+00:09:59,060 --> 00:10:01,190
+case I categorize them as JavaScript
+
+270
+00:10:01,190 --> 00:10:02,960
+related or not and determine which of
+
+271
+00:10:02,960 --> 00:10:04,220
+those could have been prevented with
+
+272
+00:10:04,220 --> 00:10:06,589
+typescript let's look at example where
+
+273
+00:10:06,589 --> 00:10:09,740
+typescript would have helped we made a
+
+274
+00:10:09,740 --> 00:10:11,180
+change to our shared input component
+
+275
+00:10:11,180 --> 00:10:13,029
+that broke a form on a settings page
+
+276
+00:10:13,029 --> 00:10:15,290
+users were unable to submit the form
+
+277
+00:10:15,290 --> 00:10:17,470
+because it no longer passed validation
+
+278
+00:10:17,470 --> 00:10:19,760
+here is a simplified version of that
+
+279
+00:10:19,760 --> 00:10:22,130
+shared and can put component before the
+
+280
+00:10:22,130 --> 00:10:24,740
+change it takes an on blur prop and
+
+281
+00:10:24,740 --> 00:10:26,720
+passes it straight through to the input
+
+282
+00:10:26,720 --> 00:10:29,990
+element a change was made to add a new
+
+283
+00:10:29,990 --> 00:10:33,920
+in on blur handler but there was a
+
+284
+00:10:33,920 --> 00:10:40,190
+subtle bug can you spot it the event
+
+285
+00:10:40,190 --> 00:10:42,080
+parameter was no longer being passed to
+
+286
+00:10:42,080 --> 00:10:45,589
+the on blur prop this caused an issue
+
+287
+00:10:45,589 --> 00:10:47,420
+several hops away in a different repo
+
+288
+00:10:47,420 --> 00:10:49,670
+the input component was being consumed
+
+289
+00:10:49,670 --> 00:10:51,800
+as part of a redux form which expects an
+
+290
+00:10:51,800 --> 00:10:53,540
+event or value to be passed in order for
+
+291
+00:10:53,540 --> 00:10:56,420
+the validation to work properly without
+
+292
+00:10:56,420 --> 00:10:58,100
+the event the form no longer pass
+
+293
+00:10:58,100 --> 00:10:59,720
+validation which meant the submit button
+
+294
+00:10:59,720 --> 00:11:02,140
+was always disabled
+
+295
+00:11:02,140 --> 00:11:05,470
+how could typescript have helped us here
+
+296
+00:11:05,470 --> 00:11:08,180
+the types for redux form capture the
+
+297
+00:11:08,180 --> 00:11:10,459
+constraint we saw in the docs the on
+
+298
+00:11:10,459 --> 00:11:12,410
+blur prop must be passed an event
+
+299
+00:11:12,410 --> 00:11:15,440
+value so if we had been using typescript
+
+300
+00:11:15,440 --> 00:11:17,840
+with Redux form types hooked up we would
+
+301
+00:11:17,840 --> 00:11:19,040
+have seen an error at the call site
+
+302
+00:11:19,040 --> 00:11:23,490
+where the event wasn't being passed
+
+303
+00:11:23,500 --> 00:11:26,180
+another common class of issues involved
+
+304
+00:11:26,180 --> 00:11:28,040
+strict mill checks where you use a
+
+305
+00:11:28,040 --> 00:11:29,930
+property to structure or try to invoke
+
+306
+00:11:29,930 --> 00:11:30,950
+something that could be null or
+
+307
+00:11:30,950 --> 00:11:33,110
+undefined you've probably seen that one
+
+308
+00:11:33,110 --> 00:11:34,300
+before
+
+309
+00:11:34,300 --> 00:11:37,400
+another was type mismatches typescript
+
+310
+00:11:37,400 --> 00:11:38,870
+tells us when we try to use types that
+
+311
+00:11:38,870 --> 00:11:42,860
+are not assignable to one another so now
+
+312
+00:11:42,860 --> 00:11:43,820
+that we have a better sense of the
+
+313
+00:11:43,820 --> 00:11:45,320
+common kinds of post-mortem bugs
+
+314
+00:11:45,320 --> 00:11:47,210
+typescript can help prevent what's the
+
+315
+00:11:47,210 --> 00:11:53,630
+overall percentage 38% we found that 38%
+
+316
+00:11:53,630 --> 00:11:55,820
+of incident causing bugs that reach
+
+317
+00:11:55,820 --> 00:11:57,860
+production bugs that have real effects
+
+318
+00:11:57,860 --> 00:11:59,810
+on our users and bottom line could have
+
+319
+00:11:59,810 --> 00:12:00,920
+been prevented with typescript
+
+320
+00:12:00,920 --> 00:12:03,620
+this was a huge finding for us it helped
+
+321
+00:12:03,620 --> 00:12:05,720
+make the impact real we saw light bulbs
+
+322
+00:12:05,720 --> 00:12:07,430
+go off as we replicated some of the
+
+323
+00:12:07,430 --> 00:12:08,900
+incidents and showed people the arrow
+
+324
+00:12:08,900 --> 00:12:11,060
+type script would have given sure we
+
+325
+00:12:11,060 --> 00:12:12,800
+could have written tests to catch these
+
+326
+00:12:12,800 --> 00:12:14,060
+sort of things but static type checking
+
+327
+00:12:14,060 --> 00:12:16,970
+adds an extra layer of protection so if
+
+328
+00:12:16,970 --> 00:12:18,650
+you access to a similar history at your
+
+329
+00:12:18,650 --> 00:12:20,540
+company it could be worth taking a look
+
+330
+00:12:20,540 --> 00:12:22,070
+with someone who knows typescript to see
+
+331
+00:12:22,070 --> 00:12:25,390
+what this percentage looks like for you
+
+332
+00:12:25,390 --> 00:12:30,770
+do teams want to switch to typescript we
+
+333
+00:12:30,770 --> 00:12:32,420
+pilot a typescript on several teams
+
+334
+00:12:32,420 --> 00:12:34,610
+specifically targeting teams that hadn't
+
+335
+00:12:34,610 --> 00:12:35,840
+used typescript before to gain
+
+336
+00:12:35,840 --> 00:12:37,970
+additional perspective we help them get
+
+337
+00:12:37,970 --> 00:12:39,640
+set up and gather feedback along the way
+
+338
+00:12:39,640 --> 00:12:42,680
+after using it for a while we sent a
+
+339
+00:12:42,680 --> 00:12:44,420
+survey to them asking whether we should
+
+340
+00:12:44,420 --> 00:12:46,700
+continue investing in typescript and the
+
+341
+00:12:46,700 --> 00:12:48,670
+feedback was overwhelmingly positive
+
+342
+00:12:48,670 --> 00:12:50,990
+we'd recommend using this sort of trial
+
+343
+00:12:50,990 --> 00:12:52,610
+period for testing out a new technology
+
+344
+00:12:52,610 --> 00:12:54,710
+or pattern the front-end working group
+
+345
+00:12:54,710 --> 00:12:56,330
+was on board with it because it was
+
+346
+00:12:56,330 --> 00:12:57,620
+self-contained and it was easy to
+
+347
+00:12:57,620 --> 00:12:59,180
+rollback should we not move forward with
+
+348
+00:12:59,180 --> 00:13:01,490
+it and it helped the proposal because we
+
+349
+00:13:01,490 --> 00:13:02,780
+could gauge whether teams actually liked
+
+350
+00:13:02,780 --> 00:13:06,650
+using typescript there were concerns
+
+351
+00:13:06,650 --> 00:13:08,930
+around build times we measured it and
+
+352
+00:13:08,930 --> 00:13:11,840
+found no significant impact we have over
+
+353
+00:13:11,840 --> 00:13:13,670
+500 e eslint rules enabled in our main
+
+354
+00:13:13,670 --> 00:13:15,770
+repo with the typescript eslint parser
+
+355
+00:13:15,770 --> 00:13:17,390
+we were happy to discover that most of
+
+356
+00:13:17,390 --> 00:13:20,390
+them just worked if we were to ever move
+
+357
+00:13:20,390 --> 00:13:21,950
+away from typescript in the future we
+
+358
+00:13:21,950 --> 00:13:23,510
+could strip off the types and end up
+
+359
+00:13:23,510 --> 00:13:25,040
+with roughly the same JavaScript who
+
+360
+00:13:25,040 --> 00:13:26,030
+would have written otherwise
+
+361
+00:13:26,030 --> 00:13:29,300
+so one by one we documented considered
+
+362
+00:13:29,300 --> 00:13:31,790
+followed up and came up with solutions
+
+363
+00:13:31,790 --> 00:13:34,010
+to the questions and concerns raised it
+
+364
+00:13:34,010 --> 00:13:35,420
+was important to us to work with
+
+365
+00:13:35,420 --> 00:13:36,740
+detractors and hear out their concerns
+
+366
+00:13:36,740 --> 00:13:39,080
+we converted many of them to advocates
+
+367
+00:13:39,080 --> 00:13:40,820
+in the end and our proposal became
+
+368
+00:13:40,820 --> 00:13:44,960
+stronger from their feedback after
+
+369
+00:13:44,960 --> 00:13:46,640
+sufficiently addressing concerns we
+
+370
+00:13:46,640 --> 00:13:48,260
+surveyed all front-end engineers on
+
+371
+00:13:48,260 --> 00:13:52,970
+whether we should adopt typescript given
+
+372
+00:13:52,970 --> 00:13:54,710
+the positive response we had enough
+
+373
+00:13:54,710 --> 00:13:56,360
+evidence to move forward and the
+
+374
+00:13:56,360 --> 00:14:03,200
+proposal was approved from there we
+
+375
+00:14:03,200 --> 00:14:06,230
+gradually expanded adoption and at this
+
+376
+00:14:06,230 --> 00:14:07,790
+point we had completed the pilot phase
+
+377
+00:14:07,790 --> 00:14:09,440
+that was valuable for proving out
+
+378
+00:14:09,440 --> 00:14:10,970
+typescript and getting the foundation in
+
+379
+00:14:10,970 --> 00:14:13,670
+place we ironed out frictions early and
+
+380
+00:14:13,670 --> 00:14:15,500
+improved tooling and documentation so
+
+381
+00:14:15,500 --> 00:14:16,790
+later teams would have a smoother
+
+382
+00:14:16,790 --> 00:14:19,280
+on-ramp we have ongoing contact with the
+
+383
+00:14:19,280 --> 00:14:21,350
+typescript team and help surface issues
+
+384
+00:14:21,350 --> 00:14:23,000
+like prioritizing better handling of
+
+385
+00:14:23,000 --> 00:14:25,730
+default props as one example this phase
+
+386
+00:14:25,730 --> 00:14:27,350
+also grew our internal typescript
+
+387
+00:14:27,350 --> 00:14:29,390
+community most people had Airbnb don't
+
+388
+00:14:29,390 --> 00:14:30,800
+know typescript yet so this meant more
+
+389
+00:14:30,800 --> 00:14:33,130
+people could help and answer questions
+
+390
+00:14:33,130 --> 00:14:35,780
+next we moved into a beta status and
+
+391
+00:14:35,780 --> 00:14:38,450
+teams could opt into using it to help
+
+392
+00:14:38,450 --> 00:14:40,190
+onboard teams we created internal
+
+393
+00:14:40,190 --> 00:14:41,840
+documentation and a style guide and
+
+394
+00:14:41,840 --> 00:14:45,290
+hosted learning sessions we set up a
+
+395
+00:14:45,290 --> 00:14:46,850
+slack channel an internal Stack Overflow
+
+396
+00:14:46,850 --> 00:14:49,040
+tag at Google email group of github
+
+397
+00:14:49,040 --> 00:14:51,140
+group people could use on their PRS we
+
+398
+00:14:51,140 --> 00:14:52,760
+wanted to make sure people could get the
+
+399
+00:14:52,760 --> 00:14:56,480
+help they needed the final step is
+
+400
+00:14:56,480 --> 00:14:57,890
+graduating typescript to general
+
+401
+00:14:57,890 --> 00:14:59,960
+availability meaning it's stable and
+
+402
+00:14:59,960 --> 00:15:02,030
+everyone should start using it we're
+
+403
+00:15:02,030 --> 00:15:03,350
+actively approaching this at the moment
+
+404
+00:15:03,350 --> 00:15:05,390
+the remaining steps are solidifying
+
+405
+00:15:05,390 --> 00:15:07,490
+style guide documentation ramping up
+
+406
+00:15:07,490 --> 00:15:09,680
+internal education efforts and migrating
+
+407
+00:15:09,680 --> 00:15:12,380
+more code we're about 50% of teams using
+
+408
+00:15:12,380 --> 00:15:14,570
+typescript and 10% of the files in our
+
+409
+00:15:14,570 --> 00:15:16,840
+mono repo have been converted so far
+
+410
+00:15:16,840 --> 00:15:19,520
+using this gradual approach made for
+
+411
+00:15:19,520 --> 00:15:21,800
+smoother adoption if we've said from day
+
+412
+00:15:21,800 --> 00:15:23,300
+one that everybody should start using
+
+413
+00:15:23,300 --> 00:15:25,070
+typescript person after person would
+
+414
+00:15:25,070 --> 00:15:26,900
+have run into the same issues or had the
+
+415
+00:15:26,900 --> 00:15:29,840
+same questions instead we could figure
+
+416
+00:15:29,840 --> 00:15:31,310
+things out on the smaller scale and
+
+417
+00:15:31,310 --> 00:15:33,620
+carry forward and those answers would
+
+418
+00:15:33,620 --> 00:15:38,030
+carry forward as we expand it out
+
+419
+00:15:38,040 --> 00:15:39,600
+we've been exploring a couple options
+
+420
+00:15:39,600 --> 00:15:42,770
+for migrating our code to type scripts
+
+421
+00:15:42,770 --> 00:15:45,420
+our original migration strategy was a
+
+422
+00:15:45,420 --> 00:15:48,900
+JavaScript type script hybrid let's see
+
+423
+00:15:48,900 --> 00:15:50,730
+how this strategy works in the context
+
+424
+00:15:50,730 --> 00:15:53,640
+of our mono repo this is a simplified
+
+425
+00:15:53,640 --> 00:15:55,470
+version that I came up with by literally
+
+426
+00:15:55,470 --> 00:15:57,030
+going to airbnb.com and giving
+
+427
+00:15:57,030 --> 00:15:58,710
+reasonable names to the things I saw so
+
+428
+00:15:58,710 --> 00:16:02,670
+no company secrets here let's zoom in on
+
+429
+00:16:02,670 --> 00:16:04,350
+the homes project and see what it would
+
+430
+00:16:04,350 --> 00:16:05,730
+look like to convert it using the hybrid
+
+431
+00:16:05,730 --> 00:16:09,660
+strategy we added a typescript config
+
+432
+00:16:09,660 --> 00:16:11,790
+file and renamed individual files from
+
+433
+00:16:11,790 --> 00:16:16,590
+jst TS or JSX to TS x typescript errors
+
+434
+00:16:16,590 --> 00:16:20,600
+pop up and we proceeded to fix them an
+
+435
+00:16:20,600 --> 00:16:22,710
+awesome feature of typescript is that
+
+436
+00:16:22,710 --> 00:16:24,870
+not all code has to be converted before
+
+437
+00:16:24,870 --> 00:16:27,390
+it can compile and run the allow JSF
+
+438
+00:16:27,390 --> 00:16:29,490
+configuration option allows javascript
+
+439
+00:16:29,490 --> 00:16:30,750
+and typescript files to live
+
+440
+00:16:30,750 --> 00:16:33,240
+side-by-side so at this point we can
+
+441
+00:16:33,240 --> 00:16:35,220
+check in what we have so far and the
+
+442
+00:16:35,220 --> 00:16:37,200
+site still works we don't have to pause
+
+443
+00:16:37,200 --> 00:16:38,970
+development migrate the whole project
+
+444
+00:16:38,970 --> 00:16:43,140
+and then my and then do that first we
+
+445
+00:16:43,140 --> 00:16:46,620
+can migrate instead file by file we
+
+446
+00:16:46,620 --> 00:16:49,080
+repeat this process over time until the
+
+447
+00:16:49,080 --> 00:16:52,620
+whole project is migrated on the topic
+
+448
+00:16:52,620 --> 00:16:54,120
+of migration I wanted to take a brief
+
+449
+00:16:54,120 --> 00:16:55,590
+moment and share some tips we found
+
+450
+00:16:55,590 --> 00:16:59,370
+helpful the first is TS fixed me we
+
+451
+00:16:59,370 --> 00:17:01,470
+added a global type alias for typescript
+
+452
+00:17:01,470 --> 00:17:03,540
+any type which means something could be
+
+453
+00:17:03,540 --> 00:17:04,020
+anything
+
+454
+00:17:04,020 --> 00:17:06,720
+we called it TS fix me to indicate that
+
+455
+00:17:06,720 --> 00:17:08,760
+it should be revisited and fixed up
+
+456
+00:17:08,760 --> 00:17:11,220
+later on best practice is to avoid any
+
+457
+00:17:11,220 --> 00:17:13,170
+because it loses type safety but it can
+
+458
+00:17:13,170 --> 00:17:16,010
+be helpful during the migration process
+
+459
+00:17:16,010 --> 00:17:19,050
+the TS ignore comment silences the error
+
+460
+00:17:19,050 --> 00:17:21,900
+on the following line properly typing a
+
+461
+00:17:21,900 --> 00:17:24,030
+file might involve unraveling some deep
+
+462
+00:17:24,030 --> 00:17:26,400
+chain of dependent types we try to avoid
+
+463
+00:17:26,400 --> 00:17:28,199
+this by like converting leaf files first
+
+464
+00:17:28,199 --> 00:17:30,390
+but sometimes it's inevitable so TS
+
+465
+00:17:30,390 --> 00:17:32,370
+fixed me and TS ignore can help split
+
+466
+00:17:32,370 --> 00:17:34,170
+things up such that incremental work can
+
+467
+00:17:34,170 --> 00:17:36,840
+be checked in these are intended to be
+
+468
+00:17:36,840 --> 00:17:38,340
+temporary and we're planning on adding
+
+469
+00:17:38,340 --> 00:17:40,350
+type coverage tooling to help remove
+
+470
+00:17:40,350 --> 00:17:44,810
+them as we refine the types over time in
+
+471
+00:17:44,810 --> 00:17:47,160
+JSX we use prop types on a react
+
+472
+00:17:47,160 --> 00:17:48,920
+components for runtime type checking
+
+473
+00:17:48,920 --> 00:17:51,280
+when converting a JSX
+
+474
+00:17:51,280 --> 00:17:53,140
+to tsx we can either remove the prop
+
+475
+00:17:53,140 --> 00:17:54,730
+types in favour of a tight script type
+
+476
+00:17:54,730 --> 00:17:57,490
+or keep the prop types and add a type
+
+477
+00:17:57,490 --> 00:17:59,980
+script type in addition in our react
+
+478
+00:17:59,980 --> 00:18:01,990
+component library for example we wanted
+
+479
+00:18:01,990 --> 00:18:03,760
+to keep prop types so that JavaScript
+
+480
+00:18:03,760 --> 00:18:05,530
+consumers could still get runtime checks
+
+481
+00:18:05,530 --> 00:18:07,900
+but to avoid declaring a second type
+
+482
+00:18:07,900 --> 00:18:09,550
+that would need to be kept in sync with
+
+483
+00:18:09,550 --> 00:18:11,800
+those prop types we created a props type
+
+484
+00:18:11,800 --> 00:18:14,140
+utility that is able to derive the type
+
+485
+00:18:14,140 --> 00:18:15,910
+script type given the prop types and the
+
+486
+00:18:15,910 --> 00:18:19,810
+default props in this case the prop
+
+487
+00:18:19,810 --> 00:18:21,340
+types and default props get combined
+
+488
+00:18:21,340 --> 00:18:23,950
+into this final type if you're curious
+
+489
+00:18:23,950 --> 00:18:25,390
+how this works under the hood
+
+490
+00:18:25,390 --> 00:18:30,590
+I created a gist that you can check out
+
+491
+00:18:30,600 --> 00:18:33,340
+recently we've been experimenting with a
+
+492
+00:18:33,340 --> 00:18:35,860
+revised all in typescript migration
+
+493
+00:18:35,860 --> 00:18:38,530
+strategy so let's go back to that Holmes
+
+494
+00:18:38,530 --> 00:18:40,150
+project we were looking at before and
+
+495
+00:18:40,150 --> 00:18:42,820
+use The Awl end strategy instead to see
+
+496
+00:18:42,820 --> 00:18:45,040
+how it works we start off with all j/s
+
+497
+00:18:45,040 --> 00:18:48,910
+we convert everything over to TS get the
+
+498
+00:18:48,910 --> 00:18:51,280
+project compiling perhaps we use some
+
+499
+00:18:51,280 --> 00:18:53,080
+looser types than we'd like but we still
+
+500
+00:18:53,080 --> 00:18:55,390
+have type scripts strictest options turn
+
+501
+00:18:55,390 --> 00:18:57,700
+on and then we proceed to refine the
+
+502
+00:18:57,700 --> 00:18:59,770
+types over time removing the TS fix
+
+503
+00:18:59,770 --> 00:19:03,550
+means NTS ignores this has some
+
+504
+00:19:03,550 --> 00:19:06,130
+advantages over the hybrid strategy it's
+
+505
+00:19:06,130 --> 00:19:08,170
+easier to refine type I type rather than
+
+506
+00:19:08,170 --> 00:19:10,360
+file-by-file if you're developing a
+
+507
+00:19:10,360 --> 00:19:11,800
+feature and you only care about adding
+
+508
+00:19:11,800 --> 00:19:13,750
+one type it's a much lower barrier to
+
+509
+00:19:13,750 --> 00:19:15,400
+entry to just fix up that type in
+
+510
+00:19:15,400 --> 00:19:17,290
+isolation rather than having to convert
+
+511
+00:19:17,290 --> 00:19:18,790
+the whole file first fix up all the
+
+512
+00:19:18,790 --> 00:19:20,320
+errors and then add the type you care
+
+513
+00:19:20,320 --> 00:19:23,500
+about not having to rename the file also
+
+514
+00:19:23,500 --> 00:19:25,030
+means that it's easier to review
+
+515
+00:19:25,030 --> 00:19:27,370
+sometimes if a file is renamed in one
+
+516
+00:19:27,370 --> 00:19:28,750
+commit then changes are made in another
+
+517
+00:19:28,750 --> 00:19:30,730
+they show up separately in code review
+
+518
+00:19:30,730 --> 00:19:32,410
+and the reviewer has to piece together
+
+519
+00:19:32,410 --> 00:19:35,140
+what happens it also makes it clear what
+
+520
+00:19:35,140 --> 00:19:37,450
+types are missing type scripts inference
+
+521
+00:19:37,450 --> 00:19:39,100
+is powerful and we can leverage it for
+
+522
+00:19:39,100 --> 00:19:41,050
+large portions of a file some files
+
+523
+00:19:41,050 --> 00:19:43,240
+require a few to know TS fixed means in
+
+524
+00:19:43,240 --> 00:19:45,880
+order to in order to compile type script
+
+525
+00:19:45,880 --> 00:19:50,380
+can figure out the rest another is that
+
+526
+00:19:50,380 --> 00:19:52,150
+developers can use a consistent mental
+
+527
+00:19:52,150 --> 00:19:54,010
+model they don't have to contact switch
+
+528
+00:19:54,010 --> 00:19:55,750
+depending on what file extension they're
+
+529
+00:19:55,750 --> 00:19:58,360
+in like why can't I add a type here why
+
+530
+00:19:58,360 --> 00:19:59,830
+am I not getting compilations errors
+
+531
+00:19:59,830 --> 00:20:02,410
+there types can be added consumed and
+
+532
+00:20:02,410 --> 00:20:04,620
+type checked in all files
+
+533
+00:20:04,620 --> 00:20:08,080
+yeah that sounds great but how do we
+
+534
+00:20:08,080 --> 00:20:12,430
+migrate all the code code mods are a
+
+535
+00:20:12,430 --> 00:20:14,200
+powerful tool for large-scale code
+
+536
+00:20:14,200 --> 00:20:16,930
+modifications in their simplest form a
+
+537
+00:20:16,930 --> 00:20:18,490
+codemod could be a global find and
+
+538
+00:20:18,490 --> 00:20:20,260
+replace across a project you might have
+
+539
+00:20:20,260 --> 00:20:21,790
+done this in your editor before and
+
+540
+00:20:21,790 --> 00:20:23,830
+there are code mod libraries that do use
+
+541
+00:20:23,830 --> 00:20:26,410
+read exes but they are brittle because
+
+542
+00:20:26,410 --> 00:20:27,790
+they might break depending on subtle
+
+543
+00:20:27,790 --> 00:20:31,300
+code style variations alternatively we
+
+544
+00:20:31,300 --> 00:20:33,250
+can use an abstract syntax tree which is
+
+545
+00:20:33,250 --> 00:20:34,570
+something that the speaker's earlier
+
+546
+00:20:34,570 --> 00:20:37,060
+brought up to so this is the ast
+
+547
+00:20:37,060 --> 00:20:40,530
+representation of this code notice how
+
+548
+00:20:40,530 --> 00:20:44,200
+for every piece of code on the left it
+
+549
+00:20:44,200 --> 00:20:46,090
+has a corresponding node in the tree on
+
+550
+00:20:46,090 --> 00:20:51,190
+the right so just for fun say we wanted
+
+551
+00:20:51,190 --> 00:20:52,810
+to write a code mod that reverses all
+
+552
+00:20:52,810 --> 00:20:55,420
+the identifiers in our code we'd start
+
+553
+00:20:55,420 --> 00:20:58,600
+with our code as the input creating the
+
+554
+00:20:58,600 --> 00:21:03,220
+ast out of it modify that ast and emit
+
+555
+00:21:03,220 --> 00:21:06,400
+new source code out the power here is
+
+556
+00:21:06,400 --> 00:21:07,690
+that we are making this change
+
+557
+00:21:07,690 --> 00:21:10,210
+programmatically the alternative would
+
+558
+00:21:10,210 --> 00:21:12,580
+be editing each file to make the change
+
+559
+00:21:12,580 --> 00:21:13,840
+and this works fine if you only have a
+
+560
+00:21:13,840 --> 00:21:15,970
+handful but once it gets to be more like
+
+561
+00:21:15,970 --> 00:21:18,070
+thousand files the thought of manually
+
+562
+00:21:18,070 --> 00:21:21,120
+changing them gets really sad
+
+563
+00:21:21,120 --> 00:21:23,530
+Facebook's J's code shift is a popular
+
+564
+00:21:23,530 --> 00:21:26,170
+tool we use for code mods at Airbnb this
+
+565
+00:21:26,170 --> 00:21:28,180
+transform captures the modifications we
+
+566
+00:21:28,180 --> 00:21:29,950
+just made to that ast to reverse the
+
+567
+00:21:29,950 --> 00:21:33,610
+identifiers we find all nodes that
+
+568
+00:21:33,610 --> 00:21:37,000
+correspond to identify errs replace
+
+569
+00:21:37,000 --> 00:21:39,100
+those nodes with new ones with the name
+
+570
+00:21:39,100 --> 00:21:43,810
+reversed and then return the new source
+
+571
+00:21:43,810 --> 00:21:46,690
+code back out Missy Elliott would be
+
+572
+00:21:46,690 --> 00:21:50,460
+proud of us so we flip the m reversed it
+
+573
+00:21:50,460 --> 00:21:58,350
+I got laughs that's great I was debating
+
+574
+00:21:58,350 --> 00:22:00,919
+goes like Joy Division I do it
+
+575
+00:22:00,919 --> 00:22:04,230
+we took the code and we modded it found
+
+576
+00:22:04,230 --> 00:22:06,509
+the identifier slip the member stump is
+
+577
+00:22:06,509 --> 00:22:10,169
+your friend you oh yeah
+
+578
+00:22:10,169 --> 00:22:18,450
+a tool that cannot help you with your
+
+579
+00:22:18,450 --> 00:22:20,249
+rap skills but can help you with your
+
+580
+00:22:20,249 --> 00:22:24,419
+code mods is ast xplornet which Sean
+
+581
+00:22:24,419 --> 00:22:26,399
+pointed out earlier it has a source code
+
+582
+00:22:26,399 --> 00:22:28,289
+that transform and the output and an
+
+583
+00:22:28,289 --> 00:22:31,710
+interactive ast all in one place also I
+
+584
+00:22:31,710 --> 00:22:33,899
+just landed a definitely type here to
+
+585
+00:22:33,899 --> 00:22:35,879
+add types for Jaz code shift that makes
+
+586
+00:22:35,879 --> 00:22:37,769
+it easier to author code mods and type
+
+587
+00:22:37,769 --> 00:22:42,090
+scripts several patterns emerged while
+
+588
+00:22:42,090 --> 00:22:44,009
+migrating JavaScript code to typescript
+
+589
+00:22:44,009 --> 00:22:46,590
+we repeatedly moved static class
+
+590
+00:22:46,590 --> 00:22:48,450
+properties into the class body for react
+
+591
+00:22:48,450 --> 00:22:50,269
+components created a props type
+
+592
+00:22:50,269 --> 00:22:53,279
+annotated react lifecycle methods we
+
+593
+00:22:53,279 --> 00:22:55,379
+were encoded these as code mods so that
+
+594
+00:22:55,379 --> 00:22:57,360
+we can run them repeatedly over more
+
+595
+00:22:57,360 --> 00:22:59,639
+code and we package them up in the tool
+
+596
+00:22:59,639 --> 00:23:02,730
+called TS migrate the goal is to send a
+
+597
+00:23:02,730 --> 00:23:04,350
+JavaScript project in and get a
+
+598
+00:23:04,350 --> 00:23:06,960
+compiling typescript project out now you
+
+599
+00:23:06,960 --> 00:23:08,879
+you'd still need to find the types over
+
+600
+00:23:08,879 --> 00:23:10,649
+time but it gives you a baseline to work
+
+601
+00:23:10,649 --> 00:23:13,950
+from we applied this tool to our
+
+602
+00:23:13,950 --> 00:23:15,809
+internal shared react components library
+
+603
+00:23:15,809 --> 00:23:19,730
+which is used everywhere across the site
+
+604
+00:23:19,730 --> 00:23:22,230
+we had types for this in our internal
+
+605
+00:23:22,230 --> 00:23:24,299
+definitely typed but it was hard to keep
+
+606
+00:23:24,299 --> 00:23:25,799
+those up-to-date with the rapid
+
+607
+00:23:25,799 --> 00:23:28,409
+development of the shared react
+
+608
+00:23:28,409 --> 00:23:30,450
+components library so instead we wanted
+
+609
+00:23:30,450 --> 00:23:32,100
+to emit types directly from the source
+
+610
+00:23:32,100 --> 00:23:34,139
+so it was our first target for TS
+
+611
+00:23:34,139 --> 00:23:37,710
+migrate we converted over 30,000 lines
+
+612
+00:23:37,710 --> 00:23:39,960
+of code to typescript and instead of
+
+613
+00:23:39,960 --> 00:23:41,639
+devoting the whole team's time four
+
+614
+00:23:41,639 --> 00:23:43,440
+weeks to do this we could run our suite
+
+615
+00:23:43,440 --> 00:23:45,929
+of code mods and do it in minutes we use
+
+616
+00:23:45,929 --> 00:23:47,669
+the type information from prop types and
+
+617
+00:23:47,669 --> 00:23:49,740
+made use of TS fixme and we are
+
+618
+00:23:49,740 --> 00:23:51,659
+continuing to refine from this baseline
+
+619
+00:23:51,659 --> 00:23:53,789
+but even with this we generated
+
+620
+00:23:53,789 --> 00:23:55,409
+meaningful typescript declaration files
+
+621
+00:23:55,409 --> 00:23:59,190
+we can consume in other repos in case
+
+622
+00:23:59,190 --> 00:24:00,690
+that PR line count looks a bit scary
+
+623
+00:24:00,690 --> 00:24:03,400
+with the typescript compiler half
+
+624
+00:24:03,400 --> 00:24:05,590
+for visual regression testing and our
+
+625
+00:24:05,590 --> 00:24:07,930
+just test running in CI I felt confident
+
+626
+00:24:07,930 --> 00:24:09,250
+that my changes wouldn't break anything
+
+627
+00:24:09,250 --> 00:24:11,110
+and of course we made sure the site was
+
+628
+00:24:11,110 --> 00:24:11,680
+still working
+
+629
+00:24:11,680 --> 00:24:16,690
+no regressions whew we have since run TS
+
+630
+00:24:16,690 --> 00:24:18,430
+migrate in other places and we're
+
+631
+00:24:18,430 --> 00:24:20,830
+iterating on it and we're planning on
+
+632
+00:24:20,830 --> 00:24:22,960
+using it across more and more code we
+
+633
+00:24:22,960 --> 00:24:24,850
+plan to open source it so that you can
+
+634
+00:24:24,850 --> 00:24:29,530
+use it to migrate your code to thank you
+
+635
+00:24:29,530 --> 00:24:30,910
+for following along this journey with me
+
+636
+00:24:30,910 --> 00:24:33,250
+I'd like to leave you some key takeaways
+
+637
+00:24:33,250 --> 00:24:34,840
+that we can draw from this typescript
+
+638
+00:24:34,840 --> 00:24:37,890
+transition that apply more generally
+
+639
+00:24:37,890 --> 00:24:40,360
+effecting change at a large organization
+
+640
+00:24:40,360 --> 00:24:41,440
+can be a challenge
+
+641
+00:24:41,440 --> 00:24:43,000
+but strong evidence and addressing
+
+642
+00:24:43,000 --> 00:24:45,130
+questions and concerns make a compelling
+
+643
+00:24:45,130 --> 00:24:48,700
+case adopting change gradually helps
+
+644
+00:24:48,700 --> 00:24:50,890
+reduce friction and prove out the value
+
+645
+00:24:50,890 --> 00:24:55,000
+a clear migration path helps teams move
+
+646
+00:24:55,000 --> 00:24:57,130
+over to new patterns and tooling can
+
+647
+00:24:57,130 --> 00:25:00,490
+help expedite the transition I started
+
+648
+00:25:00,490 --> 00:25:01,780
+this work while on a product team
+
+649
+00:25:01,780 --> 00:25:04,600
+feeling dissatisfied with my tools when
+
+650
+00:25:04,600 --> 00:25:06,280
+I learned that there were others in the
+
+651
+00:25:06,280 --> 00:25:07,540
+company who also wanted to make this
+
+652
+00:25:07,540 --> 00:25:09,760
+change I partnered with them and carried
+
+653
+00:25:09,760 --> 00:25:11,770
+the initiative forward it's all too easy
+
+654
+00:25:11,770 --> 00:25:13,600
+to complain about things accept the
+
+655
+00:25:13,600 --> 00:25:16,120
+status quo positive change can come
+
+656
+00:25:16,120 --> 00:25:17,620
+about through actions of people who care
+
+657
+00:25:17,620 --> 00:25:19,600
+so I'd encourage you to pursue the
+
+658
+00:25:19,600 --> 00:25:20,920
+things that you're passionate about your
+
+659
+00:25:20,920 --> 00:25:22,870
+organization to make life better for you
+
+660
+00:25:22,870 --> 00:25:25,020
+and those around you
+
+661
+00:25:25,020 --> 00:25:27,520
+thank you all for listening and thank
+
+662
+00:25:27,520 --> 00:25:28,690
+you to everyone at Airbnb who
+
+663
+00:25:28,690 --> 00:25:29,770
+contributed to this effort
+
+664
+00:25:29,770 --> 00:25:31,780
+shout out to Joe and Mohsen who are in
+
+665
+00:25:31,780 --> 00:25:33,690
+the audience and miles and Portland's
+
+666
+00:25:33,690 --> 00:25:36,190
+and there are a bunch of other awesome
+
+667
+00:25:36,190 --> 00:25:37,750
+Airbnb engineers who would love to talk
+
+668
+00:25:37,750 --> 00:25:39,970
+to you I also have some typescript
+
+669
+00:25:39,970 --> 00:25:42,730
+stickers and some Balogh keychains for
+
+670
+00:25:42,730 --> 00:25:44,800
+the like the first 30 people that come
+
+671
+00:25:44,800 --> 00:25:48,910
+find me so just as an incentive yeah
+
+672
+00:25:48,910 --> 00:25:50,240
+thank you so much
+

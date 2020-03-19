@@ -1,0 +1,1545 @@
+1
+00:00:17,200 --> 00:00:20,020
+
+hello everyone my name is Mario Gonzalez
+
+2
+00:00:20,020 --> 00:00:22,119
+I'm a senior applications developer at
+
+3
+00:00:22,119 --> 00:00:24,460
+Ogilvy & Mather in New York and I'm
+
+4
+00:00:24,460 --> 00:00:25,900
+gonna be talking about real time
+
+5
+00:00:25,900 --> 00:00:31,020
+multiplayer games with nodejs for the
+
+6
+00:00:31,020 --> 00:00:34,090
+Ogilvie's 2011 holiday card we decided
+
+7
+00:00:34,090 --> 00:00:37,989
+to make an html5 game and having heard a
+
+8
+00:00:37,989 --> 00:00:40,410
+lot about nodejs and socket IO slightly
+
+9
+00:00:40,410 --> 00:00:42,400
+we decided that we should create a
+
+10
+00:00:42,400 --> 00:00:45,519
+multiplayer game the game is currently
+
+11
+00:00:45,519 --> 00:00:48,129
+located at hall of the Holliday 2010
+
+12
+00:00:48,129 --> 00:00:50,979
+dal-gu be calm and I'm going to briefly
+
+13
+00:00:50,979 --> 00:00:52,930
+just try to play it and see how it looks
+
+14
+00:00:52,930 --> 00:01:02,559
+and let's see how that goes so so this
+
+15
+00:01:02,559 --> 00:01:04,449
+is the game I'm gonna just jump in
+
+16
+00:01:04,449 --> 00:01:07,630
+select a character that guy's fine and
+
+17
+00:01:07,630 --> 00:01:09,520
+then I'm gonna open up a new tab and do
+
+18
+00:01:09,520 --> 00:01:12,729
+the same thing give me one second in
+
+19
+00:01:12,729 --> 00:01:18,010
+here oh there you go somebody else is
+
+20
+00:01:18,010 --> 00:01:24,340
+playing right now so so this is an
+
+21
+00:01:24,340 --> 00:01:27,100
+example of a game that we created the
+
+22
+00:01:27,100 --> 00:01:29,020
+game runs on canvas and then the
+
+23
+00:01:29,020 --> 00:01:32,109
+multiplayer engine is created using
+
+24
+00:01:32,109 --> 00:01:35,469
+node.js and WebSockets on the browser
+
+25
+00:01:35,469 --> 00:01:37,810
+side so I'm going to talk a little bit
+
+26
+00:01:37,810 --> 00:01:39,189
+about how we went about creating this
+
+27
+00:01:39,189 --> 00:01:41,320
+game some problems that we faced and a
+
+28
+00:01:41,320 --> 00:01:43,329
+framework that we created recently which
+
+29
+00:01:43,329 --> 00:01:45,640
+abstracted the difficult networking
+
+30
+00:01:45,640 --> 00:01:47,770
+stuff out of this game and we've
+
+31
+00:01:47,770 --> 00:01:49,240
+released it onto github earlier this
+
+32
+00:01:49,240 --> 00:01:58,529
+week and goodbye
+
+33
+00:01:58,539 --> 00:02:01,219
+so the benefits of writing your game
+
+34
+00:02:01,219 --> 00:02:03,380
+with JavaScript and nodejs one of them
+
+35
+00:02:03,380 --> 00:02:04,850
+is that javascript is actually a really
+
+36
+00:02:04,850 --> 00:02:06,799
+great language for writing games has all
+
+37
+00:02:06,799 --> 00:02:08,390
+of the tools that you need in order to
+
+38
+00:02:08,390 --> 00:02:11,629
+write a game concisely and you can play
+
+39
+00:02:11,629 --> 00:02:12,920
+around with a lot of different things
+
+40
+00:02:12,920 --> 00:02:14,299
+because you're not held back by
+
+41
+00:02:14,299 --> 00:02:16,610
+allocating of allocation of memory and
+
+42
+00:02:16,610 --> 00:02:17,870
+you don't have to worry about the stack
+
+43
+00:02:17,870 --> 00:02:20,900
+versus the heap nodejs and v8 are
+
+44
+00:02:20,900 --> 00:02:23,000
+extremely fast in our game the node
+
+45
+00:02:23,000 --> 00:02:25,879
+process was using only one thread and it
+
+46
+00:02:25,879 --> 00:02:29,170
+runs out about three to four CPU usage
+
+47
+00:02:29,170 --> 00:02:31,610
+while running eight simultaneous games
+
+48
+00:02:31,610 --> 00:02:33,650
+each with their own collision collision
+
+49
+00:02:33,650 --> 00:02:36,980
+engine instance because decline in the
+
+50
+00:02:36,980 --> 00:02:38,690
+server are both running in JavaScript
+
+51
+00:02:38,690 --> 00:02:41,629
+you get a great interoperability between
+
+52
+00:02:41,629 --> 00:02:43,099
+the client and the server there's no
+
+53
+00:02:43,099 --> 00:02:45,040
+translation layer that you need to apply
+
+54
+00:02:45,040 --> 00:02:48,290
+because the the world state existed in
+
+55
+00:02:48,290 --> 00:02:49,989
+some sort of data on the server side and
+
+56
+00:02:49,989 --> 00:02:51,950
+existing and different data on the
+
+57
+00:02:51,950 --> 00:02:54,079
+supplied side and you need to translate
+
+58
+00:02:54,079 --> 00:02:55,250
+that when they communicate with each
+
+59
+00:02:55,250 --> 00:02:58,670
+other and an example this is for example
+
+60
+00:02:58,670 --> 00:03:00,500
+if you have a vector math utility class
+
+61
+00:03:00,500 --> 00:03:02,569
+you can just outright use that class in
+
+62
+00:03:02,569 --> 00:03:06,319
+both sides of the game this is an
+
+63
+00:03:06,319 --> 00:03:07,970
+example of the interoperability between
+
+64
+00:03:07,970 --> 00:03:10,280
+the client and the server this is this
+
+65
+00:03:10,280 --> 00:03:12,650
+represents the net channel message class
+
+66
+00:03:12,650 --> 00:03:14,389
+which actually is just a value object
+
+67
+00:03:14,389 --> 00:03:16,760
+that contains some data but we didn't
+
+68
+00:03:16,760 --> 00:03:19,099
+have to write anything to turn that into
+
+69
+00:03:19,099 --> 00:03:20,510
+something the server understands and
+
+70
+00:03:20,510 --> 00:03:22,099
+then turn it back to the what the client
+
+71
+00:03:22,099 --> 00:03:24,889
+understands it's all JavaScript so
+
+72
+00:03:24,889 --> 00:03:27,049
+that's pretty cool that's right a game
+
+73
+00:03:27,049 --> 00:03:29,389
+we had a couple of problems that arose
+
+74
+00:03:29,389 --> 00:03:30,739
+but the one that I'm gonna be talking
+
+75
+00:03:30,739 --> 00:03:33,500
+about today is the problem that we face
+
+76
+00:03:33,500 --> 00:03:35,209
+that's faced by all real-time
+
+77
+00:03:35,209 --> 00:03:36,889
+multiplayer games and that is dealing
+
+78
+00:03:36,889 --> 00:03:40,609
+with latency the initial naive approach
+
+79
+00:03:40,609 --> 00:03:44,389
+is to package up the clients information
+
+80
+00:03:44,389 --> 00:03:46,700
+and then send that to the server and
+
+81
+00:03:46,700 --> 00:03:49,669
+then the server will send that same
+
+82
+00:03:49,669 --> 00:03:51,560
+message off to all of the other clients
+
+83
+00:03:51,560 --> 00:03:53,660
+and that works fine in a system where
+
+84
+00:03:53,660 --> 00:03:55,130
+you have trusted clients such as a
+
+85
+00:03:55,130 --> 00:03:57,530
+military simulation but in a real game
+
+86
+00:03:57,530 --> 00:03:58,970
+on the Internet
+
+87
+00:03:58,970 --> 00:04:00,950
+that approach starts to break down and
+
+88
+00:04:00,950 --> 00:04:04,700
+the reason why is that the main problem
+
+89
+00:04:04,700 --> 00:04:06,530
+with this approach is that we can no we
+
+90
+00:04:06,530 --> 00:04:08,239
+cannot trust users to provide us with
+
+91
+00:04:08,239 --> 00:04:08,990
+correct and from
+
+92
+00:04:08,990 --> 00:04:11,330
+about their players current state if you
+
+93
+00:04:11,330 --> 00:04:12,830
+ask a nefarious user and he enters a
+
+94
+00:04:12,830 --> 00:04:15,050
+game where his projectile is he'll tell
+
+95
+00:04:15,050 --> 00:04:16,459
+you it's everywhere and what his health
+
+96
+00:04:16,459 --> 00:04:19,130
+is is always number dot max value so
+
+97
+00:04:19,130 --> 00:04:20,930
+simple workaround is to store the state
+
+98
+00:04:20,930 --> 00:04:22,190
+on the server and play the game
+
+99
+00:04:22,190 --> 00:04:25,190
+simultaneously on a server as well as
+
+100
+00:04:25,190 --> 00:04:27,440
+playing it locally the problem with that
+
+101
+00:04:27,440 --> 00:04:30,800
+is that the players local position as
+
+102
+00:04:30,800 --> 00:04:33,800
+shown on the left side circle and then
+
+103
+00:04:33,800 --> 00:04:35,300
+the players blue position is where the
+
+104
+00:04:35,300 --> 00:04:37,280
+player is actually located and as you
+
+105
+00:04:37,280 --> 00:04:39,050
+can see your projectile on your screen
+
+106
+00:04:39,050 --> 00:04:41,330
+will appear to have hit this player but
+
+107
+00:04:41,330 --> 00:04:42,410
+it will go right through them because
+
+108
+00:04:42,410 --> 00:04:44,450
+I'm a server that players no longer at
+
+109
+00:04:44,450 --> 00:04:48,200
+that position this is actually obviously
+
+110
+00:04:48,200 --> 00:04:50,150
+a very large problem because it happens
+
+111
+00:04:50,150 --> 00:04:52,310
+in Reverse you might be moving and then
+
+112
+00:04:52,310 --> 00:04:53,900
+a projectile will kill you and you
+
+113
+00:04:53,900 --> 00:04:56,330
+clearly dodged it but it's because what
+
+114
+00:04:56,330 --> 00:04:58,820
+you see on your local version of the
+
+115
+00:04:58,820 --> 00:05:01,040
+game does not match what is going on on
+
+116
+00:05:01,040 --> 00:05:03,650
+a server right now another problem with
+
+117
+00:05:03,650 --> 00:05:05,960
+this approach is sometimes referred to
+
+118
+00:05:05,960 --> 00:05:09,230
+as the bouncing ball problem and that is
+
+119
+00:05:09,230 --> 00:05:12,770
+that if as we receive new position and
+
+120
+00:05:12,770 --> 00:05:14,720
+new information regarding the velocity
+
+121
+00:05:14,720 --> 00:05:17,060
+of the entity from the server we draw
+
+122
+00:05:17,060 --> 00:05:19,580
+that entity with this information and it
+
+123
+00:05:19,580 --> 00:05:21,290
+causes abrupt shifts in motion along the
+
+124
+00:05:21,290 --> 00:05:24,380
+project the projectiles path in this
+
+125
+00:05:24,380 --> 00:05:26,320
+chart the dotted lines represent
+
+126
+00:05:26,320 --> 00:05:29,360
+discrete information received from the
+
+127
+00:05:29,360 --> 00:05:31,400
+server at regular intervals and if we
+
+128
+00:05:31,400 --> 00:05:33,560
+draw the players path using the
+
+129
+00:05:33,560 --> 00:05:35,540
+instantaneous velocity at that given
+
+130
+00:05:35,540 --> 00:05:38,390
+point the path takes very abrupt sharp
+
+131
+00:05:38,390 --> 00:05:41,030
+edges and it's incorrect and incorrect
+
+132
+00:05:41,030 --> 00:05:42,410
+until it receives new more up-to-date
+
+133
+00:05:42,410 --> 00:05:44,570
+information at which point that red line
+
+134
+00:05:44,570 --> 00:05:46,880
+will now move along that path at that
+
+135
+00:05:46,880 --> 00:05:48,620
+velocity and will continue to be
+
+136
+00:05:48,620 --> 00:05:51,050
+incorrect and incorrect and then switch
+
+137
+00:05:51,050 --> 00:05:52,640
+again when it receives new information
+
+138
+00:05:52,640 --> 00:05:55,160
+and you get a very zigzag style motion
+
+139
+00:05:55,160 --> 00:05:57,290
+that appears on a screen the blue line
+
+140
+00:05:57,290 --> 00:06:02,969
+represents the player's actual movement
+
+141
+00:06:02,979 --> 00:06:07,669
+see of course this time is measured in
+
+142
+00:06:07,669 --> 00:06:10,270
+milliseconds so a common solution is to
+
+143
+00:06:10,270 --> 00:06:12,710
+decrease the sampling rate on the server
+
+144
+00:06:12,710 --> 00:06:15,380
+side so that players send receive more
+
+145
+00:06:15,380 --> 00:06:17,060
+information about their world state and
+
+146
+00:06:17,060 --> 00:06:19,490
+that same chart will happen again but it
+
+147
+00:06:19,490 --> 00:06:21,590
+happens that such small incremental
+
+148
+00:06:21,590 --> 00:06:23,449
+spaces that it's hard to visually notice
+
+149
+00:06:23,449 --> 00:06:26,870
+the problem this is only an even more
+
+150
+00:06:26,870 --> 00:06:28,820
+naive solution because most of the time
+
+151
+00:06:28,820 --> 00:06:30,199
+you cannot have that kind of message
+
+152
+00:06:30,199 --> 00:06:32,690
+throughput to all clients at all times
+
+153
+00:06:32,690 --> 00:06:36,710
+unless they're all on OC threes so we
+
+154
+00:06:36,710 --> 00:06:38,750
+took a different approach this is
+
+155
+00:06:38,750 --> 00:06:40,220
+actually quite common approach in
+
+156
+00:06:40,220 --> 00:06:43,190
+multiplayer games like on consoles or
+
+157
+00:06:43,190 --> 00:06:44,810
+the source engine comes to mind
+
+158
+00:06:44,810 --> 00:06:49,660
+originally it came from quake world and
+
+159
+00:06:49,660 --> 00:06:53,090
+so I decided to look around and see how
+
+160
+00:06:53,090 --> 00:06:54,020
+other people have been doing this
+
+161
+00:06:54,020 --> 00:06:56,840
+because creating multiplayer games real
+
+162
+00:06:56,840 --> 00:06:58,310
+time multiplayer games has been being
+
+163
+00:06:58,310 --> 00:07:00,080
+done for a while and I found some
+
+164
+00:07:00,080 --> 00:07:01,610
+interesting information
+
+165
+00:07:01,610 --> 00:07:03,259
+the quake world source code is open
+
+166
+00:07:03,259 --> 00:07:05,330
+source along with several the other
+
+167
+00:07:05,330 --> 00:07:07,669
+quake games and valve also has some
+
+168
+00:07:07,669 --> 00:07:09,919
+white papers regarding networking in
+
+169
+00:07:09,919 --> 00:07:15,289
+real time games and in this approach the
+
+170
+00:07:15,289 --> 00:07:17,930
+single authoritative server is prospered
+
+171
+00:07:17,930 --> 00:07:20,210
+this represents one tick on the client
+
+172
+00:07:20,210 --> 00:07:22,039
+side and server side in this approach
+
+173
+00:07:22,039 --> 00:07:24,139
+this prop the server will process inputs
+
+174
+00:07:24,139 --> 00:07:26,389
+move the objects update the game
+
+175
+00:07:26,389 --> 00:07:29,270
+simulation create a single snapshot and
+
+176
+00:07:29,270 --> 00:07:31,520
+then let its server than a channel do
+
+177
+00:07:31,520 --> 00:07:32,990
+what it needs to do I'll explain what
+
+178
+00:07:32,990 --> 00:07:35,180
+that means later on the client-side it's
+
+179
+00:07:35,180 --> 00:07:36,740
+actually only responsible for two things
+
+180
+00:07:36,740 --> 00:07:39,020
+one of them is to sample the user
+
+181
+00:07:39,020 --> 00:07:41,449
+intervals at a discreet rate and then
+
+182
+00:07:41,449 --> 00:07:45,320
+render the world the benefit of this
+
+183
+00:07:45,320 --> 00:07:47,120
+approach is that you can have a really
+
+184
+00:07:47,120 --> 00:07:48,770
+really really interesting game and
+
+185
+00:07:48,770 --> 00:07:51,710
+because all of that logic and all in the
+
+186
+00:07:51,710 --> 00:07:53,330
+entire simulation happens on the server
+
+187
+00:07:53,330 --> 00:07:56,870
+you can really go apeshit with if with
+
+188
+00:07:56,870 --> 00:07:58,729
+what your game can do you can have
+
+189
+00:07:58,729 --> 00:08:00,380
+physics on top of other things and
+
+190
+00:08:00,380 --> 00:08:02,300
+various things and every single browser
+
+191
+00:08:02,300 --> 00:08:04,190
+that's playing the game sees the same
+
+192
+00:08:04,190 --> 00:08:05,750
+thing regardless of whether their
+
+193
+00:08:05,750 --> 00:08:08,090
+browser can keep up a two-dimensional
+
+194
+00:08:08,090 --> 00:08:09,620
+rigid body physics simulation and
+
+195
+00:08:09,620 --> 00:08:11,630
+display a canvas element with 100
+
+196
+00:08:11,630 --> 00:08:13,130
+objects it doesn't matter because
+
+197
+00:08:13,130 --> 00:08:15,080
+they're only in charge of displaying the
+
+198
+00:08:15,080 --> 00:08:16,220
+object
+
+199
+00:08:16,220 --> 00:08:18,410
+and everyone's simulation also MAGIX it
+
+200
+00:08:18,410 --> 00:08:21,320
+kind of lines up our nervous system is
+
+201
+00:08:21,320 --> 00:08:23,120
+designed to work around latency we're
+
+202
+00:08:23,120 --> 00:08:25,070
+very good at that so if we can apply a
+
+203
+00:08:25,070 --> 00:08:28,190
+smooth content constant latin c to an
+
+204
+00:08:28,190 --> 00:08:30,710
+object's path human beings can adjust to
+
+205
+00:08:30,710 --> 00:08:32,330
+that very well
+
+206
+00:08:32,330 --> 00:08:34,340
+so the key piece of the puzzle where I
+
+207
+00:08:34,340 --> 00:08:35,870
+sort of started to have the Eureka
+
+208
+00:08:35,870 --> 00:08:37,669
+moment of this as I was going through
+
+209
+00:08:37,669 --> 00:08:39,650
+the valve source papers is that we
+
+210
+00:08:39,650 --> 00:08:42,140
+actually simply render all the clients
+
+211
+00:08:42,140 --> 00:08:45,800
+and milliseconds in the past so I'm just
+
+212
+00:08:45,800 --> 00:08:47,750
+gonna call that number 75 but it's just
+
+213
+00:08:47,750 --> 00:08:50,990
+an arbitrary number and and that's what
+
+214
+00:08:50,990 --> 00:08:53,660
+this is the current time
+
+215
+00:08:53,660 --> 00:08:56,510
+on the current time on the client side
+
+216
+00:08:56,510 --> 00:08:59,360
+is shown over here so we can say that
+
+217
+00:08:59,360 --> 00:09:01,040
+the current time is about ten point four
+
+218
+00:09:01,040 --> 00:09:04,700
+six seconds now we render the world at
+
+219
+00:09:04,700 --> 00:09:07,640
+ten point three two seconds those
+
+220
+00:09:07,640 --> 00:09:10,910
+triangles represent world snapshots that
+
+221
+00:09:10,910 --> 00:09:12,620
+we've received from a server so the
+
+222
+00:09:12,620 --> 00:09:14,990
+first thing that we do is we find the
+
+223
+00:09:14,990 --> 00:09:16,910
+value for the rendering time which is
+
+224
+00:09:16,910 --> 00:09:20,300
+the current time minus some number then
+
+225
+00:09:20,300 --> 00:09:22,640
+after that we loop through the existing
+
+226
+00:09:22,640 --> 00:09:24,530
+world snapshot updates that we have from
+
+227
+00:09:24,530 --> 00:09:27,020
+the server and we find two that we fall
+
+228
+00:09:27,020 --> 00:09:29,090
+in between and now that we have found
+
+229
+00:09:29,090 --> 00:09:32,630
+those two world snapshots using a simple
+
+230
+00:09:32,630 --> 00:09:34,730
+linear interpolation function we can
+
+231
+00:09:34,730 --> 00:09:36,950
+precisely place our object at its
+
+232
+00:09:36,950 --> 00:09:39,470
+position along that path another benefit
+
+233
+00:09:39,470 --> 00:09:41,570
+to this approach is that if one of those
+
+234
+00:09:41,570 --> 00:09:44,660
+packets were dropped for example if we
+
+235
+00:09:44,660 --> 00:09:47,360
+did not have packet 3 for two we could
+
+236
+00:09:47,360 --> 00:09:49,250
+still interpolate between packets three
+
+237
+00:09:49,250 --> 00:09:50,720
+for one and three for three
+
+238
+00:09:50,720 --> 00:09:52,910
+and the user will end up in their
+
+239
+00:09:52,910 --> 00:09:55,790
+correct location so it's actually a
+
+240
+00:09:55,790 --> 00:09:57,770
+pretty good protector against packet
+
+241
+00:09:57,770 --> 00:09:59,300
+loss and it actually assumes that
+
+242
+00:09:59,300 --> 00:10:02,060
+packets will be lost and the system can
+
+243
+00:10:02,060 --> 00:10:08,300
+bounce back from that so we decided that
+
+244
+00:10:08,300 --> 00:10:10,190
+this was a pretty interesting idea and
+
+245
+00:10:10,190 --> 00:10:11,870
+some of these concepts would help
+
+246
+00:10:11,870 --> 00:10:14,630
+JavaScript game developers so we
+
+247
+00:10:14,630 --> 00:10:17,000
+abstracted these concepts from our game
+
+248
+00:10:17,000 --> 00:10:18,860
+and we created a framework for them and
+
+249
+00:10:18,860 --> 00:10:21,530
+I'm gonna show you a demo now all right
+
+250
+00:10:21,530 --> 00:10:32,560
+so see
+
+251
+00:10:32,570 --> 00:10:39,420
+I'm gonna start the server and then open
+
+252
+00:10:39,420 --> 00:10:50,040
+up my browser and see
+
+253
+00:10:50,050 --> 00:10:53,260
+all right there we go
+
+254
+00:10:53,260 --> 00:10:58,450
+so this besides being pretty is actually
+
+255
+00:10:58,450 --> 00:11:02,080
+running is a hold on I cannot see my
+
+256
+00:11:02,080 --> 00:11:08,410
+screen this will have to do okay so this
+
+257
+00:11:08,410 --> 00:11:10,899
+actual simulation is running on the
+
+258
+00:11:10,899 --> 00:11:12,760
+server where's my little character
+
+259
+00:11:12,760 --> 00:11:14,920
+that's me as I'm moving around mice
+
+260
+00:11:14,920 --> 00:11:16,839
+keyboard those entities are being
+
+261
+00:11:16,839 --> 00:11:19,029
+controlled on the server so I'm gonna
+
+262
+00:11:19,029 --> 00:11:20,800
+try I'm having a little bit of computer
+
+263
+00:11:20,800 --> 00:11:22,570
+problems here but I'm gonna try to open
+
+264
+00:11:22,570 --> 00:11:27,459
+up this in a different tab so here we
+
+265
+00:11:27,459 --> 00:11:32,920
+have synchronized multiplayer activity
+
+266
+00:11:32,920 --> 00:11:34,630
+going on and see if I can make this guy
+
+267
+00:11:34,630 --> 00:11:37,390
+show up there and in the other large
+
+268
+00:11:37,390 --> 00:11:38,890
+circle is somewhere else on the screen I
+
+269
+00:11:38,890 --> 00:11:42,459
+can't really find them so the way that
+
+270
+00:11:42,459 --> 00:11:44,829
+the engine works is that everything that
+
+271
+00:11:44,829 --> 00:11:46,329
+you're seeing is actually happening on
+
+272
+00:11:46,329 --> 00:11:48,370
+the server and the server simply sends
+
+273
+00:11:48,370 --> 00:11:52,029
+world snapshots to all of the clients so
+
+274
+00:11:52,029 --> 00:11:54,100
+everyone is guaranteed to be in sync at
+
+275
+00:11:54,100 --> 00:11:56,440
+the same time it doesn't it does add a
+
+276
+00:11:56,440 --> 00:11:58,570
+little bit of latency towards your
+
+277
+00:11:58,570 --> 00:12:00,790
+movement by default because you're
+
+278
+00:12:00,790 --> 00:12:02,860
+always rendering and milliseconds back
+
+279
+00:12:02,860 --> 00:12:04,930
+in time but human beings are very good
+
+280
+00:12:04,930 --> 00:12:06,250
+at adapting to that it's better to
+
+281
+00:12:06,250 --> 00:12:08,170
+render a little bit behind in time and
+
+282
+00:12:08,170 --> 00:12:10,029
+adjust to that lag than it is to
+
+283
+00:12:10,029 --> 00:12:12,540
+constantly have abrupt changes in motion
+
+284
+00:12:12,540 --> 00:12:16,660
+and then the other benefit is because it
+
+285
+00:12:16,660 --> 00:12:18,160
+is running on the server and this is a
+
+286
+00:12:18,160 --> 00:12:20,589
+little bit of a cooler demo we can show
+
+287
+00:12:20,589 --> 00:12:24,690
+if I can find a house where's my mouse
+
+288
+00:12:24,690 --> 00:12:33,170
+okay
+
+289
+00:12:33,180 --> 00:12:35,470
+because it is running on the server I'm
+
+290
+00:12:35,470 --> 00:12:37,810
+going to fire up the other demo that I
+
+291
+00:12:37,810 --> 00:12:41,920
+have which is actually a box 2d
+
+292
+00:12:41,920 --> 00:12:43,839
+implementation that was ported to
+
+293
+00:12:43,839 --> 00:12:45,370
+JavaScript and it's actually really well
+
+294
+00:12:45,370 --> 00:12:55,360
+done and I'm gonna try to time these
+
+295
+00:12:55,360 --> 00:12:56,740
+because it looks really really cool in
+
+296
+00:12:56,740 --> 00:12:58,150
+the beginning so let's see if I can pull
+
+297
+00:12:58,150 --> 00:13:08,840
+that off
+
+298
+00:13:08,850 --> 00:13:16,500
+I didn't pull that off I can't sorry and
+
+299
+00:13:16,500 --> 00:13:19,230
+I can't find my mouse there you go
+
+300
+00:13:19,230 --> 00:13:22,079
+all right let's try it one more time I'm
+
+301
+00:13:22,079 --> 00:13:27,329
+just gonna drag this like this there you
+
+302
+00:13:27,329 --> 00:13:30,569
+go so this is an example of a box 2d
+
+303
+00:13:30,569 --> 00:13:32,130
+simulation that is being run on the
+
+304
+00:13:32,130 --> 00:13:35,009
+server and the clients are being told
+
+305
+00:13:35,009 --> 00:13:37,199
+where these objects are and they are
+
+306
+00:13:37,199 --> 00:13:38,699
+interpolating between any of the two
+
+307
+00:13:38,699 --> 00:13:40,649
+positions and this helps you get really
+
+308
+00:13:40,649 --> 00:13:43,410
+fluid motion the cool thing about that
+
+309
+00:13:43,410 --> 00:13:46,230
+is that I'm gonna join or try to join
+
+310
+00:13:46,230 --> 00:13:49,380
+with a different browser so here's an
+
+311
+00:13:49,380 --> 00:13:54,269
+instance of Firefox and I'm going to
+
+312
+00:13:54,269 --> 00:13:55,949
+join the same I'm gonna join this game
+
+313
+00:13:55,949 --> 00:13:59,399
+and now we have synchronized physics
+
+314
+00:13:59,399 --> 00:14:01,560
+across two different browser instances
+
+315
+00:14:01,560 --> 00:14:04,230
+that are playing the same game and it's
+
+316
+00:14:04,230 --> 00:14:06,300
+actually running at a pretty good
+
+317
+00:14:06,300 --> 00:14:09,899
+framerate in Firefox and pretty much the
+
+318
+00:14:09,899 --> 00:14:12,000
+same frame rate in Chrome and the
+
+319
+00:14:12,000 --> 00:14:15,240
+simulation is running on my computer and
+
+320
+00:14:15,240 --> 00:14:15,810
+nodejs
+
+321
+00:14:15,810 --> 00:14:18,060
+but I'm gonna also try to see if I can
+
+322
+00:14:18,060 --> 00:14:21,240
+get Safari to do this three browsers
+
+323
+00:14:21,240 --> 00:14:22,529
+might be a little bit too much for my
+
+324
+00:14:22,529 --> 00:14:30,899
+computer but we can give it a try there
+
+325
+00:14:30,899 --> 00:14:33,540
+you go so now we have all three main
+
+326
+00:14:33,540 --> 00:14:36,089
+modern browsers running the same physics
+
+327
+00:14:36,089 --> 00:14:40,529
+simulation there we go
+
+328
+00:14:40,529 --> 00:14:43,110
+cool thing is so here's some interaction
+
+329
+00:14:43,110 --> 00:14:45,930
+between I'm sending my information to
+
+330
+00:14:45,930 --> 00:14:47,310
+the server and then it's playing the
+
+331
+00:14:47,310 --> 00:14:48,810
+game I think my computer is kind of
+
+332
+00:14:48,810 --> 00:14:53,610
+gonna mess it up a little bit and then
+
+333
+00:14:53,610 --> 00:14:56,160
+that's just a demo of the box for the
+
+334
+00:14:56,160 --> 00:14:57,990
+implementation that is built in the
+
+335
+00:14:57,990 --> 00:15:08,710
+library
+
+336
+00:15:08,720 --> 00:15:11,430
+No
+
+337
+00:15:11,430 --> 00:15:13,320
+and then the last thing I'm sure I don't
+
+338
+00:15:13,320 --> 00:15:15,240
+know if I'm over on time but I wanted to
+
+339
+00:15:15,240 --> 00:15:18,570
+show that the small amount of code that
+
+340
+00:15:18,570 --> 00:15:20,790
+it takes to get something like that up
+
+341
+00:15:20,790 --> 00:15:27,780
+and running so for this for this demo I
+
+342
+00:15:27,780 --> 00:15:30,960
+have a I can never seem to find my mouse
+
+343
+00:15:30,960 --> 00:15:36,840
+on here so ignoring the framework I'm
+
+344
+00:15:36,840 --> 00:15:40,200
+going to show just these few files that
+
+345
+00:15:40,200 --> 00:15:44,220
+I have and basically the demo app is
+
+346
+00:15:44,220 --> 00:15:47,850
+just a namespace then I have some file
+
+347
+00:15:47,850 --> 00:15:49,410
+that has a couple of constants in there
+
+348
+00:15:49,410 --> 00:15:51,960
+for me so the main two points of entry
+
+349
+00:15:51,960 --> 00:15:54,510
+for using this library are the demo
+
+350
+00:15:54,510 --> 00:15:56,790
+client game which is what is the browser
+
+351
+00:15:56,790 --> 00:15:59,760
+will be this will display and a demo
+
+352
+00:15:59,760 --> 00:16:01,350
+server game this is where all your cool
+
+353
+00:16:01,350 --> 00:16:03,840
+stuff goes so the demo client game
+
+354
+00:16:03,840 --> 00:16:05,850
+doesn't really have too much to it it
+
+355
+00:16:05,850 --> 00:16:08,280
+has a set up view function real time
+
+356
+00:16:08,280 --> 00:16:10,050
+multiplayer nodejs is agnostic to
+
+357
+00:16:10,050 --> 00:16:11,760
+whatever view you would like to use so
+
+358
+00:16:11,760 --> 00:16:14,490
+it could be canvas or something else it
+
+359
+00:16:14,490 --> 00:16:16,260
+has a simple tick function which gets
+
+360
+00:16:16,260 --> 00:16:18,630
+called and it has this function which
+
+361
+00:16:18,630 --> 00:16:21,660
+once the engine detects a new entity it
+
+362
+00:16:21,660 --> 00:16:23,790
+will tell you hey create an entity from
+
+363
+00:16:23,790 --> 00:16:25,800
+this description that description has
+
+364
+00:16:25,800 --> 00:16:27,690
+some properties that are passed to it
+
+365
+00:16:27,690 --> 00:16:30,210
+from the server and then you can have
+
+366
+00:16:30,210 --> 00:16:31,860
+some callbacks for when connection
+
+367
+00:16:31,860 --> 00:16:34,200
+happens when it disconnects you don't
+
+368
+00:16:34,200 --> 00:16:35,490
+actually have to do anything with these
+
+369
+00:16:35,490 --> 00:16:38,640
+at this point and then the server game
+
+370
+00:16:38,640 --> 00:16:40,950
+all that's going on here is I create a
+
+371
+00:16:40,950 --> 00:16:42,390
+new instance of the collision manager
+
+372
+00:16:42,390 --> 00:16:44,660
+this is just actually a very simple
+
+373
+00:16:44,660 --> 00:16:47,010
+radius based collision manager that I
+
+374
+00:16:47,010 --> 00:16:49,230
+created that does provide group masking
+
+375
+00:16:49,230 --> 00:16:51,780
+so that for example my projectiles don't
+
+376
+00:16:51,780 --> 00:16:53,040
+hit anyone elses on my team's
+
+377
+00:16:53,040 --> 00:16:55,740
+projectiles so it initializes that
+
+378
+00:16:55,740 --> 00:16:58,170
+creates a few entities and then calls
+
+379
+00:16:58,170 --> 00:17:00,180
+tick and then these are the callbacks
+
+380
+00:17:00,180 --> 00:17:02,790
+for the network so that's about it and
+
+381
+00:17:02,790 --> 00:17:04,800
+that that that amount of code will get
+
+382
+00:17:04,800 --> 00:17:06,720
+you running with the first demo the
+
+383
+00:17:06,720 --> 00:17:09,510
+box2d demo has a little bit more things
+
+384
+00:17:09,510 --> 00:17:11,100
+in it but they're all related to box 2d
+
+385
+00:17:11,100 --> 00:17:15,240
+and this framework is live on github as
+
+386
+00:17:15,240 --> 00:17:16,890
+of a few days ago
+

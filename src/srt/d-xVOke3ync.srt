@@ -1,0 +1,2513 @@
+1
+00:00:15,390 --> 00:00:18,030
+
+so I'm talking about the javascript is a
+
+2
+00:00:18,030 --> 00:00:19,830
+compilation target so I want to talk
+
+3
+00:00:19,830 --> 00:00:22,370
+about Todd dr. JavaScript our compiler
+
+4
+00:00:22,370 --> 00:00:26,100
+but first who am I so am i stuffed
+
+5
+00:00:26,100 --> 00:00:28,260
+engineer at Google in in ojos in Denmark
+
+6
+00:00:28,260 --> 00:00:30,540
+and my previous projects included
+
+7
+00:00:30,540 --> 00:00:32,099
+schemed its keen to JavaScript compiler
+
+8
+00:00:32,099 --> 00:00:33,750
+then in my spare time I wrote the
+
+9
+00:00:33,750 --> 00:00:35,280
+child's get the scheme compiler and I
+
+10
+00:00:35,280 --> 00:00:37,860
+worked and we ate virtual machines and
+
+11
+00:00:37,860 --> 00:00:40,260
+and now now dark so my background is
+
+12
+00:00:40,260 --> 00:00:42,150
+basically scheme and charge give dynamic
+
+13
+00:00:42,150 --> 00:00:45,780
+languages so what is start it's an
+
+14
+00:00:45,780 --> 00:00:47,340
+unsurprising of object-oriented
+
+15
+00:00:47,340 --> 00:00:49,559
+programming language which from many
+
+16
+00:00:49,559 --> 00:00:51,030
+means it's a boring language a little
+
+17
+00:00:51,030 --> 00:00:54,629
+bit like Java but that was kind of our
+
+18
+00:00:54,629 --> 00:00:57,449
+intent it's a gas phase with the sink
+
+19
+00:00:57,449 --> 00:01:00,750
+inheritance and the syntax is the same
+
+20
+00:01:00,750 --> 00:01:04,140
+as in Java JavaScript and all these see
+
+21
+00:01:04,140 --> 00:01:06,870
+like languages and the new thing at
+
+22
+00:01:06,870 --> 00:01:08,400
+least at that time was the optional
+
+23
+00:01:08,400 --> 00:01:11,430
+static type system which recently was
+
+24
+00:01:11,430 --> 00:01:14,100
+seen in touch script too just to give
+
+25
+00:01:14,100 --> 00:01:15,930
+you a small example here's are the
+
+26
+00:01:15,930 --> 00:01:19,050
+bottles of beer in Dart nothing nothing
+
+27
+00:01:19,050 --> 00:01:24,299
+special here so when we only have darts
+
+28
+00:01:24,299 --> 00:01:26,189
+and we want to deploy it we have two
+
+29
+00:01:26,189 --> 00:01:28,350
+ways to do it the first of course we
+
+30
+00:01:28,350 --> 00:01:30,420
+have our dart sources and then ideally
+
+31
+00:01:30,420 --> 00:01:31,890
+you you put it on the dart virtual
+
+32
+00:01:31,890 --> 00:01:33,990
+machine and run it fast nice and
+
+33
+00:01:33,990 --> 00:01:36,570
+everything and if you still have another
+
+34
+00:01:36,570 --> 00:01:38,490
+browser that doesn't support the dart VM
+
+35
+00:01:38,490 --> 00:01:41,159
+which currently even chrome doesn't then
+
+36
+00:01:41,159 --> 00:01:42,950
+you have to compile the JavaScript and
+
+37
+00:01:42,950 --> 00:01:45,780
+that's and then it should run on all
+
+38
+00:01:45,780 --> 00:01:48,210
+modern browsers and this talk in
+
+39
+00:01:48,210 --> 00:01:49,710
+particular is now about this doctor
+
+40
+00:01:49,710 --> 00:01:53,340
+JavaScript compiler so there were
+
+41
+00:01:53,340 --> 00:01:57,360
+several goals when we started the the
+
+42
+00:01:57,360 --> 00:01:59,640
+JavaScript compiler so for one it should
+
+43
+00:01:59,640 --> 00:02:02,549
+run on all modern browsers and we test
+
+44
+00:02:02,549 --> 00:02:04,710
+on Chrome Firefox ie and Safari and we
+
+45
+00:02:04,710 --> 00:02:07,229
+have a testing slot for Oprah we just
+
+46
+00:02:07,229 --> 00:02:09,930
+haven't fill it in yet it's going to
+
+47
+00:02:09,930 --> 00:02:12,720
+help me at some point and and our goal
+
+48
+00:02:12,720 --> 00:02:14,550
+is that that the dart VM is not
+
+49
+00:02:14,550 --> 00:02:17,040
+necessary so you can program in dart and
+
+50
+00:02:17,040 --> 00:02:19,110
+it still should still work on process
+
+51
+00:02:19,110 --> 00:02:21,270
+that don't have to be in and of course
+
+52
+00:02:21,270 --> 00:02:23,130
+it must be efficient and compact
+
+53
+00:02:23,130 --> 00:02:26,370
+otherwise nobody wants to use it
+
+54
+00:02:26,370 --> 00:02:28,739
+so here's another example of dart the
+
+55
+00:02:28,739 --> 00:02:32,909
+standard point example nothing again
+
+56
+00:02:32,909 --> 00:02:34,739
+nothing special here we just allocate to
+
+57
+00:02:34,739 --> 00:02:36,510
+new points and then take the distance
+
+58
+00:02:36,510 --> 00:02:39,239
+between those two note that in this case
+
+59
+00:02:39,239 --> 00:02:41,250
+I didn't either i didn't use the type of
+
+60
+00:02:41,250 --> 00:02:42,870
+notation i just used bar but i could
+
+61
+00:02:42,870 --> 00:02:44,940
+have used typing annotation to so
+
+62
+00:02:44,940 --> 00:02:48,170
+pointer or intern or double in this case
+
+63
+00:02:48,170 --> 00:02:51,030
+so here's the compilation to the chalice
+
+64
+00:02:51,030 --> 00:02:53,940
+crypt in this in for this example there
+
+65
+00:02:53,940 --> 00:02:55,170
+are two things that probably stick out
+
+66
+00:02:55,170 --> 00:02:58,140
+first instead we put statics on I'm
+
+67
+00:02:58,140 --> 00:03:00,480
+dollar so it's dollar dot instead of
+
+68
+00:03:00,480 --> 00:03:01,920
+having but instead of polluting the
+
+69
+00:03:01,920 --> 00:03:04,349
+global namespace and the second one that
+
+70
+00:03:04,349 --> 00:03:06,239
+you probably actually three things the
+
+71
+00:03:06,239 --> 00:03:08,010
+second one is that there is no new we
+
+72
+00:03:08,010 --> 00:03:10,079
+just always go through factory
+
+73
+00:03:10,079 --> 00:03:12,239
+constructors which has a big advantage
+
+74
+00:03:12,239 --> 00:03:14,519
+when you have different constructors for
+
+75
+00:03:14,519 --> 00:03:16,349
+the same class because we in the
+
+76
+00:03:16,349 --> 00:03:18,209
+background can then use the same
+
+77
+00:03:18,209 --> 00:03:21,540
+JavaScript gas and have one hidden map
+
+78
+00:03:21,540 --> 00:03:24,299
+in the virtual machines which basically
+
+79
+00:03:24,299 --> 00:03:27,120
+means it will run faster the other thing
+
+80
+00:03:27,120 --> 00:03:28,920
+the third thing is the distance to
+
+81
+00:03:28,920 --> 00:03:31,859
+dollar one we encode our aerating the in
+
+82
+00:03:31,859 --> 00:03:33,840
+the names of the methods this way we got
+
+83
+00:03:33,840 --> 00:03:35,549
+except we get exceptions when the arity
+
+84
+00:03:35,549 --> 00:03:37,079
+doesn't work and we don't need to check
+
+85
+00:03:37,079 --> 00:03:38,849
+in arguments the length or anything we
+
+86
+00:03:38,849 --> 00:03:40,739
+just call and if it doesn't work it
+
+87
+00:03:40,739 --> 00:03:42,419
+means that either the arity was not was
+
+88
+00:03:42,419 --> 00:03:43,829
+not right or all the methods didn't
+
+89
+00:03:43,829 --> 00:03:47,669
+exist so this is basically what I just
+
+90
+00:03:47,669 --> 00:03:50,459
+said statics on abdallah factory
+
+91
+00:03:50,459 --> 00:03:53,370
+constructors and functions method calls
+
+92
+00:03:53,370 --> 00:03:55,919
+are translated to functions with with
+
+93
+00:03:55,919 --> 00:04:00,090
+the arity in its name so what are the
+
+94
+00:04:00,090 --> 00:04:03,269
+challenges now one of the big challenge
+
+95
+00:04:03,269 --> 00:04:06,019
+is closures in fact when we have
+
+96
+00:04:06,019 --> 00:04:08,760
+JavaScript as I just said or as an
+
+97
+00:04:08,760 --> 00:04:11,400
+implied doesn't check Verity where's in
+
+98
+00:04:11,400 --> 00:04:12,810
+doubt it's an error if you if you don't
+
+99
+00:04:12,810 --> 00:04:15,769
+give the correct number of arguments and
+
+100
+00:04:15,769 --> 00:04:18,449
+in the previous example which has been
+
+101
+00:04:18,449 --> 00:04:20,699
+coded the air it in the name of the
+
+102
+00:04:20,699 --> 00:04:22,049
+method but if you have a closure in the
+
+103
+00:04:22,049 --> 00:04:23,699
+hand you you don't have a name anymore
+
+104
+00:04:23,699 --> 00:04:26,010
+so you cannot read encode it there and
+
+105
+00:04:26,010 --> 00:04:28,919
+the second thing is that in dart we have
+
+106
+00:04:28,919 --> 00:04:32,130
+a we be allowed named or option
+
+107
+00:04:32,130 --> 00:04:34,110
+arguments so that's something that would
+
+108
+00:04:34,110 --> 00:04:36,090
+be annoying to encode inside the closure
+
+109
+00:04:36,090 --> 00:04:38,870
+too and we are also instant
+
+110
+00:04:38,870 --> 00:04:41,930
+object instances so cars instances to be
+
+111
+00:04:41,930 --> 00:04:43,340
+invoked as if they were closures and
+
+112
+00:04:43,340 --> 00:04:45,290
+their everything breaks down we cannot
+
+113
+00:04:45,290 --> 00:04:46,930
+use the childish cape Dakota the
+
+114
+00:04:46,930 --> 00:04:49,940
+challenge crypto just as target for
+
+115
+00:04:49,940 --> 00:04:53,780
+watch out for dart closures next one the
+
+116
+00:04:53,780 --> 00:04:56,590
+next challenge is its operators
+
+117
+00:04:56,590 --> 00:04:59,480
+javascript is very lenient in what it
+
+118
+00:04:59,480 --> 00:05:03,440
+accepts for operator arguments in fact
+
+119
+00:05:03,440 --> 00:05:04,640
+it will just try to convert it to
+
+120
+00:05:04,640 --> 00:05:06,830
+numbers or strings and carry on it will
+
+121
+00:05:06,830 --> 00:05:08,840
+keep on truckin there's nothing that
+
+122
+00:05:08,840 --> 00:05:10,910
+will basically throw an exception or
+
+123
+00:05:10,910 --> 00:05:13,820
+I'll give an error and we don't want
+
+124
+00:05:13,820 --> 00:05:15,470
+that we want to have we want to have
+
+125
+00:05:15,470 --> 00:05:17,150
+exceptions when when things don't don't
+
+126
+00:05:17,150 --> 00:05:19,610
+work where God and the second one is
+
+127
+00:05:19,610 --> 00:05:21,290
+that in darkly I have user-defined
+
+128
+00:05:21,290 --> 00:05:23,870
+operators so we allow to override the +
+
+129
+00:05:23,870 --> 00:05:25,460
+operator the minus operator and so on
+
+130
+00:05:25,460 --> 00:05:27,320
+and therefore we cannot just compile to
+
+131
+00:05:27,320 --> 00:05:29,000
+the challenge k plus because for many
+
+132
+00:05:29,000 --> 00:05:32,660
+objects it wouldn't work and finally in
+
+133
+00:05:32,660 --> 00:05:34,430
+the little bit in a similar area is the
+
+134
+00:05:34,430 --> 00:05:39,620
+array axises in JavaScript rare exes are
+
+135
+00:05:39,620 --> 00:05:41,480
+not checked for out of bounds or what
+
+136
+00:05:41,480 --> 00:05:45,740
+what the key actually is the links
+
+137
+00:05:45,740 --> 00:05:47,600
+operator and JavaScript works on any
+
+138
+00:05:47,600 --> 00:05:50,240
+object it accepts everything starting
+
+139
+00:05:50,240 --> 00:05:52,970
+with integers doubles objects strings
+
+140
+00:05:52,970 --> 00:05:55,550
+and in some cases it merges them as you
+
+141
+00:05:55,550 --> 00:05:58,910
+can see the the a of the string 1 is
+
+142
+00:05:58,910 --> 00:06:02,720
+similar to calling a of one so all those
+
+143
+00:06:02,720 --> 00:06:05,600
+things are invalid in dart and we need
+
+144
+00:06:05,600 --> 00:06:09,620
+to check those so what what are the
+
+145
+00:06:09,620 --> 00:06:12,140
+solutions that we came up with so
+
+146
+00:06:12,140 --> 00:06:13,430
+foreclosures there's actually a pretty
+
+147
+00:06:13,430 --> 00:06:15,230
+easy solution we compile closures two
+
+148
+00:06:15,230 --> 00:06:20,210
+new classes which and these gases have a
+
+149
+00:06:20,210 --> 00:06:23,830
+feeds for for free variables and
+
+150
+00:06:23,830 --> 00:06:26,810
+sometimes boxes four for four barrels
+
+151
+00:06:26,810 --> 00:06:29,540
+that are mutated and then we just put
+
+152
+00:06:29,540 --> 00:06:31,930
+normal methods on them as if there were
+
+153
+00:06:31,930 --> 00:06:34,880
+normal classes and we treat them
+
+154
+00:06:34,880 --> 00:06:37,400
+internally as as classes basically and
+
+155
+00:06:37,400 --> 00:06:40,430
+that's that's working pretty well for
+
+156
+00:06:40,430 --> 00:06:42,350
+two reasons one is that allocating a
+
+157
+00:06:42,350 --> 00:06:45,350
+small objects in JavaScript is very fast
+
+158
+00:06:45,350 --> 00:06:48,020
+and allocating a closure and javascript
+
+159
+00:06:48,020 --> 00:06:50,090
+is smallest size emphasized at the same
+
+160
+00:06:50,090 --> 00:06:53,240
+size as six fees and the second is that
+
+161
+00:06:53,240 --> 00:06:55,580
+every JavaScript engine has heavily
+
+162
+00:06:55,580 --> 00:06:59,060
+optimized the method excesses and in
+
+163
+00:06:59,060 --> 00:07:01,310
+there in the lurch it's just because
+
+164
+00:07:01,310 --> 00:07:03,259
+every benchmark uses that heavily so in
+
+165
+00:07:03,259 --> 00:07:05,900
+the end you are usually as fast or
+
+166
+00:07:05,900 --> 00:07:07,880
+faster than if you had action closures
+
+167
+00:07:07,880 --> 00:07:14,120
+so as an example here we have a closure
+
+168
+00:07:14,120 --> 00:07:17,410
+a dart closure which starts with the
+
+169
+00:07:17,410 --> 00:07:21,139
+they each going to the list index off so
+
+170
+00:07:21,139 --> 00:07:22,669
+this is a shorthand form for for
+
+171
+00:07:22,669 --> 00:07:25,340
+creating a closure and art so the list
+
+172
+00:07:25,340 --> 00:07:27,259
+of map takes the closures that itself
+
+173
+00:07:27,259 --> 00:07:29,630
+takes in each end and searches for the
+
+174
+00:07:29,630 --> 00:07:32,930
+for this element in the list and this is
+
+175
+00:07:32,930 --> 00:07:35,720
+translated you have the tart under on
+
+176
+00:07:35,720 --> 00:07:38,259
+the bottom this is translated into a
+
+177
+00:07:38,259 --> 00:07:41,409
+main dollar closure class so the second
+
+178
+00:07:41,409 --> 00:07:45,770
+second part which has one field the list
+
+179
+00:07:45,770 --> 00:07:48,319
+so that was a free variable and it has
+
+180
+00:07:48,319 --> 00:07:50,180
+one method the cold other one which
+
+181
+00:07:50,180 --> 00:07:52,699
+represents the invocation target if you
+
+182
+00:07:52,699 --> 00:07:55,069
+invoke the closure and in there it's
+
+183
+00:07:55,069 --> 00:07:56,900
+just a normal function which takes an
+
+184
+00:07:56,900 --> 00:07:59,090
+argument and does whatever we wanted to
+
+185
+00:07:59,090 --> 00:08:01,580
+do before note the compact gas
+
+186
+00:08:01,580 --> 00:08:04,070
+representation so we avoid a lot of
+
+187
+00:08:04,070 --> 00:08:06,020
+particle by the plate code by by
+
+188
+00:08:06,020 --> 00:08:08,960
+generating an occult dynamically this
+
+189
+00:08:08,960 --> 00:08:10,789
+way we shrink a little bit the size of
+
+190
+00:08:10,789 --> 00:08:15,550
+the JavaScript the resulting JavaScript
+
+191
+00:08:15,550 --> 00:08:18,259
+so the second problem was was the
+
+192
+00:08:18,259 --> 00:08:20,990
+operators and there the knave solution
+
+193
+00:08:20,990 --> 00:08:22,669
+would be to just add functions on the
+
+194
+00:08:22,669 --> 00:08:24,979
+prototypes of numbers erased rings pool
+
+195
+00:08:24,979 --> 00:08:28,699
+enzymes on and and invoke these methods
+
+196
+00:08:28,699 --> 00:08:30,380
+instead of using the child script
+
+197
+00:08:30,380 --> 00:08:32,390
+operates directly so you could imagine
+
+198
+00:08:32,390 --> 00:08:34,610
+having an ad operator on the prototype
+
+199
+00:08:34,610 --> 00:08:36,529
+of number that takes another argument
+
+200
+00:08:36,529 --> 00:08:38,510
+and only if that argument is actually
+
+201
+00:08:38,510 --> 00:08:41,990
+number we return the the sum of this
+
+202
+00:08:41,990 --> 00:08:46,610
+plus plus X and similarly for array the
+
+203
+00:08:46,610 --> 00:08:48,589
+index operator we would check that the
+
+204
+00:08:48,589 --> 00:08:51,770
+that the index is an integer and only if
+
+205
+00:08:51,770 --> 00:08:54,260
+it's in its then also in the bounds we
+
+206
+00:08:54,260 --> 00:08:59,209
+return the the axis of this so I have
+
+207
+00:08:59,209 --> 00:09:01,610
+the effort to example standard so X plus
+
+208
+00:09:01,610 --> 00:09:04,220
+y would then be compared to X dot add of
+
+209
+00:09:04,220 --> 00:09:06,860
+Y and similarly lists the operator
+
+210
+00:09:06,860 --> 00:09:07,340
+please
+
+211
+00:09:07,340 --> 00:09:09,920
+the index operator list I would be a
+
+212
+00:09:09,920 --> 00:09:13,610
+method call to the list so the drawbacks
+
+213
+00:09:13,610 --> 00:09:15,320
+of the solution is that it pollutes the
+
+214
+00:09:15,320 --> 00:09:16,700
+global objects which is something we
+
+215
+00:09:16,700 --> 00:09:19,280
+really want to avoid and it also can be
+
+216
+00:09:19,280 --> 00:09:21,170
+very slow especially if you if you if
+
+217
+00:09:21,170 --> 00:09:25,730
+you don't have a strict mode the reason
+
+218
+00:09:25,730 --> 00:09:27,380
+is that when you do a method call on our
+
+219
+00:09:27,380 --> 00:09:30,800
+numbers or number boolean's and so on it
+
+220
+00:09:30,800 --> 00:09:32,750
+will box the object before it can do the
+
+221
+00:09:32,750 --> 00:09:38,000
+the action method call so what we did
+
+222
+00:09:38,000 --> 00:09:39,590
+instead is having having static
+
+223
+00:09:39,590 --> 00:09:41,150
+interceptors so we just have static
+
+224
+00:09:41,150 --> 00:09:43,600
+methods that represent the operators and
+
+225
+00:09:43,600 --> 00:09:47,780
+the they are polymorphic in the sense
+
+226
+00:09:47,780 --> 00:09:49,580
+that for every operator that is for
+
+227
+00:09:49,580 --> 00:09:52,010
+native sorry for native up for native
+
+228
+00:09:52,010 --> 00:09:54,770
+JavaScript objects we intercept them in
+
+229
+00:09:54,770 --> 00:09:57,140
+these static functions so we check if
+
+230
+00:09:57,140 --> 00:09:58,880
+it's a number and if the other one is a
+
+231
+00:09:58,880 --> 00:10:01,040
+number we do the operation if it's if
+
+232
+00:10:01,040 --> 00:10:02,360
+it's something else that supports them
+
+233
+00:10:02,360 --> 00:10:04,520
+plus operator we we would do it in there
+
+234
+00:10:04,520 --> 00:10:07,490
+too so we just intercept operators in a
+
+235
+00:10:07,490 --> 00:10:09,080
+static function and then only redirect
+
+236
+00:10:09,080 --> 00:10:12,410
+to the data object if if it's not a
+
+237
+00:10:12,410 --> 00:10:15,110
+child shipped primitive similarly for
+
+238
+00:10:15,110 --> 00:10:16,520
+for the index operator will check if
+
+239
+00:10:16,520 --> 00:10:18,710
+it's a JavaScript array if it is we do
+
+240
+00:10:18,710 --> 00:10:20,870
+the child script stuff and if it's not
+
+241
+00:10:20,870 --> 00:10:25,750
+we will redirect to the dart method so
+
+242
+00:10:25,750 --> 00:10:27,890
+to give you an example of how that looks
+
+243
+00:10:27,890 --> 00:10:30,500
+in the code this is just a small main
+
+244
+00:10:30,500 --> 00:10:33,080
+that loop that gets the summer of a list
+
+245
+00:10:33,080 --> 00:10:38,420
+and this is still pretty readable so
+
+246
+00:10:38,420 --> 00:10:40,490
+every operator is replaced with a call
+
+247
+00:10:40,490 --> 00:10:43,790
+to aesthetic sodala dot in one case it's
+
+248
+00:10:43,790 --> 00:10:45,770
+the less than bully fires in the other
+
+249
+00:10:45,770 --> 00:10:47,420
+one it's the ad and then we have an
+
+250
+00:10:47,420 --> 00:10:50,570
+index so pretty standard stuff nothing
+
+251
+00:10:50,570 --> 00:10:54,200
+nothing special and that works the only
+
+252
+00:10:54,200 --> 00:10:56,330
+problem is that is very slow so we had a
+
+253
+00:10:56,330 --> 00:10:58,550
+if you do it this way you have a snow
+
+254
+00:10:58,550 --> 00:11:01,090
+level slowdown of about a factor of six
+
+255
+00:11:01,090 --> 00:11:03,170
+compared to handwritten JavaScript code
+
+256
+00:11:03,170 --> 00:11:06,440
+on on v8 and in some cases it even goes
+
+257
+00:11:06,440 --> 00:11:08,990
+down to 23 times slower than handwritten
+
+258
+00:11:08,990 --> 00:11:13,970
+code and there and there some really
+
+259
+00:11:13,970 --> 00:11:15,650
+obvious improvements you don't need to
+
+260
+00:11:15,650 --> 00:11:17,270
+use an operator if you actually know the
+
+261
+00:11:17,270 --> 00:11:20,370
+type of the arguments
+
+262
+00:11:20,370 --> 00:11:22,589
+this case you can simulate the in lining
+
+263
+00:11:22,589 --> 00:11:25,410
+of this static function call and avoid
+
+264
+00:11:25,410 --> 00:11:28,230
+the da'kel to the global interceptor so
+
+265
+00:11:28,230 --> 00:11:30,360
+by tracking the types and in particular
+
+266
+00:11:30,360 --> 00:11:34,290
+the local types we can and doing a
+
+267
+00:11:34,290 --> 00:11:35,460
+little bit of type inference we can
+
+268
+00:11:35,460 --> 00:11:40,730
+improve massively on that on that code
+
+269
+00:11:40,730 --> 00:11:42,810
+going back to the example that we had
+
+270
+00:11:42,810 --> 00:11:44,910
+before instead of having all these
+
+271
+00:11:44,910 --> 00:11:47,850
+method calls to the sorry instead of
+
+272
+00:11:47,850 --> 00:11:49,080
+having all the static calls to the
+
+273
+00:11:49,080 --> 00:11:52,860
+interceptors we now have only we have
+
+274
+00:11:52,860 --> 00:11:54,600
+none left in this example every
+
+275
+00:11:54,600 --> 00:11:57,000
+everywhere place is known the type is
+
+276
+00:11:57,000 --> 00:11:58,980
+known so we know that the list is an
+
+277
+00:11:58,980 --> 00:12:01,500
+array we know that the integers that the
+
+278
+00:12:01,500 --> 00:12:03,240
+sum is a number we know that I is an
+
+279
+00:12:03,240 --> 00:12:05,040
+integer the only thing we actually still
+
+280
+00:12:05,040 --> 00:12:07,230
+have to do is to do the checks so we
+
+281
+00:12:07,230 --> 00:12:09,180
+need to check that we don't have an
+
+282
+00:12:09,180 --> 00:12:12,029
+out-of-range exception and we don't have
+
+283
+00:12:12,029 --> 00:12:14,790
+an illegal argument exception in case we
+
+284
+00:12:14,790 --> 00:12:16,740
+have a plus of a number plus something
+
+285
+00:12:16,740 --> 00:12:20,940
+that is not a number both can be in line
+
+286
+00:12:20,940 --> 00:12:24,450
+easily and are pretty fast so doing just
+
+287
+00:12:24,450 --> 00:12:26,459
+that gives us a performance compared to
+
+288
+00:12:26,459 --> 00:12:27,630
+handwritten JavaScript code of a
+
+289
+00:12:27,630 --> 00:12:31,160
+50-percent even a little bit more and
+
+290
+00:12:31,160 --> 00:12:34,529
+it's a good start to continue from there
+
+291
+00:12:34,529 --> 00:12:38,130
+on there are two things that are to be
+
+292
+00:12:38,130 --> 00:12:39,720
+noted here the better your global type
+
+293
+00:12:39,720 --> 00:12:42,540
+reference is the less study calls you
+
+294
+00:12:42,540 --> 00:12:44,610
+have so the better you get and our
+
+295
+00:12:44,610 --> 00:12:45,870
+global type of options are girding is
+
+296
+00:12:45,870 --> 00:12:47,640
+currently not that well not that good
+
+297
+00:12:47,640 --> 00:12:49,980
+something we were going to work on soon
+
+298
+00:12:49,980 --> 00:12:53,010
+and even if you have a global type
+
+299
+00:12:53,010 --> 00:12:55,589
+inference algorithm that is pretty good
+
+300
+00:12:55,589 --> 00:12:57,450
+you will still have a lot of calls to
+
+301
+00:12:57,450 --> 00:12:59,430
+interceptors in case when you lose track
+
+302
+00:12:59,430 --> 00:13:02,520
+of the types and these are doubly
+
+303
+00:13:02,520 --> 00:13:04,320
+expensive because for one you have to
+
+304
+00:13:04,320 --> 00:13:05,970
+study interceptor calls and the second
+
+305
+00:13:05,970 --> 00:13:06,959
+one is you don't know if they have side
+
+306
+00:13:06,959 --> 00:13:08,430
+effects and therefore they destroy your
+
+307
+00:13:08,430 --> 00:13:14,040
+local optimizations so the big hammer we
+
+308
+00:13:14,040 --> 00:13:15,480
+have for that is the speculative
+
+309
+00:13:15,480 --> 00:13:19,860
+optimizations and that's the yeah so the
+
+310
+00:13:19,860 --> 00:13:23,100
+idea is to guess what the type of the of
+
+311
+00:13:23,100 --> 00:13:26,580
+the verbal would be or instruction what
+
+312
+00:13:26,580 --> 00:13:29,040
+the type would be based on on how it's
+
+313
+00:13:29,040 --> 00:13:31,350
+used and then we try to optimize for
+
+314
+00:13:31,350 --> 00:13:33,150
+this speculated type
+
+315
+00:13:33,150 --> 00:13:35,100
+and the promise of course we cannot
+
+316
+00:13:35,100 --> 00:13:36,600
+always be right and therefore we have
+
+317
+00:13:36,600 --> 00:13:40,290
+bailouts when we are wrong so the give
+
+318
+00:13:40,290 --> 00:13:41,730
+you an idea here this is the same
+
+319
+00:13:41,730 --> 00:13:43,620
+example as before the the sum of the
+
+320
+00:13:43,620 --> 00:13:45,330
+loop except that in this case we have no
+
+321
+00:13:45,330 --> 00:13:47,010
+idea what X is in the previous example
+
+322
+00:13:47,010 --> 00:13:48,870
+we knew it was a list it was in the code
+
+323
+00:13:48,870 --> 00:13:51,270
+in this example it could be anything but
+
+324
+00:13:51,270 --> 00:13:53,250
+looking at the code it put a really
+
+325
+00:13:53,250 --> 00:13:55,770
+great if it was a child script array so
+
+326
+00:13:55,770 --> 00:13:58,350
+what we do now is we just say okay let's
+
+327
+00:13:58,350 --> 00:14:00,150
+check if it's a JavaScript array and if
+
+328
+00:14:00,150 --> 00:14:02,250
+it is and so if it is not one we bail
+
+329
+00:14:02,250 --> 00:14:04,380
+out but if it is one we can optimize the
+
+330
+00:14:04,380 --> 00:14:06,180
+same as before we have this perfect code
+
+331
+00:14:06,180 --> 00:14:09,900
+that is a running nicely and fast but
+
+332
+00:14:09,900 --> 00:14:13,500
+not perfect but nearly perfect and then
+
+333
+00:14:13,500 --> 00:14:15,360
+if we are wrong well we have a bailout
+
+334
+00:14:15,360 --> 00:14:17,400
+function that does the expensive static
+
+335
+00:14:17,400 --> 00:14:20,240
+interceptor calls and does the does the
+
+336
+00:14:20,240 --> 00:14:22,530
+necessary stuff to get it right in case
+
+337
+00:14:22,530 --> 00:14:24,210
+there's an operator overloading and it's
+
+338
+00:14:24,210 --> 00:14:30,480
+not a list and and all these things the
+
+339
+00:14:30,480 --> 00:14:32,190
+thing is that if you do that all the
+
+340
+00:14:32,190 --> 00:14:34,320
+time you blow up your code so we have
+
+341
+00:14:34,320 --> 00:14:36,330
+some heuristics 22 when we want to check
+
+342
+00:14:36,330 --> 00:14:39,660
+when we want to speculate and it's
+
+343
+00:14:39,660 --> 00:14:43,470
+difficult to see when and how we need to
+
+344
+00:14:43,470 --> 00:14:45,600
+do that and currently we just physically
+
+345
+00:14:45,600 --> 00:14:47,340
+say if you're using something from
+
+346
+00:14:47,340 --> 00:14:49,290
+inside a loop and ideally transitively
+
+347
+00:14:49,290 --> 00:14:50,640
+from inside the loop so if you call a
+
+348
+00:14:50,640 --> 00:14:53,190
+function that is in from inside a loop
+
+349
+00:14:53,190 --> 00:14:54,630
+you will also optimize that function
+
+350
+00:14:54,630 --> 00:14:58,200
+speculatively then we do speculative
+
+351
+00:14:58,200 --> 00:15:00,120
+optimizations if I were is just a
+
+352
+00:15:00,120 --> 00:15:02,040
+function somewhere we ok we don't care
+
+353
+00:15:02,040 --> 00:15:05,790
+we keep their two interceptors ideally
+
+354
+00:15:05,790 --> 00:15:07,290
+and that's that's future work we want to
+
+355
+00:15:07,290 --> 00:15:09,450
+do profile guided optimizations so we
+
+356
+00:15:09,450 --> 00:15:11,340
+want to say speculate everything and
+
+357
+00:15:11,340 --> 00:15:13,830
+then tell us later on what worked and
+
+358
+00:15:13,830 --> 00:15:16,170
+what didn't work and things that either
+
+359
+00:15:16,170 --> 00:15:18,600
+always made out or never wear called we
+
+360
+00:15:18,600 --> 00:15:20,550
+can't just leave the the course the
+
+361
+00:15:20,550 --> 00:15:21,690
+static interceptors and would have
+
+362
+00:15:21,690 --> 00:15:28,230
+nicely reduced code size so with that we
+
+363
+00:15:28,230 --> 00:15:30,000
+get another huge bump in performance and
+
+364
+00:15:30,000 --> 00:15:32,970
+it really really paid so with that we
+
+365
+00:15:32,970 --> 00:15:35,780
+have about 75% of handwritten code and
+
+366
+00:15:35,780 --> 00:15:38,040
+together a little bit on the speed space
+
+367
+00:15:38,040 --> 00:15:39,510
+V trade off with the speculative
+
+368
+00:15:39,510 --> 00:15:42,030
+optimizations we have about fifty
+
+369
+00:15:42,030 --> 00:15:43,590
+percent code increase when we when we
+
+370
+00:15:43,590 --> 00:15:46,950
+enable the speculative optimizations
+
+371
+00:15:46,950 --> 00:15:48,810
+using heuristics and even if we didn't
+
+372
+00:15:48,810 --> 00:15:52,200
+use heuristics it would only blow up I
+
+373
+00:15:52,200 --> 00:15:54,660
+fact them by seventy two percent so for
+
+374
+00:15:54,660 --> 00:15:56,550
+profiling for instance it would still be
+
+375
+00:15:56,550 --> 00:15:58,710
+feasible to have all speculative sin and
+
+376
+00:15:58,710 --> 00:16:00,090
+then see which ones are actually
+
+377
+00:16:00,090 --> 00:16:04,020
+effective yes there's another thing we
+
+378
+00:16:04,020 --> 00:16:05,820
+do to reduce the code size that's tree
+
+379
+00:16:05,820 --> 00:16:09,930
+shaking the idea here is that we only
+
+380
+00:16:09,930 --> 00:16:11,460
+compile functions that are potentially
+
+381
+00:16:11,460 --> 00:16:13,140
+reach able so we start with the main
+
+382
+00:16:13,140 --> 00:16:15,240
+which is the only entry point in Dart
+
+383
+00:16:15,240 --> 00:16:17,010
+you cannot execute code outside of main
+
+384
+00:16:17,010 --> 00:16:21,030
+and then we look at yes colors of Ada
+
+385
+00:16:21,030 --> 00:16:24,750
+and then we look at the at what is
+
+386
+00:16:24,750 --> 00:16:26,010
+invoked and what classes are
+
+387
+00:16:26,010 --> 00:16:27,990
+instantiated and songs in this case you
+
+388
+00:16:27,990 --> 00:16:30,000
+have two classes that extent that are
+
+389
+00:16:30,000 --> 00:16:31,860
+instantiated that is pointed line and
+
+390
+00:16:31,860 --> 00:16:34,410
+you have one method call that that's the
+
+391
+00:16:34,410 --> 00:16:37,110
+distance to and then from there on since
+
+392
+00:16:37,110 --> 00:16:38,790
+it's a method called you collect all the
+
+393
+00:16:38,790 --> 00:16:41,970
+classes they're there and see I'm sorry
+
+394
+00:16:41,970 --> 00:16:44,640
+you collect all the the methods that are
+
+395
+00:16:44,640 --> 00:16:46,800
+possible in this case let's assume point
+
+396
+00:16:46,800 --> 00:16:48,330
+and line have a distance to method on
+
+397
+00:16:48,330 --> 00:16:51,200
+them and you continue recursively
+
+398
+00:16:51,200 --> 00:16:53,070
+enumerate the functions that are
+
+399
+00:16:53,070 --> 00:16:55,830
+potentially reachable in this case you
+
+400
+00:16:55,830 --> 00:16:57,480
+would could be for instance square root
+
+401
+00:16:57,480 --> 00:17:00,180
+and a cross product and point and so as
+
+402
+00:17:00,180 --> 00:17:02,460
+you can see in this example you might
+
+403
+00:17:02,460 --> 00:17:05,130
+end up compiling too much nothing in the
+
+404
+00:17:05,130 --> 00:17:07,050
+code that is shown at least tells you
+
+405
+00:17:07,050 --> 00:17:09,300
+that you call line the distance off the
+
+406
+00:17:09,300 --> 00:17:11,550
+only one that is there is a point of
+
+407
+00:17:11,550 --> 00:17:16,199
+distance to so it distance to but the
+
+408
+00:17:16,199 --> 00:17:19,620
+it's still a good it still reduces the
+
+409
+00:17:19,620 --> 00:17:21,300
+code size ballot and the more typing
+
+410
+00:17:21,300 --> 00:17:24,770
+information you have the better it gets
+
+411
+00:17:24,770 --> 00:17:27,870
+so another in another diagram saying the
+
+412
+00:17:27,870 --> 00:17:29,790
+same thing what we do is we start by
+
+413
+00:17:29,790 --> 00:17:33,330
+parsing the whole code but diet parsing
+
+414
+00:17:33,330 --> 00:17:34,770
+which means that we don't actually
+
+415
+00:17:34,770 --> 00:17:36,480
+create the ast for everything we just
+
+416
+00:17:36,480 --> 00:17:38,220
+get the structures what other classes
+
+417
+00:17:38,220 --> 00:17:40,170
+without a method and so on then we
+
+418
+00:17:40,170 --> 00:17:42,270
+resolve using the tree shaking algorithm
+
+419
+00:17:42,270 --> 00:17:44,460
+and there we actually put the HTS and
+
+420
+00:17:44,460 --> 00:17:48,420
+then at the end we do another we do
+
+421
+00:17:48,420 --> 00:17:50,850
+another tree shaking while tree shaking
+
+422
+00:17:50,850 --> 00:17:53,760
+like compilation process where we where
+
+423
+00:17:53,760 --> 00:17:56,670
+we are compiled only the methods that
+
+424
+00:17:56,670 --> 00:17:59,910
+are actually called knowing that
+
+425
+00:17:59,910 --> 00:18:02,550
+the compilation might do that code
+
+426
+00:18:02,550 --> 00:18:04,110
+elimination and so on and that's why the
+
+427
+00:18:04,110 --> 00:18:06,210
+the compiled code could be less than the
+
+428
+00:18:06,210 --> 00:18:10,110
+results code since we are coming out
+
+429
+00:18:10,110 --> 00:18:12,390
+compilation I'm not going to the symbol
+
+430
+00:18:12,390 --> 00:18:16,950
+single static single assignment form so
+
+431
+00:18:16,950 --> 00:18:21,390
+we this is the the the how we compiled
+
+432
+00:18:21,390 --> 00:18:23,100
+we have we start with the dark syntax
+
+433
+00:18:23,100 --> 00:18:26,130
+tree then go for a pillow that builds
+
+434
+00:18:26,130 --> 00:18:30,330
+our SS a graph go to some optimizations
+
+435
+00:18:30,330 --> 00:18:31,980
+on that a lot of optimizations on that
+
+436
+00:18:31,980 --> 00:18:34,110
+and then go to the go to narita which
+
+437
+00:18:34,110 --> 00:18:36,750
+which code generator which will produce
+
+438
+00:18:36,750 --> 00:18:38,100
+the challenge crip syntax tree which
+
+439
+00:18:38,100 --> 00:18:44,220
+will then emit to get the final code so
+
+440
+00:18:44,220 --> 00:18:46,700
+the single static assignment form is
+
+441
+00:18:46,700 --> 00:18:49,710
+commonly used in tons of compilers and
+
+442
+00:18:49,710 --> 00:18:51,480
+we use it for for analysis and
+
+443
+00:18:51,480 --> 00:18:54,450
+optimizations too in particular we have
+
+444
+00:18:54,450 --> 00:18:56,520
+the local type inference which uses the
+
+445
+00:18:56,520 --> 00:19:00,510
+ESS a phone function in i link is well
+
+446
+00:19:00,510 --> 00:19:02,430
+it's kind of on the on the builder level
+
+447
+00:19:02,430 --> 00:19:05,910
+but partially on the SS a cuba value
+
+448
+00:19:05,910 --> 00:19:08,220
+numbering and i'm going to give a slide
+
+449
+00:19:08,220 --> 00:19:10,260
+on that one also the loop invariant code
+
+450
+00:19:10,260 --> 00:19:11,760
+motion i have a slight just afterwards
+
+451
+00:19:11,760 --> 00:19:13,950
+and finding the range propagation where
+
+452
+00:19:13,950 --> 00:19:15,720
+we just keep track of the ragged ranges
+
+453
+00:19:15,720 --> 00:19:19,170
+a variable can have note that s sa is
+
+454
+00:19:19,170 --> 00:19:22,020
+actually pretty annoying in in in some
+
+455
+00:19:22,020 --> 00:19:23,280
+respect when you compile to challenge
+
+456
+00:19:23,280 --> 00:19:26,010
+good because going out of charge of the
+
+457
+00:19:26,010 --> 00:19:29,490
+SS a form back to charge Gabe it's not
+
+458
+00:19:29,490 --> 00:19:31,350
+always trivial because there's no goat
+
+459
+00:19:31,350 --> 00:19:35,430
+in JavaScript there it can be tricky to
+
+460
+00:19:35,430 --> 00:19:37,650
+to to actually compiled back to tonights
+
+461
+00:19:37,650 --> 00:19:39,090
+challenge group and we spend a lot of
+
+462
+00:19:39,090 --> 00:19:42,810
+time on that so the club value numbering
+
+463
+00:19:42,810 --> 00:19:46,070
+I mentioned it basically just tries to
+
+464
+00:19:46,070 --> 00:19:48,420
+avoid recomputing stuff if you already
+
+465
+00:19:48,420 --> 00:19:50,550
+have computed it so in this case
+
+466
+00:19:50,550 --> 00:19:52,470
+compiler that generated assuming that we
+
+467
+00:19:52,470 --> 00:19:54,090
+know that compiler generated is not a
+
+468
+00:19:54,090 --> 00:19:56,970
+getter we can avoid accessing it twice
+
+469
+00:19:56,970 --> 00:19:59,400
+just doing it once before the diff and
+
+470
+00:19:59,400 --> 00:20:01,950
+therefore avoiding a little bit of code
+
+471
+00:20:01,950 --> 00:20:06,270
+end of execution in the same way in
+
+472
+00:20:06,270 --> 00:20:09,240
+looping around commotion if we can show
+
+473
+00:20:09,240 --> 00:20:11,730
+that we can hoist a computation out of a
+
+474
+00:20:11,730 --> 00:20:13,360
+loop well let's
+
+475
+00:20:13,360 --> 00:20:17,380
+do that it's as simple as that funny
+
+476
+00:20:17,380 --> 00:20:19,710
+enough most of those are not that
+
+477
+00:20:19,710 --> 00:20:22,690
+important for us because the the chit's
+
+478
+00:20:22,690 --> 00:20:25,390
+then do that already so only a few cases
+
+479
+00:20:25,390 --> 00:20:26,500
+where we have a little bit better
+
+480
+00:20:26,500 --> 00:20:28,720
+information than the chips can we can we
+
+481
+00:20:28,720 --> 00:20:31,630
+do do we do more than they do but it's
+
+482
+00:20:31,630 --> 00:20:36,110
+still it still gave us some percentages
+
+483
+00:20:36,120 --> 00:20:38,440
+here's now the the same actor that's
+
+484
+00:20:38,440 --> 00:20:40,900
+some example from before up with the
+
+485
+00:20:40,900 --> 00:20:42,850
+optimizations apply there are only two
+
+486
+00:20:42,850 --> 00:20:45,640
+changes from before for one we have now
+
+487
+00:20:45,640 --> 00:20:48,250
+the listed length which is a hoisted out
+
+488
+00:20:48,250 --> 00:20:51,520
+of the loop so that's the VAR t one then
+
+489
+00:20:51,520 --> 00:20:53,309
+and the second one is that the range
+
+490
+00:20:53,309 --> 00:20:55,419
+propagation made sure that we don't need
+
+491
+00:20:55,419 --> 00:20:56,830
+to check for for the out of bounds
+
+492
+00:20:56,830 --> 00:20:59,470
+exception in it other than that no
+
+493
+00:20:59,470 --> 00:21:05,140
+change so what's the status of the dart
+
+494
+00:21:05,140 --> 00:21:07,870
+to JavaScript compiler with respect to
+
+495
+00:21:07,870 --> 00:21:10,690
+code size we are we have improved a lot
+
+496
+00:21:10,690 --> 00:21:12,760
+since our first release so everybody
+
+497
+00:21:12,760 --> 00:21:14,710
+still remembers the mega byte header
+
+498
+00:21:14,710 --> 00:21:20,679
+world that's not the animal and usually
+
+499
+00:21:20,679 --> 00:21:22,510
+now if you have actually if you have an
+
+500
+00:21:22,510 --> 00:21:24,160
+app that loses a lot of charge gift code
+
+501
+00:21:24,160 --> 00:21:27,250
+is because you just libraries so it's
+
+502
+00:21:27,250 --> 00:21:29,380
+not that we cannot make our code bed and
+
+503
+00:21:29,380 --> 00:21:31,419
+we can definitely make it better but in
+
+504
+00:21:31,419 --> 00:21:33,760
+many cases now it's not not stupid
+
+505
+00:21:33,760 --> 00:21:36,220
+errors anymore stupid code generation as
+
+506
+00:21:36,220 --> 00:21:38,950
+there was before and we are working on a
+
+507
+00:21:38,950 --> 00:21:43,120
+mini fire already so we have and dart
+
+508
+00:21:43,120 --> 00:21:46,120
+dart mini fire and we have minification
+
+509
+00:21:46,120 --> 00:21:47,980
+for javascript where we remove the white
+
+510
+00:21:47,980 --> 00:21:49,929
+space at least and we are working on on
+
+511
+00:21:49,929 --> 00:21:52,270
+with minifying the local variables names
+
+512
+00:21:52,270 --> 00:21:55,660
+and everything to with respect to
+
+513
+00:21:55,660 --> 00:21:58,270
+performance this is a screenshot of our
+
+514
+00:21:58,270 --> 00:22:02,140
+internal tracker the important one is
+
+515
+00:22:02,140 --> 00:22:03,700
+probably did the last number on the
+
+516
+00:22:03,700 --> 00:22:06,280
+bottom and the right which is the dart
+
+517
+00:22:06,280 --> 00:22:08,559
+to JavaScript performance with compared
+
+518
+00:22:08,559 --> 00:22:11,679
+to v8 to handwritten v8 code so the gr
+
+519
+00:22:11,679 --> 00:22:13,690
+NT geometric means says that we are now
+
+520
+00:22:13,690 --> 00:22:15,070
+at seventy-eight percent of the
+
+521
+00:22:15,070 --> 00:22:16,750
+handwritten code at least for the
+
+522
+00:22:16,750 --> 00:22:20,080
+benchmarks we have here and we would
+
+523
+00:22:20,080 --> 00:22:21,520
+think we can still improve on that so
+
+524
+00:22:21,520 --> 00:22:24,929
+it's not yet it's not yet done
+
+525
+00:22:24,929 --> 00:22:27,130
+and then some benchmarks veeram in the
+
+526
+00:22:27,130 --> 00:22:31,890
+fastest some so as conclusion
+
+527
+00:22:31,890 --> 00:22:34,390
+speculative optimizations I think that's
+
+528
+00:22:34,390 --> 00:22:36,490
+the big takeaway from this talk it's a
+
+529
+00:22:36,490 --> 00:22:38,200
+it's crucial to get a real good
+
+530
+00:22:38,200 --> 00:22:41,340
+performance if you have dynamic code and
+
+531
+00:22:41,340 --> 00:22:44,110
+we are now more than seventy-five
+
+532
+00:22:44,110 --> 00:22:46,150
+percent speed of handwritten JavaScript
+
+533
+00:22:46,150 --> 00:22:48,400
+code so it's a good time to give that
+
+534
+00:22:48,400 --> 00:22:51,549
+another try if you have done it before
+
+535
+00:22:51,549 --> 00:22:55,600
+in a try if you hadn't and with that I
+
+536
+00:22:55,600 --> 00:23:05,470
+thank you and I will take questions
+
+537
+00:23:05,480 --> 00:23:12,149
+do have any questions out there all
+
+538
+00:23:12,149 --> 00:23:18,740
+right the loop invariant code motion
+
+539
+00:23:18,740 --> 00:23:22,620
+where and how do you have more
+
+540
+00:23:22,620 --> 00:23:25,620
+information than digit on do you have a
+
+541
+00:23:25,620 --> 00:23:28,769
+concrete case where you know more than
+
+542
+00:23:28,769 --> 00:23:32,820
+digit and can do better at the top of my
+
+543
+00:23:32,820 --> 00:23:35,250
+head I don't but I'm pretty sure there
+
+544
+00:23:35,250 --> 00:23:37,440
+are some cases where we compiled
+
+545
+00:23:37,440 --> 00:23:39,210
+something into a method call just
+
+546
+00:23:39,210 --> 00:23:40,860
+because it simpler because we don't want
+
+547
+00:23:40,860 --> 00:23:42,539
+to learn it and we still know that this
+
+548
+00:23:42,539 --> 00:23:44,580
+method call is it doesn't have any any
+
+549
+00:23:44,580 --> 00:23:46,559
+side effect and if the vm doesn't ignite
+
+550
+00:23:46,559 --> 00:23:48,570
+it it will not see the same thing and
+
+551
+00:23:48,570 --> 00:23:51,200
+also doing this might help us optimize
+
+552
+00:23:51,200 --> 00:23:54,659
+ourselves call ourselves so if we can
+
+553
+00:23:54,659 --> 00:23:56,850
+basically bail out earlier thats that's
+
+554
+00:23:56,850 --> 00:23:58,620
+the biggest thing if we can move it out
+
+555
+00:23:58,620 --> 00:24:00,090
+of the loop and then have a bailout that
+
+556
+00:24:00,090 --> 00:24:01,860
+is not inside the loop but outside the
+
+557
+00:24:01,860 --> 00:24:07,289
+loop be much faster so you briefly
+
+558
+00:24:07,289 --> 00:24:10,679
+mentioned hello hi you briefly mentioned
+
+559
+00:24:10,679 --> 00:24:13,049
+getters and of course in es6 we're gonna
+
+560
+00:24:13,049 --> 00:24:15,990
+be getting proxies which all make this I
+
+561
+00:24:15,990 --> 00:24:19,200
+imagine a lot harder do you have a
+
+562
+00:24:19,200 --> 00:24:21,510
+strategy for dealing with that or rpms
+
+563
+00:24:21,510 --> 00:24:24,450
+and compile to jeaious languages and
+
+564
+00:24:24,450 --> 00:24:26,250
+optimizations in general just kind of
+
+565
+00:24:26,250 --> 00:24:28,470
+screwed ones proxies roll around and
+
+566
+00:24:28,470 --> 00:24:30,600
+once getters start being more prevalent
+
+567
+00:24:30,600 --> 00:24:32,490
+well first it shouldn't matter because
+
+568
+00:24:32,490 --> 00:24:34,049
+we compiled to challenge crypt so as
+
+569
+00:24:34,049 --> 00:24:36,179
+long as the current set doesn't change
+
+570
+00:24:36,179 --> 00:24:38,460
+the current language doesn't change we
+
+571
+00:24:38,460 --> 00:24:40,139
+should be fine on the other hand it
+
+572
+00:24:40,139 --> 00:24:42,179
+could help us so for instance getters
+
+573
+00:24:42,179 --> 00:24:44,130
+and setters when we started out to
+
+574
+00:24:44,130 --> 00:24:45,840
+JavaScript it was just a no-go we
+
+575
+00:24:45,840 --> 00:24:47,279
+couldn't compile dart getters and
+
+576
+00:24:47,279 --> 00:24:48,960
+setters to JavaScript getters and
+
+577
+00:24:48,960 --> 00:24:51,330
+setters because they were horrendously
+
+578
+00:24:51,330 --> 00:24:54,090
+slow where's now I think there are some
+
+579
+00:24:54,090 --> 00:24:55,409
+benchmarks appearing that actually use
+
+580
+00:24:55,409 --> 00:24:58,260
+it so which its start to optimize them
+
+581
+00:24:58,260 --> 00:25:01,169
+so everything that comes into javascript
+
+582
+00:25:01,169 --> 00:25:10,139
+is just helping us
+
+583
+00:25:10,149 --> 00:25:12,860
+actually I have two questions one what
+
+584
+00:25:12,860 --> 00:25:15,080
+if you have a jquery on your page like
+
+585
+00:25:15,080 --> 00:25:17,179
+dollar sign is kind of very popular and
+
+586
+00:25:17,179 --> 00:25:19,610
+neither do you have a telco recursion
+
+587
+00:25:19,610 --> 00:25:21,350
+sorry do you have a tail call
+
+588
+00:25:21,350 --> 00:25:23,690
+optimization in art or not and if you do
+
+589
+00:25:23,690 --> 00:25:26,299
+what do you compile to ok so a second
+
+590
+00:25:26,299 --> 00:25:28,039
+question is easy to know we don't have
+
+591
+00:25:28,039 --> 00:25:30,139
+it and the first question is at the
+
+592
+00:25:30,139 --> 00:25:31,970
+moment there is a conflict but we can
+
+593
+00:25:31,970 --> 00:25:33,409
+easily change dollar to something else
+
+594
+00:25:33,409 --> 00:25:35,419
+there is no that that's that's really
+
+595
+00:25:35,419 --> 00:25:42,230
+easy so you mentioned minification at
+
+596
+00:25:42,230 --> 00:25:43,909
+the end that you might add that in are
+
+597
+00:25:43,909 --> 00:25:45,049
+there specific thing piece of
+
+598
+00:25:45,049 --> 00:25:46,820
+information you have in dart that you
+
+599
+00:25:46,820 --> 00:25:48,019
+think could help with minification
+
+600
+00:25:48,019 --> 00:25:50,539
+beyond just what you can get from a
+
+601
+00:25:50,539 --> 00:25:53,960
+post-hoc minna fire so fast minification
+
+602
+00:25:53,960 --> 00:25:55,700
+is much easier than for child can I hope
+
+603
+00:25:55,700 --> 00:25:58,760
+I responding to a question because we
+
+604
+00:25:58,760 --> 00:26:02,029
+don't have dynamic codes générateur
+
+605
+00:26:02,029 --> 00:26:05,210
+amoco generation or even accessing
+
+606
+00:26:05,210 --> 00:26:06,769
+through strings as long as you of course
+
+607
+00:26:06,769 --> 00:26:09,679
+don't use on mirrors which is reflection
+
+608
+00:26:09,679 --> 00:26:11,710
+so as long as you don't use reflection
+
+609
+00:26:11,710 --> 00:26:16,220
+we can just minify every method to the
+
+610
+00:26:16,220 --> 00:26:19,010
+corresponding minified the name and we
+
+611
+00:26:19,010 --> 00:26:20,179
+know that it will not be a problem
+
+612
+00:26:20,179 --> 00:26:22,159
+because nobody can use a string to
+
+613
+00:26:22,159 --> 00:26:23,630
+access it or nobody can generate new
+
+614
+00:26:23,630 --> 00:26:27,019
+code to do that so from that it seems
+
+615
+00:26:27,019 --> 00:26:30,950
+pretty just having a map from 24 methods
+
+616
+00:26:30,950 --> 00:26:37,710
+statics and everything should do the job
+
+617
+00:26:37,720 --> 00:26:40,510
+tree shaking if I said it correctly
+
+618
+00:26:40,510 --> 00:26:43,250
+wouldn't work with library code but
+
+619
+00:26:43,250 --> 00:26:45,080
+would it work if you included all your
+
+620
+00:26:45,080 --> 00:26:47,450
+or if you recompile your library card
+
+621
+00:26:47,450 --> 00:26:50,360
+together with the application that's the
+
+622
+00:26:50,360 --> 00:26:52,850
+spot video when you compile from dart to
+
+623
+00:26:52,850 --> 00:26:55,250
+JavaScript we take the whole code we put
+
+624
+00:26:55,250 --> 00:26:57,080
+it into one violent and which we shake
+
+625
+00:26:57,080 --> 00:26:59,059
+everything away and we have the dart
+
+626
+00:26:59,059 --> 00:27:01,370
+dart compiler to do basically the same
+
+627
+00:27:01,370 --> 00:27:07,570
+thing when you when you deploy on tart
+
+628
+00:27:07,580 --> 00:27:11,660
+any other questions all right cool thank
+

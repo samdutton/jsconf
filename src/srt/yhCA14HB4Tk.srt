@@ -1,0 +1,2437 @@
+1
+00:00:10,910 --> 00:00:13,350
+
+usually I talk about my latest node
+
+2
+00:00:13,350 --> 00:00:15,150
+library and what it does and show it off
+
+3
+00:00:15,150 --> 00:00:16,680
+and do some live coding but today I
+
+4
+00:00:16,680 --> 00:00:17,340
+thought I'd do something a little
+
+5
+00:00:17,340 --> 00:00:20,250
+different a a question that I've seen
+
+6
+00:00:20,250 --> 00:00:22,200
+come up a lot with people who are
+
+7
+00:00:22,200 --> 00:00:25,800
+working with either lots of Io and the
+
+8
+00:00:25,800 --> 00:00:27,570
+browser or on server side JavaScript
+
+9
+00:00:27,570 --> 00:00:29,910
+wears lots of I oh is that all these
+
+10
+00:00:29,910 --> 00:00:32,550
+callbacks really get tangled it gets
+
+11
+00:00:32,550 --> 00:00:35,670
+hard to do so I talk is techniques and
+
+12
+00:00:35,670 --> 00:00:36,989
+tools for taming tangled twist it turns
+
+13
+00:00:36,989 --> 00:00:42,809
+up top and yeah so so just a quick recap
+
+14
+00:00:42,809 --> 00:00:44,039
+I'm sure most of you notice what makes
+
+15
+00:00:44,039 --> 00:00:46,320
+note fast I i work on node a lot so
+
+16
+00:00:46,320 --> 00:00:47,789
+that's most of the JavaScript I deal
+
+17
+00:00:47,789 --> 00:00:48,960
+with but this applies to other things
+
+18
+00:00:48,960 --> 00:00:53,699
+too so so node never blocks on Io it's
+
+19
+00:00:53,699 --> 00:00:55,109
+all it's all non block and it's all
+
+20
+00:00:55,109 --> 00:00:56,579
+callback base which means you don't eat
+
+21
+00:00:56,579 --> 00:00:58,739
+threads which is awesome because if
+
+22
+00:00:58,739 --> 00:01:00,179
+you've done systems programming threads
+
+23
+00:01:00,179 --> 00:01:02,670
+are not free they're expensive but this
+
+24
+00:01:02,670 --> 00:01:04,019
+also means that you have to handle the
+
+25
+00:01:04,019 --> 00:01:06,830
+scheduling explicitly through callbacks
+
+26
+00:01:06,830 --> 00:01:09,240
+with threading the OS does it for you
+
+27
+00:01:09,240 --> 00:01:11,880
+you can just say I want to read the file
+
+28
+00:01:11,880 --> 00:01:15,270
+system and no one s done do this and the
+
+29
+00:01:15,270 --> 00:01:17,310
+OS handle Zelda for you all the
+
+30
+00:01:17,310 --> 00:01:21,930
+concurrency not so much in JavaScript so
+
+31
+00:01:21,930 --> 00:01:24,899
+here's just a quick example and this
+
+32
+00:01:24,899 --> 00:01:26,909
+isn't even the best Ruby but the point
+
+33
+00:01:26,909 --> 00:01:30,479
+is we have this final new thing that
+
+34
+00:01:30,479 --> 00:01:32,670
+opens a file that next line will not
+
+35
+00:01:32,670 --> 00:01:34,820
+execute until that file has been opened
+
+36
+00:01:34,820 --> 00:01:37,920
+nothing happens and this line equals
+
+37
+00:01:37,920 --> 00:01:40,770
+file gets that will block until it
+
+38
+00:01:40,770 --> 00:01:42,149
+actually reads the data from the disk
+
+39
+00:01:42,149 --> 00:01:44,670
+which could take a lot of CPU cycles and
+
+40
+00:01:44,670 --> 00:01:47,280
+in the next slide happens and then you
+
+41
+00:01:47,280 --> 00:01:48,420
+can file close here at the bottom
+
+42
+00:01:48,420 --> 00:01:50,159
+because you won't get there till you're
+
+43
+00:01:50,159 --> 00:01:53,490
+done really simple code right because
+
+44
+00:01:53,490 --> 00:01:55,020
+the OS is doing all the juggling for you
+
+45
+00:01:55,020 --> 00:01:59,399
+with threads well here's one way to do
+
+46
+00:01:59,399 --> 00:02:03,000
+this a note so we got we going to open
+
+47
+00:02:03,000 --> 00:02:04,439
+the file give that a call back when its
+
+48
+00:02:04,439 --> 00:02:08,490
+open and then nodes ap eyes are a little
+
+49
+00:02:08,490 --> 00:02:10,320
+lower level it matches the capi is
+
+50
+00:02:10,320 --> 00:02:14,010
+pretty close so you got to say I want to
+
+51
+00:02:14,010 --> 00:02:16,320
+read some data up to this many chunks
+
+52
+00:02:16,320 --> 00:02:17,820
+put it in this buffer it might actually
+
+53
+00:02:17,820 --> 00:02:19,620
+read that many chunks and so you're
+
+54
+00:02:19,620 --> 00:02:20,970
+going to then check how many chunks for
+
+55
+00:02:20,970 --> 00:02:21,540
+it I mean
+
+56
+00:02:21,540 --> 00:02:23,370
+lights were red and if it's not enough
+
+57
+00:02:23,370 --> 00:02:24,599
+you got to keep reading you go to these
+
+58
+00:02:24,599 --> 00:02:26,489
+recursive loops and it's all a sink and
+
+59
+00:02:26,489 --> 00:02:28,709
+I don't know about you but that's kind
+
+60
+00:02:28,709 --> 00:02:32,939
+of hard to read it first but that that's
+
+61
+00:02:32,939 --> 00:02:36,930
+the trade-off so don't worry it's
+
+62
+00:02:36,930 --> 00:02:39,060
+actually not as bad as it looks if your
+
+63
+00:02:39,060 --> 00:02:40,950
+house has a fire tornado that's pretty
+
+64
+00:02:40,950 --> 00:02:43,349
+bad javascript you're okay so do some
+
+65
+00:02:43,349 --> 00:02:48,480
+tricks to this so I've got six sections
+
+66
+00:02:48,480 --> 00:02:50,400
+they make a cube and all the pieces make
+
+67
+00:02:50,400 --> 00:02:53,730
+this cool awesome train yeah all right
+
+68
+00:02:53,730 --> 00:02:55,650
+this is the tingle twisted train of
+
+69
+00:02:55,650 --> 00:02:58,680
+thought so the first piece of the train
+
+70
+00:02:58,680 --> 00:03:00,829
+is lambda first class functions
+
+71
+00:03:00,829 --> 00:03:03,269
+javascript has first class functions I
+
+72
+00:03:03,269 --> 00:03:06,480
+know this isn't new to most of you but
+
+73
+00:03:06,480 --> 00:03:08,700
+in node we have this interesting merge
+
+74
+00:03:08,700 --> 00:03:10,409
+of communities where you have people
+
+75
+00:03:10,409 --> 00:03:12,060
+coming from the server side that know
+
+76
+00:03:12,060 --> 00:03:14,669
+Ruby and PHP and Python and haven't
+
+77
+00:03:14,669 --> 00:03:17,129
+really dealt with callbacks and then we
+
+78
+00:03:17,129 --> 00:03:19,019
+have the people from the front end who
+
+79
+00:03:19,019 --> 00:03:22,079
+know all about callbacks and Ajax but
+
+80
+00:03:22,079 --> 00:03:23,760
+then hadn't really use JavaScript
+
+81
+00:03:23,760 --> 00:03:25,709
+against file systems where you have lots
+
+82
+00:03:25,709 --> 00:03:28,530
+and lots of i/o and so occasionally
+
+83
+00:03:28,530 --> 00:03:30,090
+people forget that you have all these
+
+84
+00:03:30,090 --> 00:03:32,459
+neat tricks with functions so just a
+
+85
+00:03:32,459 --> 00:03:35,459
+quick review javascript is a very simple
+
+86
+00:03:35,459 --> 00:03:37,199
+business understood language and the
+
+87
+00:03:37,199 --> 00:03:40,019
+secret is the functions a function is an
+
+88
+00:03:40,019 --> 00:03:41,909
+object it can be passed around it has a
+
+89
+00:03:41,909 --> 00:03:44,280
+closure but it's really just something
+
+90
+00:03:44,280 --> 00:03:46,019
+you can pass around it's not tied to an
+
+91
+00:03:46,019 --> 00:03:48,180
+object that's not a proper method like
+
+92
+00:03:48,180 --> 00:03:49,530
+in other languages where it's part of
+
+93
+00:03:49,530 --> 00:03:52,650
+the class it's it's just some executable
+
+94
+00:03:52,650 --> 00:03:54,919
+code that has some special properties so
+
+95
+00:03:54,919 --> 00:03:57,780
+here's just a quick example so I make
+
+96
+00:03:57,780 --> 00:04:00,629
+this object Lane has named laman Elena
+
+97
+00:04:00,629 --> 00:04:02,819
+lambda and then one function description
+
+98
+00:04:02,819 --> 00:04:05,129
+that returns a person named to this name
+
+99
+00:04:05,129 --> 00:04:07,769
+and you execute this you'll get back a
+
+100
+00:04:07,769 --> 00:04:09,359
+person named Lena lambda nothing
+
+101
+00:04:09,359 --> 00:04:12,479
+surprising right so we make another
+
+102
+00:04:12,479 --> 00:04:14,040
+object called Fred and Fred's
+
+103
+00:04:14,040 --> 00:04:15,629
+description is the same function as
+
+104
+00:04:15,629 --> 00:04:17,370
+lanes description but when you read it
+
+105
+00:04:17,370 --> 00:04:19,370
+you get a person named Fred the functor
+
+106
+00:04:19,370 --> 00:04:21,539
+exact same function for rain in a
+
+107
+00:04:21,539 --> 00:04:27,419
+different different scope so we can use
+
+108
+00:04:27,419 --> 00:04:30,529
+colon apply to specify what this is
+
+109
+00:04:30,529 --> 00:04:33,079
+and just call lanes description function
+
+110
+00:04:33,079 --> 00:04:35,149
+with a new object and you'll get back a
+
+111
+00:04:35,149 --> 00:04:36,829
+person named said the zettabyte it's
+
+112
+00:04:36,829 --> 00:04:40,639
+really clear right but here's where it
+
+113
+00:04:40,639 --> 00:04:41,779
+gets people when you start dealing with
+
+114
+00:04:41,779 --> 00:04:44,269
+events and callbacks if I store this
+
+115
+00:04:44,269 --> 00:04:47,359
+lame duck description to a variable put
+
+116
+00:04:47,359 --> 00:04:49,669
+that in some event system and then later
+
+117
+00:04:49,669 --> 00:04:53,329
+call it a person named undefined but it
+
+118
+00:04:53,329 --> 00:04:54,739
+was lamed that description i passed in
+
+119
+00:04:54,739 --> 00:04:57,319
+so i should have lain as this right no
+
+120
+00:04:57,319 --> 00:04:59,269
+it's not tied to the object it's just a
+
+121
+00:04:59,269 --> 00:05:01,129
+function and when you start doing lots
+
+122
+00:05:01,129 --> 00:05:03,519
+of callbacks this bites a lot of people
+
+123
+00:05:03,519 --> 00:05:06,319
+well this is where closures come in this
+
+124
+00:05:06,319 --> 00:05:07,999
+is a simple factory method that returns
+
+125
+00:05:07,999 --> 00:05:11,269
+a function but since name is from the
+
+126
+00:05:11,269 --> 00:05:13,369
+closure no matter how you call this
+
+127
+00:05:13,369 --> 00:05:15,049
+function it's going to have the right
+
+128
+00:05:15,049 --> 00:05:17,569
+name so this is a really important thing
+
+129
+00:05:17,569 --> 00:05:18,619
+to understand i'm sure most of you
+
+130
+00:05:18,619 --> 00:05:21,049
+notice quite well but that's the first
+
+131
+00:05:21,049 --> 00:05:22,849
+technique to doing lots of asynchronous
+
+132
+00:05:22,849 --> 00:05:24,679
+code is that by sound understanding of
+
+133
+00:05:24,679 --> 00:05:27,439
+how the language works so my next
+
+134
+00:05:27,439 --> 00:05:30,679
+section function composition the first
+
+135
+00:05:30,679 --> 00:05:33,109
+large node project i will wrote was
+
+136
+00:05:33,109 --> 00:05:36,429
+wheat the engine to how to note it's
+
+137
+00:05:36,429 --> 00:05:39,289
+it's a pretty interesting blog engine it
+
+138
+00:05:39,289 --> 00:05:42,189
+sits on top of a rocket repo and
+
+139
+00:05:42,189 --> 00:05:45,799
+basically uses get sub a subshell just
+
+140
+00:05:45,799 --> 00:05:47,779
+use git show and use as good as a
+
+141
+00:05:47,779 --> 00:05:49,399
+database there are no real files
+
+142
+00:05:49,399 --> 00:05:52,159
+anywhere it just uses get show give me
+
+143
+00:05:52,159 --> 00:05:54,469
+this file at this revision and there's
+
+144
+00:05:54,469 --> 00:05:55,729
+some muck down files for articles
+
+145
+00:05:55,729 --> 00:05:57,589
+there's some HTML and it's it's all in
+
+146
+00:05:57,589 --> 00:06:01,249
+get but when I wrote this I started
+
+147
+00:06:01,249 --> 00:06:05,539
+seeing that you got to do these complex
+
+148
+00:06:05,539 --> 00:06:07,879
+things wrap them in simple api's or
+
+149
+00:06:07,879 --> 00:06:11,749
+you'll go insane so node has a single
+
+150
+00:06:11,749 --> 00:06:13,189
+def s read file because it's pretty
+
+151
+00:06:13,189 --> 00:06:14,989
+common use case that you want to read a
+
+152
+00:06:14,989 --> 00:06:16,699
+file when its entirety their small files
+
+153
+00:06:16,699 --> 00:06:18,049
+you don't want to stream it you just say
+
+154
+00:06:18,049 --> 00:06:20,629
+give me the contents of that file so you
+
+155
+00:06:20,629 --> 00:06:22,549
+take all these other async operations
+
+156
+00:06:22,549 --> 00:06:25,789
+and you wrap them in one single API this
+
+157
+00:06:25,789 --> 00:06:30,529
+is a very useful technique so I'm just
+
+158
+00:06:30,529 --> 00:06:32,059
+going to quickly go through one way to
+
+159
+00:06:32,059 --> 00:06:34,129
+implement this so what's going to happen
+
+160
+00:06:34,129 --> 00:06:36,949
+zero f s open which is a non-blocking
+
+161
+00:06:36,949 --> 00:06:38,629
+filesystem thing all the arrows with
+
+162
+00:06:38,629 --> 00:06:41,129
+stars means this call
+
+163
+00:06:41,129 --> 00:06:42,929
+happens via the event loop you don't
+
+164
+00:06:42,929 --> 00:06:45,300
+ever explicitly call this when the file
+
+165
+00:06:45,300 --> 00:06:47,999
+system comes back and it's open it will
+
+166
+00:06:47,999 --> 00:06:51,089
+then call your on open function which
+
+167
+00:06:51,089 --> 00:06:54,839
+then will call get chunk because it
+
+168
+00:06:54,839 --> 00:06:56,219
+wants to start getting some chunks and
+
+169
+00:06:56,219 --> 00:06:57,839
+then that's going to call FS read and
+
+170
+00:06:57,839 --> 00:07:00,179
+then FS rate when it gets a chunk is
+
+171
+00:07:00,179 --> 00:07:01,649
+going to call your on read and that's
+
+172
+00:07:01,649 --> 00:07:02,789
+going to check if there's bites or not
+
+173
+00:07:02,789 --> 00:07:03,839
+it's going to loop through till you've
+
+174
+00:07:03,839 --> 00:07:07,529
+read the whole file so I put the black
+
+175
+00:07:07,529 --> 00:07:10,259
+borders around these functions that I'm
+
+176
+00:07:10,259 --> 00:07:11,819
+wrapping so this is just a quick little
+
+177
+00:07:11,819 --> 00:07:15,330
+utility i made up called wrap if any of
+
+178
+00:07:15,330 --> 00:07:16,319
+you have done Python this is the
+
+179
+00:07:16,319 --> 00:07:18,330
+decorator pattern I don't know is their
+
+180
+00:07:18,330 --> 00:07:20,279
+name for a javascript where you take a
+
+181
+00:07:20,279 --> 00:07:21,629
+function return a new function with
+
+182
+00:07:21,629 --> 00:07:25,349
+slightly in your behavior but so you
+
+183
+00:07:25,349 --> 00:07:29,219
+take your your actual on an open on
+
+184
+00:07:29,219 --> 00:07:33,119
+whatever callback and this adds error
+
+185
+00:07:33,119 --> 00:07:35,339
+handling to it because the problem with
+
+186
+00:07:35,339 --> 00:07:37,610
+async code is you can't use try catch
+
+187
+00:07:37,610 --> 00:07:41,759
+try catch is tied to a stack and you saw
+
+188
+00:07:41,759 --> 00:07:43,169
+the errors with the stars every time
+
+189
+00:07:43,169 --> 00:07:45,300
+that happens you're on a new stack and
+
+190
+00:07:45,300 --> 00:07:46,860
+you try catch to happen before is long
+
+191
+00:07:46,860 --> 00:07:48,479
+gone and it won't catch any exceptions
+
+192
+00:07:48,479 --> 00:07:50,699
+that happen now so if you want your code
+
+193
+00:07:50,699 --> 00:07:52,889
+to not throw exceptions which in a
+
+194
+00:07:52,889 --> 00:07:54,360
+server you don't want because then your
+
+195
+00:07:54,360 --> 00:07:56,309
+entire server goes down and all your
+
+196
+00:07:56,309 --> 00:07:58,949
+connections are now closed you need to
+
+197
+00:07:58,949 --> 00:08:00,209
+be careful about routing all these
+
+198
+00:08:00,209 --> 00:08:01,619
+exceptions to the right place you can
+
+199
+00:08:01,619 --> 00:08:05,249
+send the user a 500 page or something so
+
+200
+00:08:05,249 --> 00:08:08,509
+it takes the function note has this
+
+201
+00:08:08,509 --> 00:08:12,300
+convention that all I'll call backs give
+
+202
+00:08:12,300 --> 00:08:14,459
+you air and result and so if node gave
+
+203
+00:08:14,459 --> 00:08:15,990
+you an error pass it through the
+
+204
+00:08:15,990 --> 00:08:19,110
+callback and if actually colon your code
+
+205
+00:08:19,110 --> 00:08:21,209
+throws an exception catch that and pass
+
+206
+00:08:21,209 --> 00:08:25,229
+it to the callback super handy and then
+
+207
+00:08:25,229 --> 00:08:26,879
+this is just merging buffers we don't
+
+208
+00:08:26,879 --> 00:08:29,550
+need to go through that but so here's
+
+209
+00:08:29,550 --> 00:08:30,990
+here's the read frontal it takes the
+
+210
+00:08:30,990 --> 00:08:32,399
+fault is chunk and then here I've got my
+
+211
+00:08:32,399 --> 00:08:33,899
+own open on read and they're just
+
+212
+00:08:33,899 --> 00:08:36,509
+wrapped versions of the functions so
+
+213
+00:08:36,509 --> 00:08:40,019
+they handled error handling on opens
+
+214
+00:08:40,019 --> 00:08:42,329
+pretty easy you get the file descriptor
+
+215
+00:08:42,329 --> 00:08:43,919
+store it and available in the closure
+
+216
+00:08:43,919 --> 00:08:47,100
+and then call get junk and then I want
+
+217
+00:08:47,100 --> 00:08:49,110
+all errors to be ready to call back on
+
+218
+00:08:49,110 --> 00:08:52,140
+read pretty similar file system
+
+219
+00:08:52,140 --> 00:08:53,880
+I gave me this many bites and those
+
+220
+00:08:53,880 --> 00:08:55,410
+bites were given to the buffer I had in
+
+221
+00:08:55,410 --> 00:08:58,410
+my other closure and so if there were no
+
+222
+00:08:58,410 --> 00:09:00,060
+bites I'm done called the done function
+
+223
+00:09:00,060 --> 00:09:03,810
+if if it wasn't how many bytes I wanted
+
+224
+00:09:03,810 --> 00:09:05,910
+or if it's small and a buffer you got to
+
+225
+00:09:05,910 --> 00:09:08,910
+resize the buffer this is low-level node
+
+226
+00:09:08,910 --> 00:09:11,370
+buffer stuff but the important thing
+
+227
+00:09:11,370 --> 00:09:13,530
+here is that I then called get chunk
+
+228
+00:09:13,530 --> 00:09:16,140
+again and it loops recursively but
+
+229
+00:09:16,140 --> 00:09:17,280
+you're not going to you're not going to
+
+230
+00:09:17,280 --> 00:09:18,510
+blow it a step because remember every
+
+231
+00:09:18,510 --> 00:09:20,250
+time on Reed is called it's a new stack
+
+232
+00:09:20,250 --> 00:09:21,720
+so you'd have to worry about stack
+
+233
+00:09:21,720 --> 00:09:24,840
+overflow and the get chunk just
+
+234
+00:09:24,840 --> 00:09:27,120
+basically allocates a buffer and reads
+
+235
+00:09:27,120 --> 00:09:30,510
+it from the file and then done closes
+
+236
+00:09:30,510 --> 00:09:32,310
+the file and then merges all the buffers
+
+237
+00:09:32,310 --> 00:09:35,190
+and calls person here is your file nice
+
+238
+00:09:35,190 --> 00:09:36,960
+to do all that for you and wrap it up in
+
+239
+00:09:36,960 --> 00:09:39,390
+just one call read this phone give me
+
+240
+00:09:39,390 --> 00:09:41,670
+the data there's the data great pattern
+
+241
+00:09:41,670 --> 00:09:45,570
+function composition so the second
+
+242
+00:09:45,570 --> 00:09:48,570
+technique is called back counters since
+
+243
+00:09:48,570 --> 00:09:51,840
+this all this non blocking code it just
+
+244
+00:09:51,840 --> 00:09:53,040
+goes straight through you can do stuff
+
+245
+00:09:53,040 --> 00:09:55,380
+in parallel you can do weights in
+
+246
+00:09:55,380 --> 00:09:57,060
+parallel you can't do execution and
+
+247
+00:09:57,060 --> 00:09:58,530
+parallels it's single-threaded it's
+
+248
+00:09:58,530 --> 00:10:00,750
+JavaScript but you can be waiting for
+
+249
+00:10:00,750 --> 00:10:02,010
+this file to open while you're waiting
+
+250
+00:10:02,010 --> 00:10:03,300
+for this database query to come back
+
+251
+00:10:03,300 --> 00:10:04,380
+while you're waiting for something else
+
+252
+00:10:04,380 --> 00:10:05,670
+to happen you can do all those weights
+
+253
+00:10:05,670 --> 00:10:07,290
+in parallel which is great really speeds
+
+254
+00:10:07,290 --> 00:10:14,610
+it up but the problem is you need to do
+
+255
+00:10:14,610 --> 00:10:16,170
+things when it's done you need to
+
+256
+00:10:16,170 --> 00:10:19,670
+continue the logic of your program so
+
+257
+00:10:19,670 --> 00:10:22,290
+organize it into either serial actions
+
+258
+00:10:22,290 --> 00:10:23,370
+that maybe we'll run on another or
+
+259
+00:10:23,370 --> 00:10:26,160
+things going to be done in parallel so
+
+260
+00:10:26,160 --> 00:10:27,960
+here's a simple example suppose I want
+
+261
+00:10:27,960 --> 00:10:29,220
+to read two files these files are
+
+262
+00:10:29,220 --> 00:10:31,080
+completely unrelated and then do
+
+263
+00:10:31,080 --> 00:10:33,210
+something after they've been read well
+
+264
+00:10:33,210 --> 00:10:35,910
+how do you do that it's quite simple you
+
+265
+00:10:35,910 --> 00:10:37,920
+have a counter or some other variable
+
+266
+00:10:37,920 --> 00:10:41,610
+and each time the on Reed's come back
+
+267
+00:10:41,610 --> 00:10:43,440
+from those you decrement your counter
+
+268
+00:10:43,440 --> 00:10:45,120
+and when it reaches zero you know all of
+
+269
+00:10:45,120 --> 00:10:47,190
+your call backs have done and then you
+
+270
+00:10:47,190 --> 00:10:51,780
+call the next step so there's simple
+
+271
+00:10:51,780 --> 00:10:55,290
+counters here's a slightly more complex
+
+272
+00:10:55,290 --> 00:10:57,150
+example suppose I want to take a
+
+273
+00:10:57,150 --> 00:10:59,730
+directory of files and I want to read
+
+274
+00:10:59,730 --> 00:11:01,140
+the contents of all the files in that
+
+275
+00:11:01,140 --> 00:11:03,090
+directory so we have an unknown number
+
+276
+00:11:03,090 --> 00:11:04,130
+of things here
+
+277
+00:11:04,130 --> 00:11:05,450
+there might be 10 files might be a
+
+278
+00:11:05,450 --> 00:11:09,350
+thousand files so I'm gonna call read
+
+279
+00:11:09,350 --> 00:11:10,820
+directory which is going to get listing
+
+280
+00:11:10,820 --> 00:11:13,250
+the files when that comes back I'm going
+
+281
+00:11:13,250 --> 00:11:15,410
+to then loop over that and fire off a
+
+282
+00:11:15,410 --> 00:11:16,940
+raid file for each one of those files
+
+283
+00:11:16,940 --> 00:11:19,580
+and then I wanted a another all going to
+
+284
+00:11:19,580 --> 00:11:21,080
+call on read and then when all of them
+
+285
+00:11:21,080 --> 00:11:22,640
+are done it's going to pass the data to
+
+286
+00:11:22,640 --> 00:11:28,130
+my call back so this is slightly more
+
+287
+00:11:28,130 --> 00:11:32,380
+complicated but same idea so we call
+
+288
+00:11:32,380 --> 00:11:35,270
+some filtering out some files either a
+
+289
+00:11:35,270 --> 00:11:37,010
+County ghost files dot length so the
+
+290
+00:11:37,010 --> 00:11:38,330
+number of files i'm going to open I got
+
+291
+00:11:38,330 --> 00:11:40,460
+my counter again and then while I for
+
+292
+00:11:40,460 --> 00:11:42,740
+each over the files it's opening them
+
+293
+00:11:42,740 --> 00:11:44,210
+and then when those callbacks come back
+
+294
+00:11:44,210 --> 00:11:46,190
+document count now one thing to note
+
+295
+00:11:46,190 --> 00:11:48,770
+here remember this is non blocking so
+
+296
+00:11:48,770 --> 00:11:51,700
+this for each goes through instantly and
+
+297
+00:11:51,700 --> 00:11:53,810
+then the files are read from the disk
+
+298
+00:11:53,810 --> 00:11:56,630
+you got to remember that code never ever
+
+299
+00:11:56,630 --> 00:11:58,340
+blocks in this non-blocking world and
+
+300
+00:11:58,340 --> 00:12:01,250
+any tobacco goes straight through but
+
+301
+00:12:01,250 --> 00:12:03,440
+then once they've all read the count
+
+302
+00:12:03,440 --> 00:12:05,660
+will be the count will be zero called a
+
+303
+00:12:05,660 --> 00:12:10,760
+call back with the results here's a
+
+304
+00:12:10,760 --> 00:12:12,590
+slightly simpler version if you just
+
+305
+00:12:12,590 --> 00:12:14,750
+want to see count count decrement and
+
+306
+00:12:14,750 --> 00:12:16,760
+then equals you don't have to use the
+
+307
+00:12:16,760 --> 00:12:18,170
+minus minus count it's kind of tricky
+
+308
+00:12:18,170 --> 00:12:19,910
+but if you want really short code works
+
+309
+00:12:19,910 --> 00:12:21,380
+I mean it's whatever your preference is
+
+310
+00:12:21,380 --> 00:12:24,230
+I usually just do count minus minus 0
+
+311
+00:12:24,230 --> 00:12:25,490
+then if count equals 0 it's more
+
+312
+00:12:25,490 --> 00:12:28,610
+explicit that way but slides you got to
+
+313
+00:12:28,610 --> 00:12:31,700
+squish the code sometimes so that's
+
+314
+00:12:31,700 --> 00:12:33,230
+called back counters very handy
+
+315
+00:12:33,230 --> 00:12:34,670
+technique we do this all the time I
+
+316
+00:12:34,670 --> 00:12:36,770
+think I think every node library at
+
+317
+00:12:36,770 --> 00:12:37,970
+there has some implementation of
+
+318
+00:12:37,970 --> 00:12:42,130
+counters and a helper library that loops
+
+319
+00:12:42,130 --> 00:12:46,640
+not everything is a call back so call
+
+320
+00:12:46,640 --> 00:12:48,620
+backs are great the way the way we
+
+321
+00:12:48,620 --> 00:12:51,140
+talked about them originally when we
+
+322
+00:12:51,140 --> 00:12:53,540
+dropped promises from node is there's a
+
+323
+00:12:53,540 --> 00:12:55,880
+distinction you have you have things
+
+324
+00:12:55,880 --> 00:12:57,200
+that are basically asynchronous
+
+325
+00:12:57,200 --> 00:12:59,120
+functions they're going to either return
+
+326
+00:12:59,120 --> 00:13:02,570
+one value or they're going to throw an
+
+327
+00:13:02,570 --> 00:13:04,580
+error and in synchronous code that's
+
+328
+00:13:04,580 --> 00:13:07,940
+easy an async code you just give it a
+
+329
+00:13:07,940 --> 00:13:08,960
+call back and that callback you
+
+330
+00:13:08,960 --> 00:13:10,610
+eventually gets cold with an error or
+
+331
+00:13:10,610 --> 00:13:13,040
+value what about things that just happen
+
+332
+00:13:13,040 --> 00:13:14,190
+on several
+
+333
+00:13:14,190 --> 00:13:16,800
+x or never happen at all like unclick
+
+334
+00:13:16,800 --> 00:13:19,200
+events in the browser or on request
+
+335
+00:13:19,200 --> 00:13:21,480
+events an HTTP server you don't want to
+
+336
+00:13:21,480 --> 00:13:23,190
+really use plain callbacks for those
+
+337
+00:13:23,190 --> 00:13:25,500
+because it happened several times I mean
+
+338
+00:13:25,500 --> 00:13:27,150
+lower level it is JavaScript callback is
+
+339
+00:13:27,150 --> 00:13:29,250
+a function but it's a slightly higher
+
+340
+00:13:29,250 --> 00:13:32,850
+abstraction using events so going back
+
+341
+00:13:32,850 --> 00:13:34,170
+to the rube example ahead of front
+
+342
+00:13:34,170 --> 00:13:35,610
+suppose you really did want to read the
+
+343
+00:13:35,610 --> 00:13:37,710
+file line by line that's a useful thing
+
+344
+00:13:37,710 --> 00:13:42,300
+to do so I had this mythical line reader
+
+345
+00:13:42,300 --> 00:13:43,980
+thing this is doesn't exist a node and
+
+346
+00:13:43,980 --> 00:13:47,160
+it gives you this object that has three
+
+347
+00:13:47,160 --> 00:13:50,130
+events it has a line event that is
+
+348
+00:13:50,130 --> 00:13:51,600
+emitted every time a line is read from
+
+349
+00:13:51,600 --> 00:13:53,880
+the file has an end event that is
+
+350
+00:13:53,880 --> 00:13:55,800
+emitted when the files done and if
+
+351
+00:13:55,800 --> 00:13:56,820
+there's any errors there's an error
+
+352
+00:13:56,820 --> 00:13:58,410
+event this is one way to do it there's
+
+353
+00:13:58,410 --> 00:14:00,600
+lots of other abstractions but the point
+
+354
+00:14:00,600 --> 00:14:02,910
+is different things are happening and so
+
+355
+00:14:02,910 --> 00:14:08,050
+you just have various event callbacks
+
+356
+00:14:08,060 --> 00:14:10,860
+easy as pie libraries to see I need to
+
+357
+00:14:10,860 --> 00:14:15,420
+use these cool symbols so a lot of this
+
+358
+00:14:15,420 --> 00:14:17,430
+code as you saw it was kind of long and
+
+359
+00:14:17,430 --> 00:14:19,290
+hard to write and i've been writing eps
+
+360
+00:14:19,290 --> 00:14:20,760
+with node for a while and i don't like
+
+361
+00:14:20,760 --> 00:14:23,610
+writing this over all the time so i made
+
+362
+00:14:23,610 --> 00:14:25,380
+a i made several libraries my favorite
+
+363
+00:14:25,380 --> 00:14:28,380
+one is step and it's based on regular
+
+364
+00:14:28,380 --> 00:14:30,540
+callbacks and it's it's really simple
+
+365
+00:14:30,540 --> 00:14:34,830
+and it just you can do things in cereal
+
+366
+00:14:34,830 --> 00:14:36,240
+without nesting your code you can do
+
+367
+00:14:36,240 --> 00:14:37,470
+things in parallel and group and with
+
+368
+00:14:37,470 --> 00:14:39,090
+that writing your own counters it does
+
+369
+00:14:39,090 --> 00:14:40,890
+the counters for you it wraps everything
+
+370
+00:14:40,890 --> 00:14:42,990
+in try-catch does the routing it's just
+
+371
+00:14:42,990 --> 00:14:46,530
+a neat thing Chris recently released the
+
+372
+00:14:46,530 --> 00:14:49,050
+library promised i/o which it wraps the
+
+373
+00:14:49,050 --> 00:14:51,510
+node AP is in in some promise
+
+374
+00:14:51,510 --> 00:14:53,390
+abstraction which is a different way to
+
+375
+00:14:53,390 --> 00:14:55,680
+instead of doing callbacks their
+
+376
+00:14:55,680 --> 00:14:58,020
+promises so there's lots of ways to do
+
+377
+00:14:58,020 --> 00:15:00,300
+this there's other libraries too I know
+
+378
+00:15:00,300 --> 00:15:01,560
+step so that's what I'm going to talk
+
+379
+00:15:01,560 --> 00:15:05,190
+about so let's take a simple example I
+
+380
+00:15:05,190 --> 00:15:08,040
+want to load a user now I get that user
+
+381
+00:15:08,040 --> 00:15:10,770
+from the database I then we'll find some
+
+382
+00:15:10,770 --> 00:15:13,380
+items about that user so i need to do
+
+383
+00:15:13,380 --> 00:15:14,820
+some queries against the database and
+
+384
+00:15:14,820 --> 00:15:17,160
+then when that's done that bottom ones
+
+385
+00:15:17,160 --> 00:15:21,720
+labeled wrong do something else so you
+
+386
+00:15:21,720 --> 00:15:24,180
+notice here this there's two events from
+
+387
+00:15:24,180 --> 00:15:26,610
+the event loop the return from the
+
+388
+00:15:26,610 --> 00:15:27,750
+database and the other
+
+389
+00:15:27,750 --> 00:15:30,450
+on the database so to do this in step
+
+390
+00:15:30,450 --> 00:15:33,900
+you have three steps load user calls DB
+
+391
+00:15:33,900 --> 00:15:36,780
+get user and then in step this is a call
+
+392
+00:15:36,780 --> 00:15:38,250
+back to the next step so you don't have
+
+393
+00:15:38,250 --> 00:15:40,440
+to nest your code that way it stays on
+
+394
+00:15:40,440 --> 00:15:41,820
+saner when you have long chains of
+
+395
+00:15:41,820 --> 00:15:44,610
+things to do in cereal so then find
+
+396
+00:15:44,610 --> 00:15:46,050
+items i'm just going to do some random
+
+397
+00:15:46,050 --> 00:15:47,400
+query against the database and then
+
+398
+00:15:47,400 --> 00:15:50,850
+again this that'll pass the area to the
+
+399
+00:15:50,850 --> 00:15:54,180
+next one notice that i am checking the
+
+400
+00:15:54,180 --> 00:15:55,470
+air here and thrown it if there's a
+
+401
+00:15:55,470 --> 00:15:57,480
+problem normally you want to pass it to
+
+402
+00:15:57,480 --> 00:15:59,730
+some call back throwing and note is
+
+403
+00:15:59,730 --> 00:16:01,020
+generally a bad idea unless you know
+
+404
+00:16:01,020 --> 00:16:04,200
+something's going to catch it so just
+
+405
+00:16:04,200 --> 00:16:05,880
+you know a couple things in order pretty
+
+406
+00:16:05,880 --> 00:16:08,430
+simple right how about a couple things
+
+407
+00:16:08,430 --> 00:16:10,140
+in parallel you do that all the time too
+
+408
+00:16:10,140 --> 00:16:12,390
+suppose I'm rendering a page i need to
+
+409
+00:16:12,390 --> 00:16:13,830
+load my template from the file system
+
+410
+00:16:13,830 --> 00:16:15,450
+but what am I data from the database and
+
+411
+00:16:15,450 --> 00:16:17,040
+then merge the two and render HTML page
+
+412
+00:16:17,040 --> 00:16:20,190
+super common but I need to know I have
+
+413
+00:16:20,190 --> 00:16:22,290
+to have the data and the template to be
+
+414
+00:16:22,290 --> 00:16:23,310
+able to render it I can't do anything
+
+415
+00:16:23,310 --> 00:16:27,510
+till they're both done so the this
+
+416
+00:16:27,510 --> 00:16:30,510
+object actually has a function called
+
+417
+00:16:30,510 --> 00:16:32,550
+parallel which generates callbacks so
+
+418
+00:16:32,550 --> 00:16:33,750
+every time you need a callback for that
+
+419
+00:16:33,750 --> 00:16:35,550
+you just call this parallel so I can do
+
+420
+00:16:35,550 --> 00:16:36,930
+five things in parallel two things in
+
+421
+00:16:36,930 --> 00:16:39,300
+parallel it'll do them all it'll keep
+
+422
+00:16:39,300 --> 00:16:40,770
+checking the counters it'll even order
+
+423
+00:16:40,770 --> 00:16:42,600
+the results for you so no matter what
+
+424
+00:16:42,600 --> 00:16:45,000
+order these come back when it calls the
+
+425
+00:16:45,000 --> 00:16:46,650
+next thing I got my results i got my
+
+426
+00:16:46,650 --> 00:16:48,150
+file contents and if there was an error
+
+427
+00:16:48,150 --> 00:16:52,830
+in either one i have that error and what
+
+428
+00:16:52,830 --> 00:16:54,240
+if you want to do several things like we
+
+429
+00:16:54,240 --> 00:16:55,560
+did before rita directory with several
+
+430
+00:16:55,560 --> 00:17:01,110
+files so in that case we're going to
+
+431
+00:17:01,110 --> 00:17:03,210
+read the directory pass the file names
+
+432
+00:17:03,210 --> 00:17:06,000
+to the next step and this one I don't
+
+433
+00:17:06,000 --> 00:17:06,930
+know I should probably change the you've
+
+434
+00:17:06,930 --> 00:17:09,780
+had this really confuses people so this
+
+435
+00:17:09,780 --> 00:17:12,380
+step group creates a callback generator
+
+436
+00:17:12,380 --> 00:17:14,640
+so you got to call that once and that
+
+437
+00:17:14,640 --> 00:17:16,050
+will reserve a slot in the next step and
+
+438
+00:17:16,050 --> 00:17:19,530
+then for each of your things an FS read
+
+439
+00:17:19,530 --> 00:17:21,839
+file call group again this is now the
+
+440
+00:17:21,839 --> 00:17:23,550
+callback generator and that gives each
+
+441
+00:17:23,550 --> 00:17:25,189
+one of those read files a unique
+
+442
+00:17:25,189 --> 00:17:28,500
+callback and the contents the next step
+
+443
+00:17:28,500 --> 00:17:30,300
+will be an array of all the results and
+
+444
+00:17:30,300 --> 00:17:32,130
+those are actually ordered in the order
+
+445
+00:17:32,130 --> 00:17:33,690
+you called FS read file not the order
+
+446
+00:17:33,690 --> 00:17:34,680
+that came back from the file system
+
+447
+00:17:34,680 --> 00:17:38,170
+because those aren't the same thing
+
+448
+00:17:38,180 --> 00:17:41,220
+so so you do that we've contents now you
+
+449
+00:17:41,220 --> 00:17:42,480
+got the contents of all the files this
+
+450
+00:17:42,480 --> 00:17:46,320
+is slightly less code then doing it in
+
+451
+00:17:46,320 --> 00:17:48,210
+plain node plain JavaScript but when you
+
+452
+00:17:48,210 --> 00:17:50,280
+start getting larger programs this gets
+
+453
+00:17:50,280 --> 00:17:52,470
+a lot saner and this has all day or
+
+454
+00:17:52,470 --> 00:18:01,170
+handily built in for you so well that
+
+455
+00:18:01,170 --> 00:18:05,610
+was fast all right questions that I know
+
+456
+00:18:05,610 --> 00:18:06,630
+a lot of people have questions about
+
+457
+00:18:06,630 --> 00:18:39,090
+this Lamela enlist in IRC
+
+458
+00:18:39,100 --> 00:18:42,910
+yeah I mean note is single threaded
+
+459
+00:18:42,910 --> 00:18:45,170
+execution only one thing happens at a
+
+460
+00:18:45,170 --> 00:18:47,720
+time ever and so if I have a line that
+
+461
+00:18:47,720 --> 00:18:49,370
+says count minus minus and the next line
+
+462
+00:18:49,370 --> 00:18:50,930
+if at zero nothing's going to happen
+
+463
+00:18:50,930 --> 00:18:52,850
+between those that's blocking
+
+464
+00:18:52,850 --> 00:18:55,460
+synchronous code and so while we have
+
+465
+00:18:55,460 --> 00:18:57,800
+some asynchronous things going on you at
+
+466
+00:18:57,800 --> 00:18:59,810
+least know that random stuff that could
+
+467
+00:18:59,810 --> 00:19:01,190
+happen between your lines like with
+
+468
+00:19:01,190 --> 00:19:03,410
+threading with threading it's insane
+
+469
+00:19:03,410 --> 00:19:04,970
+anything can happen anywhere unless it's
+
+470
+00:19:04,970 --> 00:19:07,520
+an atomic CPU operation which is why we
+
+471
+00:19:07,520 --> 00:19:09,680
+have OS level locks and all these crazy
+
+472
+00:19:09,680 --> 00:19:12,110
+things but with a single threaded event
+
+473
+00:19:12,110 --> 00:19:14,360
+system you don't have those issues the
+
+474
+00:19:14,360 --> 00:19:15,440
+only time that things can happen
+
+475
+00:19:15,440 --> 00:19:20,030
+arbitrarily is between your weights you
+
+476
+00:19:20,030 --> 00:19:21,410
+don't know which events are going to
+
+477
+00:19:21,410 --> 00:19:23,540
+come back in what order you just know
+
+478
+00:19:23,540 --> 00:19:25,010
+that once you're in code you're in
+
+479
+00:19:25,010 --> 00:19:28,010
+control until you stop so like I said at
+
+480
+00:19:28,010 --> 00:19:29,210
+the beginning the difference between
+
+481
+00:19:29,210 --> 00:19:31,880
+this and threading is with threading the
+
+482
+00:19:31,880 --> 00:19:33,650
+OS handles the concurrency for you it
+
+483
+00:19:33,650 --> 00:19:36,290
+says you code stop you code run no no no
+
+484
+00:19:36,290 --> 00:19:38,120
+you run again it just interrupts them
+
+485
+00:19:38,120 --> 00:19:40,970
+constantly with node we're saying run
+
+486
+00:19:40,970 --> 00:19:43,850
+this code and then I'm done which can
+
+487
+00:19:43,850 --> 00:19:47,630
+actually bite you sometimes because if
+
+488
+00:19:47,630 --> 00:19:49,430
+you're doing CPU intensive things like
+
+489
+00:19:49,430 --> 00:19:51,700
+calculating the first million pi digits
+
+490
+00:19:51,700 --> 00:19:54,890
+that's not a good thing first Olivia
+
+491
+00:19:54,890 --> 00:19:55,760
+it's not very good at that particular
+
+492
+00:19:55,760 --> 00:19:59,810
+use case and secondly your entire server
+
+493
+00:19:59,810 --> 00:20:01,760
+with your hundred thousand clients is
+
+494
+00:20:01,760 --> 00:20:04,250
+now blocked nothing happens nothing
+
+495
+00:20:04,250 --> 00:20:05,750
+happens at all because it's calculating
+
+496
+00:20:05,750 --> 00:20:07,250
+these pi digits for this one user who
+
+497
+00:20:07,250 --> 00:20:08,510
+typed a really big number in their form
+
+498
+00:20:08,510 --> 00:20:10,880
+and so that's where things like web
+
+499
+00:20:10,880 --> 00:20:12,680
+workers come in where you can actually
+
+500
+00:20:12,680 --> 00:20:14,630
+defer this to another process that does
+
+501
+00:20:14,630 --> 00:20:16,760
+the CPU intensive stuff hopefully on
+
+502
+00:20:16,760 --> 00:20:17,990
+another machine maybe if it's really
+
+503
+00:20:17,990 --> 00:20:19,910
+heavy so you're not fighting for the
+
+504
+00:20:19,910 --> 00:20:21,470
+threads and then that will give you
+
+505
+00:20:21,470 --> 00:20:24,530
+something back over IPC or TCP about
+
+506
+00:20:24,530 --> 00:20:27,200
+it's done but if things are short and
+
+507
+00:20:27,200 --> 00:20:28,880
+that receive you intensive than just do
+
+508
+00:20:28,880 --> 00:20:30,380
+them in line as long as you're done
+
+509
+00:20:30,380 --> 00:20:32,530
+quickly it won't hurt the event loop
+
+510
+00:20:32,530 --> 00:20:51,210
+anymore questions
+
+511
+00:20:51,220 --> 00:20:54,640
+I
+
+512
+00:20:54,650 --> 00:20:57,920
+I have i I've heard different things
+
+513
+00:20:57,920 --> 00:20:59,570
+I've heard it being I've heard what we
+
+514
+00:20:59,570 --> 00:21:01,130
+do with node called continuation passing
+
+515
+00:21:01,130 --> 00:21:02,660
+style and I've heard other things what
+
+516
+00:21:02,660 --> 00:21:17,330
+what do you mean by that
+
+517
+00:21:17,340 --> 00:21:20,440
+the best solution
+
+518
+00:21:20,440 --> 00:21:25,179
+so is this is this like her routines or
+
+519
+00:21:25,179 --> 00:21:30,289
+sort of okay so i dunno co routines and
+
+520
+00:21:30,289 --> 00:21:33,619
+we we had those in node early on with
+
+521
+00:21:33,619 --> 00:21:37,579
+the promise wait API and while it works
+
+522
+00:21:37,579 --> 00:21:39,259
+and doesn't hurt the event lip too bad
+
+523
+00:21:39,259 --> 00:21:41,599
+it introduces thread like semantics
+
+524
+00:21:41,599 --> 00:21:44,359
+because now you have functions that do
+
+525
+00:21:44,359 --> 00:21:47,569
+non-blocking i/o but externally look
+
+526
+00:21:47,569 --> 00:21:50,599
+like they're blocking and so once those
+
+527
+00:21:50,599 --> 00:21:52,309
+get reps behind other functions and
+
+528
+00:21:52,309 --> 00:21:53,929
+other AP is and you just use libraries
+
+529
+00:21:53,929 --> 00:21:55,969
+unless you read all the code you don't
+
+530
+00:21:55,969 --> 00:21:58,219
+know if this function call is actually
+
+531
+00:21:58,219 --> 00:22:00,109
+going to stop and let the event lib do
+
+532
+00:22:00,109 --> 00:22:02,119
+other stuff and so then it's kind of
+
+533
+00:22:02,119 --> 00:22:03,409
+like threading in between these calls
+
+534
+00:22:03,409 --> 00:22:05,629
+random stuff may happen and it's not
+
+535
+00:22:05,629 --> 00:22:08,899
+quite as bad as truth reading but yeah i
+
+536
+00:22:08,899 --> 00:22:10,849
+mean we tried the co routines we decided
+
+537
+00:22:10,849 --> 00:22:12,589
+we didn't like them for node other other
+
+538
+00:22:12,589 --> 00:22:14,929
+frameworks use them if that's what
+
+539
+00:22:14,929 --> 00:22:17,809
+you're talking about but yeah it's it's
+
+540
+00:22:17,809 --> 00:22:19,999
+one alternative we're trying we're
+
+541
+00:22:19,999 --> 00:22:22,039
+trying to a nodal really trying to
+
+542
+00:22:22,039 --> 00:22:23,929
+follow the same style in the browser and
+
+543
+00:22:23,929 --> 00:22:26,329
+in the browser it's just plain callbacks
+
+544
+00:22:26,329 --> 00:22:28,489
+plain event single threaded single stack
+
+545
+00:22:28,489 --> 00:22:31,159
+and with co routines you have multiple
+
+546
+00:22:31,159 --> 00:22:33,559
+stacks and they that kind of interleave
+
+547
+00:22:33,559 --> 00:22:35,869
+dependent on when they when they waited
+
+548
+00:22:35,869 --> 00:22:48,950
+on the next event the question
+
+549
+00:22:48,960 --> 00:22:51,580
+it depends on how the DB library is
+
+550
+00:22:51,580 --> 00:22:53,230
+written hopefully it doesn't look any
+
+551
+00:22:53,230 --> 00:22:56,950
+library is a block you shouldn't use if
+
+552
+00:22:56,950 --> 00:22:58,720
+it's my postgres library it actually
+
+553
+00:22:58,720 --> 00:23:00,850
+implements that the postgres protocol
+
+554
+00:23:00,850 --> 00:23:03,100
+over tcp and so it's non blocking
+
+555
+00:23:03,100 --> 00:23:04,929
+because all of nodes networking stack as
+
+556
+00:23:04,929 --> 00:23:06,850
+non blocking but if you're saying just
+
+557
+00:23:06,850 --> 00:23:08,919
+buying into the ROM icicle library it's
+
+558
+00:23:08,919 --> 00:23:10,149
+going to be blocking is going to hurt
+
+559
+00:23:10,149 --> 00:23:11,860
+your event loop so you got to make sure
+
+560
+00:23:11,860 --> 00:23:12,909
+you don't use libraries that are
+
+561
+00:23:12,909 --> 00:23:15,249
+blocking which is another reason why
+
+562
+00:23:15,249 --> 00:23:17,279
+javascript was a good choice for note
+
+563
+00:23:17,279 --> 00:23:20,110
+people who come from Python or Ruby are
+
+564
+00:23:20,110 --> 00:23:22,179
+used to these blocking libraries almost
+
+565
+00:23:22,179 --> 00:23:23,619
+your database drivers are blocking and
+
+566
+00:23:23,619 --> 00:23:25,779
+so when people use twisted or event
+
+567
+00:23:25,779 --> 00:23:27,940
+machine or the non-blocking systems they
+
+568
+00:23:27,940 --> 00:23:29,289
+got to be careful which libraries they
+
+569
+00:23:29,289 --> 00:23:32,470
+pull in and JavaScript the spec there is
+
+570
+00:23:32,470 --> 00:23:35,860
+no I oh and in the browser the only i/o
+
+571
+00:23:35,860 --> 00:23:38,379
+is non blocking I mean there is sync xhr
+
+572
+00:23:38,379 --> 00:23:40,480
+but we're told not to use it so pretty
+
+573
+00:23:40,480 --> 00:23:42,070
+much it's non blocking and so the
+
+574
+00:23:42,070 --> 00:23:43,539
+JavaScript people are used to this idea
+
+575
+00:23:43,539 --> 00:23:45,490
+of all your libraries being non blocking
+
+576
+00:23:45,490 --> 00:23:47,740
+and we have a fresh clean start but yeah
+
+577
+00:23:47,740 --> 00:23:49,090
+you don't want to use a library that is
+
+578
+00:23:49,090 --> 00:24:09,680
+blocking that's that's very bad
+
+579
+00:24:09,690 --> 00:24:15,370
+yeah so it's a tough decision require
+
+580
+00:24:15,370 --> 00:24:17,730
+require especially as a special case
+
+581
+00:24:17,730 --> 00:24:20,950
+early on I was pushing for fully async
+
+582
+00:24:20,950 --> 00:24:22,030
+require it makes your code more
+
+583
+00:24:22,030 --> 00:24:23,890
+complicated makes it harder to read and
+
+584
+00:24:23,890 --> 00:24:25,660
+the same time it's you know it's
+
+585
+00:24:25,660 --> 00:24:27,160
+parallel what's non-blocking you can
+
+586
+00:24:27,160 --> 00:24:28,570
+write the same code in the browser and
+
+587
+00:24:28,570 --> 00:24:29,890
+because you can't really do block and
+
+588
+00:24:29,890 --> 00:24:33,270
+requires on a browser but then again
+
+589
+00:24:33,270 --> 00:24:36,130
+require is cached even if you require in
+
+590
+00:24:36,130 --> 00:24:37,660
+a hot loop in your server you're
+
+591
+00:24:37,660 --> 00:24:39,430
+probably requiring the 10 file same 10
+
+592
+00:24:39,430 --> 00:24:41,560
+files over and over so your first web
+
+593
+00:24:41,560 --> 00:24:43,150
+request will be an extra 30 milliseconds
+
+594
+00:24:43,150 --> 00:24:45,400
+long after that they're hitting the
+
+595
+00:24:45,400 --> 00:24:47,050
+in-memory cache and so it doesn't hurt
+
+596
+00:24:47,050 --> 00:24:49,990
+your performance yeah it's a special
+
+597
+00:24:49,990 --> 00:24:51,610
+case and we're still thinking about
+
+598
+00:24:51,610 --> 00:24:53,680
+what's a good API for a good require I
+
+599
+00:24:53,680 --> 00:24:54,880
+know the common jest guys are thinking
+
+600
+00:24:54,880 --> 00:25:26,880
+about it so yeah
+
+601
+00:25:26,890 --> 00:25:29,920
+yeah now you can implement your own it's
+
+602
+00:25:29,920 --> 00:25:31,930
+not hard no it provides a script API
+
+603
+00:25:31,930 --> 00:25:35,470
+where you can get access to v8's I don't
+
+604
+00:25:35,470 --> 00:25:44,920
+know what it's called but but yeah yeah
+
+605
+00:25:44,920 --> 00:25:47,770
+okay so yeah just just talk on the
+
+606
+00:25:47,770 --> 00:25:49,360
+mailing list give some suggestions we're
+
+607
+00:25:49,360 --> 00:25:51,790
+open ideas note note is still a work in
+
+608
+00:25:51,790 --> 00:25:53,140
+progress but it's stable enough now to
+
+609
+00:25:53,140 --> 00:25:55,390
+start being used for applications thank
+

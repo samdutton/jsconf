@@ -1,0 +1,2469 @@
+1
+00:00:19,490 --> 00:00:21,869
+
+solve most of our problems but it ends
+
+2
+00:00:21,869 --> 00:00:23,910
+up being a relatively poor abstraction
+
+3
+00:00:23,910 --> 00:00:26,369
+you know it's distracting away the
+
+4
+00:00:26,369 --> 00:00:28,080
+mechanics of making the HTTP request
+
+5
+00:00:28,080 --> 00:00:29,849
+rather than embracing the bits about
+
+6
+00:00:29,849 --> 00:00:33,230
+HTTP that actually make it useful and
+
+7
+00:00:33,230 --> 00:00:35,550
+you know even then I didn't actually
+
+8
+00:00:35,550 --> 00:00:37,500
+show it but you know that abstraction
+
+9
+00:00:37,500 --> 00:00:40,230
+was also leaking details still so it was
+
+10
+00:00:40,230 --> 00:00:42,030
+a leaky abstraction because we still got
+
+11
+00:00:42,030 --> 00:00:44,100
+the response back which would be just
+
+12
+00:00:44,100 --> 00:00:46,140
+the normal jquery ajax response with all
+
+13
+00:00:46,140 --> 00:00:50,040
+the HTTP response details in it so you
+
+14
+00:00:50,040 --> 00:00:51,839
+know this isn't a problem that specific
+
+15
+00:00:51,839 --> 00:00:53,400
+to jquery by any means and i don't mean
+
+16
+00:00:53,400 --> 00:00:54,930
+to pick on jquery it's just you know
+
+17
+00:00:54,930 --> 00:00:56,489
+it's one of the most popular library so
+
+18
+00:00:56,489 --> 00:00:58,440
+it's the easiest to demonstrate every
+
+19
+00:00:58,440 --> 00:01:01,290
+library that has some like Ajax
+
+20
+00:01:01,290 --> 00:01:02,909
+functionality tends to have this
+
+21
+00:01:02,909 --> 00:01:06,390
+fundamental issue so really kind of what
+
+22
+00:01:06,390 --> 00:01:08,580
+the present here is to really kind of
+
+23
+00:01:08,580 --> 00:01:09,869
+think about what the abstractions that
+
+24
+00:01:09,869 --> 00:01:11,760
+we should be doing and we should be
+
+25
+00:01:11,760 --> 00:01:13,740
+working with the resources and HTTP is
+
+26
+00:01:13,740 --> 00:01:15,240
+fundamentally about getting and
+
+27
+00:01:15,240 --> 00:01:17,479
+manipulating resources on a server
+
+28
+00:01:17,479 --> 00:01:19,860
+rather than dealing with the low-level
+
+29
+00:01:19,860 --> 00:01:21,630
+mechanics of actually how do we make a
+
+30
+00:01:21,630 --> 00:01:24,990
+request so there's a little library that
+
+31
+00:01:24,990 --> 00:01:27,299
+I created call dress gasps it's a very
+
+32
+00:01:27,299 --> 00:01:30,119
+thin wrapper around that basically the
+
+33
+00:01:30,119 --> 00:01:32,640
+raw of request and response I mentioned
+
+34
+00:01:32,640 --> 00:01:34,619
+earlier works with the xhr as well as
+
+35
+00:01:34,619 --> 00:01:37,649
+nodes HTTP libraries also have support
+
+36
+00:01:37,649 --> 00:01:39,659
+for Jason P and even i use cross-domain
+
+37
+00:01:39,659 --> 00:01:43,530
+request runs in common Jas and AMD so
+
+38
+00:01:43,530 --> 00:01:44,969
+whatever environment you want to work
+
+39
+00:01:44,969 --> 00:01:49,579
+with you know we're using modules it's
+
+40
+00:01:49,579 --> 00:01:52,140
+so you know if you're not familiar with
+
+41
+00:01:52,140 --> 00:01:54,659
+modules everyone in node you know it's
+
+42
+00:01:54,659 --> 00:01:56,249
+just a straight-up require rest it's
+
+43
+00:01:56,249 --> 00:01:59,460
+dead simple being a browser typically we
+
+44
+00:01:59,460 --> 00:02:02,159
+require an AMD loader so if you're not
+
+45
+00:02:02,159 --> 00:02:03,179
+familiar with that you basically just
+
+46
+00:02:03,179 --> 00:02:05,789
+define your module and your specify your
+
+47
+00:02:05,789 --> 00:02:07,289
+requirements and they get injected and
+
+48
+00:02:07,289 --> 00:02:10,950
+at runtime so how do what is restaurants
+
+49
+00:02:10,950 --> 00:02:12,900
+actually look like at runtime well we
+
+50
+00:02:12,900 --> 00:02:14,700
+have this rest function and we can then
+
+51
+00:02:14,700 --> 00:02:16,740
+again get that URL and it returns a
+
+52
+00:02:16,740 --> 00:02:19,980
+promise for the response and you know if
+
+53
+00:02:19,980 --> 00:02:21,569
+you think about what I just chose
+
+54
+00:02:21,569 --> 00:02:23,220
+talking about with jquery I mean this is
+
+55
+00:02:23,220 --> 00:02:27,720
+exactly the same pattern so you know I
+
+56
+00:02:27,720 --> 00:02:30,180
+must obviously not be very good what I
+
+57
+00:02:30,180 --> 00:02:31,890
+do
+
+58
+00:02:31,890 --> 00:02:34,959
+so before I get really into deep about
+
+59
+00:02:34,959 --> 00:02:37,870
+what makes rest rest there's a concept
+
+60
+00:02:37,870 --> 00:02:40,540
+out there of the Richardson maturity
+
+61
+00:02:40,540 --> 00:02:43,450
+model and this is basically you know
+
+62
+00:02:43,450 --> 00:02:44,830
+anytime someone starts talking about a
+
+63
+00:02:44,830 --> 00:02:47,260
+maturity model you know pay attention
+
+64
+00:02:47,260 --> 00:02:49,380
+figure out what they're talking about
+
+65
+00:02:49,380 --> 00:02:51,550
+figure out how much of it really is
+
+66
+00:02:51,550 --> 00:02:53,380
+important to you and then just you know
+
+67
+00:02:53,380 --> 00:02:54,970
+figure off where you want to get off the
+
+68
+00:02:54,970 --> 00:02:58,360
+train but at the very low level you know
+
+69
+00:02:58,360 --> 00:03:00,849
+what they call level zero it's basically
+
+70
+00:03:00,849 --> 00:03:03,549
+just you know random request going off
+
+71
+00:03:03,549 --> 00:03:05,049
+all over the place that have really no
+
+72
+00:03:05,049 --> 00:03:07,239
+semantic meaning but you know somehow
+
+73
+00:03:07,239 --> 00:03:09,430
+the client and server figure out what to
+
+74
+00:03:09,430 --> 00:03:11,980
+do the level one is where you actually
+
+75
+00:03:11,980 --> 00:03:14,769
+start using resources so instead of the
+
+76
+00:03:14,769 --> 00:03:17,910
+you know you can actually start to
+
+77
+00:03:17,910 --> 00:03:19,870
+access things of the more resource
+
+78
+00:03:19,870 --> 00:03:21,549
+oriented fashion rather than trying to
+
+79
+00:03:21,549 --> 00:03:25,510
+do RPC over HTTP or some other you know
+
+80
+00:03:25,510 --> 00:03:28,840
+hack level two is actually using HTTP
+
+81
+00:03:28,840 --> 00:03:30,910
+verbs so you know using gets to load
+
+82
+00:03:30,910 --> 00:03:33,640
+resources put to create resources put to
+
+83
+00:03:33,640 --> 00:03:35,440
+modify resources or create more
+
+84
+00:03:35,440 --> 00:03:37,900
+resources and then you know finally
+
+85
+00:03:37,900 --> 00:03:40,209
+level three is you know using hypermedia
+
+86
+00:03:40,209 --> 00:03:43,209
+api's so if you think about the web you
+
+87
+00:03:43,209 --> 00:03:45,700
+have a page of links and when you
+
+88
+00:03:45,700 --> 00:03:47,200
+navigate to that page you get the links
+
+89
+00:03:47,200 --> 00:03:48,489
+and you get the context of it and then
+
+90
+00:03:48,489 --> 00:03:50,170
+you figure out okay I want to follow
+
+91
+00:03:50,170 --> 00:03:51,819
+that link and then you get another page
+
+92
+00:03:51,819 --> 00:03:53,109
+it has to get more length and you keep
+
+93
+00:03:53,109 --> 00:03:55,480
+following that so the idea of hypermedia
+
+94
+00:03:55,480 --> 00:03:57,760
+resources is that for your actual for
+
+95
+00:03:57,760 --> 00:04:00,609
+your data API s you again have resources
+
+96
+00:04:00,609 --> 00:04:02,319
+with collection of links and you
+
+97
+00:04:02,319 --> 00:04:04,450
+navigate those links that reverse the
+
+98
+00:04:04,450 --> 00:04:06,670
+object graph rather than having to
+
+99
+00:04:06,670 --> 00:04:08,560
+figure out what the URL structure is in
+
+100
+00:04:08,560 --> 00:04:10,450
+advance that that server has support and
+
+101
+00:04:10,450 --> 00:04:12,280
+then going through and parsing that out
+
+102
+00:04:12,280 --> 00:04:15,630
+yourself
+
+103
+00:04:15,640 --> 00:04:19,030
+so back to what r SJ s is so it
+
+104
+00:04:19,030 --> 00:04:20,709
+mentioned earlier it's an abstraction to
+
+105
+00:04:20,709 --> 00:04:23,470
+work with resources rather than just an
+
+106
+00:04:23,470 --> 00:04:26,140
+abstraction to make requests so of
+
+107
+00:04:26,140 --> 00:04:28,000
+course we give you full access to the
+
+108
+00:04:28,000 --> 00:04:30,550
+request and response objects you know
+
+109
+00:04:30,550 --> 00:04:32,950
+all the properties that you can put on
+
+110
+00:04:32,950 --> 00:04:34,990
+to a request or a response you have
+
+111
+00:04:34,990 --> 00:04:38,860
+access to but really the advantages that
+
+112
+00:04:38,860 --> 00:04:41,140
+we have this notion of an interceptor
+
+113
+00:04:41,140 --> 00:04:43,270
+that allows you to really apply advanced
+
+114
+00:04:43,270 --> 00:04:45,580
+behavior to that core request response
+
+115
+00:04:45,580 --> 00:04:48,070
+facility so that we're not baking in a
+
+116
+00:04:48,070 --> 00:04:49,540
+bunch of knowledge into the actual
+
+117
+00:04:49,540 --> 00:04:51,640
+lowest level client but we're applying
+
+118
+00:04:51,640 --> 00:04:54,430
+it on after the fact really what that
+
+119
+00:04:54,430 --> 00:04:55,930
+allows you to do is configure your
+
+120
+00:04:55,930 --> 00:04:58,090
+clients once and then share them with
+
+121
+00:04:58,090 --> 00:05:02,110
+your application so digging into what
+
+122
+00:05:02,110 --> 00:05:04,720
+actually an interceptor is it kind of
+
+123
+00:05:04,720 --> 00:05:06,580
+just talked about that so let's actually
+
+124
+00:05:06,580 --> 00:05:08,860
+show one so in this case we basically
+
+125
+00:05:08,860 --> 00:05:11,620
+start with the rest client and then
+
+126
+00:05:11,620 --> 00:05:13,419
+we're going to chain off of that the
+
+127
+00:05:13,419 --> 00:05:15,760
+basic auth interceptor and to that
+
+128
+00:05:15,760 --> 00:05:17,200
+interceptor we give it a little bit of
+
+129
+00:05:17,200 --> 00:05:18,610
+configuration so we can give it a
+
+130
+00:05:18,610 --> 00:05:21,220
+username and the password then basically
+
+131
+00:05:21,220 --> 00:05:23,860
+we get back a resulting client and that
+
+132
+00:05:23,860 --> 00:05:25,510
+client again is just another function
+
+133
+00:05:25,510 --> 00:05:27,820
+where you can pass the same request
+
+134
+00:05:27,820 --> 00:05:30,190
+structure to and basically what happens
+
+135
+00:05:30,190 --> 00:05:32,110
+under the hood is that before making
+
+136
+00:05:32,110 --> 00:05:35,020
+that request it'll actually apply that
+
+137
+00:05:35,020 --> 00:05:36,640
+using password and actually authenticate
+
+138
+00:05:36,640 --> 00:05:39,610
+it for you so that the response is the
+
+139
+00:05:39,610 --> 00:05:41,620
+authenticated resource instead of just
+
+140
+00:05:41,620 --> 00:05:45,970
+anonymous resource so what can
+
+141
+00:05:45,970 --> 00:05:47,620
+interceptors do you know really just
+
+142
+00:05:47,620 --> 00:05:49,180
+about anything so they fundamentally
+
+143
+00:05:49,180 --> 00:05:51,430
+hook and intercept into the requester
+
+144
+00:05:51,430 --> 00:05:53,800
+relax respond to life cycle so that they
+
+145
+00:05:53,800 --> 00:05:55,660
+can either augment a request response or
+
+146
+00:05:55,660 --> 00:05:58,780
+replace it entirely they can follow the
+
+147
+00:05:58,780 --> 00:06:00,550
+natural chain of interceptors or they
+
+148
+00:06:00,550 --> 00:06:01,900
+can replace it and send them somewhere
+
+149
+00:06:01,900 --> 00:06:04,919
+off its somewhere completely different
+
+150
+00:06:04,919 --> 00:06:07,300
+they can also detect and recover from
+
+151
+00:06:07,300 --> 00:06:09,250
+air sea and promises has the notion of a
+
+152
+00:06:09,250 --> 00:06:11,289
+successful resolution versus an air
+
+153
+00:06:11,289 --> 00:06:14,500
+state so it can push that promise into
+
+154
+00:06:14,500 --> 00:06:16,419
+one or the other states and of course it
+
+155
+00:06:16,419 --> 00:06:18,520
+can also abort the request if you don't
+
+156
+00:06:18,520 --> 00:06:21,880
+want to wait for it anymore so the only
+
+157
+00:06:21,880 --> 00:06:23,800
+thing interceptors really can't do is
+
+158
+00:06:23,800 --> 00:06:25,990
+alter another configured client because
+
+159
+00:06:25,990 --> 00:06:27,910
+a client is just a function functions
+
+160
+00:06:27,910 --> 00:06:29,950
+closure you can't manipulate it once
+
+161
+00:06:29,950 --> 00:06:32,020
+it's created so that's actually also
+
+162
+00:06:32,020 --> 00:06:34,270
+what makes it safe to take a client
+
+163
+00:06:34,270 --> 00:06:36,400
+that's bumped configured and share it
+
+164
+00:06:36,400 --> 00:06:42,400
+with that within your application so out
+
+165
+00:06:42,400 --> 00:06:43,630
+of the box we have several different
+
+166
+00:06:43,630 --> 00:06:45,460
+interceptors some of them are just low
+
+167
+00:06:45,460 --> 00:06:47,650
+level basic things like being able to
+
+168
+00:06:47,650 --> 00:06:48,970
+default different portions of the
+
+169
+00:06:48,970 --> 00:06:51,340
+request like if you always want to add
+
+170
+00:06:51,340 --> 00:06:53,020
+certain headers to your request you know
+
+171
+00:06:53,020 --> 00:06:54,970
+you can do that or if you only really
+
+172
+00:06:54,970 --> 00:06:57,160
+care about the response entity instead
+
+173
+00:06:57,160 --> 00:06:58,660
+of the response headers and other meta
+
+174
+00:06:58,660 --> 00:07:01,960
+information like the status code there's
+
+175
+00:07:01,960 --> 00:07:05,290
+restful interceptors so there's a mime
+
+176
+00:07:05,290 --> 00:07:06,640
+interceptor that handles content
+
+177
+00:07:06,640 --> 00:07:09,010
+negotiation so I mean that ends up being
+
+178
+00:07:09,010 --> 00:07:12,940
+also kind of a nice feature you know in
+
+179
+00:07:12,940 --> 00:07:14,530
+HTTP what you're supposed to do
+
+180
+00:07:14,530 --> 00:07:16,750
+typically is set the accepts header on
+
+181
+00:07:16,750 --> 00:07:18,760
+the request that says what I'm
+
+182
+00:07:18,760 --> 00:07:20,710
+interested in receiving in terms of a
+
+183
+00:07:20,710 --> 00:07:22,750
+content type then the server decides
+
+184
+00:07:22,750 --> 00:07:26,470
+okay you wanted application Jason I know
+
+185
+00:07:26,470 --> 00:07:28,480
+how to create a patient Jason so well as
+
+186
+00:07:28,480 --> 00:07:31,060
+what I'll give you but then the receiver
+
+187
+00:07:31,060 --> 00:07:33,520
+sets the response content type as
+
+188
+00:07:33,520 --> 00:07:36,010
+application Jason when it sends back the
+
+189
+00:07:36,010 --> 00:07:38,020
+response so this header there this
+
+190
+00:07:38,020 --> 00:07:40,600
+interceptor also parses the response
+
+191
+00:07:40,600 --> 00:07:43,930
+based off of a return concept type so
+
+192
+00:07:43,930 --> 00:07:46,600
+many other libraries will just say I'm
+
+193
+00:07:46,600 --> 00:07:47,800
+just going to assume that I'm going to
+
+194
+00:07:47,800 --> 00:07:51,010
+get back Jason and if it gives back
+
+195
+00:07:51,010 --> 00:07:52,810
+Jason it works if you get back something
+
+196
+00:07:52,810 --> 00:07:55,750
+else you know many servers if you have a
+
+197
+00:07:55,750 --> 00:07:58,090
+500 air will give you back HTML by
+
+198
+00:07:58,090 --> 00:07:59,980
+default it'll still try and parse that
+
+199
+00:07:59,980 --> 00:08:03,720
+as Jason and you get an even bigger air
+
+200
+00:08:03,720 --> 00:08:06,400
+also in terms of authentication sought a
+
+201
+00:08:06,400 --> 00:08:08,440
+basic off interceptor there's also an
+
+202
+00:08:08,440 --> 00:08:11,410
+Olaf interceptor in terms of errors we
+
+203
+00:08:11,410 --> 00:08:14,200
+have to basically the ability to trigger
+
+204
+00:08:14,200 --> 00:08:16,750
+air is based off the response code the
+
+205
+00:08:16,750 --> 00:08:19,930
+ability to retry failed requests as well
+
+206
+00:08:19,930 --> 00:08:23,410
+as to just timeout and stop then finally
+
+207
+00:08:23,410 --> 00:08:25,810
+some of the fall backs support for a
+
+208
+00:08:25,810 --> 00:08:29,580
+JSONP for Jason P based services
+
+209
+00:08:29,580 --> 00:08:31,830
+obviously that one's browser only and
+
+210
+00:08:31,830 --> 00:08:34,419
+within IE have support for cross the
+
+211
+00:08:34,419 --> 00:08:38,710
+main request as well as trying to you
+
+212
+00:08:38,710 --> 00:08:41,620
+use the activex a check xhr support for
+
+213
+00:08:41,620 --> 00:08:45,160
+older versions of ie so basically you
+
+214
+00:08:45,160 --> 00:08:46,510
+just add those interceptors and just
+
+215
+00:08:46,510 --> 00:08:49,930
+does it correct so interceptors also
+
+216
+00:08:49,930 --> 00:08:51,580
+really easy to create your own and
+
+217
+00:08:51,580 --> 00:08:54,280
+configure your own so fundamentally it's
+
+218
+00:08:54,280 --> 00:08:56,110
+just a function that you give it a few
+
+219
+00:08:56,110 --> 00:08:58,150
+other functions so just a few different
+
+220
+00:08:58,150 --> 00:09:01,690
+phases of the request so most of the
+
+221
+00:09:01,690 --> 00:09:03,250
+time you know you're going to deal with
+
+222
+00:09:03,250 --> 00:09:05,260
+either the requested a response phase of
+
+223
+00:09:05,260 --> 00:09:07,270
+the interceptor so that means is when a
+
+224
+00:09:07,270 --> 00:09:09,310
+request is going in that function will
+
+225
+00:09:09,310 --> 00:09:11,380
+be called and then you can choose to
+
+226
+00:09:11,380 --> 00:09:14,590
+return either just a modified request or
+
+227
+00:09:14,590 --> 00:09:16,420
+you can actually trace it with something
+
+228
+00:09:16,420 --> 00:09:18,580
+entirely else and any of these phases
+
+229
+00:09:18,580 --> 00:09:20,380
+you can always return a promise for a
+
+230
+00:09:20,380 --> 00:09:22,030
+future value if you need to go off and
+
+231
+00:09:22,030 --> 00:09:25,090
+do some other asynchronous work within
+
+232
+00:09:25,090 --> 00:09:26,830
+the request and response interceptors
+
+233
+00:09:26,830 --> 00:09:28,990
+you also or phases of the Interceptor
+
+234
+00:09:28,990 --> 00:09:30,610
+you also get access to a configuration
+
+235
+00:09:30,610 --> 00:09:32,200
+object so for that basic auth
+
+236
+00:09:32,200 --> 00:09:33,370
+interceptor we were passing in a
+
+237
+00:09:33,370 --> 00:09:35,650
+username and password configuration so
+
+238
+00:09:35,650 --> 00:09:37,750
+those become available in these
+
+239
+00:09:37,750 --> 00:09:39,640
+callbacks and you can parcel map used as
+
+240
+00:09:39,640 --> 00:09:42,610
+as values success and error is really
+
+241
+00:09:42,610 --> 00:09:44,800
+just specializations of response so
+
+242
+00:09:44,800 --> 00:09:47,610
+whether or not the promise of the parent
+
+243
+00:09:47,610 --> 00:09:50,500
+client was in their successful state or
+
+244
+00:09:50,500 --> 00:09:54,010
+whether was in a narrow state so what
+
+245
+00:09:54,010 --> 00:09:55,300
+does it interceptor actually look like
+
+246
+00:09:55,300 --> 00:09:57,370
+in real life they're very very simple
+
+247
+00:09:57,370 --> 00:10:00,130
+the other way it's set up is that you
+
+248
+00:10:00,130 --> 00:10:02,650
+know you want to plot do and just like
+
+249
+00:10:02,650 --> 00:10:03,910
+any other type of programming in the
+
+250
+00:10:03,910 --> 00:10:05,230
+function you want it to do one thing and
+
+251
+00:10:05,230 --> 00:10:08,170
+you want to do it well so for a basic
+
+252
+00:10:08,170 --> 00:10:10,540
+auth interceptor really all we're doing
+
+253
+00:10:10,540 --> 00:10:11,710
+is getting access to their request
+
+254
+00:10:11,710 --> 00:10:14,590
+headers object trying to figure out the
+
+255
+00:10:14,590 --> 00:10:15,910
+username and password that we want to
+
+256
+00:10:15,910 --> 00:10:17,380
+use it will look on the request object
+
+257
+00:10:17,380 --> 00:10:19,270
+first otherwise it falls back to the
+
+258
+00:10:19,270 --> 00:10:21,250
+config and then finally you know
+
+259
+00:10:21,250 --> 00:10:23,350
+assuming that a user name is provided
+
+260
+00:10:23,350 --> 00:10:25,570
+it'll actually set the authorization
+
+261
+00:10:25,570 --> 00:10:28,480
+header basically encoding basics before
+
+262
+00:10:28,480 --> 00:10:30,760
+the username and password together and
+
+263
+00:10:30,760 --> 00:10:32,350
+it finally returns that response back
+
+264
+00:10:32,350 --> 00:10:36,710
+through and the request continues on
+
+265
+00:10:36,720 --> 00:10:41,200
+so within these interceptors you know
+
+266
+00:10:41,200 --> 00:10:42,640
+because we have interceptors that have
+
+267
+00:10:42,640 --> 00:10:45,279
+small chunks of behavior we really want
+
+268
+00:10:45,279 --> 00:10:47,050
+to be able to apply them together in
+
+269
+00:10:47,050 --> 00:10:49,120
+aggregate so the notion of chaining
+
+270
+00:10:49,120 --> 00:10:50,770
+interceptors together becomes really
+
+271
+00:10:50,770 --> 00:10:52,209
+important you can basically create a
+
+272
+00:10:52,209 --> 00:10:55,420
+pipeline of behavior that gets applied
+
+273
+00:10:55,420 --> 00:10:57,339
+to the request and response as it flows
+
+274
+00:10:57,339 --> 00:11:02,980
+through that interceptor chain so what
+
+275
+00:11:02,980 --> 00:11:05,860
+does it actually look like so
+
+276
+00:11:05,860 --> 00:11:08,320
+essentially it's just you know you get a
+
+277
+00:11:08,320 --> 00:11:10,839
+client and there's a method on that
+
+278
+00:11:10,839 --> 00:11:13,330
+client called chain which you can give
+
+279
+00:11:13,330 --> 00:11:15,370
+the interceptor implementation as well
+
+280
+00:11:15,370 --> 00:11:17,080
+as configuration for the interceptor if
+
+281
+00:11:17,080 --> 00:11:19,300
+it has any so in this case you know
+
+282
+00:11:19,300 --> 00:11:20,709
+we're taking that same basic off
+
+283
+00:11:20,709 --> 00:11:22,779
+interceptor and then we're chaining it
+
+284
+00:11:22,779 --> 00:11:24,490
+in applying the air code interceptor
+
+285
+00:11:24,490 --> 00:11:26,290
+which basically says you know in this
+
+286
+00:11:26,290 --> 00:11:28,660
+case if there's a 500 level or greater
+
+287
+00:11:28,660 --> 00:11:32,200
+response code then take that route value
+
+288
+00:11:32,200 --> 00:11:33,880
+and basically treat it as an error
+
+289
+00:11:33,880 --> 00:11:36,300
+instead of as a successful response and
+
+290
+00:11:36,300 --> 00:11:38,980
+then after that we basically chain in
+
+291
+00:11:38,980 --> 00:11:40,390
+the mime interceptor which is what does
+
+292
+00:11:40,390 --> 00:11:42,579
+the content negotiation and then finally
+
+293
+00:11:42,579 --> 00:11:43,959
+after that we chain in the hay dos
+
+294
+00:11:43,959 --> 00:11:46,180
+interceptor which is what does the hydro
+
+295
+00:11:46,180 --> 00:11:48,430
+media API support so these things
+
+296
+00:11:48,430 --> 00:11:50,260
+together you can figure out exactly what
+
+297
+00:11:50,260 --> 00:11:52,329
+you actually care about in terms of the
+
+298
+00:11:52,329 --> 00:11:53,620
+resource that you're trying to access
+
+299
+00:11:53,620 --> 00:11:56,500
+and you can then figure out what
+
+300
+00:11:56,500 --> 00:11:57,640
+features you need to actually support
+
+301
+00:11:57,640 --> 00:11:58,990
+you can figure out how they apply
+
+302
+00:11:58,990 --> 00:12:01,209
+together so another thing that's really
+
+303
+00:12:01,209 --> 00:12:06,370
+common is to take the the retry client
+
+304
+00:12:06,370 --> 00:12:07,930
+if you're waiting for some resource to
+
+305
+00:12:07,930 --> 00:12:09,730
+become available on the server say like
+
+306
+00:12:09,730 --> 00:12:12,670
+j/s comp registration basically you can
+
+307
+00:12:12,670 --> 00:12:14,230
+just keep checking to see if something's
+
+308
+00:12:14,230 --> 00:12:17,260
+available using some sort of intercept
+
+309
+00:12:17,260 --> 00:12:18,880
+you can set it into a successful or air
+
+310
+00:12:18,880 --> 00:12:20,829
+state if it failed you can retry again
+
+311
+00:12:20,829 --> 00:12:23,260
+and then finally you can set a time out
+
+312
+00:12:23,260 --> 00:12:25,029
+kind of after a blow that to say the
+
+313
+00:12:25,029 --> 00:12:27,520
+whole thing if it takes longer than you
+
+314
+00:12:27,520 --> 00:12:34,050
+know 10 minutes just give up
+
+315
+00:12:34,060 --> 00:12:36,710
+so realistically in practice the other
+
+316
+00:12:36,710 --> 00:12:39,589
+big benefit is that because we have this
+
+317
+00:12:39,589 --> 00:12:41,390
+configuration that's you know configured
+
+318
+00:12:41,390 --> 00:12:42,589
+once and then shared within the
+
+319
+00:12:42,589 --> 00:12:44,570
+application it's really easy to make
+
+320
+00:12:44,570 --> 00:12:46,430
+modifications for things so if we take
+
+321
+00:12:46,430 --> 00:12:48,560
+that previous interceptor and let's say
+
+322
+00:12:48,560 --> 00:12:50,000
+you know my boss comes to me and says
+
+323
+00:12:50,000 --> 00:12:52,370
+you know I heard about OAuth I really
+
+324
+00:12:52,370 --> 00:12:54,290
+kind of want you to try and look at you
+
+325
+00:12:54,290 --> 00:12:55,700
+actually utilizing oh off in your
+
+326
+00:12:55,700 --> 00:12:57,680
+application that's something where most
+
+327
+00:12:57,680 --> 00:12:59,690
+HTTP you clients are just going to fall
+
+328
+00:12:59,690 --> 00:13:01,459
+over flat they don't support it out of
+
+329
+00:13:01,459 --> 00:13:02,870
+the box you know you're kind of screwed
+
+330
+00:13:02,870 --> 00:13:04,820
+you have to go find some other client
+
+331
+00:13:04,820 --> 00:13:07,490
+act like you understand excuse me have
+
+332
+00:13:07,490 --> 00:13:08,750
+to go find some other clients actually
+
+333
+00:13:08,750 --> 00:13:10,910
+understands oooff and then figure out
+
+334
+00:13:10,910 --> 00:13:12,440
+whether that understands how to actually
+
+335
+00:13:12,440 --> 00:13:13,790
+interact with everything else that you
+
+336
+00:13:13,790 --> 00:13:15,760
+actually cared about making a request
+
+337
+00:13:15,760 --> 00:13:17,720
+well with rest GS is actually pretty
+
+338
+00:13:17,720 --> 00:13:19,040
+simple basically all we have to do is
+
+339
+00:13:19,040 --> 00:13:20,839
+pop off that basic auth interceptor and
+
+340
+00:13:20,839 --> 00:13:23,600
+apply in the OAuth interceptor and that
+
+341
+00:13:23,600 --> 00:13:24,950
+Oh F interceptor actually has a little
+
+342
+00:13:24,950 --> 00:13:27,140
+bit more config because it off is it a
+
+343
+00:13:27,140 --> 00:13:29,990
+little bit more complex but
+
+344
+00:13:29,990 --> 00:13:32,240
+fundamentally the other interceptors in
+
+345
+00:13:32,240 --> 00:13:33,709
+the chain don't really care what was
+
+346
+00:13:33,709 --> 00:13:35,899
+before them they just get the request in
+
+347
+00:13:35,899 --> 00:13:38,450
+the response and the clients that are
+
+348
+00:13:38,450 --> 00:13:39,800
+actually making the request trying to
+
+349
+00:13:39,800 --> 00:13:42,260
+get back data also don't really need to
+
+350
+00:13:42,260 --> 00:13:44,510
+kindercare that it was Oh auth under the
+
+351
+00:13:44,510 --> 00:13:47,240
+hood the other thing that's really
+
+352
+00:13:47,240 --> 00:13:48,890
+useful here particularly with OAuth
+
+353
+00:13:48,890 --> 00:13:50,150
+because you have to go off to another
+
+354
+00:13:50,150 --> 00:13:53,390
+server to get an off token have that
+
+355
+00:13:53,390 --> 00:13:58,279
+come back synchronously and then be able
+
+356
+00:13:58,279 --> 00:13:59,630
+to actually make requests using that
+
+357
+00:13:59,630 --> 00:14:02,510
+token you know making sure that you're
+
+358
+00:14:02,510 --> 00:14:04,430
+using the same token for every single
+
+359
+00:14:04,430 --> 00:14:07,430
+request becomes really useful so having
+
+360
+00:14:07,430 --> 00:14:09,560
+one interceptor near the root of your
+
+361
+00:14:09,560 --> 00:14:11,240
+chain that the rest of your application
+
+362
+00:14:11,240 --> 00:14:12,920
+can use and share becomes really
+
+363
+00:14:12,920 --> 00:14:14,300
+valuable because then the rest of your
+
+364
+00:14:14,300 --> 00:14:16,190
+application can benefit from that token
+
+365
+00:14:16,190 --> 00:14:20,659
+that got captured and cashed
+
+366
+00:14:20,669 --> 00:14:26,499
+so kind of switching up a little bit you
+
+367
+00:14:26,499 --> 00:14:29,949
+know HTTP is just one thing that we have
+
+368
+00:14:29,949 --> 00:14:32,499
+to use as clients HTTP is really good
+
+369
+00:14:32,499 --> 00:14:34,929
+for resources it's not really good for
+
+370
+00:14:34,929 --> 00:14:37,929
+events an event based data transmission
+
+371
+00:14:37,929 --> 00:14:41,319
+back between servers you know if there
+
+372
+00:14:41,319 --> 00:14:42,549
+was an event and we actually were
+
+373
+00:14:42,549 --> 00:14:44,410
+running server side you know maybe we
+
+374
+00:14:44,410 --> 00:14:45,999
+would use a web hook to be notified of
+
+375
+00:14:45,999 --> 00:14:48,549
+that something happened on the client we
+
+376
+00:14:48,549 --> 00:14:49,959
+don't have that option there's no way
+
+377
+00:14:49,959 --> 00:14:51,939
+for the server to you know establish
+
+378
+00:14:51,939 --> 00:14:55,089
+connection back to the client so
+
+379
+00:14:55,089 --> 00:14:56,439
+typically what people do instead is
+
+380
+00:14:56,439 --> 00:14:58,359
+obviously they use web sockets you know
+
+381
+00:14:58,359 --> 00:15:00,100
+WebSocket supports full bi-directional
+
+382
+00:15:00,100 --> 00:15:02,410
+communication you know client server to
+
+383
+00:15:02,410 --> 00:15:06,759
+client client to server but the problem
+
+384
+00:15:06,759 --> 00:15:08,919
+with WebSocket libraries at least the
+
+385
+00:15:08,919 --> 00:15:11,109
+ones that exist today is that they
+
+386
+00:15:11,109 --> 00:15:13,419
+extract sending receiving of messages
+
+387
+00:15:13,419 --> 00:15:15,279
+from client to server but they really
+
+388
+00:15:15,279 --> 00:15:17,739
+don't help you deal with messaging once
+
+389
+00:15:17,739 --> 00:15:19,419
+you receive the message off of that
+
+390
+00:15:19,419 --> 00:15:22,689
+socket this is something that the
+
+391
+00:15:22,689 --> 00:15:23,979
+server-side world has been dealing with
+
+392
+00:15:23,979 --> 00:15:26,350
+for a long time and there's a book
+
+393
+00:15:26,350 --> 00:15:27,669
+called enterprise integration patterns
+
+394
+00:15:27,669 --> 00:15:30,999
+this is basically the Gang of Four for
+
+395
+00:15:30,999 --> 00:15:33,699
+messaging and ability provides a bunch
+
+396
+00:15:33,699 --> 00:15:35,919
+of simple patterns to really support
+
+397
+00:15:35,919 --> 00:15:38,559
+messaging oriented programming and don't
+
+398
+00:15:38,559 --> 00:15:40,119
+let the word Enterprise scare you I mean
+
+399
+00:15:40,119 --> 00:15:42,399
+it come came out of enterprise computing
+
+400
+00:15:42,399 --> 00:15:44,739
+but these patterns are really simple and
+
+401
+00:15:44,739 --> 00:15:47,109
+if you're using amqp year zeromq or
+
+402
+00:15:47,109 --> 00:15:49,720
+activemq today you know that's kind of
+
+403
+00:15:49,720 --> 00:15:51,429
+really what those concepts are built
+
+404
+00:15:51,429 --> 00:15:55,359
+around so another library out there is
+
+405
+00:15:55,359 --> 00:15:57,279
+called messages j/s it's also part of
+
+406
+00:15:57,279 --> 00:15:59,410
+Cujo and it's really an implementation
+
+407
+00:15:59,410 --> 00:16:01,470
+of the enterprise integration patterns
+
+408
+00:16:01,470 --> 00:16:04,269
+that really give you the core primitives
+
+409
+00:16:04,269 --> 00:16:08,709
+of messaging so beyond that there's also
+
+410
+00:16:08,709 --> 00:16:10,739
+adapters to other types of messaging
+
+411
+00:16:10,739 --> 00:16:13,749
+systems once you want to leave your
+
+412
+00:16:13,749 --> 00:16:15,549
+local world and move over and network to
+
+413
+00:16:15,549 --> 00:16:17,739
+something else so web sockets happens to
+
+414
+00:16:17,739 --> 00:16:20,649
+be one of those adapters but let's kind
+
+415
+00:16:20,649 --> 00:16:22,329
+of look at just a brief hello world of
+
+416
+00:16:22,329 --> 00:16:23,499
+what it looks like in a messaging
+
+417
+00:16:23,499 --> 00:16:25,929
+environment so you know the first thing
+
+418
+00:16:25,929 --> 00:16:27,879
+we have to do is require messages and
+
+419
+00:16:27,879 --> 00:16:30,669
+then we basically get a new bus credit
+
+420
+00:16:30,669 --> 00:16:31,579
+message
+
+421
+00:16:31,579 --> 00:16:33,660
+so that's not something that strictly
+
+422
+00:16:33,660 --> 00:16:35,970
+required the messages object is itself a
+
+423
+00:16:35,970 --> 00:16:38,489
+bus but when you chain a new bus off of
+
+424
+00:16:38,489 --> 00:16:40,379
+it you can get a local scope so all of
+
+425
+00:16:40,379 --> 00:16:41,729
+your names are isolated and don't
+
+426
+00:16:41,729 --> 00:16:45,689
+collide with anything else so on a bus
+
+427
+00:16:45,689 --> 00:16:48,269
+we're going to define two channels so in
+
+428
+00:16:48,269 --> 00:16:49,589
+this case we have a channel called lower
+
+429
+00:16:49,589 --> 00:16:51,599
+case in a channel upper case so a
+
+430
+00:16:51,599 --> 00:16:53,279
+channel is just a place where messages
+
+431
+00:16:53,279 --> 00:16:56,249
+are sent to and other handlers can
+
+432
+00:16:56,249 --> 00:16:59,729
+subscribe to that channel then we
+
+433
+00:16:59,729 --> 00:17:02,309
+basically have a transformer so that
+
+434
+00:17:02,309 --> 00:17:04,860
+transformer is basically has a function
+
+435
+00:17:04,860 --> 00:17:07,289
+that gets a message and then does
+
+436
+00:17:07,289 --> 00:17:08,970
+something to that message and returns it
+
+437
+00:17:08,970 --> 00:17:11,159
+so in this case basically getting a
+
+438
+00:17:11,159 --> 00:17:13,350
+string and we're calling to uppercase on
+
+439
+00:17:13,350 --> 00:17:15,689
+it and then in that transformer
+
+440
+00:17:15,689 --> 00:17:18,059
+basically has a couple configuration
+
+441
+00:17:18,059 --> 00:17:20,490
+parameters called input and output these
+
+442
+00:17:20,490 --> 00:17:22,019
+are the channels that we want to
+
+443
+00:17:22,019 --> 00:17:24,240
+subscribe to so input is the channel
+
+444
+00:17:24,240 --> 00:17:25,949
+that we want to subscribe to and an
+
+445
+00:17:25,949 --> 00:17:27,360
+output is the channel that we want to
+
+446
+00:17:27,360 --> 00:17:29,399
+send to once we've done our work with
+
+447
+00:17:29,399 --> 00:17:33,539
+that message and then we have an
+
+448
+00:17:33,539 --> 00:17:35,070
+outbound adapter which is basically just
+
+449
+00:17:35,070 --> 00:17:36,870
+a way of getting messages out of the
+
+450
+00:17:36,870 --> 00:17:39,960
+message bus back into regular code so in
+
+451
+00:17:39,960 --> 00:17:41,190
+this case we're base which is calling
+
+452
+00:17:41,190 --> 00:17:43,470
+console dot log and subscribing it to
+
+453
+00:17:43,470 --> 00:17:45,750
+the uppercase channel and then finally
+
+454
+00:17:45,750 --> 00:17:49,110
+we're going to call bus send to send a
+
+455
+00:17:49,110 --> 00:17:50,879
+new message to the lower case channel
+
+456
+00:17:50,879 --> 00:17:53,100
+say hello world then ultimately what
+
+457
+00:17:53,100 --> 00:17:55,110
+happens is it prints out hello world
+
+458
+00:17:55,110 --> 00:17:58,350
+capitalized and that's probably a ton of
+
+459
+00:17:58,350 --> 00:18:03,539
+work for a hello world and yes it is you
+
+460
+00:18:03,539 --> 00:18:05,669
+know for very simple use cases you know
+
+461
+00:18:05,669 --> 00:18:07,889
+these patterns are probably overkill but
+
+462
+00:18:07,889 --> 00:18:10,919
+they really become powerful once you can
+
+463
+00:18:10,919 --> 00:18:12,629
+actually have the need for decoupling
+
+464
+00:18:12,629 --> 00:18:15,659
+your application your system zis way we
+
+465
+00:18:15,659 --> 00:18:17,340
+will show an example of how that power
+
+466
+00:18:17,340 --> 00:18:20,909
+really pays off in a bit so there's
+
+467
+00:18:20,909 --> 00:18:22,470
+several other primitives talked about a
+
+468
+00:18:22,470 --> 00:18:25,379
+few of them you know channel there's
+
+469
+00:18:25,379 --> 00:18:27,570
+several different types of channels the
+
+470
+00:18:27,570 --> 00:18:29,429
+channel that we used by default it's
+
+471
+00:18:29,429 --> 00:18:32,220
+basically a point-to-point channel so if
+
+472
+00:18:32,220 --> 00:18:33,690
+you have multiple subscribers of that
+
+473
+00:18:33,690 --> 00:18:35,250
+channel for each message that goes in
+
+474
+00:18:35,250 --> 00:18:37,769
+the message goes out to one of those
+
+475
+00:18:37,769 --> 00:18:40,559
+subscribers also have pub/sub channels
+
+476
+00:18:40,559 --> 00:18:42,539
+you know message comes in everyone who
+
+477
+00:18:42,539 --> 00:18:43,399
+subscribed get them
+
+478
+00:18:43,399 --> 00:18:45,950
+in exchange channels which basically
+
+479
+00:18:45,950 --> 00:18:47,739
+allow you to do topic based routing
+
+480
+00:18:47,739 --> 00:18:50,719
+either based off of just some dynamic
+
+481
+00:18:50,719 --> 00:18:52,940
+key or some pattern if you want to
+
+482
+00:18:52,940 --> 00:18:56,299
+subscribe to similar to how AM PP has a
+
+483
+00:18:56,299 --> 00:19:01,279
+topic exchanges routing keys I'm also
+
+484
+00:19:01,279 --> 00:19:02,869
+have notion of a Q channel if you don't
+
+485
+00:19:02,869 --> 00:19:04,249
+want to have to deal with messages right
+
+486
+00:19:04,249 --> 00:19:05,659
+away and you want to buffer them up and
+
+487
+00:19:05,659 --> 00:19:10,309
+then pull them off as needed so within
+
+488
+00:19:10,309 --> 00:19:11,450
+the channels you can subscribe
+
+489
+00:19:11,450 --> 00:19:13,729
+unsubscribe there's also the mission of
+
+490
+00:19:13,729 --> 00:19:15,469
+tapping a channel if you want to be
+
+491
+00:19:15,469 --> 00:19:17,059
+notified every single time a message
+
+492
+00:19:17,059 --> 00:19:18,619
+comes in it's really useful for logging
+
+493
+00:19:18,619 --> 00:19:21,919
+and other types of auditing and then
+
+494
+00:19:21,919 --> 00:19:23,149
+beyond channels there's a notion of
+
+495
+00:19:23,149 --> 00:19:25,339
+handlers and handlers are things that
+
+496
+00:19:25,339 --> 00:19:28,339
+actually do things with messages so we
+
+497
+00:19:28,339 --> 00:19:30,549
+saw a transformer there's also filtering
+
+498
+00:19:30,549 --> 00:19:33,979
+routing splitting aggregating basically
+
+499
+00:19:33,979 --> 00:19:35,539
+everything you kind of want to do with a
+
+500
+00:19:35,539 --> 00:19:38,509
+message basically that's a handler then
+
+501
+00:19:38,509 --> 00:19:39,739
+finally we have inbound outbound
+
+502
+00:19:39,739 --> 00:19:41,479
+adapters as well as inbound and outbound
+
+503
+00:19:41,479 --> 00:19:43,969
+gateways inbound is coming into the
+
+504
+00:19:43,969 --> 00:19:45,259
+message bus out bounds going out of the
+
+505
+00:19:45,259 --> 00:19:47,149
+message bus adapters are typically
+
+506
+00:19:47,149 --> 00:19:50,239
+unidirectional just you know what's
+
+507
+00:19:50,239 --> 00:19:53,479
+fire-and-forget gateways typically are
+
+508
+00:19:53,479 --> 00:19:56,690
+more request reply oriented so basically
+
+509
+00:19:56,690 --> 00:20:00,820
+it establishes a promise for a response
+
+510
+00:20:00,820 --> 00:20:02,809
+so let's kind of look at what this
+
+511
+00:20:02,809 --> 00:20:06,379
+actually ends up looking like so had a
+
+512
+00:20:06,379 --> 00:20:08,450
+use case where basically had a server
+
+513
+00:20:08,450 --> 00:20:10,429
+where for every message that came into
+
+514
+00:20:10,429 --> 00:20:13,039
+it we wanted to send it out to every
+
+515
+00:20:13,039 --> 00:20:16,460
+single client that was connected so in
+
+516
+00:20:16,460 --> 00:20:18,289
+this case we have you know messages
+
+517
+00:20:18,289 --> 00:20:20,330
+again as well as a WebSocket server
+
+518
+00:20:20,330 --> 00:20:23,690
+library realistically we were using
+
+519
+00:20:23,690 --> 00:20:25,489
+stock j/s in this case as a server but
+
+520
+00:20:25,489 --> 00:20:27,979
+it could be just about anything so we're
+
+521
+00:20:27,979 --> 00:20:29,659
+establishing to pub subchannels this
+
+522
+00:20:29,659 --> 00:20:32,149
+time metro message is coming from the
+
+523
+00:20:32,149 --> 00:20:33,739
+client and then messages that we want to
+
+524
+00:20:33,739 --> 00:20:37,789
+stand back down to the client and then
+
+525
+00:20:37,789 --> 00:20:40,279
+we have a web based on the WebSocket
+
+526
+00:20:40,279 --> 00:20:42,710
+server for every connection we want to
+
+527
+00:20:42,710 --> 00:20:46,309
+take that connection and we have a node
+
+528
+00:20:46,309 --> 00:20:48,429
+stream gateway so basically this is a
+
+529
+00:20:48,429 --> 00:20:51,200
+message a set of messaging adapters that
+
+530
+00:20:51,200 --> 00:20:54,289
+for the notes dream API can basically
+
+531
+00:20:54,289 --> 00:20:55,410
+take every mess
+
+532
+00:20:55,410 --> 00:20:57,750
+coming in and put it to the Alpha
+
+533
+00:20:57,750 --> 00:20:59,100
+Channel and every message that's going
+
+534
+00:20:59,100 --> 00:21:03,150
+out and put it to the input channel so
+
+535
+00:21:03,150 --> 00:21:05,640
+basically what we're seeing here is on
+
+536
+00:21:05,640 --> 00:21:07,260
+that bus we're establishing the Gateway
+
+537
+00:21:07,260 --> 00:21:09,690
+for that connection all the messages
+
+538
+00:21:09,690 --> 00:21:11,760
+that are coming in get sent to the from
+
+539
+00:21:11,760 --> 00:21:13,320
+Channel client because this is on the
+
+540
+00:21:13,320 --> 00:21:14,880
+server we're going to going out goes
+
+541
+00:21:14,880 --> 00:21:16,770
+like the other way and then finally what
+
+542
+00:21:16,770 --> 00:21:18,630
+we're doing is we're forwarding the from
+
+543
+00:21:18,630 --> 00:21:21,080
+client channel to the to client channel
+
+544
+00:21:21,080 --> 00:21:23,250
+so basically everything that comes from
+
+545
+00:21:23,250 --> 00:21:25,590
+a client goes directly back to a client
+
+546
+00:21:25,590 --> 00:21:27,930
+and because it's pops up every client to
+
+547
+00:21:27,930 --> 00:21:29,460
+subscribe gets every message that was
+
+548
+00:21:29,460 --> 00:21:32,280
+received so but there's also a fatal
+
+549
+00:21:32,280 --> 00:21:35,430
+flaw in here if anybody sees it and it's
+
+550
+00:21:35,430 --> 00:21:38,310
+that you know we're running within a
+
+551
+00:21:38,310 --> 00:21:39,840
+single process in the single instance
+
+552
+00:21:39,840 --> 00:21:41,820
+and you know we're only going to be
+
+553
+00:21:41,820 --> 00:21:43,410
+getting the connections and subscribing
+
+554
+00:21:43,410 --> 00:21:46,020
+them to the bus if they happen to be on
+
+555
+00:21:46,020 --> 00:21:48,930
+the same local node so typically what
+
+556
+00:21:48,930 --> 00:21:51,240
+you want to do is have some other
+
+557
+00:21:51,240 --> 00:21:54,240
+messaging gateway on your back-end
+
+558
+00:21:54,240 --> 00:21:56,670
+server so in this case we're going to
+
+559
+00:21:56,670 --> 00:21:59,690
+introduce Redis for a very basic pub/sub
+
+560
+00:21:59,690 --> 00:22:02,400
+so you know requiring the reddest client
+
+561
+00:22:02,400 --> 00:22:04,980
+and one of the other adapters that we
+
+562
+00:22:04,980 --> 00:22:08,250
+have set up is for a Redis gateway so
+
+563
+00:22:08,250 --> 00:22:09,660
+everything else is the same in terms of
+
+564
+00:22:09,660 --> 00:22:11,130
+how we're interacting with the WebSocket
+
+565
+00:22:11,130 --> 00:22:12,870
+and the channels but instead of just
+
+566
+00:22:12,870 --> 00:22:15,330
+forwarding from client to client again
+
+567
+00:22:15,330 --> 00:22:17,880
+we're actually going to take that those
+
+568
+00:22:17,880 --> 00:22:20,580
+messages and pass them through Redis for
+
+569
+00:22:20,580 --> 00:22:23,100
+a very basic pub/sub so messages come
+
+570
+00:22:23,100 --> 00:22:24,990
+from the client on the WebSocket end up
+
+571
+00:22:24,990 --> 00:22:26,880
+the server from the server gets sent to
+
+572
+00:22:26,880 --> 00:22:29,970
+Redis then the though each of those
+
+573
+00:22:29,970 --> 00:22:31,320
+server nodes is then configured to
+
+574
+00:22:31,320 --> 00:22:32,970
+connect to Reddit and receive messages
+
+575
+00:22:32,970 --> 00:22:36,510
+back off of that bus and then those
+
+576
+00:22:36,510 --> 00:22:38,310
+messages get sent back to every single
+
+577
+00:22:38,310 --> 00:22:44,940
+client then on the client side you know
+
+578
+00:22:44,940 --> 00:22:46,800
+again we're going to use sock Jess and
+
+579
+00:22:46,800 --> 00:22:48,090
+again you know this code should look
+
+580
+00:22:48,090 --> 00:22:49,800
+very familiar and this you know it's the
+
+581
+00:22:49,800 --> 00:22:51,240
+exact same API is the exact same
+
+582
+00:22:51,240 --> 00:22:53,100
+programming model whether your client or
+
+583
+00:22:53,100 --> 00:22:55,110
+server but in this case we have a
+
+584
+00:22:55,110 --> 00:22:57,150
+WebSocket gateway setup and that's just
+
+585
+00:22:57,150 --> 00:22:58,950
+a set of adapters that and understand
+
+586
+00:22:58,950 --> 00:23:04,170
+the w3c web socket API so in this case
+
+587
+00:23:04,170 --> 00:23:05,730
+you know it expects to begin
+
+588
+00:23:05,730 --> 00:23:08,280
+a WebSocket connection so I'm using soft
+
+589
+00:23:08,280 --> 00:23:10,230
+j s so we can get HTTP fallbacks and
+
+590
+00:23:10,230 --> 00:23:12,210
+other things in addition to just raw
+
+591
+00:23:12,210 --> 00:23:16,320
+native web sockets and you know again
+
+592
+00:23:16,320 --> 00:23:19,290
+you know the the up the input and output
+
+593
+00:23:19,290 --> 00:23:21,990
+channels are setup subnets just come to
+
+594
+00:23:21,990 --> 00:23:23,940
+and from the server and we can interact
+
+595
+00:23:23,940 --> 00:23:27,870
+with them so still have a couple minutes
+
+596
+00:23:27,870 --> 00:23:30,120
+if you actually want to see this running
+
+597
+00:23:30,120 --> 00:23:33,030
+you can go to Jas comp cloud foundry com
+
+598
+00:23:33,030 --> 00:23:35,010
+and I actually have that code running
+
+599
+00:23:35,010 --> 00:23:38,190
+what you'll see is there's a little
+
+600
+00:23:38,190 --> 00:23:39,690
+circle that will pop up for every user
+
+601
+00:23:39,690 --> 00:23:41,760
+and as you move your mouse around the
+
+602
+00:23:41,760 --> 00:23:43,920
+circle will follow you and basically
+
+603
+00:23:43,920 --> 00:23:45,210
+what it's doing is it's capturing the
+
+604
+00:23:45,210 --> 00:23:48,120
+raw mousemove events on the browser
+
+605
+00:23:48,120 --> 00:23:49,680
+sending them up to the server
+
+606
+00:23:49,680 --> 00:23:51,630
+distributing them across reddest each of
+
+607
+00:23:51,630 --> 00:23:53,130
+the instances on the server something
+
+608
+00:23:53,130 --> 00:23:54,960
+them back down so this application is
+
+609
+00:23:54,960 --> 00:23:56,730
+actually running with three instances up
+
+610
+00:23:56,730 --> 00:24:00,210
+on cloud foundry and it's the circles
+
+611
+00:24:00,210 --> 00:24:03,750
+app sample app in within KU jjs if you
+
+612
+00:24:03,750 --> 00:24:05,220
+actually want to go grab the source for
+
+613
+00:24:05,220 --> 00:24:09,000
+it and with that i just want to say
+
+614
+00:24:09,000 --> 00:24:11,520
+thanks if you have any questions I guess
+
+615
+00:24:11,520 --> 00:24:17,820
+I have a minute all right so if anyone
+
+616
+00:24:17,820 --> 00:24:19,500
+wants to talk further just feel free to
+
+617
+00:24:19,500 --> 00:24:20,850
+grab me I'll be here for the rest of the
+

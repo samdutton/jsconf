@@ -1,0 +1,1865 @@
+1
+00:00:10,870 --> 00:00:13,450
+
+so my name is thomas yang Chuck I work
+
+2
+00:00:13,450 --> 00:00:16,390
+for of zero with gum tow and during this
+
+3
+00:00:16,390 --> 00:00:17,980
+session will be talking about sin boxing
+
+4
+00:00:17,980 --> 00:00:22,590
+no dress code in multi-channel systems
+
+5
+00:00:22,590 --> 00:00:25,869
+so why would you even think about sin
+
+6
+00:00:25,869 --> 00:00:27,820
+boxing no dress code many multi-tenant
+
+7
+00:00:27,820 --> 00:00:31,000
+systems enable extensibility by allowing
+
+8
+00:00:31,000 --> 00:00:33,640
+users to write custom code that is then
+
+9
+00:00:33,640 --> 00:00:35,530
+running as part of the platform and
+
+10
+00:00:35,530 --> 00:00:37,300
+since you since you know very little
+
+11
+00:00:37,300 --> 00:00:38,829
+about what that code does and how it
+
+12
+00:00:38,829 --> 00:00:40,989
+behaves you cannot fully trust it so
+
+13
+00:00:40,989 --> 00:00:42,550
+that's why you need a sandbox to run it
+
+14
+00:00:42,550 --> 00:00:46,239
+in he not 0 we are offering identity as
+
+15
+00:00:46,239 --> 00:00:48,190
+a service and as part of the
+
+16
+00:00:48,190 --> 00:00:49,809
+authentication pipeline we allow people
+
+17
+00:00:49,809 --> 00:00:52,600
+to provide custom nodejs code that we
+
+18
+00:00:52,600 --> 00:00:54,100
+are executing as part of every
+
+19
+00:00:54,100 --> 00:00:56,140
+authentication transaction people can
+
+20
+00:00:56,140 --> 00:00:58,179
+basically customize the behavior the
+
+21
+00:00:58,179 --> 00:01:00,100
+authentication behavior for their
+
+22
+00:01:00,100 --> 00:01:03,579
+applications and users that way however
+
+23
+00:01:03,579 --> 00:01:05,920
+given that we don't have full control
+
+24
+00:01:05,920 --> 00:01:08,440
+over what that code can do we need a
+
+25
+00:01:08,440 --> 00:01:13,659
+sandbox to run that code in all custom
+
+26
+00:01:13,659 --> 00:01:17,020
+code in ode 0 right runs in the context
+
+27
+00:01:17,020 --> 00:01:19,660
+of an HTTP request so basically the code
+
+28
+00:01:19,660 --> 00:01:22,120
+must execute fully within the lifetime
+
+29
+00:01:22,120 --> 00:01:23,740
+for a single HTTP request which is the
+
+30
+00:01:23,740 --> 00:01:25,000
+like a time span of a single
+
+31
+00:01:25,000 --> 00:01:27,940
+authentication transaction given that
+
+32
+00:01:27,940 --> 00:01:30,160
+the sandbox model that we required also
+
+33
+00:01:30,160 --> 00:01:32,770
+was based on HTTP basically you were
+
+34
+00:01:32,770 --> 00:01:35,080
+sending an HTTP POST request to the
+
+35
+00:01:35,080 --> 00:01:37,420
+sandbox the body of the HTTP POST
+
+36
+00:01:37,420 --> 00:01:39,460
+request contains the node.js code to
+
+37
+00:01:39,460 --> 00:01:42,490
+execute the sandbox runs dovecote and
+
+38
+00:01:42,490 --> 00:01:44,050
+when the result is available it sends it
+
+39
+00:01:44,050 --> 00:01:46,660
+back to the color is Jason object in the
+
+40
+00:01:46,660 --> 00:01:49,570
+HTTP response so this is a very basic
+
+41
+00:01:49,570 --> 00:01:52,630
+sandbox model the program programming
+
+42
+00:01:52,630 --> 00:01:54,250
+model around that we have created is
+
+43
+00:01:54,250 --> 00:01:56,350
+also very simple you're basically
+
+44
+00:01:56,350 --> 00:02:00,210
+writing a node.js code that returns
+
+45
+00:02:00,210 --> 00:02:03,880
+javascript function closure that
+
+46
+00:02:03,880 --> 00:02:05,410
+function accepts a single callback
+
+47
+00:02:05,410 --> 00:02:07,060
+parameter when you're done executing
+
+48
+00:02:07,060 --> 00:02:08,830
+your code you're supposed to return the
+
+49
+00:02:08,830 --> 00:02:11,890
+result value to that callback that
+
+50
+00:02:11,890 --> 00:02:13,900
+result is then civilized into Jason and
+
+51
+00:02:13,900 --> 00:02:17,260
+returning to the color what kind of
+
+52
+00:02:17,260 --> 00:02:19,150
+properties that we require out of that
+
+53
+00:02:19,150 --> 00:02:21,489
+sandbox so first and foremost we require
+
+54
+00:02:21,489 --> 00:02:24,340
+data isolation if we r XZ
+
+55
+00:02:24,340 --> 00:02:26,470
+getting code of one tenant we expect
+
+56
+00:02:26,470 --> 00:02:29,470
+that code to be unable to affect
+
+57
+00:02:29,470 --> 00:02:31,569
+execution of code from other tenants in
+
+58
+00:02:31,569 --> 00:02:33,370
+any way or from accessing data of other
+
+59
+00:02:33,370 --> 00:02:34,930
+tenants so this is the kind of primary
+
+60
+00:02:34,930 --> 00:02:38,319
+security requirement that we had in
+
+61
+00:02:38,319 --> 00:02:40,150
+addition to that we also had a number of
+
+62
+00:02:40,150 --> 00:02:43,330
+resource governance requirements around
+
+63
+00:02:43,330 --> 00:02:45,879
+how memory CPU and networking is
+
+64
+00:02:45,879 --> 00:02:48,849
+allocated we wanted to prevent one
+
+65
+00:02:48,849 --> 00:02:51,430
+tenant from executing an authenticated
+
+66
+00:02:51,430 --> 00:02:53,470
+us attack against resources of our
+
+67
+00:02:53,470 --> 00:02:56,380
+sandbox that would prevent other tenants
+
+68
+00:02:56,380 --> 00:02:59,440
+from running code in the same time in
+
+69
+00:02:59,440 --> 00:03:04,959
+that sandbox so the very high level we
+
+70
+00:03:04,959 --> 00:03:06,069
+basically looked at what is available
+
+71
+00:03:06,069 --> 00:03:07,989
+out there in terms of sandbox in node.js
+
+72
+00:03:07,989 --> 00:03:09,879
+code and none of the of the shelf
+
+73
+00:03:09,879 --> 00:03:12,610
+components were meeting our requirement
+
+74
+00:03:12,610 --> 00:03:15,310
+so we decided to build our own high
+
+75
+00:03:15,310 --> 00:03:17,410
+level our sandbox is built on core OS
+
+76
+00:03:17,410 --> 00:03:20,470
+dockery tcd and fleet which is a great
+
+77
+00:03:20,470 --> 00:03:23,349
+set of technologies that help you write
+
+78
+00:03:23,349 --> 00:03:25,690
+container based distributed applications
+
+79
+00:03:25,690 --> 00:03:28,540
+however in themselves these technologies
+
+80
+00:03:28,540 --> 00:03:30,190
+are insufficient to provide the kind of
+
+81
+00:03:30,190 --> 00:03:31,900
+security guarantees we expected around
+
+82
+00:03:31,900 --> 00:03:34,600
+the sandbox so he had to enhance the
+
+83
+00:03:34,600 --> 00:03:37,329
+basic setup of chorus and docker with
+
+84
+00:03:37,329 --> 00:03:40,480
+additional sandboxing mechanisms so this
+
+85
+00:03:40,480 --> 00:03:42,880
+is the view of a single VM in a core OS
+
+86
+00:03:42,880 --> 00:03:46,420
+cluster that runs our sandbox the
+
+87
+00:03:46,420 --> 00:03:48,190
+primary mechanism by which we ensure
+
+88
+00:03:48,190 --> 00:03:50,280
+data isolation between tenants is
+
+89
+00:03:50,280 --> 00:03:53,650
+running every tenants code in their own
+
+90
+00:03:53,650 --> 00:03:58,030
+docker container in addition to that we
+
+91
+00:03:58,030 --> 00:03:59,950
+are creating an egress firewall around
+
+92
+00:03:59,950 --> 00:04:01,870
+that docker container so that the code
+
+93
+00:04:01,870 --> 00:04:03,849
+running in that container can only talk
+
+94
+00:04:03,849 --> 00:04:07,060
+to the public Internet it cannot talk to
+
+95
+00:04:07,060 --> 00:04:08,980
+other two endpoints exposed by other
+
+96
+00:04:08,980 --> 00:04:10,810
+docker containers running on behalf of
+
+97
+00:04:10,810 --> 00:04:14,290
+other tenants or two endpoints exposed
+
+98
+00:04:14,290 --> 00:04:16,419
+by our sandbox infrastructure like the
+
+99
+00:04:16,419 --> 00:04:19,180
+proxy the controller or etcd running on
+
+100
+00:04:19,180 --> 00:04:22,270
+that box so the way the system functions
+
+101
+00:04:22,270 --> 00:04:24,099
+is that when that HTTP POST request
+
+102
+00:04:24,099 --> 00:04:26,200
+containing the code to execute arrives
+
+103
+00:04:26,200 --> 00:04:29,229
+on the box it is first landing at the
+
+104
+00:04:29,229 --> 00:04:31,990
+proxy component the proxy consults etcd
+
+105
+00:04:31,990 --> 00:04:33,669
+which is a distributed configuration
+
+106
+00:04:33,669 --> 00:04:35,870
+system like zookeeper
+
+107
+00:04:35,870 --> 00:04:38,270
+to see if a container associated to the
+
+108
+00:04:38,270 --> 00:04:40,100
+particular tenant is already running if
+
+109
+00:04:40,100 --> 00:04:42,760
+it is that request is then reverse proxy
+
+110
+00:04:42,760 --> 00:04:45,560
+to that existing container if the
+
+111
+00:04:45,560 --> 00:04:47,270
+container doesn't exist in the proxy
+
+112
+00:04:47,270 --> 00:04:49,250
+will create a new one associated with a
+
+113
+00:04:49,250 --> 00:04:52,220
+tenant a creator registration etcd for
+
+114
+00:04:52,220 --> 00:04:56,090
+future requests and reverse proxy the
+
+115
+00:04:56,090 --> 00:05:00,510
+request to the newly created component
+
+116
+00:05:00,520 --> 00:05:06,380
+in terms of preventing authenticated us
+
+117
+00:05:06,380 --> 00:05:08,290
+attacks against memory CPU and other
+
+118
+00:05:08,290 --> 00:05:10,460
+operating system resources you are using
+
+119
+00:05:10,460 --> 00:05:12,260
+a number of mechanisms first and
+
+120
+00:05:12,260 --> 00:05:14,870
+foremost we are leveraging limits
+
+121
+00:05:14,870 --> 00:05:17,390
+imposed the see groups level so see
+
+122
+00:05:17,390 --> 00:05:19,400
+groups is a Linux mechanism that docker
+
+123
+00:05:19,400 --> 00:05:29,210
+also exposes that wasn't me the doctor
+
+124
+00:05:29,210 --> 00:05:31,490
+also expose issue which which unable to
+
+125
+00:05:31,490 --> 00:05:33,380
+put limits on the memory and CPU
+
+126
+00:05:33,380 --> 00:05:35,150
+consumption of individual docking docker
+
+127
+00:05:35,150 --> 00:05:37,970
+containers in addition to that within
+
+128
+00:05:37,970 --> 00:05:40,670
+the sandbox containers themselves we are
+
+129
+00:05:40,670 --> 00:05:42,560
+creating transient users basically
+
+130
+00:05:42,560 --> 00:05:44,030
+whenever we spin up a new docker
+
+131
+00:05:44,030 --> 00:05:45,650
+container we are creating a brand new
+
+132
+00:05:45,650 --> 00:05:48,440
+operating system user and then we are
+
+133
+00:05:48,440 --> 00:05:50,630
+imposing pam limits for that user so for
+
+134
+00:05:50,630 --> 00:05:52,520
+example you are saying that user cannot
+
+135
+00:05:52,520 --> 00:05:56,090
+create more than 50 processes or threads
+
+136
+00:05:56,090 --> 00:06:00,230
+or he cannot create more than 5000 files
+
+137
+00:06:00,230 --> 00:06:02,510
+in the file system so this provides us
+
+138
+00:06:02,510 --> 00:06:05,510
+with the very basic mechanisms to limit
+
+139
+00:06:05,510 --> 00:06:07,220
+what the code running in the sandbox
+
+140
+00:06:07,220 --> 00:06:10,850
+container can do so with that I want to
+
+141
+00:06:10,850 --> 00:06:13,040
+do a few demos and take our sandbox for
+
+142
+00:06:13,040 --> 00:06:16,430
+a spin you have seen one map during the
+
+143
+00:06:16,430 --> 00:06:19,550
+RabbitMQ presentation and I just
+
+144
+00:06:19,550 --> 00:06:20,960
+couldn't resist I'll show you another
+
+145
+00:06:20,960 --> 00:06:24,050
+one we also have a map about ours with
+
+146
+00:06:24,050 --> 00:06:26,780
+more dots on it so what we are seeing
+
+147
+00:06:26,780 --> 00:06:30,320
+here is basically eight places around
+
+148
+00:06:30,320 --> 00:06:31,730
+the world where we have deployed our
+
+149
+00:06:31,730 --> 00:06:33,300
+sandbox
+
+150
+00:06:33,300 --> 00:06:35,669
+cluster so each of these places can
+
+151
+00:06:35,669 --> 00:06:38,159
+execute custom code on our behalf during
+
+152
+00:06:38,159 --> 00:06:39,930
+this demo I'm going to use the one that
+
+153
+00:06:39,930 --> 00:06:41,940
+is just around the corner in Sao Paulo
+
+154
+00:06:41,940 --> 00:06:45,030
+in Brazil just because it is the closest
+
+155
+00:06:45,030 --> 00:06:47,879
+one latency wise so with that let's have
+
+156
+00:06:47,879 --> 00:06:51,150
+a look at some code so this is the very
+
+157
+00:06:51,150 --> 00:06:53,699
+basic hello world example we are
+
+158
+00:06:53,699 --> 00:06:55,919
+creating a JavaScript function that
+
+159
+00:06:55,919 --> 00:06:57,720
+accepts a call back in immediately turns
+
+160
+00:06:57,720 --> 00:06:59,190
+around and codes are called back with a
+
+161
+00:06:59,190 --> 00:07:00,930
+simple string as a result and that
+
+162
+00:07:00,930 --> 00:07:04,080
+string is pretty much saying hello from
+
+163
+00:07:04,080 --> 00:07:07,409
+Las Vegas and it's offending the version
+
+164
+00:07:07,409 --> 00:07:10,169
+of node.js to it so the way you run that
+
+165
+00:07:10,169 --> 00:07:12,000
+code i'm going to show you the organic
+
+166
+00:07:12,000 --> 00:07:15,300
+version first we are going to use curve
+
+167
+00:07:15,300 --> 00:07:17,400
+because this is just a simple HTTP POST
+
+168
+00:07:17,400 --> 00:07:19,979
+request so courage enough and so we are
+
+169
+00:07:19,979 --> 00:07:21,650
+using Colonel we are pointing it at our
+
+170
+00:07:21,650 --> 00:07:25,050
+sandbox deployed in Sao Paulo we are
+
+171
+00:07:25,050 --> 00:07:26,789
+saying that this code is to be executing
+
+172
+00:07:26,789 --> 00:07:28,770
+on behalf of 10 and Q 1 and this is just
+
+173
+00:07:28,770 --> 00:07:31,050
+an arbitrary string that denotes the
+
+174
+00:07:31,050 --> 00:07:32,819
+isolation boundary between containers
+
+175
+00:07:32,819 --> 00:07:39,840
+and then we are just providing the body
+
+176
+00:07:39,840 --> 00:07:42,690
+of the HTTP POST request which is that
+
+177
+00:07:42,690 --> 00:07:46,050
+not Jes code that we won't execute so we
+
+178
+00:07:46,050 --> 00:07:48,770
+are going to return a function that
+
+179
+00:07:48,770 --> 00:07:52,050
+takes a single callback parameter and
+
+180
+00:07:52,050 --> 00:07:53,580
+you immediately calls that callback
+
+181
+00:07:53,580 --> 00:07:59,669
+parameter with hello world and i hope i
+
+182
+00:07:59,669 --> 00:08:12,090
+didn't make and i did make what did i
+
+183
+00:08:12,090 --> 00:08:12,900
+miss here
+
+184
+00:08:12,900 --> 00:08:16,139
+no our sandbox also has a very simple
+
+185
+00:08:16,139 --> 00:08:18,120
+authentication mechanism so I have to
+
+186
+00:08:18,120 --> 00:08:20,160
+basically provide an authentication key
+
+187
+00:08:20,160 --> 00:08:23,940
+here this is a query parameter which is
+
+188
+00:08:23,940 --> 00:08:30,060
+what I missed so you're sending it over
+
+189
+00:08:30,060 --> 00:08:33,990
+to some Pablo our sandbox compilers that
+
+190
+00:08:33,990 --> 00:08:36,240
+code executes serializes the result and
+
+191
+00:08:36,240 --> 00:08:38,690
+here it comes back so let's run it again
+
+192
+00:08:38,690 --> 00:08:41,279
+it is not much faster because the second
+
+193
+00:08:41,279 --> 00:08:42,659
+time I run it the container is already
+
+194
+00:08:42,659 --> 00:08:45,120
+running in Sao Paulo for that tenant so
+
+195
+00:08:45,120 --> 00:08:48,600
+no extra provisioning is required so
+
+196
+00:08:48,600 --> 00:08:50,160
+with that let's move on to a slightly
+
+197
+00:08:50,160 --> 00:08:52,920
+more advanced example in this case the
+
+198
+00:08:52,920 --> 00:08:54,209
+only difference is that we have a
+
+199
+00:08:54,209 --> 00:08:55,830
+variation of the programming model which
+
+200
+00:08:55,830 --> 00:08:58,350
+allows URL query parameters of that HTTP
+
+201
+00:08:58,350 --> 00:09:00,810
+POST request to be propagated to the
+
+202
+00:09:00,810 --> 00:09:02,880
+JavaScript code as part of the context
+
+203
+00:09:02,880 --> 00:09:05,040
+object so what i'm doing here is i'm
+
+204
+00:09:05,040 --> 00:09:07,800
+prepending a name equals of 0 URL query
+
+205
+00:09:07,800 --> 00:09:10,470
+parameter to the URL i'm going to be
+
+206
+00:09:10,470 --> 00:09:12,810
+involved to be invoking and then i can
+
+207
+00:09:12,810 --> 00:09:15,089
+access that name parameter off of the
+
+208
+00:09:15,089 --> 00:09:17,580
+context object passed into the function
+
+209
+00:09:17,580 --> 00:09:19,800
+that I'm authoring so let's run this
+
+210
+00:09:19,800 --> 00:09:28,280
+game
+
+211
+00:09:28,290 --> 00:09:30,690
+oh hello of zero and just make sure
+
+212
+00:09:30,690 --> 00:09:32,190
+up against really well i'm going to
+
+213
+00:09:32,190 --> 00:09:37,500
+change the 02 jas cone and what comes
+
+214
+00:09:37,500 --> 00:09:42,090
+back is calories count so here is a
+
+215
+00:09:42,090 --> 00:09:43,950
+slightly more interesting example so
+
+216
+00:09:43,950 --> 00:09:45,780
+let's say now that we have the ability
+
+217
+00:09:45,780 --> 00:09:47,970
+to run arbitrary code in eight places in
+
+218
+00:09:47,970 --> 00:09:49,980
+the world one one way we can use it is
+
+219
+00:09:49,980 --> 00:09:52,560
+to measure latency of accessing a
+
+220
+00:09:52,560 --> 00:09:54,780
+particular end point from those eight
+
+221
+00:09:54,780 --> 00:09:56,400
+places around the world and this is what
+
+222
+00:09:56,400 --> 00:10:00,600
+that code does it will call in 20 20 com
+
+223
+00:10:00,600 --> 00:10:03,510
+basically to an HTTP GET against zero at
+
+224
+00:10:03,510 --> 00:10:05,910
+colleges our website measure the latency
+
+225
+00:10:05,910 --> 00:10:09,720
+of that call and return the latency in
+
+226
+00:10:09,720 --> 00:10:14,310
+the result so let's run it from Northern
+
+227
+00:10:14,310 --> 00:10:20,040
+California which is the other sandbox
+
+228
+00:10:20,040 --> 00:10:23,340
+lastly we have deployed and you'll
+
+229
+00:10:23,340 --> 00:10:24,840
+notice the latency to Northern
+
+230
+00:10:24,840 --> 00:10:28,410
+California is very long but once you are
+
+231
+00:10:28,410 --> 00:10:30,300
+in Northern California the latency of
+
+232
+00:10:30,300 --> 00:10:32,250
+calling ohdeedoh.com is just 26
+
+233
+00:10:32,250 --> 00:10:34,590
+milliseconds that is because our website
+
+234
+00:10:34,590 --> 00:10:36,450
+of zero dot com is hosted in Northern
+
+235
+00:10:36,450 --> 00:10:38,730
+California as well if we do the same
+
+236
+00:10:38,730 --> 00:10:40,710
+test and send that code to be executed
+
+237
+00:10:40,710 --> 00:10:49,260
+in Singapore that called take more time
+
+238
+00:10:49,260 --> 00:10:52,020
+than my flight here even not is the
+
+239
+00:10:52,020 --> 00:10:55,350
+latency from Singapore to of zero is 750
+
+240
+00:10:55,350 --> 00:10:57,840
+two milliseconds so that way you can
+
+241
+00:10:57,840 --> 00:10:59,820
+basically conduct very simple latency
+
+242
+00:10:59,820 --> 00:11:01,350
+measurements by having the code deploy
+
+243
+00:11:01,350 --> 00:11:02,490
+to different places around the world
+
+244
+00:11:02,490 --> 00:11:09,840
+with a sim simple HTTP POST request so
+
+245
+00:11:09,840 --> 00:11:11,160
+here comes something interesting that
+
+246
+00:11:11,160 --> 00:11:13,770
+that ghanta mentioned the beginning in
+
+247
+00:11:13,770 --> 00:11:15,480
+addition to running no dress code we
+
+248
+00:11:15,480 --> 00:11:16,980
+also have the ability to run c-sharp
+
+249
+00:11:16,980 --> 00:11:19,650
+code and you are doing this using the
+
+250
+00:11:19,650 --> 00:11:23,040
+eds module which allows you to host CLR
+
+251
+00:11:23,040 --> 00:11:25,200
+and v8 inside of a single process and
+
+252
+00:11:25,200 --> 00:11:26,820
+provides an interrupt mechanism between
+
+253
+00:11:26,820 --> 00:11:29,040
+these two so what happens here is that
+
+254
+00:11:29,040 --> 00:11:31,230
+the node.js code is creating a
+
+255
+00:11:31,230 --> 00:11:35,100
+JavaScript proxy around async lambda
+
+256
+00:11:35,100 --> 00:11:37,350
+expression in c-sharp and it's also
+
+257
+00:11:37,350 --> 00:11:39,150
+providing a marshalling capability such
+
+258
+00:11:39,150 --> 00:11:40,650
+a thing you can exchange data between
+
+259
+00:11:40,650 --> 00:11:42,040
+JavaScript and see
+
+260
+00:11:42,040 --> 00:11:43,990
+are and also you can sighs threading
+
+261
+00:11:43,990 --> 00:11:45,160
+models because see that is
+
+262
+00:11:45,160 --> 00:11:47,970
+multi-threaded and v8 is single threaded
+
+263
+00:11:47,970 --> 00:11:52,060
+so this code should effectively do the
+
+264
+00:11:52,060 --> 00:11:54,820
+very same hello world example that we
+
+265
+00:11:54,820 --> 00:11:57,220
+have done previously in purely non je s
+
+266
+00:11:57,220 --> 00:12:00,190
+basically the URL query parameter name
+
+267
+00:12:00,190 --> 00:12:02,440
+of zero is going to be first propagated
+
+268
+00:12:02,440 --> 00:12:06,579
+into that context object in not Jes from
+
+269
+00:12:06,579 --> 00:12:08,440
+there it is going to be propagated to
+
+270
+00:12:08,440 --> 00:12:12,730
+the JavaScript function which wraps the
+
+271
+00:12:12,730 --> 00:12:15,220
+sea shop is in lambda expression from
+
+272
+00:12:15,220 --> 00:12:17,649
+there hjs will actually propagate it
+
+273
+00:12:17,649 --> 00:12:20,560
+into the dynamic context parameter to
+
+274
+00:12:20,560 --> 00:12:22,660
+that acing lambda expression and c-sharp
+
+275
+00:12:22,660 --> 00:12:26,019
+will generate a response let's send it
+
+276
+00:12:26,019 --> 00:12:33,399
+over to Brazil hello world 0 just to
+
+277
+00:12:33,399 --> 00:12:35,199
+make sure that we have the entire
+
+278
+00:12:35,199 --> 00:12:39,699
+pipeline covered the fool and here comes
+
+279
+00:12:39,699 --> 00:12:41,560
+the phone so the interesting thing you
+
+280
+00:12:41,560 --> 00:12:43,060
+know you know you notice it was actually
+
+281
+00:12:43,060 --> 00:12:44,649
+pretty fast so what happened here is we
+
+282
+00:12:44,649 --> 00:12:47,019
+sent a JavaScript code with embedded c
+
+283
+00:12:47,019 --> 00:12:49,899
+sharp code to brazil the sandbox took
+
+284
+00:12:49,899 --> 00:12:51,910
+this thing extracted the seashore code
+
+285
+00:12:51,910 --> 00:12:53,680
+compiled it on the fly into an in-memory
+
+286
+00:12:53,680 --> 00:12:56,110
+assembly marshal the request in to c
+
+287
+00:12:56,110 --> 00:12:57,639
+sharp C sharp generated the response
+
+288
+00:12:57,639 --> 00:12:59,589
+JavaScript serialize it into Jason and
+
+289
+00:12:59,589 --> 00:13:06,829
+send back to us so that was pretty quick
+
+290
+00:13:06,839 --> 00:13:09,310
+so with that let's move into something
+
+291
+00:13:09,310 --> 00:13:11,500
+slightly more complex and let's see how
+
+292
+00:13:11,500 --> 00:13:13,750
+that sandbox preventing the different
+
+293
+00:13:13,750 --> 00:13:15,459
+provides the different isolation Gavitt
+
+294
+00:13:15,459 --> 00:13:16,959
+guarantees that I've been talking about
+
+295
+00:13:16,959 --> 00:13:18,430
+and also prevents different kinds of
+
+296
+00:13:18,430 --> 00:13:21,550
+attacks so what you see here is a code
+
+297
+00:13:21,550 --> 00:13:23,290
+that we are going to be executing on
+
+298
+00:13:23,290 --> 00:13:26,660
+behalf of two different tenants
+
+299
+00:13:26,670 --> 00:13:29,050
+sequentially what this code does it
+
+300
+00:13:29,050 --> 00:13:31,390
+first it looks if there is a secret
+
+301
+00:13:31,390 --> 00:13:34,570
+property in the global namespace of what
+
+302
+00:13:34,570 --> 00:13:36,520
+whatever context that code executes
+
+303
+00:13:36,520 --> 00:13:39,010
+saying if there is no secret object a
+
+304
+00:13:39,010 --> 00:13:40,899
+one will be created using math.random
+
+305
+00:13:40,899 --> 00:13:43,720
+and you know the second time you execute
+
+306
+00:13:43,720 --> 00:13:45,490
+that code the secret will already exist
+
+307
+00:13:45,490 --> 00:13:48,640
+so it will remain unchanged and then the
+
+308
+00:13:48,640 --> 00:13:50,950
+function that we are returning from the
+
+309
+00:13:50,950 --> 00:13:52,870
+snow dress code simply turns around and
+
+310
+00:13:52,870 --> 00:13:55,750
+returns the global secret so let's run
+
+311
+00:13:55,750 --> 00:13:58,959
+it on behalf of 10 and full in some Sao
+
+312
+00:13:58,959 --> 00:14:02,920
+Paulo so the first time we done it the
+
+313
+00:14:02,920 --> 00:14:04,959
+secret will be generated and will be
+
+314
+00:14:04,959 --> 00:14:07,890
+returned to to us and that secret is
+
+315
+00:14:07,890 --> 00:14:11,080
+0.56 to something something next time
+
+316
+00:14:11,080 --> 00:14:13,570
+you call it the secret is the same but
+
+317
+00:14:13,570 --> 00:14:15,310
+now if i go ahead and I change the
+
+318
+00:14:15,310 --> 00:14:23,440
+tenant named here to full 10 and 1 i'll
+
+319
+00:14:23,440 --> 00:14:24,390
+get an oosik
+
+320
+00:14:24,390 --> 00:14:27,960
+generated 0.35 if I call tenant one
+
+321
+00:14:27,960 --> 00:14:32,160
+again I will again get zero 3.5 but if i
+
+322
+00:14:32,160 --> 00:14:35,430
+go back to tenant I'll get back the old
+
+323
+00:14:35,430 --> 00:14:36,510
+secret so this is just a demonstration
+
+324
+00:14:36,510 --> 00:14:40,080
+that the data context in which the
+
+325
+00:14:40,080 --> 00:14:41,790
+requests on behalf of different tenants
+
+326
+00:14:41,790 --> 00:14:44,670
+execute is different so tenants do not
+
+327
+00:14:44,670 --> 00:14:51,600
+have access to their data let's have a
+
+328
+00:14:51,600 --> 00:14:53,199
+look
+
+329
+00:14:53,199 --> 00:14:55,899
+my favorite kind of attack on nodejs
+
+330
+00:14:55,899 --> 00:14:58,879
+very elaborate that I can CPU we are
+
+331
+00:14:58,879 --> 00:15:01,009
+basically going to run an infinite loop
+
+332
+00:15:01,009 --> 00:15:03,800
+while true so what this does in Dantes
+
+333
+00:15:03,800 --> 00:15:06,620
+it blocks the event loop the event loop
+
+334
+00:15:06,620 --> 00:15:09,170
+can process any any more requests but
+
+335
+00:15:09,170 --> 00:15:12,050
+the basic premise of our sandbox is that
+
+336
+00:15:12,050 --> 00:15:15,800
+it is fine to do so as long as it
+
+337
+00:15:15,800 --> 00:15:17,389
+doesn't prevent other tenants from
+
+338
+00:15:17,389 --> 00:15:20,329
+executing code in the sandbox if you are
+
+339
+00:15:20,329 --> 00:15:22,490
+writing bad cold it is okay if you
+
+340
+00:15:22,490 --> 00:15:24,230
+should you yourself in the food but you
+
+341
+00:15:24,230 --> 00:15:25,959
+shouldn't be able to affect how others
+
+342
+00:15:25,959 --> 00:15:29,779
+execute code so let's let's take a guy
+
+343
+00:15:29,779 --> 00:15:31,819
+who's actually in who actually knows how
+
+344
+00:15:31,819 --> 00:15:34,040
+to write good code and he will be
+
+345
+00:15:34,040 --> 00:15:38,019
+issuing request request to the sandbox
+
+346
+00:15:38,019 --> 00:15:40,850
+thousand requests sequentially will
+
+347
+00:15:40,850 --> 00:15:42,560
+basically be responding with hello one
+
+348
+00:15:42,560 --> 00:15:44,720
+two three and so on and now I'm going to
+
+349
+00:15:44,720 --> 00:15:47,689
+run the bed code in the same sandbox and
+
+350
+00:15:47,689 --> 00:15:50,569
+see if it affects the behavior of the
+
+351
+00:15:50,569 --> 00:15:51,980
+first tenant which is running the
+
+352
+00:15:51,980 --> 00:15:55,009
+well-behaved code so I'm not going to
+
+353
+00:15:55,009 --> 00:15:57,019
+take that wire through code that the
+
+354
+00:15:57,019 --> 00:15:59,899
+loop you are seeing here and I'm going
+
+355
+00:15:59,899 --> 00:16:04,710
+to run it from this console the Derby
+
+356
+00:16:04,720 --> 00:16:09,620
+the first of all take a moment is what
+
+357
+00:16:09,620 --> 00:16:11,509
+happens here is that we are starting to
+
+358
+00:16:11,509 --> 00:16:13,399
+execute the JavaScript code that does
+
+359
+00:16:13,399 --> 00:16:16,040
+the infinite loop and before our system
+
+360
+00:16:16,040 --> 00:16:17,870
+realizes that the event loop is blocked
+
+361
+00:16:17,870 --> 00:16:19,189
+it is like two seconds it is a
+
+362
+00:16:19,189 --> 00:16:21,290
+configurable time period but eventually
+
+363
+00:16:21,290 --> 00:16:24,529
+the our sandbox realizes okay this this
+
+364
+00:16:24,529 --> 00:16:26,300
+process is gone so we are going to
+
+365
+00:16:26,300 --> 00:16:29,540
+terminate it this results in that tenant
+
+366
+00:16:29,540 --> 00:16:31,699
+who wrote the bed code getting an HTTP
+
+367
+00:16:31,699 --> 00:16:34,579
+500 back but you'll notice that the code
+
+368
+00:16:34,579 --> 00:16:37,100
+who wrote the word written code is
+
+369
+00:16:37,100 --> 00:16:38,540
+running just fine so he remained
+
+370
+00:16:38,540 --> 00:16:42,430
+unaffected by the attempted CPU attack
+
+371
+00:16:42,430 --> 00:16:47,290
+to keep that well-behaved 10 and going
+
+372
+00:16:47,290 --> 00:16:50,750
+and we will do another kind of attack on
+
+373
+00:16:50,750 --> 00:16:52,759
+memory this time so here we have a
+
+374
+00:16:52,759 --> 00:16:55,639
+string evil and you are going to run a
+
+375
+00:16:55,639 --> 00:16:57,439
+very tight loop which basically doubles
+
+376
+00:16:57,439 --> 00:16:59,540
+the size of evil so eventually after a
+
+377
+00:16:59,540 --> 00:17:00,860
+few iterations we are going to run out
+
+378
+00:17:00,860 --> 00:17:04,549
+of memory so let's run this thing in the
+
+379
+00:17:04,549 --> 00:17:05,510
+same sandbox
+
+380
+00:17:05,510 --> 00:17:10,040
+as the tenant running the well executing
+
+381
+00:17:10,040 --> 00:17:11,780
+code so you'll notice that we got HTT if
+
+382
+00:17:11,780 --> 00:17:15,199
+I found it much faster however the the
+
+383
+00:17:15,199 --> 00:17:17,180
+tenant that is well behaved was
+
+384
+00:17:17,180 --> 00:17:20,540
+unaffected again and the last kind of
+
+385
+00:17:20,540 --> 00:17:22,970
+attack is a traditional fork bomb so we
+
+386
+00:17:22,970 --> 00:17:26,360
+are going to use spawn to basically keep
+
+387
+00:17:26,360 --> 00:17:29,270
+creating note processes child node
+
+388
+00:17:29,270 --> 00:17:30,800
+processes they're not processes are not
+
+389
+00:17:30,800 --> 00:17:32,510
+doing much but it is that is beside the
+
+390
+00:17:32,510 --> 00:17:34,580
+point the idea is that you know we are
+
+391
+00:17:34,580 --> 00:17:36,320
+trying to create a billion processes on
+
+392
+00:17:36,320 --> 00:17:40,460
+that machine and see that well behave
+
+393
+00:17:40,460 --> 00:17:41,960
+tonight is affected so let's do this
+
+394
+00:17:41,960 --> 00:17:57,470
+again I will take a moment until it is
+
+395
+00:17:57,470 --> 00:17:58,700
+it should be 500
+
+396
+00:17:58,700 --> 00:18:00,890
+and the world we hit tennis continues
+
+397
+00:18:00,890 --> 00:18:02,630
+running just fine so this just
+
+398
+00:18:02,630 --> 00:18:05,990
+demonstrated some very basic send boxing
+
+399
+00:18:05,990 --> 00:18:07,610
+capabilities of the technology that
+
+400
+00:18:07,610 --> 00:18:09,860
+we've created one last thing I really
+
+401
+00:18:09,860 --> 00:18:11,720
+want to talk about in this presentation
+
+402
+00:18:11,720 --> 00:18:14,780
+is logging because that in itself is
+
+403
+00:18:14,780 --> 00:18:20,330
+very interesting logging is a very basic
+
+404
+00:18:20,330 --> 00:18:22,160
+diagnostic mechanism that is very
+
+405
+00:18:22,160 --> 00:18:23,750
+frequently used in node in a distributed
+
+406
+00:18:23,750 --> 00:18:27,080
+system like that it is interesting how
+
+407
+00:18:27,080 --> 00:18:29,540
+to structure a collection of logs such
+
+408
+00:18:29,540 --> 00:18:30,770
+as it is actually usable to the
+
+409
+00:18:30,770 --> 00:18:32,510
+developer and other systems that consume
+
+410
+00:18:32,510 --> 00:18:35,180
+them so what we are doing here is we are
+
+411
+00:18:35,180 --> 00:18:37,310
+normalizing logs generated by all
+
+412
+00:18:37,310 --> 00:18:38,810
+components in the system both the
+
+413
+00:18:38,810 --> 00:18:41,480
+sandbox the proxy and the user code
+
+414
+00:18:41,480 --> 00:18:42,830
+using anything you write using
+
+415
+00:18:42,830 --> 00:18:46,190
+console.log now into Bunyan first such
+
+416
+00:18:46,190 --> 00:18:47,960
+that we have structured Jason locks then
+
+417
+00:18:47,960 --> 00:18:50,150
+we put those logs into Kafka we have a
+
+418
+00:18:50,150 --> 00:18:52,460
+Kafka cluster deployed across the car OS
+
+419
+00:18:52,460 --> 00:18:55,160
+cluster Kafka SMS messaging server that
+
+420
+00:18:55,160 --> 00:18:56,660
+is highly optimized for logging
+
+421
+00:18:56,660 --> 00:18:59,360
+scenarios and then we expose the logs
+
+422
+00:18:59,360 --> 00:19:03,890
+over HTTP so let's take it for a spin
+
+423
+00:19:03,890 --> 00:19:05,720
+again so what i'm doing here is
+
+424
+00:19:05,720 --> 00:19:07,520
+basically writing a single simple
+
+425
+00:19:07,520 --> 00:19:10,300
+function that the calls console.log ones
+
+426
+00:19:10,300 --> 00:19:14,750
+first I'm going to attach my streaming
+
+427
+00:19:14,750 --> 00:19:17,150
+logging endpoint that exposes the locks
+
+428
+00:19:17,150 --> 00:19:21,080
+from Kafka and I'm filtering Lee let me
+
+429
+00:19:21,080 --> 00:19:23,150
+actually filter the output through
+
+430
+00:19:23,150 --> 00:19:25,400
+Bunyan so that we get pretty printing
+
+431
+00:19:25,400 --> 00:19:28,310
+and then I'm going to invoke this code
+
+432
+00:19:28,310 --> 00:19:34,500
+that actually perform some some logging
+
+433
+00:19:34,510 --> 00:19:36,250
+here it is
+
+434
+00:19:36,250 --> 00:19:40,660
+all returned Monte is 0 10 30 which is
+
+435
+00:19:40,660 --> 00:19:46,450
+what this code did but you also notice
+
+436
+00:19:46,450 --> 00:19:48,070
+that there is a console.log statement
+
+437
+00:19:48,070 --> 00:19:53,230
+and that console log showed up here if I
+
+438
+00:19:53,230 --> 00:19:56,320
+run it again it will basically get a new
+
+439
+00:19:56,320 --> 00:19:58,990
+entry here down here so this gives you a
+
+440
+00:19:58,990 --> 00:20:00,940
+streaming logging capability real time
+
+441
+00:20:00,940 --> 00:20:02,980
+access to logs generated by the sandbox
+
+442
+00:20:02,980 --> 00:20:05,830
+code and you can post process it in
+
+443
+00:20:05,830 --> 00:20:13,900
+whatever way you want so this is this is
+
+444
+00:20:13,900 --> 00:20:16,420
+what we have built we are kind of we
+
+445
+00:20:16,420 --> 00:20:19,210
+built it primarily with a scenario in
+
+446
+00:20:19,210 --> 00:20:21,400
+mind of enabling our customers to run
+
+447
+00:20:21,400 --> 00:20:23,590
+custom code on a platform but once we
+
+448
+00:20:23,590 --> 00:20:25,690
+build it we are actually started
+
+449
+00:20:25,690 --> 00:20:27,970
+noticing certain scenarios and patterns
+
+450
+00:20:27,970 --> 00:20:29,710
+where the sandbox is very very usable
+
+451
+00:20:29,710 --> 00:20:31,750
+for example we've built our entire
+
+452
+00:20:31,750 --> 00:20:33,430
+health monitoring system around the
+
+453
+00:20:33,430 --> 00:20:35,080
+system we have these eight sandboxes
+
+454
+00:20:35,080 --> 00:20:36,700
+deployed around the world and every 30
+
+455
+00:20:36,700 --> 00:20:38,350
+seconds they are basically executing a
+
+456
+00:20:38,350 --> 00:20:40,870
+bunch of tests not just HTTP test but
+
+457
+00:20:40,870 --> 00:20:42,940
+you know you can contact Mongo you can
+
+458
+00:20:42,940 --> 00:20:46,000
+do anything you can do with no Jas in
+
+459
+00:20:46,000 --> 00:20:47,470
+those sand boxes around the world and
+
+460
+00:20:47,470 --> 00:20:49,060
+they are then consolidating results
+
+461
+00:20:49,060 --> 00:20:51,220
+across the world but such a technology
+
+462
+00:20:51,220 --> 00:20:53,950
+really we think the sweet spot it is
+
+463
+00:20:53,950 --> 00:20:56,020
+targeting multi-tenant systems or things
+
+464
+00:20:56,020 --> 00:20:59,890
+like if this than that things like
+
+465
+00:20:59,890 --> 00:21:02,560
+custom web hooks for example so the
+
+466
+00:21:02,560 --> 00:21:04,420
+possibilities are really quite quite
+

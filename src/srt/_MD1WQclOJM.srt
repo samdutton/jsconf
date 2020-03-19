@@ -1,0 +1,2605 @@
+1
+00:00:10,630 --> 00:00:21,400
+
+you
+
+2
+00:00:21,410 --> 00:00:24,640
+
+
+3
+00:00:24,650 --> 00:00:27,230
+I'm an engineer on google plus and i'll
+
+4
+00:00:27,230 --> 00:00:28,490
+be talking about the work we're doing
+
+5
+00:00:28,490 --> 00:00:31,070
+with CSS modules for those who have
+
+6
+00:00:31,070 --> 00:00:33,170
+already seen this at CSS conf sorry this
+
+7
+00:00:33,170 --> 00:00:36,050
+is basically the same talk I updated a
+
+8
+00:00:36,050 --> 00:00:38,290
+few things based on questions from there
+
+9
+00:00:38,290 --> 00:00:40,850
+so the problem that CSS modules is
+
+10
+00:00:40,850 --> 00:00:43,010
+trying to solve is not a problem that's
+
+11
+00:00:43,010 --> 00:00:45,559
+unique to Google+ or Google it's a
+
+12
+00:00:45,559 --> 00:00:48,050
+problem of all very large applications
+
+13
+00:00:48,050 --> 00:00:50,449
+this is just a sampling of some of the
+
+14
+00:00:50,449 --> 00:00:52,730
+top level pages and within each of these
+
+15
+00:00:52,730 --> 00:00:55,790
+pages we have lots of features and that
+
+16
+00:00:55,790 --> 00:00:57,619
+adds up to lots of JavaScript and CSS
+
+17
+00:00:57,619 --> 00:01:00,290
+and as you can see from these numbers
+
+18
+00:01:00,290 --> 00:01:04,280
+here we have a ton of CSS and we have a
+
+19
+00:01:04,280 --> 00:01:07,580
+problem to solve the other problem that
+
+20
+00:01:07,580 --> 00:01:10,220
+module system addresses is a problem
+
+21
+00:01:10,220 --> 00:01:11,780
+that almost everybody struggles with
+
+22
+00:01:11,780 --> 00:01:16,820
+which is writing maintainable CSS and we
+
+23
+00:01:16,820 --> 00:01:19,100
+have both of these problems in Google+ a
+
+24
+00:01:19,100 --> 00:01:23,240
+lot of CSS too big too slow and since we
+
+25
+00:01:23,240 --> 00:01:25,670
+are manually curating our CSS in our
+
+26
+00:01:25,670 --> 00:01:28,040
+build files it's brittle and prone to
+
+27
+00:01:28,040 --> 00:01:30,320
+reordering when developers refactor
+
+28
+00:01:30,320 --> 00:01:33,230
+their code so this has resulted in many
+
+29
+00:01:33,230 --> 00:01:35,960
+broken you I regressions in our QA and
+
+30
+00:01:35,960 --> 00:01:38,570
+because developers cannot rely on a
+
+31
+00:01:38,570 --> 00:01:41,390
+deterministic cascade order they have to
+
+32
+00:01:41,390 --> 00:01:44,330
+resort to things like specificity which
+
+33
+00:01:44,330 --> 00:01:47,480
+gets ugly so this talk is about the
+
+34
+00:01:47,480 --> 00:01:49,580
+module system that we've developed the
+
+35
+00:01:49,580 --> 00:01:52,490
+primary goal being CSS size initial load
+
+36
+00:01:52,490 --> 00:01:56,270
+time building a body will system is a
+
+37
+00:01:56,270 --> 00:01:57,830
+lot more straightforward if you have
+
+38
+00:01:57,830 --> 00:02:00,229
+absolutely no shared code at all let's
+
+39
+00:02:00,229 --> 00:02:01,880
+say we didn't share any code between our
+
+40
+00:02:01,880 --> 00:02:04,310
+pages on Google+ then you could simply
+
+41
+00:02:04,310 --> 00:02:06,229
+make each page a module and download it
+
+42
+00:02:06,229 --> 00:02:08,269
+and it's much more straightforward but
+
+43
+00:02:08,269 --> 00:02:10,250
+in reality we have a lot of shared
+
+44
+00:02:10,250 --> 00:02:12,080
+styles and if you don't have a lot of
+
+45
+00:02:12,080 --> 00:02:13,970
+shared styles on your site you're doing
+
+46
+00:02:13,970 --> 00:02:17,510
+something wrong so we had to develop a
+
+47
+00:02:17,510 --> 00:02:19,519
+dependency system to handle this and
+
+48
+00:02:19,519 --> 00:02:22,670
+that itself has been a huge win and it's
+
+49
+00:02:22,670 --> 00:02:24,670
+really improved developer productivity
+
+50
+00:02:24,670 --> 00:02:27,860
+because now our developers can rely on
+
+51
+00:02:27,860 --> 00:02:30,500
+this deterministic cascade and not be
+
+52
+00:02:30,500 --> 00:02:32,989
+fighting specificity so we haven't
+
+53
+00:02:32,989 --> 00:02:35,989
+launched this a module system fully to
+
+54
+00:02:35,989 --> 00:02:38,030
+our entire site we have launched it
+
+55
+00:02:38,030 --> 00:02:40,520
+pages and we've seen significant
+
+56
+00:02:40,520 --> 00:02:42,770
+performance improvement in terms of CSS
+
+57
+00:02:42,770 --> 00:02:47,480
+size the GSS the CSS preprocessor we use
+
+58
+00:02:47,480 --> 00:02:49,790
+internally is called closure style
+
+59
+00:02:49,790 --> 00:02:53,000
+sheets and we call it GSS internally so
+
+60
+00:02:53,000 --> 00:02:54,920
+if i say GSS in this presentation I
+
+61
+00:02:54,920 --> 00:03:00,260
+really mean CSS so we've said that when
+
+62
+00:03:00,260 --> 00:03:01,880
+you know we have shared code we want a
+
+63
+00:03:01,880 --> 00:03:03,770
+dependency system but to build an
+
+64
+00:03:03,770 --> 00:03:06,050
+effective dependency system you have to
+
+65
+00:03:06,050 --> 00:03:09,319
+know what the shared code is and this is
+
+66
+00:03:09,319 --> 00:03:11,480
+not always obvious for a really large
+
+67
+00:03:11,480 --> 00:03:14,150
+site you might notice that there is some
+
+68
+00:03:14,150 --> 00:03:16,280
+similarity between a button and a menu
+
+69
+00:03:16,280 --> 00:03:18,500
+item but it's not obvious what those are
+
+70
+00:03:18,500 --> 00:03:21,380
+but you can start with the obvious there
+
+71
+00:03:21,380 --> 00:03:23,959
+are a lot of repeating UI elements in a
+
+72
+00:03:23,959 --> 00:03:26,600
+lot of sites and we have a ton of these
+
+73
+00:03:26,600 --> 00:03:28,880
+and these are things like buttons icons
+
+74
+00:03:28,880 --> 00:03:32,150
+or what's called the media object with
+
+75
+00:03:32,150 --> 00:03:35,239
+image on the Left text on the right so
+
+76
+00:03:35,239 --> 00:03:37,700
+Google Plus is a social network the
+
+77
+00:03:37,700 --> 00:03:39,500
+primary content on the main page are
+
+78
+00:03:39,500 --> 00:03:42,880
+post from people in your network and
+
+79
+00:03:42,880 --> 00:03:46,450
+every post is contained in its card and
+
+80
+00:03:46,450 --> 00:03:48,950
+every post has the same characteristics
+
+81
+00:03:48,950 --> 00:03:51,290
+the circular icon with a person posting
+
+82
+00:03:51,290 --> 00:03:54,350
+there are buttons for + well for
+
+83
+00:03:54,350 --> 00:03:56,660
+uploading Andrey sharing this comment
+
+84
+00:03:56,660 --> 00:03:58,790
+activity on the left hand side there's a
+
+85
+00:03:58,790 --> 00:04:00,560
+box that you would start typing in if
+
+86
+00:04:00,560 --> 00:04:01,730
+you wanted to share something with your
+
+87
+00:04:01,730 --> 00:04:03,549
+network and we call this the share box
+
+88
+00:04:03,549 --> 00:04:05,780
+so this is a completely different page
+
+89
+00:04:05,780 --> 00:04:08,180
+it's my profile page and it's got this
+
+90
+00:04:08,180 --> 00:04:10,250
+unique element on the top right going
+
+91
+00:04:10,250 --> 00:04:12,440
+but the rest of the page is looking very
+
+92
+00:04:12,440 --> 00:04:14,989
+similar there are posts the posts have
+
+93
+00:04:14,989 --> 00:04:17,209
+the same characteristic same components
+
+94
+00:04:17,209 --> 00:04:20,209
+and again there is a share box another
+
+95
+00:04:20,209 --> 00:04:23,300
+page on our side community page and it
+
+96
+00:04:23,300 --> 00:04:24,680
+has a description of the community in
+
+97
+00:04:24,680 --> 00:04:26,660
+the top right card and there's a panel
+
+98
+00:04:26,660 --> 00:04:29,300
+on the left but the rest of the page is
+
+99
+00:04:29,300 --> 00:04:33,260
+again posts and the share box I get
+
+100
+00:04:33,260 --> 00:04:35,690
+another page photos and this looks very
+
+101
+00:04:35,690 --> 00:04:37,520
+different at first but then if you look
+
+102
+00:04:37,520 --> 00:04:38,960
+on the right panel you see the same
+
+103
+00:04:38,960 --> 00:04:41,780
+recurring UI elements so you get the
+
+104
+00:04:41,780 --> 00:04:44,510
+point we have a ton of shared components
+
+105
+00:04:44,510 --> 00:04:47,330
+across our entire site but this is not
+
+106
+00:04:47,330 --> 00:04:49,400
+everything in terms of shared styles in
+
+107
+00:04:49,400 --> 00:04:50,940
+addition to this we have
+
+108
+00:04:50,940 --> 00:04:53,040
+forms and colors that we share across
+
+109
+00:04:53,040 --> 00:04:55,230
+all of Google Plus and in addition to
+
+110
+00:04:55,230 --> 00:04:57,120
+that we have lots of shared Styles
+
+111
+00:04:57,120 --> 00:04:59,280
+across all of Google and these are for
+
+112
+00:04:59,280 --> 00:05:01,020
+things like buttons checkboxes menus
+
+113
+00:05:01,020 --> 00:05:03,570
+toolbars etc so that as you're visiting
+
+114
+00:05:03,570 --> 00:05:06,120
+different Google properties like search
+
+115
+00:05:06,120 --> 00:05:08,070
+or maps you have a somewhat consistent
+
+116
+00:05:08,070 --> 00:05:13,920
+look and feel so now we have these
+
+117
+00:05:13,920 --> 00:05:16,710
+somewhat competing goals because our
+
+118
+00:05:16,710 --> 00:05:18,600
+developers want to split all of this
+
+119
+00:05:18,600 --> 00:05:21,060
+code by project boundary because all of
+
+120
+00:05:21,060 --> 00:05:22,890
+those features i showed you the home
+
+121
+00:05:22,890 --> 00:05:25,350
+page the profile page photos they're all
+
+122
+00:05:25,350 --> 00:05:26,880
+developed by completely different teams
+
+123
+00:05:26,880 --> 00:05:29,700
+but we the infrastructure people want
+
+124
+00:05:29,700 --> 00:05:31,950
+them to share all of these common styles
+
+125
+00:05:31,950 --> 00:05:34,410
+so this is all the more reason we need a
+
+126
+00:05:34,410 --> 00:05:36,720
+dependency system we need a systematic
+
+127
+00:05:36,720 --> 00:05:38,130
+way for them to be able to reuse all
+
+128
+00:05:38,130 --> 00:05:40,550
+this code we cannot just depend on
+
+129
+00:05:40,550 --> 00:05:44,490
+developer discipline so let's take the
+
+130
+00:05:44,490 --> 00:05:46,170
+example of the home page in the
+
+131
+00:05:46,170 --> 00:05:48,270
+community page we know that they both
+
+132
+00:05:48,270 --> 00:05:50,910
+need to render post they both need to
+
+133
+00:05:50,910 --> 00:05:52,860
+render a share box and so they have some
+
+134
+00:05:52,860 --> 00:05:54,900
+common code for that in addition to that
+
+135
+00:05:54,900 --> 00:05:58,050
+they have unique UI elements for their
+
+136
+00:05:58,050 --> 00:06:00,480
+own pages but for this common code we
+
+137
+00:06:00,480 --> 00:06:02,010
+want them to be able to write this only
+
+138
+00:06:02,010 --> 00:06:04,260
+once download it only once to the
+
+139
+00:06:04,260 --> 00:06:06,630
+browser and download only the minimum
+
+140
+00:06:06,630 --> 00:06:10,169
+code they need so let's step back from
+
+141
+00:06:10,169 --> 00:06:12,900
+CSS and consider all of the code needed
+
+142
+00:06:12,900 --> 00:06:15,390
+to render one of these pages so for the
+
+143
+00:06:15,390 --> 00:06:17,490
+home page we know we need Templars
+
+144
+00:06:17,490 --> 00:06:20,130
+JavaScript and CSS everything that the
+
+145
+00:06:20,130 --> 00:06:22,680
+browser needs to render this page so for
+
+146
+00:06:22,680 --> 00:06:25,320
+the home page we know we need to render
+
+147
+00:06:25,320 --> 00:06:27,330
+posts share box and other home page
+
+148
+00:06:27,330 --> 00:06:30,600
+specific elements so one goal here is we
+
+149
+00:06:30,600 --> 00:06:33,080
+want our initial page to be super fast
+
+150
+00:06:33,080 --> 00:06:35,280
+we want to download only the minimum
+
+151
+00:06:35,280 --> 00:06:37,620
+needed when we visit the homepage and
+
+152
+00:06:37,620 --> 00:06:40,050
+later on when we visit another page like
+
+153
+00:06:40,050 --> 00:06:42,150
+the community page just download the
+
+154
+00:06:42,150 --> 00:06:44,400
+incremental code needed for that and
+
+155
+00:06:44,400 --> 00:06:48,570
+nothing more so there is a solution for
+
+156
+00:06:48,570 --> 00:06:51,210
+this in JavaScript and it's called jjs
+
+157
+00:06:51,210 --> 00:06:53,280
+modules and it solves exactly this
+
+158
+00:06:53,280 --> 00:06:55,820
+problem of incremental download an
+
+159
+00:06:55,820 --> 00:06:58,290
+example familiar to do javascript
+
+160
+00:06:58,290 --> 00:07:00,590
+developers would be AMD common jas and
+
+161
+00:07:00,590 --> 00:07:03,750
+last year ajs conned my co-workers Malta
+
+162
+00:07:03,750 --> 00:07:04,680
+and John
+
+163
+00:07:04,680 --> 00:07:06,509
+unveiled the Google open source module
+
+164
+00:07:06,509 --> 00:07:10,350
+server however there is no solution here
+
+165
+00:07:10,350 --> 00:07:13,380
+for CSS and the question is can be used
+
+166
+00:07:13,380 --> 00:07:16,590
+the same solution so there is a catch in
+
+167
+00:07:16,590 --> 00:07:20,550
+CSS which is safety so let's say you
+
+168
+00:07:20,550 --> 00:07:22,289
+visited the home page and then you was
+
+169
+00:07:22,289 --> 00:07:23,699
+in the community page if you're not
+
+170
+00:07:23,699 --> 00:07:27,479
+careful about how you write your CSS you
+
+171
+00:07:27,479 --> 00:07:29,940
+could potentially override the styles of
+
+172
+00:07:29,940 --> 00:07:32,370
+the home page and distort that page so
+
+173
+00:07:32,370 --> 00:07:34,259
+for example that there was a button with
+
+174
+00:07:34,259 --> 00:07:36,479
+the same selector on both sides and the
+
+175
+00:07:36,479 --> 00:07:38,099
+community page added style to the same
+
+176
+00:07:38,099 --> 00:07:40,289
+selector and now your home page button
+
+177
+00:07:40,289 --> 00:07:43,199
+is broken so now an additional goal we
+
+178
+00:07:43,199 --> 00:07:46,169
+have for CSS is that we want absolutely
+
+179
+00:07:46,169 --> 00:07:49,139
+no UI regressions on the previous page
+
+180
+00:07:49,139 --> 00:07:52,620
+as you visit new pages so we're starting
+
+181
+00:07:52,620 --> 00:07:55,949
+to see that CSS is not so simple the
+
+182
+00:07:55,949 --> 00:07:57,419
+challenges here include a safety issue
+
+183
+00:07:57,419 --> 00:07:59,430
+that I just mentioned in addition to
+
+184
+00:07:59,430 --> 00:08:01,560
+that we know we have all of these shared
+
+185
+00:08:01,560 --> 00:08:03,360
+depths and we need a dependency system
+
+186
+00:08:03,360 --> 00:08:05,789
+but there is no notion of dependencies
+
+187
+00:08:05,789 --> 00:08:08,820
+and CSS and almost every other language
+
+188
+00:08:08,820 --> 00:08:11,220
+seems to have a dependency system and
+
+189
+00:08:11,220 --> 00:08:13,289
+this like require and common jas or
+
+190
+00:08:13,289 --> 00:08:16,800
+import of java and python so then the
+
+191
+00:08:16,800 --> 00:08:18,720
+question is how do we depend on what we
+
+192
+00:08:18,720 --> 00:08:21,150
+need and how do we depend on only what
+
+193
+00:08:21,150 --> 00:08:26,099
+we need so we recap our goal here as we
+
+194
+00:08:26,099 --> 00:08:27,810
+wanted to deliver the minimum amount of
+
+195
+00:08:27,810 --> 00:08:30,180
+CSS you want to do it incrementally and
+
+196
+00:08:30,180 --> 00:08:33,000
+safely and the challenges are bundling
+
+197
+00:08:33,000 --> 00:08:34,400
+the CSS with its dependencies
+
+198
+00:08:34,400 --> 00:08:36,900
+downloading it as needed and safely
+
+199
+00:08:36,900 --> 00:08:40,200
+composing it so we are really saying
+
+200
+00:08:40,200 --> 00:08:42,450
+what we want is a module system we want
+
+201
+00:08:42,450 --> 00:08:43,919
+to dependency system so we can bundle
+
+202
+00:08:43,919 --> 00:08:46,350
+all the CSS with the steps we want an
+
+203
+00:08:46,350 --> 00:08:48,570
+assembly and serving system so we can
+
+204
+00:08:48,570 --> 00:08:51,900
+download it and safely compose it so
+
+205
+00:08:51,900 --> 00:08:53,420
+let's consider each of these challenges
+
+206
+00:08:53,420 --> 00:08:56,250
+starting with the bundling so if we
+
+207
+00:08:56,250 --> 00:08:58,829
+define a module as a bundle of CSS it
+
+208
+00:08:58,829 --> 00:09:00,510
+supports a page of our sign downloaded
+
+209
+00:09:00,510 --> 00:09:03,180
+together and we are already identified
+
+210
+00:09:03,180 --> 00:09:05,520
+some of our CSS dependencies as the
+
+211
+00:09:05,520 --> 00:09:07,950
+shared code this is CSS that comes from
+
+212
+00:09:07,950 --> 00:09:10,200
+shared components from things like
+
+213
+00:09:10,200 --> 00:09:13,170
+shared fonts and colors and the common
+
+214
+00:09:13,170 --> 00:09:15,750
+CSS libraries been in our case these are
+
+215
+00:09:15,750 --> 00:09:17,339
+typically the Google wide style
+
+216
+00:09:17,339 --> 00:09:18,270
+libraries
+
+217
+00:09:18,270 --> 00:09:21,870
+so before we dive into our solution lets
+
+218
+00:09:21,870 --> 00:09:24,300
+rule out the naive solutions that don't
+
+219
+00:09:24,300 --> 00:09:27,690
+work for us we cannot just become we
+
+220
+00:09:27,690 --> 00:09:29,610
+don't want duplication so we can't just
+
+221
+00:09:29,610 --> 00:09:32,400
+add an additional CSS at import in every
+
+222
+00:09:32,400 --> 00:09:34,020
+page and duplicate Lee download all of
+
+223
+00:09:34,020 --> 00:09:36,090
+those shared Styles you already seen we
+
+224
+00:09:36,090 --> 00:09:38,880
+have a ton of shared Styles if you want
+
+225
+00:09:38,880 --> 00:09:41,430
+to include only what we need so if there
+
+226
+00:09:41,430 --> 00:09:43,050
+are like seven variants of the share box
+
+227
+00:09:43,050 --> 00:09:45,240
+measured and if my page just wants to
+
+228
+00:09:45,240 --> 00:09:47,400
+depend on one of them I want to include
+
+229
+00:09:47,400 --> 00:09:50,460
+just that and nothing else in addition
+
+230
+00:09:50,460 --> 00:09:53,550
+we don't want to take every single style
+
+231
+00:09:53,550 --> 00:09:55,680
+that's ever shared across our entire
+
+232
+00:09:55,680 --> 00:09:58,170
+site and bundle it together in a single
+
+233
+00:09:58,170 --> 00:10:00,120
+shared depth smart you because this is
+
+234
+00:10:00,120 --> 00:10:01,920
+very quickly going to become very big
+
+235
+00:10:01,920 --> 00:10:06,150
+and very unmaintained bull so starting
+
+236
+00:10:06,150 --> 00:10:08,250
+with dependencies we know the first type
+
+237
+00:10:08,250 --> 00:10:10,080
+of dependencies are shared components
+
+238
+00:10:10,080 --> 00:10:13,260
+and we have a bunch of these but what is
+
+239
+00:10:13,260 --> 00:10:15,600
+the CSS that we need for these it's not
+
+240
+00:10:15,600 --> 00:10:17,730
+easy to tell because we are writing our
+
+241
+00:10:17,730 --> 00:10:22,320
+styles in a separate stylesheet but we
+
+242
+00:10:22,320 --> 00:10:24,180
+do know what templates we need and we do
+
+243
+00:10:24,180 --> 00:10:26,250
+know what javascript we need and these
+
+244
+00:10:26,250 --> 00:10:28,650
+in turn can point us to the CSS that
+
+245
+00:10:28,650 --> 00:10:32,490
+they need so essentially if we associate
+
+246
+00:10:32,490 --> 00:10:34,620
+the CSS with the JavaScript and with the
+
+247
+00:10:34,620 --> 00:10:37,320
+template and create a component and the
+
+248
+00:10:37,320 --> 00:10:39,990
+CSS can just come along when we depend
+
+249
+00:10:39,990 --> 00:10:43,230
+on this component and this is similar to
+
+250
+00:10:43,230 --> 00:10:46,980
+the idea of CSS Legos that's fairly well
+
+251
+00:10:46,980 --> 00:10:49,160
+Lola CSS community where you identify
+
+252
+00:10:49,160 --> 00:10:54,120
+bundles of CSS for reusable widgets the
+
+253
+00:10:54,120 --> 00:10:56,370
+new concept here is we wanted to be
+
+254
+00:10:56,370 --> 00:10:58,170
+self-contained you wanted to include its
+
+255
+00:10:58,170 --> 00:11:00,780
+templates and it's JavaScript and this
+
+256
+00:11:00,780 --> 00:11:03,180
+lets us have the framework do all the
+
+257
+00:11:03,180 --> 00:11:05,550
+heavy lifting and we're not relying on
+
+258
+00:11:05,550 --> 00:11:09,900
+developer discipline so we've said that
+
+259
+00:11:09,900 --> 00:11:11,760
+we want to have dependencies from
+
+260
+00:11:11,760 --> 00:11:14,070
+template to CSS and from JavaScript or
+
+261
+00:11:14,070 --> 00:11:17,070
+CSS so we've created our own custom
+
+262
+00:11:17,070 --> 00:11:20,220
+syntax for this we use closure templates
+
+263
+00:11:20,220 --> 00:11:22,980
+and on Google+ and so we've created a
+
+264
+00:11:22,980 --> 00:11:25,620
+require CSS syntax that just gets added
+
+265
+00:11:25,620 --> 00:11:27,990
+to the template and it points to the
+
+266
+00:11:27,990 --> 00:11:31,590
+namespace off the CSS that it needs
+
+267
+00:11:31,590 --> 00:11:33,690
+in addition we created a syntax in
+
+268
+00:11:33,690 --> 00:11:35,910
+JavaScript to the annotation that again
+
+269
+00:11:35,910 --> 00:11:37,770
+points to the CSS namespace that it
+
+270
+00:11:37,770 --> 00:11:39,930
+needs and this can just as well be
+
+271
+00:11:39,930 --> 00:11:43,980
+expressed with AMD syntax so once we do
+
+272
+00:11:43,980 --> 00:11:47,190
+this bundling of components and pointing
+
+273
+00:11:47,190 --> 00:11:49,710
+to components from these visits we
+
+274
+00:11:49,710 --> 00:11:51,360
+essentially end up with a component
+
+275
+00:11:51,360 --> 00:11:53,070
+dependency graph something that looks
+
+276
+00:11:53,070 --> 00:11:56,550
+like this and this thing can extend to
+
+277
+00:11:56,550 --> 00:11:58,800
+our entire site so we have a complete
+
+278
+00:11:58,800 --> 00:12:01,290
+component dependency graph across our
+
+279
+00:12:01,290 --> 00:12:04,950
+site so the next category of
+
+280
+00:12:04,950 --> 00:12:07,200
+dependencies are things like fonts and
+
+281
+00:12:07,200 --> 00:12:09,480
+colors and layout things that are that
+
+282
+00:12:09,480 --> 00:12:10,830
+can be expressed as constants and
+
+283
+00:12:10,830 --> 00:12:13,410
+mix-ins so there is pretty standard
+
+284
+00:12:13,410 --> 00:12:15,390
+syntax for this in most CSS
+
+285
+00:12:15,390 --> 00:12:17,190
+preprocessors and this is the
+
+286
+00:12:17,190 --> 00:12:19,980
+intemperate directive in SAS we use
+
+287
+00:12:19,980 --> 00:12:21,780
+close your style sheets in Google+ and
+
+288
+00:12:21,780 --> 00:12:24,960
+our syntax is called etro wide and it
+
+289
+00:12:24,960 --> 00:12:29,700
+required so let's say you have some name
+
+290
+00:12:29,700 --> 00:12:31,560
+some CSS namespace called profile base
+
+291
+00:12:31,560 --> 00:12:34,380
+and it's exporting a constant called
+
+292
+00:12:34,380 --> 00:12:36,120
+profile update background color or
+
+293
+00:12:36,120 --> 00:12:37,680
+something and then you have some other
+
+294
+00:12:37,680 --> 00:12:40,440
+CSS that wants to use this concert in a
+
+295
+00:12:40,440 --> 00:12:43,040
+style all it has to do is at require
+
+296
+00:12:43,040 --> 00:12:48,360
+profile based namespace and this notion
+
+297
+00:12:48,360 --> 00:12:50,610
+of fonts and colors and constants
+
+298
+00:12:50,610 --> 00:12:53,940
+expressed in namespaces Maps well to our
+
+299
+00:12:53,940 --> 00:12:56,910
+CSS dependency graph so if you have
+
+300
+00:12:56,910 --> 00:12:58,380
+constants that are applicable only to
+
+301
+00:12:58,380 --> 00:13:00,540
+the photos page only the photos page
+
+302
+00:13:00,540 --> 00:13:02,010
+will depend on these and then if you
+
+303
+00:13:02,010 --> 00:13:03,750
+have other common constants that are
+
+304
+00:13:03,750 --> 00:13:05,220
+need where multiple pages then they can
+
+305
+00:13:05,220 --> 00:13:09,330
+all depend on those we still haven't
+
+306
+00:13:09,330 --> 00:13:11,850
+talked about shared CSS libraries yet
+
+307
+00:13:11,850 --> 00:13:15,230
+and we'll come back to that in a minute
+
+308
+00:13:15,230 --> 00:13:17,730
+so moving on to the next challenge which
+
+309
+00:13:17,730 --> 00:13:21,230
+is safely composing CSS in the browser
+
+310
+00:13:21,230 --> 00:13:25,100
+so before I del too much into safety I
+
+311
+00:13:25,100 --> 00:13:27,180
+feel like I need to set the background
+
+312
+00:13:27,180 --> 00:13:29,220
+here with kind of the core concepts of
+
+313
+00:13:29,220 --> 00:13:32,910
+CSS which are order and specificity the
+
+314
+00:13:32,910 --> 00:13:36,360
+sea and CSS is for cascade CSS is
+
+315
+00:13:36,360 --> 00:13:38,670
+inherently order dependent if you have
+
+316
+00:13:38,670 --> 00:13:40,830
+base tiles and you have overrides the
+
+317
+00:13:40,830 --> 00:13:43,110
+base tiles must be ordered before the
+
+318
+00:13:43,110 --> 00:13:45,089
+overrides and special
+
+319
+00:13:45,089 --> 00:13:49,259
+the city can trump order so let's say I
+
+320
+00:13:49,259 --> 00:13:53,220
+have a text hello world wrap in a div
+
+321
+00:13:53,220 --> 00:13:56,850
+and it has two classes blue and red with
+
+322
+00:13:56,850 --> 00:13:59,670
+the colors blue and red the color of
+
+323
+00:13:59,670 --> 00:14:02,759
+this text is going to be blue and the
+
+324
+00:14:02,759 --> 00:14:05,430
+reason for this is that it is the
+
+325
+00:14:05,430 --> 00:14:07,649
+Cascade order that dictates styles and
+
+326
+00:14:07,649 --> 00:14:11,339
+not HTML I continue to see developers be
+
+327
+00:14:11,339 --> 00:14:13,079
+confused by this because this is not
+
+328
+00:14:13,079 --> 00:14:17,730
+intuitive so now if I add an additional
+
+329
+00:14:17,730 --> 00:14:21,449
+class called hello in the same tag and I
+
+330
+00:14:21,449 --> 00:14:24,540
+update my red selector to hello dot red
+
+331
+00:14:24,540 --> 00:14:26,759
+and now the text is read and this is
+
+332
+00:14:26,759 --> 00:14:28,170
+because i have just bumped up the
+
+333
+00:14:28,170 --> 00:14:31,019
+specificity of the color red this is
+
+334
+00:14:31,019 --> 00:14:33,209
+generally not a great way to do over
+
+335
+00:14:33,209 --> 00:14:35,220
+right because you can get into trouble
+
+336
+00:14:35,220 --> 00:14:39,569
+then you want to again override this so
+
+337
+00:14:39,569 --> 00:14:41,550
+the next time you want to override again
+
+338
+00:14:41,550 --> 00:14:43,949
+you're basically fighting the previous
+
+339
+00:14:43,949 --> 00:14:45,749
+specificity and which is why this is
+
+340
+00:14:45,749 --> 00:14:49,529
+famously call the specificity Wars so
+
+341
+00:14:49,529 --> 00:14:52,920
+the basic rules are as much as possible
+
+342
+00:14:52,920 --> 00:14:54,870
+we want to use the Cascade to dictate
+
+343
+00:14:54,870 --> 00:14:58,410
+styles and not specificity there is a
+
+344
+00:14:58,410 --> 00:15:01,860
+known body of work thanks to the work
+
+345
+00:15:01,860 --> 00:15:03,899
+done by Nicole Solomon on
+
+346
+00:15:03,899 --> 00:15:06,959
+object-oriented CSS there are some basic
+
+347
+00:15:06,959 --> 00:15:08,730
+guidelines and we have found these to be
+
+348
+00:15:08,730 --> 00:15:11,040
+fairly accurate in our own experience in
+
+349
+00:15:11,040 --> 00:15:13,439
+Google+ and these the guidelines are
+
+350
+00:15:13,439 --> 00:15:16,170
+minimize your selectors reuse as much as
+
+351
+00:15:16,170 --> 00:15:18,809
+possible simplify specificity it should
+
+352
+00:15:18,809 --> 00:15:21,209
+be as low as possible and keep your
+
+353
+00:15:21,209 --> 00:15:24,749
+rules to have the same strength use the
+
+354
+00:15:24,749 --> 00:15:27,089
+Cascade to override styles not
+
+355
+00:15:27,089 --> 00:15:31,199
+specificity so really what we want is a
+
+356
+00:15:31,199 --> 00:15:34,559
+framework that enables us to use to
+
+357
+00:15:34,559 --> 00:15:38,249
+basically allows us to develop using
+
+358
+00:15:38,249 --> 00:15:40,439
+these guidelines it should enable simple
+
+359
+00:15:40,439 --> 00:15:42,269
+selectors it should enable rules of
+
+360
+00:15:42,269 --> 00:15:44,339
+equal strength and ideally the framework
+
+361
+00:15:44,339 --> 00:15:46,259
+itself should order the Cascade
+
+362
+00:15:46,259 --> 00:15:48,540
+correctly so we the developers don't
+
+363
+00:15:48,540 --> 00:15:51,870
+have to worry about specificity so let's
+
+364
+00:15:51,870 --> 00:15:53,660
+consider the concrete example of
+
+365
+00:15:53,660 --> 00:15:56,579
+overrides for a button let's say we have
+
+366
+00:15:56,579 --> 00:15:58,769
+a button it has some shared styles
+
+367
+00:15:58,769 --> 00:16:00,869
+we have different pages on our site that
+
+368
+00:16:00,869 --> 00:16:02,420
+want to style this slightly differently
+
+369
+00:16:02,420 --> 00:16:04,589
+for the sake of this example let's say
+
+370
+00:16:04,589 --> 00:16:07,019
+each of these pages wants a slight once
+
+371
+00:16:07,019 --> 00:16:09,989
+a different color so there's many ways
+
+372
+00:16:09,989 --> 00:16:13,230
+for overriding styles and CSS and this
+
+373
+00:16:13,230 --> 00:16:15,029
+is a list of them and there's pros and
+
+374
+00:16:15,029 --> 00:16:17,459
+cons so we're going to take a quick tour
+
+375
+00:16:17,459 --> 00:16:21,569
+of these examples so the standard way to
+
+376
+00:16:21,569 --> 00:16:25,939
+do this is you want to extend the base
+
+377
+00:16:25,939 --> 00:16:28,559
+button styles with your context specific
+
+378
+00:16:28,559 --> 00:16:30,869
+style so in this case say the prove that
+
+379
+00:16:30,869 --> 00:16:33,079
+you would add a profile button class and
+
+380
+00:16:33,079 --> 00:16:35,519
+then you might use a compound selector
+
+381
+00:16:35,519 --> 00:16:38,069
+like profile button got standard button
+
+382
+00:16:38,069 --> 00:16:41,249
+and we've already said why this is not
+
+383
+00:16:41,249 --> 00:16:44,160
+the ideal practice because this is prone
+
+384
+00:16:44,160 --> 00:16:46,170
+to clashes now let's say the profile
+
+385
+00:16:46,170 --> 00:16:47,759
+page again wants to override the button
+
+386
+00:16:47,759 --> 00:16:50,009
+in its context if the button appears on
+
+387
+00:16:50,009 --> 00:16:51,989
+the header verse a sidebar it should
+
+388
+00:16:51,989 --> 00:16:53,670
+look differently and that's when you
+
+389
+00:16:53,670 --> 00:16:56,369
+start getting into trouble here another
+
+390
+00:16:56,369 --> 00:16:57,839
+way to do this is using descendant
+
+391
+00:16:57,839 --> 00:16:59,790
+selectors so you would say profile post
+
+392
+00:16:59,790 --> 00:17:02,910
+space start standard button and the
+
+393
+00:17:02,910 --> 00:17:05,069
+problem with this is now you are tying
+
+394
+00:17:05,069 --> 00:17:08,149
+your CSS to a predefined HTML structure
+
+395
+00:17:08,149 --> 00:17:11,909
+you could use tools to do this and most
+
+396
+00:17:11,909 --> 00:17:13,829
+CSS preprocessors have the notion of
+
+397
+00:17:13,829 --> 00:17:16,260
+mix-ins so if you use a mix in here and
+
+398
+00:17:16,260 --> 00:17:19,949
+expanded that it would essentially put
+
+399
+00:17:19,949 --> 00:17:22,709
+the styles in line in the profile
+
+400
+00:17:22,709 --> 00:17:26,429
+context on the event context and the the
+
+401
+00:17:26,429 --> 00:17:27,809
+nice thing about this is that now you no
+
+402
+00:17:27,809 --> 00:17:29,789
+longer need the standard button but on
+
+403
+00:17:29,789 --> 00:17:31,590
+the flip side this is a lot of
+
+404
+00:17:31,590 --> 00:17:33,360
+duplication this is not going to scale
+
+405
+00:17:33,360 --> 00:17:37,440
+for our site another possibility is it
+
+406
+00:17:37,440 --> 00:17:40,049
+using the sass at extend directive so
+
+407
+00:17:40,049 --> 00:17:41,220
+you would create a place mall or
+
+408
+00:17:41,220 --> 00:17:43,049
+standard button and then you would
+
+409
+00:17:43,049 --> 00:17:45,870
+extend that in the profile context and
+
+410
+00:17:45,870 --> 00:17:48,389
+in the event context and this compiles
+
+411
+00:17:48,389 --> 00:17:51,120
+to something like this where sass will
+
+412
+00:17:51,120 --> 00:17:53,700
+create a single rule with all the shared
+
+413
+00:17:53,700 --> 00:17:57,630
+styles and this is much better now much
+
+414
+00:17:57,630 --> 00:18:00,389
+better than mix-ins you know law you no
+
+415
+00:18:00,389 --> 00:18:02,669
+longer have the duplication problem but
+
+416
+00:18:02,669 --> 00:18:06,029
+now there is a single selector for each
+
+417
+00:18:06,029 --> 00:18:08,639
+of these and in in our case when we have
+
+418
+00:18:08,639 --> 00:18:11,429
+this big CSS dependency graph this
+
+419
+00:18:11,429 --> 00:18:12,350
+selector is going
+
+420
+00:18:12,350 --> 00:18:14,480
+to show this rule is going to show up in
+
+421
+00:18:14,480 --> 00:18:17,809
+a shared module in our graph and ideally
+
+422
+00:18:17,809 --> 00:18:20,080
+for our dependency graph we want to keep
+
+423
+00:18:20,080 --> 00:18:23,059
+context specific and features specific
+
+424
+00:18:23,059 --> 00:18:27,470
+selectors in their own modules so
+
+425
+00:18:27,470 --> 00:18:30,799
+finally one way to do this is simply add
+
+426
+00:18:30,799 --> 00:18:32,539
+an additional class keep the standard
+
+427
+00:18:32,539 --> 00:18:35,960
+button and just add more context
+
+428
+00:18:35,960 --> 00:18:39,500
+specific selectors with the override but
+
+429
+00:18:39,500 --> 00:18:41,600
+here now you have to rely on the correct
+
+430
+00:18:41,600 --> 00:18:45,830
+CSS cascade order this is in fact our
+
+431
+00:18:45,830 --> 00:18:48,650
+preferred solution for what we do in
+
+432
+00:18:48,650 --> 00:18:54,409
+Google+ and we let the framework order
+
+433
+00:18:54,409 --> 00:18:56,570
+the Cascade correctly using it require
+
+434
+00:18:56,570 --> 00:18:58,730
+so in this case where the profile button
+
+435
+00:18:58,730 --> 00:19:00,650
+wants to be ordered after the standard
+
+436
+00:19:00,650 --> 00:19:03,260
+button all that has to do is at require
+
+437
+00:19:03,260 --> 00:19:06,080
+the standard button so we essentially
+
+438
+00:19:06,080 --> 00:19:08,570
+now expanding the semantics of act
+
+439
+00:19:08,570 --> 00:19:11,539
+required to include ordering and we've
+
+440
+00:19:11,539 --> 00:19:13,159
+considered some alternatives here like
+
+441
+00:19:13,159 --> 00:19:15,200
+expressing this ordering in our
+
+442
+00:19:15,200 --> 00:19:17,299
+JavaScript or in our templates but that
+
+443
+00:19:17,299 --> 00:19:20,000
+starts to look awkward and we like this
+
+444
+00:19:20,000 --> 00:19:22,010
+approach because it meets our
+
+445
+00:19:22,010 --> 00:19:23,990
+requirements it minimizes the number of
+
+446
+00:19:23,990 --> 00:19:26,240
+selectors and now we have rules of equal
+
+447
+00:19:26,240 --> 00:19:29,419
+strength so we still haven't looked at
+
+448
+00:19:29,419 --> 00:19:32,210
+how we do overrides and components the
+
+449
+00:19:32,210 --> 00:19:34,010
+example we just looked at was the case
+
+450
+00:19:34,010 --> 00:19:36,470
+where we have a shared library of styles
+
+451
+00:19:36,470 --> 00:19:38,570
+and we had some shared button styles
+
+452
+00:19:38,570 --> 00:19:40,250
+what if you do about shared components
+
+453
+00:19:40,250 --> 00:19:42,650
+so let's say you have an icon component
+
+454
+00:19:42,650 --> 00:19:44,870
+that's used in multiple contexts like
+
+455
+00:19:44,870 --> 00:19:47,360
+many widgets want to use that same icon
+
+456
+00:19:47,360 --> 00:19:49,340
+but they want to override it and have it
+
+457
+00:19:49,340 --> 00:19:51,080
+look slightly differently in each
+
+458
+00:19:51,080 --> 00:19:54,530
+context so in the when we create a
+
+459
+00:19:54,530 --> 00:19:57,020
+component dependency graph the nodes in
+
+460
+00:19:57,020 --> 00:19:59,450
+the graph will have the bundled template
+
+461
+00:19:59,450 --> 00:20:02,330
+in the JavaScript and the CSS for this
+
+462
+00:20:02,330 --> 00:20:06,770
+and then later on we essentially flat in
+
+463
+00:20:06,770 --> 00:20:10,010
+this dependency graph to the Cascade but
+
+464
+00:20:10,010 --> 00:20:13,250
+we preserve order when we do that so now
+
+465
+00:20:13,250 --> 00:20:16,580
+you can see why the Cascade order is
+
+466
+00:20:16,580 --> 00:20:21,049
+correct and so now we have styles that
+
+467
+00:20:21,049 --> 00:20:23,330
+show up in the right order and that's
+
+468
+00:20:23,330 --> 00:20:24,390
+great which
+
+469
+00:20:24,390 --> 00:20:27,210
+haven't said how we are overriding so we
+
+470
+00:20:27,210 --> 00:20:28,860
+typically either use additional classes
+
+471
+00:20:28,860 --> 00:20:32,250
+or descendant selectors additional
+
+472
+00:20:32,250 --> 00:20:35,220
+classes require you to plumb your new
+
+473
+00:20:35,220 --> 00:20:36,990
+class down to the components template
+
+474
+00:20:36,990 --> 00:20:39,680
+but if the component is going to be
+
+475
+00:20:39,680 --> 00:20:42,270
+overrated in almost every context it's
+
+476
+00:20:42,270 --> 00:20:43,950
+used in then that's actually better
+
+477
+00:20:43,950 --> 00:20:47,160
+because it exposes sort of an API the
+
+478
+00:20:47,160 --> 00:20:48,780
+other way to do this is use a descendant
+
+479
+00:20:48,780 --> 00:20:51,540
+selector and here we are not tying it to
+
+480
+00:20:51,540 --> 00:20:54,570
+the HTML structure / Saviour tying it to
+
+481
+00:20:54,570 --> 00:20:57,530
+each context at the different pages need
+
+482
+00:20:57,530 --> 00:21:00,360
+alright so so far we've covered the
+
+483
+00:21:00,360 --> 00:21:02,730
+types of CSS dependencies we have its
+
+484
+00:21:02,730 --> 00:21:04,560
+components constants and mixes and
+
+485
+00:21:04,560 --> 00:21:06,450
+libraries and we've looked at the
+
+486
+00:21:06,450 --> 00:21:08,850
+dependency syntax in each category and
+
+487
+00:21:08,850 --> 00:21:11,160
+we've looked at the star how style
+
+488
+00:21:11,160 --> 00:21:13,140
+overrides happen and we've demonstrated
+
+489
+00:21:13,140 --> 00:21:16,800
+that the Cascade order is correct so
+
+490
+00:21:16,800 --> 00:21:18,480
+with the addition of the shared CSS
+
+491
+00:21:18,480 --> 00:21:21,270
+libraries now we have a complete CSS
+
+492
+00:21:21,270 --> 00:21:26,280
+dependency graph for our site oh and by
+
+493
+00:21:26,280 --> 00:21:29,490
+the way we don't just rely on developers
+
+494
+00:21:29,490 --> 00:21:31,440
+to do the right thing here in terms of
+
+495
+00:21:31,440 --> 00:21:33,360
+adding the dependency syntax we actually
+
+496
+00:21:33,360 --> 00:21:35,940
+do enforce it and this is using tools
+
+497
+00:21:35,940 --> 00:21:38,580
+and tests and compiler passes so for
+
+498
+00:21:38,580 --> 00:21:41,730
+require CSS we have tests that create
+
+499
+00:21:41,730 --> 00:21:44,430
+maps out of the CSS namespace classes
+
+500
+00:21:44,430 --> 00:21:48,300
+and it will the test will fail if you're
+
+501
+00:21:48,300 --> 00:21:51,030
+missing a require CSS basically and
+
+502
+00:21:51,030 --> 00:21:52,560
+similarly for the Ettrick wire we have
+
+503
+00:21:52,560 --> 00:21:54,900
+compiler passes that enforce some things
+
+504
+00:21:54,900 --> 00:21:57,180
+like you cannot simply keep overriding
+
+505
+00:21:57,180 --> 00:21:58,800
+the same selector in multiple contexts
+
+506
+00:21:58,800 --> 00:22:00,570
+you can't just say dot foo and then
+
+507
+00:22:00,570 --> 00:22:05,850
+again dot foo and etc also we want to
+
+508
+00:22:05,850 --> 00:22:08,730
+order like we want to enforce the
+
+509
+00:22:08,730 --> 00:22:11,580
+ordering of classes in the HTML so that
+
+510
+00:22:11,580 --> 00:22:13,830
+goes back to our original hello world
+
+511
+00:22:13,830 --> 00:22:16,950
+example like you'll be forced to express
+
+512
+00:22:16,950 --> 00:22:21,480
+that ordering with that require all
+
+513
+00:22:21,480 --> 00:22:23,640
+right so so far we've covered the
+
+514
+00:22:23,640 --> 00:22:25,110
+dependency system part of our module
+
+515
+00:22:25,110 --> 00:22:27,840
+system we've looked at namespaces we've
+
+516
+00:22:27,840 --> 00:22:29,280
+looked at how we express dependencies
+
+517
+00:22:29,280 --> 00:22:33,060
+using require CSS that require so now we
+
+518
+00:22:33,060 --> 00:22:37,490
+move on to assembly and serving so I
+
+519
+00:22:37,490 --> 00:22:39,559
+on this a little bit earlier how we have
+
+520
+00:22:39,559 --> 00:22:41,780
+a dependency graph and how that gets
+
+521
+00:22:41,780 --> 00:22:44,390
+flattering to a cascade the additional
+
+522
+00:22:44,390 --> 00:22:47,360
+thing here to note is that nodes in the
+
+523
+00:22:47,360 --> 00:22:50,120
+like bundles of nodes in this graph get
+
+524
+00:22:50,120 --> 00:22:55,130
+compiled to modules and those modules
+
+525
+00:22:55,130 --> 00:22:58,700
+get ordered correctly a module is a
+
+526
+00:22:58,700 --> 00:23:01,370
+group of CSS the downloader together and
+
+527
+00:23:01,370 --> 00:23:02,929
+we always make sure that the shared
+
+528
+00:23:02,929 --> 00:23:04,910
+dependencies are downloaded with the
+
+529
+00:23:04,910 --> 00:23:07,700
+first module that needs it and we have
+
+530
+00:23:07,700 --> 00:23:10,520
+analogous JavaScript modules for our CSS
+
+531
+00:23:10,520 --> 00:23:13,730
+modules so the two requirements of a
+
+532
+00:23:13,730 --> 00:23:15,650
+serving system that we really want you
+
+533
+00:23:15,650 --> 00:23:17,210
+want to minimize the number of requests
+
+534
+00:23:17,210 --> 00:23:21,800
+and we want cashable responses so one
+
+535
+00:23:21,800 --> 00:23:23,720
+thing to note here is that the client
+
+536
+00:23:23,720 --> 00:23:25,880
+has the knowledge of the dependency
+
+537
+00:23:25,880 --> 00:23:30,410
+graph so it can ask for the modules that
+
+538
+00:23:30,410 --> 00:23:32,690
+are deeded so let's say you're making
+
+539
+00:23:32,690 --> 00:23:35,210
+here on the first page on Google+ let's
+
+540
+00:23:35,210 --> 00:23:37,040
+say the community page and you make
+
+541
+00:23:37,040 --> 00:23:38,720
+requests to the server you're
+
+542
+00:23:38,720 --> 00:23:40,730
+essentially constructing a request URL
+
+543
+00:23:40,730 --> 00:23:43,340
+that has the list of modules that you
+
+544
+00:23:43,340 --> 00:23:47,240
+need to show that page and then on the
+
+545
+00:23:47,240 --> 00:23:49,400
+server the list of modules gets
+
+546
+00:23:49,400 --> 00:23:51,710
+concatenated down to a single response
+
+547
+00:23:51,710 --> 00:23:54,490
+and so you're serving a single response
+
+548
+00:23:54,490 --> 00:23:58,520
+and again the next page if you go visit
+
+549
+00:23:58,520 --> 00:24:00,620
+another page because you have stayed on
+
+550
+00:24:00,620 --> 00:24:02,510
+the client that knows what my deals have
+
+551
+00:24:02,510 --> 00:24:04,910
+already been requested and cached you
+
+552
+00:24:04,910 --> 00:24:07,190
+only request the additional modules on
+
+553
+00:24:07,190 --> 00:24:11,450
+the next round and one thing to note
+
+554
+00:24:11,450 --> 00:24:14,720
+here is that this addresses our original
+
+555
+00:24:14,720 --> 00:24:16,850
+problem of safety we don't get into the
+
+556
+00:24:16,850 --> 00:24:19,580
+problem of oh I'm on my next page and
+
+557
+00:24:19,580 --> 00:24:21,770
+the new styles of the community page are
+
+558
+00:24:21,770 --> 00:24:24,050
+killing my button that doesn't happen
+
+559
+00:24:24,050 --> 00:24:25,670
+because we've already done the hard work
+
+560
+00:24:25,670 --> 00:24:27,830
+of creating this dependency graph we've
+
+561
+00:24:27,830 --> 00:24:30,170
+identified the shared styles we've
+
+562
+00:24:30,170 --> 00:24:32,660
+extracted them out into the depths so
+
+563
+00:24:32,660 --> 00:24:36,290
+always the depths are present beforehand
+
+564
+00:24:36,290 --> 00:24:41,540
+so now this solves our problem original
+
+565
+00:24:41,540 --> 00:24:45,350
+problems of Google+ which is big CSS
+
+566
+00:24:45,350 --> 00:24:48,679
+bundles that's low and specificity Wars
+
+567
+00:24:48,679 --> 00:24:51,429
+manual curation maintainability
+
+568
+00:24:51,429 --> 00:24:54,080
+so these are some open source resources
+
+569
+00:24:54,080 --> 00:24:56,179
+that you can look at we use close your
+
+570
+00:24:56,179 --> 00:24:58,249
+style sheets which has our EDD provide
+
+571
+00:24:58,249 --> 00:25:01,460
+an Det require syntax and we use closure
+
+572
+00:25:01,460 --> 00:25:02,989
+templates which doesn't have our require
+
+573
+00:25:02,989 --> 00:25:05,379
+CSS syntax yet but will in the future
+
+574
+00:25:05,379 --> 00:25:15,440
+thank you that's all Thank You CD do it
+
+575
+00:25:15,440 --> 00:25:22,879
+questions I should be so going back a
+
+576
+00:25:22,879 --> 00:25:25,309
+bit to the performance you mentioned you
+
+577
+00:25:25,309 --> 00:25:27,499
+just want to download the additional CSS
+
+578
+00:25:27,499 --> 00:25:30,590
+that the page needs how about cash
+
+579
+00:25:30,590 --> 00:25:34,879
+ability of URLs how do you tackle them
+
+580
+00:25:34,879 --> 00:25:38,480
+do do you just add more URL so that the
+
+581
+00:25:38,480 --> 00:25:40,309
+browser has to cash in you like
+
+582
+00:25:40,309 --> 00:25:42,889
+proliferate a lot of URLs that in style
+
+583
+00:25:42,889 --> 00:25:45,169
+sheets that the browser caches with this
+
+584
+00:25:45,169 --> 00:25:47,720
+approach like I said we are cashing the
+
+585
+00:25:47,720 --> 00:25:49,940
+previously downloaded modules so the
+
+586
+00:25:49,940 --> 00:25:52,369
+next URL will not have the modules that
+
+587
+00:25:52,369 --> 00:25:56,239
+you already downloaded before so you
+
+588
+00:25:56,239 --> 00:25:58,940
+basically get caching and you'll leak at
+
+589
+00:25:58,940 --> 00:26:00,350
+the incremental modules you need on the
+
+590
+00:26:00,350 --> 00:26:03,619
+next one right so so that's the separate
+
+591
+00:26:03,619 --> 00:26:06,259
+requests yeah so the next request will
+
+592
+00:26:06,259 --> 00:26:08,600
+have the additional modules and so on
+
+593
+00:26:08,600 --> 00:26:10,359
+the next and if you go to another page
+
+594
+00:26:10,359 --> 00:26:13,190
+you won't get there you already cashed
+
+595
+00:26:13,190 --> 00:26:14,840
+my deals from the first two pages and
+
+596
+00:26:14,840 --> 00:26:15,769
+now you'd only get the additional stuff
+
+597
+00:26:15,769 --> 00:26:28,200
+in the third page and so on sorry
+
+598
+00:26:28,210 --> 00:26:31,130
+hello should be i want to thank you for
+
+599
+00:26:31,130 --> 00:26:33,590
+your presentation thank you i work for
+
+600
+00:26:33,590 --> 00:26:36,529
+and exits kinda russian google might be
+
+601
+00:26:36,529 --> 00:26:39,350
+heard of it and actually i work at a
+
+602
+00:26:39,350 --> 00:26:43,640
+team which are expensive for quite
+
+603
+00:26:43,640 --> 00:26:47,510
+similar thing we created methodology and
+
+604
+00:26:47,510 --> 00:26:51,080
+tools and some libraries which provide
+
+605
+00:26:51,080 --> 00:26:55,549
+almost to the same ideas to reuse blogs
+
+606
+00:26:55,549 --> 00:26:58,909
+and to share same components among all
+
+607
+00:26:58,909 --> 00:27:02,179
+our services we have about i think 200
+
+608
+00:27:02,179 --> 00:27:05,059
+of them and i have got a question right
+
+609
+00:27:05,059 --> 00:27:07,340
+now you said that you share a lot of
+
+610
+00:27:07,340 --> 00:27:10,600
+same components but all of them are in
+
+611
+00:27:10,600 --> 00:27:14,149
+google+ just one service but i'm sure
+
+612
+00:27:14,149 --> 00:27:16,880
+that quite a lot of different services
+
+613
+00:27:16,880 --> 00:27:20,630
+at google uses the same things and are
+
+614
+00:27:20,630 --> 00:27:23,690
+you going to share your same components
+
+615
+00:27:23,690 --> 00:27:26,960
+among all the services and if so how
+
+616
+00:27:26,960 --> 00:27:29,630
+would you do it yeah so we actually do
+
+617
+00:27:29,630 --> 00:27:31,309
+that already so things like the +1
+
+618
+00:27:31,309 --> 00:27:33,350
+button and stuff they show up in
+
+619
+00:27:33,350 --> 00:27:36,830
+multiple play all over google and like
+
+620
+00:27:36,830 --> 00:27:39,230
+one search and stuff so we're already
+
+621
+00:27:39,230 --> 00:27:44,059
+doing that so we do have a shared well
+
+622
+00:27:44,059 --> 00:27:45,620
+we're still sort of pushing towards sort
+
+623
+00:27:45,620 --> 00:27:47,360
+of you know making them as encapsulated
+
+624
+00:27:47,360 --> 00:27:50,539
+and kind of bundled as possible but we
+
+625
+00:27:50,539 --> 00:27:53,120
+do have some of these like the +1 button
+
+626
+00:27:53,120 --> 00:27:56,029
+that has you know template in javascript
+
+627
+00:27:56,029 --> 00:27:58,070
+and CSS and now many different things
+
+628
+00:27:58,070 --> 00:28:01,370
+can point to that but my question is a
+
+629
+00:28:01,370 --> 00:28:04,279
+bit wider i think because i'm sure that
+
+630
+00:28:04,279 --> 00:28:06,490
+different services uses different
+
+631
+00:28:06,490 --> 00:28:09,799
+technologies for templating writing
+
+632
+00:28:09,799 --> 00:28:12,950
+JavaScript with different approaches and
+
+633
+00:28:12,950 --> 00:28:16,190
+so on and it's not so easy to share same
+
+634
+00:28:16,190 --> 00:28:18,080
+challenge London yeah that's absolutely
+
+635
+00:28:18,080 --> 00:28:19,970
+a problem right so if something if
+
+636
+00:28:19,970 --> 00:28:21,710
+another like if maps is using a
+
+637
+00:28:21,710 --> 00:28:23,450
+completely different templating system
+
+638
+00:28:23,450 --> 00:28:25,669
+then yes that does break down there they
+
+639
+00:28:25,669 --> 00:28:28,190
+cannot just use it use the entire
+
+640
+00:28:28,190 --> 00:28:30,080
+component they can only use the styles
+
+641
+00:28:30,080 --> 00:28:33,230
+and the JavaScript and import that so
+
+642
+00:28:33,230 --> 00:28:36,169
+yes we haven't solved that yet but still
+
+643
+00:28:36,169 --> 00:28:37,460
+you are going to try
+
+644
+00:28:37,460 --> 00:28:42,679
+and if so I think we can share our ideas
+
+645
+00:28:42,679 --> 00:28:45,110
+and maybe we can borrow something from
+
+646
+00:28:45,110 --> 00:28:48,320
+you I absolutely love to chat later no I
+
+647
+00:28:48,320 --> 00:28:53,799
+think we can find a lot of helpful
+
+648
+00:28:53,799 --> 00:28:56,510
+things between our approaches and
+
+649
+00:28:56,510 --> 00:28:59,090
+compiling looking our efforts thanks
+
+650
+00:28:59,090 --> 00:29:06,140
+thank you very much all right if that's
+
+651
+00:29:06,140 --> 00:29:20,610
+it uh thank you so much TV
+

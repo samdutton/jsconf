@@ -1,0 +1,2337 @@
+1
+00:00:02,330 --> 00:00:08,000
+
+[Music]
+
+2
+00:00:08,010 --> 00:00:10,390
+thank you and you can hear me fine
+
+3
+00:00:10,390 --> 00:00:13,270
+everybody yes okay welcome back from
+
+4
+00:00:13,270 --> 00:00:16,150
+lunch I hope you're not too sleepy I'll
+
+5
+00:00:16,150 --> 00:00:17,950
+try to make it dramatic I certainly had
+
+6
+00:00:17,950 --> 00:00:19,810
+some drama in the in the break here
+
+7
+00:00:19,810 --> 00:00:21,910
+turns out my laptop did not connect to
+
+8
+00:00:21,910 --> 00:00:24,400
+the display so that was my break and I
+
+9
+00:00:24,400 --> 00:00:26,020
+was working what I'm still have a mild
+
+10
+00:00:26,020 --> 00:00:28,990
+state of panic yeah my name is Peter I'm
+
+11
+00:00:28,990 --> 00:00:31,720
+from Copenhagen I've been a front-end
+
+12
+00:00:31,720 --> 00:00:34,050
+developer for 15 years now
+
+13
+00:00:34,050 --> 00:00:38,499
+time flies I'm very much into tooling I
+
+14
+00:00:38,499 --> 00:00:41,649
+want to I want to enable people to do
+
+15
+00:00:41,649 --> 00:00:45,670
+complex stuff in a simple way and this
+
+16
+00:00:45,670 --> 00:00:49,569
+talk is about techniques how to load web
+
+17
+00:00:49,569 --> 00:00:52,269
+fonts fast and also tooling that I built
+
+18
+00:00:52,269 --> 00:00:55,809
+to help you do that so first of all
+
+19
+00:00:55,809 --> 00:00:58,239
+according to the HTTP archive which
+
+20
+00:00:58,239 --> 00:01:01,420
+scrapes like millions of pages based on
+
+21
+00:01:01,420 --> 00:01:03,639
+Alexa rank so like the most popular
+
+22
+00:01:03,639 --> 00:01:05,409
+pages on the Internet
+
+23
+00:01:05,409 --> 00:01:07,689
+70% of those pages are using web fonts
+
+24
+00:01:07,689 --> 00:01:10,840
+and that is a performance problem
+
+25
+00:01:10,840 --> 00:01:13,659
+because if you don't do something extra
+
+26
+00:01:13,659 --> 00:01:15,729
+to make a web fonts perform then they
+
+27
+00:01:15,729 --> 00:01:17,109
+will actually detract from your
+
+28
+00:01:17,109 --> 00:01:20,140
+performance and that has to do with the
+
+29
+00:01:20,140 --> 00:01:22,140
+wave fonts are loaded but I'm gonna
+
+30
+00:01:22,140 --> 00:01:24,579
+preempt myself and actually start out
+
+31
+00:01:24,579 --> 00:01:26,259
+with a demo and then we can look at the
+
+32
+00:01:26,259 --> 00:01:29,020
+difference between what default web
+
+33
+00:01:29,020 --> 00:01:31,450
+fonts performance profile could be and
+
+34
+00:01:31,450 --> 00:01:33,670
+what an optimized one could be so I'm
+
+35
+00:01:33,670 --> 00:01:35,289
+gonna start out with showing you the
+
+36
+00:01:35,289 --> 00:01:37,479
+tool and then I'll walk you through the
+
+37
+00:01:37,479 --> 00:01:39,189
+techniques applied which you could also
+
+38
+00:01:39,189 --> 00:01:41,619
+apply manually and then I'll explain
+
+39
+00:01:41,619 --> 00:01:47,049
+things as we go so first of all I have a
+
+40
+00:01:47,049 --> 00:01:49,719
+blog very rarely updated like two years
+
+41
+00:01:49,719 --> 00:01:54,310
+ago so this is a standard jackhole site
+
+42
+00:01:54,310 --> 00:01:57,670
+it's hosted on net Liffe I so I get
+
+43
+00:01:57,670 --> 00:01:59,979
+static file hosting which is fast I have
+
+44
+00:01:59,979 --> 00:02:02,649
+a CDN which which delivers things fast I
+
+45
+00:02:02,649 --> 00:02:04,630
+run a static build system on this so
+
+46
+00:02:04,630 --> 00:02:06,579
+everything is optimized there's bundling
+
+47
+00:02:06,579 --> 00:02:08,140
+this minification there's compression
+
+48
+00:02:08,140 --> 00:02:13,220
+all those things and the performer
+
+49
+00:02:13,220 --> 00:02:15,920
+profiles actually not that good so I can
+
+50
+00:02:15,920 --> 00:02:18,080
+show you first of all I'm gonna run the
+
+51
+00:02:18,080 --> 00:02:21,980
+demo here if Network permitting I'm
+
+52
+00:02:21,980 --> 00:02:25,490
+gonna run my tool here I'm gonna install
+
+53
+00:02:25,490 --> 00:02:27,320
+the tool called sub font which is an
+
+54
+00:02:27,320 --> 00:02:29,150
+open source tool I built if the network
+
+55
+00:02:29,150 --> 00:02:30,830
+doesn't work we'll just skip ahead
+
+56
+00:02:30,830 --> 00:02:33,710
+because I have a fallback it looks like
+
+57
+00:02:33,710 --> 00:02:34,220
+it's working
+
+58
+00:02:34,220 --> 00:02:36,260
+thank you for not running Dropbox right
+
+59
+00:02:36,260 --> 00:02:38,600
+now nice of you okay
+
+60
+00:02:38,600 --> 00:02:41,000
+I installed sub font so I'm gonna I'm
+
+61
+00:02:41,000 --> 00:02:43,370
+gonna open my package JSON and I'm gonna
+
+62
+00:02:43,370 --> 00:02:48,050
+autumn and my build system my build
+
+63
+00:02:48,050 --> 00:02:50,630
+system is currently bundled x''k Jake
+
+64
+00:02:50,630 --> 00:02:52,540
+you'll build so it's a Jekyll page and
+
+65
+00:02:52,540 --> 00:02:55,520
+after I've done that I'm gonna say soft
+
+66
+00:02:55,520 --> 00:03:00,020
+font bill slash index dot HTML which is
+
+67
+00:03:00,020 --> 00:03:01,850
+where the build artifacts from Jekyll
+
+68
+00:03:01,850 --> 00:03:05,450
+will be I'm gonna say - I which means
+
+69
+00:03:05,450 --> 00:03:07,370
+that it'll clobber the files which I'm
+
+70
+00:03:07,370 --> 00:03:09,170
+fine with because it's a build artifact
+
+71
+00:03:09,170 --> 00:03:14,650
+and then I'm gonna say inline CSS save
+
+72
+00:03:14,650 --> 00:03:19,489
+and I'm gonna do npm run build so what
+
+73
+00:03:19,489 --> 00:03:21,709
+will happen now is the Jekyll build will
+
+74
+00:03:21,709 --> 00:03:23,810
+will run I will have a build artifact
+
+75
+00:03:23,810 --> 00:03:26,510
+and index.html sup font the tool will go
+
+76
+00:03:26,510 --> 00:03:28,520
+in a statically analyze the page figure
+
+77
+00:03:28,520 --> 00:03:30,290
+out that I have google fonts and then
+
+78
+00:03:30,290 --> 00:03:32,510
+it'll do magic which I will show you in
+
+79
+00:03:32,510 --> 00:03:35,540
+in a moment Network permitting because
+
+80
+00:03:35,540 --> 00:03:37,220
+now it's actually going on the network
+
+81
+00:03:37,220 --> 00:03:40,000
+to fetch funds from from Google Fonts
+
+82
+00:03:40,000 --> 00:03:43,610
+and then my post optimization tool is
+
+83
+00:03:43,610 --> 00:03:47,840
+ran just like normally and I cheated I
+
+84
+00:03:47,840 --> 00:03:51,410
+already prepared a web page test or run
+
+85
+00:03:51,410 --> 00:03:54,650
+on my master before the optimization and
+
+86
+00:03:54,650 --> 00:04:00,200
+one after and it looks like this so I
+
+87
+00:04:00,200 --> 00:04:02,209
+don't know if you can see this the upper
+
+88
+00:04:02,209 --> 00:04:05,420
+timeline is my blog as I just showed it
+
+89
+00:04:05,420 --> 00:04:08,590
+to you on the different tab it takes
+
+90
+00:04:08,590 --> 00:04:11,030
+four and a half to five seconds before I
+
+91
+00:04:11,030 --> 00:04:14,170
+get the first paint and then it takes
+
+92
+00:04:14,170 --> 00:04:16,850
+slightly somewhere in between six and a
+
+93
+00:04:16,850 --> 00:04:18,739
+half seconds and seven seconds to get
+
+94
+00:04:18,739 --> 00:04:21,500
+the fonts that's a long time this is
+
+95
+00:04:21,500 --> 00:04:23,960
+done on a moto 4G and a slow 3G
+
+96
+00:04:23,960 --> 00:04:25,729
+connection that is deemed to be the
+
+97
+00:04:25,729 --> 00:04:26,170
+current
+
+98
+00:04:26,170 --> 00:04:28,810
+global average so if you have pages that
+
+99
+00:04:28,810 --> 00:04:30,490
+you're interested in also serving in
+
+100
+00:04:30,490 --> 00:04:34,270
+South America Africa Asia then you want
+
+101
+00:04:34,270 --> 00:04:37,330
+to perform on this profile the bottom
+
+102
+00:04:37,330 --> 00:04:40,090
+timeline timeline is the after after I
+
+103
+00:04:40,090 --> 00:04:42,610
+ran this tool and you can see that I
+
+104
+00:04:42,610 --> 00:04:45,190
+have a first paint at four seconds
+
+105
+00:04:45,190 --> 00:04:47,620
+instead of seven seconds because I
+
+106
+00:04:47,620 --> 00:04:49,990
+already have the fonts that's a massive
+
+107
+00:04:49,990 --> 00:04:53,230
+difference and obviously the difference
+
+108
+00:04:53,230 --> 00:04:54,820
+will be less pronounced if you have a
+
+109
+00:04:54,820 --> 00:04:57,640
+fast Network and a fast CPU but the
+
+110
+00:04:57,640 --> 00:04:59,520
+difference will still be perceivable
+
+111
+00:04:59,520 --> 00:05:03,250
+so let's look into why why is there this
+
+112
+00:05:03,250 --> 00:05:06,070
+massive difference and the upper the
+
+113
+00:05:06,070 --> 00:05:10,540
+upper line is running Google Fonts as as
+
+114
+00:05:10,540 --> 00:05:12,850
+suggested by Google Fonts it's included
+
+115
+00:05:12,850 --> 00:05:15,310
+with a link tag it's including the style
+
+116
+00:05:15,310 --> 00:05:16,900
+sheet from Google Fonts which will then
+
+117
+00:05:16,900 --> 00:05:19,270
+eventually point at the font files which
+
+118
+00:05:19,270 --> 00:05:24,420
+are needed so let's look at the timeline
+
+119
+00:05:24,420 --> 00:05:26,710
+is this big enough that you can see it
+
+120
+00:05:26,710 --> 00:05:28,930
+you think I can up it one more there we
+
+121
+00:05:28,930 --> 00:05:29,230
+go
+
+122
+00:05:29,230 --> 00:05:32,920
+alright so this is a this is my page you
+
+123
+00:05:32,920 --> 00:05:35,050
+can see the initial request has a slow
+
+124
+00:05:35,050 --> 00:05:37,180
+T&S it has a slow connection time it has
+
+125
+00:05:37,180 --> 00:05:40,780
+an SSL handshake then it has a roundtrip
+
+126
+00:05:40,780 --> 00:05:42,430
+for waiting for the data and then the
+
+127
+00:05:42,430 --> 00:05:45,310
+index.html drops in that's at around 2.2
+
+128
+00:05:45,310 --> 00:05:48,400
+seconds then a bunch of new connections
+
+129
+00:05:48,400 --> 00:05:51,700
+are triggered my CSS some images and the
+
+130
+00:05:51,700 --> 00:05:53,410
+Google Fonts CSS and then you see oh I
+
+131
+00:05:53,410 --> 00:05:55,540
+need to know the DNS I need another
+
+132
+00:05:55,540 --> 00:05:57,610
+connection I need another SSL roundtrip
+
+133
+00:05:57,610 --> 00:05:59,650
+and then I need another entre for the
+
+134
+00:05:59,650 --> 00:06:03,160
+data and then the green line indicates
+
+135
+00:06:03,160 --> 00:06:04,690
+that now the browser is ready to render
+
+136
+00:06:04,690 --> 00:06:07,750
+now it has loaded this external blocking
+
+137
+00:06:07,750 --> 00:06:11,050
+Google style sheet and and it says oh
+
+138
+00:06:11,050 --> 00:06:13,570
+there are some fonts and I need to fetch
+
+139
+00:06:13,570 --> 00:06:16,990
+them and then it does another DNS lookup
+
+140
+00:06:16,990 --> 00:06:19,180
+and another connection and another SSL
+
+141
+00:06:19,180 --> 00:06:20,860
+handshakes and then it and then it
+
+142
+00:06:20,860 --> 00:06:24,450
+downloads the fonts this is very slow
+
+143
+00:06:24,450 --> 00:06:27,430
+and this is like what what Google serves
+
+144
+00:06:27,430 --> 00:06:30,310
+you as the default it doesn't even serve
+
+145
+00:06:30,310 --> 00:06:31,930
+the fonts from the same domain as the
+
+146
+00:06:31,930 --> 00:06:34,390
+CSS so you don't already have a warmed
+
+147
+00:06:34,390 --> 00:06:36,160
+up connection which you can request the
+
+148
+00:06:36,160 --> 00:06:38,860
+fonts on if you use google fonts
+
+149
+00:06:38,860 --> 00:06:39,590
+out-of-the-box
+
+150
+00:06:39,590 --> 00:06:42,050
+this is what you'll get and we can do
+
+151
+00:06:42,050 --> 00:06:45,770
+better so this is the after timeline I'm
+
+152
+00:06:45,770 --> 00:06:47,030
+going to switch back and forth so you
+
+153
+00:06:47,030 --> 00:06:50,060
+can just see later so what happens here
+
+154
+00:06:50,060 --> 00:06:51,790
+is that my index file comes in
+
+155
+00:06:51,790 --> 00:06:53,960
+approximately the same time that there's
+
+156
+00:06:53,960 --> 00:06:56,150
+no difference and then immediately I
+
+157
+00:06:56,150 --> 00:06:59,660
+download the four fonts in parallel with
+
+158
+00:06:59,660 --> 00:07:03,650
+requesting my my stylesheet and and all
+
+159
+00:07:03,650 --> 00:07:05,870
+those things and then you can see later
+
+160
+00:07:05,870 --> 00:07:07,910
+after after the paint after the three
+
+161
+00:07:07,910 --> 00:07:10,340
+point two ish seconds the green line
+
+162
+00:07:10,340 --> 00:07:12,440
+where the browser has already rendered
+
+163
+00:07:12,440 --> 00:07:15,920
+with fonts it does some more things it
+
+164
+00:07:15,920 --> 00:07:18,290
+downloads the google fonts CSS and then
+
+165
+00:07:18,290 --> 00:07:20,120
+it downs upload and loads another file
+
+166
+00:07:20,120 --> 00:07:21,860
+that's a part I can't explain right now
+
+167
+00:07:21,860 --> 00:07:26,630
+I'll fix that eventually so you can kind
+
+168
+00:07:26,630 --> 00:07:28,550
+of perceive the difference that here you
+
+169
+00:07:28,550 --> 00:07:32,300
+have a very very horizontal waterfall
+
+170
+00:07:32,300 --> 00:07:35,060
+chart and here it becomes more vertical
+
+171
+00:07:35,060 --> 00:07:36,880
+so it does more things at the same time
+
+172
+00:07:36,880 --> 00:07:40,370
+leverage is http/2 and and downloads
+
+173
+00:07:40,370 --> 00:07:43,490
+things in parallel so I'll show you
+
+174
+00:07:43,490 --> 00:07:46,490
+which techniques I I used to achieve
+
+175
+00:07:46,490 --> 00:07:49,940
+this but let's first do a small video
+
+176
+00:07:49,940 --> 00:07:54,760
+comparison so just to have a feeling for
+
+177
+00:07:54,760 --> 00:07:59,360
+what the perceived difference is that's
+
+178
+00:07:59,360 --> 00:08:03,560
+what the user experience is right okay
+
+179
+00:08:03,560 --> 00:08:06,110
+let's let's dive into what what actually
+
+180
+00:08:06,110 --> 00:08:08,600
+happened here this should probably be
+
+181
+00:08:08,600 --> 00:08:15,280
+smaller and this should be prettier okay
+
+182
+00:08:15,280 --> 00:08:19,390
+so this is where things get interesting
+
+183
+00:08:19,390 --> 00:08:23,750
+my tool looked at the original link
+
+184
+00:08:23,750 --> 00:08:26,060
+include from from from google fonts for
+
+185
+00:08:26,060 --> 00:08:28,130
+the star seed and that it analyzed the
+
+186
+00:08:28,130 --> 00:08:31,480
+page pulled down the pages to local
+
+187
+00:08:31,480 --> 00:08:34,130
+which means that now I can download the
+
+188
+00:08:34,130 --> 00:08:37,040
+font or it pulled on the fonts to to my
+
+189
+00:08:37,040 --> 00:08:38,900
+local server which means that now I can
+
+190
+00:08:38,900 --> 00:08:41,360
+reuse my already warm HTTP to connection
+
+191
+00:08:41,360 --> 00:08:44,660
+from my host and I preload the fonts
+
+192
+00:08:44,660 --> 00:08:47,270
+which have a known file name the trick
+
+193
+00:08:47,270 --> 00:08:49,340
+is with google fonts and with any web
+
+194
+00:08:49,340 --> 00:08:51,500
+phone provider out there like Typekit or
+
+195
+00:08:51,500 --> 00:08:52,400
+similar
+
+196
+00:08:52,400 --> 00:08:54,740
+none of them provide stable URLs for the
+
+197
+00:08:54,740 --> 00:08:57,590
+font files so you cannot even put a
+
+198
+00:08:57,590 --> 00:08:59,840
+preload header and and say I want to
+
+199
+00:08:59,840 --> 00:09:01,250
+preload this well file because
+
+200
+00:09:01,250 --> 00:09:03,950
+eventually it might change the URL so we
+
+201
+00:09:03,950 --> 00:09:05,240
+cannot guarantee that it actually works
+
+202
+00:09:05,240 --> 00:09:07,040
+the worst case is you'll spend the
+
+203
+00:09:07,040 --> 00:09:08,600
+download time and downloading the font
+
+204
+00:09:08,600 --> 00:09:10,340
+file and then you download a different
+
+205
+00:09:10,340 --> 00:09:11,870
+font file which is essentially the same
+
+206
+00:09:11,870 --> 00:09:14,840
+thing so by pulling it down on your own
+
+207
+00:09:14,840 --> 00:09:17,630
+server you can leverage the preload by a
+
+208
+00:09:17,630 --> 00:09:20,360
+by having a guaranteed file name and you
+
+209
+00:09:20,360 --> 00:09:22,070
+can use your already warmed up already
+
+210
+00:09:22,070 --> 00:09:25,160
+connected HTTP to connection if you
+
+211
+00:09:25,160 --> 00:09:26,840
+remember one thing then then it's this
+
+212
+00:09:26,840 --> 00:09:29,930
+one this is like 80 to 90 percent of the
+
+213
+00:09:29,930 --> 00:09:32,120
+speed-up you just saw all the rest is
+
+214
+00:09:32,120 --> 00:09:35,990
+just geekery like preload and get your
+
+215
+00:09:35,990 --> 00:09:38,930
+fonts local so this one more thing I'm
+
+216
+00:09:38,930 --> 00:09:40,430
+doing which is cheap which you can do
+
+217
+00:09:40,430 --> 00:09:41,930
+yourself when you have the funds local
+
+218
+00:09:41,930 --> 00:09:46,430
+you can add a font display font display
+
+219
+00:09:46,430 --> 00:09:49,060
+has a few options on how to deal with
+
+220
+00:09:49,060 --> 00:09:51,830
+the limbo in between the page being
+
+221
+00:09:51,830 --> 00:09:54,380
+render and font being downloaded and I
+
+222
+00:09:54,380 --> 00:09:56,720
+recommend having fun to play swap which
+
+223
+00:09:56,720 --> 00:09:58,640
+will immediately draw the fallback font
+
+224
+00:09:58,640 --> 00:10:00,080
+as soon as it as soon as your page
+
+225
+00:10:00,080 --> 00:10:02,120
+renders and then whenever the web font
+
+226
+00:10:02,120 --> 00:10:04,730
+comes in and switches them because this
+
+227
+00:10:04,730 --> 00:10:06,500
+means that the time the time to
+
+228
+00:10:06,500 --> 00:10:08,480
+meaningful paint the time where the user
+
+229
+00:10:08,480 --> 00:10:10,670
+can actually read the page and see if
+
+230
+00:10:10,670 --> 00:10:13,400
+it's useful is the same as the time to
+
+231
+00:10:13,400 --> 00:10:15,620
+first paint so the larger uses to
+
+232
+00:10:15,620 --> 00:10:18,260
+immediately see do I want to do even
+
+233
+00:10:18,260 --> 00:10:19,940
+want to be here do I want to scroll or
+
+234
+00:10:19,940 --> 00:10:21,560
+engage with this page and then
+
+235
+00:10:21,560 --> 00:10:23,270
+eventually the nice experience will come
+
+236
+00:10:23,270 --> 00:10:28,520
+in when the web font drops in so in
+
+237
+00:10:28,520 --> 00:10:29,840
+order to serve it from local I'm using
+
+238
+00:10:29,840 --> 00:10:32,510
+the same technique as Google toss prefer
+
+239
+00:10:32,510 --> 00:10:36,320
+local otherwise use this URL for both -
+
+240
+00:10:36,320 --> 00:10:38,690
+and this URL for what you don't need to
+
+241
+00:10:38,690 --> 00:10:40,460
+make anymore gymnastics these days the
+
+242
+00:10:40,460 --> 00:10:43,610
+process are good enough that basically
+
+243
+00:10:43,610 --> 00:10:45,050
+all the process you want to support or
+
+244
+00:10:45,050 --> 00:10:49,160
+any support wofe and I'm pre loading
+
+245
+00:10:49,160 --> 00:10:50,720
+only there were two files because
+
+246
+00:10:50,720 --> 00:10:53,930
+preload support is a subset of waft of
+
+247
+00:10:53,930 --> 00:10:56,960
+to support so it's safe to say preload
+
+248
+00:10:56,960 --> 00:10:58,940
+above two files because if the browser
+
+249
+00:10:58,940 --> 00:11:00,710
+doesn't understand it it's a guarantee
+
+250
+00:11:00,710 --> 00:11:03,020
+that it probably doesn't understand what
+
+251
+00:11:03,020 --> 00:11:05,929
+you either
+
+252
+00:11:05,939 --> 00:11:08,819
+and then I'm doing something tricky so
+
+253
+00:11:08,819 --> 00:11:11,149
+there's a little script down here
+
+254
+00:11:11,149 --> 00:11:14,309
+preload is supported by around 60% of
+
+255
+00:11:14,309 --> 00:11:18,359
+all browsers but there exists a CSS
+
+256
+00:11:18,359 --> 00:11:20,129
+front loading API which you can access
+
+257
+00:11:20,129 --> 00:11:22,859
+through JavaScript and through this you
+
+258
+00:11:22,859 --> 00:11:25,109
+can actually trigger a load of the font
+
+259
+00:11:25,109 --> 00:11:27,299
+even for browsers that don't have P load
+
+260
+00:11:27,299 --> 00:11:29,489
+support yet this is what fun face
+
+261
+00:11:29,489 --> 00:11:31,049
+observer does if you've ever heard of
+
+262
+00:11:31,049 --> 00:11:34,319
+that which lets you like do a promise
+
+263
+00:11:34,319 --> 00:11:35,970
+based thing where I say I want to load
+
+264
+00:11:35,970 --> 00:11:37,679
+this font and when you're done I can
+
+265
+00:11:37,679 --> 00:11:40,079
+switch classes so I can like do a
+
+266
+00:11:40,079 --> 00:11:41,970
+loading spinner or or control the
+
+267
+00:11:41,970 --> 00:11:44,129
+experience in the in between in the
+
+268
+00:11:44,129 --> 00:11:45,569
+limbo between not having the fund and
+
+269
+00:11:45,569 --> 00:11:48,239
+having written at the page this is the
+
+270
+00:11:48,239 --> 00:11:50,399
+very short version what it's doing it
+
+271
+00:11:50,399 --> 00:11:52,589
+says it's iterating through the fonts on
+
+272
+00:11:52,589 --> 00:11:55,979
+on the on page and then I'm saying if it
+
+273
+00:11:55,979 --> 00:11:57,749
+has this specific name underscore
+
+274
+00:11:57,749 --> 00:11:59,459
+underscore subset which I'll come back
+
+275
+00:11:59,459 --> 00:12:03,299
+to all of these above have the have
+
+276
+00:12:03,299 --> 00:12:06,139
+underscore underscore subset in the name
+
+277
+00:12:06,139 --> 00:12:08,339
+so if it has underscore underscore
+
+278
+00:12:08,339 --> 00:12:10,769
+subset in the name please try and load
+
+279
+00:12:10,769 --> 00:12:13,049
+it and there's a try-catch around it
+
+280
+00:12:13,049 --> 00:12:14,999
+because this API isn't supported by all
+
+281
+00:12:14,999 --> 00:12:18,359
+browsers so I'll just do an empty error
+
+282
+00:12:18,359 --> 00:12:19,919
+handling I don't care about the result I
+
+283
+00:12:19,919 --> 00:12:21,059
+just want to trigger that download
+
+284
+00:12:21,059 --> 00:12:24,629
+immediately if it's available again if
+
+285
+00:12:24,629 --> 00:12:26,399
+you remember anything these are these
+
+286
+00:12:26,399 --> 00:12:27,809
+are the preload things you can do to get
+
+287
+00:12:27,809 --> 00:12:31,409
+like 90% of the speed-up I just got so
+
+288
+00:12:31,409 --> 00:12:35,399
+now let's talk about the hairy stuff I'm
+
+289
+00:12:35,399 --> 00:12:39,059
+not ok with 90% I want to enable people
+
+290
+00:12:39,059 --> 00:12:42,449
+to get perfect results with very little
+
+291
+00:12:42,449 --> 00:12:46,220
+work so I thought this sub setting thing
+
+292
+00:12:46,220 --> 00:12:49,829
+selecting a subset of glyphs that are
+
+293
+00:12:49,829 --> 00:12:51,629
+used on my page and excluding the ones
+
+294
+00:12:51,629 --> 00:12:54,239
+that are not using on my page that seems
+
+295
+00:12:54,239 --> 00:12:56,249
+like a doable thing right there are
+
+296
+00:12:56,249 --> 00:12:57,869
+tools to do it if you know what glyphs
+
+297
+00:12:57,869 --> 00:13:00,089
+you have you can apply a tool on your
+
+298
+00:13:00,089 --> 00:13:02,429
+font and then you can get a reduced font
+
+299
+00:13:02,429 --> 00:13:04,979
+that only has the glyphs you need easy
+
+300
+00:13:04,979 --> 00:13:08,879
+right after so after we did this we
+
+301
+00:13:08,879 --> 00:13:11,819
+coined a concept called hybrids driven
+
+302
+00:13:11,819 --> 00:13:14,369
+development and that's what this is you
+
+303
+00:13:14,369 --> 00:13:15,959
+think it's easy and then just keeps
+
+304
+00:13:15,959 --> 00:13:18,629
+going so let's dive into what's actually
+
+305
+00:13:18,629 --> 00:13:19,209
+happening
+
+306
+00:13:19,209 --> 00:13:23,379
+so you see that after I've figured out
+
+307
+00:13:23,379 --> 00:13:27,009
+how to how to know what cliffs I have on
+
+308
+00:13:27,009 --> 00:13:31,300
+my page that's hard I do this thing
+
+309
+00:13:31,300 --> 00:13:34,269
+where I have a new name for the font the
+
+310
+00:13:34,269 --> 00:13:36,939
+original name was notice Arif now the
+
+311
+00:13:36,939 --> 00:13:38,499
+name is notice Arif on the score on the
+
+312
+00:13:38,499 --> 00:13:42,369
+score subset so I'm actually including
+
+313
+00:13:42,369 --> 00:13:45,129
+the subset here and I've modified my CSS
+
+314
+00:13:45,129 --> 00:13:48,339
+so it points at the subset this is not
+
+315
+00:13:48,339 --> 00:13:51,399
+recommended practice in fact web font
+
+316
+00:13:51,399 --> 00:13:53,679
+experts will specifically tell you to
+
+317
+00:13:53,679 --> 00:13:55,660
+not too aggressive subsetting it is an
+
+318
+00:13:55,660 --> 00:13:56,259
+anti-pattern
+
+319
+00:13:56,259 --> 00:14:00,879
+and it just so happens that so this is
+
+320
+00:14:00,879 --> 00:14:02,559
+an example of a subset where only the
+
+321
+00:14:02,559 --> 00:14:05,649
+English character sets are downloaded
+
+322
+00:14:05,649 --> 00:14:07,839
+but it has this effect if you do it
+
+323
+00:14:07,839 --> 00:14:11,709
+wrong you might recognize this as as
+
+324
+00:14:11,709 --> 00:14:15,040
+Germans I have a um loud in my in my
+
+325
+00:14:15,040 --> 00:14:15,610
+last name
+
+326
+00:14:15,610 --> 00:14:17,319
+I've had many different renderings of
+
+327
+00:14:17,319 --> 00:14:20,740
+you or not both both this one and also
+
+328
+00:14:20,740 --> 00:14:23,970
+different characters especially Airlines
+
+329
+00:14:23,970 --> 00:14:26,379
+but what happened here was there was a
+
+330
+00:14:26,379 --> 00:14:28,660
+subset that and somebody forgot to
+
+331
+00:14:28,660 --> 00:14:32,139
+include um lab in the font so that one
+
+332
+00:14:32,139 --> 00:14:34,089
+glyph is rendered with a fallback font
+
+333
+00:14:34,089 --> 00:14:35,679
+and in this case the fallback font
+
+334
+00:14:35,679 --> 00:14:37,360
+doesn't really look anything like the
+
+335
+00:14:37,360 --> 00:14:43,869
+web font if you only serve a subset then
+
+336
+00:14:43,869 --> 00:14:45,999
+you might run into this especially if
+
+337
+00:14:45,999 --> 00:14:48,160
+dynamic stuff is happening on your page
+
+338
+00:14:48,160 --> 00:14:50,499
+our comment by somebody is loaded
+
+339
+00:14:50,499 --> 00:14:53,230
+they're Chinese and they write in
+
+340
+00:14:53,230 --> 00:14:54,850
+Chinese then it will definitely not be
+
+341
+00:14:54,850 --> 00:14:58,569
+in the web form that you anticipated so
+
+342
+00:14:58,569 --> 00:15:03,069
+I came up with a new technique to load a
+
+343
+00:15:03,069 --> 00:15:06,279
+subset and use a subset but still have a
+
+344
+00:15:06,279 --> 00:15:08,829
+proper fallback so at the time where a
+
+345
+00:15:08,829 --> 00:15:12,459
+new cliff loads or is needed it will
+
+346
+00:15:12,459 --> 00:15:16,749
+actually load the original font so that
+
+347
+00:15:16,749 --> 00:15:18,519
+is on demand and I have not seen this
+
+348
+00:15:18,519 --> 00:15:20,139
+technique before so I'm gonna try and
+
+349
+00:15:20,139 --> 00:15:22,959
+show you if if I can find where this is
+
+350
+00:15:22,959 --> 00:15:27,579
+used so I'm pre connecting to two more -
+
+351
+00:15:27,579 --> 00:15:30,999
+two more URLs one is fun stuff Google
+
+352
+00:15:30,999 --> 00:15:32,350
+API is calm once
+
+353
+00:15:32,350 --> 00:15:36,190
+funky static calm those are the the
+
+354
+00:15:36,190 --> 00:15:37,840
+places where the CSS and the fonts are
+
+355
+00:15:37,840 --> 00:15:39,670
+hosted on Google Fonts so I'm already
+
+356
+00:15:39,670 --> 00:15:41,620
+warming up the connection just in case I
+
+357
+00:15:41,620 --> 00:15:44,470
+need to look the fallbacks then all the
+
+358
+00:15:44,470 --> 00:15:50,460
+way at the bottom I have this ugly block
+
+359
+00:15:50,460 --> 00:15:52,900
+which is a script and an L script and
+
+360
+00:15:52,900 --> 00:15:56,200
+that's essentially loading the CSS the
+
+361
+00:15:56,200 --> 00:15:58,150
+original CSS from from google fonts that
+
+362
+00:15:58,150 --> 00:16:02,620
+I had but in an asynchronous way when
+
+363
+00:16:02,620 --> 00:16:05,170
+you when a script append a link tag like
+
+364
+00:16:05,170 --> 00:16:07,240
+this it'll load asynchronously so I've
+
+365
+00:16:07,240 --> 00:16:10,330
+just removed that slow connection time
+
+366
+00:16:10,330 --> 00:16:12,730
+and round-trip to Google Fonts from my
+
+367
+00:16:12,730 --> 00:16:15,910
+critical rendering path but I still get
+
+368
+00:16:15,910 --> 00:16:17,620
+this stuff but it's just not in my
+
+369
+00:16:17,620 --> 00:16:20,740
+critical path anymore so I'm warming up
+
+370
+00:16:20,740 --> 00:16:23,380
+these connections and in order to both
+
+371
+00:16:23,380 --> 00:16:25,750
+use the subset and enable me to fall
+
+372
+00:16:25,750 --> 00:16:29,260
+back to the original web font I will
+
+373
+00:16:29,260 --> 00:16:32,200
+need to look into build something that's
+
+374
+00:16:32,200 --> 00:16:36,730
+CSS main that's users probably know what
+
+375
+00:16:36,730 --> 00:16:38,710
+to say there we go so I've rewritten all
+
+376
+00:16:38,710 --> 00:16:42,280
+the usages so this was my original usage
+
+377
+00:16:42,280 --> 00:16:45,610
+as I said I want to use no Caesaria and
+
+378
+00:16:45,610 --> 00:16:46,930
+fall back to serife but now our
+
+379
+00:16:46,930 --> 00:16:49,780
+prepended this this subset so the effect
+
+380
+00:16:49,780 --> 00:16:52,630
+of this is that if a glyph is missing in
+
+381
+00:16:52,630 --> 00:16:57,640
+a web font these these declarations will
+
+382
+00:16:57,640 --> 00:16:59,680
+be tried in order so it'll start with my
+
+383
+00:16:59,680 --> 00:17:01,840
+subset figure out this glyph is missing
+
+384
+00:17:01,840 --> 00:17:03,820
+then I'd load the next one at least
+
+385
+00:17:03,820 --> 00:17:07,000
+that's the spec and Chrome and opera
+
+386
+00:17:07,000 --> 00:17:09,820
+does it correct Firefox has a bug which
+
+387
+00:17:09,820 --> 00:17:11,710
+I'm tracking right now it also has a
+
+388
+00:17:11,710 --> 00:17:13,330
+park where they load these things
+
+389
+00:17:13,330 --> 00:17:15,400
+upfront which means that you pay more
+
+390
+00:17:15,400 --> 00:17:17,830
+bytes but it actually doesn't infect
+
+391
+00:17:17,830 --> 00:17:19,930
+your your time - first meaningful paint
+
+392
+00:17:19,930 --> 00:17:21,540
+because the subset is already
+
+393
+00:17:21,540 --> 00:17:23,560
+pre-empting and and you can already
+
+394
+00:17:23,560 --> 00:17:26,410
+render before so even though some
+
+395
+00:17:26,410 --> 00:17:27,790
+browsers are loading a few more bites
+
+396
+00:17:27,790 --> 00:17:31,210
+there's still no downsides if your goal
+
+397
+00:17:31,210 --> 00:17:33,040
+is to get a first meaningful for paint
+
+398
+00:17:33,040 --> 00:17:37,960
+faster so I skipped over the hard part
+
+399
+00:17:37,960 --> 00:17:40,960
+which was figuring out which glyphs I'm
+
+400
+00:17:40,960 --> 00:17:41,990
+using
+
+401
+00:17:41,990 --> 00:17:44,200
+[Music]
+
+402
+00:17:44,200 --> 00:17:47,529
+it sounds easy and that's what we said
+
+403
+00:17:47,529 --> 00:17:52,510
+I happen to be a former colleague of one
+
+404
+00:17:52,510 --> 00:17:54,730
+of the web's foremost web font experts
+
+405
+00:17:54,730 --> 00:17:57,610
+Rammstein years ago we worked at the
+
+406
+00:17:57,610 --> 00:18:00,340
+same company and so we were having a
+
+407
+00:18:00,340 --> 00:18:02,289
+reunion birria like two years ago and I
+
+408
+00:18:02,289 --> 00:18:03,700
+was sitting there with another different
+
+409
+00:18:03,700 --> 00:18:05,830
+colleague and we were like hah I'm this
+
+410
+00:18:05,830 --> 00:18:07,779
+subsetting stuff how hard can that be
+
+411
+00:18:07,779 --> 00:18:09,580
+like you could just statically analyze
+
+412
+00:18:09,580 --> 00:18:12,340
+the the font or the text on the page and
+
+413
+00:18:12,340 --> 00:18:14,620
+then you know what cliffs you use right
+
+414
+00:18:14,620 --> 00:18:18,190
+and he goes no you cannot you cannot do
+
+415
+00:18:18,190 --> 00:18:19,750
+that there's all sorts of things and
+
+416
+00:18:19,750 --> 00:18:21,190
+we're drunk and we're not listening to
+
+417
+00:18:21,190 --> 00:18:23,380
+him we're like yeah yeah yeah we can do
+
+418
+00:18:23,380 --> 00:18:26,799
+this so the reason why we were that
+
+419
+00:18:26,799 --> 00:18:29,620
+cocky is that we spend a lot of time
+
+420
+00:18:29,620 --> 00:18:31,809
+building static analysis tools which
+
+421
+00:18:31,809 --> 00:18:34,929
+look at at a page as a whole as a one
+
+422
+00:18:34,929 --> 00:18:36,880
+single data model it has access to the
+
+423
+00:18:36,880 --> 00:18:39,309
+Dom to the CSS to JavaScript everything
+
+424
+00:18:39,309 --> 00:18:41,169
+at the same time which means that we
+
+425
+00:18:41,169 --> 00:18:43,450
+have the basis to do a static analysis
+
+426
+00:18:43,450 --> 00:18:46,000
+that would know which CSS applies to
+
+427
+00:18:46,000 --> 00:18:49,899
+which text so that's a tool set called
+
+428
+00:18:49,899 --> 00:18:52,389
+asset graph and it's using JSON
+
+429
+00:18:52,389 --> 00:18:55,269
+internally to model HTML so when we
+
+430
+00:18:55,269 --> 00:18:56,950
+started doing this Hybris driven
+
+431
+00:18:56,950 --> 00:18:58,539
+development we thought we'll just get
+
+432
+00:18:58,539 --> 00:19:01,149
+computed style and then we have the font
+
+433
+00:19:01,149 --> 00:19:02,860
+properties that we're interested in and
+
+434
+00:19:02,860 --> 00:19:05,289
+then we can figure out how they group to
+
+435
+00:19:05,289 --> 00:19:07,090
+the font files and then everything is
+
+436
+00:19:07,090 --> 00:19:09,159
+good handed off to a sub setting tool
+
+437
+00:19:09,159 --> 00:19:11,980
+and then we have a result jsm does not
+
+438
+00:19:11,980 --> 00:19:13,990
+have get computed style for inherited
+
+439
+00:19:13,990 --> 00:19:19,480
+properties so we implemented it which
+
+440
+00:19:19,480 --> 00:19:22,779
+turns out to teach me a lot about how
+
+441
+00:19:22,779 --> 00:19:25,570
+CSS font resolution is actually working
+
+442
+00:19:25,570 --> 00:19:28,990
+so just to do a short walk through you
+
+443
+00:19:28,990 --> 00:19:32,169
+you see the the the declaration you use
+
+444
+00:19:32,169 --> 00:19:34,929
+you see which selector applies to its
+
+445
+00:19:34,929 --> 00:19:36,970
+dom nodes the no declarations followed
+
+446
+00:19:36,970 --> 00:19:39,820
+you figure out this a specific font you
+
+447
+00:19:39,820 --> 00:19:42,750
+look up the front face declaration you
+
+448
+00:19:42,750 --> 00:19:45,789
+see which weights it has and if it's
+
+449
+00:19:45,789 --> 00:19:48,399
+italic and not and that classifies it to
+
+450
+00:19:48,399 --> 00:19:51,309
+which fonts you need to download so now
+
+451
+00:19:51,309 --> 00:19:52,929
+you have the weights and and the
+
+452
+00:19:52,929 --> 00:19:54,730
+approximate font and then if you don't
+
+453
+00:19:54,730 --> 00:19:56,440
+have all the funds for all the weights
+
+454
+00:19:56,440 --> 00:19:58,060
+that you specified it'll snap
+
+455
+00:19:58,060 --> 00:20:00,100
+- the ones available and then you need
+
+456
+00:20:00,100 --> 00:20:02,650
+to take care of things like you can set
+
+457
+00:20:02,650 --> 00:20:04,540
+a CSS property called font-weight:bold
+
+458
+00:20:04,540 --> 00:20:07,690
+er which means that after all this
+
+459
+00:20:07,690 --> 00:20:09,550
+snapping has happened it's gonna say oh
+
+460
+00:20:09,550 --> 00:20:12,040
+you want it I'm in a contact I've
+
+461
+00:20:12,040 --> 00:20:13,930
+already built but I want Boulder I'm
+
+462
+00:20:13,930 --> 00:20:17,080
+gonna do one higher of whatever is
+
+463
+00:20:17,080 --> 00:20:18,640
+available so all of these things are
+
+464
+00:20:18,640 --> 00:20:21,490
+very dynamic and very hard to track then
+
+465
+00:20:21,490 --> 00:20:24,180
+you have CSS generated content you have
+
+466
+00:20:24,180 --> 00:20:26,830
+visible attributes like placeholder
+
+467
+00:20:26,830 --> 00:20:30,040
+attributes then you have potentially
+
+468
+00:20:30,040 --> 00:20:32,680
+different states hover States active
+
+469
+00:20:32,680 --> 00:20:34,750
+states in CSS you have media queries
+
+470
+00:20:34,750 --> 00:20:37,480
+suddenly this problem is not just I have
+
+471
+00:20:37,480 --> 00:20:39,250
+a text node and I'm getting the computer
+
+472
+00:20:39,250 --> 00:20:42,280
+style its multi-dimensional multiple
+
+473
+00:20:42,280 --> 00:20:45,430
+states at the same time which all might
+
+474
+00:20:45,430 --> 00:20:48,010
+affect which glyphs and end up in which
+
+475
+00:20:48,010 --> 00:20:52,360
+pocket for which font file we ended up
+
+476
+00:20:52,360 --> 00:20:55,870
+actually implementing all of this and I
+
+477
+00:20:55,870 --> 00:20:58,030
+have not seen an implementation of this
+
+478
+00:20:58,030 --> 00:21:00,130
+before so I think this is genuinely a
+
+479
+00:21:00,130 --> 00:21:02,920
+new contribution there exists a
+
+480
+00:21:02,920 --> 00:21:05,080
+different tool called cliffhanger which
+
+481
+00:21:05,080 --> 00:21:07,960
+does get computed style for for text
+
+482
+00:21:07,960 --> 00:21:10,150
+nodes for also for attributes but
+
+483
+00:21:10,150 --> 00:21:13,480
+doesn't do the State thing so if you're
+
+484
+00:21:13,480 --> 00:21:15,280
+interested in in trying to look into
+
+485
+00:21:15,280 --> 00:21:17,370
+that cliffhanger is easier code to read
+
+486
+00:21:17,370 --> 00:21:21,130
+look at that and if you're taunting then
+
+487
+00:21:21,130 --> 00:21:22,810
+come speak to me and I'll walk you
+
+488
+00:21:22,810 --> 00:21:25,120
+through through our code and how we did
+
+489
+00:21:25,120 --> 00:21:32,770
+this so this tool only works for static
+
+490
+00:21:32,770 --> 00:21:37,630
+files for static pages so this means
+
+491
+00:21:37,630 --> 00:21:39,610
+that if you have a static page like
+
+492
+00:21:39,610 --> 00:21:43,690
+Jekyll or if they use Hugo or I don't
+
+493
+00:21:43,690 --> 00:21:44,950
+know there's a lot of different static
+
+494
+00:21:44,950 --> 00:21:48,040
+page generators these days this is a
+
+495
+00:21:48,040 --> 00:21:51,850
+tool for you you can keep doing the the
+
+496
+00:21:51,850 --> 00:21:54,790
+default recommended style of including
+
+497
+00:21:54,790 --> 00:21:56,890
+google fonts like this it also works
+
+498
+00:21:56,890 --> 00:21:59,980
+with local funds there is a there is a
+
+499
+00:21:59,980 --> 00:22:01,510
+Python dependency if you want to do
+
+500
+00:22:01,510 --> 00:22:04,060
+local subsetting it'll help you install
+
+501
+00:22:04,060 --> 00:22:08,410
+that when you when you hit that but if
+
+502
+00:22:08,410 --> 00:22:10,720
+you have a dynamic page you might be out
+
+503
+00:22:10,720 --> 00:22:12,020
+of luck
+
+504
+00:22:12,020 --> 00:22:14,670
+dynamic pages take several forms some
+
+505
+00:22:14,670 --> 00:22:17,040
+maybe have a static loading screen or a
+
+506
+00:22:17,040 --> 00:22:19,320
+static header then you could still run
+
+507
+00:22:19,320 --> 00:22:20,550
+this and you could get immediate
+
+508
+00:22:20,550 --> 00:22:22,800
+rendering of your static header but the
+
+509
+00:22:22,800 --> 00:22:25,140
+dynamic parts it doesn't really cover so
+
+510
+00:22:25,140 --> 00:22:28,050
+if you want to do fonts upsetting again
+
+511
+00:22:28,050 --> 00:22:31,140
+I cannot repeat this enough don't don't
+
+512
+00:22:31,140 --> 00:22:34,140
+do funds upsetting for that just don't
+
+513
+00:22:34,140 --> 00:22:35,700
+like it will not be enough to know
+
+514
+00:22:35,700 --> 00:22:37,590
+what's in your words in your translation
+
+515
+00:22:37,590 --> 00:22:39,690
+system or what's in on your pages
+
+516
+00:22:39,690 --> 00:22:41,940
+because there are weird States you could
+
+517
+00:22:41,940 --> 00:22:43,560
+get into and you cannot predict them
+
+518
+00:22:43,560 --> 00:22:46,190
+when you do dynamic JavaScript that said
+
+519
+00:22:46,190 --> 00:22:48,900
+preload preload print up preload
+
+520
+00:22:48,900 --> 00:22:52,430
+remember that go home and do it it's
+
+521
+00:22:52,430 --> 00:22:55,470
+it's like a half an hour change you can
+
+522
+00:22:55,470 --> 00:22:57,090
+download the web fonts from Google the
+
+523
+00:22:57,090 --> 00:22:59,580
+license allows you to they're available
+
+524
+00:22:59,580 --> 00:23:01,320
+on github I think they're even available
+
+525
+00:23:01,320 --> 00:23:04,710
+as NPM installs you can point a preload
+
+526
+00:23:04,710 --> 00:23:07,740
+link you can use an HTTP header if you
+
+527
+00:23:07,740 --> 00:23:09,780
+have access to to set your HTTP headers
+
+528
+00:23:09,780 --> 00:23:11,730
+this increases your performance
+
+529
+00:23:11,730 --> 00:23:17,550
+immensely so go and do that so I
+
+530
+00:23:17,550 --> 00:23:20,430
+encourage you to try this I want to help
+
+531
+00:23:20,430 --> 00:23:21,930
+you like if you have time in a break
+
+532
+00:23:21,930 --> 00:23:23,970
+I'll help you set this up if you have a
+
+533
+00:23:23,970 --> 00:23:26,190
+static page and and see it break in all
+
+534
+00:23:26,190 --> 00:23:27,960
+the funny ways that it can and then I'll
+
+535
+00:23:27,960 --> 00:23:31,880
+have Bakri posts that I can fix but I
+
+536
+00:23:31,880 --> 00:23:34,350
+want to close off with with this is just
+
+537
+00:23:34,350 --> 00:23:37,980
+one instance of a tool as I think it
+
+538
+00:23:37,980 --> 00:23:40,860
+should it should be built I think there
+
+539
+00:23:40,860 --> 00:23:43,070
+are not enough tools that allow you to
+
+540
+00:23:43,070 --> 00:23:47,430
+work in in a non complex way and then
+
+541
+00:23:47,430 --> 00:23:49,050
+abstract the complexity away from you
+
+542
+00:23:49,050 --> 00:23:52,590
+most of the tools that exist expose you
+
+543
+00:23:52,590 --> 00:23:55,320
+to tons of complexity with configuration
+
+544
+00:23:55,320 --> 00:23:57,990
+because you have to tell it everything
+
+545
+00:23:57,990 --> 00:23:59,840
+you have to tell at every entry point
+
+546
+00:23:59,840 --> 00:24:02,190
+everything to do you have to tell it how
+
+547
+00:24:02,190 --> 00:24:04,140
+to do it and you don't tell it what to
+
+548
+00:24:04,140 --> 00:24:08,370
+do so I I want to build tools that and I
+
+549
+00:24:08,370 --> 00:24:11,130
+want others to build tools that let you
+
+550
+00:24:11,130 --> 00:24:14,100
+achieve the goal and then just look at
+
+551
+00:24:14,100 --> 00:24:17,070
+your code and does the right thing and I
+
+552
+00:24:17,070 --> 00:24:20,040
+think this is one example of such tool I
+
+553
+00:24:20,040 --> 00:24:21,900
+might do a lightning talk later where
+
+554
+00:24:21,900 --> 00:24:24,630
+there might be another one I
+
+555
+00:24:24,630 --> 00:24:25,980
+what these tools to give people
+
+556
+00:24:25,980 --> 00:24:29,190
+abilities without having to know all the
+
+557
+00:24:29,190 --> 00:24:31,800
+crazy stuff that is behind it that's
+
+558
+00:24:31,800 --> 00:24:34,140
+upsetting stuff is so hard I don't
+
+559
+00:24:34,140 --> 00:24:36,510
+expect anybody to know it like I don't
+
+560
+00:24:36,510 --> 00:24:38,790
+even expect web font experts to do it
+
+561
+00:24:38,790 --> 00:24:41,820
+because it is so error-prone so I'm
+
+562
+00:24:41,820 --> 00:24:44,040
+really hoping that I can contribute that
+
+563
+00:24:44,040 --> 00:24:47,190
+people can do this and win something
+
+564
+00:24:47,190 --> 00:24:52,500
+from it but again subsetting that's just
+
+565
+00:24:52,500 --> 00:24:55,050
+the geekery I'm loading slightly less
+
+566
+00:24:55,050 --> 00:24:57,870
+fonts it's not where the gains come from
+
+567
+00:24:57,870 --> 00:25:03,000
+do pre loading so I'm really also hoping
+
+568
+00:25:03,000 --> 00:25:05,190
+that there might be designers in the
+
+569
+00:25:05,190 --> 00:25:08,970
+room or people who specialized in HTML
+
+570
+00:25:08,970 --> 00:25:12,330
+and CSS only and don't necessarily geek
+
+571
+00:25:12,330 --> 00:25:14,400
+out on web performance like I do and I
+
+572
+00:25:14,400 --> 00:25:16,140
+hope that they can they can use this and
+
+573
+00:25:16,140 --> 00:25:18,540
+that they can build faster experiences
+
+574
+00:25:18,540 --> 00:25:22,790
+so I think that's all the words I had I
+
+575
+00:25:22,790 --> 00:25:24,810
+think this room is not so good for
+
+576
+00:25:24,810 --> 00:25:26,670
+questions so I think we'll forego them
+
+577
+00:25:26,670 --> 00:25:28,590
+I'll be I'll be in front of the stage
+
+578
+00:25:28,590 --> 00:25:30,000
+and you can come and ask me questions if
+
+579
+00:25:30,000 --> 00:25:32,490
+you're interested and I'll leave you
+
+580
+00:25:32,490 --> 00:25:35,970
+with those words take a look at ads up
+
+581
+00:25:35,970 --> 00:25:38,340
+front you can install it from NPM
+
+582
+00:25:38,340 --> 00:25:40,770
+if you want to and give it a go and
+
+583
+00:25:40,770 --> 00:25:42,930
+tweet at me if it doesn't work I'll fix
+
+584
+00:25:42,930 --> 00:25:44,770
+it for you thank you
+

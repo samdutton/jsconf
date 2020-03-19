@@ -1,0 +1,2365 @@
+1
+00:00:34,579 --> 00:00:38,960
+
+so hey y'all my name is Andy Wingo it's
+
+2
+00:00:38,960 --> 00:00:41,570
+real pleasure to be here thank you and
+
+3
+00:00:41,570 --> 00:00:43,520
+and I'm a compiler nerd I have to say
+
+4
+00:00:43,520 --> 00:00:46,399
+right yeah it's a technical title
+
+5
+00:00:46,399 --> 00:00:48,769
+actually I work for a gallium it's a
+
+6
+00:00:48,769 --> 00:00:51,620
+spanish software consulting company that
+
+7
+00:00:51,620 --> 00:00:53,329
+does mostly consulting around free
+
+8
+00:00:53,329 --> 00:00:54,680
+software projects and if you know our
+
+9
+00:00:54,680 --> 00:00:57,079
+work it's mostly it would probably be
+
+10
+00:00:57,079 --> 00:00:58,970
+because of our work on whether it right
+
+11
+00:00:58,970 --> 00:01:00,710
+where it's difficult to count these
+
+12
+00:01:00,710 --> 00:01:01,820
+things but we're something like the
+
+13
+00:01:01,820 --> 00:01:04,399
+third largest corporate contributor to
+
+14
+00:01:04,399 --> 00:01:07,940
+the WebKit project we work on ports for
+
+15
+00:01:07,940 --> 00:01:15,320
+customers integrations for device
+
+16
+00:01:15,320 --> 00:01:17,830
+manufacturers and things that and then I
+
+17
+00:01:17,830 --> 00:01:20,420
+have been working on JavaScript core for
+
+18
+00:01:20,420 --> 00:01:24,979
+the last spend some time with v8 but I'm
+
+19
+00:01:24,979 --> 00:01:27,200
+I'm mostly going to focus on JavaScript
+
+20
+00:01:27,200 --> 00:01:30,890
+core oh yes fun fact you Galia is a
+
+21
+00:01:30,890 --> 00:01:32,600
+worker owned cooperative if y'all are
+
+22
+00:01:32,600 --> 00:01:34,700
+interested about such a strange project
+
+23
+00:01:34,700 --> 00:01:35,869
+come to me afterwards and you know
+
+24
+00:01:35,869 --> 00:01:39,470
+asking about the thing but I'm not
+
+25
+00:01:39,470 --> 00:01:41,300
+really a JavaScript programmer right I'm
+
+26
+00:01:41,300 --> 00:01:45,779
+I'm a schemer at heart that's you know
+
+27
+00:01:45,789 --> 00:01:48,950
+but it's been just real interesting
+
+28
+00:01:48,950 --> 00:01:50,630
+getting in the thick of these JavaScript
+
+29
+00:01:50,630 --> 00:01:52,399
+implementations they're fascinating
+
+30
+00:01:52,399 --> 00:01:55,160
+things and I find them you know quite
+
+31
+00:01:55,160 --> 00:01:56,929
+quite interesting so this is gonna be a
+
+32
+00:01:56,929 --> 00:01:58,789
+talk about some things that I've learned
+
+33
+00:01:58,789 --> 00:02:00,410
+about the various implementations and
+
+34
+00:02:00,410 --> 00:02:02,209
+it's going to focus on JavaScript core
+
+35
+00:02:02,209 --> 00:02:04,009
+because they don't do a very good job
+
+36
+00:02:04,009 --> 00:02:05,300
+marketing and I don't think anyone
+
+37
+00:02:05,300 --> 00:02:06,500
+really understands how it works
+
+38
+00:02:06,500 --> 00:02:09,410
+right so I figure it's a a good you know
+
+39
+00:02:09,410 --> 00:02:11,620
+time to take out some of these things I
+
+40
+00:02:11,620 --> 00:02:14,090
+have a feeling like my perspective is
+
+41
+00:02:14,090 --> 00:02:16,489
+that my languages are essentially tribal
+
+42
+00:02:16,489 --> 00:02:18,980
+right that's that's the thing that
+
+43
+00:02:18,980 --> 00:02:20,690
+defines a language community that you
+
+44
+00:02:20,690 --> 00:02:22,760
+know you have a group and you have in
+
+45
+00:02:22,760 --> 00:02:24,770
+and outside and you have your respected
+
+46
+00:02:24,770 --> 00:02:26,480
+elders and your tribe and such and I
+
+47
+00:02:26,480 --> 00:02:28,360
+come from you know this Lisp tribe and
+
+48
+00:02:28,360 --> 00:02:31,400
+one of our old bards was Peter Norvig
+
+49
+00:02:31,400 --> 00:02:33,050
+you might know I'm he's through a
+
+50
+00:02:33,050 --> 00:02:35,300
+research now at Google 20 years ago he
+
+51
+00:02:35,300 --> 00:02:36,860
+wrote a book called paradigms and
+
+52
+00:02:36,860 --> 00:02:39,010
+artificial intelligence programming and
+
+53
+00:02:39,010 --> 00:02:41,390
+the book has not held up as far as
+
+54
+00:02:41,390 --> 00:02:43,310
+artificial intelligence goes but it's I
+
+55
+00:02:43,310 --> 00:02:44,960
+think it's quite interesting on a you
+
+56
+00:02:44,960 --> 00:02:46,760
+know the practice of programming and
+
+57
+00:02:46,760 --> 00:02:48,230
+some efficiency concerns
+
+58
+00:02:48,230 --> 00:02:50,480
+and he he did some retrospectives on
+
+59
+00:02:50,480 --> 00:02:53,269
+this book five years after in ten years
+
+60
+00:02:53,269 --> 00:02:55,069
+after he hasn't done a twenty or one yet
+
+61
+00:02:55,069 --> 00:02:57,290
+but I'm aware of but he extracted you
+
+62
+00:02:57,290 --> 00:02:58,670
+know these lessons and they're kind of
+
+63
+00:02:58,670 --> 00:03:00,530
+cute one of them though that really is
+
+64
+00:03:00,530 --> 00:03:02,450
+stuck with me and all my programming
+
+65
+00:03:02,450 --> 00:03:06,170
+stuff be it god forbid even in C++ would
+
+66
+00:03:06,170 --> 00:03:07,670
+be that they're this statement that
+
+67
+00:03:07,670 --> 00:03:09,680
+there are four general techniques which
+
+68
+00:03:09,680 --> 00:03:12,110
+you can use to speed up an algorithm
+
+69
+00:03:12,110 --> 00:03:16,340
+being caching compiling delaying
+
+70
+00:03:16,340 --> 00:03:17,750
+computation which sometimes we call
+
+71
+00:03:17,750 --> 00:03:19,489
+laziness any through in this thing
+
+72
+00:03:19,489 --> 00:03:20,769
+called indexing because the bad time
+
+73
+00:03:20,769 --> 00:03:23,150
+Lisp programmers like to use linked
+
+74
+00:03:23,150 --> 00:03:25,040
+lists for everything and Husing please
+
+75
+00:03:25,040 --> 00:03:27,590
+use a an array or some structure with
+
+76
+00:03:27,590 --> 00:03:32,090
+better Big O complexity but you know in
+
+77
+00:03:32,090 --> 00:03:36,819
+any case this is you know escaping from
+
+78
+00:03:36,819 --> 00:03:40,790
+as a way to interpret what I have found
+
+79
+00:03:40,790 --> 00:03:43,250
+in in the JavaScript tribe so one
+
+80
+00:03:43,250 --> 00:03:45,920
+extreme example of this would be the
+
+81
+00:03:45,920 --> 00:03:48,319
+inline cash phenomenon so lose your hand
+
+82
+00:03:48,319 --> 00:03:51,190
+if you own inline caches sorry get
+
+83
+00:03:51,190 --> 00:03:55,010
+through the room or so so this when
+
+84
+00:03:55,010 --> 00:03:56,930
+you're a language imitation and you see
+
+85
+00:03:56,930 --> 00:04:00,200
+like X plus y like you have to do
+
+86
+00:04:00,200 --> 00:04:01,519
+something right you have to add it at
+
+87
+00:04:01,519 --> 00:04:04,850
+some point right but the question is how
+
+88
+00:04:04,850 --> 00:04:06,079
+exactly are you going to go about doing
+
+89
+00:04:06,079 --> 00:04:09,650
+this well for example in v8 and more
+
+90
+00:04:09,650 --> 00:04:11,299
+even than that and in Dart
+
+91
+00:04:11,299 --> 00:04:13,069
+what you do is you don't do anything
+
+92
+00:04:13,069 --> 00:04:15,380
+right you don't implement it at all
+
+93
+00:04:15,380 --> 00:04:17,359
+until it's run for the first time and
+
+94
+00:04:17,359 --> 00:04:19,700
+then when it's first run you see what
+
+95
+00:04:19,700 --> 00:04:21,169
+types are flowing through that call site
+
+96
+00:04:21,169 --> 00:04:24,650
+you compile a version of this operation
+
+97
+00:04:24,650 --> 00:04:26,660
+specific to the types for that call site
+
+98
+00:04:26,660 --> 00:04:29,060
+and you cash that code in stub so
+
+99
+00:04:29,060 --> 00:04:31,490
+they're those three most important
+
+100
+00:04:31,490 --> 00:04:34,760
+elements of norfolk's Maxim they're sort
+
+101
+00:04:34,760 --> 00:04:37,070
+of worked them together and of course
+
+102
+00:04:37,070 --> 00:04:38,780
+this technique also applies to field
+
+103
+00:04:38,780 --> 00:04:41,720
+accesses you know x dot y and
+
+104
+00:04:41,720 --> 00:04:45,020
+interestingly in v8 the the caches work
+
+105
+00:04:45,020 --> 00:04:47,270
+as input the optimizing compiler later
+
+106
+00:04:47,270 --> 00:04:48,260
+I'll talk a little bit more about that
+
+107
+00:04:48,260 --> 00:04:51,710
+in a bit but like I say on JavaScript
+
+108
+00:04:51,710 --> 00:04:55,820
+core and specifically to the new tiered
+
+109
+00:04:55,820 --> 00:04:57,470
+compilation model I'm gonna do the hand
+
+110
+00:04:57,470 --> 00:05:00,250
+raising thing again so how many of you
+
+111
+00:05:00,250 --> 00:05:01,970
+have her
+
+112
+00:05:01,970 --> 00:05:06,560
+the term TFG TFG very few I guess lol
+
+113
+00:05:06,560 --> 00:05:09,590
+int probably fewer okay some though
+
+114
+00:05:09,590 --> 00:05:10,760
+awesome great
+
+115
+00:05:10,760 --> 00:05:14,120
+so javascriptcore works it's it it
+
+116
+00:05:14,120 --> 00:05:18,200
+compiles your code to bytecode and then
+
+117
+00:05:18,200 --> 00:05:20,690
+the first time it runs it on cold code
+
+118
+00:05:20,690 --> 00:05:23,330
+it will interpret that bytecode and then
+
+119
+00:05:23,330 --> 00:05:25,580
+if that code warms up it will compile
+
+120
+00:05:25,580 --> 00:05:28,340
+those byte codes into native code and
+
+121
+00:05:28,340 --> 00:05:30,770
+then if that code JavaScript core
+
+122
+00:05:30,770 --> 00:05:32,660
+determines that it's hot then it will
+
+123
+00:05:32,660 --> 00:05:35,390
+optimize that compiled code and produce
+
+124
+00:05:35,390 --> 00:05:37,820
+a version which is specific to the types
+
+125
+00:05:37,820 --> 00:05:39,650
+flowing through that call site and it's
+
+126
+00:05:39,650 --> 00:05:43,220
+a speculative optimization meaning it
+
+127
+00:05:43,220 --> 00:05:44,990
+doesn't have to be general like so that
+
+128
+00:05:44,990 --> 00:05:47,570
+the the highest then it can fail at some
+
+129
+00:05:47,570 --> 00:05:48,620
+point say you're having a bunch of
+
+130
+00:05:48,620 --> 00:05:50,270
+integers and integers and integers and
+
+131
+00:05:50,270 --> 00:05:54,030
+something you see like a float
+
+132
+00:05:54,040 --> 00:05:56,030
+javascript or floating point but there's
+
+133
+00:05:56,030 --> 00:05:57,740
+the common optimization that small
+
+134
+00:05:57,740 --> 00:05:59,600
+integers are represented differently at
+
+135
+00:05:59,600 --> 00:06:00,650
+that point you would fail the
+
+136
+00:06:00,650 --> 00:06:02,870
+speculation tier back down from tier 2
+
+137
+00:06:02,870 --> 00:06:05,750
+up to tier 1 and wait again and try some
+
+138
+00:06:05,750 --> 00:06:08,240
+more and I think I'm sure many of you
+
+139
+00:06:08,240 --> 00:06:12,740
+have heard Larry wall Perl creator haha
+
+140
+00:06:12,740 --> 00:06:15,410
+but right he has the cardinal virtues of
+
+141
+00:06:15,410 --> 00:06:18,230
+programmer being laziness impatience and
+
+142
+00:06:18,230 --> 00:06:19,550
+humorous and I think they correspond in
+
+143
+00:06:19,550 --> 00:06:22,190
+this order actually to the L and the the
+
+144
+00:06:22,190 --> 00:06:26,630
+baseline JIT and the DFG JIT so the ll
+
+145
+00:06:26,630 --> 00:06:30,640
+inch is the lowest level of JavaScript
+
+146
+00:06:30,640 --> 00:06:32,620
+implementation javascript cores
+
+147
+00:06:32,620 --> 00:06:34,790
+implementation and this is very very new
+
+148
+00:06:34,790 --> 00:06:36,740
+it's maybe it landed a month and a half
+
+149
+00:06:36,740 --> 00:06:38,780
+ago or so so I'm not surprised y'all
+
+150
+00:06:38,780 --> 00:06:39,980
+haven't heard of it and I'm not
+
+151
+00:06:39,980 --> 00:06:41,330
+surprised you haven't heard the DFG
+
+152
+00:06:41,330 --> 00:06:42,730
+either because that's also quite recent
+
+153
+00:06:42,730 --> 00:06:46,700
+it's the new interpreter it's the first
+
+154
+00:06:46,700 --> 00:06:51,860
+pass at your and javascriptcore I need
+
+155
+00:06:51,860 --> 00:06:53,300
+to give a bit of context though for you
+
+156
+00:06:53,300 --> 00:06:54,890
+to understand how it's different than
+
+157
+00:06:54,890 --> 00:06:58,100
+the old one so I'm gonna do a bit of a
+
+158
+00:06:58,100 --> 00:07:01,070
+deep dive into the bytecode the bike
+
+159
+00:07:01,070 --> 00:07:04,040
+compiler the old interpreter and then
+
+160
+00:07:04,040 --> 00:07:06,290
+I'll show the new one and we're going to
+
+161
+00:07:06,290 --> 00:07:08,960
+see a bit of C++ here and I'm sorry you
+
+162
+00:07:08,960 --> 00:07:10,370
+know I have to deal with it'll work I
+
+163
+00:07:10,370 --> 00:07:12,650
+figure y'all got yourself a little bit
+
+164
+00:07:12,650 --> 00:07:15,030
+of it you know some somehow for
+
+165
+00:07:15,030 --> 00:07:19,590
+justice I guess so anyway if you have
+
+166
+00:07:19,590 --> 00:07:21,870
+javascriptcore for example you have
+
+167
+00:07:21,870 --> 00:07:23,970
+downloaded a WebKit nightly and you find
+
+168
+00:07:23,970 --> 00:07:25,710
+the JSC binary which is tucked in there
+
+169
+00:07:25,710 --> 00:07:27,420
+somewhere for the Mac platform or you
+
+170
+00:07:27,420 --> 00:07:30,390
+build javascriptcore yourself you will
+
+171
+00:07:30,390 --> 00:07:31,980
+end up with this binary called JSC and
+
+172
+00:07:31,980 --> 00:07:33,720
+that's the interpreter when you run it
+
+173
+00:07:33,720 --> 00:07:35,910
+with the data GE argument it's going to
+
+174
+00:07:35,910 --> 00:07:40,680
+dump any time it creates bytecode so you
+
+175
+00:07:40,680 --> 00:07:44,400
+know main function and you put it in
+
+176
+00:07:44,400 --> 00:07:46,740
+prisoner right it's going to print out
+
+177
+00:07:46,740 --> 00:07:49,110
+some byte code that it emits and the
+
+178
+00:07:49,110 --> 00:07:51,000
+interesting thing is like where where is
+
+179
+00:07:51,000 --> 00:07:54,240
+the addition here here we're just ok the
+
+180
+00:07:54,240 --> 00:07:55,800
+result of defining this thing is the
+
+181
+00:07:55,800 --> 00:07:57,540
+undefined value which is kind of a whap
+
+182
+00:07:57,540 --> 00:07:59,850
+thing as far as language goes but you
+
+183
+00:07:59,850 --> 00:08:02,850
+know where is the addition so like we
+
+184
+00:08:02,850 --> 00:08:05,610
+said about laziness javascriptcore and
+
+185
+00:08:05,610 --> 00:08:09,030
+v8 and I assume spider monkey and God
+
+186
+00:08:09,030 --> 00:08:11,550
+knows what the other engines do don't
+
+187
+00:08:11,550 --> 00:08:13,830
+actually byte compile they don't even
+
+188
+00:08:13,830 --> 00:08:16,170
+par seer function until it's run for the
+
+189
+00:08:16,170 --> 00:08:18,300
+first time they simply check the syntax
+
+190
+00:08:18,300 --> 00:08:21,020
+right so the function is never called is
+
+191
+00:08:21,020 --> 00:08:24,210
+essentially free there are some you know
+
+192
+00:08:24,210 --> 00:08:26,340
+overheads for that but if if you have a
+
+193
+00:08:26,340 --> 00:08:27,750
+function is never called like you have a
+
+194
+00:08:27,750 --> 00:08:29,400
+big jQuery library or something and you
+
+195
+00:08:29,400 --> 00:08:30,450
+just don't call some of those things
+
+196
+00:08:30,450 --> 00:08:32,280
+they never get created like they never
+
+197
+00:08:32,280 --> 00:08:34,500
+your parsed I never get compiled either
+
+198
+00:08:34,500 --> 00:08:35,910
+to bytecode nor native code nor anything
+
+199
+00:08:35,910 --> 00:08:37,680
+else so once you call them for the first
+
+200
+00:08:37,680 --> 00:08:39,780
+time though JavaScript core is going to
+
+201
+00:08:39,780 --> 00:08:41,910
+go ahead and and byte compile it and
+
+202
+00:08:41,910 --> 00:08:44,490
+parse it by compile it and produce this
+
+203
+00:08:44,490 --> 00:08:47,280
+output here we see we have three opcodes
+
+204
+00:08:47,280 --> 00:08:50,790
+right we enter the function we are going
+
+205
+00:08:50,790 --> 00:08:57,450
+to add and it's a negative eight
+
+206
+00:08:57,450 --> 00:08:59,420
+negative nine that's gonna reference
+
+207
+00:08:59,420 --> 00:09:02,040
+arguments coming in and the result is
+
+208
+00:09:02,040 --> 00:09:04,230
+gonna be put in our zero and then you're
+
+209
+00:09:04,230 --> 00:09:05,820
+gonna return from that function you of
+
+210
+00:09:05,820 --> 00:09:07,800
+its I think it's it's fairly clear what
+
+211
+00:09:07,800 --> 00:09:10,170
+this is question is what is implementing
+
+212
+00:09:10,170 --> 00:09:13,170
+these op codes right that that is the
+
+213
+00:09:13,170 --> 00:09:16,170
+interpreter at the very base level and
+
+214
+00:09:16,170 --> 00:09:19,170
+the classic interpreter it's world bitch
+
+215
+00:09:19,170 --> 00:09:21,360
+how about that you raise hands for Go
+
+216
+00:09:21,360 --> 00:09:23,280
+Fish we got many but that's the name
+
+217
+00:09:23,280 --> 00:09:26,019
+it's sort of stuck with you I don't know
+
+218
+00:09:26,019 --> 00:09:27,670
+I'm not sure if the other thing to you
+
+219
+00:09:27,670 --> 00:09:30,399
+new javascriptcore squirrelfish all
+
+220
+00:09:30,399 --> 00:09:32,110
+these all these names got you know
+
+221
+00:09:32,110 --> 00:09:34,689
+jumbled together marketing-wise the name
+
+222
+00:09:34,689 --> 00:09:35,949
+of the interpreter is javascriptcore
+
+223
+00:09:35,949 --> 00:09:37,989
+it's been marketed under various names
+
+224
+00:09:37,989 --> 00:09:40,720
+and when in 2008 the bike compiler first
+
+225
+00:09:40,720 --> 00:09:42,009
+came out because before they had this
+
+226
+00:09:42,009 --> 00:09:44,079
+tree based interpreter they called it
+
+227
+00:09:44,079 --> 00:09:46,269
+squirrel so the classic interpreter now
+
+228
+00:09:46,269 --> 00:09:48,610
+corresponds more or less to did that
+
+229
+00:09:48,610 --> 00:09:51,040
+release in 2008 and here we go with some
+
+230
+00:09:51,040 --> 00:09:54,189
+c++ I don't I mean you don't need to you
+
+231
+00:09:54,189 --> 00:09:55,749
+know understand this but I just wanna
+
+232
+00:09:55,749 --> 00:10:00,309
+sure the shape right so if you find
+
+233
+00:10:00,309 --> 00:10:02,410
+interpreter at cpp when you download the
+
+234
+00:10:02,410 --> 00:10:05,410
+source and you should dig this sort of
+
+235
+00:10:05,410 --> 00:10:09,100
+thing and you'll find op add I your
+
+236
+00:10:09,100 --> 00:10:10,329
+search for it and we see at the
+
+237
+00:10:10,329 --> 00:10:12,279
+beginning we're parsing out the the
+
+238
+00:10:12,279 --> 00:10:14,499
+registers like we had the dump and then
+
+239
+00:10:14,499 --> 00:10:16,689
+there are two cases right one is a case
+
+240
+00:10:16,689 --> 00:10:18,369
+for small integers that don't overflow
+
+241
+00:10:18,369 --> 00:10:20,350
+and yeah there's a more general case
+
+242
+00:10:20,350 --> 00:10:21,399
+where we're calling out to a stub
+
+243
+00:10:21,399 --> 00:10:25,269
+finally we put the well both of those
+
+244
+00:10:25,269 --> 00:10:26,439
+handle putting the result in the
+
+245
+00:10:26,439 --> 00:10:28,839
+destination we advance the program
+
+246
+00:10:28,839 --> 00:10:30,009
+counter and we go to the next
+
+247
+00:10:30,009 --> 00:10:31,269
+instruction and this is kind of
+
+248
+00:10:31,269 --> 00:10:33,309
+interesting here the next instruction is
+
+249
+00:10:33,309 --> 00:10:37,569
+uh is a macro to find the top and it's a
+
+250
+00:10:37,569 --> 00:10:40,389
+computed goto you see the go to star
+
+251
+00:10:40,389 --> 00:10:43,209
+right the the opcode actually stores the
+
+252
+00:10:43,209 --> 00:10:45,879
+address of the label and the C++
+
+253
+00:10:45,879 --> 00:10:48,850
+function it's kind of you know makes
+
+254
+00:10:48,850 --> 00:10:50,559
+your head turn a little bit and it makes
+
+255
+00:10:50,559 --> 00:10:52,360
+the compilers head turn a little bit as
+
+256
+00:10:52,360 --> 00:10:53,920
+well because this isn't it's not
+
+257
+00:10:53,920 --> 00:10:56,259
+standard C it's not standard C++ and
+
+258
+00:10:56,259 --> 00:10:58,689
+it's a it's a form of higher-level flow
+
+259
+00:10:58,689 --> 00:11:00,369
+control and the compiler doesn't really
+
+260
+00:11:00,369 --> 00:11:03,339
+know the C compiler right GC c lv m
+
+261
+00:11:03,339 --> 00:11:04,749
+doesn't really know what to do with this
+
+262
+00:11:04,749 --> 00:11:06,910
+function right it doesn't know what
+
+263
+00:11:06,910 --> 00:11:08,319
+things need to be in registers what
+
+264
+00:11:08,319 --> 00:11:09,730
+things can be spilled on the stack what
+
+265
+00:11:09,730 --> 00:11:11,110
+things can be thrown away because all it
+
+266
+00:11:11,110 --> 00:11:13,209
+sees is all the labels could branch to
+
+267
+00:11:13,209 --> 00:11:16,240
+each other and it doesn't it can't do
+
+268
+00:11:16,240 --> 00:11:18,759
+very good analysis my so what happened
+
+269
+00:11:18,759 --> 00:11:20,949
+was is this fellow Philip is low which I
+
+270
+00:11:20,949 --> 00:11:22,149
+don't know how long he's been working in
+
+271
+00:11:22,149 --> 00:11:23,350
+Apple but he's been contributing our
+
+272
+00:11:23,350 --> 00:11:24,569
+JavaScript core for about a year so
+
+273
+00:11:24,569 --> 00:11:27,639
+rewrote the the interpreter in assembly
+
+274
+00:11:27,639 --> 00:11:29,379
+right I assume that's not important I've
+
+275
+00:11:29,379 --> 00:11:32,499
+never actually seen before and he ll int
+
+276
+00:11:32,499 --> 00:11:34,689
+is the new interpreter for JavaScript
+
+277
+00:11:34,689 --> 00:11:37,839
+core instead of being implemented in C++
+
+278
+00:11:37,839 --> 00:11:40,330
+it's amended in a specific
+
+279
+00:11:40,330 --> 00:11:42,250
+assembly language and it's actually
+
+280
+00:11:42,250 --> 00:11:43,840
+compiled to the native code with a
+
+281
+00:11:43,840 --> 00:11:46,330
+custom Ruby macro assembler so I think
+
+282
+00:11:46,330 --> 00:11:48,610
+it's fair to say that javascriptcore now
+
+283
+00:11:48,610 --> 00:11:50,170
+implemented Ruby
+
+284
+00:11:50,170 --> 00:11:53,200
+it happens beforehand it's ahead of time
+
+285
+00:11:53,200 --> 00:11:54,760
+it's part of the build process for
+
+286
+00:11:54,760 --> 00:11:57,160
+JavaScript core itself and again I'm
+
+287
+00:11:57,160 --> 00:11:58,960
+going to show you this this custom
+
+288
+00:11:58,960 --> 00:12:00,970
+language sort of for shape you know if
+
+289
+00:12:00,970 --> 00:12:03,010
+you're really into this the the slides
+
+290
+00:12:03,010 --> 00:12:04,270
+will be up later you can check it out
+
+291
+00:12:04,270 --> 00:12:06,030
+and obviously it's in the source as well
+
+292
+00:12:06,030 --> 00:12:09,220
+at first we see we're defining a
+
+293
+00:12:09,220 --> 00:12:11,440
+dispatch macro so this is a macro
+
+294
+00:12:11,440 --> 00:12:12,880
+assembler that allows you to define
+
+295
+00:12:12,880 --> 00:12:15,640
+macros in its own language so your dogs
+
+296
+00:12:15,640 --> 00:12:20,590
+right dispatch we're adding some number
+
+297
+00:12:20,590 --> 00:12:22,180
+to the program counter and then we're
+
+298
+00:12:22,180 --> 00:12:23,680
+doing the computed go to but this is an
+
+299
+00:12:23,680 --> 00:12:28,000
+assembly now we dereference the OP code
+
+300
+00:12:28,000 --> 00:12:30,100
+that is there and jump forward to the
+
+301
+00:12:30,100 --> 00:12:33,580
+next label these like hello end up and
+
+302
+00:12:33,580 --> 00:12:36,070
+it lazy reg that's the simplest opcode
+
+303
+00:12:36,070 --> 00:12:38,050
+it's in the interpreter basically and I
+
+304
+00:12:38,050 --> 00:12:40,330
+put up there just to show it there's a
+
+305
+00:12:40,330 --> 00:12:41,620
+trace execution which generally doesn't
+
+306
+00:12:41,620 --> 00:12:44,410
+execute we parse out the register that
+
+307
+00:12:44,410 --> 00:12:45,730
+we're going to fill with an empty value
+
+308
+00:12:45,730 --> 00:12:48,310
+for various internal purposes we store
+
+309
+00:12:48,310 --> 00:12:51,310
+the empty value in that slot and then we
+
+310
+00:12:51,310 --> 00:12:52,960
+dispatch on to the next opcode and
+
+311
+00:12:52,960 --> 00:12:55,150
+that's the entire imitation that opcode
+
+312
+00:12:55,150 --> 00:12:57,790
+I can't show add though not not as it's
+
+313
+00:12:57,790 --> 00:12:59,230
+not in its entirety because you get
+
+314
+00:12:59,230 --> 00:13:01,180
+adding small integers with small
+
+315
+00:13:01,180 --> 00:13:02,950
+integers adding small integers with
+
+316
+00:13:02,950 --> 00:13:04,780
+doubles adding doubles with small
+
+317
+00:13:04,780 --> 00:13:07,450
+integers you know and then strings right
+
+318
+00:13:07,450 --> 00:13:09,790
+because it's a string append as well and
+
+319
+00:13:09,790 --> 00:13:12,100
+then other value of type things and it
+
+320
+00:13:12,100 --> 00:13:15,180
+gets a bit complicated so what he did as
+
+321
+00:13:15,180 --> 00:13:18,100
+this complication it has to be repeated
+
+322
+00:13:18,100 --> 00:13:19,800
+for all these different opcodes like add
+
+323
+00:13:19,800 --> 00:13:22,960
+divide subtract and all these things he
+
+324
+00:13:22,960 --> 00:13:25,270
+made a macro called binary op that gets
+
+325
+00:13:25,270 --> 00:13:30,460
+passed to macros right macro being
+
+326
+00:13:30,460 --> 00:13:33,060
+passed to macros one which is the ratio
+
+327
+00:13:33,060 --> 00:13:35,350
+and you see at the bottom that we're
+
+328
+00:13:35,350 --> 00:13:38,020
+instantiating the binary op with two
+
+329
+00:13:38,020 --> 00:13:39,310
+macros which are defined there
+
+330
+00:13:39,310 --> 00:13:41,500
+anonymously like lambda expressions I
+
+331
+00:13:41,500 --> 00:13:45,280
+know you're all with me right but so
+
+332
+00:13:45,280 --> 00:13:47,400
+this is this is your new JavaScript core
+
+333
+00:13:47,400 --> 00:13:50,080
+and the question is why right
+
+334
+00:13:50,080 --> 00:13:52,640
+the the low-level interpreter has
+
+335
+00:13:52,640 --> 00:13:54,200
+of advantages over the old one not only
+
+336
+00:13:54,200 --> 00:13:56,660
+you know can we select what's on the
+
+337
+00:13:56,660 --> 00:13:58,190
+stack and what's in the register a bit
+
+338
+00:13:58,190 --> 00:13:58,610
+better
+
+339
+00:13:58,610 --> 00:14:00,650
+we can select what's in line then what's
+
+340
+00:14:00,650 --> 00:14:01,850
+not in line which is something that's
+
+341
+00:14:01,850 --> 00:14:05,720
+kind of difficult to do in in C++ to get
+
+342
+00:14:05,720 --> 00:14:07,790
+very fine control over you know the
+
+343
+00:14:07,790 --> 00:14:10,070
+ordering of your instructions that gets
+
+344
+00:14:10,070 --> 00:14:12,410
+you better locality which means you're
+
+345
+00:14:12,410 --> 00:14:14,030
+you're missing on your instruction cache
+
+346
+00:14:14,030 --> 00:14:16,760
+less since you're not spilling as much
+
+347
+00:14:16,760 --> 00:14:18,110
+stuff on the stack you know you can
+
+348
+00:14:18,110 --> 00:14:20,810
+throw away the garbage collector doesn't
+
+349
+00:14:20,810 --> 00:14:23,990
+hang on to as much garbage to it doesn't
+
+350
+00:14:23,990 --> 00:14:25,490
+think some things but you're dead or
+
+351
+00:14:25,490 --> 00:14:28,190
+actually alive and it's much easier to
+
+352
+00:14:28,190 --> 00:14:31,100
+transfer to tear up from the low-level
+
+353
+00:14:31,100 --> 00:14:33,350
+interpreter to the JIT because it's the
+
+354
+00:14:33,350 --> 00:14:34,640
+same calling convention because we
+
+355
+00:14:34,640 --> 00:14:36,410
+control the con convention like you
+
+356
+00:14:36,410 --> 00:14:37,880
+don't when you when you compile
+
+357
+00:14:37,880 --> 00:14:43,160
+something in C++ and yes
+
+358
+00:14:43,160 --> 00:14:45,800
+OSR is this process of tearing up or
+
+359
+00:14:45,800 --> 00:14:47,660
+down you're on the stack in the middle
+
+360
+00:14:47,660 --> 00:14:50,330
+of a computation and you replace the
+
+361
+00:14:50,330 --> 00:14:51,500
+code that's running the current
+
+362
+00:14:51,500 --> 00:14:53,900
+computation from you know one tier to
+
+363
+00:14:53,900 --> 00:14:56,060
+the other tier on stack replacements
+
+364
+00:14:56,060 --> 00:14:58,010
+also quite complicated if you google for
+
+365
+00:14:58,010 --> 00:14:59,870
+that you'll find a blog post in which it
+
+366
+00:14:59,870 --> 00:15:03,710
+blows my mind entirely so it's much
+
+367
+00:15:03,710 --> 00:15:06,520
+faster is the thing the initial
+
+368
+00:15:06,520 --> 00:15:10,250
+statement was 200% is faster I don't
+
+369
+00:15:10,250 --> 00:15:12,470
+know whether that means x 2 or x 3 or
+
+370
+00:15:12,470 --> 00:15:14,990
+what I don't really know in reality if
+
+371
+00:15:14,990 --> 00:15:16,520
+you have a JIT you're going to tear up
+
+372
+00:15:16,520 --> 00:15:18,200
+on anything it's hot and so it doesn't
+
+373
+00:15:18,200 --> 00:15:20,230
+make that that much of a performance
+
+374
+00:15:20,230 --> 00:15:22,760
+gain on some benchmarks but when you're
+
+375
+00:15:22,760 --> 00:15:24,860
+just slinging lots of JavaScript it's
+
+376
+00:15:24,860 --> 00:15:27,290
+good to have like a fast low-level thing
+
+377
+00:15:27,290 --> 00:15:29,000
+where you just don't do very much again
+
+378
+00:15:29,000 --> 00:15:31,190
+delay in common delaying computation
+
+379
+00:15:31,190 --> 00:15:35,960
+right and on the iOS you have this
+
+380
+00:15:35,960 --> 00:15:37,400
+restriction where you can't generate
+
+381
+00:15:37,400 --> 00:15:41,450
+native code in as an app right and this
+
+382
+00:15:41,450 --> 00:15:43,160
+sort of thing really helps out in that
+
+383
+00:15:43,160 --> 00:15:44,870
+context I would imagine you know I don't
+
+384
+00:15:44,870 --> 00:15:46,610
+have any inside apple knowledge right
+
+385
+00:15:46,610 --> 00:15:48,650
+but it seems pretty clear that's what
+
+386
+00:15:48,650 --> 00:15:50,360
+what the deal is the other thing you can
+
+387
+00:15:50,360 --> 00:15:53,240
+do is you can actually use the ll into
+
+388
+00:15:53,240 --> 00:15:55,400
+profile what values are flowing through
+
+389
+00:15:55,400 --> 00:15:57,590
+your interpreter and you can use this
+
+390
+00:15:57,590 --> 00:16:00,890
+information as input you're optimizing
+
+391
+00:16:00,890 --> 00:16:03,140
+compilers say oh actually I've never
+
+392
+00:16:03,140 --> 00:16:05,260
+seen a negative zero in this
+
+393
+00:16:05,260 --> 00:16:06,520
+of the computation and you would be
+
+394
+00:16:06,520 --> 00:16:09,460
+amazed like how much work goes into
+
+395
+00:16:09,460 --> 00:16:10,930
+proving that you'll never see a negative
+
+396
+00:16:10,930 --> 00:16:14,290
+zero because if you can there's many
+
+397
+00:16:14,290 --> 00:16:16,570
+more code cases right so if you can
+
+398
+00:16:16,570 --> 00:16:18,160
+prove that you can't or you can
+
+399
+00:16:18,160 --> 00:16:19,480
+speculate that you can't because you
+
+400
+00:16:19,480 --> 00:16:21,280
+haven't seen one then then you can do
+
+401
+00:16:21,280 --> 00:16:22,960
+much better right
+
+402
+00:16:22,960 --> 00:16:25,210
+so that's tier 0 the low-level
+
+403
+00:16:25,210 --> 00:16:28,330
+interpreter tier 1 would be what was
+
+404
+00:16:28,330 --> 00:16:30,520
+called squirrelfish extreme if anyone
+
+405
+00:16:30,520 --> 00:16:32,860
+remembers this one it's essentially you
+
+406
+00:16:32,860 --> 00:16:34,900
+take all the all those code segments I
+
+407
+00:16:34,900 --> 00:16:36,940
+showed you like those little labels and
+
+408
+00:16:36,940 --> 00:16:41,110
+instead of making making the the native
+
+409
+00:16:41,110 --> 00:16:42,430
+machine jump back and forth in between
+
+410
+00:16:42,430 --> 00:16:44,470
+those labels you you copy them out and
+
+411
+00:16:44,470 --> 00:16:46,450
+serialize them so the native machine
+
+412
+00:16:46,450 --> 00:16:50,080
+pointer is advancing you you you miss
+
+413
+00:16:50,080 --> 00:16:52,630
+fuer branches the the branch predictions
+
+414
+00:16:52,630 --> 00:16:57,820
+work better you can do some small
+
+415
+00:16:57,820 --> 00:17:01,330
+optimizations here as well and this JIT
+
+416
+00:17:01,330 --> 00:17:03,910
+until the element was amended was also
+
+417
+00:17:03,910 --> 00:17:07,360
+this sort of standard for execution of
+
+418
+00:17:07,360 --> 00:17:09,490
+all JavaScript it's generic it handles
+
+419
+00:17:09,490 --> 00:17:11,740
+all the cases and it's okay
+
+420
+00:17:11,740 --> 00:17:13,990
+the advantage of course is that you also
+
+421
+00:17:13,990 --> 00:17:15,940
+control the stack as opposed to the old
+
+422
+00:17:15,940 --> 00:17:18,760
+interpreter so it helps you when you can
+
+423
+00:17:18,760 --> 00:17:20,410
+tear up to the optimizing compiler after
+
+424
+00:17:20,410 --> 00:17:21,550
+that all right
+
+425
+00:17:21,550 --> 00:17:28,800
+no c++ right crazy macro macro LAN
+
+426
+00:17:28,800 --> 00:17:30,880
+again I just want to show you the shape
+
+427
+00:17:30,880 --> 00:17:33,310
+here we're parsing out the arguments in
+
+428
+00:17:33,310 --> 00:17:34,900
+the beginning just as we were doing and
+
+429
+00:17:34,900 --> 00:17:36,820
+any other interpreters its operating on
+
+430
+00:17:36,820 --> 00:17:38,110
+the bytecode it's turning the bytecode
+
+431
+00:17:38,110 --> 00:17:40,360
+into native code and we have a few more
+
+432
+00:17:40,360 --> 00:17:43,840
+you know if blocks this means we have a
+
+433
+00:17:43,840 --> 00:17:45,700
+few more cases that we can compile
+
+434
+00:17:45,700 --> 00:17:47,650
+specially meaning your code can go a bit
+
+435
+00:17:47,650 --> 00:17:49,900
+more a bit faster if we can tell that
+
+436
+00:17:49,900 --> 00:17:53,440
+you're adding a constant to a constant
+
+437
+00:17:53,440 --> 00:17:56,530
+small number to a number right then the
+
+438
+00:17:56,530 --> 00:17:59,260
+the it can predict a bit better or what
+
+439
+00:17:59,260 --> 00:18:00,670
+you're going to have while still having
+
+440
+00:18:00,670 --> 00:18:03,760
+to implement the slow path but general
+
+441
+00:18:03,760 --> 00:18:06,100
+it doesn't have flow control it doesn't
+
+442
+00:18:06,100 --> 00:18:08,190
+know what's really happening
+
+443
+00:18:08,190 --> 00:18:10,290
+so it can just guess it has to be fast
+
+444
+00:18:10,290 --> 00:18:12,330
+it just slings out the native code and
+
+445
+00:18:12,330 --> 00:18:15,660
+then if you actually need it the D F G
+
+446
+00:18:15,660 --> 00:18:18,600
+is there D F G stands for a data flow
+
+447
+00:18:18,600 --> 00:18:21,510
+graph and it refers to how the type
+
+448
+00:18:21,510 --> 00:18:23,730
+information propagates in the optimizing
+
+449
+00:18:23,730 --> 00:18:26,610
+compiler this is for JavaScript core
+
+450
+00:18:26,610 --> 00:18:31,770
+what the higher levels of hotspot or
+
+451
+00:18:31,770 --> 00:18:34,440
+what crankshaft is for for v8 like this
+
+452
+00:18:34,440 --> 00:18:36,030
+is that right this this is the
+
+453
+00:18:36,030 --> 00:18:38,070
+optimizing compiler that tries to you
+
+454
+00:18:38,070 --> 00:18:39,420
+know spend a bit more time on your on
+
+455
+00:18:39,420 --> 00:18:42,410
+your hot code and use the type back to
+
+456
+00:18:42,410 --> 00:18:46,110
+unbox your numbers to find your
+
+457
+00:18:46,110 --> 00:18:48,900
+functions to what else I say here native
+
+458
+00:18:48,900 --> 00:18:52,080
+arithmetic and objects in allocate
+
+459
+00:18:52,080 --> 00:18:54,960
+registers and and all the things in
+
+460
+00:18:54,960 --> 00:18:56,940
+order to be able to do this you need a
+
+461
+00:18:56,940 --> 00:18:58,290
+couple of things you need to be able to
+
+462
+00:18:58,290 --> 00:19:00,390
+tear down which is this OSR thing and
+
+463
+00:19:00,390 --> 00:19:01,440
+you couldn't tear down to the
+
+464
+00:19:01,440 --> 00:19:03,780
+interpreter before because you didn't
+
+465
+00:19:03,780 --> 00:19:06,300
+control the layout of the stack but now
+
+466
+00:19:06,300 --> 00:19:08,220
+with the element you can tear between
+
+467
+00:19:08,220 --> 00:19:10,170
+all these different levels
+
+468
+00:19:10,170 --> 00:19:12,600
+you also need profiling information
+
+469
+00:19:12,600 --> 00:19:15,900
+about you know is this thing that is a
+
+470
+00:19:15,900 --> 00:19:17,940
+plus in the JavaScript source code is it
+
+471
+00:19:17,940 --> 00:19:21,090
+out of the numbers and if it's further
+
+472
+00:19:21,090 --> 00:19:26,400
+they doubles or are they small and and
+
+473
+00:19:26,400 --> 00:19:27,960
+you need the ability to sort of abort
+
+474
+00:19:27,960 --> 00:19:29,850
+when you're when your speculation fails
+
+475
+00:19:29,850 --> 00:19:33,000
+I cool and and crankshaft is is cool in
+
+476
+00:19:33,000 --> 00:19:36,420
+the same way that you can just try
+
+477
+00:19:36,420 --> 00:19:38,520
+really hard to emit the correct code
+
+478
+00:19:38,520 --> 00:19:40,260
+like assume that things are going to
+
+479
+00:19:40,260 --> 00:19:42,000
+work out and if things don't if you see
+
+480
+00:19:42,000 --> 00:19:44,940
+that negative zero then you bail and and
+
+481
+00:19:44,940 --> 00:19:47,130
+things go on with with the older JIT and
+
+482
+00:19:47,130 --> 00:19:49,590
+it doesn't go as fast but maybe it's
+
+483
+00:19:49,590 --> 00:19:51,920
+your fault anyway I don't know
+
+484
+00:19:51,920 --> 00:19:56,010
+it's a DFG I this is even more abstract
+
+485
+00:19:56,010 --> 00:19:57,780
+but I want to point out a couple of
+
+486
+00:19:57,780 --> 00:20:00,750
+points here and it's this word should
+
+487
+00:20:00,750 --> 00:20:05,160
+write before in the baseline JIT we
+
+488
+00:20:05,160 --> 00:20:07,260
+didn't know whether we you know should
+
+489
+00:20:07,260 --> 00:20:09,030
+speculate for an integer or should
+
+490
+00:20:09,030 --> 00:20:14,310
+speculate for a double or should only go
+
+491
+00:20:14,310 --> 00:20:16,860
+the slow path of string concatenation or
+
+492
+00:20:16,860 --> 00:20:18,900
+what have you but in the DFG we've
+
+493
+00:20:18,900 --> 00:20:20,610
+actually done some flow analysis we've
+
+494
+00:20:20,610 --> 00:20:21,450
+eliminated
+
+495
+00:20:21,450 --> 00:20:23,429
+code we've propagated types around and
+
+496
+00:20:23,429 --> 00:20:25,620
+so we can you know have an answer for
+
+497
+00:20:25,620 --> 00:20:27,120
+this should what should I do
+
+498
+00:20:27,120 --> 00:20:29,850
+right and that's that's what the DFG is
+
+499
+00:20:29,850 --> 00:20:34,889
+able to do and as far as comment works
+
+500
+00:20:34,889 --> 00:20:38,250
+go in JavaScript core now there is the
+
+501
+00:20:38,250 --> 00:20:39,659
+classic interpreter it's still there
+
+502
+00:20:39,659 --> 00:20:41,730
+there is the low-level interpreter there
+
+503
+00:20:41,730 --> 00:20:43,980
+is the baseline JIT and there is the DFG
+
+504
+00:20:43,980 --> 00:20:45,539
+JIT and they can exist in various
+
+505
+00:20:45,539 --> 00:20:48,269
+combinations and depends on the port as
+
+506
+00:20:48,269 --> 00:20:51,600
+to what actually exists on the Mac on
+
+507
+00:20:51,600 --> 00:20:56,399
+x86 32 and 64 and on arm v7 you get the
+
+508
+00:20:56,399 --> 00:20:58,769
+combination ll in baseline JIT and DFG
+
+509
+00:20:58,769 --> 00:21:00,899
+this is really what you want a lot of
+
+510
+00:21:00,899 --> 00:21:02,460
+the other ports like I work on the GDK
+
+511
+00:21:02,460 --> 00:21:07,789
+portable it hasn't caught up yet and
+
+512
+00:21:07,789 --> 00:21:12,899
+only have like the baseline JIT gtk
+
+513
+00:21:12,899 --> 00:21:15,120
+right now and JIT is it a minute at all
+
+514
+00:21:15,120 --> 00:21:17,429
+on Windows for for examples so you just
+
+515
+00:21:17,429 --> 00:21:18,690
+get the classic interpreter but it's
+
+516
+00:21:18,690 --> 00:21:20,130
+kind of nice that you actually have a
+
+517
+00:21:20,130 --> 00:21:21,990
+portable interpreter to run things on
+
+518
+00:21:21,990 --> 00:21:24,029
+you know even if you're on some strange
+
+519
+00:21:24,029 --> 00:21:28,230
+platform like Windows 64 so again back
+
+520
+00:21:28,230 --> 00:21:32,220
+to nor bigs for ways to speed up the
+
+521
+00:21:32,220 --> 00:21:34,049
+algorithm caching compiling delaying
+
+522
+00:21:34,049 --> 00:21:36,289
+commutation and you know for charitable
+
+523
+00:21:36,289 --> 00:21:39,330
+I feel like we're missing something you
+
+524
+00:21:39,330 --> 00:21:41,940
+know because this is what Norvig was
+
+525
+00:21:41,940 --> 00:21:46,380
+writing about in 1992 on big lists
+
+526
+00:21:46,380 --> 00:21:48,120
+machines and some things are available
+
+527
+00:21:48,120 --> 00:21:49,860
+to us now that we're not available to
+
+528
+00:21:49,860 --> 00:21:53,179
+amend it specifically concurrency and
+
+529
+00:21:53,179 --> 00:21:55,440
+you know how can we you know bring
+
+530
+00:21:55,440 --> 00:21:57,809
+concurrency to bear on the problem of
+
+531
+00:21:57,809 --> 00:22:00,990
+making JavaScript implementations faster
+
+532
+00:22:00,990 --> 00:22:03,840
+and what JavaScript core has been doing
+
+533
+00:22:03,840 --> 00:22:06,720
+is to paralyze what's called the mark
+
+534
+00:22:06,720 --> 00:22:09,539
+phase of garbage collection so garbage
+
+535
+00:22:09,539 --> 00:22:10,860
+collection goes you allocate you
+
+536
+00:22:10,860 --> 00:22:12,840
+allocate you allocate and at some point
+
+537
+00:22:12,840 --> 00:22:14,370
+there's there's no more free memory
+
+538
+00:22:14,370 --> 00:22:16,830
+right so you stop you mark all the live
+
+539
+00:22:16,830 --> 00:22:22,700
+data all the data which gets free
+
+540
+00:22:22,710 --> 00:22:25,680
+and this marking phase stops your
+
+541
+00:22:25,680 --> 00:22:27,210
+application right so if you have
+
+542
+00:22:27,210 --> 00:22:28,650
+something that's trying to update at 30
+
+543
+00:22:28,650 --> 00:22:38,920
+frames a second or you know even more
+
+544
+00:22:38,930 --> 00:22:41,130
+what again
+
+545
+00:22:41,130 --> 00:22:43,200
+Philip is low I hope to meet him one day
+
+546
+00:22:43,200 --> 00:22:44,390
+because he sounds really awesome
+
+547
+00:22:44,390 --> 00:22:47,100
+terrible is this mark face so we can use
+
+548
+00:22:47,100 --> 00:22:50,850
+for cours upward force it can use more
+
+549
+00:22:50,850 --> 00:22:58,250
+this is a value in the garbage collector
+
+550
+00:22:58,250 --> 00:23:00,590
+and I think coming to the end here
+
+551
+00:23:00,590 --> 00:23:06,780
+finally so this is nor big in this book
+
+552
+00:23:06,780 --> 00:23:08,730
+as this chapter nothing called on
+
+553
+00:23:08,730 --> 00:23:11,130
+efficiency and if you substitute lips
+
+554
+00:23:11,130 --> 00:23:14,580
+list for yeah I just list if you
+
+555
+00:23:14,580 --> 00:23:16,680
+substitute list for a JavaScript when
+
+556
+00:23:16,680 --> 00:23:19,340
+you're reading this if you check it out
+
+557
+00:23:19,340 --> 00:23:23,640
+or what have you then you're it's it's
+
+558
+00:23:23,640 --> 00:23:24,960
+quite relevant you know to modern-day
+
+559
+00:23:24,960 --> 00:23:26,430
+programming and JavaScript and
+
+560
+00:23:26,430 --> 00:23:28,530
+JavaScript implementations and one of
+
+561
+00:23:28,530 --> 00:23:30,270
+the things he says is that the expert
+
+562
+00:23:30,270 --> 00:23:33,030
+Lisp programmer eventually develops a
+
+563
+00:23:33,030 --> 00:23:35,010
+good efficiency model you know what what
+
+564
+00:23:35,010 --> 00:23:37,020
+is the cost of what I'm doing there's a
+
+565
+00:23:37,020 --> 00:23:39,870
+quote by Alan Perlis that a lisp
+
+566
+00:23:39,870 --> 00:23:41,370
+programmer and there was the value of
+
+567
+00:23:41,370 --> 00:23:43,770
+everything but the cost of nothing but
+
+568
+00:23:43,770 --> 00:23:46,140
+the thing is is that this efficiency
+
+569
+00:23:46,140 --> 00:23:49,320
+model changes over time right the things
+
+570
+00:23:49,320 --> 00:23:51,090
+that are fast now in JavaScript I was
+
+571
+00:23:51,090 --> 00:23:52,410
+talking to a fella yesterday's like well
+
+572
+00:23:52,410 --> 00:23:55,440
+you know if you just do this for x
+
+573
+00:23:55,440 --> 00:23:57,960
+equals 1 X is less than and you know do
+
+574
+00:23:57,960 --> 00:23:59,340
+something on my array that's much faster
+
+575
+00:23:59,340 --> 00:24:01,830
+than array for each well why is this
+
+576
+00:24:01,830 --> 00:24:04,950
+it's because the benchmarks don't have
+
+577
+00:24:04,950 --> 00:24:08,040
+array for each all right JavaScript
+
+578
+00:24:08,040 --> 00:24:09,870
+invitations are completely driven by
+
+579
+00:24:09,870 --> 00:24:13,680
+benchmarks and and you as programmers
+
+580
+00:24:13,680 --> 00:24:17,070
+are in this loop right if something if
+
+581
+00:24:17,070 --> 00:24:18,840
+there's a way that you want to program
+
+582
+00:24:18,840 --> 00:24:23,640
+it's not working you can file bug
+
+583
+00:24:23,640 --> 00:24:25,470
+reports or grade benchmark sweets or
+
+584
+00:24:25,470 --> 00:24:27,720
+such and and get it to a point where it
+
+585
+00:24:27,720 --> 00:24:29,700
+where it is fast like this efficiency
+
+586
+00:24:29,700 --> 00:24:31,470
+model can change over time and don't let
+
+587
+00:24:31,470 --> 00:24:33,840
+you know what's currently fast or slow
+
+588
+00:24:33,840 --> 00:24:35,299
+crimper style
+
+589
+00:24:35,299 --> 00:24:38,809
+so to speak and I think I'd say we can
+
+590
+00:24:38,809 --> 00:24:40,700
+do some questions you can find me this
+
+591
+00:24:40,700 --> 00:24:44,419
+dress or that website so thank you very
+

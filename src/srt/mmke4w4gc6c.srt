@@ -1,0 +1,3089 @@
+1
+00:00:15,779 --> 00:00:18,160
+
+yeah I'm Lanie kenzo I'm a software
+
+2
+00:00:18,160 --> 00:00:19,810
+engineer i work on the product
+
+3
+00:00:19,810 --> 00:00:22,750
+infrastructure team at facebook and back
+
+4
+00:00:22,750 --> 00:00:25,480
+in january at react Jas comp to my
+
+5
+00:00:25,480 --> 00:00:27,400
+teammates dan Schaefer and jing chen
+
+6
+00:00:27,400 --> 00:00:30,160
+gave a talk introducing relay which is
+
+7
+00:00:30,160 --> 00:00:31,779
+our data fetching framework for react
+
+8
+00:00:31,779 --> 00:00:33,730
+and the query language that it uses
+
+9
+00:00:33,730 --> 00:00:36,640
+called graph ql so today in this talk
+
+10
+00:00:36,640 --> 00:00:38,650
+i'm going to start with a description of
+
+11
+00:00:38,650 --> 00:00:40,750
+relay engraft well for anyone who didn't
+
+12
+00:00:40,750 --> 00:00:41,860
+see their talk or who needs a refresher
+
+13
+00:00:41,860 --> 00:00:43,360
+and then i'm going to dive into some
+
+14
+00:00:43,360 --> 00:00:47,250
+specific parts of the real a framework
+
+15
+00:00:47,250 --> 00:00:49,660
+so let's start by thinking about how we
+
+16
+00:00:49,660 --> 00:00:51,190
+at facebook we're doing client
+
+17
+00:00:51,190 --> 00:00:53,559
+development a year ago at that point
+
+18
+00:00:53,559 --> 00:00:56,020
+we've developed react and we had also
+
+19
+00:00:56,020 --> 00:00:58,059
+developed the flux architecture which
+
+20
+00:00:58,059 --> 00:01:00,070
+provides a pattern for one-way data flow
+
+21
+00:01:00,070 --> 00:01:02,710
+through an application and when we use
+
+22
+00:01:02,710 --> 00:01:05,110
+both react and flux we found that we can
+
+23
+00:01:05,110 --> 00:01:06,310
+move faster in the development process
+
+24
+00:01:06,310 --> 00:01:08,200
+and we can build more robust reliable
+
+25
+00:01:08,200 --> 00:01:11,530
+applications but there was one big
+
+26
+00:01:11,530 --> 00:01:14,200
+problem that neither react nor flux
+
+27
+00:01:14,200 --> 00:01:17,110
+really addressed that almost every
+
+28
+00:01:17,110 --> 00:01:18,670
+client developer has faced at one time
+
+29
+00:01:18,670 --> 00:01:20,590
+or another which is what's the best way
+
+30
+00:01:20,590 --> 00:01:22,479
+to fetch data from the server and to
+
+31
+00:01:22,479 --> 00:01:24,160
+organize that data once it's on the
+
+32
+00:01:24,160 --> 00:01:27,550
+client so let's look at how data
+
+33
+00:01:27,550 --> 00:01:28,780
+fetching might work in an application
+
+34
+00:01:28,780 --> 00:01:31,869
+built with reactant flux I'm going to
+
+35
+00:01:31,869 --> 00:01:33,670
+use this example of a news feed story
+
+36
+00:01:33,670 --> 00:01:36,610
+that I wrote about Jay escon and in
+
+37
+00:01:36,610 --> 00:01:38,440
+particular its likes and comments
+
+38
+00:01:38,440 --> 00:01:41,170
+section on the bottom so this like and
+
+39
+00:01:41,170 --> 00:01:43,750
+comment box is was one of the first
+
+40
+00:01:43,750 --> 00:01:45,310
+parts of face book that we wrote with
+
+41
+00:01:45,310 --> 00:01:47,830
+reactant flux it's a really central part
+
+42
+00:01:47,830 --> 00:01:49,959
+of Facebook one where you get people
+
+43
+00:01:49,959 --> 00:01:51,700
+from a bunch of different teams coming
+
+44
+00:01:51,700 --> 00:01:53,709
+in and changing it frequently whether
+
+45
+00:01:53,709 --> 00:01:55,209
+they're updating the design or adding
+
+46
+00:01:55,209 --> 00:01:57,190
+new features so it's kind of a hot hot
+
+47
+00:01:57,190 --> 00:02:00,819
+part of Facebook so let's consider the
+
+48
+00:02:00,819 --> 00:02:03,340
+example of introducing stickers and
+
+49
+00:02:03,340 --> 00:02:04,599
+comments which is something that we
+
+50
+00:02:04,599 --> 00:02:08,679
+actually did last fall let's say that in
+
+51
+00:02:08,679 --> 00:02:10,500
+this part of the application our
+
+52
+00:02:10,500 --> 00:02:12,940
+component tree consists of this comment
+
+53
+00:02:12,940 --> 00:02:16,180
+box which contains a comment list which
+
+54
+00:02:16,180 --> 00:02:19,330
+contains a series of comment items so
+
+55
+00:02:19,330 --> 00:02:21,189
+how does each of these components get
+
+56
+00:02:21,189 --> 00:02:23,829
+the data that it needs the data comes
+
+57
+00:02:23,829 --> 00:02:25,209
+from the server and then it will get
+
+58
+00:02:25,209 --> 00:02:25,660
+past
+
+59
+00:02:25,660 --> 00:02:27,880
+through the component tree so comment
+
+60
+00:02:27,880 --> 00:02:29,680
+box is going to get some set of data and
+
+61
+00:02:29,680 --> 00:02:31,690
+then it will take a subset of that and
+
+62
+00:02:31,690 --> 00:02:34,300
+pass it into comment list and then
+
+63
+00:02:34,300 --> 00:02:35,710
+comment list will take subsets of that
+
+64
+00:02:35,710 --> 00:02:37,360
+data and pass that into each of the
+
+65
+00:02:37,360 --> 00:02:40,480
+comment items in this model the
+
+66
+00:02:40,480 --> 00:02:42,580
+important thing to notice is that every
+
+67
+00:02:42,580 --> 00:02:44,530
+component needs to be aware of the data
+
+68
+00:02:44,530 --> 00:02:46,390
+that its children need so that it can
+
+69
+00:02:46,390 --> 00:02:48,550
+pass the right data down and then that
+
+70
+00:02:48,550 --> 00:02:49,960
+server on point up there needs to be
+
+71
+00:02:49,960 --> 00:02:51,490
+aware of the data required by every
+
+72
+00:02:51,490 --> 00:02:54,400
+single component in that tree so in
+
+73
+00:02:54,400 --> 00:02:56,050
+other words the implementation details
+
+74
+00:02:56,050 --> 00:02:58,330
+of each component the details of what
+
+75
+00:02:58,330 --> 00:03:00,130
+exact data each component needs are
+
+76
+00:03:00,130 --> 00:03:02,350
+leaked up to the parents and to the
+
+77
+00:03:02,350 --> 00:03:05,710
+server why does this matter well it
+
+78
+00:03:05,710 --> 00:03:07,300
+means that if you come along and you
+
+79
+00:03:07,300 --> 00:03:08,650
+want to introduce sticker comments you
+
+80
+00:03:08,650 --> 00:03:10,390
+can't just make a change in comment item
+
+81
+00:03:10,390 --> 00:03:11,950
+you're also going to need to change
+
+82
+00:03:11,950 --> 00:03:14,980
+comment list comment box and that server
+
+83
+00:03:14,980 --> 00:03:18,340
+endpoint this is not cool when you need
+
+84
+00:03:18,340 --> 00:03:20,650
+to change all those files especially
+
+85
+00:03:20,650 --> 00:03:21,940
+when you have different people coming in
+
+86
+00:03:21,940 --> 00:03:23,380
+all trying to make their changes and
+
+87
+00:03:23,380 --> 00:03:24,910
+needing to modify all those files every
+
+88
+00:03:24,910 --> 00:03:26,890
+time you end up with more conflicts and
+
+89
+00:03:26,890 --> 00:03:28,990
+just generally slower development
+
+90
+00:03:28,990 --> 00:03:32,500
+process moreover things can get pretty
+
+91
+00:03:32,500 --> 00:03:34,150
+confusing when you have your data
+
+92
+00:03:34,150 --> 00:03:35,590
+fetching logic in one place on the
+
+93
+00:03:35,590 --> 00:03:37,660
+server and then you're rendering logic
+
+94
+00:03:37,660 --> 00:03:39,970
+on the client so let's say that you look
+
+95
+00:03:39,970 --> 00:03:42,340
+at your server endpoint and you see that
+
+96
+00:03:42,340 --> 00:03:43,900
+you're fetching the birthdays for all
+
+97
+00:03:43,900 --> 00:03:46,990
+the commenters on a story it's really
+
+98
+00:03:46,990 --> 00:03:48,610
+hard to know at a glance whether and
+
+99
+00:03:48,610 --> 00:03:50,740
+where this birthday data is being used
+
+100
+00:03:50,740 --> 00:03:53,530
+in your application on the client so
+
+101
+00:03:53,530 --> 00:03:55,600
+maybe someone ran an a/b test a few
+
+102
+00:03:55,600 --> 00:03:57,070
+months ago and they wanted to see what
+
+103
+00:03:57,070 --> 00:03:58,300
+would happen if they added birthdays for
+
+104
+00:03:58,300 --> 00:04:00,010
+commenters and it didn't really work
+
+105
+00:04:00,010 --> 00:04:01,630
+that well so they removed that code from
+
+106
+00:04:01,630 --> 00:04:07,420
+the client and now oops we have this
+
+107
+00:04:07,420 --> 00:04:09,370
+over fetching situation where we're
+
+108
+00:04:09,370 --> 00:04:11,230
+loading that birthday sending it to the
+
+109
+00:04:11,230 --> 00:04:12,760
+client and then we're not doing anything
+
+110
+00:04:12,760 --> 00:04:15,580
+with it and so it's just wasteful so
+
+111
+00:04:15,580 --> 00:04:16,660
+maybe we're going to try to do a good
+
+112
+00:04:16,660 --> 00:04:19,090
+deed and clean up the server remove that
+
+113
+00:04:19,090 --> 00:04:20,859
+birthday code without realizing that
+
+114
+00:04:20,859 --> 00:04:22,210
+there actually is some corner of
+
+115
+00:04:22,210 --> 00:04:24,040
+application where we're still using the
+
+116
+00:04:24,040 --> 00:04:26,140
+birthdays and now we have an under
+
+117
+00:04:26,140 --> 00:04:27,700
+fetching bug so we're going to send some
+
+118
+00:04:27,700 --> 00:04:30,150
+data the birthday won't be there and
+
+119
+00:04:30,150 --> 00:04:35,229
+things won't be good it's pretty easy to
+
+120
+00:04:35,229 --> 00:04:37,930
+for these data fetching pieces and the
+
+121
+00:04:37,930 --> 00:04:38,940
+and the rendered pieces
+
+122
+00:04:38,940 --> 00:04:40,440
+to get out of sync like this and it will
+
+123
+00:04:40,440 --> 00:04:42,000
+often cause either over fetching or
+
+124
+00:04:42,000 --> 00:04:45,870
+under fetching so how would this work in
+
+125
+00:04:45,870 --> 00:04:48,450
+a perfect world ideally if we wanted to
+
+126
+00:04:48,450 --> 00:04:50,100
+introduce sticker comments we would only
+
+127
+00:04:50,100 --> 00:04:51,600
+need to change that comment item
+
+128
+00:04:51,600 --> 00:04:54,120
+component and more generally rather than
+
+129
+00:04:54,120 --> 00:04:55,890
+having our data fetching logic strewn
+
+130
+00:04:55,890 --> 00:04:57,930
+throughout the application and on the
+
+131
+00:04:57,930 --> 00:05:00,900
+server you reside in just one place the
+
+132
+00:05:00,900 --> 00:05:02,510
+same place where we do our rendering
+
+133
+00:05:02,510 --> 00:05:05,250
+this is the idea at the core of relay
+
+134
+00:05:05,250 --> 00:05:07,470
+but to make development easier we should
+
+135
+00:05:07,470 --> 00:05:09,120
+keep our logic for data fetching and
+
+136
+00:05:09,120 --> 00:05:11,760
+rendering in the same place namely
+
+137
+00:05:11,760 --> 00:05:18,300
+within the react component so rather
+
+138
+00:05:18,300 --> 00:05:20,010
+than just containing the logic to render
+
+139
+00:05:20,010 --> 00:05:21,660
+itself like a traditional react
+
+140
+00:05:21,660 --> 00:05:24,180
+component a real a component also
+
+141
+00:05:24,180 --> 00:05:26,280
+contains a declaration of the data that
+
+142
+00:05:26,280 --> 00:05:28,760
+it needs in the form of a data query
+
+143
+00:05:28,760 --> 00:05:31,230
+this way when someone wants to make a
+
+144
+00:05:31,230 --> 00:05:32,970
+small change they can just find the
+
+145
+00:05:32,970 --> 00:05:35,220
+relevant component change its data query
+
+146
+00:05:35,220 --> 00:05:37,320
+and its render method and then they're
+
+147
+00:05:37,320 --> 00:05:38,640
+done you don't they don't need to go
+
+148
+00:05:38,640 --> 00:05:40,050
+change parent components or touch the
+
+149
+00:05:40,050 --> 00:05:42,420
+server with the data query and the
+
+150
+00:05:42,420 --> 00:05:44,010
+rendering in one place it's also a lot
+
+151
+00:05:44,010 --> 00:05:45,660
+easier to know when you're fetching data
+
+152
+00:05:45,660 --> 00:05:47,490
+that you don't don't use or trying to
+
+153
+00:05:47,490 --> 00:05:49,740
+use data that you didn't fetch so you're
+
+154
+00:05:49,740 --> 00:05:51,390
+less likely to get those over fetching
+
+155
+00:05:51,390 --> 00:05:54,419
+and under fetching bugs in order to
+
+156
+00:05:54,419 --> 00:05:56,310
+achieve all these benefits of putting
+
+157
+00:05:56,310 --> 00:05:58,140
+the data query in the component we
+
+158
+00:05:58,140 --> 00:05:59,850
+needed a common way for the components
+
+159
+00:05:59,850 --> 00:06:02,130
+to declare their data requirements and
+
+160
+00:06:02,130 --> 00:06:05,790
+this is where graph ql comes in graph UL
+
+161
+00:06:05,790 --> 00:06:08,130
+at the data queering language and for
+
+162
+00:06:08,130 --> 00:06:10,440
+the last couple years our client
+
+163
+00:06:10,440 --> 00:06:11,880
+applications at facebook have been using
+
+164
+00:06:11,880 --> 00:06:14,360
+graphs well to describe their data needs
+
+165
+00:06:14,360 --> 00:06:16,950
+let's look at an example of what a graph
+
+166
+00:06:16,950 --> 00:06:19,230
+ql query actually might look like so
+
+167
+00:06:19,230 --> 00:06:20,760
+let's let's think about the data that we
+
+168
+00:06:20,760 --> 00:06:24,840
+need to render a cup of comments author
+
+169
+00:06:24,840 --> 00:06:27,840
+here so we want yet the ID of the person
+
+170
+00:06:27,840 --> 00:06:30,510
+the person's name and then some data
+
+171
+00:06:30,510 --> 00:06:32,040
+that we need to render the profile
+
+172
+00:06:32,040 --> 00:06:34,710
+picture so look what happens if we
+
+173
+00:06:34,710 --> 00:06:36,090
+highlight just the fields here and
+
+174
+00:06:36,090 --> 00:06:38,850
+remove the values that's a graft well
+
+175
+00:06:38,850 --> 00:06:41,610
+query as you can see the query here it
+
+176
+00:06:41,610 --> 00:06:43,350
+not only expresses the data that it
+
+177
+00:06:43,350 --> 00:06:45,480
+needs but also the precise nested
+
+178
+00:06:45,480 --> 00:06:47,550
+structure that we want the response to
+
+179
+00:06:47,550 --> 00:06:50,820
+that query to have graph ql is designed
+
+180
+00:06:50,820 --> 00:06:52,280
+to be a thin layer over
+
+181
+00:06:52,280 --> 00:06:54,650
+existing data model so that clients can
+
+182
+00:06:54,650 --> 00:06:56,210
+get the benefit of writing queries like
+
+183
+00:06:56,210 --> 00:06:57,980
+this one without the whole server
+
+184
+00:06:57,980 --> 00:07:01,610
+needing to be totally rewritten another
+
+185
+00:07:01,610 --> 00:07:03,610
+important feature of reps well is that
+
+186
+00:07:03,610 --> 00:07:06,560
+you can compose queries so basically one
+
+187
+00:07:06,560 --> 00:07:08,030
+graph field query can be built up of
+
+188
+00:07:08,030 --> 00:07:10,910
+utter gaps filled queries so this means
+
+189
+00:07:10,910 --> 00:07:12,950
+that if you take a component tree like
+
+190
+00:07:12,950 --> 00:07:14,870
+this for an application on the one hand
+
+191
+00:07:14,870 --> 00:07:17,750
+you can look at it as a way to build a
+
+192
+00:07:17,750 --> 00:07:19,280
+view for the whole application so each
+
+193
+00:07:19,280 --> 00:07:21,830
+parent component will render its
+
+194
+00:07:21,830 --> 00:07:25,250
+children in the same way you can take
+
+195
+00:07:25,250 --> 00:07:26,720
+this component tree and look at it as a
+
+196
+00:07:26,720 --> 00:07:28,340
+guide for how to build the graph ql
+
+197
+00:07:28,340 --> 00:07:30,080
+query for the whole application each
+
+198
+00:07:30,080 --> 00:07:32,060
+parent components graph GL query is
+
+199
+00:07:32,060 --> 00:07:33,980
+composed from the queries of its
+
+200
+00:07:33,980 --> 00:07:37,760
+children so now that you see what graft
+
+201
+00:07:37,760 --> 00:07:39,470
+well is we can look at how relay works
+
+202
+00:07:39,470 --> 00:07:41,870
+overall each relay component contains
+
+203
+00:07:41,870 --> 00:07:44,600
+this query and the render method relays
+
+204
+00:07:44,600 --> 00:07:45,919
+going to take the queries from each
+
+205
+00:07:45,919 --> 00:07:47,630
+component and build up that overall
+
+206
+00:07:47,630 --> 00:07:50,270
+query and send that to the server the
+
+207
+00:07:50,270 --> 00:07:53,000
+server is going to respond and then
+
+208
+00:07:53,000 --> 00:07:54,590
+really puts our response data into a
+
+209
+00:07:54,590 --> 00:07:56,960
+single store and then it will use that
+
+210
+00:07:56,960 --> 00:07:59,240
+data to construct prop that it sends out
+
+211
+00:07:59,240 --> 00:08:02,120
+to the components for rendering at its
+
+212
+00:08:02,120 --> 00:08:05,330
+core this is a flux application the only
+
+213
+00:08:05,330 --> 00:08:06,530
+difference is that rather than having
+
+214
+00:08:06,530 --> 00:08:08,750
+several or many stores a relay
+
+215
+00:08:08,750 --> 00:08:10,520
+application just has this one single
+
+216
+00:08:10,520 --> 00:08:12,919
+store containing generic logic for
+
+217
+00:08:12,919 --> 00:08:16,039
+dealing with graft well data having this
+
+218
+00:08:16,039 --> 00:08:17,780
+single store provides a number of nice
+
+219
+00:08:17,780 --> 00:08:20,300
+benefits so for one it reduces the need
+
+220
+00:08:20,300 --> 00:08:23,360
+for a lot of the flux boilerplate it
+
+221
+00:08:23,360 --> 00:08:25,190
+also helps with data consistency across
+
+222
+00:08:25,190 --> 00:08:27,070
+different parts of the application and
+
+223
+00:08:27,070 --> 00:08:29,870
+finally it lets us build certain common
+
+224
+00:08:29,870 --> 00:08:31,520
+product pattern something like pagin
+
+225
+00:08:31,520 --> 00:08:33,560
+aiding through a list of items something
+
+226
+00:08:33,560 --> 00:08:35,060
+that you guys have probably implemented
+
+227
+00:08:35,060 --> 00:08:38,330
+at least one right into relay so that
+
+228
+00:08:38,330 --> 00:08:39,890
+people don't need to build them from
+
+229
+00:08:39,890 --> 00:08:44,540
+scratch every time so now that we see
+
+230
+00:08:44,540 --> 00:08:46,010
+how really works let's look back at this
+
+231
+00:08:46,010 --> 00:08:47,570
+sticker common example and see how much
+
+232
+00:08:47,570 --> 00:08:49,420
+easier relay is going to make our lives
+
+233
+00:08:49,420 --> 00:08:51,680
+rather than needing to change a bunch of
+
+234
+00:08:51,680 --> 00:08:53,600
+files up the whole tree and the server
+
+235
+00:08:53,600 --> 00:08:55,730
+we just changed comment item so more
+
+236
+00:08:55,730 --> 00:08:57,680
+specifically let's say that this is part
+
+237
+00:08:57,680 --> 00:09:00,020
+of our graphical query right now we're
+
+238
+00:09:00,020 --> 00:09:01,670
+just putting for the text of the comment
+
+239
+00:09:01,670 --> 00:09:04,620
+and now we can also
+
+240
+00:09:04,620 --> 00:09:06,660
+with a sticker use that in our render
+
+241
+00:09:06,660 --> 00:09:10,020
+method and we're done we can go build
+
+242
+00:09:10,020 --> 00:09:11,520
+other awesome stuff in the time that we
+
+243
+00:09:11,520 --> 00:09:12,990
+would have spent changing those other
+
+244
+00:09:12,990 --> 00:09:16,710
+files so really solves this big problem
+
+245
+00:09:16,710 --> 00:09:18,570
+of how to fetch data in a way that we
+
+246
+00:09:18,570 --> 00:09:20,760
+found scales really nicely to a complex
+
+247
+00:09:20,760 --> 00:09:22,560
+application being developed by a big
+
+248
+00:09:22,560 --> 00:09:24,510
+engineering team so because you have
+
+249
+00:09:24,510 --> 00:09:25,860
+that data query and the render method
+
+250
+00:09:25,860 --> 00:09:28,440
+encapsulated within the component it's
+
+251
+00:09:28,440 --> 00:09:30,240
+easy for a lot of people to work on a
+
+252
+00:09:30,240 --> 00:09:32,010
+lot of different parts of an application
+
+253
+00:09:32,010 --> 00:09:35,010
+at once so I can make my changes my
+
+254
+00:09:35,010 --> 00:09:36,510
+teammates can make their changes people
+
+255
+00:09:36,510 --> 00:09:37,980
+on other teams can make their changes
+
+256
+00:09:37,980 --> 00:09:39,180
+and we don't need to worry as much about
+
+257
+00:09:39,180 --> 00:09:40,800
+whether we're stepping on each other's
+
+258
+00:09:40,800 --> 00:09:43,080
+toes and whether we have full context on
+
+259
+00:09:43,080 --> 00:09:44,610
+what every other person is doing at that
+
+260
+00:09:44,610 --> 00:09:48,900
+time so far you've heard about the read
+
+261
+00:09:48,900 --> 00:09:50,850
+path and relay but a framework would be
+
+262
+00:09:50,850 --> 00:09:53,160
+would have limited usefulness if it
+
+263
+00:09:53,160 --> 00:09:54,750
+didn't also support a right path if it
+
+264
+00:09:54,750 --> 00:09:57,300
+didn't let developers give users a way
+
+265
+00:09:57,300 --> 00:09:59,640
+to take actions that does liking a story
+
+266
+00:09:59,640 --> 00:10:03,150
+maybe even liking my own story so I'll
+
+267
+00:10:03,150 --> 00:10:04,950
+use the term mutations to refer to these
+
+268
+00:10:04,950 --> 00:10:06,870
+actions that a user can take in an
+
+269
+00:10:06,870 --> 00:10:09,300
+application so in facebook this could be
+
+270
+00:10:09,300 --> 00:10:11,070
+something like sharing a link our suit
+
+271
+00:10:11,070 --> 00:10:14,090
+came to an event or poking a friend and
+
+272
+00:10:14,090 --> 00:10:16,320
+for the rest of the talk I'll focus on
+
+273
+00:10:16,320 --> 00:10:20,730
+how mutations work in relay so to start
+
+274
+00:10:20,730 --> 00:10:22,620
+I'm going to go back and talk about how
+
+275
+00:10:22,620 --> 00:10:24,390
+we at facebook at least we're building
+
+276
+00:10:24,390 --> 00:10:27,000
+mutations before relay so I joined
+
+277
+00:10:27,000 --> 00:10:28,710
+facebook a little over three years ago
+
+278
+00:10:28,710 --> 00:10:29,910
+and I was working on the newsfeed
+
+279
+00:10:29,910 --> 00:10:32,070
+product team mostly working on the
+
+280
+00:10:32,070 --> 00:10:34,200
+homepage of the website and i got really
+
+281
+00:10:34,200 --> 00:10:36,000
+familiar with writing mutations like
+
+282
+00:10:36,000 --> 00:10:37,830
+this i would write some custom
+
+283
+00:10:37,830 --> 00:10:40,470
+JavaScript and I would write a custom
+
+284
+00:10:40,470 --> 00:10:42,600
+server on point I would have the
+
+285
+00:10:42,600 --> 00:10:44,700
+JavaScript called that in point I would
+
+286
+00:10:44,700 --> 00:10:46,650
+have the endpoint return data and
+
+287
+00:10:46,650 --> 00:10:49,710
+basically whatever format I chose then I
+
+288
+00:10:49,710 --> 00:10:50,970
+would have the JavaScript make sense of
+
+289
+00:10:50,970 --> 00:10:52,500
+that data and update the views
+
+290
+00:10:52,500 --> 00:10:55,350
+accordingly usually by manually updating
+
+291
+00:10:55,350 --> 00:10:58,290
+the DOM and then maybe I wanted to also
+
+292
+00:10:58,290 --> 00:11:00,480
+use that same endpoint from a different
+
+293
+00:11:00,480 --> 00:11:02,430
+part of the client I would need to shove
+
+294
+00:11:02,430 --> 00:11:04,200
+some more messy logic in there to make
+
+295
+00:11:04,200 --> 00:11:06,480
+sure that the server was returning the
+
+296
+00:11:06,480 --> 00:11:09,000
+data that the client needed regardless
+
+297
+00:11:09,000 --> 00:11:10,500
+of where it was being called from and
+
+298
+00:11:10,500 --> 00:11:13,710
+the key word here is custom basically
+
+299
+00:11:13,710 --> 00:11:15,480
+every time my team major I wanted to
+
+300
+00:11:15,480 --> 00:11:17,130
+implement a new mutation we had to start
+
+301
+00:11:17,130 --> 00:11:18,740
+from scratch
+
+302
+00:11:18,740 --> 00:11:20,720
+I personally really disliked this
+
+303
+00:11:20,720 --> 00:11:22,310
+pattern of writing mutations with these
+
+304
+00:11:22,310 --> 00:11:24,440
+custom endpoints and custom client code
+
+305
+00:11:24,440 --> 00:11:26,060
+if I'll really repetitive an error prone
+
+306
+00:11:26,060 --> 00:11:28,940
+to me and in my mind this pattern became
+
+307
+00:11:28,940 --> 00:11:30,350
+kind of synonymous with writing
+
+308
+00:11:30,350 --> 00:11:32,990
+JavaScript because I had just started a
+
+309
+00:11:32,990 --> 00:11:34,430
+Facebook I came right out of school this
+
+310
+00:11:34,430 --> 00:11:35,839
+is what I did every time I would write
+
+311
+00:11:35,839 --> 00:11:37,880
+JavaScript so to me this was JavaScript
+
+312
+00:11:37,880 --> 00:11:39,649
+and so I came to think of myself as
+
+313
+00:11:39,649 --> 00:11:41,120
+someone who really didn't like
+
+314
+00:11:41,120 --> 00:11:42,430
+JavaScript and didn't want to write it
+
+315
+00:11:42,430 --> 00:11:44,480
+it wasn't until I was introduced to
+
+316
+00:11:44,480 --> 00:11:46,790
+react and flux that I started to realize
+
+317
+00:11:46,790 --> 00:11:48,680
+that I don't dislike JavaScript I just
+
+318
+00:11:48,680 --> 00:11:51,890
+like this kind of gross pattern of using
+
+319
+00:11:51,890 --> 00:11:54,110
+it so I wouldn't have guessed three
+
+320
+00:11:54,110 --> 00:11:55,970
+years ago that I would be now on a team
+
+321
+00:11:55,970 --> 00:11:57,260
+where I'm writing JavaScript full-time
+
+322
+00:11:57,260 --> 00:11:59,510
+or here with all of you guys but a
+
+323
+00:11:59,510 --> 00:12:01,790
+JavaScript conference but here I am and
+
+324
+00:12:01,790 --> 00:12:04,670
+I'm pretty excited about it so back to
+
+325
+00:12:04,670 --> 00:12:07,310
+mutations we we took a step in the right
+
+326
+00:12:07,310 --> 00:12:08,779
+direction when we introduced a more
+
+327
+00:12:08,779 --> 00:12:11,450
+structured API for doing rights as part
+
+328
+00:12:11,450 --> 00:12:14,360
+of our graph API so this was nice
+
+329
+00:12:14,360 --> 00:12:15,290
+because it gave the client a
+
+330
+00:12:15,290 --> 00:12:16,940
+standardized way to specify what
+
+331
+00:12:16,940 --> 00:12:19,880
+mutation they wanted to do and also to
+
+332
+00:12:19,880 --> 00:12:21,200
+provide the necessary inputs in a
+
+333
+00:12:21,200 --> 00:12:24,740
+structured way but what about the data
+
+334
+00:12:24,740 --> 00:12:27,890
+that that the server returns then each
+
+335
+00:12:27,890 --> 00:12:29,839
+right endpoint in the graph API is being
+
+336
+00:12:29,839 --> 00:12:31,279
+used by a bunch of different clients
+
+337
+00:12:31,279 --> 00:12:33,140
+there's not really a great way to make
+
+338
+00:12:33,140 --> 00:12:34,399
+sure that the server is going to return
+
+339
+00:12:34,399 --> 00:12:36,320
+the data that any client might need to
+
+340
+00:12:36,320 --> 00:12:39,290
+update itself so what we would do
+
+341
+00:12:39,290 --> 00:12:40,910
+instead is usually provide these pretty
+
+342
+00:12:40,910 --> 00:12:43,459
+minimal responses usually just an ID so
+
+343
+00:12:43,459 --> 00:12:45,500
+maybe if it was the mutation was writing
+
+344
+00:12:45,500 --> 00:12:46,940
+a comment we will just return the idea
+
+345
+00:12:46,940 --> 00:12:48,829
+of the new comment or maybe even just a
+
+346
+00:12:48,829 --> 00:12:51,110
+boolean saying this mutation succeeded
+
+347
+00:12:51,110 --> 00:12:54,800
+or it did and so at that point there's
+
+348
+00:12:54,800 --> 00:12:56,750
+two main options for how you update the
+
+349
+00:12:56,750 --> 00:12:59,240
+client you can guess you can say okay I
+
+350
+00:12:59,240 --> 00:13:01,040
+got this boolean things worked so this
+
+351
+00:13:01,040 --> 00:13:02,420
+is how I think the data should look now
+
+352
+00:13:02,420 --> 00:13:05,540
+or you could do a second round trip go
+
+353
+00:13:05,540 --> 00:13:07,100
+back to the server and get the data that
+
+354
+00:13:07,100 --> 00:13:08,779
+you need if you want to be really sure
+
+355
+00:13:08,779 --> 00:13:12,200
+that it's right the first option has
+
+356
+00:13:12,200 --> 00:13:14,870
+issues with correctness potentially and
+
+357
+00:13:14,870 --> 00:13:17,089
+the second has issues with efficiency so
+
+358
+00:13:17,089 --> 00:13:19,750
+neither one of those is really ideal
+
+359
+00:13:19,750 --> 00:13:22,279
+ideally the response from the server
+
+360
+00:13:22,279 --> 00:13:24,230
+would contain exactly the information
+
+361
+00:13:24,230 --> 00:13:27,110
+that the client needs top date itself so
+
+362
+00:13:27,110 --> 00:13:29,750
+let's talk about liking a story let's
+
+363
+00:13:29,750 --> 00:13:31,190
+say we have this mobile client and it
+
+364
+00:13:31,190 --> 00:13:32,620
+shows the number of people who
+
+365
+00:13:32,620 --> 00:13:34,900
+like the story then we would want the
+
+366
+00:13:34,900 --> 00:13:36,760
+server if you did a like to return the
+
+367
+00:13:36,760 --> 00:13:38,860
+new light count so that we could update
+
+368
+00:13:38,860 --> 00:13:42,730
+the story correctly in our web client
+
+369
+00:13:42,730 --> 00:13:43,960
+instead of just showing the number of
+
+370
+00:13:43,960 --> 00:13:45,070
+likes we show this thing that we call
+
+371
+00:13:45,070 --> 00:13:47,200
+the like sentence and it's it's an
+
+372
+00:13:47,200 --> 00:13:48,490
+internationalized string that we
+
+373
+00:13:48,490 --> 00:13:49,930
+generate on the server that provides
+
+374
+00:13:49,930 --> 00:13:52,150
+some social context about who else who
+
+375
+00:13:52,150 --> 00:13:54,970
+who of your friends or who has liked the
+
+376
+00:13:54,970 --> 00:13:57,580
+story so for this we would want the
+
+377
+00:13:57,580 --> 00:13:58,990
+server to actually return the new like
+
+378
+00:13:58,990 --> 00:14:01,620
+sentence so that we could do the update
+
+379
+00:14:01,620 --> 00:14:04,030
+okay but then what if we wanted to
+
+380
+00:14:04,030 --> 00:14:06,370
+change the mobile client to also show
+
+381
+00:14:06,370 --> 00:14:08,920
+the profile pictures of the likers then
+
+382
+00:14:08,920 --> 00:14:10,480
+we would want to make sure to update the
+
+383
+00:14:10,480 --> 00:14:12,220
+server so that it also returns the new
+
+384
+00:14:12,220 --> 00:14:14,380
+likers picture so that we can show that
+
+385
+00:14:14,380 --> 00:14:17,050
+when someone likes it and then maybe if
+
+386
+00:14:17,050 --> 00:14:19,780
+eventually we took out those pictures we
+
+387
+00:14:19,780 --> 00:14:20,890
+would need to clean up that server
+
+388
+00:14:20,890 --> 00:14:22,720
+endpoint get rid of the liker picture
+
+389
+00:14:22,720 --> 00:14:25,150
+and this situation should start feeling
+
+390
+00:14:25,150 --> 00:14:26,830
+kind of familiar to you it's similar to
+
+391
+00:14:26,830 --> 00:14:28,900
+what we saw with data reads where we're
+
+392
+00:14:28,900 --> 00:14:30,400
+in that situation where the server
+
+393
+00:14:30,400 --> 00:14:32,080
+endpoint needed to be aware of the
+
+394
+00:14:32,080 --> 00:14:34,410
+details of the clients rendering logic
+
+395
+00:14:34,410 --> 00:14:36,760
+when we change the client rendering we
+
+396
+00:14:36,760 --> 00:14:38,680
+need to change what we return from the
+
+397
+00:14:38,680 --> 00:14:40,090
+right endpoint on the server and it gets
+
+398
+00:14:40,090 --> 00:14:41,740
+kind of tough and time-consuming to keep
+
+399
+00:14:41,740 --> 00:14:45,880
+those two places in sync just like
+
+400
+00:14:45,880 --> 00:14:47,950
+before relay and graphs well can help us
+
+401
+00:14:47,950 --> 00:14:50,290
+solve the problem so it turns out the
+
+402
+00:14:50,290 --> 00:14:52,120
+graph ql doesn't just support doing data
+
+403
+00:14:52,120 --> 00:14:54,970
+reads it also supports right graph ql
+
+404
+00:14:54,970 --> 00:14:57,850
+mutations so how will this work and
+
+405
+00:14:57,850 --> 00:14:59,140
+graph ql if you want to do a dick read
+
+406
+00:14:59,140 --> 00:15:00,700
+you just provide a query and you get a
+
+407
+00:15:00,700 --> 00:15:02,800
+response mutations are a little
+
+408
+00:15:02,800 --> 00:15:04,330
+different so you need to provide three
+
+409
+00:15:04,330 --> 00:15:06,310
+piece of information the type of the
+
+410
+00:15:06,310 --> 00:15:08,740
+mutation that you're trying to do any
+
+411
+00:15:08,740 --> 00:15:10,390
+inputs that will usually just be an ID
+
+412
+00:15:10,390 --> 00:15:13,090
+or two and then a query for the data
+
+413
+00:15:13,090 --> 00:15:15,040
+that you want after that mutation has
+
+414
+00:15:15,040 --> 00:15:18,250
+been performed so for liking a story
+
+415
+00:15:18,250 --> 00:15:20,710
+what would this be the type is just
+
+416
+00:15:20,710 --> 00:15:23,470
+story like the inputs that you need to
+
+417
+00:15:23,470 --> 00:15:25,150
+give our just the idea of the story that
+
+418
+00:15:25,150 --> 00:15:27,670
+your liking and then the query can be
+
+419
+00:15:27,670 --> 00:15:29,020
+anything but in this case let's say we
+
+420
+00:15:29,020 --> 00:15:30,610
+want to know if the viewer likes the
+
+421
+00:15:30,610 --> 00:15:31,840
+story so you know if you should make
+
+422
+00:15:31,840 --> 00:15:33,850
+that little thumb blue and then the
+
+423
+00:15:33,850 --> 00:15:35,590
+count of the number of people that like
+
+424
+00:15:35,590 --> 00:15:38,530
+it so when we send this information to
+
+425
+00:15:38,530 --> 00:15:41,290
+graft well it performs the right and
+
+426
+00:15:41,290 --> 00:15:43,690
+then it runs that query and then it will
+
+427
+00:15:43,690 --> 00:15:45,880
+send us back this payload which we can
+
+428
+00:15:45,880 --> 00:15:46,300
+use
+
+429
+00:15:46,300 --> 00:15:50,140
+to update the client relay uses graph ql
+
+430
+00:15:50,140 --> 00:15:51,760
+mutations for all of its data rights
+
+431
+00:15:51,760 --> 00:15:53,590
+which provides a standardized way to
+
+432
+00:15:53,590 --> 00:15:55,210
+both perform the rites and then to
+
+433
+00:15:55,210 --> 00:15:58,540
+update the client afterwards but let's
+
+434
+00:15:58,540 --> 00:15:59,740
+look back at these three pieces of
+
+435
+00:15:59,740 --> 00:16:01,870
+information here one of the more
+
+436
+00:16:01,870 --> 00:16:03,580
+interesting problems that we face when
+
+437
+00:16:03,580 --> 00:16:05,440
+developing this mutations framework for
+
+438
+00:16:05,440 --> 00:16:08,290
+relay was how to decide what this query
+
+439
+00:16:08,290 --> 00:16:11,350
+should actually be so our goal here was
+
+440
+00:16:11,350 --> 00:16:13,450
+to get the client data consistent with
+
+441
+00:16:13,450 --> 00:16:16,060
+the new post mutation state of the world
+
+442
+00:16:16,060 --> 00:16:18,940
+so we want this query to be for anything
+
+443
+00:16:18,940 --> 00:16:21,760
+that we had in the store in our in relay
+
+444
+00:16:21,760 --> 00:16:23,620
+that could have changed as a result of
+
+445
+00:16:23,620 --> 00:16:27,070
+the mutation happening so one option the
+
+446
+00:16:27,070 --> 00:16:28,570
+easiest option is just to have the
+
+447
+00:16:28,570 --> 00:16:30,910
+developer write these crazy manually so
+
+448
+00:16:30,910 --> 00:16:32,380
+in this example they would write this
+
+449
+00:16:32,380 --> 00:16:35,350
+query but then let's say someone came
+
+450
+00:16:35,350 --> 00:16:38,560
+and added profile pictures here we would
+
+451
+00:16:38,560 --> 00:16:40,750
+send this information to the server the
+
+452
+00:16:40,750 --> 00:16:42,040
+right would happen we would get this
+
+453
+00:16:42,040 --> 00:16:44,710
+response back and we wouldn't have the
+
+454
+00:16:44,710 --> 00:16:46,000
+new profile picture in the right size
+
+455
+00:16:46,000 --> 00:16:49,840
+and and this would be a bug so to avoid
+
+456
+00:16:49,840 --> 00:16:51,400
+that the person who added the profile
+
+457
+00:16:51,400 --> 00:16:53,260
+pictures would need to make sure to go
+
+458
+00:16:53,260 --> 00:16:54,940
+find that mutation query probably
+
+459
+00:16:54,940 --> 00:16:57,040
+somewhere in some other file and add the
+
+460
+00:16:57,040 --> 00:16:59,080
+profile picture in there and more
+
+461
+00:16:59,080 --> 00:17:00,940
+generally we would be in this situation
+
+462
+00:17:00,940 --> 00:17:03,460
+where every time someone changed some
+
+463
+00:17:03,460 --> 00:17:04,630
+rendering logic they would need to
+
+464
+00:17:04,630 --> 00:17:06,040
+remember to go find all of the
+
+465
+00:17:06,040 --> 00:17:07,840
+potentially relevant mutation queries
+
+466
+00:17:07,840 --> 00:17:10,300
+and change them this wasn't a great
+
+467
+00:17:10,300 --> 00:17:12,250
+option for us since with relay we really
+
+468
+00:17:12,250 --> 00:17:14,320
+want to minimize these situations where
+
+469
+00:17:14,320 --> 00:17:16,210
+you make a change somewhere and then you
+
+470
+00:17:16,210 --> 00:17:17,320
+need to make a change in a bunch of
+
+471
+00:17:17,320 --> 00:17:21,550
+other places so instead we put the logic
+
+472
+00:17:21,550 --> 00:17:23,320
+to determine the correct mutation query
+
+473
+00:17:23,320 --> 00:17:26,490
+into relay itself how does this work so
+
+474
+00:17:26,490 --> 00:17:29,110
+intrinsic to every graph ql mutation is
+
+475
+00:17:29,110 --> 00:17:31,810
+the set of data that can change as a
+
+476
+00:17:31,810 --> 00:17:34,060
+result of that mutation so this is an
+
+477
+00:17:34,060 --> 00:17:36,040
+independent of what any client renders
+
+478
+00:17:36,040 --> 00:17:37,660
+it's a property of the mutation itself
+
+479
+00:17:37,660 --> 00:17:39,340
+so it's a property of story like or a
+
+480
+00:17:39,340 --> 00:17:42,040
+comment create so here's the set of
+
+481
+00:17:42,040 --> 00:17:44,920
+things that can change when we do a
+
+482
+00:17:44,920 --> 00:17:47,800
+story like and if we always queried for
+
+483
+00:17:47,800 --> 00:17:49,780
+everything that can change every time we
+
+484
+00:17:49,780 --> 00:17:51,850
+did a mutation we would clearly end up
+
+485
+00:17:51,850 --> 00:17:54,070
+in a consistent state but we might be
+
+486
+00:17:54,070 --> 00:17:55,930
+massively over fetching since maybe we
+
+487
+00:17:55,930 --> 00:17:57,010
+never rendered any of
+
+488
+00:17:57,010 --> 00:17:59,920
+data we don't care about some of them so
+
+489
+00:17:59,920 --> 00:18:02,580
+we have relied keep track for each ID of
+
+490
+00:18:02,580 --> 00:18:05,130
+the set of data that the client has
+
+491
+00:18:05,130 --> 00:18:07,420
+retrieved for that ID and put into its
+
+492
+00:18:07,420 --> 00:18:10,380
+store so if we had rendered my story
+
+493
+00:18:10,380 --> 00:18:12,670
+maybe this would be the set of the data
+
+494
+00:18:12,670 --> 00:18:14,610
+that we have fetched for my story and
+
+495
+00:18:14,610 --> 00:18:18,250
+then when you do a mutation on some
+
+496
+00:18:18,250 --> 00:18:20,980
+story or on some ID really builds a
+
+497
+00:18:20,980 --> 00:18:23,770
+mutation query by intersecting this set
+
+498
+00:18:23,770 --> 00:18:26,680
+of things that can possibly change with
+
+499
+00:18:26,680 --> 00:18:28,750
+the set of things that it knows that it
+
+500
+00:18:28,750 --> 00:18:30,250
+cares about the set of things that it
+
+501
+00:18:30,250 --> 00:18:33,460
+has in a store this ensures that we
+
+502
+00:18:33,460 --> 00:18:35,590
+query for exactly the set of field that
+
+503
+00:18:35,590 --> 00:18:39,220
+needs to be updated so in this case we
+
+504
+00:18:39,220 --> 00:18:42,520
+would end up with this query here and
+
+505
+00:18:42,520 --> 00:18:45,130
+the really nice part of this is that if
+
+506
+00:18:45,130 --> 00:18:47,350
+someone does come along and let's say
+
+507
+00:18:47,350 --> 00:18:50,260
+they replace that three likes with the
+
+508
+00:18:50,260 --> 00:18:54,400
+like sentence then relay this what we've
+
+509
+00:18:54,400 --> 00:18:56,290
+stored will know that we've now fetched
+
+510
+00:18:56,290 --> 00:18:57,850
+the like sentence for that story not the
+
+511
+00:18:57,850 --> 00:18:59,650
+Lakers count and so when we do this
+
+512
+00:18:59,650 --> 00:19:02,440
+intersection the intersected query will
+
+513
+00:19:02,440 --> 00:19:03,850
+be the correct one will correctly ask
+
+514
+00:19:03,850 --> 00:19:05,500
+the server for the new like sentence
+
+515
+00:19:05,500 --> 00:19:09,850
+rather than the like count so those are
+
+516
+00:19:09,850 --> 00:19:12,250
+the basics of how relay mutations work
+
+517
+00:19:12,250 --> 00:19:15,400
+the user takes an action we send the
+
+518
+00:19:15,400 --> 00:19:17,830
+name of the mutation and any inputs into
+
+519
+00:19:17,830 --> 00:19:19,900
+relay and really does that intersection
+
+520
+00:19:19,900 --> 00:19:21,790
+to figure out what the query should be
+
+521
+00:19:21,790 --> 00:19:24,220
+it'll send that over to the server the
+
+522
+00:19:24,220 --> 00:19:26,560
+server will respond will put that
+
+523
+00:19:26,560 --> 00:19:28,660
+response into the store and then we'll
+
+524
+00:19:28,660 --> 00:19:30,550
+notify the affected views by sending
+
+525
+00:19:30,550 --> 00:19:33,220
+them updated crops and you'll notice
+
+526
+00:19:33,220 --> 00:19:35,080
+that this diagram is kind of similar to
+
+527
+00:19:35,080 --> 00:19:36,490
+the one I showed you for the read path
+
+528
+00:19:36,490 --> 00:19:39,490
+before in particular the second part is
+
+529
+00:19:39,490 --> 00:19:41,680
+identical in the two flows graph ql
+
+530
+00:19:41,680 --> 00:19:43,390
+sends us some data relay puts it in the
+
+531
+00:19:43,390 --> 00:19:44,980
+store and then we send the props to the
+
+532
+00:19:44,980 --> 00:19:47,410
+components these parallels between the
+
+533
+00:19:47,410 --> 00:19:48,910
+read and the right flows are not a
+
+534
+00:19:48,910 --> 00:19:51,610
+coincidence just like flux relay treats
+
+535
+00:19:51,610 --> 00:19:54,190
+data rights as first-class citizens by
+
+536
+00:19:54,190 --> 00:19:56,140
+using the same core logic and code to
+
+537
+00:19:56,140 --> 00:20:00,070
+handle both reads and writes so if
+
+538
+00:20:00,070 --> 00:20:02,320
+you've written mutations before you'll
+
+539
+00:20:02,320 --> 00:20:04,270
+know that even when you have v1 working
+
+540
+00:20:04,270 --> 00:20:05,560
+when you have the right actually
+
+541
+00:20:05,560 --> 00:20:07,300
+happening on the server and then the
+
+542
+00:20:07,300 --> 00:20:09,490
+client getting updated correctly there's
+
+543
+00:20:09,490 --> 00:20:10,830
+there's often a lot more
+
+544
+00:20:10,830 --> 00:20:13,260
+to be done so maybe you have to think
+
+545
+00:20:13,260 --> 00:20:15,690
+about things like making that feel more
+
+546
+00:20:15,690 --> 00:20:17,490
+responsive by having the client kind of
+
+547
+00:20:17,490 --> 00:20:19,649
+doing fake updates instantaneously or
+
+548
+00:20:19,649 --> 00:20:21,210
+you have to worry about how to handle
+
+549
+00:20:21,210 --> 00:20:24,179
+errors timeout retries or things like
+
+550
+00:20:24,179 --> 00:20:27,450
+race conditions because relay has this
+
+551
+00:20:27,450 --> 00:20:29,279
+centralized mutations framework we're
+
+552
+00:20:29,279 --> 00:20:31,049
+able to take a lot of these common
+
+553
+00:20:31,049 --> 00:20:33,120
+concerns and put them into relay itself
+
+554
+00:20:33,120 --> 00:20:35,669
+so the developers get that get the
+
+555
+00:20:35,669 --> 00:20:37,320
+handling of those issues for free rather
+
+556
+00:20:37,320 --> 00:20:38,669
+than needing to solve them again and
+
+557
+00:20:38,669 --> 00:20:41,370
+again with each new mutation so let's
+
+558
+00:20:41,370 --> 00:20:42,870
+start with that app responsiveness
+
+559
+00:20:42,870 --> 00:20:45,419
+example if I implement its story like
+
+560
+00:20:45,419 --> 00:20:46,950
+the way that I've described so far and
+
+561
+00:20:46,950 --> 00:20:49,080
+then someone use this app and hit the
+
+562
+00:20:49,080 --> 00:20:51,450
+like button they notice a significant
+
+563
+00:20:51,450 --> 00:20:53,070
+delay between when they hit like and
+
+564
+00:20:53,070 --> 00:20:57,000
+when one app actually changes because
+
+565
+00:20:57,000 --> 00:20:57,960
+we're sitting there waiting for the
+
+566
+00:20:57,960 --> 00:20:59,370
+server response to come back waiting for
+
+567
+00:20:59,370 --> 00:21:02,130
+that graphical response it would be nice
+
+568
+00:21:02,130 --> 00:21:03,480
+if we didn't have to deal with this
+
+569
+00:21:03,480 --> 00:21:06,120
+delay and lucky for us really provide
+
+570
+00:21:06,120 --> 00:21:07,860
+support for what we call optimistic
+
+571
+00:21:07,860 --> 00:21:10,049
+mutations where we immediately update
+
+572
+00:21:10,049 --> 00:21:12,360
+the view to the expected post right
+
+573
+00:21:12,360 --> 00:21:13,860
+state being optimistic that everything
+
+574
+00:21:13,860 --> 00:21:16,820
+will work out nicely on the server
+
+575
+00:21:16,820 --> 00:21:19,230
+essentially to make this happen you can
+
+576
+00:21:19,230 --> 00:21:21,179
+provide a payload mimicking the server
+
+577
+00:21:21,179 --> 00:21:23,309
+response and then the view will change
+
+578
+00:21:23,309 --> 00:21:26,039
+instantly based on that payload so that
+
+579
+00:21:26,039 --> 00:21:27,659
+optimistic payload doesn't have to
+
+580
+00:21:27,659 --> 00:21:29,159
+include everything that would be in the
+
+581
+00:21:29,159 --> 00:21:30,929
+server update it can include as much or
+
+582
+00:21:30,929 --> 00:21:32,429
+as little information as you need to
+
+583
+00:21:32,429 --> 00:21:33,929
+make things feel right so it's kind of
+
+584
+00:21:33,929 --> 00:21:36,029
+just a we want this to feel good in
+
+585
+00:21:36,029 --> 00:21:37,139
+between when we're waiting for the
+
+586
+00:21:37,139 --> 00:21:39,510
+server response to come back so maybe
+
+587
+00:21:39,510 --> 00:21:41,159
+for story like we would just do an
+
+588
+00:21:41,159 --> 00:21:42,840
+optimistic peeled like this just slip
+
+589
+00:21:42,840 --> 00:21:45,450
+does viewer like to true and that would
+
+590
+00:21:45,450 --> 00:21:46,860
+cause the the thumb to turn blue
+
+591
+00:21:46,860 --> 00:21:48,720
+immediately but maybe you'd think this
+
+592
+00:21:48,720 --> 00:21:50,250
+is kind of weird because you still see
+
+593
+00:21:50,250 --> 00:21:53,010
+to like so you could do this instead is
+
+594
+00:21:53,010 --> 00:21:54,750
+optimistic payload we're now you're also
+
+595
+00:21:54,750 --> 00:21:57,539
+incrementing the count by one so that
+
+596
+00:21:57,539 --> 00:21:59,429
+you'll get the three likes and the blue
+
+597
+00:21:59,429 --> 00:22:02,760
+thumb instantly if I had wanted to do an
+
+598
+00:22:02,760 --> 00:22:04,409
+optimistic update like this back when I
+
+599
+00:22:04,409 --> 00:22:05,760
+was writing mutation for the newsfeed
+
+600
+00:22:05,760 --> 00:22:07,200
+team I would need to just add a bunch of
+
+601
+00:22:07,200 --> 00:22:09,870
+code to manually update the Dom in a
+
+602
+00:22:09,870 --> 00:22:11,429
+react application i could call us at
+
+603
+00:22:11,429 --> 00:22:13,169
+state to get my component to rerender
+
+604
+00:22:13,169 --> 00:22:15,870
+with this new optimistic data but in
+
+605
+00:22:15,870 --> 00:22:17,309
+really i just provide this optimistic
+
+606
+00:22:17,309 --> 00:22:18,510
+tailored and then everything else
+
+607
+00:22:18,510 --> 00:22:19,830
+happens automatically the framework
+
+608
+00:22:19,830 --> 00:22:23,059
+automatically will update the views
+
+609
+00:22:23,059 --> 00:22:25,129
+so I want to describe now how these
+
+610
+00:22:25,129 --> 00:22:27,139
+optimistic mutations have been behind
+
+611
+00:22:27,139 --> 00:22:28,940
+the scenes even though the view is
+
+612
+00:22:28,940 --> 00:22:30,980
+changing immediately with optimistic
+
+613
+00:22:30,980 --> 00:22:32,779
+update really isn't immediately
+
+614
+00:22:32,779 --> 00:22:34,850
+overriding the data in that graph you'll
+
+615
+00:22:34,850 --> 00:22:37,610
+store so instead we maintain a queue of
+
+616
+00:22:37,610 --> 00:22:40,759
+in-flight mutations mutations that we've
+
+617
+00:22:40,759 --> 00:22:41,990
+done the optimistic update but the
+
+618
+00:22:41,990 --> 00:22:43,669
+server response hasn't come back yet and
+
+619
+00:22:43,669 --> 00:22:45,950
+when we read data from the store we read
+
+620
+00:22:45,950 --> 00:22:48,379
+through that Q so what does that look
+
+621
+00:22:48,379 --> 00:22:50,299
+like let's say that this is the data in
+
+622
+00:22:50,299 --> 00:22:53,509
+our store for my story so the UI is
+
+623
+00:22:53,509 --> 00:22:54,860
+going to reflect what we have in the
+
+624
+00:22:54,860 --> 00:22:58,429
+store and then let's say I do alike so
+
+625
+00:22:58,429 --> 00:22:59,899
+you'll notice that the UI block
+
+626
+00:22:59,899 --> 00:23:02,779
+immediately changed blue but the store
+
+627
+00:23:02,779 --> 00:23:04,700
+we haven't changed anything in the store
+
+628
+00:23:04,700 --> 00:23:07,730
+yet and now I do a comment again because
+
+629
+00:23:07,730 --> 00:23:09,679
+of the optimistic update the UI changes
+
+630
+00:23:09,679 --> 00:23:11,149
+instantly but the store is still
+
+631
+00:23:11,149 --> 00:23:14,480
+untouched so now we get the server
+
+632
+00:23:14,480 --> 00:23:16,039
+payload let's say the like succeeded
+
+633
+00:23:16,039 --> 00:23:18,499
+this is when will actually remove that
+
+634
+00:23:18,499 --> 00:23:20,860
+like from the queue and update the store
+
+635
+00:23:20,860 --> 00:23:23,840
+so now what if we get an error for the
+
+636
+00:23:23,840 --> 00:23:26,330
+comment so if we had immediately written
+
+637
+00:23:26,330 --> 00:23:28,279
+that comment into the store when as soon
+
+638
+00:23:28,279 --> 00:23:30,230
+as I did it this is when we would be in
+
+639
+00:23:30,230 --> 00:23:31,249
+a little bit of a sticky situation
+
+640
+00:23:31,249 --> 00:23:33,799
+because we need to kind of roll back our
+
+641
+00:23:33,799 --> 00:23:35,210
+changes make sure that we left the store
+
+642
+00:23:35,210 --> 00:23:36,529
+in the exact state that it had been
+
+643
+00:23:36,529 --> 00:23:38,779
+before but because we maintain this
+
+644
+00:23:38,779 --> 00:23:41,600
+queue all you need to do is remove it
+
+645
+00:23:41,600 --> 00:23:44,179
+from the queue the stores still in good
+
+646
+00:23:44,179 --> 00:23:46,190
+shape and the UI goes back to taking the
+
+647
+00:23:46,190 --> 00:23:49,759
+comment away the mutations q also makes
+
+648
+00:23:49,759 --> 00:23:52,340
+it simple to deal with retries so let's
+
+649
+00:23:52,340 --> 00:23:53,929
+say that I'm trying to comment and say
+
+650
+00:23:53,929 --> 00:23:56,450
+thanks to my friends here so I hit post
+
+651
+00:23:56,450 --> 00:23:58,490
+and the optimistic update happens
+
+652
+00:23:58,490 --> 00:24:00,799
+immediately and is added to the queue
+
+653
+00:24:00,799 --> 00:24:03,200
+and then an error comes back so in the
+
+654
+00:24:03,200 --> 00:24:04,820
+example I just showed you I took them I
+
+655
+00:24:04,820 --> 00:24:06,440
+just said okay there was an error take
+
+656
+00:24:06,440 --> 00:24:09,740
+it out of the queue revert but what we
+
+657
+00:24:09,740 --> 00:24:12,200
+can also do is keep it in the queue but
+
+658
+00:24:12,200 --> 00:24:15,649
+mark it with an error state and the view
+
+659
+00:24:15,649 --> 00:24:17,240
+can pick up on this air state and show
+
+660
+00:24:17,240 --> 00:24:18,679
+that little message unable to post
+
+661
+00:24:18,679 --> 00:24:21,440
+comment try again and then if I do hit
+
+662
+00:24:21,440 --> 00:24:23,539
+try again it's easy to perform that
+
+663
+00:24:23,539 --> 00:24:25,460
+retry since we have that comment
+
+664
+00:24:25,460 --> 00:24:26,990
+mutation sitting in the queue and it
+
+665
+00:24:26,990 --> 00:24:28,580
+contains all the data that it needs to
+
+666
+00:24:28,580 --> 00:24:30,590
+basically send itself off to the server
+
+667
+00:24:30,590 --> 00:24:34,940
+again so I hit retry and this time it
+
+668
+00:24:34,940 --> 00:24:37,759
+works and voila
+
+669
+00:24:37,759 --> 00:24:40,169
+so a final nice feature of relay
+
+670
+00:24:40,169 --> 00:24:42,450
+mutations framework is that it provides
+
+671
+00:24:42,450 --> 00:24:44,220
+a solution for race conditions that you
+
+672
+00:24:44,220 --> 00:24:46,440
+can get when someone is performing a
+
+673
+00:24:46,440 --> 00:24:48,570
+quick sequence of mutations on all
+
+674
+00:24:48,570 --> 00:24:50,730
+affecting the same object so let's say
+
+675
+00:24:50,730 --> 00:24:52,950
+that I quickly like and unlike my story
+
+676
+00:24:52,950 --> 00:24:56,100
+a bunch of times in a row there's a
+
+677
+00:24:56,100 --> 00:24:57,509
+pretty high chance here that something's
+
+678
+00:24:57,509 --> 00:24:59,639
+going to go wrong if we just didn't have
+
+679
+00:24:59,639 --> 00:25:02,989
+any special casing for the situation so
+
+680
+00:25:02,989 --> 00:25:05,850
+there's a race condition for my
+
+681
+00:25:05,850 --> 00:25:08,399
+mutations hitting the server if the if
+
+682
+00:25:08,399 --> 00:25:10,859
+I've ended up on an unlike but the like
+
+683
+00:25:10,859 --> 00:25:12,509
+is the last one hit the server then
+
+684
+00:25:12,509 --> 00:25:13,830
+we're going to have the wrong state of
+
+685
+00:25:13,830 --> 00:25:15,779
+data on the server and even if that all
+
+686
+00:25:15,779 --> 00:25:18,679
+works out we have another race condition
+
+687
+00:25:18,679 --> 00:25:21,600
+for those payloads coming back where
+
+688
+00:25:21,600 --> 00:25:23,909
+it's the last one that comes back is the
+
+689
+00:25:23,909 --> 00:25:24,929
+like then we're going to have an
+
+690
+00:25:24,929 --> 00:25:27,830
+inconsistent State on the client in
+
+691
+00:25:27,830 --> 00:25:30,179
+relay we have a way to detect the view
+
+692
+00:25:30,179 --> 00:25:32,279
+mutations are dependent and guarantee
+
+693
+00:25:32,279 --> 00:25:33,869
+that only one of them is in flight at a
+
+694
+00:25:33,869 --> 00:25:36,690
+time so the first one goes off and only
+
+695
+00:25:36,690 --> 00:25:38,460
+when that payload comes back do we send
+
+696
+00:25:38,460 --> 00:25:40,679
+off the second one and so on so all the
+
+697
+00:25:40,679 --> 00:25:42,330
+optimistic rights still happen
+
+698
+00:25:42,330 --> 00:25:44,039
+immediately so the person using the
+
+699
+00:25:44,039 --> 00:25:45,359
+application doesn't know that we're
+
+700
+00:25:45,359 --> 00:25:46,559
+doing anything different behind the
+
+701
+00:25:46,559 --> 00:25:49,739
+scenes but we do this thing to ensure
+
+702
+00:25:49,739 --> 00:25:50,730
+that we're not going to get these
+
+703
+00:25:50,730 --> 00:25:54,899
+collisions so all what I've described so
+
+704
+00:25:54,899 --> 00:25:56,820
+far relay and its mutations framework
+
+705
+00:25:56,820 --> 00:25:58,710
+are already being used in a few places
+
+706
+00:25:58,710 --> 00:26:00,989
+in production at Facebook including our
+
+707
+00:26:00,989 --> 00:26:03,239
+standalone groups app and our mobile ads
+
+708
+00:26:03,239 --> 00:26:05,279
+manager app which are both using both
+
+709
+00:26:05,279 --> 00:26:07,889
+relay and react native I'm going to
+
+710
+00:26:07,889 --> 00:26:09,059
+spend the last few minutes here
+
+711
+00:26:09,059 --> 00:26:10,859
+discussing a part of relay that we're
+
+712
+00:26:10,859 --> 00:26:12,450
+still working on that's not yet in
+
+713
+00:26:12,450 --> 00:26:15,989
+production so this was a diagram that I
+
+714
+00:26:15,989 --> 00:26:18,960
+showed earlier to explain mutations as i
+
+715
+00:26:18,960 --> 00:26:20,519
+explained really can take this mutation
+
+716
+00:26:20,519 --> 00:26:22,950
+payload from graft well store it and
+
+717
+00:26:22,950 --> 00:26:24,899
+then send the props to any effective
+
+718
+00:26:24,899 --> 00:26:27,600
+views so here the action is originating
+
+719
+00:26:27,600 --> 00:26:28,710
+from the person who's using the
+
+720
+00:26:28,710 --> 00:26:30,960
+application but that doesn't have to be
+
+721
+00:26:30,960 --> 00:26:35,129
+the case so imagine if Joe comments on
+
+722
+00:26:35,129 --> 00:26:38,489
+my story from his phone we can actually
+
+723
+00:26:38,489 --> 00:26:41,159
+use this same path once it goes through
+
+724
+00:26:41,159 --> 00:26:43,799
+the cloud to send his mutation payload
+
+725
+00:26:43,799 --> 00:26:46,230
+to relay put it in the store and then
+
+726
+00:26:46,230 --> 00:26:48,600
+update the views to show his new comment
+
+727
+00:26:48,600 --> 00:26:50,640
+do we call this a subscription
+
+728
+00:26:50,640 --> 00:26:52,650
+basically if I'm looking at a new speed
+
+729
+00:26:52,650 --> 00:26:54,570
+story I can subscribe to all new
+
+730
+00:26:54,570 --> 00:26:56,790
+comments happening on that story and at
+
+731
+00:26:56,790 --> 00:26:58,230
+the time that i subscribe i'll provide a
+
+732
+00:26:58,230 --> 00:27:00,360
+graph to all queries saying here's the
+
+733
+00:27:00,360 --> 00:27:02,910
+query for what data i want for every new
+
+734
+00:27:02,910 --> 00:27:05,520
+comment that comes in and then using a
+
+735
+00:27:05,520 --> 00:27:07,680
+pub sub system in the back end we can
+
+736
+00:27:07,680 --> 00:27:09,390
+ensure that all of these mutation
+
+737
+00:27:09,390 --> 00:27:10,890
+payloads for each new comment are
+
+738
+00:27:10,890 --> 00:27:13,170
+delivered whenever someone comments and
+
+739
+00:27:13,170 --> 00:27:14,700
+then relay will automatically update the
+
+740
+00:27:14,700 --> 00:27:17,490
+views so along the same lines I've say
+
+741
+00:27:17,490 --> 00:27:19,500
+media or firebase this subscriptions
+
+742
+00:27:19,500 --> 00:27:21,750
+piece of relay provides a simple way to
+
+743
+00:27:21,750 --> 00:27:24,000
+build dynamic applications that feel
+
+744
+00:27:24,000 --> 00:27:26,100
+alive with real-time updates and this is
+
+745
+00:27:26,100 --> 00:27:26,970
+something that we're excited about
+
+746
+00:27:26,970 --> 00:27:28,650
+integrating into various parts of
+
+747
+00:27:28,650 --> 00:27:32,310
+facebook so I'm going to close with just
+
+748
+00:27:32,310 --> 00:27:34,920
+a few last points the core idea of relay
+
+749
+00:27:34,920 --> 00:27:36,810
+just to re-emphasize that is that we
+
+750
+00:27:36,810 --> 00:27:38,160
+should keep our data fetching logic
+
+751
+00:27:38,160 --> 00:27:40,230
+together with our rendering logic within
+
+752
+00:27:40,230 --> 00:27:42,120
+each component because we found this
+
+753
+00:27:42,120 --> 00:27:44,250
+approach to really scale well to a big
+
+754
+00:27:44,250 --> 00:27:47,240
+application being built by a big team
+
+755
+00:27:47,240 --> 00:27:49,500
+one of our main goals when we've
+
+756
+00:27:49,500 --> 00:27:51,810
+designed really has been to identify
+
+757
+00:27:51,810 --> 00:27:53,490
+these problematic patterns that people
+
+758
+00:27:53,490 --> 00:27:55,230
+are facing again and again and that are
+
+759
+00:27:55,230 --> 00:27:57,180
+slowing them down and pull the
+
+760
+00:27:57,180 --> 00:27:59,190
+complexity of those patterns into relay
+
+761
+00:27:59,190 --> 00:28:01,380
+so we saw a few examples of this today
+
+762
+00:28:01,380 --> 00:28:03,870
+with relay mutations from the way that
+
+763
+00:28:03,870 --> 00:28:05,670
+we do that intersection to determine the
+
+764
+00:28:05,670 --> 00:28:07,800
+correct mutation query to the way that
+
+765
+00:28:07,800 --> 00:28:09,810
+we have optimistic updates in that queue
+
+766
+00:28:09,810 --> 00:28:12,330
+to our solution for rage conditions in
+
+767
+00:28:12,330 --> 00:28:14,550
+each case someone using relay will get
+
+768
+00:28:14,550 --> 00:28:16,080
+these common problems solved for free
+
+769
+00:28:16,080 --> 00:28:18,270
+and can focus on bigger and better
+
+770
+00:28:18,270 --> 00:28:20,640
+things so I'm going to close with one
+
+771
+00:28:20,640 --> 00:28:23,010
+last sticker comment thank you all for
+
+772
+00:28:23,010 --> 00:28:51,490
+listening
+

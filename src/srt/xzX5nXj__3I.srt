@@ -1,0 +1,2197 @@
+1
+00:00:17,240 --> 00:00:19,490
+
+my name is Tommy scratch I work for a
+
+2
+00:00:19,490 --> 00:00:21,020
+company called joint which you may be
+
+3
+00:00:21,020 --> 00:00:24,710
+heard of we do stuff with node which
+
+4
+00:00:24,710 --> 00:00:28,970
+you've also may be heard of and yeah i'm
+
+5
+00:00:28,970 --> 00:00:30,650
+writing this book i don't recommend
+
+6
+00:00:30,650 --> 00:00:33,949
+writing a book it's a stupid idea if
+
+7
+00:00:33,949 --> 00:00:35,210
+anybody ever tells you to write a book
+
+8
+00:00:35,210 --> 00:00:37,400
+you know just ignore them or hurt them
+
+9
+00:00:37,400 --> 00:00:40,640
+or both but this is this is the book i'm
+
+10
+00:00:40,640 --> 00:00:42,230
+writing in case wondering that's a
+
+11
+00:00:42,230 --> 00:00:45,170
+common tree true cuz alrighty clearly
+
+12
+00:00:45,170 --> 00:00:50,479
+let me pick my animal you know so I the
+
+13
+00:00:50,479 --> 00:00:52,610
+talk is multi Ted node architectures but
+
+14
+00:00:52,610 --> 00:00:54,680
+you know I wanted to kind of recap some
+
+15
+00:00:54,680 --> 00:00:57,500
+stuff I think the the people at Jay's
+
+16
+00:00:57,500 --> 00:00:58,879
+convoy always really smart but I think
+
+17
+00:00:58,879 --> 00:01:00,530
+often kind of looking at the core
+
+18
+00:01:00,530 --> 00:01:01,610
+principles of what we're trying to
+
+19
+00:01:01,610 --> 00:01:05,449
+achieve really helps so you know one of
+
+20
+00:01:05,449 --> 00:01:06,470
+the things that we want to do when we
+
+21
+00:01:06,470 --> 00:01:08,780
+write servers is minimize the client
+
+22
+00:01:08,780 --> 00:01:09,890
+response time and this is actually like
+
+23
+00:01:09,890 --> 00:01:11,990
+a big draw of why people use node right
+
+24
+00:01:11,990 --> 00:01:13,670
+is we want really fast service because
+
+25
+00:01:13,670 --> 00:01:16,430
+you know sometimes people just can't
+
+26
+00:01:16,430 --> 00:01:19,610
+wait to do stuff and you know that that
+
+27
+00:01:19,610 --> 00:01:21,500
+can be an issue in case we running I
+
+28
+00:01:21,500 --> 00:01:24,109
+also used to work for Yahoo so that's
+
+29
+00:01:24,109 --> 00:01:31,850
+the Yahoo that's a yahoo bathroom so the
+
+30
+00:01:31,850 --> 00:01:33,770
+goal number two is well sure we won't
+
+31
+00:01:33,770 --> 00:01:36,049
+really fast response times but you know
+
+32
+00:01:36,049 --> 00:01:37,850
+heck I only have so many servers you
+
+33
+00:01:37,850 --> 00:01:40,460
+know I mean I guess we could buy like a
+
+34
+00:01:40,460 --> 00:01:42,079
+server for every user that we have and
+
+35
+00:01:42,079 --> 00:01:43,729
+then all of their response times would
+
+36
+00:01:43,729 --> 00:01:46,189
+be really fast but nobody can obviously
+
+37
+00:01:46,189 --> 00:01:47,240
+nobody can afford to do that that's
+
+38
+00:01:47,240 --> 00:01:49,640
+stupid so it's you know we have we have
+
+39
+00:01:49,640 --> 00:01:51,319
+these two conflicting goals it's like
+
+40
+00:01:51,319 --> 00:01:53,649
+how do we how do we balance these things
+
+41
+00:01:53,649 --> 00:01:56,719
+because obviously you know at some point
+
+42
+00:01:56,719 --> 00:01:58,729
+we hit the capacity of our servers and
+
+43
+00:01:58,729 --> 00:02:00,139
+sometimes you know even if you're
+
+44
+00:02:00,139 --> 00:02:02,450
+planning capacity there's there's there
+
+45
+00:02:02,450 --> 00:02:04,670
+are issues there so I like to think of
+
+46
+00:02:04,670 --> 00:02:07,340
+this in in kind of the critical path
+
+47
+00:02:07,340 --> 00:02:08,720
+like one of the things I think people
+
+48
+00:02:08,720 --> 00:02:10,550
+people think of like these really
+
+49
+00:02:10,550 --> 00:02:12,560
+generalize models are computing and what
+
+50
+00:02:12,560 --> 00:02:15,200
+it comes down to for me is we have a
+
+51
+00:02:15,200 --> 00:02:17,360
+critical path this is what an Internet
+
+52
+00:02:17,360 --> 00:02:19,100
+application looks like a modern Internet
+
+53
+00:02:19,100 --> 00:02:22,160
+application looks like this you have
+
+54
+00:02:22,160 --> 00:02:24,260
+this big red blob of like network
+
+55
+00:02:24,260 --> 00:02:26,090
+latency at the front and this is
+
+56
+00:02:26,090 --> 00:02:27,620
+obviously this is really simplified but
+
+57
+00:02:27,620 --> 00:02:29,780
+you know the the talking back and
+
+58
+00:02:29,780 --> 00:02:31,280
+with a web client of the internet is
+
+59
+00:02:31,280 --> 00:02:33,260
+really slow compared to the actual
+
+60
+00:02:33,260 --> 00:02:35,030
+amount of computation it takes to render
+
+61
+00:02:35,030 --> 00:02:38,120
+a web page talking to the database it's
+
+62
+00:02:38,120 --> 00:02:40,459
+really slow compared to the actual time
+
+63
+00:02:40,459 --> 00:02:41,930
+it takes to do a query in general not
+
+64
+00:02:41,930 --> 00:02:44,750
+all queries but in general this is this
+
+65
+00:02:44,750 --> 00:02:46,550
+is generally true if you mean think
+
+66
+00:02:46,550 --> 00:02:48,950
+about Google if every time you typed in
+
+67
+00:02:48,950 --> 00:02:50,810
+a search query Google went out and
+
+68
+00:02:50,810 --> 00:02:53,500
+spidered the entire internet compiled
+
+69
+00:02:53,500 --> 00:02:56,480
+you know a search index and then gave
+
+70
+00:02:56,480 --> 00:02:57,470
+you back your result would be like a
+
+71
+00:02:57,470 --> 00:03:00,050
+month the point is that we take all the
+
+72
+00:03:00,050 --> 00:03:02,660
+computation as far away from the user as
+
+73
+00:03:02,660 --> 00:03:04,550
+possible so when the user is actually
+
+74
+00:03:04,550 --> 00:03:06,170
+interacting with the website the web
+
+75
+00:03:06,170 --> 00:03:08,330
+application whatever system it is that
+
+76
+00:03:08,330 --> 00:03:12,230
+we're doing the the maximum the biggest
+
+77
+00:03:12,230 --> 00:03:14,390
+pieces of this time is some kind of
+
+78
+00:03:14,390 --> 00:03:16,880
+rooting some kind of network transfer
+
+79
+00:03:16,880 --> 00:03:19,000
+and the actual amount of computation is
+
+80
+00:03:19,000 --> 00:03:21,860
+as small as possible and these are the
+
+81
+00:03:21,860 --> 00:03:25,069
+models of applications we build now so
+
+82
+00:03:25,069 --> 00:03:26,510
+the traditional way that we do this is
+
+83
+00:03:26,510 --> 00:03:28,910
+we pre allocate resources to the client
+
+84
+00:03:28,910 --> 00:03:30,350
+for the for the entire duration of the
+
+85
+00:03:30,350 --> 00:03:32,180
+request we go here you go here's a bunch
+
+86
+00:03:32,180 --> 00:03:34,459
+of resources and that gives you
+
+87
+00:03:34,459 --> 00:03:36,230
+efficiency within each individual
+
+88
+00:03:36,230 --> 00:03:38,269
+connection you give a bunch of resources
+
+89
+00:03:38,269 --> 00:03:41,870
+away and you get you know you get a lot
+
+90
+00:03:41,870 --> 00:03:44,090
+of efficiency it's like his here's a big
+
+91
+00:03:44,090 --> 00:03:46,910
+size of resources and that means that
+
+92
+00:03:46,910 --> 00:03:48,709
+the response time for this individual
+
+93
+00:03:48,709 --> 00:03:50,510
+connection is going to be really fast
+
+94
+00:03:50,510 --> 00:03:51,980
+because they've already given them all
+
+95
+00:03:51,980 --> 00:03:54,320
+the resources that they need to do this
+
+96
+00:03:54,320 --> 00:03:56,030
+so as soon as anything happens I'm
+
+97
+00:03:56,030 --> 00:03:58,400
+instantly ready to go so they kind of
+
+98
+00:03:58,400 --> 00:04:00,440
+makes sense you know I think of it like
+
+99
+00:04:00,440 --> 00:04:03,230
+this you know if the the you know if the
+
+100
+00:04:03,230 --> 00:04:05,750
+pie is my server I have like a certain
+
+101
+00:04:05,750 --> 00:04:07,459
+amount of resources it's just dedicated
+
+102
+00:04:07,459 --> 00:04:09,620
+to running you know whether it's node or
+
+103
+00:04:09,620 --> 00:04:12,799
+Apache or you know tom cat or whatever
+
+104
+00:04:12,799 --> 00:04:14,600
+and then every request you start to
+
+105
+00:04:14,600 --> 00:04:16,700
+share out the pie and you give each one
+
+106
+00:04:16,700 --> 00:04:20,570
+of these two requests and you know
+
+107
+00:04:20,570 --> 00:04:22,940
+that's great but we basically heavily
+
+108
+00:04:22,940 --> 00:04:25,010
+waste memory in order to serve the
+
+109
+00:04:25,010 --> 00:04:28,340
+fastest most optimal requests and when
+
+110
+00:04:28,340 --> 00:04:30,460
+you run out of you know memory the
+
+111
+00:04:30,460 --> 00:04:32,660
+Soviets overwhelmed and that's you know
+
+112
+00:04:32,660 --> 00:04:34,490
+that's kind of bad it's like fighting
+
+113
+00:04:34,490 --> 00:04:36,710
+off lobsters with a stick I guess to
+
+114
+00:04:36,710 --> 00:04:38,890
+stretch your metaphor I don't know um
+
+115
+00:04:38,890 --> 00:04:41,210
+actually I tried this talk somewhere
+
+116
+00:04:41,210 --> 00:04:42,919
+else and somebody had called me and said
+
+117
+00:04:42,919 --> 00:04:43,610
+those aren't lobs
+
+118
+00:04:43,610 --> 00:04:48,289
+those are crabs you know it's kind of
+
+119
+00:04:48,289 --> 00:04:49,460
+weird I mean to be honest I don't know
+
+120
+00:04:49,460 --> 00:04:50,689
+this gentleman well enough to know if
+
+121
+00:04:50,689 --> 00:04:54,259
+those are crabs or not that was awful
+
+122
+00:04:54,259 --> 00:04:57,590
+wasn't it but seriously I mean I think
+
+123
+00:04:57,590 --> 00:04:59,509
+the it's it's it's it's a model that
+
+124
+00:04:59,509 --> 00:05:01,189
+kind of it makes sense in principle but
+
+125
+00:05:01,189 --> 00:05:02,629
+we have these real-world constraints we
+
+126
+00:05:02,629 --> 00:05:04,310
+can't have as many services we want and
+
+127
+00:05:04,310 --> 00:05:06,129
+this is where the event loop comes in so
+
+128
+00:05:06,129 --> 00:05:09,560
+if you don't pre allocate memory what
+
+129
+00:05:09,560 --> 00:05:12,050
+happens we create a placeholder for so
+
+130
+00:05:12,050 --> 00:05:13,610
+test so this is kind of I mean this is
+
+131
+00:05:13,610 --> 00:05:15,620
+still kind of node 101 stuff but we have
+
+132
+00:05:15,620 --> 00:05:17,479
+all these placeholders and then we have
+
+133
+00:05:17,479 --> 00:05:19,009
+this shade work resource like now I have
+
+134
+00:05:19,009 --> 00:05:21,259
+some work to do I'm going to do it the
+
+135
+00:05:21,259 --> 00:05:22,699
+servers going to use memory in order to
+
+136
+00:05:22,699 --> 00:05:24,949
+deal with this one specific task we have
+
+137
+00:05:24,949 --> 00:05:27,469
+the first-in first-out model so we have
+
+138
+00:05:27,469 --> 00:05:29,599
+a bunch of events you can see that for
+
+139
+00:05:29,599 --> 00:05:31,879
+each individual event whether it's like
+
+140
+00:05:31,879 --> 00:05:34,610
+an event created by the node application
+
+141
+00:05:34,610 --> 00:05:37,370
+or from the OS it goes in and it comes
+
+142
+00:05:37,370 --> 00:05:40,039
+up but you know that makes the server
+
+143
+00:05:40,039 --> 00:05:41,479
+more efficient but it then creates this
+
+144
+00:05:41,479 --> 00:05:43,360
+thing well we can't block the event loop
+
+145
+00:05:43,360 --> 00:05:46,189
+so people start to you no wonder well
+
+146
+00:05:46,189 --> 00:05:48,770
+i'm using this model how do i actually
+
+147
+00:05:48,770 --> 00:05:50,810
+make the most of my service what are the
+
+148
+00:05:50,810 --> 00:05:54,319
+architectures that really helped me so
+
+149
+00:05:54,319 --> 00:05:57,889
+if i do big work in the event loop then
+
+150
+00:05:57,889 --> 00:06:00,680
+we can only serve after that after that
+
+151
+00:06:00,680 --> 00:06:03,110
+request is finished so you know this is
+
+152
+00:06:03,110 --> 00:06:04,190
+kind of this is like a different
+
+153
+00:06:04,190 --> 00:06:05,659
+programming model people like what I get
+
+154
+00:06:05,659 --> 00:06:07,610
+the other thing you know I just have
+
+155
+00:06:07,610 --> 00:06:10,190
+like one thread per user and I don't
+
+156
+00:06:10,190 --> 00:06:11,509
+have to think about it but now I'm in
+
+157
+00:06:11,509 --> 00:06:14,210
+the shared memory you know I'm sharing
+
+158
+00:06:14,210 --> 00:06:15,830
+all of this stuff how do i how do I do
+
+159
+00:06:15,830 --> 00:06:17,210
+that I have to worry about these big
+
+160
+00:06:17,210 --> 00:06:19,789
+tasks so blocking the event loop is just
+
+161
+00:06:19,789 --> 00:06:23,020
+bad nobody wants to do that you know um
+
+162
+00:06:23,020 --> 00:06:24,860
+don't worry we're going to run out of
+
+163
+00:06:24,860 --> 00:06:27,979
+I'm never that bad metaphor soon but
+
+164
+00:06:27,979 --> 00:06:29,509
+nobody wants to block the event loop so
+
+165
+00:06:29,509 --> 00:06:30,560
+it's like how do I do that how do i
+
+166
+00:06:30,560 --> 00:06:32,240
+create an architecture with node that
+
+167
+00:06:32,240 --> 00:06:34,189
+makes it work efficiently so this is the
+
+168
+00:06:34,189 --> 00:06:36,050
+obvious architecture and everybody uses
+
+169
+00:06:36,050 --> 00:06:38,479
+this in you know it's not rocket science
+
+170
+00:06:38,479 --> 00:06:40,909
+but it is a tiered architecture I have
+
+171
+00:06:40,909 --> 00:06:43,430
+my client and then I have some kind of
+
+172
+00:06:43,430 --> 00:06:44,930
+like node front end and then I have
+
+173
+00:06:44,930 --> 00:06:47,120
+database and this is I mean this is like
+
+174
+00:06:47,120 --> 00:06:49,430
+a really simple architecture but it's
+
+175
+00:06:49,430 --> 00:06:51,740
+it's clearly multi-tiered the database
+
+176
+00:06:51,740 --> 00:06:54,139
+is doing stuff that isn't in the main
+
+177
+00:06:54,139 --> 00:06:55,969
+node process we're not blocking we're
+
+178
+00:06:55,969 --> 00:06:56,990
+using eight
+
+179
+00:06:56,990 --> 00:06:59,840
+Kronus I oh and this this already is a
+
+180
+00:06:59,840 --> 00:07:01,880
+multi-tiered architecture you're pushing
+
+181
+00:07:01,880 --> 00:07:04,070
+the database work out so it's not
+
+182
+00:07:04,070 --> 00:07:06,200
+blocking the rest of the node process
+
+183
+00:07:06,200 --> 00:07:08,150
+right i mean we could just you know we
+
+184
+00:07:08,150 --> 00:07:10,670
+could have all of that together what
+
+185
+00:07:10,670 --> 00:07:11,840
+about something like this this is
+
+186
+00:07:11,840 --> 00:07:13,130
+something that I think a lot of people
+
+187
+00:07:13,130 --> 00:07:15,470
+were starting to play with will you know
+
+188
+00:07:15,470 --> 00:07:19,550
+if big things are no too bad how about I
+
+189
+00:07:19,550 --> 00:07:21,110
+do something like this so I want to do
+
+190
+00:07:21,110 --> 00:07:23,420
+clients maybe I want to use Jess domin
+
+191
+00:07:23,420 --> 00:07:25,130
+order to render all of my results people
+
+192
+00:07:25,130 --> 00:07:27,500
+people really like the idea of doing
+
+193
+00:07:27,500 --> 00:07:29,870
+stuff with jess Tom and that's cool I
+
+194
+00:07:29,870 --> 00:07:32,180
+think that's really interesting but it's
+
+195
+00:07:32,180 --> 00:07:34,010
+like well what if you know if if all of
+
+196
+00:07:34,010 --> 00:07:36,380
+the j estan stuff is really big I should
+
+197
+00:07:36,380 --> 00:07:38,030
+move that like a separate thing outside
+
+198
+00:07:38,030 --> 00:07:40,880
+of my main node process right and then
+
+199
+00:07:40,880 --> 00:07:41,990
+you end up with an architecture like
+
+200
+00:07:41,990 --> 00:07:45,410
+this well why would you do that one of
+
+201
+00:07:45,410 --> 00:07:46,700
+the things people want more paralyzation
+
+202
+00:07:46,700 --> 00:07:48,820
+like I'm spreading out my load I'm
+
+203
+00:07:48,820 --> 00:07:51,710
+creating more task synchronization but
+
+204
+00:07:51,710 --> 00:07:54,470
+if we look back at this diagram when
+
+205
+00:07:54,470 --> 00:07:56,000
+you're using something like Jess DOM and
+
+206
+00:07:56,000 --> 00:07:58,400
+you're just increasing the size of these
+
+207
+00:07:58,400 --> 00:08:00,380
+computational units you're just
+
+208
+00:08:00,380 --> 00:08:02,810
+increasing the size the critical path is
+
+209
+00:08:02,810 --> 00:08:05,240
+still the same the path between the user
+
+210
+00:08:05,240 --> 00:08:07,490
+asking for a request and getting on back
+
+211
+00:08:07,490 --> 00:08:09,590
+is the same you've just added more
+
+212
+00:08:09,590 --> 00:08:12,440
+computation so maybe the actual balance
+
+213
+00:08:12,440 --> 00:08:15,410
+on the critical path is different maybe
+
+214
+00:08:15,410 --> 00:08:18,650
+now computation is thirty percent of the
+
+215
+00:08:18,650 --> 00:08:21,020
+critical path instead of 10 because
+
+216
+00:08:21,020 --> 00:08:22,550
+you're doing more work on the server
+
+217
+00:08:22,550 --> 00:08:25,220
+because you're using more JavaScript I
+
+218
+00:08:25,220 --> 00:08:27,710
+think that's okay and this is the thing
+
+219
+00:08:27,710 --> 00:08:30,800
+is people people think that that doing
+
+220
+00:08:30,800 --> 00:08:33,080
+that helps them if you use non-blocking
+
+221
+00:08:33,080 --> 00:08:36,560
+i/o you're removing all of the resource
+
+222
+00:08:36,560 --> 00:08:39,080
+allocation during latency so all of
+
+223
+00:08:39,080 --> 00:08:40,640
+those latent periods you can forget
+
+224
+00:08:40,640 --> 00:08:42,110
+about and the computation is still the
+
+225
+00:08:42,110 --> 00:08:43,940
+same so pushing all of that
+
+226
+00:08:43,940 --> 00:08:45,950
+client-facing processing off the main
+
+227
+00:08:45,950 --> 00:08:47,300
+process so if we look at the
+
+228
+00:08:47,300 --> 00:08:49,580
+architecture again you know pushing that
+
+229
+00:08:49,580 --> 00:08:52,010
+back to another thing that's in the same
+
+230
+00:08:52,010 --> 00:08:54,350
+critical path isn't helping you in fact
+
+231
+00:08:54,350 --> 00:08:55,840
+it's actually just making it worse
+
+232
+00:08:55,840 --> 00:08:58,700
+you're pushing that processing so you
+
+233
+00:08:58,700 --> 00:09:00,620
+have to have another jump you have to
+
+234
+00:09:00,620 --> 00:09:03,380
+have more HTTP requests it turns out
+
+235
+00:09:03,380 --> 00:09:06,970
+that it's okay if you have a bunch of
+
+236
+00:09:06,970 --> 00:09:09,530
+like node front ends or running express
+
+237
+00:09:09,530 --> 00:09:10,430
+and
+
+238
+00:09:10,430 --> 00:09:12,470
+you know oh you know your individual
+
+239
+00:09:12,470 --> 00:09:15,230
+response time is now 15 milliseconds
+
+240
+00:09:15,230 --> 00:09:17,149
+instead of one millisecond well that's
+
+241
+00:09:17,149 --> 00:09:19,490
+okay because you're doing more work just
+
+242
+00:09:19,490 --> 00:09:20,720
+get more service you're going to need
+
+243
+00:09:20,720 --> 00:09:22,460
+more servers anyway so I think this is
+
+244
+00:09:22,460 --> 00:09:24,470
+something that people people you know
+
+245
+00:09:24,470 --> 00:09:26,810
+conceptually understand this idea if I
+
+246
+00:09:26,810 --> 00:09:28,820
+don't want to block the event loop but
+
+247
+00:09:28,820 --> 00:09:30,560
+if you're just doing more work then
+
+248
+00:09:30,560 --> 00:09:32,450
+that's okay so let's look at some other
+
+249
+00:09:32,450 --> 00:09:35,120
+stuff what other kind of architectures
+
+250
+00:09:35,120 --> 00:09:37,100
+might might we look at anything this is
+
+251
+00:09:37,100 --> 00:09:38,990
+where it starts to get more interesting
+
+252
+00:09:38,990 --> 00:09:41,300
+so we've got a client I've got a front
+
+253
+00:09:41,300 --> 00:09:42,410
+end farm which is talking to the
+
+254
+00:09:42,410 --> 00:09:45,050
+database maybe this is express now the
+
+255
+00:09:45,050 --> 00:09:47,300
+logging is this is something that isn't
+
+256
+00:09:47,300 --> 00:09:48,770
+on that critical path this isn't
+
+257
+00:09:48,770 --> 00:09:51,350
+involved in getting the response to the
+
+258
+00:09:51,350 --> 00:09:54,320
+user as fast as possible instead now
+
+259
+00:09:54,320 --> 00:09:56,149
+we've got something where it's you know
+
+260
+00:09:56,149 --> 00:09:57,620
+this is something that's out of band
+
+261
+00:09:57,620 --> 00:09:59,540
+this is something that and if you are
+
+262
+00:09:59,540 --> 00:10:03,110
+Matt is matt raney around somewhere hey
+
+263
+00:10:03,110 --> 00:10:05,750
+Matt there is he's really tall but he's
+
+264
+00:10:05,750 --> 00:10:07,399
+sitting down so now he's just putting
+
+265
+00:10:07,399 --> 00:10:09,020
+his hand up like an average height
+
+266
+00:10:09,020 --> 00:10:12,800
+person Matt Matt is doing a bunch of
+
+267
+00:10:12,800 --> 00:10:14,420
+stuff in this kind of model so i
+
+268
+00:10:14,420 --> 00:10:16,190
+recommend talking to matt if you if you
+
+269
+00:10:16,190 --> 00:10:17,779
+want to talk to somebody that's running
+
+270
+00:10:17,779 --> 00:10:20,990
+at scale a bunch of stuff where he's
+
+271
+00:10:20,990 --> 00:10:23,000
+pushing the work which isn't user-facing
+
+272
+00:10:23,000 --> 00:10:25,400
+out of band and this is this is where
+
+273
+00:10:25,400 --> 00:10:27,260
+it's useful if you have this process
+
+274
+00:10:27,260 --> 00:10:29,029
+that that you want to work as fast as
+
+275
+00:10:29,029 --> 00:10:31,160
+possible and you're sharing memory
+
+276
+00:10:31,160 --> 00:10:32,930
+things like logging just throw it at
+
+277
+00:10:32,930 --> 00:10:34,730
+Redis throw it at some node process
+
+278
+00:10:34,730 --> 00:10:36,380
+that's going to take it to read us a
+
+279
+00:10:36,380 --> 00:10:39,350
+real couch and get it out of the way the
+
+280
+00:10:39,350 --> 00:10:42,410
+user if you if you have and this is I
+
+281
+00:10:42,410 --> 00:10:43,550
+mean a really good example of this
+
+282
+00:10:43,550 --> 00:10:46,730
+actually is a standard error if you try
+
+283
+00:10:46,730 --> 00:10:49,010
+and write to process that standard error
+
+284
+00:10:49,010 --> 00:10:52,430
+on you'll note your main node process
+
+285
+00:10:52,430 --> 00:10:56,630
+that actually blocks it if the colonel
+
+286
+00:10:56,630 --> 00:10:58,730
+write buffer is full that will block
+
+287
+00:10:58,730 --> 00:11:00,829
+your whole main node process so the
+
+288
+00:11:00,829 --> 00:11:02,630
+better thing to do is if you want to log
+
+289
+00:11:02,630 --> 00:11:03,829
+to standard error which you don't really
+
+290
+00:11:03,829 --> 00:11:06,230
+need to but if you really did throw it
+
+291
+00:11:06,230 --> 00:11:08,060
+out to a separate note process that's
+
+292
+00:11:08,060 --> 00:11:10,910
+going to write to the that file
+
+293
+00:11:10,910 --> 00:11:12,620
+descriptor on your behalf you know you
+
+294
+00:11:12,620 --> 00:11:14,089
+can share the file descriptor you can
+
+295
+00:11:14,089 --> 00:11:15,800
+pass it over and it will write to it on
+
+296
+00:11:15,800 --> 00:11:17,510
+your behalf but you've got to get the
+
+297
+00:11:17,510 --> 00:11:19,850
+things that are blocking the ant to do
+
+298
+00:11:19,850 --> 00:11:21,829
+with actually serving the request to the
+
+299
+00:11:21,829 --> 00:11:24,080
+user out of the main band and
+
+300
+00:11:24,080 --> 00:11:25,550
+this is where it makes sense to start
+
+301
+00:11:25,550 --> 00:11:29,090
+splitting stuff up so move work which
+
+302
+00:11:29,090 --> 00:11:30,830
+isn't user-facing out of the event loop
+
+303
+00:11:30,830 --> 00:11:32,780
+don't worry about the stuff that is that
+
+304
+00:11:32,780 --> 00:11:34,400
+can stay there that's fine it's just
+
+305
+00:11:34,400 --> 00:11:37,070
+regular work and then of course you know
+
+306
+00:11:37,070 --> 00:11:39,170
+i mean i'm i've started displaying some
+
+307
+00:11:39,170 --> 00:11:41,480
+of these things now as stacks use pre
+
+308
+00:11:41,480 --> 00:11:44,390
+forking so just you know create things
+
+309
+00:11:44,390 --> 00:11:46,240
+into farms you want to use all of your
+
+310
+00:11:46,240 --> 00:11:48,920
+you know all of your cause on your
+
+311
+00:11:48,920 --> 00:11:51,050
+machine do people know about cluster
+
+312
+00:11:51,050 --> 00:11:52,750
+hands up people that use in cluster a
+
+313
+00:11:52,750 --> 00:11:55,730
+few people you can do you can do this by
+
+314
+00:11:55,730 --> 00:11:58,940
+hand I strongly recommend cluster I've
+
+315
+00:11:58,940 --> 00:12:01,130
+heard like TJ and Guillermo a good at
+
+316
+00:12:01,130 --> 00:12:05,170
+writing no taps apparently that's true
+
+317
+00:12:05,170 --> 00:12:09,290
+so this is this is a really this is how
+
+318
+00:12:09,290 --> 00:12:12,110
+you use cluster so I create a file
+
+319
+00:12:12,110 --> 00:12:15,230
+called children Jess I create a server
+
+320
+00:12:15,230 --> 00:12:16,550
+in this case obviously it's really
+
+321
+00:12:16,550 --> 00:12:17,930
+simple in your case is going to be a lot
+
+322
+00:12:17,930 --> 00:12:20,660
+more complicated create the server you
+
+323
+00:12:20,660 --> 00:12:23,060
+have a function which does stuff and all
+
+324
+00:12:23,060 --> 00:12:24,470
+I'm doing is instead of actually
+
+325
+00:12:24,470 --> 00:12:27,050
+listening myself I just export the
+
+326
+00:12:27,050 --> 00:12:30,760
+server it's a the people you spark to
+
+327
+00:12:30,760 --> 00:12:33,800
+anybody using spark no okay it's like
+
+328
+00:12:33,800 --> 00:12:36,380
+that if you've seen that and then to run
+
+329
+00:12:36,380 --> 00:12:38,300
+it instead of just running it as normal
+
+330
+00:12:38,300 --> 00:12:40,520
+I just have a rapper script so the
+
+331
+00:12:40,520 --> 00:12:43,250
+rapper script includes cluster cluster
+
+332
+00:12:43,250 --> 00:12:45,620
+children so I'm giving it the name of my
+
+333
+00:12:45,620 --> 00:12:47,810
+my JavaScript application and then I
+
+334
+00:12:47,810 --> 00:12:49,520
+tell it to listen on port 80 now what's
+
+335
+00:12:49,520 --> 00:12:51,200
+going to happen is in this scenario
+
+336
+00:12:51,200 --> 00:12:53,090
+instead of just starting a single node
+
+337
+00:12:53,090 --> 00:12:54,680
+process which is what typically happens
+
+338
+00:12:54,680 --> 00:12:57,050
+when you just type node my script it's
+
+339
+00:12:57,050 --> 00:12:59,600
+going to start 20 and what it's going to
+
+340
+00:12:59,600 --> 00:13:02,150
+do is it's going to create our a main
+
+341
+00:13:02,150 --> 00:13:03,890
+process which is going to create file
+
+342
+00:13:03,890 --> 00:13:05,270
+descriptors it's going to listen on port
+
+343
+00:13:05,270 --> 00:13:07,340
+80 and it's going to pass the file
+
+344
+00:13:07,340 --> 00:13:08,570
+descriptors it's going to pass the
+
+345
+00:13:08,570 --> 00:13:12,290
+socket that one socket on port 80 to all
+
+346
+00:13:12,290 --> 00:13:14,270
+of the other child processes but it's
+
+347
+00:13:14,270 --> 00:13:15,920
+gonna the way that no does that is going
+
+348
+00:13:15,920 --> 00:13:17,420
+to pass them at a kernel level so
+
+349
+00:13:17,420 --> 00:13:19,010
+basically we're going to tell the
+
+350
+00:13:19,010 --> 00:13:21,650
+colonel I have these 20 processes and I
+
+351
+00:13:21,650 --> 00:13:24,500
+want you to give anything that happens
+
+352
+00:13:24,500 --> 00:13:26,120
+on port 80 to one of them and one of
+
+353
+00:13:26,120 --> 00:13:28,370
+them is going to pick it up so now you
+
+354
+00:13:28,370 --> 00:13:29,900
+know if you have a server with you know
+
+355
+00:13:29,900 --> 00:13:32,360
+24 logical cores whatever so say it's
+
+356
+00:13:32,360 --> 00:13:34,910
+you know say it's just like a regular 8
+
+357
+00:13:34,910 --> 00:13:37,740
+CPU machine and each of them has you
+
+358
+00:13:37,740 --> 00:13:40,830
+44 cause you know you can you can use a
+
+359
+00:13:40,830 --> 00:13:43,380
+bunch of those cause in order to do your
+
+360
+00:13:43,380 --> 00:13:45,810
+node work that's that's great that you
+
+361
+00:13:45,810 --> 00:13:48,690
+now have a lot more capacity within your
+
+362
+00:13:48,690 --> 00:13:50,250
+node and this is by far the easiest way
+
+363
+00:13:50,250 --> 00:13:51,930
+to do it you can obviously I mean like
+
+364
+00:13:51,930 --> 00:13:53,430
+go and read the code it's you know I
+
+365
+00:13:53,430 --> 00:13:55,020
+think it's like a thousand lines or less
+
+366
+00:13:55,020 --> 00:13:57,000
+you know you can go and see what they're
+
+367
+00:13:57,000 --> 00:13:59,520
+doing but cluster has a bunch of really
+
+368
+00:13:59,520 --> 00:14:01,470
+nice tools for management and you know
+
+369
+00:14:01,470 --> 00:14:03,480
+keeping them the the notes heart and
+
+370
+00:14:03,480 --> 00:14:07,320
+restarting them and stuff and then if is
+
+371
+00:14:07,320 --> 00:14:09,150
+that's great but you can also use load
+
+372
+00:14:09,150 --> 00:14:11,370
+balancers to just distribute this is all
+
+373
+00:14:11,370 --> 00:14:14,220
+like regular stuff no proxy I don't know
+
+374
+00:14:14,220 --> 00:14:16,470
+if you saw Charlie's talk you know those
+
+375
+00:14:16,470 --> 00:14:18,540
+guys right node proxy squared varnish
+
+376
+00:14:18,540 --> 00:14:20,490
+hard proxy that you know there's a bunch
+
+377
+00:14:20,490 --> 00:14:22,260
+of stuff I'm not gonna really talk about
+
+378
+00:14:22,260 --> 00:14:24,060
+that and then the final thing I wanted
+
+379
+00:14:24,060 --> 00:14:25,800
+to talk about a little bit let me just
+
+380
+00:14:25,800 --> 00:14:28,530
+check my time all right so we've got
+
+381
+00:14:28,530 --> 00:14:32,100
+five minutes so shouting shouting is
+
+382
+00:14:32,100 --> 00:14:34,110
+kind of hard I mean you know there are
+
+383
+00:14:34,110 --> 00:14:35,850
+definitely strategies for charting I
+
+384
+00:14:35,850 --> 00:14:38,280
+think one of the earliest kind of good
+
+385
+00:14:38,280 --> 00:14:39,810
+references that I like on shouting is
+
+386
+00:14:39,810 --> 00:14:42,960
+cow henningsens book on flickr i think
+
+387
+00:14:42,960 --> 00:14:45,570
+it's like scaling or something like that
+
+388
+00:14:45,570 --> 00:14:47,550
+it's called so no variety book with a
+
+389
+00:14:47,550 --> 00:14:52,470
+fish on it and you know node node
+
+390
+00:14:52,470 --> 00:14:55,260
+process can handle lots of clients so
+
+391
+00:14:55,260 --> 00:14:56,490
+you can do really big shards this is
+
+392
+00:14:56,490 --> 00:14:57,360
+actually one of the things that's really
+
+393
+00:14:57,360 --> 00:14:59,670
+nice about node it's like typically when
+
+394
+00:14:59,670 --> 00:15:00,870
+you're doing shouting strategies it's
+
+395
+00:15:00,870 --> 00:15:02,460
+like well you know if each of my
+
+396
+00:15:02,460 --> 00:15:03,900
+machines only gets like a couple
+
+397
+00:15:03,900 --> 00:15:06,390
+thousand clients you know the logical
+
+398
+00:15:06,390 --> 00:15:08,010
+like separation so you've got like a
+
+399
+00:15:08,010 --> 00:15:09,420
+chat room if we were building a chat
+
+400
+00:15:09,420 --> 00:15:11,310
+room and you want to distribute across a
+
+401
+00:15:11,310 --> 00:15:13,320
+bunch of things you know and you have 30
+
+402
+00:15:13,320 --> 00:15:15,890
+people in chat room well you know it
+
+403
+00:15:15,890 --> 00:15:18,420
+gets difficult or like a hundreds of
+
+404
+00:15:18,420 --> 00:15:20,520
+people because node will happily handle
+
+405
+00:15:20,520 --> 00:15:22,410
+hundreds of people on a cat room you
+
+406
+00:15:22,410 --> 00:15:23,520
+know you could just have like one
+
+407
+00:15:23,520 --> 00:15:25,380
+process / chat room that's a really
+
+408
+00:15:25,380 --> 00:15:27,030
+common approach that people take there's
+
+409
+00:15:27,030 --> 00:15:28,680
+all kinds of things but because node
+
+410
+00:15:28,680 --> 00:15:30,720
+processes can handle lots of clients you
+
+411
+00:15:30,720 --> 00:15:32,130
+can do really big shards and that's kind
+
+412
+00:15:32,130 --> 00:15:33,810
+of nice and the other thing that's kind
+
+413
+00:15:33,810 --> 00:15:36,330
+of nice is that's a single process when
+
+414
+00:15:36,330 --> 00:15:38,460
+you start actually doing like multi-core
+
+415
+00:15:38,460 --> 00:15:41,010
+node on a single machine is you can use
+
+416
+00:15:41,010 --> 00:15:43,380
+unix sockets so you can you can use
+
+417
+00:15:43,380 --> 00:15:45,300
+those same file descriptors to start
+
+418
+00:15:45,300 --> 00:15:48,180
+passing a lot faster communication so
+
+419
+00:15:48,180 --> 00:15:49,680
+file descriptor sharing is actually
+
+420
+00:15:49,680 --> 00:15:51,390
+really nice because you can start to
+
+421
+00:15:51,390 --> 00:15:56,160
+have the same the same processes
+
+422
+00:15:56,160 --> 00:15:58,320
+listening to the same file descriptor so
+
+423
+00:15:58,320 --> 00:15:59,640
+you can basically create a bunch of file
+
+424
+00:15:59,640 --> 00:16:01,860
+descriptors pass them to a bunch of a
+
+425
+00:16:01,860 --> 00:16:03,870
+child processes on the same machine and
+
+426
+00:16:03,870 --> 00:16:06,870
+say you guys now have a really efficient
+
+427
+00:16:06,870 --> 00:16:09,000
+way to do multicast on a single machine
+
+428
+00:16:09,000 --> 00:16:11,520
+and the colonel is facilitating all that
+
+429
+00:16:11,520 --> 00:16:13,440
+so you're getting a really fast inter
+
+430
+00:16:13,440 --> 00:16:14,940
+process communication now I'm not saying
+
+431
+00:16:14,940 --> 00:16:16,800
+that that's easy i'm not saying that you
+
+432
+00:16:16,800 --> 00:16:17,580
+don't have to think about your
+
+433
+00:16:17,580 --> 00:16:19,230
+architecture but one of the things
+
+434
+00:16:19,230 --> 00:16:20,910
+that's great is because notice is
+
+435
+00:16:20,910 --> 00:16:23,190
+scaling so much on a single machine is
+
+436
+00:16:23,190 --> 00:16:26,880
+you can start to glue you know 8012
+
+437
+00:16:26,880 --> 00:16:29,460
+fairs and whatever it is 30,000 people
+
+438
+00:16:29,460 --> 00:16:31,440
+to a single machine and say you guys are
+
+439
+00:16:31,440 --> 00:16:34,470
+a shard and that you know depending i
+
+440
+00:16:34,470 --> 00:16:36,180
+mean you know i guess there's a few guys
+
+441
+00:16:36,180 --> 00:16:38,070
+probably from facebook or some like
+
+442
+00:16:38,070 --> 00:16:39,900
+other really big companies but for most
+
+443
+00:16:39,900 --> 00:16:42,720
+applications something even that simple
+
+444
+00:16:42,720 --> 00:16:45,450
+means that if you can just glue you know
+
+445
+00:16:45,450 --> 00:16:47,010
+however many people is to one machine
+
+446
+00:16:47,010 --> 00:16:49,140
+you've just achieved the amount of scale
+
+447
+00:16:49,140 --> 00:16:51,210
+that you wanted so let's look something
+
+448
+00:16:51,210 --> 00:16:53,550
+like this client load balancers glue
+
+449
+00:16:53,550 --> 00:16:56,820
+people to a machine and then the machine
+
+450
+00:16:56,820 --> 00:17:00,270
+then shards out are a bunch of processes
+
+451
+00:17:00,270 --> 00:17:02,520
+which can share some file descriptors or
+
+452
+00:17:02,520 --> 00:17:04,620
+unix sockets in order to do that really
+
+453
+00:17:04,620 --> 00:17:06,660
+you know that much faster than over the
+
+454
+00:17:06,660 --> 00:17:10,250
+network multicast so that's that's nice
+
+455
+00:17:10,250 --> 00:17:12,690
+so this is you know these I mean and if
+
+456
+00:17:12,690 --> 00:17:13,709
+you want to talk about like more
+
+457
+00:17:13,709 --> 00:17:15,750
+detailed things these get really
+
+458
+00:17:15,750 --> 00:17:17,370
+application specific but this is a
+
+459
+00:17:17,370 --> 00:17:19,380
+really nice way to kind of distribute
+
+460
+00:17:19,380 --> 00:17:22,500
+some of that load so you know UNIX file
+
+461
+00:17:22,500 --> 00:17:24,209
+descriptors have a much lower unbanded
+
+462
+00:17:24,209 --> 00:17:25,709
+latency than that work you know there's
+
+463
+00:17:25,709 --> 00:17:27,540
+still there's still a buffer there's
+
+464
+00:17:27,540 --> 00:17:29,520
+still the potential that you may not be
+
+465
+00:17:29,520 --> 00:17:30,870
+able to write to the file descriptor
+
+466
+00:17:30,870 --> 00:17:33,090
+when you want but it's a lot lower than
+
+467
+00:17:33,090 --> 00:17:36,150
+sending stuff over the network so
+
+468
+00:17:36,150 --> 00:17:38,700
+summary don't sweat client side facing
+
+469
+00:17:38,700 --> 00:17:41,640
+CPU time it's not a big deal move non
+
+470
+00:17:41,640 --> 00:17:44,370
+client-facing stuff away and then you
+
+471
+00:17:44,370 --> 00:17:46,140
+know use cluster if you if you're not if
+
+472
+00:17:46,140 --> 00:17:47,310
+you're using node right now in
+
+473
+00:17:47,310 --> 00:17:49,290
+production and you're not using cluster
+
+474
+00:17:49,290 --> 00:17:51,780
+I really strongly recommend taking a
+
+475
+00:17:51,780 --> 00:17:54,060
+look at that and it's just it's cluster
+
+476
+00:17:54,060 --> 00:17:57,180
+by learn boost really simple and that's
+
+477
+00:17:57,180 --> 00:17:59,730
+it so you can follow me on shimmer on
+
+478
+00:17:59,730 --> 00:18:01,950
+Twitter with one because I guess I'm
+
+479
+00:18:01,950 --> 00:18:03,300
+kind of old I've been on the internet
+
+480
+00:18:03,300 --> 00:18:04,580
+long time
+
+481
+00:18:04,580 --> 00:18:06,320
+but and any questions I think they have
+
+482
+00:18:06,320 --> 00:18:16,940
+a couple minutes yes possibly I mean I
+
+483
+00:18:16,940 --> 00:18:19,190
+think we're working at the roadmap we're
+
+484
+00:18:19,190 --> 00:18:20,450
+really interested in taking suggestions
+
+485
+00:18:20,450 --> 00:18:22,730
+on what you guys want for energy so
+
+486
+00:18:22,730 --> 00:18:25,039
+please you know let us know you know we
+
+487
+00:18:25,039 --> 00:18:26,299
+are working on some of that stuff but
+
+488
+00:18:26,299 --> 00:18:27,679
+right now we haven't published the
+
+489
+00:18:27,679 --> 00:18:43,220
+roadmap oh okay yeah yet so a bunch of
+
+490
+00:18:43,220 --> 00:18:45,320
+people I think use memcached you know I
+
+491
+00:18:45,320 --> 00:18:46,399
+mean is there's like a bunch of
+
+492
+00:18:46,399 --> 00:18:47,779
+strategies to kind of do that I mean you
+
+493
+00:18:47,779 --> 00:18:49,429
+think it depends what you want to
+
+494
+00:18:49,429 --> 00:18:50,630
+achieve and what architectures you want
+
+495
+00:18:50,630 --> 00:18:52,760
+to achieve I think things like memcache
+
+496
+00:18:52,760 --> 00:18:55,580
+they're kind of obvious i think the the
+
+497
+00:18:55,580 --> 00:18:57,980
+ability to use file descriptors in node
+
+498
+00:18:57,980 --> 00:19:00,049
+is maybe less obvious to people but i
+
+499
+00:19:00,049 --> 00:19:01,130
+agree i mean like using something like
+
+500
+00:19:01,130 --> 00:19:03,500
+memcached is a completely viable
+
+501
+00:19:03,500 --> 00:19:09,289
+strategy to ya how would you do like
+
+502
+00:19:09,289 --> 00:19:11,510
+sticky user sessions so you want one
+
+503
+00:19:11,510 --> 00:19:15,590
+user session to always be passed to the
+
+504
+00:19:15,590 --> 00:19:18,049
+same note in front Joe so the question
+
+505
+00:19:18,049 --> 00:19:19,399
+was like how do you do sticky user
+
+506
+00:19:19,399 --> 00:19:21,200
+sessions I think it depends what you're
+
+507
+00:19:21,200 --> 00:19:23,690
+building an app in so I mean I mean it
+
+508
+00:19:23,690 --> 00:19:25,370
+whether you do that has like the load
+
+509
+00:19:25,370 --> 00:19:28,309
+balancer or whether you do that you know
+
+510
+00:19:28,309 --> 00:19:30,470
+based on something with like Express and
+
+511
+00:19:30,470 --> 00:19:32,029
+actually like set sessions and then use
+
+512
+00:19:32,029 --> 00:19:34,399
+the the session handle and express in
+
+513
+00:19:34,399 --> 00:19:37,850
+order to like redirect let's assume the
+
+514
+00:19:37,850 --> 00:19:42,740
+Express so I would say you could either
+
+515
+00:19:42,740 --> 00:19:45,649
+use a lightweight express in front in
+
+516
+00:19:45,649 --> 00:19:47,659
+order to like redirect so just like an
+
+517
+00:19:47,659 --> 00:19:48,860
+express app that's just reading the
+
+518
+00:19:48,860 --> 00:19:50,899
+session handle and then passing it off
+
+519
+00:19:50,899 --> 00:19:52,789
+to the right place so using Express as a
+
+520
+00:19:52,789 --> 00:19:55,580
+proxy or you could you could just read
+
+521
+00:19:55,580 --> 00:19:59,840
+the cookie in a node proxy and then use
+
+522
+00:19:59,840 --> 00:20:06,500
+that Rick give any metrics are now
+
+523
+00:20:06,510 --> 00:20:10,750
+I don't you should ask Charlie you
+
+524
+00:20:10,750 --> 00:20:12,400
+should see you should ask the ninjutsu
+
+525
+00:20:12,400 --> 00:20:15,910
+goes I mean in terms of kind of I mean
+
+526
+00:20:15,910 --> 00:20:17,860
+in terms of like node proxy I don't know
+
+527
+00:20:17,860 --> 00:20:22,680
+in terms of a proxy written in node I
+
+528
+00:20:22,680 --> 00:20:24,730
+guess it depends on like the profile of
+
+529
+00:20:24,730 --> 00:20:28,810
+your traffic but we've we've done tests
+
+530
+00:20:28,810 --> 00:20:33,310
+were reasonable reasonable sized servers
+
+531
+00:20:33,310 --> 00:20:36,070
+are doing you know very high hundreds of
+
+532
+00:20:36,070 --> 00:20:38,050
+thousands of requests a second without
+
+533
+00:20:38,050 --> 00:20:43,740
+any trouble single not a single process
+
+534
+00:20:43,740 --> 00:20:48,180
+like Rocky is rocky by a few drunken
+
+535
+00:20:48,180 --> 00:20:51,730
+know by it's it's it's chartered it's
+
+536
+00:20:51,730 --> 00:20:54,610
+it's split across so it's it's sharing a
+
+537
+00:20:54,610 --> 00:20:59,690
+file descriptor in order to do learning
+
+538
+00:20:59,700 --> 00:21:04,120
+it's a solaris colonel cuz i work for
+
+539
+00:21:04,120 --> 00:21:08,110
+join um cool i do you have another talk
+
+540
+00:21:08,110 --> 00:21:09,940
+or is it I don't know at the end of it
+
+541
+00:21:09,940 --> 00:21:13,210
+anymore any more questions okay thank
+
+542
+00:21:13,210 --> 00:21:15,160
+you very much oh um and I couldn't find
+
+543
+00:21:15,160 --> 00:21:17,920
+a way to put in the side but I am I just
+
+544
+00:21:17,920 --> 00:21:19,240
+think it's really awesome I mean it's
+
+545
+00:21:19,240 --> 00:21:22,720
+just you know it's it's it's it's a
+
+546
+00:21:22,720 --> 00:21:24,040
+really bad movie that Sean Connery made
+
+547
+00:21:24,040 --> 00:21:26,950
+in like nineteen seventy-four called I
+
+548
+00:21:26,950 --> 00:21:30,820
+think it's ass off yes go and watch it
+
+549
+00:21:30,820 --> 00:21:35,650
+because it's terrible so that's it thank
+

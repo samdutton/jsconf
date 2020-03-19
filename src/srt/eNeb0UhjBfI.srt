@@ -1,0 +1,1917 @@
+1
+00:00:06,950 --> 00:00:11,880
+
+hello all right thanks everybody for
+
+2
+00:00:11,880 --> 00:00:14,269
+coming out the title of my talk is
+
+3
+00:00:14,269 --> 00:00:18,000
+atomic components managing dynamic react
+
+4
+00:00:18,000 --> 00:00:21,810
+components using atomic design so just
+
+5
+00:00:21,810 --> 00:00:23,550
+quick show of hands who here is hurt
+
+6
+00:00:23,550 --> 00:00:26,279
+atomic atomic design previously great
+
+7
+00:00:26,279 --> 00:00:30,750
+awesome um who's heard of react okay all
+
+8
+00:00:30,750 --> 00:00:33,329
+right you're sort of redox and data
+
+9
+00:00:33,329 --> 00:00:36,600
+management flux okay okay great all
+
+10
+00:00:36,600 --> 00:00:38,969
+right so um this is going to assume some
+
+11
+00:00:38,969 --> 00:00:42,629
+prior knowledge of how data is managed
+
+12
+00:00:42,629 --> 00:00:45,000
+outside of just specific react
+
+13
+00:00:45,000 --> 00:00:48,120
+parent-child type stuff um going to
+
+14
+00:00:48,120 --> 00:00:50,640
+assume a little bit of prepare knowledge
+
+15
+00:00:50,640 --> 00:00:54,510
+about redox or flux just data cross
+
+16
+00:00:54,510 --> 00:00:56,579
+component communication via some sort of
+
+17
+00:00:56,579 --> 00:00:59,129
+you know third party however atomic
+
+18
+00:00:59,129 --> 00:01:01,649
+design you know will be will be getting
+
+19
+00:01:01,649 --> 00:01:07,170
+into um so my name is Joey I'm a
+
+20
+00:01:07,170 --> 00:01:09,750
+front-end developer at balderdash we are
+
+21
+00:01:09,750 --> 00:01:12,090
+no Jas consultants and maintain errs of
+
+22
+00:01:12,090 --> 00:01:15,810
+sales um that's that's my website find
+
+23
+00:01:15,810 --> 00:01:18,810
+me on the interwebs at yeah Jody doe
+
+24
+00:01:18,810 --> 00:01:22,549
+it's just my name mixed up all right
+
+25
+00:01:22,549 --> 00:01:28,020
+atomic design so what is atomic design
+
+26
+00:01:28,020 --> 00:01:31,710
+it is a methodology for creating design
+
+27
+00:01:31,710 --> 00:01:34,770
+systems and the way this works is that
+
+28
+00:01:34,770 --> 00:01:38,720
+it's broken up into five discrete levels
+
+29
+00:01:38,720 --> 00:01:42,720
+you have atoms molecules organisms
+
+30
+00:01:42,720 --> 00:01:47,189
+templates and pages um this was designed
+
+31
+00:01:47,189 --> 00:01:50,220
+by Brad frost and dave olson they um
+
+32
+00:01:50,220 --> 00:01:52,829
+have a little library to help you
+
+33
+00:01:52,829 --> 00:01:56,930
+organize your project in atomic design
+
+34
+00:01:56,930 --> 00:02:00,180
+called pattern lab pattern labs at i/o
+
+35
+00:02:00,180 --> 00:02:04,619
+and atomic design it lends a context
+
+36
+00:02:04,619 --> 00:02:08,129
+interfaces it's very client-facing it
+
+37
+00:02:08,129 --> 00:02:12,880
+helps I take some sort of
+
+38
+00:02:12,880 --> 00:02:16,030
+static mock up on these components are
+
+39
+00:02:16,030 --> 00:02:19,480
+these are these small pieces and allows
+
+40
+00:02:19,480 --> 00:02:21,940
+you to put an additional layer on top of
+
+41
+00:02:21,940 --> 00:02:24,550
+it which might sound like bloat but um
+
+42
+00:02:24,550 --> 00:02:27,910
+it it provides a sort of focus that
+
+43
+00:02:27,910 --> 00:02:31,170
+allows you to with these descriptions
+
+44
+00:02:31,170 --> 00:02:34,810
+communicate more easily across across a
+
+45
+00:02:34,810 --> 00:02:37,930
+team or explain to your client exactly
+
+46
+00:02:37,930 --> 00:02:39,370
+how this is going to work in a greater
+
+47
+00:02:39,370 --> 00:02:43,920
+flow of things why do we need it so
+
+48
+00:02:43,920 --> 00:02:47,920
+anytime we come across some sort of some
+
+49
+00:02:47,920 --> 00:02:50,860
+abstraction or conceptual blue we we
+
+50
+00:02:50,860 --> 00:02:53,560
+have to ask ourselves is the return
+
+51
+00:02:53,560 --> 00:02:57,010
+worth the investment right so long in
+
+52
+00:02:57,010 --> 00:03:00,280
+our case I know as developers we like to
+
+53
+00:03:00,280 --> 00:03:02,530
+maybe sometimes over design our
+
+54
+00:03:02,530 --> 00:03:06,610
+structures and our systems um just
+
+55
+00:03:06,610 --> 00:03:08,560
+because we feel like that's thorough but
+
+56
+00:03:08,560 --> 00:03:10,540
+when we already have something that's
+
+57
+00:03:10,540 --> 00:03:13,810
+you know on a pretty flat simple level
+
+58
+00:03:13,810 --> 00:03:15,850
+adding this canned a lot of times
+
+59
+00:03:15,850 --> 00:03:18,520
+bringing a focus to it an organization
+
+60
+00:03:18,520 --> 00:03:22,240
+that doesn't quite um exist well it
+
+61
+00:03:22,240 --> 00:03:26,170
+doesn't exist without it right so um the
+
+62
+00:03:26,170 --> 00:03:28,770
+atomic design in this case helps chunk
+
+63
+00:03:28,770 --> 00:03:31,330
+with these five components helps create
+
+64
+00:03:31,330 --> 00:03:34,080
+this artificial hierarchy of the
+
+65
+00:03:34,080 --> 00:03:39,010
+components in a mental way so how does
+
+66
+00:03:39,010 --> 00:03:42,760
+it do this well it breaks it down into
+
+67
+00:03:42,760 --> 00:03:45,430
+five atomic levels so on the Left we
+
+68
+00:03:45,430 --> 00:03:51,010
+have a small atom arm which I'm get
+
+69
+00:03:51,010 --> 00:03:53,620
+composed into molecules which then into
+
+70
+00:03:53,620 --> 00:03:56,200
+organisms int and then into templates
+
+71
+00:03:56,200 --> 00:04:00,610
+and then into actual pages so with atoms
+
+72
+00:04:00,610 --> 00:04:02,200
+and molecules and organisms what is an
+
+73
+00:04:02,200 --> 00:04:04,980
+atom right well an atom in our domain is
+
+74
+00:04:04,980 --> 00:04:07,240
+something like an input element or
+
+75
+00:04:07,240 --> 00:04:10,230
+button element just small very low level
+
+76
+00:04:10,230 --> 00:04:14,950
+HTML elements molecules would be a group
+
+77
+00:04:14,950 --> 00:04:18,850
+of these together let's say a search bar
+
+78
+00:04:18,850 --> 00:04:21,549
+right we have an input field and we have
+
+79
+00:04:21,549 --> 00:04:23,470
+a button that works with that input
+
+80
+00:04:23,470 --> 00:04:26,270
+field those together form some sort of
+
+81
+00:04:26,270 --> 00:04:29,360
+you I togetherness a concept in the UI
+
+82
+00:04:29,360 --> 00:04:31,879
+that is on we wouldn't think of them
+
+83
+00:04:31,879 --> 00:04:33,620
+separately so we can think of those as
+
+84
+00:04:33,620 --> 00:04:37,039
+an organ as a molecule then we take it a
+
+85
+00:04:37,039 --> 00:04:39,470
+step further and we say well that on
+
+86
+00:04:39,470 --> 00:04:42,199
+that search that search bar has a
+
+87
+00:04:42,199 --> 00:04:44,509
+further contacts usually in UI patterns
+
+88
+00:04:44,509 --> 00:04:46,460
+some and some sort of maybe a header
+
+89
+00:04:46,460 --> 00:04:49,430
+element or something like that it can be
+
+90
+00:04:49,430 --> 00:04:53,999
+anywhere I can um you know be in a
+
+91
+00:04:54,009 --> 00:04:56,599
+anywhere on the page but it still is
+
+92
+00:04:56,599 --> 00:04:59,750
+usually grouped into something that has
+
+93
+00:04:59,750 --> 00:05:00,979
+a greater context and that's where our
+
+94
+00:05:00,979 --> 00:05:03,139
+organisms come in at least an atomic
+
+95
+00:05:03,139 --> 00:05:05,780
+design so these are repeatable elements
+
+96
+00:05:05,780 --> 00:05:08,630
+or groups of molecules that tell a story
+
+97
+00:05:08,630 --> 00:05:11,300
+in the UI and so here's an example of
+
+98
+00:05:11,300 --> 00:05:13,190
+them right so at the top we obviously
+
+99
+00:05:13,190 --> 00:05:16,490
+have an atom underneath that we have
+
+100
+00:05:16,490 --> 00:05:19,669
+molecules we just have some sort of some
+
+101
+00:05:19,669 --> 00:05:21,409
+sort of text along with an input and the
+
+102
+00:05:21,409 --> 00:05:23,210
+button together those three atoms form a
+
+103
+00:05:23,210 --> 00:05:25,280
+molecule might be over explaining this I
+
+104
+00:05:25,280 --> 00:05:27,039
+think is pretty pretty intuitive
+
+105
+00:05:27,039 --> 00:05:29,150
+underneath that we have an organism we
+
+106
+00:05:29,150 --> 00:05:31,280
+have a logo we have some some navigation
+
+107
+00:05:31,280 --> 00:05:33,469
+links and then we have the search bar
+
+108
+00:05:33,469 --> 00:05:35,569
+together and that's in traditional
+
+109
+00:05:35,569 --> 00:05:37,580
+atomic design what's what's considered
+
+110
+00:05:37,580 --> 00:05:42,110
+an organism so outside of that Brad
+
+111
+00:05:42,110 --> 00:05:43,940
+frost recommends that we break our
+
+112
+00:05:43,940 --> 00:05:46,130
+chemistry analogy and we just completely
+
+113
+00:05:46,130 --> 00:05:49,729
+pivot into templates um because it quote
+
+114
+00:05:49,729 --> 00:05:52,039
+makes more sense to our clients in a lot
+
+115
+00:05:52,039 --> 00:05:54,710
+of way um these are the templates are
+
+116
+00:05:54,710 --> 00:05:56,719
+just groups of organisms that are
+
+117
+00:05:56,719 --> 00:05:58,610
+dedicated to a page level abstraction
+
+118
+00:05:58,610 --> 00:06:01,550
+and can moved around wireframe style the
+
+119
+00:06:01,550 --> 00:06:05,029
+the pages would be the actual instances
+
+120
+00:06:05,029 --> 00:06:07,610
+of those templates that are designed to
+
+121
+00:06:07,610 --> 00:06:11,389
+be deliverables so yeah okay that's
+
+122
+00:06:11,389 --> 00:06:14,750
+fantastic um it's great for documents
+
+123
+00:06:14,750 --> 00:06:18,650
+great for print but you know we don't
+
+124
+00:06:18,650 --> 00:06:19,969
+deal with that stuff anymore we're in a
+
+125
+00:06:19,969 --> 00:06:23,150
+post document arrow um we as react are
+
+126
+00:06:23,150 --> 00:06:25,759
+building user interfaces not necessarily
+
+127
+00:06:25,759 --> 00:06:29,120
+pages and style sheets and you know we
+
+128
+00:06:29,120 --> 00:06:31,190
+have one HTML document we're serving not
+
+129
+00:06:31,190 --> 00:06:33,770
+pages that match up one to one with the
+
+130
+00:06:33,770 --> 00:06:36,860
+styles or just views tied to specific
+
+131
+00:06:36,860 --> 00:06:39,470
+models we have things that we have
+
+132
+00:06:39,470 --> 00:06:41,360
+small components and groups of them that
+
+133
+00:06:41,360 --> 00:06:44,660
+need to have their own information it's
+
+134
+00:06:44,660 --> 00:06:48,830
+a very very pre spy idea so react does
+
+135
+00:06:48,830 --> 00:06:50,300
+have these very specific concerns as I
+
+136
+00:06:50,300 --> 00:06:54,200
+mentioned we we have these living
+
+137
+00:06:54,200 --> 00:06:56,720
+breathing life cycle driven components
+
+138
+00:06:56,720 --> 00:06:59,480
+with these contextual stores that model
+
+139
+00:06:59,480 --> 00:07:01,370
+are you I state anymore it's not like
+
+140
+00:07:01,370 --> 00:07:03,230
+we're just pulling anything out of a
+
+141
+00:07:03,230 --> 00:07:06,950
+database anymore the organism relates
+
+142
+00:07:06,950 --> 00:07:10,460
+only to other organisms in the atomic
+
+143
+00:07:10,460 --> 00:07:12,860
+metaphor and that they coexist in visual
+
+144
+00:07:12,860 --> 00:07:16,160
+space right along when along one one
+
+145
+00:07:16,160 --> 00:07:18,470
+another on the template or page this
+
+146
+00:07:18,470 --> 00:07:19,730
+says nothing about how they're going to
+
+147
+00:07:19,730 --> 00:07:21,650
+talk to each other it simply means a
+
+148
+00:07:21,650 --> 00:07:24,020
+visual organization and grouping and we
+
+149
+00:07:24,020 --> 00:07:25,850
+have concerns about how we can actually
+
+150
+00:07:25,850 --> 00:07:27,650
+make these things talk to one another
+
+151
+00:07:27,650 --> 00:07:30,590
+when when it comes to implementation we
+
+152
+00:07:30,590 --> 00:07:33,650
+lack that atomic principle so can we
+
+153
+00:07:33,650 --> 00:07:39,020
+solve that doesn't AMA caprent.com we as
+
+154
+00:07:39,020 --> 00:07:41,990
+react developers use the same metaphors
+
+155
+00:07:41,990 --> 00:07:43,250
+because they seem very useful right I
+
+156
+00:07:43,250 --> 00:07:45,050
+mean we start with you I we start with a
+
+157
+00:07:45,050 --> 00:07:46,580
+mock-up and then we chop it up and break
+
+158
+00:07:46,580 --> 00:07:49,220
+it down and organize them try to find
+
+159
+00:07:49,220 --> 00:07:50,630
+something cool with our directory and
+
+160
+00:07:50,630 --> 00:07:52,400
+good way to good way to put them
+
+161
+00:07:52,400 --> 00:07:53,960
+together so we can get this like actual
+
+162
+00:07:53,960 --> 00:07:56,150
+tangible feel with it so this is great
+
+163
+00:07:56,150 --> 00:07:59,890
+for that how can we use it arm luckily
+
+164
+00:07:59,890 --> 00:08:03,290
+pattern on pattern lab is designed a
+
+165
+00:08:03,290 --> 00:08:05,650
+very and very you know Foss manner it's
+
+166
+00:08:05,650 --> 00:08:07,850
+very flexible with naming a structure
+
+167
+00:08:07,850 --> 00:08:09,740
+it's brand new right a lot of stuff
+
+168
+00:08:09,740 --> 00:08:11,419
+we're seeing in the space is new and
+
+169
+00:08:11,419 --> 00:08:14,090
+open to change there's no one right way
+
+170
+00:08:14,090 --> 00:08:16,040
+to do it and we think that's just fine
+
+171
+00:08:16,040 --> 00:08:18,229
+main things as you please and we'll
+
+172
+00:08:18,229 --> 00:08:20,560
+leave the hair splitting out of things
+
+173
+00:08:20,560 --> 00:08:22,610
+fantastic all right so let's let's
+
+174
+00:08:22,610 --> 00:08:24,169
+rethink this how are we going to do this
+
+175
+00:08:24,169 --> 00:08:28,160
+well so what I've done is on we're gonna
+
+176
+00:08:28,160 --> 00:08:31,010
+we're going to not break after organisms
+
+177
+00:08:31,010 --> 00:08:32,270
+we're not going to pivot the templates
+
+178
+00:08:32,270 --> 00:08:34,280
+in pages we're instead going to extend
+
+179
+00:08:34,280 --> 00:08:36,880
+keep keep with this economic this
+
+180
+00:08:36,880 --> 00:08:40,580
+ecological metaphor and add to new
+
+181
+00:08:40,580 --> 00:08:44,020
+levels the ecosystem and the environment
+
+182
+00:08:44,020 --> 00:08:46,130
+so we'll go from atoms to molecules
+
+183
+00:08:46,130 --> 00:08:48,320
+organisms ecosystems and then into a
+
+184
+00:08:48,320 --> 00:08:50,769
+sort of larger environment
+
+185
+00:08:50,769 --> 00:08:53,439
+and what these do so we're also going to
+
+186
+00:08:53,439 --> 00:08:56,319
+slightly modify the organism arm there's
+
+187
+00:08:56,319 --> 00:08:58,360
+a problem with the organism I feel where
+
+188
+00:08:58,360 --> 00:09:00,429
+the organism is a top level minute
+
+189
+00:09:00,429 --> 00:09:03,249
+pivots anatomic design they say okay
+
+190
+00:09:03,249 --> 00:09:06,100
+yeah an organism can be either you know
+
+191
+00:09:06,100 --> 00:09:08,199
+the header the footer these groups of
+
+192
+00:09:08,199 --> 00:09:09,939
+molecules I get that we group these
+
+193
+00:09:09,939 --> 00:09:11,889
+molecules or let's say we have a product
+
+194
+00:09:11,889 --> 00:09:13,179
+grid we are right we have these
+
+195
+00:09:13,179 --> 00:09:15,100
+repeating products something it's a
+
+196
+00:09:15,100 --> 00:09:16,929
+repeatable container that's also an
+
+197
+00:09:16,929 --> 00:09:19,689
+organism and it's like okay so we we
+
+198
+00:09:19,689 --> 00:09:23,019
+have something that I understand the
+
+199
+00:09:23,019 --> 00:09:24,999
+grouping inside the header but we're
+
+200
+00:09:24,999 --> 00:09:26,470
+also just going to leverage this
+
+201
+00:09:26,470 --> 00:09:28,749
+organism because we want to pivot to
+
+202
+00:09:28,749 --> 00:09:31,660
+templates to describe product grids also
+
+203
+00:09:31,660 --> 00:09:33,670
+which are fundamentally different as
+
+204
+00:09:33,670 --> 00:09:36,670
+repeatable containers are not a big fan
+
+205
+00:09:36,670 --> 00:09:40,299
+so I say let's let's keep the organism
+
+206
+00:09:40,299 --> 00:09:42,299
+is repeatable container that's fine um
+
+207
+00:09:42,299 --> 00:09:45,459
+but now that we have these these new
+
+208
+00:09:45,459 --> 00:09:48,100
+concepts to leverage the ecosystem and
+
+209
+00:09:48,100 --> 00:09:49,689
+environment let's figure out if we can
+
+210
+00:09:49,689 --> 00:09:52,629
+we can take the context of what would
+
+211
+00:09:52,629 --> 00:09:54,519
+encompass some sort of header or footer
+
+212
+00:09:54,519 --> 00:09:58,959
+and maybe you know abstract it out so
+
+213
+00:09:58,959 --> 00:10:00,699
+you see where we can go with that so
+
+214
+00:10:00,699 --> 00:10:02,949
+we're atomic design pivots towards
+
+215
+00:10:02,949 --> 00:10:04,779
+client understanding with pages and
+
+216
+00:10:04,779 --> 00:10:07,660
+templates we need a pivot towards
+
+217
+00:10:07,660 --> 00:10:09,369
+implementation while still retaining the
+
+218
+00:10:09,369 --> 00:10:13,629
+usefulness of the visual metaphors so
+
+219
+00:10:13,629 --> 00:10:17,740
+with the ecosystems we're going to see
+
+220
+00:10:17,740 --> 00:10:21,970
+an example so this is our fake social
+
+221
+00:10:21,970 --> 00:10:28,720
+app fantastic it's great um it's just a
+
+222
+00:10:28,720 --> 00:10:31,809
+mock-up that i put together we see we
+
+223
+00:10:31,809 --> 00:10:34,240
+have some sort of hey what's up you know
+
+224
+00:10:34,240 --> 00:10:35,649
+it's going to tell someone my status
+
+225
+00:10:35,649 --> 00:10:40,299
+some notifications or messages chat
+
+226
+00:10:40,299 --> 00:10:42,220
+people on the right or buddies you can
+
+227
+00:10:42,220 --> 00:10:44,110
+see who's online talk to them if we won
+
+228
+00:10:44,110 --> 00:10:46,839
+I have some other stuff in there some
+
+229
+00:10:46,839 --> 00:10:49,600
+post some comments on there a lot of
+
+230
+00:10:49,600 --> 00:10:51,249
+people like my stuff at school have a
+
+231
+00:10:51,249 --> 00:10:54,399
+lot of friends gotta get nice gallery in
+
+232
+00:10:54,399 --> 00:10:55,839
+there showing some awesome pictures from
+
+233
+00:10:55,839 --> 00:10:58,239
+Jas calm my profile image let everyone
+
+234
+00:10:58,239 --> 00:11:02,459
+know who I am and how I see myself
+
+235
+00:11:02,459 --> 00:11:04,300
+alright so what we're
+
+236
+00:11:04,300 --> 00:11:06,910
+to do instead is that this is the
+
+237
+00:11:06,910 --> 00:11:09,850
+environment we're encapsulating the
+
+238
+00:11:09,850 --> 00:11:12,220
+whole thing environments are going to be
+
+239
+00:11:12,220 --> 00:11:13,780
+a little bit flexible because in a lot
+
+240
+00:11:13,780 --> 00:11:15,160
+of times when we're not just building
+
+241
+00:11:15,160 --> 00:11:18,850
+this you know like great little isolated
+
+242
+00:11:18,850 --> 00:11:21,220
+you I that is super cool on dribble and
+
+243
+00:11:21,220 --> 00:11:22,810
+moves inside and things change inside
+
+244
+00:11:22,810 --> 00:11:24,370
+this little card container and stuff
+
+245
+00:11:24,370 --> 00:11:26,500
+like that we actually still are building
+
+246
+00:11:26,500 --> 00:11:29,500
+product that might need to move from
+
+247
+00:11:29,500 --> 00:11:32,800
+page to page we need full pages so this
+
+248
+00:11:32,800 --> 00:11:35,020
+environment is going to represent this
+
+249
+00:11:35,020 --> 00:11:38,620
+pay the still same page level or if you
+
+250
+00:11:38,620 --> 00:11:39,970
+don't need that if everything is just
+
+251
+00:11:39,970 --> 00:11:41,470
+moving pieces inside of the static you I
+
+252
+00:11:41,470 --> 00:11:44,770
+just one page level your environment is
+
+253
+00:11:44,770 --> 00:11:46,030
+the application itself be your app
+
+254
+00:11:46,030 --> 00:11:52,090
+component it's also important to have
+
+255
+00:11:52,090 --> 00:11:55,450
+the so it's good to have supper shell
+
+256
+00:11:55,450 --> 00:11:58,930
+not even for like flocks of redox or
+
+257
+00:11:58,930 --> 00:12:00,850
+anything because a lot of times if you
+
+258
+00:12:00,850 --> 00:12:02,860
+have siblings like us siblings like the
+
+259
+00:12:02,860 --> 00:12:06,040
+nav bar or the content container um you
+
+260
+00:12:06,040 --> 00:12:07,630
+still need a way to get that information
+
+261
+00:12:07,630 --> 00:12:09,490
+from an outboard to that so you just
+
+262
+00:12:09,490 --> 00:12:12,730
+pass it up and that's down and so you're
+
+263
+00:12:12,730 --> 00:12:14,020
+good there the environment still lends
+
+264
+00:12:14,020 --> 00:12:15,520
+itself to there so it is flexible in
+
+265
+00:12:15,520 --> 00:12:18,970
+that way but still very useful outside
+
+266
+00:12:18,970 --> 00:12:22,450
+of that I want you ought to take a
+
+267
+00:12:22,450 --> 00:12:24,820
+minute just to think so we know the arm
+
+268
+00:12:24,820 --> 00:12:28,090
+we have this environment we also have
+
+269
+00:12:28,090 --> 00:12:30,400
+these ecosystems that are going to
+
+270
+00:12:30,400 --> 00:12:32,620
+obviously be sub junks of this we're
+
+271
+00:12:32,620 --> 00:12:33,760
+going to break them up into contact with
+
+272
+00:12:33,760 --> 00:12:35,140
+rule components like I'd mentioned
+
+273
+00:12:35,140 --> 00:12:38,410
+before on the the nav bar or something
+
+274
+00:12:38,410 --> 00:12:40,180
+like a some sort of header or footer so
+
+275
+00:12:40,180 --> 00:12:42,250
+if you were to do this given this you
+
+276
+00:12:42,250 --> 00:12:44,700
+guys have just heard this just now um
+
+277
+00:12:44,700 --> 00:12:47,290
+take a moment to think about what you
+
+278
+00:12:47,290 --> 00:12:49,750
+would imagine would be the ecosystems of
+
+279
+00:12:49,750 --> 00:12:51,760
+of this right I'm going to show you in
+
+280
+00:12:51,760 --> 00:12:54,700
+just a second of how I interpreted this
+
+281
+00:12:54,700 --> 00:12:56,230
+because a lot of these are just design
+
+282
+00:12:56,230 --> 00:12:58,900
+decisions so this is how I think
+
+283
+00:12:58,900 --> 00:13:01,930
+ecosystem the ecosystems would be we
+
+284
+00:13:01,930 --> 00:13:03,580
+have one on the right for the chat we
+
+285
+00:13:03,580 --> 00:13:05,080
+have one for the main profile and then
+
+286
+00:13:05,080 --> 00:13:07,390
+we have one that would maybe be a header
+
+287
+00:13:07,390 --> 00:13:10,840
+or footer so they they should represent
+
+288
+00:13:10,840 --> 00:13:12,970
+the major core container components and
+
+289
+00:13:12,970 --> 00:13:14,260
+ideas the interface is trying to
+
+290
+00:13:14,260 --> 00:13:15,100
+communicate
+
+291
+00:13:15,100 --> 00:13:18,340
+um also provides a nice isolated context
+
+292
+00:13:18,340 --> 00:13:20,800
+for when you're trying to style the the
+
+293
+00:13:20,800 --> 00:13:22,660
+three major ecosystems here chat header
+
+294
+00:13:22,660 --> 00:13:25,870
+orientation and profile if you're using
+
+295
+00:13:25,870 --> 00:13:28,090
+Redux for your data management this is
+
+296
+00:13:28,090 --> 00:13:28,960
+where I have to assume the prior
+
+297
+00:13:28,960 --> 00:13:30,910
+knowledge there's a thing called smart
+
+298
+00:13:30,910 --> 00:13:33,310
+components which if you don't know redux
+
+299
+00:13:33,310 --> 00:13:36,340
+um the smart components are the
+
+300
+00:13:36,340 --> 00:13:39,480
+container components that are going to
+
+301
+00:13:39,480 --> 00:13:42,070
+not only hold dumb components to which
+
+302
+00:13:42,070 --> 00:13:44,590
+you pass pass your state and prompts but
+
+303
+00:13:44,590 --> 00:13:46,960
+also communicate with your reducers and
+
+304
+00:13:46,960 --> 00:13:49,210
+get the information you need to pass it
+
+305
+00:13:49,210 --> 00:13:51,160
+down they're kind of like the managers
+
+306
+00:13:51,160 --> 00:13:53,350
+in the application and this also lends
+
+307
+00:13:53,350 --> 00:13:55,030
+itself really well to these this
+
+308
+00:13:55,030 --> 00:13:58,060
+ecosystem metaphor this is where um that
+
+309
+00:13:58,060 --> 00:14:00,790
+manipulation is going to happen helps um
+
+310
+00:14:00,790 --> 00:14:03,100
+not so we can still leverage these
+
+311
+00:14:03,100 --> 00:14:04,240
+things right because you know a ver mob
+
+312
+00:14:04,240 --> 00:14:05,680
+came up with this smart and dumb the
+
+313
+00:14:05,680 --> 00:14:07,270
+dumb czar your will be your organisms
+
+314
+00:14:07,270 --> 00:14:09,520
+and your molecules and atoms and you
+
+315
+00:14:09,520 --> 00:14:12,880
+just pass them down through it and it's
+
+316
+00:14:12,880 --> 00:14:14,980
+nice that this level of abstraction you
+
+317
+00:14:14,980 --> 00:14:16,870
+know there's this conceptual bloat still
+
+318
+00:14:16,870 --> 00:14:18,730
+is able to map pretty well two things
+
+319
+00:14:18,730 --> 00:14:20,260
+that are already out there so we don't
+
+320
+00:14:20,260 --> 00:14:22,150
+need to add another thing it just it
+
+321
+00:14:22,150 --> 00:14:23,320
+just kind of plugs right in because
+
+322
+00:14:23,320 --> 00:14:25,000
+we're all thinking along the same path
+
+323
+00:14:25,000 --> 00:14:27,130
+sort of thing with on breaking these you
+
+324
+00:14:27,130 --> 00:14:32,650
+eyes up into up into new ways so yeah
+
+325
+00:14:32,650 --> 00:14:33,940
+they're both are responsible for both
+
+326
+00:14:33,940 --> 00:14:36,160
+handling the data and delegating the NIP
+
+327
+00:14:36,160 --> 00:14:41,710
+you laid state so notice that we still
+
+328
+00:14:41,710 --> 00:14:43,930
+have one ecosystem that is significantly
+
+329
+00:14:43,930 --> 00:14:47,380
+complex versus the other two um the main
+
+330
+00:14:47,380 --> 00:14:51,040
+profile ecosystem that could probably be
+
+331
+00:14:51,040 --> 00:14:53,110
+broken down even further because I don't
+
+332
+00:14:53,110 --> 00:14:54,940
+think we're ready to go to the organism
+
+333
+00:14:54,940 --> 00:15:00,790
+level yet um so ecosystems as a nature
+
+334
+00:15:00,790 --> 00:15:03,880
+can be nested so we we break it up with
+
+335
+00:15:03,880 --> 00:15:06,940
+visually and it allows us to have some
+
+336
+00:15:06,940 --> 00:15:09,160
+sort of isolation for when we want to
+
+337
+00:15:09,160 --> 00:15:12,100
+pass things around and that way we could
+
+338
+00:15:12,100 --> 00:15:13,780
+be like hey you know go go wrong with
+
+339
+00:15:13,780 --> 00:15:15,700
+this this profile part of the ecosystem
+
+340
+00:15:15,700 --> 00:15:17,260
+and you go run with this and then we'll
+
+341
+00:15:17,260 --> 00:15:19,470
+just worry about connecting later maybe
+
+342
+00:15:19,470 --> 00:15:21,790
+maybe even make it a dumb AP system they
+
+343
+00:15:21,790 --> 00:15:23,950
+don't have to be smart right consider
+
+344
+00:15:23,950 --> 00:15:25,390
+that one a dumb component then have the
+
+345
+00:15:25,390 --> 00:15:27,280
+parent ecosystem the larger one the
+
+346
+00:15:27,280 --> 00:15:28,840
+profile section
+
+347
+00:15:28,840 --> 00:15:30,040
+the one that's going to handle all that
+
+348
+00:15:30,040 --> 00:15:31,750
+so you know you work on that you work on
+
+349
+00:15:31,750 --> 00:15:33,810
+that and what we'll figure it out later
+
+350
+00:15:33,810 --> 00:15:35,800
+so after that we're going to break it
+
+351
+00:15:35,800 --> 00:15:38,350
+down into organisms right repeatable
+
+352
+00:15:38,350 --> 00:15:43,630
+containers chat instances each of which
+
+353
+00:15:43,630 --> 00:15:45,430
+have a molecule that is you know your
+
+354
+00:15:45,430 --> 00:15:48,160
+name your profile picture um the
+
+355
+00:15:48,160 --> 00:15:50,530
+repeatable posts inside of which could
+
+356
+00:15:50,530 --> 00:15:51,880
+be a number of different things right i
+
+357
+00:15:51,880 --> 00:15:53,350
+mean they're just like cards they have
+
+358
+00:15:53,350 --> 00:15:55,300
+this one has a text this one is
+
+359
+00:15:55,300 --> 00:15:57,420
+information about who's following me um
+
+360
+00:15:57,420 --> 00:16:00,670
+two down there's one there's about the
+
+361
+00:16:00,670 --> 00:16:03,670
+some sub information about what I added
+
+362
+00:16:03,670 --> 00:16:07,210
+with my new gallery you know just
+
+363
+00:16:07,210 --> 00:16:08,920
+repeatable elements I think that's
+
+364
+00:16:08,920 --> 00:16:12,820
+pretty straightforward so how do we
+
+365
+00:16:12,820 --> 00:16:14,770
+organize these right um this is great
+
+366
+00:16:14,770 --> 00:16:18,010
+it's it's very useful to UM to start
+
+367
+00:16:18,010 --> 00:16:19,830
+thinking of these components in this
+
+368
+00:16:19,830 --> 00:16:23,710
+this just slightly abstracted way to
+
+369
+00:16:23,710 --> 00:16:26,740
+kind of lend to you know give them some
+
+370
+00:16:26,740 --> 00:16:29,770
+sort of orthogonal contacts if you will
+
+371
+00:16:29,770 --> 00:16:32,680
+arm but can we also use this to help us
+
+372
+00:16:32,680 --> 00:16:34,150
+actually literally organize their
+
+373
+00:16:34,150 --> 00:16:36,460
+components in our project and the answer
+
+374
+00:16:36,460 --> 00:16:39,610
+is yeah so just a just a brief tour of
+
+375
+00:16:39,610 --> 00:16:41,650
+how things used to be organized right
+
+376
+00:16:41,650 --> 00:16:43,480
+and react in the beginning everybody
+
+377
+00:16:43,480 --> 00:16:47,980
+just we had a components folder and we
+
+378
+00:16:47,980 --> 00:16:52,660
+put them all in it was cool it was it
+
+379
+00:16:52,660 --> 00:16:54,280
+was very poor because we were like oh
+
+380
+00:16:54,280 --> 00:16:58,390
+these components are cool this new idea
+
+381
+00:16:58,390 --> 00:17:01,090
+you know we weren't really organizing
+
+382
+00:17:01,090 --> 00:17:02,740
+our directives like that until and then
+
+383
+00:17:02,740 --> 00:17:04,180
+John Papa came along and was like hey
+
+384
+00:17:04,180 --> 00:17:06,459
+let's let's add add an additional layer
+
+385
+00:17:06,459 --> 00:17:07,630
+of context let's say hey you know what
+
+386
+00:17:07,630 --> 00:17:08,980
+if all these directives are going to be
+
+387
+00:17:08,980 --> 00:17:11,170
+inside of a footer or header let's um
+
+388
+00:17:11,170 --> 00:17:13,959
+let's make a footer component let's make
+
+389
+00:17:13,959 --> 00:17:16,209
+a footer folder or something and put all
+
+390
+00:17:16,209 --> 00:17:17,260
+the directives that are associated with
+
+391
+00:17:17,260 --> 00:17:18,520
+that in there same thing we so we
+
+392
+00:17:18,520 --> 00:17:20,140
+started doing that with our react
+
+393
+00:17:20,140 --> 00:17:24,190
+components we said okay you know what so
+
+394
+00:17:24,190 --> 00:17:26,290
+I've got a header part I'm some header
+
+395
+00:17:26,290 --> 00:17:28,900
+components is getting kind of big got a
+
+396
+00:17:28,900 --> 00:17:31,720
+profile I'm going to put on my profile
+
+397
+00:17:31,720 --> 00:17:33,580
+components in there and a footer and put
+
+398
+00:17:33,580 --> 00:17:34,870
+on my components and that's fine that's
+
+399
+00:17:34,870 --> 00:17:37,570
+kind of how we do it today the most
+
+400
+00:17:37,570 --> 00:17:38,830
+common way to organize our your
+
+401
+00:17:38,830 --> 00:17:40,140
+components
+
+402
+00:17:40,140 --> 00:17:45,270
+but you know this arm you still have to
+
+403
+00:17:45,270 --> 00:17:48,000
+refer to is it still requires some sort
+
+404
+00:17:48,000 --> 00:17:54,330
+of over design I guess in a lot of ways
+
+405
+00:17:54,330 --> 00:17:56,220
+I mean you'd have to a lot of thinking
+
+406
+00:17:56,220 --> 00:17:58,080
+about naming and name spacing and where
+
+407
+00:17:58,080 --> 00:17:59,520
+you going to put things and we're going
+
+408
+00:17:59,520 --> 00:18:02,490
+to call things and might not be too bad
+
+409
+00:18:02,490 --> 00:18:05,100
+of an issue but um when you when you can
+
+410
+00:18:05,100 --> 00:18:07,410
+instead go back to what we had which is
+
+411
+00:18:07,410 --> 00:18:09,000
+this an idea of okay look these are all
+
+412
+00:18:09,000 --> 00:18:10,260
+components yeah they fall into these
+
+413
+00:18:10,260 --> 00:18:13,470
+trick these these are these ideas but
+
+414
+00:18:13,470 --> 00:18:15,870
+these ideas don't relate to with a
+
+415
+00:18:15,870 --> 00:18:17,790
+specific type of implementation for
+
+416
+00:18:17,790 --> 00:18:19,260
+application that we're going to use they
+
+417
+00:18:19,260 --> 00:18:21,180
+might you know we might want to reuse
+
+418
+00:18:21,180 --> 00:18:25,040
+them in other things and they're now
+
+419
+00:18:25,040 --> 00:18:31,280
+scope to this you know profile idea
+
+420
+00:18:31,280 --> 00:18:34,500
+let's instead you know let's go with
+
+421
+00:18:34,500 --> 00:18:36,840
+something flat let's this is going to be
+
+422
+00:18:36,840 --> 00:18:38,250
+a molecule no matter where it is it's
+
+423
+00:18:38,250 --> 00:18:40,050
+pretty clear this is going to be an atom
+
+424
+00:18:40,050 --> 00:18:42,570
+it's pretty clear so we can take what we
+
+425
+00:18:42,570 --> 00:18:43,950
+had just that components folder and then
+
+426
+00:18:43,950 --> 00:18:46,920
+make our five atomic folders and just
+
+427
+00:18:46,920 --> 00:18:49,320
+start you know throwing our components
+
+428
+00:18:49,320 --> 00:18:51,240
+in there as they as they receive the as
+
+429
+00:18:51,240 --> 00:18:53,220
+they as they match up with these atomic
+
+430
+00:18:53,220 --> 00:18:56,370
+principles so what's what's nice about
+
+431
+00:18:56,370 --> 00:19:01,230
+that is that it hopes when you're trying
+
+432
+00:19:01,230 --> 00:19:02,850
+to refactor you want to change things a
+
+433
+00:19:02,850 --> 00:19:07,770
+lot of times if you want to consider an
+
+434
+00:19:07,770 --> 00:19:10,170
+organism something on an organism level
+
+435
+00:19:10,170 --> 00:19:11,760
+smart and that makes you want to change
+
+436
+00:19:11,760 --> 00:19:14,070
+it to an ecosystem instead of going up
+
+437
+00:19:14,070 --> 00:19:15,690
+and then finding exactly where that was
+
+438
+00:19:15,690 --> 00:19:17,580
+in the project previously and finding
+
+439
+00:19:17,580 --> 00:19:19,590
+the name and finding the path for it you
+
+440
+00:19:19,590 --> 00:19:20,730
+just go up one level because
+
+441
+00:19:20,730 --> 00:19:22,440
+everything's flat and you change the
+
+442
+00:19:22,440 --> 00:19:24,210
+name and you just say alright this
+
+443
+00:19:24,210 --> 00:19:26,730
+molecule there and or ok that's the
+
+444
+00:19:26,730 --> 00:19:30,600
+ecosystem now so that's that's a brief
+
+445
+00:19:30,600 --> 00:19:34,740
+idea of what atomic components um can
+
+446
+00:19:34,740 --> 00:19:38,850
+can help you with we've used didn't few
+
+447
+00:19:38,850 --> 00:19:41,130
+of our projects to really great success
+
+448
+00:19:41,130 --> 00:19:44,970
+um communicating with design especially
+
+449
+00:19:44,970 --> 00:19:48,000
+designed knows these things you'd be
+
+450
+00:19:48,000 --> 00:19:50,160
+surprised how quickly even non technical
+
+451
+00:19:50,160 --> 00:19:52,060
+managers can pick up on this type of
+
+452
+00:19:52,060 --> 00:19:56,920
+they will they kind of go off on the
+
+453
+00:19:56,920 --> 00:19:58,660
+road and you you know II first start
+
+454
+00:19:58,660 --> 00:19:59,620
+doing this feel like you might have to
+
+455
+00:19:59,620 --> 00:20:01,570
+handhold or something a little but then
+
+456
+00:20:01,570 --> 00:20:05,440
+the you'd be surprised it's actually
+
+457
+00:20:05,440 --> 00:20:06,700
+really intuitive I'm hoping that you
+
+458
+00:20:06,700 --> 00:20:07,800
+know when I when we did a little
+
+459
+00:20:07,800 --> 00:20:10,150
+experiment with you know okay you create
+
+460
+00:20:10,150 --> 00:20:11,770
+your own ecosystem sort of thing we all
+
+461
+00:20:11,770 --> 00:20:14,080
+probably kind of broke it up into at
+
+462
+00:20:14,080 --> 00:20:16,630
+least those few sections right might not
+
+463
+00:20:16,630 --> 00:20:18,040
+have been exactly that might have been
+
+464
+00:20:18,040 --> 00:20:20,170
+more might have been a little less but I
+
+465
+00:20:20,170 --> 00:20:22,030
+think we all understand is you know
+
+466
+00:20:22,030 --> 00:20:24,280
+front-end developers exactly how these
+
+467
+00:20:24,280 --> 00:20:30,970
+you eyes lend themselves so to get
+
+468
+00:20:30,970 --> 00:20:32,980
+started um I put a little boilerplate
+
+469
+00:20:32,980 --> 00:20:36,190
+atomic components app up on github this
+
+470
+00:20:36,190 --> 00:20:39,850
+is the app right here these little peace
+
+471
+00:20:39,850 --> 00:20:44,560
+signs it's an environment holding two
+
+472
+00:20:44,560 --> 00:20:46,960
+ecosystems inside of which are for
+
+473
+00:20:46,960 --> 00:20:49,150
+organisms inside of which are molecules
+
+474
+00:20:49,150 --> 00:20:54,100
+with two atoms so it uses you know
+
+475
+00:20:54,100 --> 00:20:57,370
+webpack and SES s modules and you know
+
+476
+00:20:57,370 --> 00:20:59,230
+redox and all the cool fun stuff so you
+
+477
+00:20:59,230 --> 00:21:00,910
+can just clone it and get started and
+
+478
+00:21:00,910 --> 00:21:05,560
+play around with it and hopefully find
+
+479
+00:21:05,560 --> 00:21:07,770
+as much use in it as we have I
+

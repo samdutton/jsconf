@@ -1,0 +1,1989 @@
+1
+00:00:37,879 --> 00:00:40,739
+
+so my name is Hakeem shoot it's my
+
+2
+00:00:40,739 --> 00:00:42,420
+privilege today to bring you out of the
+
+3
+00:00:42,420 --> 00:00:45,179
+lunch coma back onto track B I'll be
+
+4
+00:00:45,179 --> 00:00:47,309
+talking about technology called HJs
+
+5
+00:00:47,309 --> 00:00:49,589
+which allows you to run node.js and that
+
+6
+00:00:49,589 --> 00:00:53,359
+net framework called code in one process
+
+7
+00:00:53,359 --> 00:00:56,129
+so when you write an application today
+
+8
+00:00:56,129 --> 00:00:58,710
+you have a choice of many languages each
+
+9
+00:00:58,710 --> 00:01:00,179
+of them has its own strengths and
+
+10
+00:01:00,179 --> 00:01:03,420
+weaknesses if you choose not yes as your
+
+11
+00:01:03,420 --> 00:01:05,220
+back-end solution that these are some of
+
+12
+00:01:05,220 --> 00:01:07,200
+the challenges you have to deal with so
+
+13
+00:01:07,200 --> 00:01:09,060
+first of all no js' is not really cut
+
+14
+00:01:09,060 --> 00:01:11,159
+for doing CPU bound work and by CPU
+
+15
+00:01:11,159 --> 00:01:12,780
+bound I don't necessarily mean weather
+
+16
+00:01:12,780 --> 00:01:14,939
+prediction but even something as simple
+
+17
+00:01:14,939 --> 00:01:16,619
+as you know calculating a fibonacci
+
+18
+00:01:16,619 --> 00:01:19,259
+sequence if you do in a CPU bound work
+
+19
+00:01:19,259 --> 00:01:21,299
+in node.js you will effectively block
+
+20
+00:01:21,299 --> 00:01:23,340
+the node.js event loop and prevent your
+
+21
+00:01:23,340 --> 00:01:26,369
+web from serving subsequent HTTP
+
+22
+00:01:26,369 --> 00:01:32,340
+requests it is it is very infrequent
+
+23
+00:01:32,340 --> 00:01:34,859
+then you're developing an application a
+
+24
+00:01:34,859 --> 00:01:36,390
+new application in a complete vacuum
+
+25
+00:01:36,390 --> 00:01:38,399
+typically you'd have some ecosystem of
+
+26
+00:01:38,399 --> 00:01:40,439
+other subsystems or components that you
+
+27
+00:01:40,439 --> 00:01:42,060
+would want to either reuse or integrate
+
+28
+00:01:42,060 --> 00:01:44,250
+with and chances are these components
+
+29
+00:01:44,250 --> 00:01:46,890
+are not implemented in ondrea's but with
+
+30
+00:01:46,890 --> 00:01:50,520
+some other technology like JVM based or
+
+31
+00:01:50,520 --> 00:01:54,570
+or CLR based and lastly you know
+
+32
+00:01:54,570 --> 00:01:56,899
+javascript is not really cut for many
+
+33
+00:01:56,899 --> 00:01:59,700
+tasks out there and and far superior
+
+34
+00:01:59,700 --> 00:02:02,070
+implementations exist implemented in
+
+35
+00:02:02,070 --> 00:02:04,320
+other technologies and to write a really
+
+36
+00:02:04,320 --> 00:02:06,060
+good application you really have to have
+
+37
+00:02:06,060 --> 00:02:08,340
+a hybrid technology stack and be able to
+
+38
+00:02:08,340 --> 00:02:11,190
+reuse the components that do something
+
+39
+00:02:11,190 --> 00:02:13,949
+better
+
+40
+00:02:13,959 --> 00:02:15,910
+so a common solution to all these
+
+41
+00:02:15,910 --> 00:02:17,770
+problems in in no js' when you're
+
+42
+00:02:17,770 --> 00:02:19,090
+writing that hybrid application
+
+43
+00:02:19,090 --> 00:02:21,810
+consisting of many technologies is to
+
+44
+00:02:21,810 --> 00:02:24,580
+move the computation that is using other
+
+45
+00:02:24,580 --> 00:02:26,470
+technology to a different process so
+
+46
+00:02:26,470 --> 00:02:27,940
+you're introducing a process boundary
+
+47
+00:02:27,940 --> 00:02:30,130
+within your application establish some
+
+48
+00:02:30,130 --> 00:02:31,959
+form of inter process communication to
+
+49
+00:02:31,959 --> 00:02:33,550
+exchange data between the node Reyes
+
+50
+00:02:33,550 --> 00:02:35,800
+component and let's say Java or.net
+
+51
+00:02:35,800 --> 00:02:41,349
+component and this this approach
+
+52
+00:02:41,349 --> 00:02:43,840
+generally has two big disadvantages one
+
+53
+00:02:43,840 --> 00:02:46,269
+is the added complexity now you have two
+
+54
+00:02:46,269 --> 00:02:47,709
+processes instead of one you have to
+
+55
+00:02:47,709 --> 00:02:50,459
+deal with process lifetime management
+
+56
+00:02:50,459 --> 00:02:53,709
+many more kind of failure ingles of the
+
+57
+00:02:53,709 --> 00:02:55,750
+entire system and also you have added
+
+58
+00:02:55,750 --> 00:02:58,510
+latency arguably any inter-process
+
+59
+00:02:58,510 --> 00:03:00,849
+communication mechanism is going to have
+
+60
+00:03:00,849 --> 00:03:04,120
+higher latency than any in process call
+
+61
+00:03:04,120 --> 00:03:06,940
+within the same address address space so
+
+62
+00:03:06,940 --> 00:03:08,620
+there has to be a better way of solving
+
+63
+00:03:08,620 --> 00:03:11,080
+that hybrid application problem and in
+
+64
+00:03:11,080 --> 00:03:12,819
+case of CLR I believe the solution could
+
+65
+00:03:12,819 --> 00:03:15,040
+look like this
+
+66
+00:03:15,040 --> 00:03:19,930
+so MJS is a node.js module when you pull
+
+67
+00:03:19,930 --> 00:03:22,060
+that module into node.js application
+
+68
+00:03:22,060 --> 00:03:23,950
+what happens is that from the node.js
+
+69
+00:03:23,950 --> 00:03:26,470
+perspective it appears to be a native
+
+70
+00:03:26,470 --> 00:03:28,810
+module however the first thing it does
+
+71
+00:03:28,810 --> 00:03:31,180
+is actually spins up a CLR virtual
+
+72
+00:03:31,180 --> 00:03:33,940
+machine within the note process itself
+
+73
+00:03:33,940 --> 00:03:35,680
+so at that point you are running v8
+
+74
+00:03:35,680 --> 00:03:38,709
+which underpins nodejs and CLR which
+
+75
+00:03:38,709 --> 00:03:40,720
+allows you to run any of the CLR
+
+76
+00:03:40,720 --> 00:03:42,519
+languages within the same processes here
+
+77
+00:03:42,519 --> 00:03:45,280
+node.js code executes in addition to
+
+78
+00:03:45,280 --> 00:03:46,810
+that the add module provide a single
+
+79
+00:03:46,810 --> 00:03:50,730
+function called func the function takes
+
+80
+00:03:50,730 --> 00:03:53,530
+CLR code in a variety of representations
+
+81
+00:03:53,530 --> 00:03:54,730
+so we'll be talking about soon and
+
+82
+00:03:54,730 --> 00:03:57,670
+creates a JavaScript wrapper around that
+
+83
+00:03:57,670 --> 00:04:00,489
+call so in here we are basically we have
+
+84
+00:04:00,489 --> 00:04:03,040
+a async lambda expression in c-sharp
+
+85
+00:04:03,040 --> 00:04:05,350
+which accepts an input parameter and
+
+86
+00:04:05,350 --> 00:04:06,940
+returns a string there is a
+
+87
+00:04:06,940 --> 00:04:09,100
+concatenation of dotnet welcomes and
+
+88
+00:04:09,100 --> 00:04:10,690
+that input parameter C realized the
+
+89
+00:04:10,690 --> 00:04:12,280
+string
+
+90
+00:04:12,280 --> 00:04:15,790
+H fact creates a JavaScript proxy around
+
+91
+00:04:15,790 --> 00:04:18,729
+the c-sharp code and that proxy is
+
+92
+00:04:18,729 --> 00:04:20,799
+called hello the proxy is actually a
+
+93
+00:04:20,799 --> 00:04:22,750
+script function so next we are calling
+
+94
+00:04:22,750 --> 00:04:24,640
+it passing node.js is that single
+
+95
+00:04:24,640 --> 00:04:26,590
+parameter
+
+96
+00:04:26,590 --> 00:04:28,780
+and as is the case with the typical
+
+97
+00:04:28,780 --> 00:04:30,970
+async pattern in not is that hello
+
+98
+00:04:30,970 --> 00:04:32,980
+function accepts input parameter in the
+
+99
+00:04:32,980 --> 00:04:34,510
+callback function in the callback we are
+
+100
+00:04:34,510 --> 00:04:35,710
+basically displaying the result
+
+101
+00:04:35,710 --> 00:04:37,810
+generated by the by the seashore code so
+
+102
+00:04:37,810 --> 00:04:44,420
+let's let's take it for a spin
+
+103
+00:04:44,430 --> 00:04:47,770
+that's probably way too small something
+
+104
+00:04:47,770 --> 00:04:57,430
+happened with the retina see if I can
+
+105
+00:04:57,430 --> 00:05:05,110
+quickly fix this so this is our function
+
+106
+00:05:05,110 --> 00:05:07,210
+that you just a minute ago on the slide
+
+107
+00:05:07,210 --> 00:05:11,169
+if I run it basically it prints out that
+
+108
+00:05:11,169 --> 00:05:12,729
+net welcomes new Jaso at that point
+
+109
+00:05:12,729 --> 00:05:14,740
+we've been running the node process
+
+110
+00:05:14,740 --> 00:05:17,320
+I wasn't spinning any external processes
+
+111
+00:05:17,320 --> 00:05:19,389
+I was running that CLR code inside of
+
+112
+00:05:19,389 --> 00:05:20,229
+node
+
+113
+00:05:20,229 --> 00:05:22,960
+Xin windows and of course that this was
+
+114
+00:05:22,960 --> 00:05:24,790
+to be expected as Windows that are three
+
+115
+00:05:24,790 --> 00:05:27,250
+more runs on Windows but you can do the
+
+116
+00:05:27,250 --> 00:05:33,729
+same on a Mac as well so we have the
+
+117
+00:05:33,729 --> 00:05:40,780
+same problem here and I can run it on
+
+118
+00:05:40,780 --> 00:05:42,490
+the Mac on market is using a Shimano
+
+119
+00:05:42,490 --> 00:05:45,640
+instead of dotnet framework and you can
+
+120
+00:05:45,640 --> 00:05:53,240
+do the very same thing on the bun to
+
+121
+00:05:53,250 --> 00:05:55,060
+welcomes ingest so this is a
+
+122
+00:05:55,060 --> 00:05:58,030
+cross-platform capability to of
+
+123
+00:05:58,030 --> 00:06:01,120
+scripting CLR inside of a node.js
+
+124
+00:06:01,120 --> 00:06:09,160
+application so if scenes run on windows
+
+125
+00:06:09,160 --> 00:06:12,729
+on mark and on linux there have been
+
+126
+00:06:12,729 --> 00:06:15,479
+several attempts prior to address to
+
+127
+00:06:15,479 --> 00:06:18,760
+provide support for interurban CLR and
+
+128
+00:06:18,760 --> 00:06:21,550
+no js' most of these attempts were
+
+129
+00:06:21,550 --> 00:06:23,289
+trying to solve a very general problem
+
+130
+00:06:23,289 --> 00:06:27,400
+of allowing not dress code to call any
+
+131
+00:06:27,400 --> 00:06:31,320
+api in that net or any managed library
+
+132
+00:06:31,320 --> 00:06:33,580
+this is problematic because there is a
+
+133
+00:06:33,580 --> 00:06:36,010
+fundamental discrepancy between the
+
+134
+00:06:36,010 --> 00:06:39,300
+basic design of node.js and CL
+
+135
+00:06:39,300 --> 00:06:41,729
+no js' a single-threaded in even the
+
+136
+00:06:41,729 --> 00:06:44,550
+base see that is multi-threaded and
+
+137
+00:06:44,550 --> 00:06:47,039
+effectively by being multi-threaded it
+
+138
+00:06:47,039 --> 00:06:49,259
+also allows the number of synchronous
+
+139
+00:06:49,259 --> 00:06:51,389
+blocking calls and that meant framework
+
+140
+00:06:51,389 --> 00:06:54,060
+is actually it provides many blocking
+
+141
+00:06:54,060 --> 00:06:57,060
+calls that that if called from no js' on
+
+142
+00:06:57,060 --> 00:06:59,159
+the v8 singleton threat would directly
+
+143
+00:06:59,159 --> 00:07:03,419
+block the node.js event loop so edge is
+
+144
+00:07:03,419 --> 00:07:07,650
+takes a much more prescriptive approach
+
+145
+00:07:07,650 --> 00:07:10,139
+to the Interop and says that any code
+
+146
+00:07:10,139 --> 00:07:12,810
+that you want to invoke from not Jes
+
+147
+00:07:12,810 --> 00:07:15,930
+must be wrapped in an async delegate the
+
+148
+00:07:15,930 --> 00:07:17,840
+shape of the racing the delegate is
+
+149
+00:07:17,840 --> 00:07:20,909
+frank object task object which means
+
+150
+00:07:20,909 --> 00:07:23,789
+that the code you are calling from not
+
+151
+00:07:23,789 --> 00:07:26,550
+Jes in CLR must accept one parameter
+
+152
+00:07:26,550 --> 00:07:28,379
+which is of type type object it may be a
+
+153
+00:07:28,379 --> 00:07:30,780
+complex type and the returns a task
+
+154
+00:07:30,780 --> 00:07:33,960
+typed with an object a task is a the
+
+155
+00:07:33,960 --> 00:07:37,050
+sila concept that is a moral equivalent
+
+156
+00:07:37,050 --> 00:07:39,900
+of a Java future or a JavaScript promise
+
+157
+00:07:39,900 --> 00:07:42,300
+which is basically encapsulates a
+
+158
+00:07:42,300 --> 00:07:45,569
+concept of an asynchronous call that
+
+159
+00:07:45,569 --> 00:07:47,550
+will complete sometime in the future
+
+160
+00:07:47,550 --> 00:07:50,250
+with either a result or an error and
+
+161
+00:07:50,250 --> 00:07:52,110
+that concept of a promise can be very
+
+162
+00:07:52,110 --> 00:07:53,639
+easily mapped into the basic
+
+163
+00:07:53,639 --> 00:07:56,849
+asynchronous pattern of calling
+
+164
+00:07:56,849 --> 00:07:58,770
+functions in node.js which is basically
+
+165
+00:07:58,770 --> 00:08:00,330
+a function that accepts a parameter and
+
+166
+00:08:00,330 --> 00:08:02,909
+a callback method and the callback
+
+167
+00:08:02,909 --> 00:08:05,039
+method accepts an error an optional
+
+168
+00:08:05,039 --> 00:08:07,860
+error in a result and this is how how
+
+169
+00:08:07,860 --> 00:08:11,039
+this for these concepts map onto each
+
+170
+00:08:11,039 --> 00:08:12,360
+other
+
+171
+00:08:12,360 --> 00:08:14,550
+so what address gives you is basically
+
+172
+00:08:14,550 --> 00:08:17,250
+the ability to run a silicon
+
+173
+00:08:17,250 --> 00:08:19,500
+CLR virtual machine and v8 virtual
+
+174
+00:08:19,500 --> 00:08:21,930
+machine inside of a single process it
+
+175
+00:08:21,930 --> 00:08:25,529
+provides the capability to marshal data
+
+176
+00:08:25,529 --> 00:08:28,319
+between v8 and CLR reconcile the
+
+177
+00:08:28,319 --> 00:08:29,940
+threading models between not a threaded
+
+178
+00:08:29,940 --> 00:08:34,050
+CLR and simulated v8 and provides that
+
+179
+00:08:34,050 --> 00:08:36,209
+all within that framework of this very
+
+180
+00:08:36,209 --> 00:08:37,260
+prescriptive
+
+181
+00:08:37,260 --> 00:08:41,880
+interrupt pattern so why is this a
+
+182
+00:08:41,880 --> 00:08:43,740
+better way than spinning to processes
+
+183
+00:08:43,740 --> 00:08:45,750
+first of all because you don't have two
+
+184
+00:08:45,750 --> 00:08:47,550
+processes now you have just one and it
+
+185
+00:08:47,550 --> 00:08:49,560
+is definitely simpler to deploy simpler
+
+186
+00:08:49,560 --> 00:08:51,410
+to manage and simpler to think about and
+
+187
+00:08:51,410 --> 00:08:53,040
+second of all that is
+
+188
+00:08:53,040 --> 00:08:55,829
+but faster than any inter process
+
+189
+00:08:55,829 --> 00:08:57,480
+communication mechanisms that will be
+
+190
+00:08:57,480 --> 00:08:59,339
+required if you had multiple processes
+
+191
+00:08:59,339 --> 00:09:02,579
+to integrate a hybrid an application
+
+192
+00:09:02,579 --> 00:09:05,779
+consisting of hybrid technologies
+
+193
+00:09:05,779 --> 00:09:07,740
+specifically I've done some measurements
+
+194
+00:09:07,740 --> 00:09:12,360
+around providing the same application
+
+195
+00:09:12,360 --> 00:09:15,630
+logic where the dotnet process was
+
+196
+00:09:15,630 --> 00:09:17,459
+running separately from los Reyes and
+
+197
+00:09:17,459 --> 00:09:19,110
+there was an HTTP communication between
+
+198
+00:09:19,110 --> 00:09:22,920
+these two versus using address 2 to
+
+199
+00:09:22,920 --> 00:09:24,449
+perform the same functionality within
+
+200
+00:09:24,449 --> 00:09:26,220
+the scope of a single node.js process
+
+201
+00:09:26,220 --> 00:09:27,480
+and the latter approach the single
+
+202
+00:09:27,480 --> 00:09:30,420
+process approach was 30 times 32 times
+
+203
+00:09:30,420 --> 00:09:33,690
+faster and this is the similarly result
+
+204
+00:09:33,690 --> 00:09:36,500
+that you get across the three platforms
+
+205
+00:09:36,500 --> 00:09:41,639
+so CLR is you know c-sharp is largely
+
+206
+00:09:41,639 --> 00:09:44,130
+perceived as the kind of primary
+
+207
+00:09:44,130 --> 00:09:46,800
+language that CLR supports but just like
+
+208
+00:09:46,800 --> 00:09:49,199
+JVM see that support multiple languages
+
+209
+00:09:49,199 --> 00:09:50,910
+so address actually allows you to script
+
+210
+00:09:50,910 --> 00:09:52,350
+not only c-sharp but many other
+
+211
+00:09:52,350 --> 00:09:55,350
+languages so in here you can see an
+
+212
+00:09:55,350 --> 00:09:57,949
+async workflow expression in F sharp
+
+213
+00:09:57,949 --> 00:10:00,240
+there is integrated inside of a node.js
+
+214
+00:10:00,240 --> 00:10:02,880
+application this is Python using
+
+215
+00:10:02,880 --> 00:10:05,899
+ironpython implementation in top of CLR
+
+216
+00:10:05,899 --> 00:10:08,880
+this is power shell which is a scripting
+
+217
+00:10:08,880 --> 00:10:12,420
+language that only works in Windows and
+
+218
+00:10:12,420 --> 00:10:15,000
+lastly you can you can actually go and
+
+219
+00:10:15,000 --> 00:10:17,269
+implement your own languages or DSL
+
+220
+00:10:17,269 --> 00:10:19,829
+using the edge reyes extensibility
+
+221
+00:10:19,829 --> 00:10:21,720
+mechanism in this particular case I'm
+
+222
+00:10:21,720 --> 00:10:24,779
+actually scripting T sequel directly
+
+223
+00:10:24,779 --> 00:10:28,500
+from not Reyes the the baking
+
+224
+00:10:28,500 --> 00:10:30,690
+implementation is that that T sequel is
+
+225
+00:10:30,690 --> 00:10:33,120
+translated into a second extraction that
+
+226
+00:10:33,120 --> 00:10:36,449
+is passed to a do dotnet and that way
+
+227
+00:10:36,449 --> 00:10:37,980
+you can basically communicate with MS
+
+228
+00:10:37,980 --> 00:10:40,050
+sequel and fetch data from MS sequel in
+
+229
+00:10:40,050 --> 00:10:42,089
+a very easy way and arguably this is
+
+230
+00:10:42,089 --> 00:10:46,170
+actually the vastly superior way of
+
+231
+00:10:46,170 --> 00:10:47,880
+accessing a mythical data from not less
+
+232
+00:10:47,880 --> 00:10:49,529
+than any of the alternatives simply
+
+233
+00:10:49,529 --> 00:10:51,480
+because a do dotnet has been around for
+
+234
+00:10:51,480 --> 00:10:52,279
+over a decade
+
+235
+00:10:52,279 --> 00:10:55,199
+so predates anything that had been
+
+236
+00:10:55,199 --> 00:10:56,850
+created for not Reyes so the stable
+
+237
+00:10:56,850 --> 00:10:59,910
+tested and this is the de facto standard
+
+238
+00:10:59,910 --> 00:11:03,930
+of accessing I'm a sequel data from that
+
+239
+00:11:03,930 --> 00:11:06,610
+net
+
+240
+00:11:06,620 --> 00:11:10,340
+there are several ways you can pull in
+
+241
+00:11:10,340 --> 00:11:12,240
+CLR code into your knowledge race
+
+242
+00:11:12,240 --> 00:11:14,790
+application this is the kind of basic
+
+243
+00:11:14,790 --> 00:11:17,280
+primary mechanisms you pre-compiled your
+
+244
+00:11:17,280 --> 00:11:19,230
+sealer code into a minute assembly just
+
+245
+00:11:19,230 --> 00:11:22,950
+like you do a regular class library and
+
+246
+00:11:22,950 --> 00:11:25,770
+you call the h frank function and
+
+247
+00:11:25,770 --> 00:11:27,480
+provide assembly name type name and
+
+248
+00:11:27,480 --> 00:11:29,610
+method name that method of course must
+
+249
+00:11:29,610 --> 00:11:31,410
+have that prescriptive pattern that a
+
+250
+00:11:31,410 --> 00:11:33,210
+J's requires which is func object task
+
+251
+00:11:33,210 --> 00:11:35,520
+object but but from their own address
+
+252
+00:11:35,520 --> 00:11:37,560
+can basically create a JavaScript wrap
+
+253
+00:11:37,560 --> 00:11:40,380
+around that function call it the second
+
+254
+00:11:40,380 --> 00:11:43,470
+way is to actually provide a literal
+
+255
+00:11:43,470 --> 00:11:45,570
+code and there are three ways you can
+
+256
+00:11:45,570 --> 00:11:47,040
+provide that code either as a string
+
+257
+00:11:47,040 --> 00:11:49,650
+which is function of one you can do also
+
+258
+00:11:49,650 --> 00:11:52,590
+do a multi-line string the multi-line
+
+259
+00:11:52,590 --> 00:11:56,160
+string is a little hack I would say
+
+260
+00:11:56,160 --> 00:11:58,440
+because JavaScript definitely support
+
+261
+00:11:58,440 --> 00:12:00,600
+multi-line strings very well what I'm
+
+262
+00:12:00,600 --> 00:12:03,600
+doing here is I'm providing the edge
+
+263
+00:12:03,600 --> 00:12:06,630
+func function with an anonymous function
+
+264
+00:12:06,630 --> 00:12:09,380
+with a body that consists of a comment
+
+265
+00:12:09,380 --> 00:12:12,840
+it turns out that in v8 in particular if
+
+266
+00:12:12,840 --> 00:12:15,090
+you serialize such a function you'll
+
+267
+00:12:15,090 --> 00:12:16,680
+also get the body's he realized the
+
+268
+00:12:16,680 --> 00:12:19,380
+string so afterwards I'm I'm running a
+
+269
+00:12:19,380 --> 00:12:21,210
+simple regular expression to extract
+
+270
+00:12:21,210 --> 00:12:23,430
+that string compile it on the flight
+
+271
+00:12:23,430 --> 00:12:25,920
+when in memory CLR assembly and from
+
+272
+00:12:25,920 --> 00:12:27,930
+there own and three that wrapper the
+
+273
+00:12:27,930 --> 00:12:31,920
+JavaScript wrapper and F 3 you can
+
+274
+00:12:31,920 --> 00:12:34,050
+simply store your sealer coat in an
+
+275
+00:12:34,050 --> 00:12:36,660
+external cs5 and basically loaded up and
+
+276
+00:12:36,660 --> 00:12:41,650
+running
+
+277
+00:12:41,660 --> 00:12:44,040
+generally speaking CLR is a strongly
+
+278
+00:12:44,040 --> 00:12:46,020
+typed environment you'd expect all your
+
+279
+00:12:46,020 --> 00:12:48,380
+types to be to be declared upfront and
+
+280
+00:12:48,380 --> 00:12:51,000
+you'd have a class person with members
+
+281
+00:12:51,000 --> 00:12:53,550
+and so on however CLR also has a concept
+
+282
+00:12:53,550 --> 00:12:57,180
+of dynamics which allow you a way of
+
+283
+00:12:57,180 --> 00:12:59,490
+accessing data in a very similar way
+
+284
+00:12:59,490 --> 00:13:01,380
+that you'll be used to from loosely
+
+285
+00:13:01,380 --> 00:13:03,870
+typed environment like JavaScript so in
+
+286
+00:13:03,870 --> 00:13:05,910
+here we are constructing an input object
+
+287
+00:13:05,910 --> 00:13:07,500
+in JavaScript that has some nested
+
+288
+00:13:07,500 --> 00:13:09,780
+properties we are passing that input
+
+289
+00:13:09,780 --> 00:13:12,090
+object to the hello function which is
+
+290
+00:13:12,090 --> 00:13:15,360
+created via edge that funk and when you
+
+291
+00:13:15,360 --> 00:13:18,850
+look at how the data is accessed
+
+292
+00:13:18,850 --> 00:13:21,339
+within that async lambda expression is
+
+293
+00:13:21,339 --> 00:13:24,160
+actually with a simple dot dot dot line
+
+294
+00:13:24,160 --> 00:13:26,860
+and no types were required upfront you
+
+295
+00:13:26,860 --> 00:13:28,449
+can just dot your way into this data
+
+296
+00:13:28,449 --> 00:13:34,990
+structure using dynamics if you need to
+
+297
+00:13:34,990 --> 00:13:36,459
+write code that goes beyond a very
+
+298
+00:13:36,459 --> 00:13:37,930
+simple hello world you'll frequently
+
+299
+00:13:37,930 --> 00:13:41,610
+need to pull in extra assemblies or
+
+300
+00:13:41,610 --> 00:13:44,760
+namespaces so I borrowed some of the
+
+301
+00:13:44,760 --> 00:13:47,350
+syntax from Rosalie in the new C shop
+
+302
+00:13:47,350 --> 00:13:50,290
+compiler to allow you to actually plug
+
+303
+00:13:50,290 --> 00:13:53,589
+in by reference new new assemblies like
+
+304
+00:13:53,589 --> 00:13:55,389
+system data DLL if you want to use ad or
+
+305
+00:13:55,389 --> 00:13:57,670
+dotnet and using statements that are
+
+306
+00:13:57,670 --> 00:13:59,740
+kind of out of bound of a class I would
+
+307
+00:13:59,740 --> 00:14:03,399
+say so you know these these declarations
+
+308
+00:14:03,399 --> 00:14:05,260
+can be directly followed by an async
+
+309
+00:14:05,260 --> 00:14:08,410
+lambda expression without that markup
+
+310
+00:14:08,410 --> 00:14:14,920
+surrounding a class you can pass pretty
+
+311
+00:14:14,920 --> 00:14:16,899
+much any kind of data from JavaScript to
+
+312
+00:14:16,899 --> 00:14:19,360
+CLR a J's takes care of marshaling all
+
+313
+00:14:19,360 --> 00:14:21,220
+the basic data datatypes from ins
+
+314
+00:14:21,220 --> 00:14:24,130
+boolean strings to objects arrays and
+
+315
+00:14:24,130 --> 00:14:29,170
+buffer similarly you can pass very
+
+316
+00:14:29,170 --> 00:14:31,810
+similar data structures from CLR back to
+
+317
+00:14:31,810 --> 00:14:34,600
+not JSON returning the value all
+
+318
+00:14:34,600 --> 00:14:37,870
+civilization or isolation on marshalling
+
+319
+00:14:37,870 --> 00:14:40,120
+between the eight and CLR is done by
+
+320
+00:14:40,120 --> 00:14:42,699
+value so the moment you call that
+
+321
+00:14:42,699 --> 00:14:44,500
+function or the moment you return from
+
+322
+00:14:44,500 --> 00:14:47,260
+that function a copy of the data is
+
+323
+00:14:47,260 --> 00:14:49,720
+created either in v8 heap or CLR heap
+
+324
+00:14:49,720 --> 00:14:51,850
+and from there on the data lives in the
+
+325
+00:14:51,850 --> 00:14:53,079
+independently it has independent
+
+326
+00:14:53,079 --> 00:14:56,980
+lifetime so if you go and manipulate the
+
+327
+00:14:56,980 --> 00:14:59,500
+value of an array that you have passed
+
+328
+00:14:59,500 --> 00:15:01,600
+from one side to the other it won't have
+
+329
+00:15:01,600 --> 00:15:04,720
+any effect on the value of that array in
+
+330
+00:15:04,720 --> 00:15:08,560
+the other environment another the most
+
+331
+00:15:08,560 --> 00:15:11,769
+exciting marshalling feature that
+
+332
+00:15:11,769 --> 00:15:13,149
+address provides is actually the ability
+
+333
+00:15:13,149 --> 00:15:16,089
+to marshal functions so in addition to
+
+334
+00:15:16,089 --> 00:15:17,949
+marshaling basic data types you can also
+
+335
+00:15:17,949 --> 00:15:21,029
+marshal back a function as long as it
+
+336
+00:15:21,029 --> 00:15:23,529
+corresponds to the basic interrupt
+
+337
+00:15:23,529 --> 00:15:25,720
+pattern that address requires so in here
+
+338
+00:15:25,720 --> 00:15:29,220
+we can see an async lambda expression
+
+339
+00:15:29,220 --> 00:15:30,850
+that return
+
+340
+00:15:30,850 --> 00:15:34,480
+another async lambda expression back to
+
+341
+00:15:34,480 --> 00:15:38,110
+no js' when cold so when we are calling
+
+342
+00:15:38,110 --> 00:15:39,310
+that Creed hello function which
+
+343
+00:15:39,310 --> 00:15:40,990
+corresponds to the outer async lambda
+
+344
+00:15:40,990 --> 00:15:44,110
+expression it returns a low function
+
+345
+00:15:44,110 --> 00:15:46,720
+that we can later call now the reason
+
+346
+00:15:46,720 --> 00:15:48,580
+this is interesting is that it actually
+
+347
+00:15:48,580 --> 00:15:51,310
+allows you to manipulate manipulate
+
+348
+00:15:51,310 --> 00:15:54,250
+durable CLR state if you look at this
+
+349
+00:15:54,250 --> 00:15:59,080
+example we have a create counter
+
+350
+00:15:59,080 --> 00:16:01,630
+function this is the outer isn't lambda
+
+351
+00:16:01,630 --> 00:16:04,300
+expression and we are calling it
+
+352
+00:16:04,300 --> 00:16:06,550
+providing a value of 12 as an input
+
+353
+00:16:06,550 --> 00:16:09,280
+parameter the first thing it does is
+
+354
+00:16:09,280 --> 00:16:11,260
+actually storing that value of 12 in a
+
+355
+00:16:11,260 --> 00:16:14,020
+local Kay variable and then it is
+
+356
+00:16:14,020 --> 00:16:15,940
+returning an async lambda expression
+
+357
+00:16:15,940 --> 00:16:18,190
+which is implemented as a closure over
+
+358
+00:16:18,190 --> 00:16:20,980
+that local state and as you see the
+
+359
+00:16:20,980 --> 00:16:22,600
+implementation of that closure we are
+
+360
+00:16:22,600 --> 00:16:25,420
+basically increasing that local value of
+
+361
+00:16:25,420 --> 00:16:28,630
+K so we have just created a counter and
+
+362
+00:16:28,630 --> 00:16:30,460
+whenever we call that counter method
+
+363
+00:16:30,460 --> 00:16:32,110
+which is switch corresponds to that
+
+364
+00:16:32,110 --> 00:16:36,490
+inner function the value of K on the CLR
+
+365
+00:16:36,490 --> 00:16:39,430
+sight will get increased despite the
+
+366
+00:16:39,430 --> 00:16:41,470
+fact that that variable is not directly
+
+367
+00:16:41,470 --> 00:16:44,230
+exposed to no js' so you can extend that
+
+368
+00:16:44,230 --> 00:16:47,110
+concept really exposing entire object
+
+369
+00:16:47,110 --> 00:16:50,290
+hierarchies from CLR to Drai's but K
+
+370
+00:16:50,290 --> 00:16:52,210
+could this will be an instance of a
+
+371
+00:16:52,210 --> 00:16:55,600
+person with many methods on it and what
+
+372
+00:16:55,600 --> 00:16:57,910
+you could return from that outer async
+
+373
+00:16:57,910 --> 00:17:00,670
+lambda expression is an anonymous object
+
+374
+00:17:00,670 --> 00:17:02,740
+with a number of functions that perform
+
+375
+00:17:02,740 --> 00:17:05,590
+a variety of tasks over that person is
+
+376
+00:17:05,590 --> 00:17:10,090
+nice so similarly to exporting a
+
+377
+00:17:10,090 --> 00:17:12,730
+function from CLR to not jsut can also
+
+378
+00:17:12,730 --> 00:17:15,490
+export a function from not rest to CLR
+
+379
+00:17:15,490 --> 00:17:18,070
+so in here we basically construct a
+
+380
+00:17:18,070 --> 00:17:21,510
+payload object that contains two basic
+
+381
+00:17:21,510 --> 00:17:25,420
+atomic data entries as well as a
+
+382
+00:17:25,420 --> 00:17:29,080
+property which is a function i call it x
+
+383
+00:17:29,080 --> 00:17:31,000
+two because all it does it takes an
+
+384
+00:17:31,000 --> 00:17:32,740
+input and multiplies it by two and cause
+
+385
+00:17:32,740 --> 00:17:34,930
+the callback without value so later on
+
+386
+00:17:34,930 --> 00:17:38,080
+when you pass that payload object to the
+
+387
+00:17:38,080 --> 00:17:40,600
+function created around some c-sharp
+
+388
+00:17:40,600 --> 00:17:43,800
+code you can extract the dot time
+
+389
+00:17:43,800 --> 00:17:46,140
+- method and cast it to that funk object
+
+390
+00:17:46,140 --> 00:17:48,450
+ask object delegate that a J's has
+
+391
+00:17:48,450 --> 00:17:50,880
+created around it so this is just again
+
+392
+00:17:50,880 --> 00:17:53,880
+a proxy around a JavaScript function
+
+393
+00:17:53,880 --> 00:17:57,330
+that lives in v8 and you can since this
+
+394
+00:17:57,330 --> 00:18:00,450
+is the the return type that function is
+
+395
+00:18:00,450 --> 00:18:02,880
+task object you can call it using the
+
+396
+00:18:02,880 --> 00:18:05,550
+very convenient a weight keyword in the
+
+397
+00:18:05,550 --> 00:18:09,720
+net framework which is basically like
+
+398
+00:18:09,720 --> 00:18:11,760
+yield from in Python which basically
+
+399
+00:18:11,760 --> 00:18:17,150
+doesn't block the the current thread and
+
+400
+00:18:17,150 --> 00:18:19,740
+still allows you to write asynchronous
+
+401
+00:18:19,740 --> 00:18:21,600
+programs that have the look and feel of
+
+402
+00:18:21,600 --> 00:18:27,060
+a synchronous application one other
+
+403
+00:18:27,060 --> 00:18:29,670
+exciting feature of edge is is the
+
+404
+00:18:29,670 --> 00:18:31,590
+ability to tap onto multi-threading in
+
+405
+00:18:31,590 --> 00:18:36,470
+CLR so the moment you call a function in
+
+406
+00:18:36,470 --> 00:18:39,030
+via AJ as a function in CLR you are
+
+407
+00:18:39,030 --> 00:18:41,520
+still executing on a v8 thread so if you
+
+408
+00:18:41,520 --> 00:18:43,710
+do anything blocking there you are not
+
+409
+00:18:43,710 --> 00:18:45,090
+race event loop will be blocked
+
+410
+00:18:45,090 --> 00:18:46,680
+however in CLR you have the option to
+
+411
+00:18:46,680 --> 00:18:48,810
+actually spin up a new CLR a thread pool
+
+412
+00:18:48,810 --> 00:18:51,000
+thread and perform some long-running
+
+413
+00:18:51,000 --> 00:18:52,950
+operation there so the equivalent of
+
+414
+00:18:52,950 --> 00:18:54,330
+that long-running operation here is a
+
+415
+00:18:54,330 --> 00:18:56,070
+task delay we are basically waiting for
+
+416
+00:18:56,070 --> 00:18:58,170
+five seconds but since we are doing that
+
+417
+00:18:58,170 --> 00:19:00,360
+waiting on a CLR thread pool thread the
+
+418
+00:19:00,360 --> 00:19:01,650
+single don't be it threat remains
+
+419
+00:19:01,650 --> 00:19:03,840
+unblocked and you're not jeaious event
+
+420
+00:19:03,840 --> 00:19:05,970
+loop is capable of accepting subsequent
+
+421
+00:19:05,970 --> 00:19:10,530
+processing subsequent requests I was
+
+422
+00:19:10,530 --> 00:19:12,570
+supposed to be an outbreak but we're out
+
+423
+00:19:12,570 --> 00:19:15,030
+of time so what we can build with this
+
+424
+00:19:15,030 --> 00:19:17,250
+zip compression zip compression is an
+
+425
+00:19:17,250 --> 00:19:19,020
+example we kind of lightweight CPU bound
+
+426
+00:19:19,020 --> 00:19:21,240
+operation you can't do that very easily
+
+427
+00:19:21,240 --> 00:19:23,010
+right now with node.js you have to spin
+
+428
+00:19:23,010 --> 00:19:25,320
+up an external process with a Jas you
+
+429
+00:19:25,320 --> 00:19:27,090
+can do it in process literally with a
+
+430
+00:19:27,090 --> 00:19:28,950
+single line of code because dotnet
+
+431
+00:19:28,950 --> 00:19:30,030
+framework support zip compression
+
+432
+00:19:30,030 --> 00:19:34,590
+they're very kind of usable API same
+
+433
+00:19:34,590 --> 00:19:36,750
+thing with image conversion dotnet has a
+
+434
+00:19:36,750 --> 00:19:38,340
+very rich
+
+435
+00:19:38,340 --> 00:19:41,220
+image processing capabilities you can
+
+436
+00:19:41,220 --> 00:19:43,530
+convert images between PNG and JPEG with
+
+437
+00:19:43,530 --> 00:19:46,020
+a literally a single API call but again
+
+438
+00:19:46,020 --> 00:19:47,700
+this is a CPU bound operation so you
+
+439
+00:19:47,700 --> 00:19:49,590
+would normally do it from from within
+
+440
+00:19:49,590 --> 00:19:51,540
+your node.js application even if you had
+
+441
+00:19:51,540 --> 00:19:55,170
+an API for it with edge you can run that
+
+442
+00:19:55,170 --> 00:19:56,790
+logic on a silver thread pool thread
+
+443
+00:19:56,790 --> 00:19:57,639
+without blocking the
+
+444
+00:19:57,639 --> 00:20:00,879
+dress event loop you can skip the sequel
+
+445
+00:20:00,879 --> 00:20:02,469
+we've been talking about it if you want
+
+446
+00:20:02,469 --> 00:20:04,479
+to go beyond the basic crud crud
+
+447
+00:20:04,479 --> 00:20:07,719
+capability David knew has actually
+
+448
+00:20:07,719 --> 00:20:09,459
+created a great article showing how to
+
+449
+00:20:09,459 --> 00:20:11,109
+call like stored procedures use
+
+450
+00:20:11,109 --> 00:20:14,079
+transactions around a sequel using edge
+
+451
+00:20:14,079 --> 00:20:18,279
+and a do dotnet similarly you can this
+
+452
+00:20:18,279 --> 00:20:19,539
+is a very interesting concept that's
+
+453
+00:20:19,539 --> 00:20:21,129
+kind of pushing it you can have an
+
+454
+00:20:21,129 --> 00:20:23,320
+express race application that subdivides
+
+455
+00:20:23,320 --> 00:20:25,809
+the URL space were part of that space is
+
+456
+00:20:25,809 --> 00:20:27,849
+handled by nodejs and part is handled by
+
+457
+00:20:27,849 --> 00:20:32,639
+dotnet that not actually defines an
+
+458
+00:20:32,639 --> 00:20:35,049
+interface very similar conceptually to
+
+459
+00:20:35,049 --> 00:20:39,389
+WS di in Python which called Owen which
+
+460
+00:20:39,389 --> 00:20:41,829
+allows you to write applications the
+
+461
+00:20:41,829 --> 00:20:43,629
+kind of web applications that are
+
+462
+00:20:43,629 --> 00:20:44,829
+abstracted away from the underlying
+
+463
+00:20:44,829 --> 00:20:48,459
+server and Bruno bias created an
+
+464
+00:20:48,459 --> 00:20:50,549
+extension of a Jas that allows you to
+
+465
+00:20:50,549 --> 00:20:52,629
+take these applications that and
+
+466
+00:20:52,629 --> 00:20:55,389
+applications and plug them into the edge
+
+467
+00:20:55,389 --> 00:21:00,579
+the Express Reyes pipeline you can also
+
+468
+00:21:00,579 --> 00:21:02,559
+call legacy job services there isn't
+
+469
+00:21:02,559 --> 00:21:04,329
+really a very good library in Andres for
+
+470
+00:21:04,329 --> 00:21:05,709
+calling soap simply because that
+
+471
+00:21:05,709 --> 00:21:07,719
+technology largely predates the
+
+472
+00:21:07,719 --> 00:21:09,820
+development of node that meant framework
+
+473
+00:21:09,820 --> 00:21:11,739
+has a very rich sub capabilities in the
+
+474
+00:21:11,739 --> 00:21:12,849
+form of windows communication foundation
+
+475
+00:21:12,849 --> 00:21:16,419
+so you can use that legacy services and
+
+476
+00:21:16,419 --> 00:21:17,679
+lastly I wanted to mention something
+
+477
+00:21:17,679 --> 00:21:20,589
+completely different if you if you
+
+478
+00:21:20,589 --> 00:21:22,239
+recall the basic interrupt pattern
+
+479
+00:21:22,239 --> 00:21:26,139
+between nod Reyes and CLR it is very
+
+480
+00:21:26,139 --> 00:21:27,999
+much symmetric it basically allows you
+
+481
+00:21:27,999 --> 00:21:30,309
+to call functions from one side to the
+
+482
+00:21:30,309 --> 00:21:32,200
+other export functions both ways and so
+
+483
+00:21:32,200 --> 00:21:35,019
+on so just as you can scrape the CLR
+
+484
+00:21:35,019 --> 00:21:37,479
+from node Reyes you can also script
+
+485
+00:21:37,479 --> 00:21:41,619
+node.js from CLR so so basically this
+
+486
+00:21:41,619 --> 00:21:44,200
+actually required compiling node.js as a
+
+487
+00:21:44,200 --> 00:21:46,570
+shared library rather than an executable
+
+488
+00:21:46,570 --> 00:21:47,919
+which is a standard distribution
+
+489
+00:21:47,919 --> 00:21:49,929
+mechanism but at this point you can
+
+490
+00:21:49,929 --> 00:21:54,070
+basically take no js' with a 70,000 NPM
+
+491
+00:21:54,070 --> 00:21:56,619
+modules and you know do things like run
+
+492
+00:21:56,619 --> 00:21:58,629
+connect middle word inside of asp net
+
+493
+00:21:58,629 --> 00:22:02,049
+around expressjs rendering engines in
+
+494
+00:22:02,049 --> 00:22:07,209
+asp net 2 and this is it so high level
+
+495
+00:22:07,209 --> 00:22:09,190
+basically address does it run
+
+496
+00:22:09,190 --> 00:22:11,380
+CLR a no dress code in one process
+
+497
+00:22:11,380 --> 00:22:14,650
+it is faster than having to processes it
+

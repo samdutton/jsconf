@@ -1,0 +1,1689 @@
+1
+00:00:17,320 --> 00:00:19,660
+
+good morning everybody hope you're awake
+
+2
+00:00:19,660 --> 00:00:23,260
+and I talk really fast and mumble a lot
+
+3
+00:00:23,260 --> 00:00:25,150
+so if there's any questions just come
+
+4
+00:00:25,150 --> 00:00:27,669
+see me afterwards we're here to talk
+
+5
+00:00:27,669 --> 00:00:29,890
+about insecure web apps since Crockfords
+
+6
+00:00:29,890 --> 00:00:31,570
+not here I'm the guy to yell at you
+
+7
+00:00:31,570 --> 00:00:35,559
+about security and I lied in the in the
+
+8
+00:00:35,559 --> 00:00:37,120
+title of talk there's no three easy
+
+9
+00:00:37,120 --> 00:00:40,080
+steps there's there's a whole pile of
+
+10
+00:00:40,080 --> 00:00:42,850
+mistakes and mistakes that we can go
+
+11
+00:00:42,850 --> 00:00:47,800
+through all right so who am i I'm Adam
+
+12
+00:00:47,800 --> 00:00:49,719
+Baldwin i founded a company called
+
+13
+00:00:49,719 --> 00:00:53,440
+ingenuity we do a pen testing of web
+
+14
+00:00:53,440 --> 00:00:55,079
+applications networks things like that
+
+15
+00:00:55,079 --> 00:00:57,520
+we break all of the stuff that you guys
+
+16
+00:00:57,520 --> 00:01:00,430
+build I am in no way qualified to give a
+
+17
+00:01:00,430 --> 00:01:02,530
+talk on code or developing or anything
+
+18
+00:01:02,530 --> 00:01:05,289
+like that I build really really horrible
+
+19
+00:01:05,289 --> 00:01:08,289
+apps I'm better at breaking them which
+
+20
+00:01:08,289 --> 00:01:11,560
+is why I'm talking about that I also in
+
+21
+00:01:11,560 --> 00:01:13,869
+the curator of evil packet net which has
+
+22
+00:01:13,869 --> 00:01:17,140
+some video demonstration of abusing web
+
+23
+00:01:17,140 --> 00:01:19,840
+applications there's a pile of web
+
+24
+00:01:19,840 --> 00:01:21,580
+well-known applications out there and
+
+25
+00:01:21,580 --> 00:01:26,619
+stuff we've done evil things to just
+
+26
+00:01:26,619 --> 00:01:29,939
+some of our clients on the bottom there
+
+27
+00:01:29,939 --> 00:01:33,100
+I'm going to try to really really really
+
+28
+00:01:33,100 --> 00:01:35,439
+not like this guy I'm going to try to
+
+29
+00:01:35,439 --> 00:01:39,790
+not yell at you and complain but you'll
+
+30
+00:01:39,790 --> 00:01:42,759
+you'll hopefully respect or understand
+
+31
+00:01:42,759 --> 00:01:45,490
+my side of things and I'm for most of
+
+32
+00:01:45,490 --> 00:01:46,570
+you in the room i'm probably going to be
+
+33
+00:01:46,570 --> 00:01:47,590
+talking about things that you're not
+
+34
+00:01:47,590 --> 00:01:49,030
+going to want to hear about you really
+
+35
+00:01:49,030 --> 00:01:50,020
+like well we hear about this all the
+
+36
+00:01:50,020 --> 00:01:52,780
+time this stuff that this is this is
+
+37
+00:01:52,780 --> 00:01:54,460
+stuff that we're always getting brushed
+
+38
+00:01:54,460 --> 00:01:56,079
+with and i know how to solve this
+
+39
+00:01:56,079 --> 00:01:58,630
+problem but the reality is is of it is
+
+40
+00:01:58,630 --> 00:02:00,430
+the mistakes are still being made we're
+
+41
+00:02:00,430 --> 00:02:02,170
+still running into this stuff and this
+
+42
+00:02:02,170 --> 00:02:04,180
+what i'm going to talk about the just
+
+43
+00:02:04,180 --> 00:02:05,530
+kind of some basic things output
+
+44
+00:02:05,530 --> 00:02:08,979
+encoding hashtag navigation and piles of
+
+45
+00:02:08,979 --> 00:02:11,470
+other crap is these mistakes still keep
+
+46
+00:02:11,470 --> 00:02:14,079
+getting made not only to mention that
+
+47
+00:02:14,079 --> 00:02:15,900
+we're taking javascript which has been a
+
+48
+00:02:15,900 --> 00:02:18,850
+typically a client-side thing and we're
+
+49
+00:02:18,850 --> 00:02:20,920
+going to be taking it and and shoving it
+
+50
+00:02:20,920 --> 00:02:22,450
+into the server side so now we're going
+
+51
+00:02:22,450 --> 00:02:24,459
+to have developers that are experienced
+
+52
+00:02:24,459 --> 00:02:26,440
+the client-side dealing with server-side
+
+53
+00:02:26,440 --> 00:02:28,449
+problems and so we have a whole new
+
+54
+00:02:28,449 --> 00:02:30,690
+class of issues that are going to happen
+
+55
+00:02:30,690 --> 00:02:34,980
+security issues so so writing insecure
+
+56
+00:02:34,980 --> 00:02:36,930
+apps you guys you guys have a really
+
+57
+00:02:36,930 --> 00:02:41,850
+really difficult problem oh yeah I don't
+
+58
+00:02:41,850 --> 00:02:44,100
+always test my code but I when I do it I
+
+59
+00:02:44,100 --> 00:02:46,140
+do it in production that sound like any
+
+60
+00:02:46,140 --> 00:02:51,090
+any of you we see it a lot and I don't
+
+61
+00:02:51,090 --> 00:02:52,710
+know if there's a solution around it but
+
+62
+00:02:52,710 --> 00:02:55,610
+so you guys have a really really hard
+
+63
+00:02:55,610 --> 00:02:58,380
+our problem when it comes to developing
+
+64
+00:02:58,380 --> 00:03:02,760
+and developing securely you you you only
+
+65
+00:03:02,760 --> 00:03:05,520
+have to find one way to screw up and the
+
+66
+00:03:05,520 --> 00:03:06,810
+security guys in the security community
+
+67
+00:03:06,810 --> 00:03:08,670
+point laughs right like like we're just
+
+68
+00:03:08,670 --> 00:03:10,020
+a bunch of dicks and we just say haha
+
+69
+00:03:10,020 --> 00:03:11,370
+you've got cross-site scripting and and
+
+70
+00:03:11,370 --> 00:03:16,140
+you know fix it so you're also
+
+71
+00:03:16,140 --> 00:03:18,840
+resource-constrained you you you won't
+
+72
+00:03:18,840 --> 00:03:20,580
+we have we as an attacker have to find
+
+73
+00:03:20,580 --> 00:03:23,370
+one way and you have to find all of the
+
+74
+00:03:23,370 --> 00:03:24,810
+all you have to solve all the problems
+
+75
+00:03:24,810 --> 00:03:26,970
+as well as not only being resource
+
+76
+00:03:26,970 --> 00:03:29,010
+constraint time money your manager
+
+77
+00:03:29,010 --> 00:03:31,910
+breathing on your neck to just ship it
+
+78
+00:03:31,910 --> 00:03:34,800
+the landscape is always changing html5
+
+79
+00:03:34,800 --> 00:03:37,860
+is a set in stone standard right right
+
+80
+00:03:37,860 --> 00:03:39,930
+yeah it's always going to be changing
+
+81
+00:03:39,930 --> 00:03:41,760
+and so you're going to have a whole pile
+
+82
+00:03:41,760 --> 00:03:43,950
+of new problems to deal with with every
+
+83
+00:03:43,950 --> 00:03:45,840
+day not to mention you're trying to just
+
+84
+00:03:45,840 --> 00:03:47,970
+get your feature out or you're trying to
+
+85
+00:03:47,970 --> 00:03:49,920
+just innovate and that's that's the last
+
+86
+00:03:49,920 --> 00:03:51,720
+problem is engineering versus innovation
+
+87
+00:03:51,720 --> 00:03:55,830
+right like you guys I had a conversation
+
+88
+00:03:55,830 --> 00:03:58,890
+with one our clients and yet and I you
+
+89
+00:03:58,890 --> 00:04:00,330
+know I was the typical security guy and
+
+90
+00:04:00,330 --> 00:04:03,360
+I said hey output output and code this
+
+91
+00:04:03,360 --> 00:04:05,610
+particular field in his comment back was
+
+92
+00:04:05,610 --> 00:04:08,519
+I haven't secured it yet I haven't got
+
+93
+00:04:08,519 --> 00:04:11,820
+there yet and what we find a lot at
+
+94
+00:04:11,820 --> 00:04:13,470
+ingenuity while while we're assessing
+
+95
+00:04:13,470 --> 00:04:18,030
+applications is that that that yet never
+
+96
+00:04:18,030 --> 00:04:21,330
+comes it's a to-do line it's it's the
+
+97
+00:04:21,330 --> 00:04:23,730
+famous last words right to do input
+
+98
+00:04:23,730 --> 00:04:26,850
+validation to do output encoding you
+
+99
+00:04:26,850 --> 00:04:28,950
+know check this check that and I hate to
+
+100
+00:04:28,950 --> 00:04:30,540
+be the guy to kind of rant about it but
+
+101
+00:04:30,540 --> 00:04:33,960
+it never gets done for starters stop
+
+102
+00:04:33,960 --> 00:04:35,520
+using to do's and use an actual bug
+
+103
+00:04:35,520 --> 00:04:37,530
+tracker that's that's that's a good
+
+104
+00:04:37,530 --> 00:04:41,250
+start so I really respect what you guys
+
+105
+00:04:41,250 --> 00:04:43,200
+do from a code perspective and I'm
+
+106
+00:04:43,200 --> 00:04:44,280
+really I
+
+107
+00:04:44,280 --> 00:04:46,800
+really think that the security community
+
+108
+00:04:46,800 --> 00:04:48,600
+and the development unity you need to
+
+109
+00:04:48,600 --> 00:04:51,060
+need to interact more and we as security
+
+110
+00:04:51,060 --> 00:04:53,040
+people need to understand what you guys
+
+111
+00:04:53,040 --> 00:04:54,630
+what's cool things you guys are building
+
+112
+00:04:54,630 --> 00:04:56,880
+and and I really want to have some
+
+113
+00:04:56,880 --> 00:04:58,200
+discussion after this talk with people
+
+114
+00:04:58,200 --> 00:04:59,810
+on how their team is handling security
+
+115
+00:04:59,810 --> 00:05:04,139
+how how you think that that you guys do
+
+116
+00:05:04,139 --> 00:05:06,030
+it right that you guys you guys don't do
+
+117
+00:05:06,030 --> 00:05:07,680
+it and maybe that's the way you do it
+
+118
+00:05:07,680 --> 00:05:09,419
+and that's just because of constraints
+
+119
+00:05:09,419 --> 00:05:11,280
+I'd really like to have some of those
+
+120
+00:05:11,280 --> 00:05:14,300
+conversations come out of doing this as
+
+121
+00:05:14,300 --> 00:05:18,960
+for I also think that that developers
+
+122
+00:05:18,960 --> 00:05:20,910
+need to take a little more
+
+123
+00:05:20,910 --> 00:05:23,040
+responsibility when it comes to security
+
+124
+00:05:23,040 --> 00:05:25,260
+and think about it and the problem is is
+
+125
+00:05:25,260 --> 00:05:26,550
+again your resource constraints so you
+
+126
+00:05:26,550 --> 00:05:28,050
+get to the end of a project where
+
+127
+00:05:28,050 --> 00:05:31,410
+security is usually applied and you just
+
+128
+00:05:31,410 --> 00:05:33,150
+ship it now you're moving on to cool
+
+129
+00:05:33,150 --> 00:05:36,000
+project x instead of you know dealing
+
+130
+00:05:36,000 --> 00:05:38,520
+with the as was mentioned in some of the
+
+131
+00:05:38,520 --> 00:05:41,130
+earlier talks you know dealing with the
+
+132
+00:05:41,130 --> 00:05:42,360
+the code that you just don't want to
+
+133
+00:05:42,360 --> 00:05:43,770
+work on because it's it's not cool it's
+
+134
+00:05:43,770 --> 00:05:49,680
+old and it's old and flabby right so so
+
+135
+00:05:49,680 --> 00:05:51,180
+here's the first thing that I see gets
+
+136
+00:05:51,180 --> 00:05:53,520
+screwed up as I went over all of the
+
+137
+00:05:53,520 --> 00:05:54,810
+assessment reports we've done for the
+
+138
+00:05:54,810 --> 00:05:56,700
+last couple of years there's two things
+
+139
+00:05:56,700 --> 00:05:58,979
+that stood out was hash you know kind of
+
+140
+00:05:58,979 --> 00:06:02,010
+a hash navigation or a shebang
+
+141
+00:06:02,010 --> 00:06:04,650
+navigation and output encoding and
+
+142
+00:06:04,650 --> 00:06:09,120
+there's a unicorn so the the reality is
+
+143
+00:06:09,120 --> 00:06:11,760
+is I see this done wrong in two
+
+144
+00:06:11,760 --> 00:06:14,400
+different ways and it's really easy to
+
+145
+00:06:14,400 --> 00:06:16,140
+get right and a lot of places do get it
+
+146
+00:06:16,140 --> 00:06:17,910
+right but it's just done wrong so you
+
+147
+00:06:17,910 --> 00:06:19,830
+have you have a URL right like you know
+
+148
+00:06:19,830 --> 00:06:23,070
+twitter com / you know hash and then a
+
+149
+00:06:23,070 --> 00:06:26,250
+resource and you get that Reese and the
+
+150
+00:06:26,250 --> 00:06:27,690
+Ajax just says go get that resource
+
+151
+00:06:27,690 --> 00:06:29,820
+right we're all pretty much familiar
+
+152
+00:06:29,820 --> 00:06:31,380
+with how that works right a lot of
+
+153
+00:06:31,380 --> 00:06:32,910
+places just don't bother to check that
+
+154
+00:06:32,910 --> 00:06:34,440
+there's I don't know a slash at the
+
+155
+00:06:34,440 --> 00:06:36,780
+beginning and so then you just go and it
+
+156
+00:06:36,780 --> 00:06:38,910
+says just get whatever resource that is
+
+157
+00:06:38,910 --> 00:06:41,820
+and they don't they don't tack on a vein
+
+158
+00:06:41,820 --> 00:06:44,430
+or they don't tack on anything at the
+
+159
+00:06:44,430 --> 00:06:47,010
+beginning so you put in a you know a
+
+160
+00:06:47,010 --> 00:06:49,979
+payload like this you know to evil site
+
+161
+00:06:49,979 --> 00:06:52,590
+in and I've argued with a lot of people
+
+162
+00:06:52,590 --> 00:06:53,789
+and they say well that won't work
+
+163
+00:06:53,789 --> 00:06:55,740
+because it's cross domain right
+
+164
+00:06:55,740 --> 00:06:56,910
+it just doesn't work we'll get guess
+
+165
+00:06:56,910 --> 00:07:00,509
+what of course headers allow that and my
+
+166
+00:07:00,509 --> 00:07:02,220
+evil site just sets that nice core
+
+167
+00:07:02,220 --> 00:07:06,240
+course header and and it works and the
+
+168
+00:07:06,240 --> 00:07:08,009
+other way I see it done right is that
+
+169
+00:07:08,009 --> 00:07:13,500
+they don't they they're checking for or
+
+170
+00:07:13,500 --> 00:07:15,300
+they don't check for HTTP so you so you
+
+171
+00:07:15,300 --> 00:07:19,009
+end up building a big long domain like
+
+172
+00:07:19,009 --> 00:07:22,919
+example com evil packet net resource and
+
+173
+00:07:22,919 --> 00:07:24,509
+you just do something like that and it
+
+174
+00:07:24,509 --> 00:07:26,069
+gets built out those are the two ways I
+
+175
+00:07:26,069 --> 00:07:28,860
+see it I'm going to attempt to do just
+
+176
+00:07:28,860 --> 00:07:31,560
+the demo just just to show kind of what
+
+177
+00:07:31,560 --> 00:07:36,090
+it would look like a really simple
+
+178
+00:07:36,090 --> 00:07:37,590
+cheesy demo that will probably fail
+
+179
+00:07:37,590 --> 00:07:40,440
+miserably okay so it has tests that's
+
+180
+00:07:40,440 --> 00:07:47,099
+the standard content we can win a life
+
+181
+00:07:47,099 --> 00:07:55,289
+test look at that resource great that
+
+182
+00:07:55,289 --> 00:07:58,440
+resources you know maps whatever and of
+
+183
+00:07:58,440 --> 00:08:02,310
+course we put in something you look at
+
+184
+00:08:02,310 --> 00:08:06,300
+the people pack it down net / cores and
+
+185
+00:08:06,300 --> 00:08:09,570
+we can see that it's going to not work
+
+186
+00:08:09,570 --> 00:08:15,959
+right
+
+187
+00:08:15,969 --> 00:08:22,620
+boom
+
+188
+00:08:22,630 --> 00:08:25,000
+all right live demo fail well what I was
+
+189
+00:08:25,000 --> 00:08:29,830
+going to show is that oh yeah I didn't
+
+190
+00:08:29,830 --> 00:08:39,760
+go get it Oh aha my app sucks so now
+
+191
+00:08:39,760 --> 00:08:41,289
+I'll actually work it just displays an
+
+192
+00:08:41,289 --> 00:08:43,510
+alert box saying that it executes a code
+
+193
+00:08:43,510 --> 00:08:45,040
+in the context of local I was great you
+
+194
+00:08:45,040 --> 00:08:47,080
+know window dot location but if you'll
+
+195
+00:08:47,080 --> 00:08:48,270
+actually look at the headers and I'm I
+
+196
+00:08:48,270 --> 00:08:51,220
+apologize because I'm not smart as Paul
+
+197
+00:08:51,220 --> 00:08:52,660
+Irish and I can't make this font bigger
+
+198
+00:08:52,660 --> 00:08:54,670
+I don't think I don't know how to do
+
+199
+00:08:54,670 --> 00:08:58,120
+that so if you actually look at the
+
+200
+00:08:58,120 --> 00:08:59,470
+headers that's coming back and this is
+
+201
+00:08:59,470 --> 00:09:05,170
+really hard to see there is a response
+
+202
+00:09:05,170 --> 00:09:08,530
+header access control allow origin star
+
+203
+00:09:08,530 --> 00:09:10,750
+that's all I have to set for four cores
+
+204
+00:09:10,750 --> 00:09:12,970
+and so just the point of that it's
+
+205
+00:09:12,970 --> 00:09:15,040
+really easy for an attacker once we if
+
+206
+00:09:15,040 --> 00:09:16,900
+you do this wrong to to execute code
+
+207
+00:09:16,900 --> 00:09:18,970
+within the context or application the
+
+208
+00:09:18,970 --> 00:09:20,650
+uneven packet there's a really
+
+209
+00:09:20,650 --> 00:09:24,160
+complicated example of our do had had
+
+210
+00:09:24,160 --> 00:09:27,000
+this problem when they came in beta and
+
+211
+00:09:27,000 --> 00:09:30,580
+and it shows some more complicated
+
+212
+00:09:30,580 --> 00:09:35,080
+execution flow for that cross-site
+
+213
+00:09:35,080 --> 00:09:37,360
+scripting everyone everyone's plagued by
+
+214
+00:09:37,360 --> 00:09:41,200
+this problem right like we don't want to
+
+215
+00:09:41,200 --> 00:09:42,550
+hear about cross-site scripting at least
+
+216
+00:09:42,550 --> 00:09:43,390
+at least that's what I hear from
+
+217
+00:09:43,390 --> 00:09:44,560
+developers when I talk to them they're
+
+218
+00:09:44,560 --> 00:09:46,480
+like it's probably just want to get go
+
+219
+00:09:46,480 --> 00:09:49,690
+away right or my templating framework
+
+220
+00:09:49,690 --> 00:09:52,060
+takes care of that the guys in the
+
+221
+00:09:52,060 --> 00:09:53,620
+Django community say well my templating
+
+222
+00:09:53,620 --> 00:09:55,180
+takes care of that rail says my template
+
+223
+00:09:55,180 --> 00:09:56,620
+thing takes care of that Express and
+
+224
+00:09:56,620 --> 00:09:59,050
+Jade takes care of that right well guess
+
+225
+00:09:59,050 --> 00:10:00,940
+what it doesn't if you up your
+
+226
+00:10:00,940 --> 00:10:03,010
+templates you're going to have a problem
+
+227
+00:10:03,010 --> 00:10:05,350
+and the reality is is this is this is
+
+228
+00:10:05,350 --> 00:10:07,540
+the reason all of these things encode
+
+229
+00:10:07,540 --> 00:10:10,510
+those five characters quotes greater
+
+230
+00:10:10,510 --> 00:10:11,950
+than less than single quote & ampersand
+
+231
+00:10:11,950 --> 00:10:16,770
+and if you put if you write shitty HTML
+
+232
+00:10:16,770 --> 00:10:21,340
+like down at the bottom there it you
+
+233
+00:10:21,340 --> 00:10:22,570
+don't need any of those things to
+
+234
+00:10:22,570 --> 00:10:27,070
+actually execute code it's just not
+
+235
+00:10:27,070 --> 00:10:31,089
+required the other things people forget
+
+236
+00:10:31,089 --> 00:10:32,200
+is that you can write Java code
+
+237
+00:10:32,200 --> 00:10:33,940
+JavaScript without letters and numbers
+
+238
+00:10:33,940 --> 00:10:35,520
+alphanumeric JavaScript
+
+239
+00:10:35,520 --> 00:10:36,630
+so depending on what you're actually
+
+240
+00:10:36,630 --> 00:10:39,360
+encoding it's contextually aware context
+
+241
+00:10:39,360 --> 00:10:40,350
+matters of where you're actually
+
+242
+00:10:40,350 --> 00:10:42,930
+cramming cramming your stuff into your
+
+243
+00:10:42,930 --> 00:10:45,930
+templates and you guys do some really
+
+244
+00:10:45,930 --> 00:10:47,760
+creative stuff with templating and and
+
+245
+00:10:47,760 --> 00:10:50,940
+sticking stuff where I would not
+
+246
+00:10:50,940 --> 00:10:53,310
+normally think think about it and in
+
+247
+00:10:53,310 --> 00:10:54,960
+this stuff matters well there's some
+
+248
+00:10:54,960 --> 00:10:56,250
+really there's some really elegant
+
+249
+00:10:56,250 --> 00:10:59,790
+solutions to solving this problem jquery
+
+250
+00:10:59,790 --> 00:11:02,820
+encoders go one way again don't write
+
+251
+00:11:02,820 --> 00:11:05,220
+your own quarters it use the stuff
+
+252
+00:11:05,220 --> 00:11:07,050
+that's out there we're trying to build a
+
+253
+00:11:07,050 --> 00:11:09,000
+wasp is trying to build their enterprise
+
+254
+00:11:09,000 --> 00:11:11,940
+security API to solve this problem to
+
+255
+00:11:11,940 --> 00:11:13,860
+make it easy so that there's a set of
+
+256
+00:11:13,860 --> 00:11:16,260
+encoders that you guys can just use and
+
+257
+00:11:16,260 --> 00:11:17,520
+you don't have to reinvent the wheel and
+
+258
+00:11:17,520 --> 00:11:19,290
+potentially screw it up they say the
+
+259
+00:11:19,290 --> 00:11:20,580
+same thing with cryptography don't write
+
+260
+00:11:20,580 --> 00:11:21,920
+your own crypto because math is hard
+
+261
+00:11:21,920 --> 00:11:25,650
+encoders are hard as well and here's a
+
+262
+00:11:25,650 --> 00:11:27,330
+simple example which I'm not going to
+
+263
+00:11:27,330 --> 00:11:29,790
+bother to go over but it just says
+
+264
+00:11:29,790 --> 00:11:31,890
+encode for HTML and they've got
+
+265
+00:11:31,890 --> 00:11:33,480
+different context is like in code for
+
+266
+00:11:33,480 --> 00:11:35,760
+CSS and code for JavaScript depending on
+
+267
+00:11:35,760 --> 00:11:37,680
+where you're actually dumping that that
+
+268
+00:11:37,680 --> 00:11:40,530
+input or that output and that's the
+
+269
+00:11:40,530 --> 00:11:42,090
+other thing is is that this is not in
+
+270
+00:11:42,090 --> 00:11:44,460
+putting not input validation we always
+
+271
+00:11:44,460 --> 00:11:45,840
+talk about input validation input
+
+272
+00:11:45,840 --> 00:11:47,720
+validation I feel is for the end user
+
+273
+00:11:47,720 --> 00:11:49,590
+you're going to give them a pretty
+
+274
+00:11:49,590 --> 00:11:51,240
+little message and tell them that there
+
+275
+00:11:51,240 --> 00:11:54,480
+that there that they put in a malformed
+
+276
+00:11:54,480 --> 00:11:56,580
+email address or something output
+
+277
+00:11:56,580 --> 00:11:58,560
+encoding is about sending it to a
+
+278
+00:11:58,560 --> 00:12:00,390
+different system so you're taking this
+
+279
+00:12:00,390 --> 00:12:02,880
+piece of out the this this piece of data
+
+280
+00:12:02,880 --> 00:12:04,500
+and you're sending it to a system a
+
+281
+00:12:04,500 --> 00:12:06,240
+browser is a system a sequel server
+
+282
+00:12:06,240 --> 00:12:08,580
+system and depending on where you're
+
+283
+00:12:08,580 --> 00:12:10,470
+sending it what complex system xmpp
+
+284
+00:12:10,470 --> 00:12:13,350
+server whatever you need to encode it
+
+285
+00:12:13,350 --> 00:12:14,640
+properly to send it to that system
+
+286
+00:12:14,640 --> 00:12:17,790
+that's output encoding and and it can be
+
+287
+00:12:17,790 --> 00:12:21,090
+a really really complicated process the
+
+288
+00:12:21,090 --> 00:12:22,740
+other thing is and I really really if
+
+289
+00:12:22,740 --> 00:12:27,810
+anybody from chrome team can can push
+
+290
+00:12:27,810 --> 00:12:29,460
+this on the chrome side I would love to
+
+291
+00:12:29,460 --> 00:12:30,930
+see it it just it's a new feature in
+
+292
+00:12:30,930 --> 00:12:33,330
+Firefox force content security policy as
+
+293
+00:12:33,330 --> 00:12:34,740
+anybody aware of content security policy
+
+294
+00:12:34,740 --> 00:12:39,930
+a couple people that's good content
+
+295
+00:12:39,930 --> 00:12:41,700
+security policy is is is pretty badass
+
+296
+00:12:41,700 --> 00:12:43,830
+it basically says that you can define
+
+297
+00:12:43,830 --> 00:12:47,250
+where you want scripts to run it and you
+
+298
+00:12:47,250 --> 00:12:49,250
+can say I only want to
+
+299
+00:12:49,250 --> 00:12:51,580
+load and execute scripts from my domain
+
+300
+00:12:51,580 --> 00:12:55,580
+inline scripts can piss off stuff from
+
+301
+00:12:55,580 --> 00:12:57,050
+other domains can just go away it's not
+
+302
+00:12:57,050 --> 00:12:59,180
+going to be executed as well as there's
+
+303
+00:12:59,180 --> 00:13:00,380
+there's a way if you want actually
+
+304
+00:13:00,380 --> 00:13:01,970
+implement this and test your app to see
+
+305
+00:13:01,970 --> 00:13:03,200
+where things would break there's
+
+306
+00:13:03,200 --> 00:13:07,670
+actually a way to just record the events
+
+307
+00:13:07,670 --> 00:13:09,050
+instead of actually blocking them so you
+
+308
+00:13:09,050 --> 00:13:10,670
+can say in the console you're going to
+
+309
+00:13:10,670 --> 00:13:13,330
+see how these things actually fail
+
+310
+00:13:13,330 --> 00:13:16,040
+another more complicated example would
+
+311
+00:13:16,040 --> 00:13:20,870
+be if i wanted to load different types
+
+312
+00:13:20,870 --> 00:13:22,220
+of objects so there's different types of
+
+313
+00:13:22,220 --> 00:13:23,780
+classification of objects objects and
+
+314
+00:13:23,780 --> 00:13:26,510
+scripts and images and things like that
+
+315
+00:13:26,510 --> 00:13:27,980
+and so you can you can define all this
+
+316
+00:13:27,980 --> 00:13:29,090
+content where you want it to come from
+
+317
+00:13:29,090 --> 00:13:30,800
+it gives you more control over things
+
+318
+00:13:30,800 --> 00:13:35,060
+that you're loading up on to up onto
+
+319
+00:13:35,060 --> 00:13:39,110
+your your page again I this is you might
+
+320
+00:13:39,110 --> 00:13:40,580
+say well I'm not just targeting Firefox
+
+321
+00:13:40,580 --> 00:13:41,900
+where I'm not just targeting chrome or
+
+322
+00:13:41,900 --> 00:13:44,390
+it doesn't solve my problem completely
+
+323
+00:13:44,390 --> 00:13:46,550
+but it makes it harder if you actually
+
+324
+00:13:46,550 --> 00:13:49,580
+implement a Content security policy on
+
+325
+00:13:49,580 --> 00:13:51,710
+your site guess what you're you may have
+
+326
+00:13:51,710 --> 00:13:53,480
+cross-site scripting problems but it's
+
+327
+00:13:53,480 --> 00:13:55,040
+only going to affect a portion of your
+
+328
+00:13:55,040 --> 00:13:56,660
+users you're going to be doing one
+
+329
+00:13:56,660 --> 00:14:00,290
+better than then somebody else and that
+
+330
+00:14:00,290 --> 00:14:01,760
+might be enough to make just somebody go
+
+331
+00:14:01,760 --> 00:14:04,580
+make an attacker go away it's kind of
+
+332
+00:14:04,580 --> 00:14:07,700
+like the the story of two guys in the
+
+333
+00:14:07,700 --> 00:14:09,440
+woods being being chased by a bear and
+
+334
+00:14:09,440 --> 00:14:10,820
+the guy takes a break to put on his
+
+335
+00:14:10,820 --> 00:14:12,110
+running shoes and his buddies like
+
+336
+00:14:12,110 --> 00:14:13,910
+asking what the hell are you doing why
+
+337
+00:14:13,910 --> 00:14:15,800
+just have to run faster than you you
+
+338
+00:14:15,800 --> 00:14:17,839
+just have to do better and that's the
+
+339
+00:14:17,839 --> 00:14:19,339
+truth is you can't have a hundred
+
+340
+00:14:19,339 --> 00:14:21,370
+percent secure site it's not possible
+
+341
+00:14:21,370 --> 00:14:23,360
+security is not a hundred percent thing
+
+342
+00:14:23,360 --> 00:14:25,580
+we all know that we all get that so it's
+
+343
+00:14:25,580 --> 00:14:26,780
+all about just doing better
+
+344
+00:14:26,780 --> 00:14:29,570
+understanding where you're at understand
+
+345
+00:14:29,570 --> 00:14:30,800
+where your organization at where you are
+
+346
+00:14:30,800 --> 00:14:32,720
+as a developer whether you give a damn
+
+347
+00:14:32,720 --> 00:14:37,460
+or not and just do better and I blew
+
+348
+00:14:37,460 --> 00:14:39,380
+through that amazingly fast so we'll
+
+349
+00:14:39,380 --> 00:14:41,050
+chat about some other stuff here
+
+350
+00:14:41,050 --> 00:14:44,120
+cross-site request forgery I see a lot
+
+351
+00:14:44,120 --> 00:14:47,780
+of people doing setting data actually
+
+352
+00:14:47,780 --> 00:14:50,450
+doing just not getting resources with
+
+353
+00:14:50,450 --> 00:14:52,790
+get I do doing privileged actions with
+
+354
+00:14:52,790 --> 00:14:55,300
+get it's a horrible idea don't do it
+
+355
+00:14:55,300 --> 00:14:58,940
+things like example.com / delete my
+
+356
+00:14:58,940 --> 00:14:59,769
+account
+
+357
+00:14:59,769 --> 00:15:02,920
+you know ID equals with a get and not
+
+358
+00:15:02,920 --> 00:15:04,509
+not bothering instead we just have we
+
+359
+00:15:04,509 --> 00:15:05,920
+just have a pop-up window it says do you
+
+360
+00:15:05,920 --> 00:15:08,939
+accept okay that's that's not really
+
+361
+00:15:08,939 --> 00:15:11,800
+necessarily adequate there's great
+
+362
+00:15:11,800 --> 00:15:14,459
+implementations out there Express
+
+363
+00:15:14,459 --> 00:15:19,449
+Express has a CSRF plugin I would look
+
+364
+00:15:19,449 --> 00:15:21,339
+if I were developing and I would look at
+
+365
+00:15:21,339 --> 00:15:22,540
+some of the models that are out there in
+
+366
+00:15:22,540 --> 00:15:25,209
+Django and in rails and and take their
+
+367
+00:15:25,209 --> 00:15:28,410
+model and implement that clickjacking
+
+368
+00:15:28,410 --> 00:15:31,749
+clickjacking totally gets a you know
+
+369
+00:15:31,749 --> 00:15:33,269
+most people think thats related to flash
+
+370
+00:15:33,269 --> 00:15:36,269
+and that type of things it circumvents
+
+371
+00:15:36,269 --> 00:15:38,139
+first of all if you have cross-site
+
+372
+00:15:38,139 --> 00:15:39,249
+scripting if you have if you have an
+
+373
+00:15:39,249 --> 00:15:40,899
+injection point near applications your
+
+374
+00:15:40,899 --> 00:15:42,639
+CSRF cross-site request forgery
+
+375
+00:15:42,639 --> 00:15:45,279
+protection is crap it's not going to
+
+376
+00:15:45,279 --> 00:15:48,699
+work it'sit's overwritten if you can
+
+377
+00:15:48,699 --> 00:15:49,959
+frame your application and you've got
+
+378
+00:15:49,959 --> 00:15:52,149
+click to basically allow for
+
+379
+00:15:52,149 --> 00:15:53,439
+clickjacking if you don't have frame
+
+380
+00:15:53,439 --> 00:15:55,299
+breakout code which frame breakout code
+
+381
+00:15:55,299 --> 00:15:58,209
+is not not perfect researchers have
+
+382
+00:15:58,209 --> 00:15:59,679
+proven time and again that that can be
+
+383
+00:15:59,679 --> 00:16:01,929
+that can be broken so there's a neat
+
+384
+00:16:01,929 --> 00:16:04,779
+little header the x frame options header
+
+385
+00:16:04,779 --> 00:16:06,910
+that you can set and you can say what
+
+386
+00:16:06,910 --> 00:16:08,709
+sites can frame your app if you're a
+
+387
+00:16:08,709 --> 00:16:10,029
+site that you never want your crap
+
+388
+00:16:10,029 --> 00:16:12,850
+framed set the header you click jacking
+
+389
+00:16:12,850 --> 00:16:14,769
+is just going to fail miserably it's not
+
+390
+00:16:14,769 --> 00:16:19,990
+going to be possible cookies I see a lot
+
+391
+00:16:19,990 --> 00:16:21,939
+of whoring cookies around in JavaScript
+
+392
+00:16:21,939 --> 00:16:27,549
+and don't do it it's that HTTP only set
+
+393
+00:16:27,549 --> 00:16:32,499
+secure flag use HTTPS and I guess any
+
+394
+00:16:32,499 --> 00:16:34,389
+questions anybody want to argue with me
+
+395
+00:16:34,389 --> 00:16:37,899
+or heckle me I'm yeah I'm this time the
+
+396
+00:16:37,899 --> 00:16:40,360
+security guy so just so you can you can
+
+397
+00:16:40,360 --> 00:16:45,200
+heckle I'm okay
+
+398
+00:16:45,210 --> 00:16:50,860
+okay so so clickjacking is clickjacking
+
+399
+00:16:50,860 --> 00:16:53,080
+is where you take a page and put in a
+
+400
+00:16:53,080 --> 00:16:55,300
+frame and make it invisible and then
+
+401
+00:16:55,300 --> 00:16:58,540
+make it follow the mouse cursor so
+
+402
+00:16:58,540 --> 00:16:59,710
+wherever you click you're going to click
+
+403
+00:16:59,710 --> 00:17:01,000
+on the button that I want you to click
+
+404
+00:17:01,000 --> 00:17:05,850
+on so one nice nun one nice thing about
+
+405
+00:17:05,850 --> 00:17:08,400
+forms that get filled out by like the
+
+406
+00:17:08,400 --> 00:17:10,930
+URL where you where you put you know
+
+407
+00:17:10,930 --> 00:17:12,850
+your form information the URL and it
+
+408
+00:17:12,850 --> 00:17:15,579
+gets populated I can just frame that URL
+
+409
+00:17:15,579 --> 00:17:17,020
+up and then make you hover over the
+
+410
+00:17:17,020 --> 00:17:18,699
+button that I want and it's invisible
+
+411
+00:17:18,699 --> 00:17:20,650
+and so when you click you actually click
+
+412
+00:17:20,650 --> 00:17:25,180
+through to that to that that frame so so
+
+413
+00:17:25,180 --> 00:17:27,250
+what happens is you're on you're on my
+
+414
+00:17:27,250 --> 00:17:29,230
+you know evil packet net and I'm I'm
+
+415
+00:17:29,230 --> 00:17:31,780
+really you know have facebook underneath
+
+416
+00:17:31,780 --> 00:17:33,100
+there so that you like me or whatever
+
+417
+00:17:33,100 --> 00:17:35,350
+and so when you click Facebook of course
+
+418
+00:17:35,350 --> 00:17:37,710
+has some protections against that but
+
+419
+00:17:37,710 --> 00:17:42,250
+that's one that's one example I I'm not
+
+420
+00:17:42,250 --> 00:17:44,800
+ready to do a demo of it but you see me
+
+421
+00:17:44,800 --> 00:17:47,100
+after I can show you a demo or something
+
+422
+00:17:47,100 --> 00:17:51,760
+if not that is it and see me after four
+

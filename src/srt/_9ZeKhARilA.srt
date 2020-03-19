@@ -1,0 +1,2781 @@
+1
+00:00:09,019 --> 00:00:11,490
+
+my name is Felix caisson deferred and
+
+2
+00:00:11,490 --> 00:00:13,290
+I'm going to talk about how to do
+
+3
+00:00:13,290 --> 00:00:17,130
+testing and noches if you are looking
+
+4
+00:00:17,130 --> 00:00:19,590
+for me on github Twitter IRC that's my
+
+5
+00:00:19,590 --> 00:00:23,910
+handle yeah Tom already gave a little
+
+6
+00:00:23,910 --> 00:00:25,710
+introduction about me but I've guess
+
+7
+00:00:25,710 --> 00:00:27,240
+I've been an early contributor to the
+
+8
+00:00:27,240 --> 00:00:29,070
+project and I kind of worked on a bunch
+
+9
+00:00:29,070 --> 00:00:32,309
+of model modules and actually really
+
+10
+00:00:32,309 --> 00:00:35,370
+liked that mad heads a talk right in
+
+11
+00:00:35,370 --> 00:00:36,870
+front of me because a lot of the
+
+12
+00:00:36,870 --> 00:00:39,510
+problems he's describing that he has was
+
+13
+00:00:39,510 --> 00:00:41,219
+running node and production have
+
+14
+00:00:41,219 --> 00:00:44,219
+different solutions in debugging lindo
+
+15
+00:00:44,219 --> 00:00:46,379
+stovall recently I don't know how reason
+
+16
+00:00:46,379 --> 00:00:48,390
+but rode on a mailing list there really
+
+17
+00:00:48,390 --> 00:00:50,340
+are only two acceptable models of
+
+18
+00:00:50,340 --> 00:00:52,860
+development sink and analyze or years
+
+19
+00:00:52,860 --> 00:00:54,300
+and years of testing and thousands of
+
+20
+00:00:54,300 --> 00:00:56,850
+machines now for most software you're
+
+21
+00:00:56,850 --> 00:00:58,260
+going to need a certain combination of
+
+22
+00:00:58,260 --> 00:01:00,000
+the two you're going to need to do a lot
+
+23
+00:01:00,000 --> 00:01:01,770
+of thinking and analyzing and a lot of
+
+24
+00:01:01,770 --> 00:01:04,049
+testing a lot of machines but i think
+
+25
+00:01:04,049 --> 00:01:05,610
+the sink and analyzed part can be
+
+26
+00:01:05,610 --> 00:01:07,920
+creighton hants to certain techniques
+
+27
+00:01:07,920 --> 00:01:09,210
+when it comes to testing noches
+
+28
+00:01:09,210 --> 00:01:11,070
+applications and they can save you a lot
+
+29
+00:01:11,070 --> 00:01:12,869
+of time on the debugging part and the
+
+30
+00:01:12,869 --> 00:01:16,320
+running on thousands of machines so let
+
+31
+00:01:16,320 --> 00:01:18,869
+me tell you a little story how I was
+
+32
+00:01:18,869 --> 00:01:21,450
+using node before I learned my lessons
+
+33
+00:01:21,450 --> 00:01:23,820
+and how we're using it now it kind of
+
+34
+00:01:23,820 --> 00:01:27,240
+started in june 2009 we were building a
+
+35
+00:01:27,240 --> 00:01:29,280
+product called trance loaded which is a
+
+36
+00:01:29,280 --> 00:01:30,960
+service for file uploading and
+
+37
+00:01:30,960 --> 00:01:33,060
+processing is an infrastructure service
+
+38
+00:01:33,060 --> 00:01:36,090
+it's kind of similar to what mess you
+
+39
+00:01:36,090 --> 00:01:37,799
+talked about at the MRC actually using
+
+40
+00:01:37,799 --> 00:01:39,869
+the note formidable file upload parcel
+
+41
+00:01:39,869 --> 00:01:42,570
+for that that we wrote and we initially
+
+42
+00:01:42,570 --> 00:01:45,780
+did set in peach key and we try to do a
+
+43
+00:01:45,780 --> 00:01:48,390
+lot of things that were difficult in PHP
+
+44
+00:01:48,390 --> 00:01:50,490
+like running a lot of processes in the
+
+45
+00:01:50,490 --> 00:01:53,939
+background and getting events for their
+
+46
+00:01:53,939 --> 00:01:55,590
+standard out in standard error to show
+
+47
+00:01:55,590 --> 00:01:57,479
+encoding progress information to the
+
+48
+00:01:57,479 --> 00:01:59,430
+users and it always felt very tedious
+
+49
+00:01:59,430 --> 00:02:01,079
+where were using workers we're using
+
+50
+00:02:01,079 --> 00:02:03,299
+hues and we just got nowhere with that
+
+51
+00:02:03,299 --> 00:02:05,100
+we didn't get results out upset said we
+
+52
+00:02:05,100 --> 00:02:06,960
+wanted it we're certainly doable but it
+
+53
+00:02:06,960 --> 00:02:10,310
+felt painful so we found no chairs
+
+54
+00:02:10,310 --> 00:02:14,360
+no jst m and we kind of fell in love
+
+55
+00:02:14,360 --> 00:02:17,780
+with it and we had a lot of fun using it
+
+56
+00:02:17,780 --> 00:02:19,670
+it really solved our problems and we
+
+57
+00:02:19,670 --> 00:02:20,989
+were thinking yeah that's the answer to
+
+58
+00:02:20,989 --> 00:02:23,209
+all of our problems but actually our
+
+59
+00:02:23,209 --> 00:02:25,550
+first version we totally crashed it it
+
+60
+00:02:25,550 --> 00:02:28,670
+did not work at all for us to be more
+
+61
+00:02:28,670 --> 00:02:30,860
+precise note crashed for us we were on a
+
+62
+00:02:30,860 --> 00:02:34,459
+very early version sing it with co 118
+
+63
+00:02:34,459 --> 00:02:37,640
+or something and it had a buggy piece in
+
+64
+00:02:37,640 --> 00:02:39,349
+the networking layer and every so often
+
+65
+00:02:39,349 --> 00:02:42,410
+more sober which is died without slowing
+
+66
+00:02:42,410 --> 00:02:44,209
+an exception just this little message
+
+67
+00:02:44,209 --> 00:02:46,250
+you see here f come receive success
+
+68
+00:02:46,250 --> 00:02:48,350
+while awesome success and then a sec
+
+69
+00:02:48,350 --> 00:02:53,630
+fold but without the sexual part so we
+
+70
+00:02:53,630 --> 00:02:55,099
+were really close to launching at that
+
+71
+00:02:55,099 --> 00:02:57,410
+point there we were like oh no and well
+
+72
+00:02:57,410 --> 00:03:00,200
+as those things happen when stuff hits
+
+73
+00:03:00,200 --> 00:03:02,209
+the fan there's more coming and this was
+
+74
+00:03:02,209 --> 00:03:04,580
+exactly the time where Ryan was changing
+
+75
+00:03:04,580 --> 00:03:07,190
+the promised API and nuking it
+
+76
+00:03:07,190 --> 00:03:08,959
+completely from the core and putting in
+
+77
+00:03:08,959 --> 00:03:11,090
+callbacks instead we were like oh no now
+
+78
+00:03:11,090 --> 00:03:13,310
+we have to rewrite all of our code on
+
+79
+00:03:13,310 --> 00:03:14,959
+top of the fact that our initial code
+
+80
+00:03:14,959 --> 00:03:17,150
+base didn't even work to begin with but
+
+81
+00:03:17,150 --> 00:03:19,340
+an even bigger problem was we had no
+
+82
+00:03:19,340 --> 00:03:23,959
+tests we had written like 10,000 lines
+
+83
+00:03:23,959 --> 00:03:26,120
+of no she s code and now refactoring
+
+84
+00:03:26,120 --> 00:03:27,890
+every single piece of the coats it uses
+
+85
+00:03:27,890 --> 00:03:30,109
+a promise to a call back I mean it was
+
+86
+00:03:30,109 --> 00:03:32,480
+not going to happen so we device the
+
+87
+00:03:32,480 --> 00:03:34,130
+greatest plan of all software
+
+88
+00:03:34,130 --> 00:03:37,670
+development ever we decided to rewrite
+
+89
+00:03:37,670 --> 00:03:39,709
+the whole thing that's what software
+
+90
+00:03:39,709 --> 00:03:41,720
+engineer that's right no that's we
+
+91
+00:03:41,720 --> 00:03:43,880
+really kind of went back and forth of it
+
+92
+00:03:43,880 --> 00:03:45,829
+if it made sense or not but we decided
+
+93
+00:03:45,829 --> 00:03:47,840
+said not having a test suit was actually
+
+94
+00:03:47,840 --> 00:03:49,940
+a really big problem even the bigger
+
+95
+00:03:49,940 --> 00:03:52,069
+problems and the fact that promises were
+
+96
+00:03:52,069 --> 00:03:55,190
+changing underneath us and at that time
+
+97
+00:03:55,190 --> 00:03:59,090
+I was watching a real con 2009 keynote
+
+98
+00:03:59,090 --> 00:04:01,819
+by robert martin also known as uncle bob
+
+99
+00:04:01,819 --> 00:04:04,010
+and he gave the presentation called what
+
+100
+00:04:04,010 --> 00:04:05,930
+killed small talk could kill ruby too
+
+101
+00:04:05,930 --> 00:04:08,600
+and it was really energetic presentation
+
+102
+00:04:08,600 --> 00:04:10,459
+about test ribbon development and i got
+
+103
+00:04:10,459 --> 00:04:12,620
+all pumped up and excited i even all
+
+104
+00:04:12,620 --> 00:04:14,120
+that one of the little cream wristbands
+
+105
+00:04:14,120 --> 00:04:16,400
+he he has for people to look at and be
+
+106
+00:04:16,400 --> 00:04:18,200
+constantly reminded to write the tests
+
+107
+00:04:18,200 --> 00:04:20,390
+first and i was very excited it's kind
+
+108
+00:04:20,390 --> 00:04:21,160
+of me in the
+
+109
+00:04:21,160 --> 00:04:23,200
+backgrounds they're being very excited
+
+110
+00:04:23,200 --> 00:04:28,360
+and so that's kind of how I got into
+
+111
+00:04:28,360 --> 00:04:29,710
+that it's been a years that have been
+
+112
+00:04:29,710 --> 00:04:31,540
+doing test-driven development so take
+
+113
+00:04:31,540 --> 00:04:33,640
+pics of what I have to say with a grain
+
+114
+00:04:33,640 --> 00:04:36,280
+of salt I'll talk what works for us what
+
+115
+00:04:36,280 --> 00:04:38,530
+doesn't and yeah let's get started with
+
+116
+00:04:38,530 --> 00:04:44,020
+us how to test asynchronous code when we
+
+117
+00:04:44,020 --> 00:04:47,380
+will start this when we decided we want
+
+118
+00:04:47,380 --> 00:04:48,610
+to do this test for the development
+
+119
+00:04:48,610 --> 00:04:50,080
+thing we want to be really disciplined
+
+120
+00:04:50,080 --> 00:04:52,210
+and do it all right we kind of looked
+
+121
+00:04:52,210 --> 00:04:53,620
+around for asynchronous testing
+
+122
+00:04:53,620 --> 00:04:57,370
+frameworks and but it kind of felt hot
+
+123
+00:04:57,370 --> 00:04:59,860
+everything we try didn't really work the
+
+124
+00:04:59,860 --> 00:05:01,330
+flying closure monster didn't really
+
+125
+00:05:01,330 --> 00:05:03,250
+help you know you already have those
+
+126
+00:05:03,250 --> 00:05:05,980
+closures in your code everywhere and now
+
+127
+00:05:05,980 --> 00:05:07,450
+you also have some in your tests and you
+
+128
+00:05:07,450 --> 00:05:10,360
+kind of need to make sure that each test
+
+129
+00:05:10,360 --> 00:05:12,100
+kinda has a done call back where you
+
+130
+00:05:12,100 --> 00:05:15,340
+tell it it's over and if there's an
+
+131
+00:05:15,340 --> 00:05:16,990
+exception that you didn't catch it's
+
+132
+00:05:16,990 --> 00:05:18,640
+really difficult to trace it back to the
+
+133
+00:05:18,640 --> 00:05:20,440
+tests that it was happening in I wishes
+
+134
+00:05:20,440 --> 00:05:24,490
+a mess it didn't really work for us it
+
+135
+00:05:24,490 --> 00:05:27,490
+turns out this is not a new problem or
+
+136
+00:05:27,490 --> 00:05:28,780
+anything this problem has been around
+
+137
+00:05:28,780 --> 00:05:31,660
+for a very long time the asynchronous
+
+138
+00:05:31,660 --> 00:05:34,060
+stuff is only piece of it but there's
+
+139
+00:05:34,060 --> 00:05:36,250
+some old news here that's why I brought
+
+140
+00:05:36,250 --> 00:05:38,919
+this last week's newspaper it's a German
+
+141
+00:05:38,919 --> 00:05:42,430
+terrible tabloid magazine and there's
+
+142
+00:05:42,430 --> 00:05:43,960
+little demonstration we can do with us
+
+143
+00:05:43,960 --> 00:05:45,730
+what I'm going to do is I'm going to
+
+144
+00:05:45,730 --> 00:05:49,150
+fold to sing seven times guess that's
+
+145
+00:05:49,150 --> 00:05:57,420
+two right now three four five
+
+146
+00:05:57,420 --> 00:06:01,560
+six gets tricky here seven okay there's
+
+147
+00:06:01,560 --> 00:06:03,180
+a lot of geeks in the room how many
+
+148
+00:06:03,180 --> 00:06:08,260
+pieces of paper are stacked up here now
+
+149
+00:06:08,270 --> 00:06:14,220
+anybody under 28 who set 128 can you
+
+150
+00:06:14,220 --> 00:06:16,140
+come here for a second it could need
+
+151
+00:06:16,140 --> 00:06:33,220
+your help on something all right come up
+
+152
+00:06:33,230 --> 00:06:35,820
+yeah folding it again would probably be
+
+153
+00:06:35,820 --> 00:06:37,920
+hard but I want you to try to rip it and
+
+154
+00:06:37,920 --> 00:06:40,290
+set religious yeah can you rip it oh
+
+155
+00:06:40,290 --> 00:06:42,570
+hell no okay there's no way to rip it
+
+156
+00:06:42,570 --> 00:06:45,000
+right no one okay okay thanks they all
+
+157
+00:06:45,000 --> 00:06:51,030
+you have to do thank you so so what's
+
+158
+00:06:51,030 --> 00:06:53,130
+the problem here well the problem is
+
+159
+00:06:53,130 --> 00:06:55,050
+said you can think of this newspaper as
+
+160
+00:06:55,050 --> 00:06:56,760
+a metaphor for something else you can
+
+161
+00:06:56,760 --> 00:06:58,560
+think of it as a simple computer program
+
+162
+00:06:58,560 --> 00:07:00,660
+that managed seven boolean variables you
+
+163
+00:07:00,660 --> 00:07:02,280
+have seven bits thing that can adds up
+
+164
+00:07:02,280 --> 00:07:07,590
+to 128 states and each bullying bullying
+
+165
+00:07:07,590 --> 00:07:09,870
+in this program has an impact on the
+
+166
+00:07:09,870 --> 00:07:11,250
+behavior of the software in this case it
+
+167
+00:07:11,250 --> 00:07:13,950
+makes a newspaper sicker and as a result
+
+168
+00:07:13,950 --> 00:07:16,290
+of set it is really difficult to rip
+
+169
+00:07:16,290 --> 00:07:18,270
+through this once and it's kind of the
+
+170
+00:07:18,270 --> 00:07:19,920
+same as if you try to rip through a
+
+171
+00:07:19,920 --> 00:07:21,690
+complex program with a single test
+
+172
+00:07:21,690 --> 00:07:22,980
+that's the whole premise of this
+
+173
+00:07:22,980 --> 00:07:24,180
+asynchronous testing you're kind of
+
+174
+00:07:24,180 --> 00:07:25,800
+doing end-to-end testing once you're
+
+175
+00:07:25,800 --> 00:07:29,460
+doing I oh and it is not a good wave for
+
+176
+00:07:29,460 --> 00:07:31,920
+testing it has certain benefits but it's
+
+177
+00:07:31,920 --> 00:07:33,840
+certainly not a solution to everything
+
+178
+00:07:33,840 --> 00:07:36,510
+why is that the case it's the problem is
+
+179
+00:07:36,510 --> 00:07:38,820
+the more variables that you get in this
+
+180
+00:07:38,820 --> 00:07:41,250
+case let's say boo lengths the more
+
+181
+00:07:41,250 --> 00:07:43,010
+possible states your software can be in
+
+182
+00:07:43,010 --> 00:07:45,180
+with the boolean's you get an
+
+183
+00:07:45,180 --> 00:07:48,480
+exponential increase in in complexity of
+
+184
+00:07:48,480 --> 00:07:50,580
+your software and each of these possible
+
+185
+00:07:50,580 --> 00:07:52,470
+combination of states could affect the
+
+186
+00:07:52,470 --> 00:07:54,300
+flow of your program and increase the
+
+187
+00:07:54,300 --> 00:07:56,400
+size or amount of tests you would need
+
+188
+00:07:56,400 --> 00:07:58,470
+to write from an integration perspective
+
+189
+00:07:58,470 --> 00:08:00,630
+exponentially so that's obviously not
+
+190
+00:08:00,630 --> 00:08:02,310
+going to happen but what's even worse
+
+191
+00:08:02,310 --> 00:08:04,200
+you don't have Bowling's you have
+
+192
+00:08:04,200 --> 00:08:06,000
+strengths you have chasing objects which
+
+193
+00:08:06,000 --> 00:08:07,230
+are really complicated because they're
+
+194
+00:08:07,230 --> 00:08:08,700
+nested and they have different data
+
+195
+00:08:08,700 --> 00:08:10,590
+structures in the marais dates whatnot
+
+196
+00:08:10,590 --> 00:08:11,129
+so
+
+197
+00:08:11,129 --> 00:08:12,300
+you don't actually end up with an
+
+198
+00:08:12,300 --> 00:08:14,520
+exponential explosion the end up with a
+
+199
+00:08:14,520 --> 00:08:16,499
+combinatorial one and if your math geek
+
+200
+00:08:16,499 --> 00:08:18,239
+you know that's one of those curves that
+
+201
+00:08:18,239 --> 00:08:20,249
+you kind of run straight into there's no
+
+202
+00:08:20,249 --> 00:08:21,989
+way to write enough tests for even a
+
+203
+00:08:21,989 --> 00:08:23,759
+simple program you'll need millions of
+
+204
+00:08:23,759 --> 00:08:27,330
+tests so how to test a synchronous code
+
+205
+00:08:27,330 --> 00:08:29,369
+as the answer is not really difficult
+
+206
+00:08:29,369 --> 00:08:31,379
+it's really an old answer and the
+
+207
+00:08:31,379 --> 00:08:35,310
+answers make it synchronous I'll get to
+
+208
+00:08:35,310 --> 00:08:38,610
+what that means in a second but we did
+
+209
+00:08:38,610 --> 00:08:40,740
+it at Prince loaded and we released
+
+210
+00:08:40,740 --> 00:08:43,019
+version 2 which was a lot nicer kind of
+
+211
+00:08:43,019 --> 00:08:43,979
+like you see in the picture with a
+
+212
+00:08:43,979 --> 00:08:46,110
+unique room well almost we have still
+
+213
+00:08:46,110 --> 00:08:48,269
+problems but it's much much better than
+
+214
+00:08:48,269 --> 00:08:50,790
+worse before we now have processed many
+
+215
+00:08:50,790 --> 00:08:52,529
+terabytes of data we have really low
+
+216
+00:08:52,529 --> 00:08:54,810
+buck raid I think the amount of box we
+
+217
+00:08:54,810 --> 00:08:57,240
+had in productions that affected users
+
+218
+00:08:57,240 --> 00:08:59,339
+is less than 10 and of those ten maybe
+
+219
+00:08:59,339 --> 00:09:01,319
+eight have been boxed where we wrote the
+
+220
+00:09:01,319 --> 00:09:02,910
+tests that actually specified the wrong
+
+221
+00:09:02,910 --> 00:09:05,550
+behavior there's not much you can do and
+
+222
+00:09:05,550 --> 00:09:08,250
+it's pretty clean code base or since we
+
+223
+00:09:08,250 --> 00:09:10,380
+want to refactor but we have close to
+
+224
+00:09:10,380 --> 00:09:13,110
+ninety nine percent test coverage so how
+
+225
+00:09:13,110 --> 00:09:15,269
+does it happen or how do you micro test
+
+226
+00:09:15,269 --> 00:09:17,430
+code well what I meant when I was saying
+
+227
+00:09:17,430 --> 00:09:19,589
+you need to make the code testing
+
+228
+00:09:19,589 --> 00:09:21,209
+synchronous with what I really was
+
+229
+00:09:21,209 --> 00:09:23,339
+saying is you have to unit test unit
+
+230
+00:09:23,339 --> 00:09:25,470
+testing means no io takes place you have
+
+231
+00:09:25,470 --> 00:09:27,689
+to inject all the stuffs that would
+
+232
+00:09:27,689 --> 00:09:29,310
+perform I oh you have to inject test
+
+233
+00:09:29,310 --> 00:09:31,829
+apples for that and that way you never
+
+234
+00:09:31,829 --> 00:09:33,120
+have such callback hell because
+
+235
+00:09:33,120 --> 00:09:35,130
+everything you're going to call is going
+
+236
+00:09:35,130 --> 00:09:36,990
+to be synchronous and if not well you
+
+237
+00:09:36,990 --> 00:09:39,420
+need to do more stopping and mocking so
+
+238
+00:09:39,420 --> 00:09:42,000
+how can you do that well rule number one
+
+239
+00:09:42,000 --> 00:09:44,160
+as I said no I oh that's how you get
+
+240
+00:09:44,160 --> 00:09:45,720
+there you start out when you load your
+
+241
+00:09:45,720 --> 00:09:47,399
+modules you make sure that nothing ever
+
+242
+00:09:47,399 --> 00:09:50,130
+does I oh and your tests rule number two
+
+243
+00:09:50,130 --> 00:09:51,689
+is that's optional depending on what you
+
+244
+00:09:51,689 --> 00:09:53,130
+want to test how you want to do it but
+
+245
+00:09:53,130 --> 00:09:54,630
+test-driven development really really
+
+246
+00:09:54,630 --> 00:09:57,930
+helps writes a test first if you can if
+
+247
+00:09:57,930 --> 00:09:59,160
+you have a piece of software that you
+
+248
+00:09:59,160 --> 00:10:00,959
+need to get and later on you can always
+
+249
+00:10:00,959 --> 00:10:02,880
+add a test for that late for that later
+
+250
+00:10:02,880 --> 00:10:06,480
+but TDD is much preferable the last part
+
+251
+00:10:06,480 --> 00:10:08,490
+is discipline I will not kid anybody
+
+252
+00:10:08,490 --> 00:10:10,139
+writing tests forever you seeing a line
+
+253
+00:10:10,139 --> 00:10:11,970
+of your code it's a pain in the
+
+254
+00:10:11,970 --> 00:10:13,240
+ass
+
+255
+00:10:13,240 --> 00:10:19,089
+it is I mean anybody who tells you it
+
+256
+00:10:19,089 --> 00:10:20,649
+kind of gets easier with time and it
+
+257
+00:10:20,649 --> 00:10:23,140
+comes really fun there hasn't really
+
+258
+00:10:23,140 --> 00:10:25,810
+turned that way for me I mean it you see
+
+259
+00:10:25,810 --> 00:10:27,190
+the results if you like what you get
+
+260
+00:10:27,190 --> 00:10:28,899
+there so you keep doing it but it's
+
+261
+00:10:28,899 --> 00:10:31,810
+really hurdle to do a big project from
+
+262
+00:10:31,810 --> 00:10:33,670
+scratch and write tests for everything
+
+263
+00:10:33,670 --> 00:10:36,880
+but I think the benefits of it kind of
+
+264
+00:10:36,880 --> 00:10:40,630
+outweigh the disadvantages so there's
+
+265
+00:10:40,630 --> 00:10:42,510
+still one problem what libraries to use
+
+266
+00:10:42,510 --> 00:10:44,620
+what do you lie breeze do you guys use
+
+267
+00:10:44,620 --> 00:10:49,260
+for testing right now anybody using bout
+
+268
+00:10:49,260 --> 00:10:51,820
+anybody doing like real unit testing
+
+269
+00:10:51,820 --> 00:10:56,950
+without io with it okay few people other
+
+270
+00:10:56,950 --> 00:10:58,630
+test libraries to the public expresso
+
+271
+00:10:58,630 --> 00:11:02,440
+maybe few people on expressive maybe
+
+272
+00:11:02,440 --> 00:11:06,250
+more general who's testing at all who
+
+273
+00:11:06,250 --> 00:11:09,790
+who's happy was there testing a few
+
+274
+00:11:09,790 --> 00:11:11,170
+people I need to talk to you guys later
+
+275
+00:11:11,170 --> 00:11:15,370
+on to see what you guys I do so my plan
+
+276
+00:11:15,370 --> 00:11:17,440
+for today was to release sweet
+
+277
+00:11:17,440 --> 00:11:19,450
+completely new libraries and I pretty
+
+278
+00:11:19,450 --> 00:11:20,920
+much managed it the fact that my
+
+279
+00:11:20,920 --> 00:11:22,779
+computer was broken the week before I
+
+280
+00:11:22,779 --> 00:11:24,760
+came here and chat leg and partying
+
+281
+00:11:24,760 --> 00:11:26,740
+didn't help but I'm pretty closed it and
+
+282
+00:11:26,740 --> 00:11:28,450
+they already in a state where they can
+
+283
+00:11:28,450 --> 00:11:31,300
+be played with the first library is
+
+284
+00:11:31,300 --> 00:11:33,880
+called node fake and what it does is
+
+285
+00:11:33,880 --> 00:11:36,130
+it's basically a simple mock mocking and
+
+286
+00:11:36,130 --> 00:11:37,930
+stopping library but it doesn't force
+
+287
+00:11:37,930 --> 00:11:40,870
+you into the concepts where you really
+
+288
+00:11:40,870 --> 00:11:43,240
+have to think about defining all the
+
+289
+00:11:43,240 --> 00:11:45,370
+methods of your mock objects beforehand
+
+290
+00:11:45,370 --> 00:11:47,350
+you can simply say I have an object here
+
+291
+00:11:47,350 --> 00:11:49,270
+I expect a method call on that on that
+
+292
+00:11:49,270 --> 00:11:51,550
+object with this signature and then
+
+293
+00:11:51,550 --> 00:11:53,079
+please verify this is happening in my
+
+294
+00:11:53,079 --> 00:11:55,660
+tests and on the other hand you can also
+
+295
+00:11:55,660 --> 00:11:59,440
+do as a kind of stopping approach where
+
+296
+00:11:59,440 --> 00:12:01,300
+you just inject a value but you don't
+
+297
+00:12:01,300 --> 00:12:03,730
+care return value but you don't care if
+
+298
+00:12:03,730 --> 00:12:06,459
+the function is ever executed or you can
+
+299
+00:12:06,459 --> 00:12:09,880
+as well verify state after the fact so
+
+300
+00:12:09,880 --> 00:12:11,110
+you can going to go for the market
+
+301
+00:12:11,110 --> 00:12:13,930
+approach of testing behavior or you can
+
+302
+00:12:13,930 --> 00:12:18,010
+go for the state association approach
+
+303
+00:12:18,010 --> 00:12:22,180
+and to wrap this thing up I wrote
+
+304
+00:12:22,180 --> 00:12:23,800
+another library called node micro test
+
+305
+00:12:23,800 --> 00:12:26,050
+which i will try to life them out here
+
+306
+00:12:26,050 --> 00:12:26,410
+but
+
+307
+00:12:26,410 --> 00:12:27,759
+you guys know how that always goes
+
+308
+00:12:27,759 --> 00:12:29,170
+something goes wrong but you'll get a
+
+309
+00:12:29,170 --> 00:12:32,199
+good laugh and what's this library does
+
+310
+00:12:32,199 --> 00:12:34,930
+it kind of helps with the discipline
+
+311
+00:12:34,930 --> 00:12:37,420
+part of performing no I Oh in your tests
+
+312
+00:12:37,420 --> 00:12:39,970
+because what it does it loads your test
+
+313
+00:12:39,970 --> 00:12:43,180
+faults in a separate v8 context so the
+
+314
+00:12:43,180 --> 00:12:45,160
+global object is completely free of any
+
+315
+00:12:45,160 --> 00:12:47,199
+note libraries you don't have a require
+
+316
+00:12:47,199 --> 00:12:49,420
+call you don't have a process object you
+
+317
+00:12:49,420 --> 00:12:51,069
+have nothing in there I doin checked a
+
+318
+00:12:51,069 --> 00:12:52,180
+few things that are just little
+
+319
+00:12:52,180 --> 00:12:55,000
+convenient but you have no way to get IO
+
+320
+00:12:55,000 --> 00:12:57,579
+down in there unless you kind of hack
+
+321
+00:12:57,579 --> 00:12:59,199
+around the system which which you
+
+322
+00:12:59,199 --> 00:13:00,790
+shouldn't do maybe there's valid use
+
+323
+00:13:00,790 --> 00:13:04,389
+cases what it also has it has no fake as
+
+324
+00:13:04,389 --> 00:13:07,000
+a mixin so the message i was talking
+
+325
+00:13:07,000 --> 00:13:09,250
+about on the in the fake library you get
+
+326
+00:13:09,250 --> 00:13:13,480
+on the same class object and i also have
+
+327
+00:13:13,480 --> 00:13:16,899
+a very basic test described framework in
+
+328
+00:13:16,899 --> 00:13:19,420
+there that if you're testing a little
+
+329
+00:13:19,420 --> 00:13:22,060
+structure i might separate that out
+
+330
+00:13:22,060 --> 00:13:23,800
+because everybody's kind of crazy but
+
+331
+00:13:23,800 --> 00:13:25,779
+how they want their color coded output
+
+332
+00:13:25,779 --> 00:13:27,459
+to look and all that stuff that i didn't
+
+333
+00:13:27,459 --> 00:13:29,560
+care about when writing this library but
+
+334
+00:13:29,560 --> 00:13:31,480
+it seems in the note community like
+
+335
+00:13:31,480 --> 00:13:32,769
+colors are the coolest thing in the
+
+336
+00:13:32,769 --> 00:13:34,990
+terminal I won't talk you that they're
+
+337
+00:13:34,990 --> 00:13:37,480
+cool but there's other problems to solve
+
+338
+00:13:37,480 --> 00:13:40,360
+first year and their Zilla so the live
+
+339
+00:13:40,360 --> 00:13:43,079
+coding will will start in the second and
+
+340
+00:13:43,079 --> 00:13:45,399
+the third libraries this one's actually
+
+341
+00:13:45,399 --> 00:13:47,350
+working well nice thinks of
+
+342
+00:13:47,350 --> 00:13:49,209
+documentation is also complete it's
+
+343
+00:13:49,209 --> 00:13:51,370
+called note far and it's basically find
+
+344
+00:13:51,370 --> 00:13:53,920
+and run so you give it a directory of
+
+345
+00:13:53,920 --> 00:13:56,620
+files of tests fault it will find some
+
+346
+00:13:56,620 --> 00:13:58,360
+more and execute them in its own note
+
+347
+00:13:58,360 --> 00:13:59,920
+process and kind of give you really
+
+348
+00:13:59,920 --> 00:14:02,050
+useful real-time output show you how
+
+349
+00:14:02,050 --> 00:14:03,550
+long the suit is running it prints it
+
+350
+00:14:03,550 --> 00:14:05,699
+all on one line it will only show you
+
+351
+00:14:05,699 --> 00:14:07,930
+output of your individual tests if one
+
+352
+00:14:07,930 --> 00:14:09,790
+of them failing you can kind of sets of
+
+353
+00:14:09,790 --> 00:14:11,740
+a paucity on that and that's the third
+
+354
+00:14:11,740 --> 00:14:15,610
+library so let's try to yeah do them bad
+
+355
+00:14:15,610 --> 00:14:21,420
+life coding
+
+356
+00:14:21,430 --> 00:14:24,560
+so I was trying to find really simple
+
+357
+00:14:24,560 --> 00:14:25,850
+programs that we could test here without
+
+358
+00:14:25,850 --> 00:14:28,550
+running out of time and this is really
+
+359
+00:14:28,550 --> 00:14:31,069
+cool using that stabilizing a note now
+
+360
+00:14:31,069 --> 00:14:33,649
+called stream pipe who has blamed played
+
+361
+00:14:33,649 --> 00:14:38,089
+with the stream pipe stuff okay cool and
+
+362
+00:14:38,089 --> 00:14:39,199
+so what we're going to do we're going to
+
+363
+00:14:39,199 --> 00:14:40,970
+write a little cat program which
+
+364
+00:14:40,970 --> 00:14:42,709
+basically takes one argument which is
+
+365
+00:14:42,709 --> 00:14:45,769
+another file and then opens a file
+
+366
+00:14:45,769 --> 00:14:48,259
+create read stream on that and then to
+
+367
+00:14:48,259 --> 00:14:51,470
+dust we'd stream pipe and then process
+
+368
+00:14:51,470 --> 00:14:53,180
+that standard out so that's like a few
+
+369
+00:14:53,180 --> 00:14:54,589
+lines of code and we can easily test
+
+370
+00:14:54,589 --> 00:14:58,040
+drive that so since we're doing
+
+371
+00:14:58,040 --> 00:14:59,449
+test-driven development the first thing
+
+372
+00:14:59,449 --> 00:15:02,329
+we're going to add is a test file so
+
+373
+00:15:02,329 --> 00:15:05,120
+we're going to name that test dash cat
+
+374
+00:15:05,120 --> 00:15:08,509
+and we're going to use the micro test
+
+375
+00:15:08,509 --> 00:15:12,970
+library we're going to say test equals
+
+376
+00:15:12,970 --> 00:15:21,110
+require micro test module then we're
+
+377
+00:15:21,110 --> 00:15:22,399
+going to tell it where the module is
+
+378
+00:15:22,399 --> 00:15:26,689
+that we're loading one of the cool
+
+379
+00:15:26,689 --> 00:15:29,660
+things at this point is the way this
+
+380
+00:15:29,660 --> 00:15:31,699
+library works is it can load any chava
+
+381
+00:15:31,699 --> 00:15:33,860
+script file so I'm pretty confident that
+
+382
+00:15:33,860 --> 00:15:36,110
+I can explai turon to actually test
+
+383
+00:15:36,110 --> 00:15:38,029
+browser scripts as well because you get
+
+384
+00:15:38,029 --> 00:15:39,920
+a new v8 context you can pre-fill the
+
+385
+00:15:39,920 --> 00:15:41,420
+global object in that so it's pretty
+
+386
+00:15:41,420 --> 00:15:43,899
+easy to say do the same kind of testing
+
+387
+00:15:43,899 --> 00:15:47,660
+with the same library and another thing
+
+388
+00:15:47,660 --> 00:15:49,310
+that's good as since your unit testing
+
+389
+00:15:49,310 --> 00:15:50,689
+here you don't actually care about the
+
+390
+00:15:50,689 --> 00:15:52,310
+browser behavior so the fact that this
+
+391
+00:15:52,310 --> 00:15:54,019
+will probably be limited to running a
+
+392
+00:15:54,019 --> 00:15:55,819
+node is exactly what you want here would
+
+393
+00:15:55,819 --> 00:15:57,139
+you want to do browser test and use
+
+394
+00:15:57,139 --> 00:16:02,280
+selenium or something more higher level
+
+395
+00:16:02,290 --> 00:16:05,209
+so we should already have a failing test
+
+396
+00:16:05,209 --> 00:16:07,880
+here because I haven't created saket j/s
+
+397
+00:16:07,880 --> 00:16:10,550
+file so yeah right here it says file not
+
+398
+00:16:10,550 --> 00:16:14,360
+found so yeah that's readable so the
+
+399
+00:16:14,360 --> 00:16:16,339
+first thing we need to do for test room
+
+400
+00:16:16,339 --> 00:16:18,019
+development does make a test fail we did
+
+401
+00:16:18,019 --> 00:16:23,120
+said and now we have to make it pass by
+
+402
+00:16:23,120 --> 00:16:25,790
+creating a CAD file so
+
+403
+00:16:25,790 --> 00:16:28,130
+close this little window so when we
+
+404
+00:16:28,130 --> 00:16:30,020
+execute the test now it's passing so
+
+405
+00:16:30,020 --> 00:16:33,980
+it's verifying our test is there the
+
+406
+00:16:33,980 --> 00:16:36,860
+next thing we want to do is we probably
+
+407
+00:16:36,860 --> 00:16:39,860
+want to include CFS module because we're
+
+408
+00:16:39,860 --> 00:16:41,810
+going to need that for the read scream
+
+409
+00:16:41,810 --> 00:16:45,160
+so we're going to say our test requires
+
+410
+00:16:45,160 --> 00:16:49,580
+CFS module and to make this test fail we
+
+411
+00:16:49,580 --> 00:16:51,050
+have to do one more step we're going to
+
+412
+00:16:51,050 --> 00:16:56,090
+have to say our our cat module is
+
+413
+00:16:56,090 --> 00:16:57,890
+created by compiling this test and
+
+414
+00:16:57,890 --> 00:16:59,080
+what's this will do it will actually
+
+415
+00:16:59,080 --> 00:17:01,880
+load the source code run it in a new v8
+
+416
+00:17:01,880 --> 00:17:03,950
+context and if use a marshal exports
+
+417
+00:17:03,950 --> 00:17:06,080
+back and like creating this module that
+
+418
+00:17:06,080 --> 00:17:08,030
+exports object and injecting that that's
+
+419
+00:17:08,030 --> 00:17:10,130
+as far as I go in terms of mirroring the
+
+420
+00:17:10,130 --> 00:17:11,600
+node API few other things like
+
+421
+00:17:11,600 --> 00:17:13,370
+underscore file name and your name but
+
+422
+00:17:13,370 --> 00:17:16,490
+not much fluff beyond that so if we
+
+423
+00:17:16,490 --> 00:17:21,290
+execute that it's going to tell us this
+
+424
+00:17:21,290 --> 00:17:22,970
+calling off the screen I'll have to
+
+425
+00:17:22,970 --> 00:17:29,000
+switch to terminal for that
+
+426
+00:17:29,010 --> 00:17:37,350
+ok I guess that means bigger
+
+427
+00:17:37,360 --> 00:17:41,770
+okay module test kit has no method
+
+428
+00:17:41,770 --> 00:17:46,480
+require Oh requires this a functioning
+
+429
+00:17:46,480 --> 00:17:49,450
+here that's why it didn't work so what
+
+430
+00:17:49,450 --> 00:17:52,059
+it now says it gives us a expectation
+
+431
+00:17:52,059 --> 00:17:54,280
+that has failed it says I was expecting
+
+432
+00:17:54,280 --> 00:17:56,140
+a different call i was expecting require
+
+433
+00:17:56,140 --> 00:17:58,299
+FS to be called in your file but instead
+
+434
+00:17:58,299 --> 00:18:00,340
+module that verify was called which is
+
+435
+00:18:00,340 --> 00:18:02,799
+called when you call compile it verifies
+
+436
+00:18:02,799 --> 00:18:04,360
+that all expectations that have been set
+
+437
+00:18:04,360 --> 00:18:06,640
+up until that point are met and so it's
+
+438
+00:18:06,640 --> 00:18:08,380
+telling us what to do includes this
+
+439
+00:18:08,380 --> 00:18:12,850
+require FS module so that's what we're
+
+440
+00:18:12,850 --> 00:18:14,770
+going to do we're going to go back to
+
+441
+00:18:14,770 --> 00:18:18,940
+our catch ES File we're going to say bar
+
+442
+00:18:18,940 --> 00:18:24,429
+F s equals require FS and that should
+
+443
+00:18:24,429 --> 00:18:28,090
+makes a test happy ok so the next thing
+
+444
+00:18:28,090 --> 00:18:31,809
+we want to do is we want to assert that
+
+445
+00:18:31,809 --> 00:18:34,809
+on the FS object we call a create read
+
+446
+00:18:34,809 --> 00:18:37,600
+stream so what we're going to do is
+
+447
+00:18:37,600 --> 00:18:40,059
+we're going to say test expect and then
+
+448
+00:18:40,059 --> 00:18:44,740
+some reference to this module is
+
+449
+00:18:44,740 --> 00:18:47,919
+actually on the test object in a in a
+
+450
+00:18:47,919 --> 00:18:49,900
+property called required so it's test
+
+451
+00:18:49,900 --> 00:18:53,100
+that required FS and we're going to say
+
+452
+00:18:53,100 --> 00:19:01,210
+create we'd stream ok now if we execute
+
+453
+00:19:01,210 --> 00:19:05,400
+that ok my
+
+454
+00:19:05,400 --> 00:19:10,260
+let me do that over here ok so again we
+
+455
+00:19:10,260 --> 00:19:12,870
+get failing a sortation here it was
+
+456
+00:19:12,870 --> 00:19:14,640
+expecting FS that create read seemed to
+
+457
+00:19:14,640 --> 00:19:16,350
+be called its not being called so let's
+
+458
+00:19:16,350 --> 00:19:25,180
+fix that ok
+
+459
+00:19:25,190 --> 00:19:30,170
+now as the test is passing again so what
+
+460
+00:19:30,170 --> 00:19:31,730
+do we want to do next the next thing we
+
+461
+00:19:31,730 --> 00:19:34,250
+will probably want to assert is that
+
+462
+00:19:34,250 --> 00:19:37,490
+this create read stream call returns our
+
+463
+00:19:37,490 --> 00:19:39,320
+injected read stream which is not a real
+
+464
+00:19:39,320 --> 00:19:41,030
+one and then we want to make sure that
+
+465
+00:19:41,030 --> 00:19:42,920
+it's a pipe message is being called on
+
+466
+00:19:42,920 --> 00:19:46,100
+that so what we will do is we're going
+
+467
+00:19:46,100 --> 00:19:47,810
+to say we're probably going to name this
+
+468
+00:19:47,810 --> 00:19:49,940
+variable file and I use all upper case
+
+469
+00:19:49,940 --> 00:19:52,520
+for my test variables just to
+
+470
+00:19:52,520 --> 00:19:54,320
+differentiate stuff I'm you're serving
+
+471
+00:19:54,320 --> 00:19:56,660
+against from the other stuff it's a less
+
+472
+00:19:56,660 --> 00:19:59,000
+annoying form of duplications and adding
+
+473
+00:19:59,000 --> 00:20:01,280
+like a prefix or suffix to them and it
+
+474
+00:20:01,280 --> 00:20:02,870
+really helps because sometimes we
+
+475
+00:20:02,870 --> 00:20:05,060
+actually also get variables out of the
+
+476
+00:20:05,060 --> 00:20:06,710
+test and you use those with underscore
+
+477
+00:20:06,710 --> 00:20:07,820
+and they asked the same parameter
+
+478
+00:20:07,820 --> 00:20:11,090
+signatures so what we're going to do
+
+479
+00:20:11,090 --> 00:20:14,270
+here as a actually the underlying fake
+
+480
+00:20:14,270 --> 00:20:18,590
+library includes a little semantic sugar
+
+481
+00:20:18,590 --> 00:20:20,870
+that lets you create a test object what
+
+482
+00:20:20,870 --> 00:20:22,400
+this really is it's just an object and
+
+483
+00:20:22,400 --> 00:20:24,410
+if it failed since I'm a certain it's
+
+484
+00:20:24,410 --> 00:20:26,240
+going to give you this name again and so
+
+485
+00:20:26,240 --> 00:20:28,190
+you have a very clear idea of this is a
+
+486
+00:20:28,190 --> 00:20:30,530
+test variable and since you say object
+
+487
+00:20:30,530 --> 00:20:33,440
+you could probably care about reference
+
+488
+00:20:33,440 --> 00:20:37,700
+to it you don't care about the value so
+
+489
+00:20:37,700 --> 00:20:39,500
+what we need to do now is we need to
+
+490
+00:20:39,500 --> 00:20:42,980
+return that file object here so we can
+
+491
+00:20:42,980 --> 00:20:47,870
+do and return the file you wow that's
+
+492
+00:20:47,870 --> 00:20:52,640
+crazy let's not do that again so what's
+
+493
+00:20:52,640 --> 00:20:54,560
+this will do it would we return the file
+
+494
+00:20:54,560 --> 00:20:58,070
+this should not fail the test yet yep it
+
+495
+00:20:58,070 --> 00:21:00,050
+doesn't because we're not really doing
+
+496
+00:21:00,050 --> 00:21:03,290
+anything with a file object yet at this
+
+497
+00:21:03,290 --> 00:21:04,910
+point it might also be worse knowing
+
+498
+00:21:04,910 --> 00:21:06,830
+that there's shortcuts because you're
+
+499
+00:21:06,830 --> 00:21:09,080
+going to write this stuff a lot so what
+
+500
+00:21:09,080 --> 00:21:10,160
+you could have also done at this point
+
+501
+00:21:10,160 --> 00:21:15,350
+is to put put set and third parameter in
+
+502
+00:21:15,350 --> 00:21:17,780
+an array of all the arguments it's
+
+503
+00:21:17,780 --> 00:21:19,400
+expecting that's kind of semantic
+
+504
+00:21:19,400 --> 00:21:21,890
+shortcut for that but we'll go for
+
+505
+00:21:21,890 --> 00:21:25,460
+readability here so what we did not want
+
+506
+00:21:25,460 --> 00:21:27,410
+to do so we want to expect the pipe call
+
+507
+00:21:27,410 --> 00:21:31,090
+so we're going to say a test expect file
+
+508
+00:21:31,090 --> 00:21:34,149
+pipe
+
+509
+00:21:34,159 --> 00:21:37,559
+okay and let me do that in the other
+
+510
+00:21:37,559 --> 00:21:40,919
+window again so yeah it's saying I was
+
+511
+00:21:40,919 --> 00:21:42,570
+expecting a different call i was
+
+512
+00:21:42,570 --> 00:21:45,629
+expecting pipe but it didn't happen so
+
+513
+00:21:45,629 --> 00:21:56,590
+let's fix it
+
+514
+00:21:56,600 --> 00:21:59,270
+okay we're not really sure where to pipe
+
+515
+00:21:59,270 --> 00:22:03,410
+yet so let's not do that that makes the
+
+516
+00:22:03,410 --> 00:22:05,600
+test pass for once and now what we want
+
+517
+00:22:05,600 --> 00:22:07,100
+to do is we want to pipe to process
+
+518
+00:22:07,100 --> 00:22:09,380
+standard output so what we need to do is
+
+519
+00:22:09,380 --> 00:22:11,540
+we kind of need to create our own fake
+
+520
+00:22:11,540 --> 00:22:14,330
+process object this time I'm actually
+
+521
+00:22:14,330 --> 00:22:16,150
+going to just use a plain literal
+
+522
+00:22:16,150 --> 00:22:18,170
+because it's a little easier for what
+
+523
+00:22:18,170 --> 00:22:21,410
+we're doing here what we want to do is
+
+524
+00:22:21,410 --> 00:22:23,660
+we want to have the test object called
+
+525
+00:22:23,660 --> 00:22:33,620
+process standard out on this and we need
+
+526
+00:22:33,620 --> 00:22:36,170
+to tell our tests to use this object so
+
+527
+00:22:36,170 --> 00:22:37,820
+another way to inject it is we can
+
+528
+00:22:37,820 --> 00:22:39,200
+actually inject into the global object
+
+529
+00:22:39,200 --> 00:22:41,900
+of our sandbox so we're going to do test
+
+530
+00:22:41,900 --> 00:22:48,070
+context that process equals process and
+
+531
+00:22:48,070 --> 00:22:51,860
+now we can ask that our parameter to
+
+532
+00:22:51,860 --> 00:22:54,370
+pipe is actually process standard out
+
+533
+00:22:54,370 --> 00:22:58,400
+i'm using the long form here again with
+
+534
+00:22:58,400 --> 00:23:07,750
+arcs and process then it out
+
+535
+00:23:07,760 --> 00:23:10,070
+okay now it says unexpected argument
+
+536
+00:23:10,070 --> 00:23:12,200
+count it was expecting one occupant it
+
+537
+00:23:12,200 --> 00:23:14,360
+supplied function it gets 0 what's also
+
+538
+00:23:14,360 --> 00:23:17,000
+kind of nice it it tells us whereas the
+
+539
+00:23:17,000 --> 00:23:18,560
+expectation was set up that tells us in
+
+540
+00:23:18,560 --> 00:23:20,420
+our test cases worst line 18 so that
+
+541
+00:23:20,420 --> 00:23:21,680
+kind of makes it really fast to jump
+
+542
+00:23:21,680 --> 00:23:25,420
+back to where you need to fix things and
+
+543
+00:23:25,420 --> 00:23:27,980
+now we're going to due process standard
+
+544
+00:23:27,980 --> 00:23:37,690
+out oops
+
+545
+00:23:37,700 --> 00:23:39,860
+oh this didn't work i need to uppercase
+
+546
+00:23:39,860 --> 00:23:45,380
+that sorry okay if we run the two test
+
+547
+00:23:45,380 --> 00:23:47,269
+passes again that's pretty much almost
+
+548
+00:23:47,269 --> 00:23:49,370
+the whole cat program it's the only
+
+549
+00:23:49,370 --> 00:23:52,130
+thing we didn't implement was telling
+
+550
+00:23:52,130 --> 00:23:54,049
+what file to actually open on the weak
+
+551
+00:23:54,049 --> 00:23:57,230
+stream what we really want to do is we
+
+552
+00:23:57,230 --> 00:24:00,260
+want process och v2 because that's where
+
+553
+00:24:00,260 --> 00:24:02,929
+node has a first parameter we pass into
+
+554
+00:24:02,929 --> 00:24:04,820
+it so let's do that real quick we need
+
+555
+00:24:04,820 --> 00:24:08,990
+to create a fake v object here the first
+
+556
+00:24:08,990 --> 00:24:10,429
+two parameters don't matter so we're
+
+557
+00:24:10,429 --> 00:24:14,210
+going to make them know and yeah for the
+
+558
+00:24:14,210 --> 00:24:17,389
+third one where we're gets just going to
+
+559
+00:24:17,389 --> 00:24:24,110
+say file duchess or something so we go
+
+560
+00:24:24,110 --> 00:24:26,450
+back to the read stream test we add a
+
+561
+00:24:26,450 --> 00:24:33,840
+with ox expectation here crosses rb2
+
+562
+00:24:33,850 --> 00:24:37,220
+yeah we we get to expect a exception
+
+563
+00:24:37,220 --> 00:24:43,700
+again we go back into that we're going
+
+564
+00:24:43,700 --> 00:24:49,149
+to fix the test
+
+565
+00:24:49,159 --> 00:24:52,950
+okay looks like it ran anybody see
+
+566
+00:24:52,950 --> 00:24:55,109
+mistake so far or do you guys think we
+
+567
+00:24:55,109 --> 00:24:57,749
+can try running this all right let's try
+
+568
+00:24:57,749 --> 00:25:00,239
+running this let's try it out put our
+
+569
+00:25:00,239 --> 00:25:02,970
+CAD program ok that worked so we just
+
+570
+00:25:02,970 --> 00:25:06,299
+test drove that whole thing seeing I'm
+
+571
+00:25:06,299 --> 00:25:08,070
+running out of time shortly so I'll skip
+
+572
+00:25:08,070 --> 00:25:09,570
+ahead to the other slides there's a lot
+
+573
+00:25:09,570 --> 00:25:11,460
+of stuff in the API you can there's a
+
+574
+00:25:11,460 --> 00:25:13,139
+lot of ways you can verify this behavior
+
+575
+00:25:13,139 --> 00:25:16,109
+it has excellent support for also
+
+576
+00:25:16,109 --> 00:25:18,179
+setting expectations again classes being
+
+577
+00:25:18,179 --> 00:25:20,009
+called with a new operator and checking
+
+578
+00:25:20,009 --> 00:25:22,499
+you and stuffs there but there's lots of
+
+579
+00:25:22,499 --> 00:25:25,289
+stuff in there let me try to find my
+
+580
+00:25:25,289 --> 00:25:28,499
+remaining slides yeah so one thing
+
+581
+00:25:28,499 --> 00:25:30,210
+you're probably asking well those kind
+
+582
+00:25:30,210 --> 00:25:31,409
+of looks like a lot of code for very
+
+583
+00:25:31,409 --> 00:25:34,549
+little behavior well that's the case and
+
+584
+00:25:34,549 --> 00:25:39,179
+I'm gonna lie but let's look at what
+
+585
+00:25:39,179 --> 00:25:41,609
+that actually means I trans loaded so we
+
+586
+00:25:41,609 --> 00:25:43,080
+have to around six thousand lines of
+
+587
+00:25:43,080 --> 00:25:45,119
+code of library stuff there's a lot more
+
+588
+00:25:45,119 --> 00:25:47,789
+dependencies a lot of stuff rewrote but
+
+589
+00:25:47,789 --> 00:25:48,960
+we kind of have a lot of test code for
+
+590
+00:25:48,960 --> 00:25:50,190
+that we have twelve thousand lines of
+
+591
+00:25:50,190 --> 00:25:53,639
+code just testing the behavior we have a
+
+592
+00:25:53,639 --> 00:25:55,499
+lot of fixture data server configuration
+
+593
+00:25:55,499 --> 00:25:57,480
+to customer websites and dependencies
+
+594
+00:25:57,480 --> 00:25:59,789
+but those are not included in this
+
+595
+00:25:59,789 --> 00:26:01,470
+amount of test data what's really
+
+596
+00:26:01,470 --> 00:26:03,570
+interesting here is to first see that
+
+597
+00:26:03,570 --> 00:26:05,159
+measure one to two I think that's too
+
+598
+00:26:05,159 --> 00:26:07,409
+high we went a little crazy there but I
+
+599
+00:26:07,409 --> 00:26:09,210
+think one to one is what you're going to
+
+600
+00:26:09,210 --> 00:26:10,409
+get if you're going to do it seriously
+
+601
+00:26:10,409 --> 00:26:13,889
+probably a little higher what also worth
+
+602
+00:26:13,889 --> 00:26:16,139
+knowing is as a distribution between
+
+603
+00:26:16,139 --> 00:26:18,960
+micro tests and integration tests so
+
+604
+00:26:18,960 --> 00:26:20,999
+unit tests that we said I was showing
+
+605
+00:26:20,999 --> 00:26:22,980
+how to do we write a lot of cells and
+
+606
+00:26:22,980 --> 00:26:24,480
+those are actually we've written huge
+
+607
+00:26:24,480 --> 00:26:26,700
+amounts of our programs just that way
+
+608
+00:26:26,700 --> 00:26:28,169
+and then we write one integration test
+
+609
+00:26:28,169 --> 00:26:29,700
+and kind of works the first time it's
+
+610
+00:26:29,700 --> 00:26:31,440
+beautiful to see thousands of lines of
+
+611
+00:26:31,440 --> 00:26:33,480
+code coming together like that and so
+
+612
+00:26:33,480 --> 00:26:37,529
+the factor we have here is 124 and we
+
+613
+00:26:37,529 --> 00:26:39,779
+have a more integration test on trans
+
+614
+00:26:39,779 --> 00:26:41,749
+loads and I would like for other stuff
+
+615
+00:26:41,749 --> 00:26:44,009
+because we need to do crazy stuff with
+
+616
+00:26:44,009 --> 00:26:47,309
+ffmpeg we need to extract some nails
+
+617
+00:26:47,309 --> 00:26:48,899
+from the videos we encode and send your
+
+618
+00:26:48,899 --> 00:26:51,779
+visual verification against a set of
+
+619
+00:26:51,779 --> 00:26:53,100
+fixture data to see if it still works
+
+620
+00:26:53,100 --> 00:26:55,950
+ffmpeg is one of the most broken open
+
+621
+00:26:55,950 --> 00:26:57,539
+source projects ever I mean it's not
+
+622
+00:26:57,539 --> 00:26:58,930
+broken but
+
+623
+00:26:58,930 --> 00:27:01,360
+it has a very strange way to interact
+
+624
+00:27:01,360 --> 00:27:02,950
+with the community into people using it
+
+625
+00:27:02,950 --> 00:27:04,600
+I'm very grateful for their work but
+
+626
+00:27:04,600 --> 00:27:07,990
+notice such a nice community in to work
+
+627
+00:27:07,990 --> 00:27:11,260
+with and but what becomes even more
+
+628
+00:27:11,260 --> 00:27:13,120
+clear here's when you look at knotts the
+
+629
+00:27:13,120 --> 00:27:14,080
+amount of code butts amount of
+
+630
+00:27:14,080 --> 00:27:16,030
+hesitations see it already looks pretty
+
+631
+00:27:16,030 --> 00:27:17,500
+good we probably have too much
+
+632
+00:27:17,500 --> 00:27:19,480
+duplication our integration tests that's
+
+633
+00:27:19,480 --> 00:27:24,340
+what it means we have I don't know 190s
+
+634
+00:27:24,340 --> 00:27:26,710
+Ertz on the integration tests in 2300 on
+
+635
+00:27:26,710 --> 00:27:30,460
+the micro test and just a reference
+
+636
+00:27:30,460 --> 00:27:32,560
+point for something else for library
+
+637
+00:27:32,560 --> 00:27:36,940
+code note mysql has a factor of 12 1.35
+
+638
+00:27:36,940 --> 00:27:39,880
+for library versus test code I think
+
+639
+00:27:39,880 --> 00:27:41,710
+that's much more reasonable and I hope
+
+640
+00:27:41,710 --> 00:27:43,540
+to get that even first down to one to
+
+641
+00:27:43,540 --> 00:27:47,890
+one with that new micro testing I was
+
+642
+00:27:47,890 --> 00:27:52,090
+just showing it has a similar in the
+
+643
+00:27:52,090 --> 00:27:54,990
+creation versus micro testing here and
+
+644
+00:27:54,990 --> 00:27:57,970
+it's also doing pretty well when you
+
+645
+00:27:57,970 --> 00:28:01,920
+look at citations so to finish this up
+
+646
+00:28:01,920 --> 00:28:05,170
+yes this is a lot of code and it kind of
+
+647
+00:28:05,170 --> 00:28:07,480
+feels like it slows you down but one
+
+648
+00:28:07,480 --> 00:28:09,310
+really good quote on the subject us why
+
+649
+00:28:09,310 --> 00:28:11,380
+do you have breaks in a car they're not
+
+650
+00:28:11,380 --> 00:28:13,000
+there to go slower they actually there
+
+651
+00:28:13,000 --> 00:28:14,770
+to cook faster because you can speed up
+
+652
+00:28:14,770 --> 00:28:16,810
+two curves and hits a break and slim
+
+653
+00:28:16,810 --> 00:28:18,520
+around it and that's what we really see
+
+654
+00:28:18,520 --> 00:28:21,100
+with this it costs a lot of it costs a
+
+655
+00:28:21,100 --> 00:28:22,360
+little bit more time to develop new
+
+656
+00:28:22,360 --> 00:28:24,010
+features but if we hunt bucks in
+
+657
+00:28:24,010 --> 00:28:26,050
+production like someone neta sonic we
+
+658
+00:28:26,050 --> 00:28:27,580
+can actually test a lot of things on a
+
+659
+00:28:27,580 --> 00:28:29,590
+very low level like what happens if an
+
+660
+00:28:29,590 --> 00:28:31,060
+error event is being emitted here are we
+
+661
+00:28:31,060 --> 00:28:33,040
+handling that and we we are able to
+
+662
+00:28:33,040 --> 00:28:35,230
+usually pinpoint sources of error very
+
+663
+00:28:35,230 --> 00:28:37,150
+quickly write a test for it on the micro
+
+664
+00:28:37,150 --> 00:28:38,950
+level sometimes also on send equation
+
+665
+00:28:38,950 --> 00:28:41,080
+level depending on how easy it is to get
+
+666
+00:28:41,080 --> 00:28:42,820
+scissors past and then we sometimes
+
+667
+00:28:42,820 --> 00:28:44,260
+throws into creation test that shows the
+
+668
+00:28:44,260 --> 00:28:45,910
+back away because the micro test is
+
+669
+00:28:45,910 --> 00:28:48,970
+defining the behavior of our program so
+
+670
+00:28:48,970 --> 00:28:50,650
+the too long didn't read don't use
+
+671
+00:28:50,650 --> 00:28:52,090
+integration test to show the basic
+
+672
+00:28:52,090 --> 00:28:53,650
+correctness of your software and write
+
+673
+00:28:53,650 --> 00:28:57,880
+more micro test I don't know if I have
+
+674
+00:28:57,880 --> 00:28:59,140
+time for questions we can do one
+
+675
+00:28:59,140 --> 00:29:00,669
+question while we're setting up so
+
+676
+00:29:00,669 --> 00:29:02,289
+oh one or two questions so if you have
+
+677
+00:29:02,289 --> 00:29:05,039
+questions ask them quickly questions
+
+678
+00:29:05,039 --> 00:29:09,549
+anybody this whole I hear micro test
+
+679
+00:29:09,549 --> 00:29:11,289
+sent me down the dependency injection
+
+680
+00:29:11,289 --> 00:29:14,710
+sort of daiquiri and yes their approach
+
+681
+00:29:14,710 --> 00:29:17,679
+is there a frame or packaged drinking
+
+682
+00:29:17,679 --> 00:29:22,119
+use for di yes basically you don't need
+
+683
+00:29:22,119 --> 00:29:23,799
+to do dependency injection because you
+
+684
+00:29:23,799 --> 00:29:26,649
+can inject a reference to the class
+
+685
+00:29:26,649 --> 00:29:28,450
+that's being required you require
+
+686
+00:29:28,450 --> 00:29:30,070
+another class you can inject your own
+
+687
+00:29:30,070 --> 00:29:31,659
+constructor for that and then you can
+
+688
+00:29:31,659 --> 00:29:33,549
+actually say test expect it's a
+
+689
+00:29:33,549 --> 00:29:34,869
+reference to your test double
+
+690
+00:29:34,869 --> 00:29:36,759
+constructor and so you don't need to
+
+691
+00:29:36,759 --> 00:29:38,889
+change your code to test it that was one
+
+692
+00:29:38,889 --> 00:29:40,809
+of my design goals for this don't write
+
+693
+00:29:40,809 --> 00:29:42,639
+your code for tests right in for your
+
+694
+00:29:42,639 --> 00:29:44,440
+human readability and then figure out a
+
+695
+00:29:44,440 --> 00:29:49,450
+way to test it okay thank you sorry for
+

@@ -1,0 +1,1049 @@
+1
+00:00:17,200 --> 00:00:19,390
+
+I'm just going to talk to you about low
+
+2
+00:00:19,390 --> 00:00:20,620
+friction development and what I mean by
+
+3
+00:00:20,620 --> 00:00:23,710
+low friction development is I'm going to
+
+4
+00:00:23,710 --> 00:00:26,850
+share some experiences that we've had
+
+5
+00:00:26,850 --> 00:00:29,560
+transitioning our our development from
+
+6
+00:00:29,560 --> 00:00:33,730
+lamp stack onto old JavaScript and to
+
+7
+00:00:33,730 --> 00:00:36,640
+end I hope it's going to be interesting
+
+8
+00:00:36,640 --> 00:00:38,620
+to you I hope maybe you'll there'll be
+
+9
+00:00:38,620 --> 00:00:42,820
+something in it if you take away so my
+
+10
+00:00:42,820 --> 00:00:44,559
+name is Peter Alta i'm co-founder of a
+
+11
+00:00:44,559 --> 00:00:47,940
+company called betta pond and we do
+
+12
+00:00:47,940 --> 00:00:51,940
+social media applications branded social
+
+13
+00:00:51,940 --> 00:00:54,100
+media applications primarily on on
+
+14
+00:00:54,100 --> 00:00:58,000
+facebook i like i like simple things i
+
+15
+00:00:58,000 --> 00:00:59,110
+heard a guy this morning talking about
+
+16
+00:00:59,110 --> 00:01:01,120
+how he like simple things i agree simple
+
+17
+00:01:01,120 --> 00:01:03,730
+things are great I've been doing
+
+18
+00:01:03,730 --> 00:01:08,110
+software for a good while now initially
+
+19
+00:01:08,110 --> 00:01:11,830
+in very very kind of low level c c++
+
+20
+00:01:11,830 --> 00:01:15,970
+stuff in kind of nuclear fusion research
+
+21
+00:01:15,970 --> 00:01:19,300
+and moving across into other areas telco
+
+22
+00:01:19,300 --> 00:01:20,979
+as well then i got enlightened on
+
+23
+00:01:20,979 --> 00:01:23,530
+JavaScript a couple of years ago that it
+
+24
+00:01:23,530 --> 00:01:25,030
+was in fact this really incredibly
+
+25
+00:01:25,030 --> 00:01:27,789
+powerful language and not a lot to kind
+
+26
+00:01:27,789 --> 00:01:32,410
+of toy language in a browser and I've
+
+27
+00:01:32,410 --> 00:01:35,350
+kind of grown in my my appreciation of
+
+28
+00:01:35,350 --> 00:01:37,360
+it and how it can be used to solve
+
+29
+00:01:37,360 --> 00:01:40,959
+problems and and that's culminated in us
+
+30
+00:01:40,959 --> 00:01:42,640
+now moving all the development
+
+31
+00:01:42,640 --> 00:01:44,110
+development from our company across from
+
+32
+00:01:44,110 --> 00:01:46,750
+from a lamp stack onto end-to-end
+
+33
+00:01:46,750 --> 00:01:50,410
+JavaScript and the approach we taken to
+
+34
+00:01:50,410 --> 00:01:52,750
+do that is to is to leverage as much of
+
+35
+00:01:52,750 --> 00:01:54,910
+the existing tools are available but
+
+36
+00:01:54,910 --> 00:01:57,550
+build our own very lightweight framework
+
+37
+00:01:57,550 --> 00:01:59,050
+this specifically tailored for doing
+
+38
+00:01:59,050 --> 00:02:03,610
+social up dev and just a quick aside I
+
+39
+00:02:03,610 --> 00:02:05,610
+heard a guy this morning talking about
+
+40
+00:02:05,610 --> 00:02:07,750
+he was talking about how it's really
+
+41
+00:02:07,750 --> 00:02:09,940
+good to learn lots of languages and I
+
+42
+00:02:09,940 --> 00:02:12,459
+have to agree with that the structure of
+
+43
+00:02:12,459 --> 00:02:14,740
+the languages that we use affects the
+
+44
+00:02:14,740 --> 00:02:16,959
+way we think and I think that's
+
+45
+00:02:16,959 --> 00:02:19,569
+particularly particularly true in in
+
+46
+00:02:19,569 --> 00:02:21,940
+JavaScript as you can see there's a
+
+47
+00:02:21,940 --> 00:02:23,770
+bunch of guys probably bit on myself
+
+48
+00:02:23,770 --> 00:02:25,980
+that have been developing
+
+49
+00:02:25,980 --> 00:02:27,610
+high-performance service for years
+
+50
+00:02:27,610 --> 00:02:29,630
+thinking about mutexes semaphores block
+
+51
+00:02:29,630 --> 00:02:31,670
+like kind of stuff and they're suddenly
+
+52
+00:02:31,670 --> 00:02:32,840
+something comes along that does it
+
+53
+00:02:32,840 --> 00:02:34,010
+differently because it has a different
+
+54
+00:02:34,010 --> 00:02:37,970
+tool set I think that's that's in a very
+
+55
+00:02:37,970 --> 00:02:39,860
+interesting and so learning lots of
+
+56
+00:02:39,860 --> 00:02:43,910
+languages is good so what I'm going to
+
+57
+00:02:43,910 --> 00:02:44,930
+want to talk about I want to talk a
+
+58
+00:02:44,930 --> 00:02:46,130
+little bit about the problems that we
+
+59
+00:02:46,130 --> 00:02:49,100
+have I'm going to talk about the the
+
+60
+00:02:49,100 --> 00:02:50,750
+sources of friction that we experienced
+
+61
+00:02:50,750 --> 00:02:53,690
+in our development that gave us gave us
+
+62
+00:02:53,690 --> 00:02:55,700
+the question how are you doing things I
+
+63
+00:02:55,700 --> 00:02:58,820
+can talk about the the range of options
+
+64
+00:02:58,820 --> 00:03:00,950
+that are available to us and then what
+
+65
+00:03:00,950 --> 00:03:04,280
+we did I'm afraid I don't have too many
+
+66
+00:03:04,280 --> 00:03:05,750
+flashy generals or anything like that so
+
+67
+00:03:05,750 --> 00:03:08,270
+I hope you're not too disappointed with
+
+68
+00:03:08,270 --> 00:03:13,370
+that so we need to rapidly develop
+
+69
+00:03:13,370 --> 00:03:16,250
+branded social apps and by those by
+
+70
+00:03:16,250 --> 00:03:17,870
+brainless social apps what I mean is
+
+71
+00:03:17,870 --> 00:03:21,980
+some examples here and so this would be
+
+72
+00:03:21,980 --> 00:03:23,750
+an example one for the Royal Wedding
+
+73
+00:03:23,750 --> 00:03:25,490
+predictor we can go on and predict the
+
+74
+00:03:25,490 --> 00:03:27,980
+royal wedding what what was going on the
+
+75
+00:03:27,980 --> 00:03:30,230
+day what dress they'd wear or another
+
+76
+00:03:30,230 --> 00:03:31,940
+example would be New Orleans tourist
+
+77
+00:03:31,940 --> 00:03:34,580
+board where you can where we're giving a
+
+78
+00:03:34,580 --> 00:03:36,560
+am a leader board of based on check-ins
+
+79
+00:03:36,560 --> 00:03:40,190
+of the top attractions in the town so
+
+80
+00:03:40,190 --> 00:03:43,630
+it's tying tying bits of data base from
+
+81
+00:03:43,630 --> 00:03:46,970
+location-based stuff into social media
+
+82
+00:03:46,970 --> 00:03:54,160
+and now that that means that we have a
+
+83
+00:03:54,160 --> 00:03:56,870
+lot of apps that you need to run most of
+
+84
+00:03:56,870 --> 00:04:00,050
+them have a very short life lifetime
+
+85
+00:04:00,050 --> 00:04:02,060
+maybe two three months something like
+
+86
+00:04:02,060 --> 00:04:04,730
+that they're all pretty much single page
+
+87
+00:04:04,730 --> 00:04:07,910
+Ajax apps and we need to run run lots of
+
+88
+00:04:07,910 --> 00:04:10,910
+them lots of little apps and each one
+
+89
+00:04:10,910 --> 00:04:13,459
+will usually experience a fairly fairly
+
+90
+00:04:13,459 --> 00:04:16,010
+sharp traffic spike depending on the
+
+91
+00:04:16,010 --> 00:04:18,799
+media spending that happens and then of
+
+92
+00:04:18,799 --> 00:04:21,530
+course on the viral sharing on social
+
+93
+00:04:21,530 --> 00:04:23,330
+networks will give us a spike of
+
+94
+00:04:23,330 --> 00:04:24,610
+trafficking we need to handle as well
+
+95
+00:04:24,610 --> 00:04:27,110
+and we need to go faster handle more
+
+96
+00:04:27,110 --> 00:04:30,620
+traffic with less effort i guess nobody
+
+97
+00:04:30,620 --> 00:04:32,900
+really wants to go slow and no one
+
+98
+00:04:32,900 --> 00:04:34,190
+really want to handle less traffic and
+
+99
+00:04:34,190 --> 00:04:37,510
+weather but we particularly feel it
+
+100
+00:04:37,510 --> 00:04:40,550
+because because of the nature of the the
+
+101
+00:04:40,550 --> 00:04:42,800
+applications that we're developing
+
+102
+00:04:42,800 --> 00:04:45,509
+so sources of frictions we experienced
+
+103
+00:04:45,509 --> 00:04:50,070
+in in developing these types of apps was
+
+104
+00:04:50,070 --> 00:04:52,199
+as you know that the typical lamp stack
+
+105
+00:04:52,199 --> 00:04:55,410
+requires five languages so you HTML CSS
+
+106
+00:04:55,410 --> 00:04:58,080
+JavaScript SQL and what have your server
+
+107
+00:04:58,080 --> 00:05:00,539
+language of choices and and I've heard
+
+108
+00:05:00,539 --> 00:05:03,229
+those described as being well you know
+
+109
+00:05:03,229 --> 00:05:09,720
+SQL is like a box and maybe your mid
+
+110
+00:05:09,720 --> 00:05:12,229
+tier language is a triangle and your
+
+111
+00:05:12,229 --> 00:05:14,310
+JavaScript your browser is a circle and
+
+112
+00:05:14,310 --> 00:05:15,599
+they just don't really fit together and
+
+113
+00:05:15,599 --> 00:05:18,180
+tessellate didn't fit and so there's
+
+114
+00:05:18,180 --> 00:05:20,580
+definitely a mental discount that occurs
+
+115
+00:05:20,580 --> 00:05:24,240
+when you're moving across tears building
+
+116
+00:05:24,240 --> 00:05:26,990
+applications and that can slow you down
+
+117
+00:05:26,990 --> 00:05:29,820
+and that in my experience causes teams
+
+118
+00:05:29,820 --> 00:05:31,130
+to break down into front-end back-end
+
+119
+00:05:31,130 --> 00:05:33,419
+specialists along those language lines
+
+120
+00:05:33,419 --> 00:05:34,889
+and that causes friction and development
+
+121
+00:05:34,889 --> 00:05:38,090
+as well because what it means is that
+
+122
+00:05:38,090 --> 00:05:40,500
+your front-end guys are often waiting
+
+123
+00:05:40,500 --> 00:05:43,080
+for for mid tier or database guys to do
+
+124
+00:05:43,080 --> 00:05:45,090
+stuff I don't speak the same languages
+
+125
+00:05:45,090 --> 00:05:47,270
+and wait for you to finish or for you or
+
+126
+00:05:47,270 --> 00:05:50,880
+and that causes blockages of course
+
+127
+00:05:50,880 --> 00:05:53,550
+relational databases once they're great
+
+128
+00:05:53,550 --> 00:05:56,159
+for in a lot of areas they're not a fit
+
+129
+00:05:56,159 --> 00:05:59,039
+for what we're trying to do and you they
+
+130
+00:05:59,039 --> 00:06:00,570
+introduce the burden of schema
+
+131
+00:06:00,570 --> 00:06:04,139
+maintenance and management we also find
+
+132
+00:06:04,139 --> 00:06:05,490
+that server template in gets in the way
+
+133
+00:06:05,490 --> 00:06:07,080
+of designer styling show everyone here
+
+134
+00:06:07,080 --> 00:06:12,539
+is experience that problem so we became
+
+135
+00:06:12,539 --> 00:06:14,820
+aware of the whole new range of
+
+136
+00:06:14,820 --> 00:06:16,800
+technology that's out there based on
+
+137
+00:06:16,800 --> 00:06:18,870
+JavaScript sono sul stores obviously
+
+138
+00:06:18,870 --> 00:06:21,060
+note that Jas and all the associated
+
+139
+00:06:21,060 --> 00:06:24,030
+modules client libraries in the
+
+140
+00:06:24,030 --> 00:06:25,380
+frameworks that are available is a huge
+
+141
+00:06:25,380 --> 00:06:27,419
+range of mail there now attempting
+
+142
+00:06:27,419 --> 00:06:30,630
+engines animagic managed cloud hosting
+
+143
+00:06:30,630 --> 00:06:33,449
+is a whole bunch to choose from excuse
+
+144
+00:06:33,449 --> 00:06:38,880
+me and some of them worked and fitted
+
+145
+00:06:38,880 --> 00:06:40,710
+with what we wanted to do and some of
+
+146
+00:06:40,710 --> 00:06:43,770
+them didn't fit exactly right so we took
+
+147
+00:06:43,770 --> 00:06:46,650
+the approach of we want to keep things
+
+148
+00:06:46,650 --> 00:06:48,840
+really really simple I like simple I
+
+149
+00:06:48,840 --> 00:06:50,400
+like to build things really simply
+
+150
+00:06:50,400 --> 00:06:52,080
+because I find that that's the way that
+
+151
+00:06:52,080 --> 00:06:53,889
+you're going to get stuff done
+
+152
+00:06:53,889 --> 00:06:56,110
+over the long term we definitely didn't
+
+153
+00:06:56,110 --> 00:06:57,789
+want any any server temper team because
+
+154
+00:06:57,789 --> 00:07:00,999
+we needed to get styling done quickly
+
+155
+00:07:00,999 --> 00:07:04,389
+and not get in the way of that we wanted
+
+156
+00:07:04,389 --> 00:07:06,099
+a model whether we pulled pages together
+
+157
+00:07:06,099 --> 00:07:11,289
+on the client and we want it we having
+
+158
+00:07:11,289 --> 00:07:13,120
+looked at the sources of friction that
+
+159
+00:07:13,120 --> 00:07:14,979
+we were experiencing we felt that doing
+
+160
+00:07:14,979 --> 00:07:16,990
+end-to-end JavaScript would be an
+
+161
+00:07:16,990 --> 00:07:20,529
+approach that would work for us so in
+
+162
+00:07:20,529 --> 00:07:22,509
+order to do that we put together a very
+
+163
+00:07:22,509 --> 00:07:26,409
+light lean framework based on top of
+
+164
+00:07:26,409 --> 00:07:32,860
+node and and jQuery on front-end and so
+
+165
+00:07:32,860 --> 00:07:36,189
+what we built out was on the server on
+
+166
+00:07:36,189 --> 00:07:38,740
+top of nodejs a very thin no SQL driver
+
+167
+00:07:38,740 --> 00:07:42,009
+layer and a very lightweight controller
+
+168
+00:07:42,009 --> 00:07:44,800
+and model structure a simple and
+
+169
+00:07:44,800 --> 00:07:47,620
+consistent file system layout for the
+
+170
+00:07:47,620 --> 00:07:51,069
+applications controllers responding with
+
+171
+00:07:51,069 --> 00:07:53,620
+them with Jason tation review references
+
+172
+00:07:53,620 --> 00:07:56,800
+and all of our static assets everything
+
+173
+00:07:56,800 --> 00:07:58,689
+static so all of the views to be served
+
+174
+00:07:58,689 --> 00:08:00,819
+down statically no server-side
+
+175
+00:08:00,819 --> 00:08:05,289
+templating and on the client very
+
+176
+00:08:05,289 --> 00:08:07,089
+lightweight controllers binding to the
+
+177
+00:08:07,089 --> 00:08:09,849
+Dom models connecting to back-end logic
+
+178
+00:08:09,849 --> 00:08:13,120
+let lazy loaded views and we're not
+
+179
+00:08:13,120 --> 00:08:14,889
+mandating any particular widget
+
+180
+00:08:14,889 --> 00:08:19,389
+incurring work so let me just give you a
+
+181
+00:08:19,389 --> 00:08:20,770
+quick view of that that's a very very
+
+182
+00:08:20,770 --> 00:08:22,149
+simple architecture I think it was a
+
+183
+00:08:22,149 --> 00:08:23,860
+very simple architecture outlined this
+
+184
+00:08:23,860 --> 00:08:28,270
+morning simple is good the request
+
+185
+00:08:28,270 --> 00:08:29,710
+response cycle we put together is very
+
+186
+00:08:29,710 --> 00:08:32,890
+very simple we just do a get or post in
+
+187
+00:08:32,890 --> 00:08:36,490
+forum data the server then is going to
+
+188
+00:08:36,490 --> 00:08:38,440
+return us data in one stream and the
+
+189
+00:08:38,440 --> 00:08:41,529
+view as a static asset to be rendered on
+
+190
+00:08:41,529 --> 00:08:43,870
+the client so what we're doing is we're
+
+191
+00:08:43,870 --> 00:08:45,820
+pushing a lot of that rendering off
+
+192
+00:08:45,820 --> 00:08:49,899
+client-side and so we've reflected that
+
+193
+00:08:49,899 --> 00:08:51,550
+in the structure of the application
+
+194
+00:08:51,550 --> 00:08:55,630
+layout we've got in this breakdown here
+
+195
+00:08:55,630 --> 00:08:57,550
+at the top level we've got controllers
+
+196
+00:08:57,550 --> 00:09:00,940
+and models that run server side and then
+
+197
+00:09:00,940 --> 00:09:02,589
+under public we've got controllers and
+
+198
+00:09:02,589 --> 00:09:04,860
+models that run client-side
+
+199
+00:09:04,860 --> 00:09:10,140
+so that they're different beasts on the
+
+200
+00:09:10,140 --> 00:09:12,060
+one side you're controlling and binding
+
+201
+00:09:12,060 --> 00:09:15,840
+into the Dom sending requests up server
+
+202
+00:09:15,840 --> 00:09:17,130
+side you are then forwarding on
+
+203
+00:09:17,130 --> 00:09:19,710
+connections into an SQL store and then
+
+204
+00:09:19,710 --> 00:09:22,470
+data being sent back down with static
+
+205
+00:09:22,470 --> 00:09:23,990
+views that are rendered on the client
+
+206
+00:09:23,990 --> 00:09:27,030
+and then of course acceptance and unit
+
+207
+00:09:27,030 --> 00:09:31,320
+testing baked in as well we have a very
+
+208
+00:09:31,320 --> 00:09:34,790
+very simple configuration structure we
+
+209
+00:09:34,790 --> 00:09:37,260
+would have a global config just pointing
+
+210
+00:09:37,260 --> 00:09:39,750
+to where all the applications live and
+
+211
+00:09:39,750 --> 00:09:41,990
+then for each application we would
+
+212
+00:09:41,990 --> 00:09:45,660
+configure a name and then any other
+
+213
+00:09:45,660 --> 00:09:47,190
+specific social stuff that we need to
+
+214
+00:09:47,190 --> 00:09:49,800
+plug in there so we have particular
+
+215
+00:09:49,800 --> 00:09:51,840
+modules and so forth and so on with
+
+216
+00:09:51,840 --> 00:09:55,710
+Facebook that we need to to use we found
+
+217
+00:09:55,710 --> 00:09:57,680
+this has really been helpful to us and
+
+218
+00:09:57,680 --> 00:10:00,000
+it's reduced the number of languages
+
+219
+00:10:00,000 --> 00:10:02,610
+that are guys need to writing down to
+
+220
+00:10:02,610 --> 00:10:04,140
+three languages so it's JavaScript end
+
+221
+00:10:04,140 --> 00:10:07,050
+to end the whole scheme of three scheme
+
+222
+00:10:07,050 --> 00:10:09,360
+of free pictures has helped us a lot and
+
+223
+00:10:09,360 --> 00:10:11,400
+it means that we're not maintaining
+
+224
+00:10:11,400 --> 00:10:15,300
+models we can go a lot faster and we can
+
+225
+00:10:15,300 --> 00:10:17,670
+do the design a lot quicker when it's
+
+226
+00:10:17,670 --> 00:10:22,620
+when it's template free and early
+
+227
+00:10:22,620 --> 00:10:25,020
+results are that we're getting obviously
+
+228
+00:10:25,020 --> 00:10:27,240
+still going very very quickly for us we
+
+229
+00:10:27,240 --> 00:10:29,490
+can divert the applications a lot
+
+230
+00:10:29,490 --> 00:10:32,250
+quicker we're avoiding all of the mental
+
+231
+00:10:32,250 --> 00:10:34,590
+context switching and we're getting a
+
+232
+00:10:34,590 --> 00:10:36,930
+lower operational costs because we are
+
+233
+00:10:36,930 --> 00:10:40,770
+we are not having to run so many so many
+
+234
+00:10:40,770 --> 00:10:44,970
+server instances and okay that's it I
+
+235
+00:10:44,970 --> 00:10:46,350
+think I've kind of caught up on the time
+
+236
+00:10:46,350 --> 00:10:49,890
+and I hope that was kind of useful we
+
+237
+00:10:49,890 --> 00:10:51,300
+think the JavaScript stack is early
+
+238
+00:10:51,300 --> 00:10:54,000
+stage obviously but we think it can
+
+239
+00:10:54,000 --> 00:10:55,410
+become the universal language
+
+240
+00:10:55,410 --> 00:10:57,510
+application development both client and
+
+241
+00:10:57,510 --> 00:11:01,470
+and server side and I have to I'm
+
+242
+00:11:01,470 --> 00:11:06,120
+learning an awful lot here so so thanks
+
+243
+00:11:06,120 --> 00:11:07,800
+thanks so much of your time and any
+
+244
+00:11:07,800 --> 00:11:11,370
+questions sure
+
+245
+00:11:11,370 --> 00:11:15,870
+I haven't we haven't released it open
+
+246
+00:11:15,870 --> 00:11:18,000
+source yet because we've got some there
+
+247
+00:11:18,000 --> 00:11:19,200
+are some bits of it that a proprietary
+
+248
+00:11:19,200 --> 00:11:22,080
+that we need to take out we're going to
+
+249
+00:11:22,080 --> 00:11:23,940
+be open sourcing it hopefully if not
+
+250
+00:11:23,940 --> 00:11:25,320
+next week the week after we're looking
+
+251
+00:11:25,320 --> 00:11:38,490
+to put it out it can sometimes like a
+
+252
+00:11:38,490 --> 00:11:41,310
+bit clunky but if you're rendering
+
+253
+00:11:41,310 --> 00:11:42,779
+within Facebook most most of the loan is
+
+254
+00:11:42,779 --> 00:11:45,120
+clunky anyway right so the outside frame
+
+255
+00:11:45,120 --> 00:11:46,800
+is loading clunky right so it doesn't
+
+256
+00:11:46,800 --> 00:11:49,140
+really really matter too much people are
+
+257
+00:11:49,140 --> 00:11:51,839
+fairly fairly understanding about it in
+
+258
+00:11:51,839 --> 00:11:54,270
+that context I think in different
+
+259
+00:11:54,270 --> 00:11:56,190
+contexts it might not be quite the same
+
+260
+00:11:56,190 --> 00:11:58,230
+but the rendering is pretty quick these
+
+261
+00:11:58,230 --> 00:12:07,650
+days anyway right that's good sure okay
+
+262
+00:12:07,650 --> 00:12:09,180
+thanks for watching time guys appreciate
+

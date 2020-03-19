@@ -1,0 +1,2093 @@
+1
+00:00:07,490 --> 00:00:11,280
+
+my name is Jacob just as Martha said and
+
+2
+00:00:11,280 --> 00:00:14,000
+today I'm going to present topic of
+
+3
+00:00:14,000 --> 00:00:19,080
+voxels rendering with JavaScript just a
+
+4
+00:00:19,080 --> 00:00:20,910
+short about me and just started George
+
+5
+00:00:20,910 --> 00:00:22,710
+Street like who in the December so
+
+6
+00:00:22,710 --> 00:00:25,830
+before I was a formerly Python developer
+
+7
+00:00:25,830 --> 00:00:28,859
+so that's my first attempt to ever to do
+
+8
+00:00:28,859 --> 00:00:33,270
+anything in 3d so just take take it into
+
+9
+00:00:33,270 --> 00:00:35,610
+account my twitter is Sasquatch or
+
+10
+00:00:35,610 --> 00:00:40,110
+Sasquatch and give counties rather empty
+
+11
+00:00:40,110 --> 00:00:42,530
+currently but I will place the cold
+
+12
+00:00:42,530 --> 00:00:45,809
+after my presentation and the street
+
+13
+00:00:45,809 --> 00:00:49,410
+does the blog also mainly about Python
+
+14
+00:00:49,410 --> 00:00:51,510
+currently but i'll try to fix that in
+
+15
+00:00:51,510 --> 00:00:55,670
+the coming weeks so why voxel octrees
+
+16
+00:00:55,670 --> 00:01:00,500
+well basically because of this guy
+
+17
+00:01:00,500 --> 00:01:02,940
+everybody knows the guy I believe John
+
+18
+00:01:02,940 --> 00:01:06,360
+Carmack the guy behind doom Wolfenstein
+
+19
+00:01:06,360 --> 00:01:08,880
+quake and the games like that so they've
+
+20
+00:01:08,880 --> 00:01:12,479
+got father of gaming okay and they're
+
+21
+00:01:12,479 --> 00:01:15,030
+just about two years ago John Carmack
+
+22
+00:01:15,030 --> 00:01:17,670
+said that we are currently reaching the
+
+23
+00:01:17,670 --> 00:01:20,750
+limits of the possibilities to render
+
+24
+00:01:20,750 --> 00:01:23,880
+simply render graphics using the
+
+25
+00:01:23,880 --> 00:01:27,990
+traditional methods so what are the
+
+26
+00:01:27,990 --> 00:01:30,290
+traditional methods well obviously
+
+27
+00:01:30,290 --> 00:01:32,299
+traditional methods are rendering using
+
+28
+00:01:32,299 --> 00:01:36,299
+polygons which are just a tiny triangles
+
+29
+00:01:36,299 --> 00:01:38,940
+and polygons are cool
+
+30
+00:01:38,940 --> 00:01:43,260
+because this hardware is optimized to
+
+31
+00:01:43,260 --> 00:01:45,990
+render using polygons also the polygons
+
+32
+00:01:45,990 --> 00:01:49,410
+are really nice big to show uniform
+
+33
+00:01:49,410 --> 00:01:51,840
+uniform surfaces but they suck at
+
+34
+00:01:51,840 --> 00:01:57,660
+complicated scene so a karmic decided to
+
+35
+00:01:57,660 --> 00:01:59,970
+go that bit different way and he
+
+36
+00:01:59,970 --> 00:02:01,530
+introduced voxels well nothing
+
+37
+00:02:01,530 --> 00:02:03,780
+introduced but he said he in the next
+
+38
+00:02:03,780 --> 00:02:05,940
+engine she's gonna render the scenes
+
+39
+00:02:05,940 --> 00:02:09,000
+using voxels and factories so forces are
+
+40
+00:02:09,000 --> 00:02:11,760
+just small cube so we just move the
+
+41
+00:02:11,760 --> 00:02:15,060
+pixel in 3d dimension trading a tiny
+
+42
+00:02:15,060 --> 00:02:16,470
+cube so you can get a better
+
+43
+00:02:16,470 --> 00:02:21,870
+representation of the of the scene there
+
+44
+00:02:21,870 --> 00:02:25,070
+are a lot of trouble with this technique
+
+45
+00:02:25,070 --> 00:02:26,990
+implementation is pretty straightforward
+
+46
+00:02:26,990 --> 00:02:29,180
+traversing the trees very easy
+
+47
+00:02:29,180 --> 00:02:32,490
+collisions are easy resolution change is
+
+48
+00:02:32,490 --> 00:02:35,880
+easy we have possibility generate sparse
+
+49
+00:02:35,880 --> 00:02:39,540
+voxel tree so the nodes of our tree that
+
+50
+00:02:39,540 --> 00:02:41,310
+don't contain data that need to be
+
+51
+00:02:41,310 --> 00:02:45,630
+rendered are just not shown it's really
+
+52
+00:02:45,630 --> 00:02:48,930
+easy to hide surfaces that we're not
+
+53
+00:02:48,930 --> 00:02:52,110
+showing there are many possibilities to
+
+54
+00:02:52,110 --> 00:02:54,120
+improve because the topic is not as much
+
+55
+00:02:54,120 --> 00:02:56,850
+research as the polygon generation but
+
+56
+00:02:56,850 --> 00:03:00,239
+there are a lot of cons so first thing
+
+57
+00:03:00,239 --> 00:03:01,860
+she can be expensive because if you move
+
+58
+00:03:01,860 --> 00:03:04,620
+if you start from the not from the
+
+59
+00:03:04,620 --> 00:03:07,260
+correct point you just can move back and
+
+60
+00:03:07,260 --> 00:03:10,230
+forth across the tree and this can be
+
+61
+00:03:10,230 --> 00:03:12,860
+really expensive and time-consuming
+
+62
+00:03:12,860 --> 00:03:16,680
+animations suck we'll just think about
+
+63
+00:03:16,680 --> 00:03:20,640
+moving 5 million or 50 millions of atoms
+
+64
+00:03:20,640 --> 00:03:24,269
+at a time across the tree structure it
+
+65
+00:03:24,269 --> 00:03:26,910
+really suck at the moment but will check
+
+66
+00:03:26,910 --> 00:03:29,100
+about that later and size doesn't matter
+
+67
+00:03:29,100 --> 00:03:32,030
+unfortunately storing data in an octree
+
+68
+00:03:32,030 --> 00:03:37,220
+44 voxel it's really sighs consuming so
+
+69
+00:03:37,220 --> 00:03:39,870
+let's proceed so first we dig into all
+
+70
+00:03:39,870 --> 00:03:42,590
+trees basically oak trees are just
+
+71
+00:03:42,590 --> 00:03:45,750
+trimmed with data presentation which
+
+72
+00:03:45,750 --> 00:03:47,860
+device divides the
+
+73
+00:03:47,860 --> 00:03:52,540
+the special into small box when each
+
+74
+00:03:52,540 --> 00:03:54,940
+book consists of eight children and so
+
+75
+00:03:54,940 --> 00:03:58,870
+on and so on and so on and this house
+
+76
+00:03:58,870 --> 00:03:59,890
+knows basically some pretty
+
+77
+00:03:59,890 --> 00:04:02,380
+straightforward I live third where you
+
+78
+00:04:02,380 --> 00:04:06,340
+can get it and how implemented it well
+
+79
+00:04:06,340 --> 00:04:08,710
+to be honest I just went through like
+
+80
+00:04:08,710 --> 00:04:11,320
+thousands of different codes to a lot of
+
+81
+00:04:11,320 --> 00:04:13,240
+different implementations in C in
+
+82
+00:04:13,240 --> 00:04:15,640
+JavaScript there is I believe only one
+
+83
+00:04:15,640 --> 00:04:17,950
+implementation JavaScript but I wasn't
+
+84
+00:04:17,950 --> 00:04:20,049
+able to contact the outer so I'm not
+
+85
+00:04:20,049 --> 00:04:23,050
+sure how it works he just states that it
+
+86
+00:04:23,050 --> 00:04:28,030
+does so old after that I went to check
+
+87
+00:04:28,030 --> 00:04:30,010
+the implementations of quad risk or
+
+88
+00:04:30,010 --> 00:04:33,370
+basically just the same idea but still I
+
+89
+00:04:33,370 --> 00:04:35,110
+wasn't able to find anything interesting
+
+90
+00:04:35,110 --> 00:04:39,340
+in there so after skimming through some
+
+91
+00:04:39,340 --> 00:04:42,280
+sickos C++ code I was able to come up
+
+92
+00:04:42,280 --> 00:04:44,470
+with a solution of my own solution which
+
+93
+00:04:44,470 --> 00:04:48,010
+is not over complicated and it worked so
+
+94
+00:04:48,010 --> 00:04:51,580
+basically that's the up three object as
+
+95
+00:04:51,580 --> 00:04:54,729
+you can see we have the node which is
+
+96
+00:04:54,729 --> 00:04:58,260
+the root of over over three structure
+
+97
+00:04:58,260 --> 00:05:00,940
+the road can't the root can contain
+
+98
+00:05:00,940 --> 00:05:04,330
+shape if you just have one level we have
+
+99
+00:05:04,330 --> 00:05:07,840
+also position over root we have also
+
+100
+00:05:07,840 --> 00:05:11,800
+type which is a bit not useful here okay
+
+101
+00:05:11,800 --> 00:05:15,430
+maybe it is the length of the wall which
+
+102
+00:05:15,430 --> 00:05:18,190
+gives us the size of the whole space and
+
+103
+00:05:18,190 --> 00:05:20,169
+the depth and the max depth which are
+
+104
+00:05:20,169 --> 00:05:22,870
+useful when traversing when adding and
+
+105
+00:05:22,870 --> 00:05:26,260
+etcetera etcetera so following now
+
+106
+00:05:26,260 --> 00:05:28,630
+denote the law basically is just the
+
+107
+00:05:28,630 --> 00:05:33,340
+same it differs with having nodes
+
+108
+00:05:33,340 --> 00:05:35,290
+reference which is a reference to an
+
+109
+00:05:35,290 --> 00:05:38,680
+array that contains the child node of
+
+110
+00:05:38,680 --> 00:05:43,050
+the root of the node which can be either
+
+111
+00:05:43,050 --> 00:05:46,480
+another note or can be
+
+112
+00:05:46,480 --> 00:05:48,970
+the stuff that will be rendering during
+
+113
+00:05:48,970 --> 00:05:52,270
+our scene and the data that will be
+
+114
+00:05:52,270 --> 00:05:55,090
+rendered I just stored in a flat array
+
+115
+00:05:55,090 --> 00:05:56,860
+because it faster to traverse roof run
+
+116
+00:05:56,860 --> 00:05:58,950
+away then going through the whole tree
+
+117
+00:05:58,950 --> 00:06:02,530
+it also has a parent reference because
+
+118
+00:06:02,530 --> 00:06:04,630
+it's faster to it give us really a boost
+
+119
+00:06:04,630 --> 00:06:08,980
+when the traversing girl Rory a location
+
+120
+00:06:08,980 --> 00:06:10,330
+which is the real magic here the real
+
+121
+00:06:10,330 --> 00:06:15,420
+deal okay now location I needed a way to
+
+122
+00:06:15,420 --> 00:06:18,700
+find my find the note i'm currently
+
+123
+00:06:18,700 --> 00:06:21,310
+dealing with and across the whole
+
+124
+00:06:21,310 --> 00:06:26,220
+structure and it had to be fixed because
+
+125
+00:06:26,220 --> 00:06:29,410
+basically we don't wanna guess in which
+
+126
+00:06:29,410 --> 00:06:31,750
+note we are so i went the bitwise like
+
+127
+00:06:31,750 --> 00:06:37,000
+idea where the note the the position of
+
+128
+00:06:37,000 --> 00:06:39,580
+the note inside the parent node it's
+
+129
+00:06:39,580 --> 00:06:44,890
+just defined by a difference on XY and z
+
+130
+00:06:44,890 --> 00:06:48,010
+axis so in all this further than half of
+
+131
+00:06:48,010 --> 00:06:51,580
+the length of XY or z axis we just said
+
+132
+00:06:51,580 --> 00:06:54,490
+to know set the beach one and if it's
+
+133
+00:06:54,490 --> 00:06:56,800
+closer to point zero zero just set the
+
+134
+00:06:56,800 --> 00:06:59,890
+bit to 0 0 to 0 and this gives us a
+
+135
+00:06:59,890 --> 00:07:04,420
+uniform distribution it's the same
+
+136
+00:07:04,420 --> 00:07:08,590
+across the hall the node so just the
+
+137
+00:07:08,590 --> 00:07:13,270
+ticket program now change the rest of
+
+138
+00:07:13,270 --> 00:07:16,570
+location magic I'm not really going into
+
+139
+00:07:16,570 --> 00:07:21,040
+the bit bitwise bitwise where it was bit
+
+140
+00:07:21,040 --> 00:07:24,880
+kinda start and so I decided to just set
+
+141
+00:07:24,880 --> 00:07:26,890
+the position and save the position as a
+
+142
+00:07:26,890 --> 00:07:31,570
+string as a triple of Charles so just
+
+143
+00:07:31,570 --> 00:07:34,090
+traversing deeper into the tree I just
+
+144
+00:07:34,090 --> 00:07:36,480
+add the current position
+
+145
+00:07:36,480 --> 00:07:40,210
+of my note inside the parental so just
+
+146
+00:07:40,210 --> 00:07:41,920
+as you can see in the no list for
+
+147
+00:07:41,920 --> 00:07:45,520
+example the first node in the in the
+
+148
+00:07:45,520 --> 00:07:47,560
+array then the second node we just start
+
+149
+00:07:47,560 --> 00:07:50,380
+with 0 0 0 and so on and so on we just
+
+150
+00:07:50,380 --> 00:07:51,900
+go deeper and deeper and deeper and
+
+151
+00:07:51,900 --> 00:07:55,510
+finally adding the the triples of
+
+152
+00:07:55,510 --> 00:07:58,300
+strings we just end with the correct
+
+153
+00:07:58,300 --> 00:08:01,360
+position of over note inside the whole
+
+154
+00:08:01,360 --> 00:08:07,510
+oak tree now some code for way it's not
+
+155
+00:08:07,510 --> 00:08:09,790
+maybe too obvious but I really try to
+
+156
+00:08:09,790 --> 00:08:12,760
+keep it simple mmm the recursive adding
+
+157
+00:08:12,760 --> 00:08:15,130
+of course we there are different
+
+158
+00:08:15,130 --> 00:08:16,900
+approaches but the recursion is the
+
+159
+00:08:16,900 --> 00:08:20,560
+easiest to just show you so we just
+
+160
+00:08:20,560 --> 00:08:23,680
+Traverse across we just Traverse across
+
+161
+00:08:23,680 --> 00:08:31,479
+the the oak tree we have to as you can
+
+162
+00:08:31,479 --> 00:08:34,150
+see here current location in our equal
+
+163
+00:08:34,150 --> 00:08:36,070
+string location and current depth is not
+
+164
+00:08:36,070 --> 00:08:40,909
+equal string depth so these are the two
+
+165
+00:08:40,919 --> 00:08:45,330
+the two operations that limit our as
+
+166
+00:08:45,330 --> 00:08:48,040
+approach the travas traversing so for
+
+167
+00:08:48,040 --> 00:08:52,240
+example 48 level 3 unless the current
+
+168
+00:08:52,240 --> 00:08:56,500
+location is equal to 8 times 3 / 111 we
+
+169
+00:08:56,500 --> 00:08:58,600
+just reverse deeper and deeper if the
+
+170
+00:08:58,600 --> 00:09:00,670
+current depth is not equal desired depth
+
+171
+00:09:00,670 --> 00:09:03,910
+you just go and add our node in the
+
+172
+00:09:03,910 --> 00:09:06,780
+correct way so how the function for
+
+173
+00:09:06,780 --> 00:09:10,180
+inserting looks like well it's pretty
+
+174
+00:09:10,180 --> 00:09:13,500
+straightforward we just divide the
+
+175
+00:09:13,500 --> 00:09:15,940
+string of location in two triples once
+
+176
+00:09:15,940 --> 00:09:20,620
+again and just following the idea I told
+
+177
+00:09:20,620 --> 00:09:22,960
+you about before we just select the
+
+178
+00:09:22,960 --> 00:09:26,050
+correct we just first okay with vesicles
+
+179
+00:09:26,050 --> 00:09:29,380
+we need to recalculate the position from
+
+180
+00:09:29,380 --> 00:09:32,170
+string to integer from bitwise to
+
+181
+00:09:32,170 --> 00:09:34,579
+integer then we can go through
+
+182
+00:09:34,579 --> 00:09:37,279
+the nodes selecting each node and we
+
+183
+00:09:37,279 --> 00:09:39,799
+when we down we just add node set the
+
+184
+00:09:39,799 --> 00:09:43,009
+values and that's all so the last
+
+185
+00:09:43,009 --> 00:09:44,929
+interesting function here is for
+
+186
+00:09:44,929 --> 00:09:49,579
+retrieving the node is we also reduce
+
+187
+00:09:49,579 --> 00:09:52,670
+recursion here and we can use make the
+
+188
+00:09:52,670 --> 00:09:56,350
+usage of the bit presentation so we just
+
+189
+00:09:56,350 --> 00:09:58,579
+calculate the boundaries of the note
+
+190
+00:09:58,579 --> 00:10:00,829
+we're currently in as well as the node
+
+191
+00:10:00,829 --> 00:10:03,679
+point or object we will be matching
+
+192
+00:10:03,679 --> 00:10:07,850
+against and if the x-axis if the
+
+193
+00:10:07,850 --> 00:10:10,429
+exposition keeps in the boundaries of
+
+194
+00:10:10,429 --> 00:10:11,869
+the note you're currently in we just
+
+195
+00:10:11,869 --> 00:10:14,929
+select the node and now we can use the
+
+196
+00:10:14,929 --> 00:10:17,799
+magic I told you about because if the
+
+197
+00:10:17,799 --> 00:10:21,529
+position of if the position of the
+
+198
+00:10:21,529 --> 00:10:25,209
+object will matching against the node is
+
+199
+00:10:25,209 --> 00:10:28,189
+smaller than half of all the length of
+
+200
+00:10:28,189 --> 00:10:31,519
+for example 4 x-axis or y-axis or z axis
+
+201
+00:10:31,519 --> 00:10:34,220
+we just set the bit to 0 either way we
+
+202
+00:10:34,220 --> 00:10:36,379
+set it one and this way we can limit the
+
+203
+00:10:36,379 --> 00:10:38,779
+amount of the child nodes that we need
+
+204
+00:10:38,779 --> 00:10:40,819
+to traverse so I can really boost up the
+
+205
+00:10:40,819 --> 00:10:46,149
+search now for some real life usage I
+
+206
+00:10:46,149 --> 00:10:49,279
+will just show you two examples the
+
+207
+00:10:49,279 --> 00:10:52,220
+first one ray casting also I believe
+
+208
+00:10:52,220 --> 00:10:54,949
+that this graphic shows though we can we
+
+209
+00:10:54,949 --> 00:10:57,589
+just need to calculate the position on
+
+210
+00:10:57,589 --> 00:10:59,509
+the entrance and deposition on the exit
+
+211
+00:10:59,509 --> 00:11:04,600
+we just then we traverse across the ray
+
+212
+00:11:04,600 --> 00:11:07,819
+through our up three and we select only
+
+213
+00:11:07,819 --> 00:11:09,379
+the notes that were affected we just
+
+214
+00:11:09,379 --> 00:11:11,959
+skip the rest and we saw it the note
+
+215
+00:11:11,959 --> 00:11:15,339
+that were inside the first room and
+
+216
+00:11:15,339 --> 00:11:18,499
+that's basically all the second one is
+
+217
+00:11:18,499 --> 00:11:20,869
+collisions the simple bounding boxes
+
+218
+00:11:20,869 --> 00:11:22,309
+approach is the one I've told you about
+
+219
+00:11:22,309 --> 00:11:25,069
+the one that uses the function presented
+
+220
+00:11:25,069 --> 00:11:28,459
+earlier but the other one is a bit more
+
+221
+00:11:28,459 --> 00:11:31,669
+complicated so basing on the path that
+
+222
+00:11:31,669 --> 00:11:35,149
+our object already traversed if we if it
+
+223
+00:11:35,149 --> 00:11:38,869
+did we can predict the road it will
+
+224
+00:11:38,869 --> 00:11:39,590
+follow
+
+225
+00:11:39,590 --> 00:11:41,910
+calculate the bounding boxes of their of
+
+226
+00:11:41,910 --> 00:11:45,450
+this element fire raised from the edges
+
+227
+00:11:45,450 --> 00:11:47,400
+of the bounding box and this also
+
+228
+00:11:47,400 --> 00:11:51,840
+selects us just the space that will be
+
+229
+00:11:51,840 --> 00:11:53,250
+affected and the space that we need to
+
+230
+00:11:53,250 --> 00:11:56,430
+really take care of that's just a simple
+
+231
+00:11:56,430 --> 00:11:59,580
+demo I hope that it will work who's this
+
+232
+00:11:59,580 --> 00:12:04,170
+I frame is a bit more not cooperating to
+
+233
+00:12:04,170 --> 00:12:12,270
+be honest ok yeah ok so just that simple
+
+234
+00:12:12,270 --> 00:12:14,880
+collision on bounding boxes just move
+
+235
+00:12:14,880 --> 00:12:17,310
+here and wallow ok we have a collision
+
+236
+00:12:17,310 --> 00:12:25,890
+so pretty cool thanks ok nearly half of
+
+237
+00:12:25,890 --> 00:12:28,620
+the time ok so now fast vocals the voxel
+
+238
+00:12:28,620 --> 00:12:31,200
+are just I said previously just remove
+
+239
+00:12:31,200 --> 00:12:33,420
+pixel in three dimension we create a
+
+240
+00:12:33,420 --> 00:12:36,150
+little cube from it and basically this
+
+241
+00:12:36,150 --> 00:12:40,040
+that's what we create a word from the
+
+242
+00:12:40,040 --> 00:12:43,200
+usages of divorces well you might have
+
+243
+00:12:43,200 --> 00:12:44,940
+thought that they are not used at all
+
+244
+00:12:44,940 --> 00:12:48,270
+because the concepts that previously but
+
+245
+00:12:48,270 --> 00:12:50,400
+while they are we used them for example
+
+246
+00:12:50,400 --> 00:12:52,380
+for medicine for rendering to the images
+
+247
+00:12:52,380 --> 00:12:54,420
+as well as we use them the way they were
+
+248
+00:12:54,420 --> 00:12:56,520
+previously used in games I can play the
+
+249
+00:12:56,520 --> 00:12:58,560
+rounder the whole vaccine the whole beam
+
+250
+00:12:58,560 --> 00:13:00,620
+engine was created using voxels
+
+251
+00:13:00,620 --> 00:13:02,940
+unfortunately they had some problems
+
+252
+00:13:02,940 --> 00:13:05,700
+with efficiency of this engine I believe
+
+253
+00:13:05,700 --> 00:13:08,220
+in chromatin conquer and red alert games
+
+254
+00:13:08,220 --> 00:13:09,780
+the units in the game will create
+
+255
+00:13:09,780 --> 00:13:12,990
+diffusing voxels the outcast game the
+
+256
+00:13:12,990 --> 00:13:14,790
+whole map was rendered using voxel but
+
+257
+00:13:14,790 --> 00:13:17,700
+they were cheating a bit there is a game
+
+258
+00:13:17,700 --> 00:13:19,650
+called foxes time so a clone of
+
+259
+00:13:19,650 --> 00:13:23,070
+Wolfenstein pretty cool also the whole
+
+260
+00:13:23,070 --> 00:13:24,720
+world is created of voxels you can just
+
+261
+00:13:24,720 --> 00:13:27,660
+see it clearly here and just recently
+
+262
+00:13:27,660 --> 00:13:29,960
+there was a lot of noise about
+
+263
+00:13:29,960 --> 00:13:32,000
+technology called unlike the detailed
+
+264
+00:13:32,000 --> 00:13:35,220
+technology well they really didn't
+
+265
+00:13:35,220 --> 00:13:35,820
+really
+
+266
+00:13:35,820 --> 00:13:37,800
+released any official info about the
+
+267
+00:13:37,800 --> 00:13:40,710
+technology behind this the this demo but
+
+268
+00:13:40,710 --> 00:13:42,930
+not the creator of Minecraft and some
+
+269
+00:13:42,930 --> 00:13:46,860
+other smart guys stated and agreed that
+
+270
+00:13:46,860 --> 00:13:48,870
+they for sure might be using optrician
+
+271
+00:13:48,870 --> 00:13:51,750
+boxes because they're mentioning atoms
+
+272
+00:13:51,750 --> 00:13:54,300
+for the rendering of the role so Adam
+
+273
+00:13:54,300 --> 00:13:57,720
+and q PM does the same as well as the
+
+274
+00:13:57,720 --> 00:13:59,640
+the model shown in during the demo are
+
+275
+00:13:59,640 --> 00:14:03,060
+just all the same so that's easy to just
+
+276
+00:14:03,060 --> 00:14:05,430
+cut part of our oak tree and duplicate
+
+277
+00:14:05,430 --> 00:14:08,760
+it and so buddy that's it also yeah for
+
+278
+00:14:08,760 --> 00:14:10,740
+sure will you say it in quake 5 and do
+
+279
+00:14:10,740 --> 00:14:13,170
+for and whatever other implementation I
+
+280
+00:14:13,170 --> 00:14:15,330
+just found one implementation of voxels
+
+281
+00:14:15,330 --> 00:14:19,340
+using javascript which is the one
+
+282
+00:14:19,340 --> 00:14:23,270
+display here from the ipod on the roof
+
+283
+00:14:23,270 --> 00:14:25,770
+why we don't like it and why that's not
+
+284
+00:14:25,770 --> 00:14:27,300
+what i wanted to do well basically
+
+285
+00:14:27,300 --> 00:14:29,700
+that's not a 3d engine but two and a
+
+286
+00:14:29,700 --> 00:14:31,440
+half d we now have the freedom of
+
+287
+00:14:31,440 --> 00:14:37,630
+movement here you just can move oh sorry
+
+288
+00:14:37,640 --> 00:14:40,710
+as you can see you can just move in this
+
+289
+00:14:40,710 --> 00:14:44,070
+way also it uses height maps only it
+
+290
+00:14:44,070 --> 00:14:46,800
+doesn't really have a structure so you
+
+291
+00:14:46,800 --> 00:14:49,290
+cannot have overlapping pixels when
+
+292
+00:14:49,290 --> 00:14:53,010
+there is a free space between them so
+
+293
+00:14:53,010 --> 00:14:54,870
+well that's not all that's not what I
+
+294
+00:14:54,870 --> 00:14:57,960
+wanted to build mmm now show about my
+
+295
+00:14:57,960 --> 00:14:59,880
+engine is a 3 beta alpha alpha alpha
+
+296
+00:14:59,880 --> 00:15:04,340
+really I just can't even say how not
+
+297
+00:15:04,340 --> 00:15:07,290
+finished it is there's still a lot of
+
+298
+00:15:07,290 --> 00:15:10,650
+work to do but basically i'll be able to
+
+299
+00:15:10,650 --> 00:15:12,990
+show you just a working demo unit
+
+300
+00:15:12,990 --> 00:15:14,250
+pinhole camera type thanks Marcus
+
+301
+00:15:14,250 --> 00:15:15,990
+Pedersen fillet to the trader of origami
+
+302
+00:15:15,990 --> 00:15:19,410
+3d I use geometrics for calculating the
+
+303
+00:15:19,410 --> 00:15:22,830
+mastery separation i'm using quads
+
+304
+00:15:22,830 --> 00:15:26,430
+instead of triangles for rendering and
+
+305
+00:15:26,430 --> 00:15:29,610
+texturing because apparently drawing a
+
+306
+00:15:29,610 --> 00:15:34,230
+quad it just uses four moves and joined
+
+307
+00:15:34,230 --> 00:15:38,700
+quad during using triangles these five
+
+308
+00:15:38,700 --> 00:15:40,350
+moves so we just have one additional
+
+309
+00:15:40,350 --> 00:15:43,790
+three i used parts walks of trees so the
+
+310
+00:15:43,790 --> 00:15:47,410
+space that doesn't contain any data
+
+311
+00:15:47,410 --> 00:15:49,910
+needed for rendering you just removed
+
+312
+00:15:49,910 --> 00:15:51,590
+from the tree there is a back face
+
+313
+00:15:51,590 --> 00:15:53,510
+culling there is no ray casting so it
+
+314
+00:15:53,510 --> 00:15:57,020
+really affects the performance and still
+
+315
+00:15:57,020 --> 00:15:59,000
+a lot of things to be done so I believe
+
+316
+00:15:59,000 --> 00:16:00,650
+that somebody will help me after the
+
+317
+00:16:00,650 --> 00:16:02,840
+conference with finishing this whoa whoa
+
+318
+00:16:02,840 --> 00:16:06,530
+whoa sorry once again of course we need
+
+319
+00:16:06,530 --> 00:16:09,050
+some data to generate a word so I went
+
+320
+00:16:09,050 --> 00:16:12,410
+the noise generation way and i'm using
+
+321
+00:16:12,410 --> 00:16:14,300
+Perlin noise for this party noise for
+
+322
+00:16:14,300 --> 00:16:17,930
+the year hey Moreno is what is that it's
+
+323
+00:16:17,930 --> 00:16:20,900
+just a set of formulas mathematical
+
+324
+00:16:20,900 --> 00:16:25,130
+formulas that can power in I believed
+
+325
+00:16:25,130 --> 00:16:27,980
+invented in like 1980s and that's the
+
+326
+00:16:27,980 --> 00:16:29,620
+really smart guy because basically
+
+327
+00:16:29,620 --> 00:16:33,950
+everybody uses that even unwittingly and
+
+328
+00:16:33,950 --> 00:16:36,680
+guy got an oscar for tron special
+
+329
+00:16:36,680 --> 00:16:38,560
+effects yeah so that speak for itself
+
+330
+00:16:38,560 --> 00:16:41,840
+also the effect is used in Photoshop
+
+331
+00:16:41,840 --> 00:16:43,880
+route filter so probably some of you
+
+332
+00:16:43,880 --> 00:16:47,320
+have used it already he has a side that
+
+333
+00:16:47,320 --> 00:16:50,150
+describes step-by-step how the noise was
+
+334
+00:16:50,150 --> 00:16:52,460
+Heather knows how the noise is made and
+
+335
+00:16:52,460 --> 00:16:55,100
+how to implement it I believe in C so
+
+336
+00:16:55,100 --> 00:16:56,930
+probably maybe somebody will find it
+
+337
+00:16:56,930 --> 00:16:59,300
+useful basically does the noise i'm
+
+338
+00:16:59,300 --> 00:17:02,450
+generating so does the sample 256 for
+
+339
+00:17:02,450 --> 00:17:04,520
+256 so i can just generate him
+
+340
+00:17:04,520 --> 00:17:08,120
+differently shapow yeah i'm just using
+
+341
+00:17:08,120 --> 00:17:10,600
+some and the idea single rate and some
+
+342
+00:17:10,600 --> 00:17:12,800
+different calculations which is just to
+
+343
+00:17:12,800 --> 00:17:17,210
+fit it to my world generating engine I'm
+
+344
+00:17:17,210 --> 00:17:20,200
+well I was thinking about going the
+
+345
+00:17:20,200 --> 00:17:23,000
+going to Minecraft way when they just
+
+346
+00:17:23,000 --> 00:17:26,720
+generate few noises after one after each
+
+347
+00:17:26,720 --> 00:17:29,390
+other just plating the splitting the
+
+348
+00:17:29,390 --> 00:17:31,370
+whole generated noise into small pieces
+
+349
+00:17:31,370 --> 00:17:33,200
+taking this piece generating goes over
+
+350
+00:17:33,200 --> 00:17:34,730
+this piece and so on and so on and so on
+
+351
+00:17:34,730 --> 00:17:39,230
+and it gives them proper results but I
+
+352
+00:17:39,230 --> 00:17:42,800
+didn't either that's all how we do it we
+
+353
+00:17:42,800 --> 00:17:45,590
+just cremate create an image data array
+
+354
+00:17:45,590 --> 00:17:47,720
+the size of the canvas
+
+355
+00:17:47,720 --> 00:17:51,200
+it was x 4 of course because RGB na and
+
+356
+00:17:51,200 --> 00:17:54,470
+for each pixel we just now the RGB data
+
+357
+00:17:54,470 --> 00:17:57,770
+to adjust the RGB data to zero and use
+
+358
+00:17:57,770 --> 00:18:00,500
+paulinho's only to generate alpha and
+
+359
+00:18:00,500 --> 00:18:02,210
+because it just gives us a uniform
+
+360
+00:18:02,210 --> 00:18:06,200
+distribution and really it works
+
+361
+00:18:06,200 --> 00:18:08,900
+properly so then we just have this
+
+362
+00:18:08,900 --> 00:18:11,360
+moving a little bit read the data from
+
+363
+00:18:11,360 --> 00:18:14,539
+the creative image can cut the noise in
+
+364
+00:18:14,539 --> 00:18:16,010
+half because obviously we don't want the
+
+365
+00:18:16,010 --> 00:18:18,080
+we're not in Himalayas we don't want a
+
+366
+00:18:18,080 --> 00:18:20,090
+nice to be the size over the whole
+
+367
+00:18:20,090 --> 00:18:23,360
+generated world and then just render it
+
+368
+00:18:23,360 --> 00:18:25,970
+so how it looks rendered will basically
+
+369
+00:18:25,970 --> 00:18:27,919
+something like that it pretty simple
+
+370
+00:18:27,919 --> 00:18:31,880
+currently as you can see there it's well
+
+371
+00:18:31,880 --> 00:18:34,940
+it resembles some kind of world not sure
+
+372
+00:18:34,940 --> 00:18:40,549
+which and just okay with him who short
+
+373
+00:18:40,549 --> 00:18:43,610
+one so I have a demo of generate
+
+374
+00:18:43,610 --> 00:18:45,350
+probably noise a small sample because
+
+375
+00:18:45,350 --> 00:18:47,090
+the performance is really cool I think I
+
+376
+00:18:47,090 --> 00:18:49,340
+mean you really really really cool yes
+
+377
+00:18:49,340 --> 00:18:51,140
+as you can see have added some lighting
+
+378
+00:18:51,140 --> 00:18:54,799
+it's just a word from last day so it
+
+379
+00:18:54,799 --> 00:18:57,340
+basically you can see that it's working
+
+380
+00:18:57,340 --> 00:18:59,990
+hopefully I'll manage to just improve it
+
+381
+00:18:59,990 --> 00:19:04,850
+a bit and have it work better and now
+
+382
+00:19:04,850 --> 00:19:07,580
+the fun part we need to generate the
+
+383
+00:19:07,580 --> 00:19:11,179
+world but I just hope that my firefox
+
+384
+00:19:11,179 --> 00:19:14,960
+won't die 23 is time consuming and
+
+385
+00:19:14,960 --> 00:19:16,580
+really resource consuming and I will
+
+386
+00:19:16,580 --> 00:19:19,130
+just tell you in a second one as you can
+
+387
+00:19:19,130 --> 00:19:20,929
+see it almost dies yeah still
+
+388
+00:19:20,929 --> 00:19:24,909
+calculating yep yeah free me from here
+
+389
+00:19:24,909 --> 00:19:27,350
+why it takes so much time well basically
+
+390
+00:19:27,350 --> 00:19:32,539
+i'm generating a sample of 64 x 64 x 64
+
+391
+00:19:32,539 --> 00:19:34,880
+so you can calculate from how much boxer
+
+392
+00:19:34,880 --> 00:19:38,539
+we have in it I haven't yet implemented
+
+393
+00:19:38,539 --> 00:19:41,960
+any removal of the hidden of boxes that
+
+394
+00:19:41,960 --> 00:19:45,409
+are not seen so the amount of data that
+
+395
+00:19:45,409 --> 00:19:47,030
+needs to be rendered off as you can see
+
+396
+00:19:47,030 --> 00:19:49,880
+he just really really really big and you
+
+397
+00:19:49,880 --> 00:19:51,549
+can see the noise generated in
+
+398
+00:19:51,549 --> 00:19:54,399
+in the corner basically it resembles a
+
+399
+00:19:54,399 --> 00:19:58,539
+bit they think that is generated I will
+
+400
+00:19:58,539 --> 00:20:00,580
+just try to move it but I just said it's
+
+401
+00:20:00,580 --> 00:20:05,139
+really poor performance there is also a
+
+402
+00:20:05,139 --> 00:20:07,389
+zooming but i'm not sure if it's capable
+
+403
+00:20:07,389 --> 00:20:11,379
+of showing it maybe we'll open have 10
+
+404
+00:20:11,379 --> 00:20:15,879
+more minutes yeah well it resembles
+
+405
+00:20:15,879 --> 00:20:17,799
+minecraft a bit even the textures are
+
+406
+00:20:17,799 --> 00:20:21,700
+used from minecraft so just I just I
+
+407
+00:20:21,700 --> 00:20:23,499
+needed to really turn off the lighting
+
+408
+00:20:23,499 --> 00:20:25,869
+because the computer would die even that
+
+409
+00:20:25,869 --> 00:20:29,559
+it has four cores and well basically why
+
+410
+00:20:29,559 --> 00:20:31,929
+it's working this way why the
+
+411
+00:20:31,929 --> 00:20:34,269
+performance is so poor isn't closing all
+
+412
+00:20:34,269 --> 00:20:40,749
+the tabs Yuri time consuming oh come on
+
+413
+00:20:40,749 --> 00:20:52,850
+come on come on how do plane yeah thanks
+
+414
+00:20:52,860 --> 00:20:59,100
+I just really need to show my slides
+
+415
+00:20:59,100 --> 00:21:04,679
+again yeah everybody's in it now sorry
+
+416
+00:21:04,679 --> 00:21:07,559
+for that it's going to take so much time
+
+417
+00:21:07,559 --> 00:21:17,400
+oh come on Firefox
+
+418
+00:21:17,410 --> 00:21:19,840
+oh nothing strange happened i believe i
+
+419
+00:21:19,840 --> 00:21:22,170
+just turned the world upside down okay
+
+420
+00:21:22,170 --> 00:21:30,160
+let's put this really shouldn't happen
+
+421
+00:21:30,160 --> 00:21:36,130
+oh no no it should it should ease that's
+
+422
+00:21:36,130 --> 00:21:38,080
+how it went to work yeah I just need to
+
+423
+00:21:38,080 --> 00:21:41,370
+consume the time of it yeah cool work
+
+424
+00:21:41,370 --> 00:21:45,330
+okay I'm just believe that I have to
+
+425
+00:21:45,330 --> 00:21:53,790
+come on slides
+
+426
+00:21:53,800 --> 00:22:00,320
+okay sorry it just is yeah I just need
+
+427
+00:22:00,320 --> 00:22:04,309
+to buy a macbook I believe ok kill this
+
+428
+00:22:04,309 --> 00:22:08,000
+process yeah close the process yeah
+
+429
+00:22:08,000 --> 00:22:09,650
+Firefox is checking first version yeah
+
+430
+00:22:09,650 --> 00:22:12,730
+for sure
+
+431
+00:22:12,740 --> 00:22:17,610
+okay so if you can fix it okay so we're
+
+432
+00:22:17,610 --> 00:22:26,960
+the slides
+
+433
+00:22:26,970 --> 00:22:29,460
+why it's not working sorry for that
+
+434
+00:22:29,460 --> 00:22:33,470
+really you just couldn't get a bit bored
+
+435
+00:22:33,470 --> 00:22:35,909
+maybe I'll tell a joke on outdoor
+
+436
+00:22:35,909 --> 00:22:40,700
+cooking okay kkkk uh yeah so it was like
+
+437
+00:22:40,700 --> 00:22:46,200
+26 leaf
+
+438
+00:22:46,210 --> 00:22:50,320
+oh yeah basically we will hear yeah I
+
+439
+00:22:50,320 --> 00:22:52,750
+can trust trampoline yeah you have the
+
+440
+00:22:52,750 --> 00:22:56,260
+noise the noise possible improvements
+
+441
+00:22:56,260 --> 00:22:59,200
+why it's working so slow well mmm there
+
+442
+00:22:59,200 --> 00:23:01,180
+are a lot of a lot of things to be done
+
+443
+00:23:01,180 --> 00:23:03,400
+as I said earlier we can join smaller
+
+444
+00:23:03,400 --> 00:23:05,910
+boxes in big round so we just have
+
+445
+00:23:05,910 --> 00:23:09,850
+blessed data to draw we can for sure we
+
+446
+00:23:09,850 --> 00:23:12,040
+need to hide unseen boxes like surround
+
+447
+00:23:12,040 --> 00:23:13,960
+sound rounded by other voxels we can
+
+448
+00:23:13,960 --> 00:23:16,840
+draw the the whole images with image
+
+449
+00:23:16,840 --> 00:23:19,030
+data so just the way I used for
+
+450
+00:23:19,030 --> 00:23:20,890
+generating the noise we can use it the
+
+451
+00:23:20,890 --> 00:23:24,400
+opposite way we can create magnetically
+
+452
+00:23:24,400 --> 00:23:28,090
+quick we can create our image data array
+
+453
+00:23:28,090 --> 00:23:32,230
+but without knowing the RGB and this
+
+454
+00:23:32,230 --> 00:23:34,720
+gives us a boost off like four times so
+
+455
+00:23:34,720 --> 00:23:37,450
+it's really cool properly casting needs
+
+456
+00:23:37,450 --> 00:23:39,820
+to be implemented yeah and some other
+
+457
+00:23:39,820 --> 00:23:41,920
+maybe some other traversing algorithm as
+
+458
+00:23:41,920 --> 00:23:45,490
+well as well GL cause currently event
+
+459
+00:23:45,490 --> 00:23:47,530
+used with WebGL cause WebGL is cheating
+
+460
+00:23:47,530 --> 00:23:49,810
+and where is that basically with GL
+
+461
+00:23:49,810 --> 00:23:52,750
+opengl and other lip lips for graphics
+
+462
+00:23:52,750 --> 00:23:54,540
+just don't allow you to create websites
+
+463
+00:23:54,540 --> 00:23:57,540
+we just you're just forced to use
+
+464
+00:23:57,540 --> 00:24:01,260
+polygon so basically building a world of
+
+465
+00:24:01,260 --> 00:24:03,670
+voxels with wedgie is just building
+
+466
+00:24:03,670 --> 00:24:05,890
+world from polygon so you can implement
+
+467
+00:24:05,890 --> 00:24:07,570
+it easily I've tried to implementing it
+
+468
+00:24:07,570 --> 00:24:09,460
+using the fridge is so just
+
+469
+00:24:09,460 --> 00:24:11,440
+straightforward because even mr. dupe
+
+470
+00:24:11,440 --> 00:24:14,380
+created demo of building world of voxels
+
+471
+00:24:14,380 --> 00:24:18,730
+so it works and summarize were drawing
+
+472
+00:24:18,730 --> 00:24:20,860
+voxels is slow really it's slow
+
+473
+00:24:20,860 --> 00:24:22,450
+everybody says that it's too slow
+
+474
+00:24:22,450 --> 00:24:26,950
+animating a slow sizes an issue and it
+
+475
+00:24:26,950 --> 00:24:28,660
+really seems impossible right now well
+
+476
+00:24:28,660 --> 00:24:31,180
+John Carmack states that he was able to
+
+477
+00:24:31,180 --> 00:24:32,590
+animate like three million boxes but
+
+478
+00:24:32,590 --> 00:24:34,480
+nobody believes him so probably we
+
+479
+00:24:34,480 --> 00:24:35,980
+should wait for for him to finish his
+
+480
+00:24:35,980 --> 00:24:41,560
+engine but still how does the full quota
+
+481
+00:24:41,560 --> 00:24:45,360
+girl photo from i believe last last week
+
+482
+00:24:45,360 --> 00:24:48,730
+we have to just everybody said that
+
+483
+00:24:48,730 --> 00:24:50,230
+there is nothing faster than speed of
+
+484
+00:24:50,230 --> 00:24:52,480
+light well neutrino just proved that the
+
+485
+00:24:52,480 --> 00:24:53,030
+wrong
+
+486
+00:24:53,030 --> 00:24:56,680
+so maybe the same will work on fox cells
+
+487
+00:24:56,680 --> 00:24:59,840
+and we're just a bit more info you can
+
+488
+00:24:59,840 --> 00:25:02,240
+ask me about the boxes you can check the
+
+489
+00:25:02,240 --> 00:25:04,310
+gift wrap after the presentation you can
+
+490
+00:25:04,310 --> 00:25:06,710
+come to voxels blogspot com which is a
+
+491
+00:25:06,710 --> 00:25:09,830
+block of guys from Nvidia which use cuda
+
+492
+00:25:09,830 --> 00:25:12,920
+for rendering the proper voxel images
+
+493
+00:25:12,920 --> 00:25:16,490
+which work and you can also ask just
+
+494
+00:25:16,490 --> 00:25:18,470
+karmic how to do it but i'm not sure if
+
+495
+00:25:18,470 --> 00:25:22,880
+you'll tell you just a short demo how it
+
+496
+00:25:22,880 --> 00:25:32,690
+should be done i believe that okay so as
+
+497
+00:25:32,690 --> 00:25:36,550
+you can see as you will be able to see
+
+498
+00:25:36,550 --> 00:25:39,140
+yeah it's pretty cool so they have
+
+499
+00:25:39,140 --> 00:25:42,250
+potential for sure the world looks cool
+
+500
+00:25:42,250 --> 00:25:46,760
+so probably would if with some help from
+
+501
+00:25:46,760 --> 00:25:49,580
+you guys or with some help from other
+
+502
+00:25:49,580 --> 00:25:52,250
+guys that will just go dig deeper into
+
+503
+00:25:52,250 --> 00:25:54,200
+this topic there will be a possibility
+
+504
+00:25:54,200 --> 00:25:57,830
+to create such things in in with
+
+505
+00:25:57,830 --> 00:26:04,400
+javascript and if I close that once
+
+506
+00:26:04,400 --> 00:26:06,770
+again you don't want to cooperate with
+
+507
+00:26:06,770 --> 00:26:11,750
+me okay just let's demo because you
+
+508
+00:26:11,750 --> 00:26:14,630
+obviously can go deeper into this topic
+
+509
+00:26:14,630 --> 00:26:17,020
+or just saying was all so
+
+510
+00:26:17,020 --> 00:26:20,750
+instead of going deeper into boxers you
+
+511
+00:26:20,750 --> 00:26:37,330
+can just not working
+
+512
+00:26:37,340 --> 00:26:39,809
+instead of going deeper into voltage you
+
+513
+00:26:39,809 --> 00:26:42,450
+can just play it for your March using
+
+514
+00:26:42,450 --> 00:26:53,609
+floppy music so thanks that's all
+
+515
+00:26:53,619 --> 00:27:01,509
+questions if you have any issues no
+
+516
+00:27:01,509 --> 00:27:06,589
+chrome dies Oprah dies and Internet
+
+517
+00:27:06,589 --> 00:27:08,929
+Explorer doesn't really show the window
+
+518
+00:27:08,929 --> 00:27:11,599
+so I believe that Firefox is currently
+
+519
+00:27:11,599 --> 00:27:13,789
+the only the only browser capable of
+
+520
+00:27:13,789 --> 00:27:15,429
+displaying this data cause it's about
+
+521
+00:27:15,429 --> 00:27:18,439
+250 megabytes to show in one rendering
+
+522
+00:27:18,439 --> 00:27:20,589
+so the three a lot of data to be shown
+
+523
+00:27:20,589 --> 00:27:25,969
+does it does it does the problem great
+

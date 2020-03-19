@@ -1,0 +1,1377 @@
+1
+00:00:00,000 --> 00:00:02,129
+
+thanks guys is this everyone can hear me
+
+2
+00:00:02,129 --> 00:00:06,509
+fine yep good so my name is Steven and
+
+3
+00:00:06,509 --> 00:00:08,610
+let's talk about some JavaScript flow
+
+4
+00:00:08,610 --> 00:00:11,610
+control with set timeout set of media
+
+5
+00:00:11,610 --> 00:00:13,230
+and process next tick and I'd like to
+
+6
+00:00:13,230 --> 00:00:15,059
+point out i started this talk with this
+
+7
+00:00:15,059 --> 00:00:16,890
+amazing slide background it's just like
+
+8
+00:00:16,890 --> 00:00:18,750
+it looks so professional right my goal
+
+9
+00:00:18,750 --> 00:00:22,769
+was do the whole thing like that and
+
+10
+00:00:22,769 --> 00:00:25,769
+that didn't happen so a little bit about
+
+11
+00:00:25,769 --> 00:00:28,980
+me I'm from node Orlando I have a kid I
+
+12
+00:00:28,980 --> 00:00:32,160
+live in SF now i really like javascript
+
+13
+00:00:32,160 --> 00:00:34,980
+because it that it's awful if you watch
+
+14
+00:00:34,980 --> 00:00:36,750
+the wat videos or any time like you're
+
+15
+00:00:36,750 --> 00:00:39,420
+you know trying to debug node which is
+
+16
+00:00:39,420 --> 00:00:40,710
+sometimes impossible and you're like i
+
+17
+00:00:40,710 --> 00:00:41,969
+just think i hate this thing
+
+18
+00:00:41,969 --> 00:00:43,890
+that's why i like it i don't i don't
+
+19
+00:00:43,890 --> 00:00:46,950
+know why i moved here originally to work
+
+20
+00:00:46,950 --> 00:00:50,250
+with CJ she abandoned me kick cambridge
+
+21
+00:00:50,250 --> 00:00:51,800
+also abandoned me i love those guys
+
+22
+00:00:51,800 --> 00:00:55,110
+right now i'm typing computer things at
+
+23
+00:00:55,110 --> 00:00:57,899
+Netflix and and I'm very nervous and
+
+24
+00:00:57,899 --> 00:01:01,379
+later on you can ask me why I gave this
+
+25
+00:01:01,379 --> 00:01:04,199
+talk at bay node because Ross k said hey
+
+26
+00:01:04,199 --> 00:01:05,820
+anyone want to talk about process next
+
+27
+00:01:05,820 --> 00:01:07,409
+tick and I said I have no idea what that
+
+28
+00:01:07,409 --> 00:01:10,260
+is but sure and I gave the talk and he
+
+29
+00:01:10,260 --> 00:01:11,939
+said I think if you polish that talk up
+
+30
+00:01:11,939 --> 00:01:13,470
+you would have a really great talk so
+
+31
+00:01:13,470 --> 00:01:15,119
+the plan was that I would do that and
+
+32
+00:01:15,119 --> 00:01:18,360
+then present it here and this is not the
+
+33
+00:01:18,360 --> 00:01:19,770
+greatest talk in the world like we had
+
+34
+00:01:19,770 --> 00:01:22,140
+originally planned this is just a
+
+35
+00:01:22,140 --> 00:01:25,650
+tribute so let's get started it's
+
+36
+00:01:25,650 --> 00:01:28,530
+dangerous to flow control alone like
+
+37
+00:01:28,530 --> 00:01:31,290
+let's take this set timeout concept look
+
+38
+00:01:31,290 --> 00:01:33,900
+don't take set timeout you heathen
+
+39
+00:01:33,900 --> 00:01:35,850
+dinosaurs you don't use that for flow
+
+40
+00:01:35,850 --> 00:01:37,979
+control in JavaScript the way that we
+
+41
+00:01:37,979 --> 00:01:39,450
+have these like really powerful tools to
+
+42
+00:01:39,450 --> 00:01:40,619
+do so we're actually not really going to
+
+43
+00:01:40,619 --> 00:01:42,240
+talk about that will show why it's bad a
+
+44
+00:01:42,240 --> 00:01:45,320
+little bit later but let's talk about
+
+45
+00:01:45,320 --> 00:01:48,210
+set immediate like recursive deferral
+
+46
+00:01:48,210 --> 00:01:50,250
+with set of media this is kind of a new
+
+47
+00:01:50,250 --> 00:01:51,630
+thing that's come up recently in node
+
+48
+00:01:51,630 --> 00:01:54,210
+not super new but if you guys all want
+
+49
+00:01:54,210 --> 00:01:55,799
+to just take some time to read all of
+
+50
+00:01:55,799 --> 00:01:59,100
+this there may be a test later I'm
+
+51
+00:01:59,100 --> 00:02:02,430
+kidding there's the important part is
+
+52
+00:02:02,430 --> 00:02:04,500
+the while the order is preserved for
+
+53
+00:02:04,500 --> 00:02:06,450
+execution of anything that you use set
+
+54
+00:02:06,450 --> 00:02:09,030
+immediate for other i/o events may fire
+
+55
+00:02:09,030 --> 00:02:11,239
+between any two scheduled immediate
+
+56
+00:02:11,239 --> 00:02:14,010
+callbacks and I've got some code
+
+57
+00:02:14,010 --> 00:02:15,360
+it will go over for that but the
+
+58
+00:02:15,360 --> 00:02:18,450
+important thing to remember is that set
+
+59
+00:02:18,450 --> 00:02:20,849
+immediate you should use that if you
+
+60
+00:02:20,849 --> 00:02:23,040
+want to cue the function behind whatever
+
+61
+00:02:23,040 --> 00:02:25,530
+I owe events callbacks that are already
+
+62
+00:02:25,530 --> 00:02:29,159
+in the event queue so I've got this a
+
+63
+00:02:29,159 --> 00:02:31,140
+couple code examples here by the way I
+
+64
+00:02:31,140 --> 00:02:33,120
+would like to take a second to thank
+
+65
+00:02:33,120 --> 00:02:35,579
+node botanist for loaning me a laptop I
+
+66
+00:02:35,579 --> 00:02:38,099
+had a huge fiasco where I thought
+
+67
+00:02:38,099 --> 00:02:41,010
+December 10th was Thursday all week so
+
+68
+00:02:41,010 --> 00:02:43,920
+I'm standing in line to to go to Los
+
+69
+00:02:43,920 --> 00:02:45,750
+Gatos to work and then I'm realizing
+
+70
+00:02:45,750 --> 00:02:48,000
+like oh I have to be in oakland today
+
+71
+00:02:48,000 --> 00:02:50,519
+not los gatos so I was not prepared for
+
+72
+00:02:50,519 --> 00:02:54,000
+this so stack overflows if you've seen
+
+73
+00:02:54,000 --> 00:02:55,829
+them like we have a real simple function
+
+74
+00:02:55,829 --> 00:02:58,319
+here it's just going to recurse a whole
+
+75
+00:02:58,319 --> 00:03:00,480
+bunch of times and then when it does
+
+76
+00:03:00,480 --> 00:03:02,099
+throw we've got this process that on
+
+77
+00:03:02,099 --> 00:03:05,549
+uncaught exception that's a really good
+
+78
+00:03:05,549 --> 00:03:08,129
+code practice I'm told and then this
+
+79
+00:03:08,129 --> 00:03:10,019
+particular error throws what I like to
+
+80
+00:03:10,019 --> 00:03:12,659
+call nearly perfect messaging I think
+
+81
+00:03:12,659 --> 00:03:14,909
+that's TM so you might yell at me later
+
+82
+00:03:14,909 --> 00:03:18,510
+Isaak will sing so if we fire this up in
+
+83
+00:03:18,510 --> 00:03:22,650
+the console here it recursos a whole
+
+84
+00:03:22,650 --> 00:03:23,819
+bunch of times and then it just says hey
+
+85
+00:03:23,819 --> 00:03:25,919
+range error maximum call stack size
+
+86
+00:03:25,919 --> 00:03:27,900
+exceeded and you're like great that is
+
+87
+00:03:27,900 --> 00:03:30,150
+actually nearly perfect messaging I know
+
+88
+00:03:30,150 --> 00:03:33,690
+exactly what to do with that right and
+
+89
+00:03:33,690 --> 00:03:36,810
+another thing that we can do here with
+
+90
+00:03:36,810 --> 00:03:41,269
+the get my bearings here real quick
+
+91
+00:03:41,269 --> 00:03:46,079
+continuous compute so stack overflows
+
+92
+00:03:46,079 --> 00:03:47,669
+are bad in general I think I just heard
+
+93
+00:03:47,669 --> 00:03:49,709
+somebody from and yet talking about how
+
+94
+00:03:49,709 --> 00:03:50,940
+they were having problems with that and
+
+95
+00:03:50,940 --> 00:03:53,639
+I do apologize and learning how to use
+
+96
+00:03:53,639 --> 00:03:56,790
+this new computer there we go is it
+
+97
+00:03:56,790 --> 00:03:59,129
+going to go to someone there we go so
+
+98
+00:03:59,129 --> 00:04:00,659
+let's say that we have this this this
+
+99
+00:04:00,659 --> 00:04:02,730
+problem in our in our application where
+
+100
+00:04:02,730 --> 00:04:04,889
+we want to be able to respond to HTTP
+
+101
+00:04:04,889 --> 00:04:06,209
+requests but we also have to do some
+
+102
+00:04:06,209 --> 00:04:09,750
+like long-lived compute function if we
+
+103
+00:04:09,750 --> 00:04:11,760
+recursively call this compute function
+
+104
+00:04:11,760 --> 00:04:13,229
+like we're just going to get the same
+
+105
+00:04:13,229 --> 00:04:14,430
+thing we're just going to get a stack
+
+106
+00:04:14,430 --> 00:04:16,139
+overflow it's going to block we're not
+
+107
+00:04:16,139 --> 00:04:17,579
+going to be able to respond to those
+
+108
+00:04:17,579 --> 00:04:21,630
+HTTP functions so if you wanted to you
+
+109
+00:04:21,630 --> 00:04:23,310
+could do like a set time out and just
+
+110
+00:04:23,310 --> 00:04:25,080
+say like hey every you know 1000
+
+111
+00:04:25,080 --> 00:04:26,909
+milliseconds run this compute function
+
+112
+00:04:26,909 --> 00:04:27,820
+that's going to do some
+
+113
+00:04:27,820 --> 00:04:30,760
+thing in the meantime you can answer you
+
+114
+00:04:30,760 --> 00:04:36,910
+know HTTP requests and do continuous
+
+115
+00:04:36,910 --> 00:04:43,210
+compute here you'll see over there we're
+
+116
+00:04:43,210 --> 00:04:44,710
+running our server and it's like kind of
+
+117
+00:04:44,710 --> 00:04:49,000
+got this ongoing thing and we're still
+
+118
+00:04:49,000 --> 00:04:52,330
+able to respond to these requests that's
+
+119
+00:04:52,330 --> 00:04:54,130
+like probably the worst and most
+
+120
+00:04:54,130 --> 00:04:57,370
+inefficient way of doing that so I'm
+
+121
+00:04:57,370 --> 00:04:59,980
+really struggling with the alt tabbing
+
+122
+00:04:59,980 --> 00:05:04,900
+here we go I turn go back over here and
+
+123
+00:05:04,900 --> 00:05:09,010
+kill this and I feel like it goes back
+
+124
+00:05:09,010 --> 00:05:13,360
+to keynote when I really want sublime so
+
+125
+00:05:13,360 --> 00:05:15,280
+if we use a process that next tick like
+
+126
+00:05:15,280 --> 00:05:20,110
+it used to work a long time ago it is it
+
+127
+00:05:20,110 --> 00:05:21,640
+doing that that's not just like me and
+
+128
+00:05:21,640 --> 00:05:24,850
+being jittery or so we'll go back to
+
+129
+00:05:24,850 --> 00:05:30,160
+sublime and then I term there we go and
+
+130
+00:05:30,160 --> 00:05:33,760
+let's restart this continuous compute
+
+131
+00:05:33,760 --> 00:05:35,200
+and we don't we don't even get anywhere
+
+132
+00:05:35,200 --> 00:05:37,480
+so it's like oh hey by the way you're
+
+133
+00:05:37,480 --> 00:05:39,280
+done like you use too many process next
+
+134
+00:05:39,280 --> 00:05:40,840
+sticks and I just don't want to do this
+
+135
+00:05:40,840 --> 00:05:42,430
+but it gives you some nearly perfect
+
+136
+00:05:42,430 --> 00:05:44,260
+messaging that says like you should be
+
+137
+00:05:44,260 --> 00:05:46,000
+using set immediate in this version of
+
+138
+00:05:46,000 --> 00:05:48,280
+node because we're not going to be using
+
+139
+00:05:48,280 --> 00:05:51,520
+process next tick that way and I'll show
+
+140
+00:05:51,520 --> 00:05:52,870
+you an example of what we would use
+
+141
+00:05:52,870 --> 00:05:55,810
+process next stick for later on the way
+
+142
+00:05:55,810 --> 00:05:57,700
+that we actually want to do this so we
+
+143
+00:05:57,700 --> 00:05:59,380
+got this set immediate where the server
+
+144
+00:05:59,380 --> 00:06:00,640
+is going to be allowed to work as much
+
+145
+00:06:00,640 --> 00:06:03,250
+as it can but we do want to allow it to
+
+146
+00:06:03,250 --> 00:06:09,670
+respond to these requests you'll see
+
+147
+00:06:09,670 --> 00:06:12,310
+over here we're still able to ping the
+
+148
+00:06:12,310 --> 00:06:14,080
+server but obviously it's just like
+
+149
+00:06:14,080 --> 00:06:16,330
+firing off a whole bunch of times over
+
+150
+00:06:16,330 --> 00:06:18,400
+there so we're we're no longer blocked
+
+151
+00:06:18,400 --> 00:06:20,860
+by by that process in the event loop
+
+152
+00:06:20,860 --> 00:06:23,320
+that's the general purpose for set of
+
+153
+00:06:23,320 --> 00:06:26,530
+media and process next tick now we'll go
+
+154
+00:06:26,530 --> 00:06:33,379
+back to our slides here
+
+155
+00:06:33,389 --> 00:06:37,360
+and we'll get into the actual
+
+156
+00:06:37,360 --> 00:06:39,550
+differences here between process next
+
+157
+00:06:39,550 --> 00:06:41,590
+tick using call backs versus set
+
+158
+00:06:41,590 --> 00:06:43,960
+immediate so we're going to use process
+
+159
+00:06:43,960 --> 00:06:46,060
+next tick to effectively cue the
+
+160
+00:06:46,060 --> 00:06:48,220
+function at the head of the event queue
+
+161
+00:06:48,220 --> 00:06:50,440
+so that it executes immediately after
+
+162
+00:06:50,440 --> 00:06:53,860
+current function completes so in the
+
+163
+00:06:53,860 --> 00:06:56,950
+tinkering file here there's a couple
+
+164
+00:06:56,950 --> 00:07:01,770
+different examples that I've got and
+
+165
+00:07:01,770 --> 00:07:04,360
+right now we've got this these two
+
+166
+00:07:04,360 --> 00:07:06,310
+different functions here one is going to
+
+167
+00:07:06,310 --> 00:07:09,010
+be maybe synchronous sometimes and one
+
+168
+00:07:09,010 --> 00:07:10,270
+is going to definitely be synchronous
+
+169
+00:07:10,270 --> 00:07:11,410
+all the time because we're going to use
+
+170
+00:07:11,410 --> 00:07:13,900
+process next tick and then a couple of
+
+171
+00:07:13,900 --> 00:07:15,340
+functions that we call in different
+
+172
+00:07:15,340 --> 00:07:21,130
+orders so right now if I call maybe sink
+
+173
+00:07:21,130 --> 00:07:23,770
+and I pass in false and give it that
+
+174
+00:07:23,770 --> 00:07:25,810
+callback and then I call bar does anyone
+
+175
+00:07:25,810 --> 00:07:27,400
+know what the terminal output here is
+
+176
+00:07:27,400 --> 00:07:40,260
+going to be
+
+177
+00:07:40,270 --> 00:07:43,760
+ok
+
+178
+00:07:43,770 --> 00:07:47,190
+I thought that would be a good play on
+
+179
+00:07:47,190 --> 00:07:49,650
+the hold ojs thing and then look the
+
+180
+00:07:49,650 --> 00:07:51,360
+more I read it I'm like loads d loads
+
+181
+00:07:51,360 --> 00:07:53,479
+that doesn't even really you know like
+
+182
+00:07:53,479 --> 00:07:58,919
+anyways so we get this deal edge and
+
+183
+00:07:58,919 --> 00:08:00,780
+then loads just like oh hey I fired and
+
+184
+00:08:00,780 --> 00:08:04,050
+you're like okay nice so what happens if
+
+185
+00:08:04,050 --> 00:08:06,650
+we change the arguments and now are our
+
+186
+00:08:06,650 --> 00:08:09,000
+statement it basically changes the way
+
+187
+00:08:09,000 --> 00:08:11,970
+that the function is going to run they
+
+188
+00:08:11,970 --> 00:08:13,319
+come out in a different order and you're
+
+189
+00:08:13,319 --> 00:08:16,740
+like a weight so programmatically I want
+
+190
+00:08:16,740 --> 00:08:18,060
+to change like some logic I didn't want
+
+191
+00:08:18,060 --> 00:08:19,949
+to change the order in which the program
+
+192
+00:08:19,949 --> 00:08:24,539
+ran and that's why you would use process
+
+193
+00:08:24,539 --> 00:08:28,190
+next tick so as you can see here in the
+
+194
+00:08:28,190 --> 00:08:30,300
+definitely sink what we're doing is
+
+195
+00:08:30,300 --> 00:08:31,590
+we're basically just saying hey like we
+
+196
+00:08:31,590 --> 00:08:33,810
+we want this to perform the same way
+
+197
+00:08:33,810 --> 00:08:37,709
+every time so if we come down here and
+
+198
+00:08:37,709 --> 00:08:42,209
+we pass in false Hey look it came out in
+
+199
+00:08:42,209 --> 00:08:45,240
+the order that we might expect and if we
+
+200
+00:08:45,240 --> 00:08:50,880
+pass in true comes out in the same order
+
+201
+00:08:50,880 --> 00:08:52,649
+so it starts behaving a little bit more
+
+202
+00:08:52,649 --> 00:08:54,959
+the way that our end users of this API
+
+203
+00:08:54,959 --> 00:08:56,640
+would expect and it's going to be
+
+204
+00:08:56,640 --> 00:09:02,430
+consistent and that is actually where I
+
+205
+00:09:02,430 --> 00:09:04,440
+get into like what is this what is this
+
+206
+00:09:04,440 --> 00:09:06,529
+sorcery and there's like again there's
+
+207
+00:09:06,529 --> 00:09:09,300
+really long thing that you can read on
+
+208
+00:09:09,300 --> 00:09:11,550
+stackoverflow when I first dug into this
+
+209
+00:09:11,550 --> 00:09:13,589
+there's like a whole lot of like older
+
+210
+00:09:13,589 --> 00:09:16,320
+node stuff and newer node stuff and they
+
+211
+00:09:16,320 --> 00:09:18,329
+kind of give misinformation but this
+
+212
+00:09:18,329 --> 00:09:20,160
+stack overflow post seemed to have a
+
+213
+00:09:20,160 --> 00:09:25,680
+pretty decent amount of good answers why
+
+214
+00:09:25,680 --> 00:09:27,540
+should you use this this actually comes
+
+215
+00:09:27,540 --> 00:09:29,850
+from Isaac's blog post which he points
+
+216
+00:09:29,850 --> 00:09:31,320
+to another blog post and he very
+
+217
+00:09:31,320 --> 00:09:33,570
+adamantly says like four or five times
+
+218
+00:09:33,570 --> 00:09:36,360
+in one paragraph go read the other post
+
+219
+00:09:36,360 --> 00:09:38,310
+right now you absolutely have to read
+
+220
+00:09:38,310 --> 00:09:39,870
+that do you still kind of stand by that
+
+221
+00:09:39,870 --> 00:09:42,839
+or yeah so you should probably go read
+
+222
+00:09:42,839 --> 00:09:44,100
+both of these if you haven't i'm going
+
+223
+00:09:44,100 --> 00:09:45,839
+to assume that most of you have at this
+
+224
+00:09:45,839 --> 00:09:48,329
+point if you have an API that takes a
+
+225
+00:09:48,329 --> 00:09:50,040
+callback and sometimes it's called
+
+226
+00:09:50,040 --> 00:09:51,930
+immediately and other times it's called
+
+227
+00:09:51,930 --> 00:09:54,209
+at some point in the future then you
+
+228
+00:09:54,209 --> 00:09:56,250
+render any code that's using this API
+
+229
+00:09:56,250 --> 00:09:57,070
+and pow
+
+230
+00:09:57,070 --> 00:09:59,290
+symbol to reason about and you cause the
+
+231
+00:09:59,290 --> 00:10:00,700
+release of zal go I actually don't
+
+232
+00:10:00,700 --> 00:10:02,170
+really understand what that last line
+
+233
+00:10:02,170 --> 00:10:04,060
+means but I think it's bad I think it's
+
+234
+00:10:04,060 --> 00:10:07,000
+really bad so oh and here's a note
+
+235
+00:10:07,000 --> 00:10:11,200
+botanist see if i can not expose
+
+236
+00:10:11,200 --> 00:10:13,420
+anything that I'm not supposed to hear
+
+237
+00:10:13,420 --> 00:10:17,830
+this so when I was digging into this
+
+238
+00:10:17,830 --> 00:10:21,190
+talk the first time at begnaud I started
+
+239
+00:10:21,190 --> 00:10:22,870
+to think like well this is like really
+
+240
+00:10:22,870 --> 00:10:25,420
+you know loads and D loads yeah perfect
+
+241
+00:10:25,420 --> 00:10:26,620
+it makes sense it's a real world
+
+242
+00:10:26,620 --> 00:10:28,450
+application right you guys do that all
+
+243
+00:10:28,450 --> 00:10:30,370
+the time that's like wait nobody does
+
+244
+00:10:30,370 --> 00:10:33,430
+that like what's a an actual example of
+
+245
+00:10:33,430 --> 00:10:36,700
+what we can do you know to to take
+
+246
+00:10:36,700 --> 00:10:37,690
+advantage of these when we're
+
+247
+00:10:37,690 --> 00:10:40,420
+constructing our our modules so that
+
+248
+00:10:40,420 --> 00:10:42,130
+people can use these and not have to
+
+249
+00:10:42,130 --> 00:10:43,450
+worry about how it's going to perform
+
+250
+00:10:43,450 --> 00:10:45,970
+later just based on on the logic
+
+251
+00:10:45,970 --> 00:10:47,350
+conditions but they just know it's going
+
+252
+00:10:47,350 --> 00:10:48,790
+to perform the same way every time and
+
+253
+00:10:48,790 --> 00:10:51,510
+this example is the one that I landed on
+
+254
+00:10:51,510 --> 00:10:55,680
+so we have two constructor classes here
+
+255
+00:10:55,680 --> 00:10:58,660
+and they perform entirely different and
+
+256
+00:10:58,660 --> 00:11:00,460
+you probably run into this I would think
+
+257
+00:11:00,460 --> 00:11:03,910
+at some point but the the cigarettes one
+
+258
+00:11:03,910 --> 00:11:05,950
+is really just a constructor and we call
+
+259
+00:11:05,950 --> 00:11:07,630
+that we say hey we want a new sink and
+
+260
+00:11:07,630 --> 00:11:08,830
+it's going to say hey I'm gonna park
+
+261
+00:11:08,830 --> 00:11:10,000
+some options for that and then I'm going
+
+262
+00:11:10,000 --> 00:11:12,340
+to initialize and immediately after that
+
+263
+00:11:12,340 --> 00:11:13,900
+it does its initialize things and it
+
+264
+00:11:13,900 --> 00:11:15,880
+says hey I'm going to omit some events
+
+265
+00:11:15,880 --> 00:11:18,250
+and and then I'm going to be done in
+
+266
+00:11:18,250 --> 00:11:23,710
+this example so if we run this block of
+
+267
+00:11:23,710 --> 00:11:26,140
+code here that says hey you know I want
+
+268
+00:11:26,140 --> 00:11:27,820
+a new sink and then I want to listen to
+
+269
+00:11:27,820 --> 00:11:29,590
+the data event and I want to listen to
+
+270
+00:11:29,590 --> 00:11:38,300
+the end event when we actually run
+
+271
+00:11:38,310 --> 00:11:43,440
+I need to block this out there we go
+
+272
+00:11:43,440 --> 00:11:45,620
+we're getting back to the wonky behavior
+
+273
+00:11:45,620 --> 00:11:49,200
+so we were on that block of code the the
+
+274
+00:11:49,200 --> 00:11:51,690
+other logs that came out for what we
+
+275
+00:11:51,690 --> 00:11:53,310
+thought would listen to those events
+
+276
+00:11:53,310 --> 00:11:54,990
+never actually never actually get there
+
+277
+00:11:54,990 --> 00:11:57,630
+and I ran into this a few times and I
+
+278
+00:11:57,630 --> 00:11:59,400
+had no idea why I was like we I thought
+
+279
+00:11:59,400 --> 00:12:00,720
+I attached an event matter and then
+
+280
+00:12:00,720 --> 00:12:02,010
+sometimes it would work later on it was
+
+281
+00:12:02,010 --> 00:12:04,560
+like okay so it's it works sometimes I
+
+282
+00:12:04,560 --> 00:12:07,680
+don't understand why but the async
+
+283
+00:12:07,680 --> 00:12:12,330
+module that we wrote here does one thing
+
+284
+00:12:12,330 --> 00:12:14,970
+different instead of initializing right
+
+285
+00:12:14,970 --> 00:12:16,410
+away it just says hey by the way I'll
+
+286
+00:12:16,410 --> 00:12:19,800
+finish up my initial at some point you
+
+287
+00:12:19,800 --> 00:12:21,029
+go ahead and finish everything else that
+
+288
+00:12:21,029 --> 00:12:23,190
+you wanted to do and then when you get
+
+289
+00:12:23,190 --> 00:12:26,010
+back you know process next tick I'll get
+
+290
+00:12:26,010 --> 00:12:28,050
+my initializing done there so we have
+
+291
+00:12:28,050 --> 00:12:31,350
+the same block of code for our end users
+
+292
+00:12:31,350 --> 00:12:35,220
+of this module but they actually get to
+
+293
+00:12:35,220 --> 00:12:40,560
+use immediately what they would want
+
+294
+00:12:40,560 --> 00:12:42,029
+programmatically so you can see right
+
+295
+00:12:42,029 --> 00:12:44,880
+here like it initializes the module fire
+
+296
+00:12:44,880 --> 00:12:47,040
+some initial events and we capture those
+
+297
+00:12:47,040 --> 00:12:50,370
+events later on in the code and then you
+
+298
+00:12:50,370 --> 00:12:51,870
+know we can we can actually use the
+
+299
+00:12:51,870 --> 00:12:53,880
+module at this point has anyone ran into
+
+300
+00:12:53,880 --> 00:12:55,589
+that when they're using like third party
+
+301
+00:12:55,589 --> 00:12:58,410
+stuff where you try to attach one maybe
+
+302
+00:12:58,410 --> 00:13:02,400
+two a couple i did scratch my head for
+
+303
+00:13:02,400 --> 00:13:04,890
+you know like ours like I don't
+
+304
+00:13:04,890 --> 00:13:08,100
+understand what's going on here so and
+
+305
+00:13:08,100 --> 00:13:09,510
+since I'm doing the whole like I'm
+
+306
+00:13:09,510 --> 00:13:11,160
+nervous and I'm going super fast and
+
+307
+00:13:11,160 --> 00:13:12,570
+we're all ending through or like we're
+
+308
+00:13:12,570 --> 00:13:15,600
+almost done don't worry I did do some
+
+309
+00:13:15,600 --> 00:13:17,160
+micro benchmarks there's apparently some
+
+310
+00:13:17,160 --> 00:13:19,140
+performance benefits that you can get
+
+311
+00:13:19,140 --> 00:13:20,970
+here obviously micro benchmarks are
+
+312
+00:13:20,970 --> 00:13:22,440
+super important and you can learn a lot
+
+313
+00:13:22,440 --> 00:13:24,480
+about programming concepts if you only
+
+314
+00:13:24,480 --> 00:13:30,580
+do micro benchmarks
+
+315
+00:13:30,590 --> 00:13:36,870
+let's see here i'll just show you these
+
+316
+00:13:36,870 --> 00:13:38,310
+and i'll show you the results but
+
+317
+00:13:38,310 --> 00:13:41,820
+essentially what we do here is I just
+
+318
+00:13:41,820 --> 00:13:44,310
+use a for loop and either you process
+
+319
+00:13:44,310 --> 00:13:46,320
+that next tick or set immediate or set
+
+320
+00:13:46,320 --> 00:13:48,480
+timeout to show you you know what the
+
+321
+00:13:48,480 --> 00:13:51,150
+performance values were there and it
+
+322
+00:13:51,150 --> 00:13:54,090
+came out again like really super
+
+323
+00:13:54,090 --> 00:13:57,590
+important micro benchmark information
+
+324
+00:13:57,590 --> 00:14:00,840
+yeah that's that's useful right what
+
+325
+00:14:00,840 --> 00:14:02,460
+I've heard though is that said of media
+
+326
+00:14:02,460 --> 00:14:03,660
+actually can be a little bit more
+
+327
+00:14:03,660 --> 00:14:06,930
+performant when used properly I've had
+
+328
+00:14:06,930 --> 00:14:08,580
+some coding challenges in the past where
+
+329
+00:14:08,580 --> 00:14:10,800
+they just use that to like overload a
+
+330
+00:14:10,800 --> 00:14:12,300
+whole bunch of stuff that you do and you
+
+331
+00:14:12,300 --> 00:14:14,070
+have to kind of like you know positive
+
+332
+00:14:14,070 --> 00:14:15,630
+stream and all of that but you can you
+
+333
+00:14:15,630 --> 00:14:17,760
+can really wind up the node process with
+
+334
+00:14:17,760 --> 00:14:21,080
+with set media if you use it effectively
+
+335
+00:14:21,080 --> 00:14:25,220
+so yeah that's that's all I got
+
+336
+00:14:25,220 --> 00:14:28,050
+javascript flow control it's it's kind
+
+337
+00:14:28,050 --> 00:14:30,030
+of complex if you use these concepts use
+
+338
+00:14:30,030 --> 00:14:31,710
+them right you read the right blog posts
+
+339
+00:14:31,710 --> 00:14:33,420
+I think you'll do it right if you guys
+
+340
+00:14:33,420 --> 00:14:36,990
+want you can follow me at spr j RX on
+
+341
+00:14:36,990 --> 00:14:38,580
+twitter i say a lot of really stupid
+
+342
+00:14:38,580 --> 00:14:40,200
+things and they're not that funny and
+
+343
+00:14:40,200 --> 00:14:43,770
+i'm learning how to behave better but or
+
+344
+00:14:43,770 --> 00:14:45,450
+you can check out my website at stephen
+

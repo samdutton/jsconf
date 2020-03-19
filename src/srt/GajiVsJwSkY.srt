@@ -1,0 +1,2073 @@
+1
+00:00:07,700 --> 00:00:11,219
+
+my name is constant k fur I'm going to
+
+2
+00:00:11,219 --> 00:00:13,139
+talk about not writing notes as
+
+3
+00:00:13,139 --> 00:00:18,000
+extensions with c++ and the v8 API you
+
+4
+00:00:18,000 --> 00:00:21,300
+can find me on get up and twitter under
+
+5
+00:00:21,300 --> 00:00:28,010
+the username of kk fur so I work for oh
+
+6
+00:00:28,010 --> 00:00:31,019
+yeah this is the page you want to show
+
+7
+00:00:31,019 --> 00:00:33,360
+you I work for a development seat we're
+
+8
+00:00:33,360 --> 00:00:35,309
+a small shop based in DC and we do
+
+9
+00:00:35,309 --> 00:00:37,230
+mapping stuff our project is called
+
+10
+00:00:37,230 --> 00:00:39,870
+matte box and it allows you to create
+
+11
+00:00:39,870 --> 00:00:42,660
+maps we all have tile milk which is like
+
+12
+00:00:42,660 --> 00:00:44,489
+I'm at the sign application you can
+
+13
+00:00:44,489 --> 00:00:47,280
+change the color here to basically
+
+14
+00:00:47,280 --> 00:00:51,090
+create your own maps I'm going to talk
+
+15
+00:00:51,090 --> 00:00:55,550
+about c++ and how you can use it to
+
+16
+00:00:55,550 --> 00:00:59,730
+write no extensions so we all know that
+
+17
+00:00:59,730 --> 00:01:02,280
+people's bus is faster than JavaScript
+
+18
+00:01:02,280 --> 00:01:04,530
+right that's what you learn is cool
+
+19
+00:01:04,530 --> 00:01:10,080
+right anyone agrees with that the
+
+20
+00:01:10,080 --> 00:01:12,590
+question is is it really faster and
+
+21
+00:01:12,590 --> 00:01:15,960
+turns out the v8 guys did a really great
+
+22
+00:01:15,960 --> 00:01:19,200
+job at making JavaScript run very fast
+
+23
+00:01:19,200 --> 00:01:24,150
+and I did a little experiment to really
+
+24
+00:01:24,150 --> 00:01:25,979
+find out whether it actually makes sense
+
+25
+00:01:25,979 --> 00:01:31,770
+to write C++ extensions for node and if
+
+26
+00:01:31,770 --> 00:01:34,049
+you can do what you want to do it all in
+
+27
+00:01:34,049 --> 00:01:35,670
+JavaScript you should probably do it in
+
+28
+00:01:35,670 --> 00:01:37,229
+JavaScript because it's probably going
+
+29
+00:01:37,229 --> 00:01:40,890
+to be faster not always but most of time
+
+30
+00:01:40,890 --> 00:01:43,409
+the reason for this is that crossing the
+
+31
+00:01:43,409 --> 00:01:45,840
+boundary between JavaScript and C++ is
+
+32
+00:01:45,840 --> 00:01:50,310
+very slow and the ape compiles the child
+
+33
+00:01:50,310 --> 00:01:52,409
+strip code you write into a native
+
+34
+00:01:52,409 --> 00:01:54,750
+bytecode that it's usually faster to
+
+35
+00:01:54,750 --> 00:01:57,240
+execute them like just run your
+
+36
+00:01:57,240 --> 00:02:02,490
+unoptimized C++ code so for my little
+
+37
+00:02:02,490 --> 00:02:05,729
+test i use this functions which is the
+
+38
+00:02:05,729 --> 00:02:09,979
+formula for calculating the answer to
+
+39
+00:02:09,979 --> 00:02:14,870
+everything and so when I write this in
+
+40
+00:02:14,870 --> 00:02:16,280
+native she has an executor I get about
+
+41
+00:02:16,280 --> 00:02:19,099
+80 million calls per second on my crappy
+
+42
+00:02:19,099 --> 00:02:23,090
+three year old laptop it's pretty fast
+
+43
+00:02:23,090 --> 00:02:26,180
+right is there at the same thing in the
+
+44
+00:02:26,180 --> 00:02:28,400
+aid as a node extension I only get 13
+
+45
+00:02:28,400 --> 00:02:31,280
+million code calls per second which is a
+
+46
+00:02:31,280 --> 00:02:34,700
+lot slower if I do this asynchronously
+
+47
+00:02:34,700 --> 00:02:38,480
+like if I pass a callback function Jim I
+
+48
+00:02:38,480 --> 00:02:41,360
+v8 function written in C++ I only get
+
+49
+00:02:41,360 --> 00:02:44,299
+one point seven and if I go through the
+
+50
+00:02:44,299 --> 00:02:46,910
+thread pool light I'll float the
+
+51
+00:02:46,910 --> 00:02:48,829
+calculation to another threat if you
+
+52
+00:02:48,829 --> 00:02:55,280
+will it's really slow so if like if what
+
+53
+00:02:55,280 --> 00:02:57,769
+you want to do that's like you can write
+
+54
+00:02:57,769 --> 00:02:59,510
+it in JavaScript if if you can't do that
+
+55
+00:02:59,510 --> 00:03:04,340
+otherwise I'm going to like talk to you
+
+56
+00:03:04,340 --> 00:03:10,579
+about how you can do it in C++ so why
+
+57
+00:03:10,579 --> 00:03:12,410
+would you do c++ if you can write
+
+58
+00:03:12,410 --> 00:03:13,790
+JavaScript so there are a few reasons
+
+59
+00:03:13,790 --> 00:03:17,269
+here the biggest reason is yayness
+
+60
+00:03:17,269 --> 00:03:19,819
+written in C++ to kind of have to write
+
+61
+00:03:19,819 --> 00:03:22,790
+C++ to write node extensions but why do
+
+62
+00:03:22,790 --> 00:03:25,040
+you want to write node extensions tab at
+
+63
+00:03:25,040 --> 00:03:28,190
+all so pretty much the only reason for
+
+64
+00:03:28,190 --> 00:03:30,980
+doing that is to wrap existing C++
+
+65
+00:03:30,980 --> 00:03:32,569
+libraries right you don't want to
+
+66
+00:03:32,569 --> 00:03:34,760
+reinvent the wheel of light someone else
+
+67
+00:03:34,760 --> 00:03:37,880
+has probably spent a lot of time and
+
+68
+00:03:37,880 --> 00:03:41,450
+effort to build existing libraries like
+
+69
+00:03:41,450 --> 00:03:44,419
+sequel I'd like coelom you don't want to
+
+70
+00:03:44,419 --> 00:03:45,980
+really implement that again in
+
+71
+00:03:45,980 --> 00:03:50,569
+JavaScript and maybe one of the biggest
+
+72
+00:03:50,569 --> 00:03:54,019
+reason is javascript is single trip at
+
+73
+00:03:54,019 --> 00:03:57,019
+single-threaded pretty much so if you
+
+74
+00:03:57,019 --> 00:03:59,269
+have this big beautiful eight core
+
+75
+00:03:59,269 --> 00:04:02,090
+machine that you want to use and you run
+
+76
+00:04:02,090 --> 00:04:04,730
+like JavaScript code or just chose to
+
+77
+00:04:04,730 --> 00:04:07,160
+code it on it you can't really use more
+
+78
+00:04:07,160 --> 00:04:10,400
+than one processor one core at a time so
+
+79
+00:04:10,400 --> 00:04:13,669
+by offloading work into another threat
+
+80
+00:04:13,669 --> 00:04:18,299
+you can use more of the CPU so
+
+81
+00:04:18,299 --> 00:04:21,180
+this is actually all there is to writing
+
+82
+00:04:21,180 --> 00:04:23,879
+a C++ module four node this is all all
+
+83
+00:04:23,879 --> 00:04:27,080
+the code you have to write to be able to
+
+84
+00:04:27,080 --> 00:04:30,060
+get started so there are a few things
+
+85
+00:04:30,060 --> 00:04:31,110
+here you have to include the header
+
+86
+00:04:31,110 --> 00:04:34,590
+files of course if it register module
+
+87
+00:04:34,590 --> 00:04:36,000
+function you can really name that anyway
+
+88
+00:04:36,000 --> 00:04:38,330
+you want us just let use that name and
+
+89
+00:04:38,330 --> 00:04:41,789
+you registered your module lower like
+
+90
+00:04:41,789 --> 00:04:44,250
+the register function with node by using
+
+91
+00:04:44,250 --> 00:04:49,199
+the node module macro and use this
+
+92
+00:04:49,199 --> 00:04:51,479
+boilerplate code to compile it just like
+
+93
+00:04:51,479 --> 00:04:53,789
+save it as w script in the same
+
+94
+00:04:53,789 --> 00:04:58,319
+directory and you're good to go so if
+
+95
+00:04:58,319 --> 00:04:59,789
+you want to follow along you can go to
+
+96
+00:04:59,789 --> 00:05:04,139
+github.com / kk for / node CPP modules
+
+97
+00:05:04,139 --> 00:05:07,710
+which sold a sample code and contains a
+
+98
+00:05:07,710 --> 00:05:09,270
+lot more comes as well so you can like
+
+99
+00:05:09,270 --> 00:05:11,669
+go back there later if you want to check
+
+100
+00:05:11,669 --> 00:05:17,409
+that out anyway so let's compile this
+
+101
+00:05:17,419 --> 00:05:19,500
+compelling is pretty easy with node you
+
+102
+00:05:19,500 --> 00:05:22,830
+chose type node Wow configure and it
+
+103
+00:05:22,830 --> 00:05:27,029
+configures all your stuff and to
+
+104
+00:05:27,029 --> 00:05:30,479
+actually compile it if you run the same
+
+105
+00:05:30,479 --> 00:05:32,969
+thing with build or nothing at all and
+
+106
+00:05:32,969 --> 00:05:36,000
+it compiles in links or module and saves
+
+107
+00:05:36,000 --> 00:05:39,690
+it as a build / release / module named
+
+108
+00:05:39,690 --> 00:05:42,389
+of node or whatever you named it in uu w
+
+109
+00:05:42,389 --> 00:05:48,240
+script file so let's run this code like
+
+110
+00:05:48,240 --> 00:05:49,949
+this is just the nine lines of code that
+
+111
+00:05:49,949 --> 00:05:53,099
+I showed you on this slide this is all
+
+112
+00:05:53,099 --> 00:05:59,699
+we compiled now so you can just require
+
+113
+00:05:59,699 --> 00:06:01,650
+this module like any other node module
+
+114
+00:06:01,650 --> 00:06:04,349
+and what you'll get back as an empty
+
+115
+00:06:04,349 --> 00:06:05,699
+object that's all there's there's
+
+116
+00:06:05,699 --> 00:06:07,349
+nothing you can do nothing with that
+
+117
+00:06:07,349 --> 00:06:08,879
+object could have done this in
+
+118
+00:06:08,879 --> 00:06:13,529
+JavaScript right but we'll get to some
+
+119
+00:06:13,529 --> 00:06:18,120
+more examples in a bit so a few general
+
+120
+00:06:18,120 --> 00:06:21,330
+recommendations for developing I
+
+121
+00:06:21,330 --> 00:06:23,699
+recommend using si Lang and that makes
+
+122
+00:06:23,699 --> 00:06:26,060
+it a lot easier because ceiling has
+
+123
+00:06:26,060 --> 00:06:28,650
+easier to comprehend error message
+
+124
+00:06:28,650 --> 00:06:35,250
+than GCC but you should also compile
+
+125
+00:06:35,250 --> 00:06:37,139
+your stuff we're test your stuff with
+
+126
+00:06:37,139 --> 00:06:40,070
+GCC because many assistants many users
+
+127
+00:06:40,070 --> 00:06:42,870
+still use GCC they don't have ceiling
+
+128
+00:06:42,870 --> 00:06:45,300
+installed and if you publish your module
+
+129
+00:06:45,300 --> 00:06:48,990
+in npm most of the people who will
+
+130
+00:06:48,990 --> 00:06:51,210
+download and install your module will
+
+131
+00:06:51,210 --> 00:06:58,889
+probably use GCC right so let's get to
+
+132
+00:06:58,889 --> 00:07:01,919
+some more interesting samples to let
+
+133
+00:07:01,919 --> 00:07:04,199
+create a function in JavaScript or in
+
+134
+00:07:04,199 --> 00:07:06,870
+C++ that you can access from JavaScript
+
+135
+00:07:06,870 --> 00:07:08,669
+you just like to find a regular c
+
+136
+00:07:08,669 --> 00:07:12,030
+function or c++ function and there are a
+
+137
+00:07:12,030 --> 00:07:14,340
+few things here I'm it returns a handle
+
+138
+00:07:14,340 --> 00:07:18,210
+a handle is like basically a wrapper
+
+139
+00:07:18,210 --> 00:07:24,210
+around some sort of value um takes arcs
+
+140
+00:07:24,210 --> 00:07:26,400
+or arguments which is pretty much the
+
+141
+00:07:26,400 --> 00:07:28,680
+same thing as the arcs arguments options
+
+142
+00:07:28,680 --> 00:07:30,660
+that you get in JavaScript functions as
+
+143
+00:07:30,660 --> 00:07:33,300
+well and there are a few things that are
+
+144
+00:07:33,300 --> 00:07:36,690
+new here so in line for we have the
+
+145
+00:07:36,690 --> 00:07:40,169
+handle scope the handle scope is
+
+146
+00:07:40,169 --> 00:07:42,810
+basically sort of a safeguard that keeps
+
+147
+00:07:42,810 --> 00:07:45,300
+track of all the handles that you create
+
+148
+00:07:45,300 --> 00:07:46,949
+of all the variables that you create in
+
+149
+00:07:46,949 --> 00:07:49,860
+this c++ function and cleans them up
+
+150
+00:07:49,860 --> 00:07:52,740
+after rewards so you don't leak any of
+
+151
+00:07:52,740 --> 00:07:55,860
+the any of the variables that you create
+
+152
+00:07:55,860 --> 00:08:00,659
+and when you want to return stuff you
+
+153
+00:08:00,659 --> 00:08:02,909
+don't want V 8 to clean that that
+
+154
+00:08:02,909 --> 00:08:05,310
+because like the child script that
+
+155
+00:08:05,310 --> 00:08:07,800
+expects the return value still wants to
+
+156
+00:08:07,800 --> 00:08:10,320
+use this right so you want to make sure
+
+157
+00:08:10,320 --> 00:08:12,180
+that it doesn't get cleaned up and the
+
+158
+00:08:12,180 --> 00:08:15,630
+way you do this is a call scope that
+
+159
+00:08:15,630 --> 00:08:18,120
+closed around this and return the result
+
+160
+00:08:18,120 --> 00:08:24,419
+of that so we still have to register
+
+161
+00:08:24,419 --> 00:08:26,340
+that function that we defined with our
+
+162
+00:08:26,340 --> 00:08:28,979
+node module and in the register module
+
+163
+00:08:28,979 --> 00:08:31,260
+function which just call them Acura note
+
+164
+00:08:31,260 --> 00:08:33,870
+set method and just like use an
+
+165
+00:08:33,870 --> 00:08:36,510
+arbitrary name that we want to and use
+
+166
+00:08:36,510 --> 00:08:38,579
+our function name and that's pretty much
+
+167
+00:08:38,579 --> 00:08:42,050
+it
+
+168
+00:08:42,060 --> 00:08:45,640
+the target parameter of the register
+
+169
+00:08:45,640 --> 00:08:47,740
+module function is pretty much the same
+
+170
+00:08:47,740 --> 00:08:50,350
+as the exports object that you have in
+
+171
+00:08:50,350 --> 00:08:54,310
+native JavaScript modules so you can
+
+172
+00:08:54,310 --> 00:08:57,940
+just add stuff to that to that object
+
+173
+00:08:57,940 --> 00:09:01,480
+and it'll show up in the c++ extension
+
+174
+00:09:01,480 --> 00:09:04,450
+when you require it so it's compiled
+
+175
+00:09:04,450 --> 00:09:08,320
+this compelling works the same way as
+
+176
+00:09:08,320 --> 00:09:12,399
+before with no left configure note with
+
+177
+00:09:12,399 --> 00:09:17,860
+build and when we require this we see
+
+178
+00:09:17,860 --> 00:09:20,950
+the function as expected right okay we
+
+179
+00:09:20,950 --> 00:09:22,839
+can call this and we get the return
+
+180
+00:09:22,839 --> 00:09:29,310
+value that we defined in the function so
+
+181
+00:09:29,310 --> 00:09:33,940
+accepting arguments is not that
+
+182
+00:09:33,940 --> 00:09:36,279
+complicated either usually is a good at
+
+183
+00:09:36,279 --> 00:09:38,230
+here to check that you actually like the
+
+184
+00:09:38,230 --> 00:09:40,120
+user actually pass arguments to the
+
+185
+00:09:40,120 --> 00:09:43,959
+function similar to the Chava script
+
+186
+00:09:43,959 --> 00:09:46,000
+arguments objects we also have that
+
+187
+00:09:46,000 --> 00:09:49,750
+length function or that length a way to
+
+188
+00:09:49,750 --> 00:09:53,560
+find out the number of arguments and we
+
+189
+00:09:53,560 --> 00:10:00,130
+can throw exceptions and yeah just like
+
+190
+00:10:00,130 --> 00:10:02,730
+return create a new error object
+
+191
+00:10:02,730 --> 00:10:04,930
+exception that hyper is basically the
+
+192
+00:10:04,930 --> 00:10:08,079
+same as new error in JavaScript to
+
+193
+00:10:08,079 --> 00:10:10,000
+create new JavaScript strings use string
+
+194
+00:10:10,000 --> 00:10:15,490
+down you and that way the user will get
+
+195
+00:10:15,490 --> 00:10:19,600
+a JavaScript exception when when they
+
+196
+00:10:19,600 --> 00:10:21,100
+try to call the function without an
+
+197
+00:10:21,100 --> 00:10:23,740
+argument so once you're past the check
+
+198
+00:10:23,740 --> 00:10:25,750
+and the user actually parsed an argument
+
+199
+00:10:25,750 --> 00:10:28,300
+we can convert that to integer and there
+
+200
+00:10:28,300 --> 00:10:31,720
+are a bunch of two functions that you
+
+201
+00:10:31,720 --> 00:10:35,560
+can use to convert the stuff convert the
+
+202
+00:10:35,560 --> 00:10:39,670
+variable unica the user pass to any to a
+
+203
+00:10:39,670 --> 00:10:41,529
+particular type that you want to work
+
+204
+00:10:41,529 --> 00:10:46,060
+with or that you expect so let's look at
+
+205
+00:10:46,060 --> 00:10:49,240
+the at the documentation of the v8
+
+206
+00:10:49,240 --> 00:10:50,720
+documentation
+
+207
+00:10:50,720 --> 00:10:57,110
+and we kind of see the datatype tree
+
+208
+00:10:57,110 --> 00:10:58,970
+here so this is pretty much the same
+
+209
+00:10:58,970 --> 00:11:00,500
+things that you know from javascript
+
+210
+00:11:00,500 --> 00:11:01,910
+because we're after all writing
+
+211
+00:11:01,910 --> 00:11:05,779
+JavaScript code just in C++ we have an
+
+212
+00:11:05,779 --> 00:11:07,610
+array we have date with this weird
+
+213
+00:11:07,610 --> 00:11:11,449
+things like the boolean object so I'm
+
+214
+00:11:11,449 --> 00:11:13,360
+sure most of you know that they're like
+
+215
+00:11:13,360 --> 00:11:16,220
+Williams and actual objects which are
+
+216
+00:11:16,220 --> 00:11:20,750
+not type of boolean and with strings
+
+217
+00:11:20,750 --> 00:11:24,709
+numbers you can go down there and the
+
+218
+00:11:24,709 --> 00:11:28,250
+interesting part is that the C++ API the
+
+219
+00:11:28,250 --> 00:11:31,939
+v8 C++ API actually have several number
+
+220
+00:11:31,939 --> 00:11:33,889
+types as opposed to JavaScript where you
+
+221
+00:11:33,889 --> 00:11:36,560
+only have a number the eight actually
+
+222
+00:11:36,560 --> 00:11:41,899
+supports like native integers which are
+
+223
+00:11:41,899 --> 00:11:43,939
+subclass of the number type so there's
+
+224
+00:11:43,939 --> 00:11:49,399
+just something to be aware of mmm okay
+
+225
+00:11:49,399 --> 00:11:56,360
+let's get okay so when you do when you
+
+226
+00:11:56,360 --> 00:11:59,300
+want to run stuff asynchronously you
+
+227
+00:11:59,300 --> 00:12:02,059
+usually accept a callback function that
+
+228
+00:12:02,059 --> 00:12:04,339
+you called when you are finished writing
+
+229
+00:12:04,339 --> 00:12:09,290
+your work and the way to do this is to
+
+230
+00:12:09,290 --> 00:12:12,259
+check whether it's a function and cast
+
+231
+00:12:12,259 --> 00:12:15,529
+this to a function basically very
+
+232
+00:12:15,529 --> 00:12:17,149
+similar to what we did before when we
+
+233
+00:12:17,149 --> 00:12:20,800
+casted it or converted it to an integer
+
+234
+00:12:20,800 --> 00:12:23,660
+then we just do our stuff our
+
+235
+00:12:23,660 --> 00:12:26,059
+calculations in soup or pulling out to
+
+236
+00:12:26,059 --> 00:12:30,500
+smc libraries or C++ libraries and when
+
+237
+00:12:30,500 --> 00:12:31,879
+you get an error this is just note
+
+238
+00:12:31,879 --> 00:12:34,279
+convention but it's probably a pretty
+
+239
+00:12:34,279 --> 00:12:35,870
+good idea to follow it because most
+
+240
+00:12:35,870 --> 00:12:38,300
+users are familiar with that convention
+
+241
+00:12:38,300 --> 00:12:43,430
+is the first argument to their callback
+
+242
+00:12:43,430 --> 00:12:46,220
+is an error object if an error occurred
+
+243
+00:12:46,220 --> 00:12:49,100
+otherwise it's no so when Noah record we
+
+244
+00:12:49,100 --> 00:12:50,860
+just create note for the first argument
+
+245
+00:12:50,860 --> 00:12:54,620
+when an error occurred we create a new
+
+246
+00:12:54,620 --> 00:12:57,980
+exception object and pass that as the
+
+247
+00:12:57,980 --> 00:12:59,750
+only argument right so we call the
+
+248
+00:12:59,750 --> 00:13:02,010
+callback function with one argument here
+
+249
+00:13:02,010 --> 00:13:06,270
+and with two arguments and the second
+
+250
+00:13:06,270 --> 00:13:10,890
+argument being the result you might have
+
+251
+00:13:10,890 --> 00:13:12,870
+noticed that we don't use scope to close
+
+252
+00:13:12,870 --> 00:13:16,230
+here and there are a few things that you
+
+253
+00:13:16,230 --> 00:13:20,070
+can return from C++ functions or from
+
+254
+00:13:20,070 --> 00:13:22,380
+the 8th C++ functions that you don't
+
+255
+00:13:22,380 --> 00:13:24,210
+have to wrap in scope the closest or
+
+256
+00:13:24,210 --> 00:13:28,140
+undefined no true and false I'm not sure
+
+257
+00:13:28,140 --> 00:13:30,450
+whether more but at least these you can
+
+258
+00:13:30,450 --> 00:13:32,100
+just return without wrapping them and
+
+259
+00:13:32,100 --> 00:13:38,150
+scope that close so oh and one thing
+
+260
+00:13:38,150 --> 00:13:40,800
+when you call a function you don't have
+
+261
+00:13:40,800 --> 00:13:43,320
+to somehow make sure that the handles
+
+262
+00:13:43,320 --> 00:13:45,360
+will stay around because the call
+
+263
+00:13:45,360 --> 00:13:48,870
+function automatically make sure that VA
+
+264
+00:13:48,870 --> 00:13:51,480
+doesn't garbage collect or destroy them
+
+265
+00:13:51,480 --> 00:13:55,230
+any other way before before the call
+
+266
+00:13:55,230 --> 00:13:59,700
+function you're calling returned so oh
+
+267
+00:13:59,700 --> 00:14:02,160
+and one thing you really don't want to
+
+268
+00:14:02,160 --> 00:14:04,290
+forget the handle scope at the top
+
+269
+00:14:04,290 --> 00:14:06,330
+that's a pretty important piece if you
+
+270
+00:14:06,330 --> 00:14:10,770
+don't add that you'll run into troubles
+
+271
+00:14:10,770 --> 00:14:13,170
+and like your code starts or your module
+
+272
+00:14:13,170 --> 00:14:16,140
+starts to behave in a weird very weird
+
+273
+00:14:16,140 --> 00:14:21,660
+way and you run hard to debug errors so
+
+274
+00:14:21,660 --> 00:14:23,310
+make sure that you always have the
+
+275
+00:14:23,310 --> 00:14:29,910
+handles code but most of the stuff we
+
+276
+00:14:29,910 --> 00:14:31,470
+did so far as cereal right we just
+
+277
+00:14:31,470 --> 00:14:32,910
+implemented the same stuff that you
+
+278
+00:14:32,910 --> 00:14:36,110
+could have done in JavaScript and C++
+
+279
+00:14:36,110 --> 00:14:39,050
+let's do some stuff asynchronously
+
+280
+00:14:39,050 --> 00:14:41,820
+because like even if we just like call
+
+281
+00:14:41,820 --> 00:14:43,170
+the function here this is still
+
+282
+00:14:43,170 --> 00:14:46,080
+synchronous like the original call to
+
+283
+00:14:46,080 --> 00:14:48,330
+the callback function block until our
+
+284
+00:14:48,330 --> 00:14:52,320
+stuff is done so note has a thread pool
+
+285
+00:14:52,320 --> 00:14:54,810
+that we can use to offload work into
+
+286
+00:14:54,810 --> 00:14:57,980
+other threats and the way this works is
+
+287
+00:14:57,980 --> 00:15:00,800
+we have one main threat the eight threat
+
+288
+00:15:00,800 --> 00:15:02,940
+we're just running all the child strip
+
+289
+00:15:02,940 --> 00:15:07,080
+code and no it spawns a couple of worker
+
+290
+00:15:07,080 --> 00:15:10,770
+threads that you can dispatch work
+
+291
+00:15:10,770 --> 00:15:13,800
+requests to do this
+
+292
+00:15:13,800 --> 00:15:16,529
+you have to create three functions the
+
+293
+00:15:16,529 --> 00:15:19,170
+original function which takes all the
+
+294
+00:15:19,170 --> 00:15:22,500
+arguments and converts it to a native
+
+295
+00:15:22,500 --> 00:15:25,830
+p.o.d types or some other civil plus
+
+296
+00:15:25,830 --> 00:15:30,300
+types that are independent of v8 then it
+
+297
+00:15:30,300 --> 00:15:32,070
+is statuz that to the worker function
+
+298
+00:15:32,070 --> 00:15:36,380
+which runs in another thread and
+
+299
+00:15:36,380 --> 00:15:38,370
+afterwards when you're done when the
+
+300
+00:15:38,370 --> 00:15:39,959
+work of function which is the blocking
+
+301
+00:15:39,959 --> 00:15:42,450
+function returns you can convert it back
+
+302
+00:15:42,450 --> 00:15:47,370
+and call your original call back so like
+
+303
+00:15:47,370 --> 00:15:50,610
+I said it's single-threaded that's why
+
+304
+00:15:50,610 --> 00:15:52,740
+it's a pretty good idea to do any kind
+
+305
+00:15:52,740 --> 00:15:57,470
+of i/o and CPU or heavy cpu usage in the
+
+306
+00:15:57,470 --> 00:16:00,630
+worker thread function so you basically
+
+307
+00:16:00,630 --> 00:16:03,450
+have all the main thread like for plain
+
+308
+00:16:03,450 --> 00:16:05,100
+JavaScript functions for accepting
+
+309
+00:16:05,100 --> 00:16:07,560
+server connections and handling all the
+
+310
+00:16:07,560 --> 00:16:13,890
+blue code kind of work that's a pretty
+
+311
+00:16:13,890 --> 00:16:18,510
+important bit you should not ever access
+
+312
+00:16:18,510 --> 00:16:22,560
+any v8 variables any kind of handles
+
+313
+00:16:22,560 --> 00:16:25,310
+from the work of functions if you do
+
+314
+00:16:25,310 --> 00:16:28,410
+your program is probably going to crash
+
+315
+00:16:28,410 --> 00:16:34,050
+sooner rather than later so we still
+
+316
+00:16:34,050 --> 00:16:35,970
+want to get our data that we pass into
+
+317
+00:16:35,970 --> 00:16:37,890
+the original function to the work a
+
+318
+00:16:37,890 --> 00:16:41,700
+friend the way we can do this is to just
+
+319
+00:16:41,700 --> 00:16:45,149
+create a struct or class or whatever you
+
+320
+00:16:45,149 --> 00:16:48,779
+want to do like the convention here is
+
+321
+00:16:48,779 --> 00:16:51,540
+to call it baton but you can really use
+
+322
+00:16:51,540 --> 00:16:53,399
+any other kind of name or you can also
+
+323
+00:16:53,399 --> 00:16:57,170
+use just like passive arbitrary pointer
+
+324
+00:16:57,170 --> 00:17:00,390
+whatever you come up with but I found
+
+325
+00:17:00,390 --> 00:17:02,940
+that this works pretty well and you can
+
+326
+00:17:02,940 --> 00:17:05,339
+do most things with it it's a pretty
+
+327
+00:17:05,339 --> 00:17:07,980
+good template so beef if you think's
+
+328
+00:17:07,980 --> 00:17:12,300
+here the work request allows you to
+
+329
+00:17:12,300 --> 00:17:17,490
+dispatch the call to another thread we
+
+330
+00:17:17,490 --> 00:17:19,110
+have the callback function that we want
+
+331
+00:17:19,110 --> 00:17:21,510
+to keep around so that we can call the
+
+332
+00:17:21,510 --> 00:17:23,250
+callback function later once we're done
+
+333
+00:17:23,250 --> 00:17:26,100
+with the work and this is just some arab
+
+334
+00:17:26,100 --> 00:17:26,929
+tracking code
+
+335
+00:17:26,929 --> 00:17:31,399
+so when our work if function fails we
+
+336
+00:17:31,399 --> 00:17:34,610
+can store those error messages with a
+
+337
+00:17:34,610 --> 00:17:38,600
+record error codes here and then create
+
+338
+00:17:38,600 --> 00:17:41,960
+error object when we're back in the main
+
+339
+00:17:41,960 --> 00:17:44,960
+v8 thread to give the user some
+
+340
+00:17:44,960 --> 00:17:49,639
+information so like I said this is just
+
+341
+00:17:49,639 --> 00:17:51,259
+a convention you can use any other kind
+
+342
+00:17:51,259 --> 00:17:55,639
+of scheme that you come up with one
+
+343
+00:17:55,639 --> 00:17:57,490
+important piece is the persistent handle
+
+344
+00:17:57,490 --> 00:18:01,549
+regular handles are not persistent
+
+345
+00:18:01,549 --> 00:18:03,019
+they're cleaned up at the handle scope
+
+346
+00:18:03,019 --> 00:18:05,960
+when you exit the function but we don't
+
+347
+00:18:05,960 --> 00:18:09,049
+want our callback function to be cleaned
+
+348
+00:18:09,049 --> 00:18:10,429
+up because you want to use it later on
+
+349
+00:18:10,429 --> 00:18:15,139
+again to call the user with the results
+
+350
+00:18:15,139 --> 00:18:18,320
+of our stuff right so this is why you we
+
+351
+00:18:18,320 --> 00:18:25,139
+use the persistent type of the handle so
+
+352
+00:18:25,149 --> 00:18:30,899
+this is basically how starting a
+
+353
+00:18:30,909 --> 00:18:33,799
+starting a worker process or at work a
+
+354
+00:18:33,799 --> 00:18:37,850
+threat looks like you just check that we
+
+355
+00:18:37,850 --> 00:18:39,559
+have a function here and convert it to a
+
+356
+00:18:39,559 --> 00:18:43,399
+function handle and create a new baton
+
+357
+00:18:43,399 --> 00:18:46,399
+of doing some set of work and create a
+
+358
+00:18:46,399 --> 00:18:48,529
+new persistent handle so that VA doesn't
+
+359
+00:18:48,529 --> 00:18:53,929
+clean this up and just NQ the work
+
+360
+00:18:53,929 --> 00:18:57,950
+request into the lib QV q and we pass to
+
+361
+00:18:57,950 --> 00:19:00,950
+function names this is a sink work this
+
+362
+00:19:00,950 --> 00:19:03,529
+is our worker function and this is the
+
+363
+00:19:03,529 --> 00:19:06,740
+aftra function which is called once the
+
+364
+00:19:06,740 --> 00:19:12,649
+async work function returns so the work
+
+365
+00:19:12,649 --> 00:19:15,529
+effect is pretty pretty easy or looks
+
+366
+00:19:15,529 --> 00:19:20,769
+pretty lightweight actually sorry just
+
+367
+00:19:20,769 --> 00:19:23,779
+convert the data which is like a
+
+368
+00:19:23,779 --> 00:19:25,279
+reference or a pointer to the bathroom
+
+369
+00:19:25,279 --> 00:19:28,159
+and you can basically do any kind of
+
+370
+00:19:28,159 --> 00:19:31,669
+work here what it can do is use any v8
+
+371
+00:19:31,669 --> 00:19:33,769
+stuff so you have to convert any kind of
+
+372
+00:19:33,769 --> 00:19:35,450
+data that you pass into the worker
+
+373
+00:19:35,450 --> 00:19:37,580
+thread in
+
+374
+00:19:37,580 --> 00:19:41,150
+the first function to some some sort of
+
+375
+00:19:41,150 --> 00:19:48,080
+native type so this fence is blocking so
+
+376
+00:19:48,080 --> 00:19:49,760
+you can basically do whatever you want
+
+377
+00:19:49,760 --> 00:19:52,250
+you can do long-running network
+
+378
+00:19:52,250 --> 00:19:54,200
+connections you can do file access you
+
+379
+00:19:54,200 --> 00:19:57,260
+can do expensive calculations and it
+
+380
+00:19:57,260 --> 00:20:02,570
+won't block the main v8 Fred like I said
+
+381
+00:20:02,570 --> 00:20:05,870
+don't don't don't use any v8 stuff in
+
+382
+00:20:05,870 --> 00:20:14,330
+there ok so once you're done lip UV make
+
+383
+00:20:14,330 --> 00:20:17,060
+sure to call your after function do the
+
+384
+00:20:17,060 --> 00:20:18,890
+same thing this time with a handles code
+
+385
+00:20:18,890 --> 00:20:20,870
+because this is executed back in the
+
+386
+00:20:20,870 --> 00:20:24,050
+main threat and do the same thing check
+
+387
+00:20:24,050 --> 00:20:27,200
+whether we had an error and when we did
+
+388
+00:20:27,200 --> 00:20:29,450
+just called a call back with an error
+
+389
+00:20:29,450 --> 00:20:32,680
+object or exception object otherwise
+
+390
+00:20:32,680 --> 00:20:36,230
+we'll pass the result back this is what
+
+391
+00:20:36,230 --> 00:20:38,440
+you also have to do because we created a
+
+392
+00:20:38,440 --> 00:20:40,640
+persistent handle of the call back
+
+393
+00:20:40,640 --> 00:20:43,040
+before we have to manually dispose of it
+
+394
+00:20:43,040 --> 00:20:45,830
+to make sure that that is cleaned up and
+
+395
+00:20:45,830 --> 00:20:50,890
+just like delete our delete our object
+
+396
+00:20:50,890 --> 00:20:56,000
+so yeah ok one thing that you have to be
+
+397
+00:20:56,000 --> 00:20:59,270
+aware of is when you call a callback
+
+398
+00:20:59,270 --> 00:21:01,970
+functions in in an after function that
+
+399
+00:21:01,970 --> 00:21:04,190
+returns from the GV is called the top of
+
+400
+00:21:04,190 --> 00:21:07,000
+the event loop of notes event loop so
+
+401
+00:21:07,000 --> 00:21:09,950
+this time you've to wrap it in a c++
+
+402
+00:21:09,950 --> 00:21:13,510
+try-catch or leg at the eight try-catch
+
+403
+00:21:13,510 --> 00:21:17,020
+so that it's possible for modules to use
+
+404
+00:21:17,020 --> 00:21:21,920
+process on uncaught exception in the
+
+405
+00:21:21,920 --> 00:21:28,400
+case the callback function fails so some
+
+406
+00:21:28,400 --> 00:21:32,210
+some words on API design the problem is
+
+407
+00:21:32,210 --> 00:21:35,330
+that most of the time you want to
+
+408
+00:21:35,330 --> 00:21:38,120
+convert a synchronous API that is
+
+409
+00:21:38,120 --> 00:21:41,510
+implemented in C or C++ into some sort
+
+410
+00:21:41,510 --> 00:21:45,860
+of a sink a way so they can use it from
+
+411
+00:21:45,860 --> 00:21:49,400
+JavaScript there's some patterns that
+
+412
+00:21:49,400 --> 00:21:50,650
+you can use here
+
+413
+00:21:50,650 --> 00:21:52,810
+the event emitter pattern if sometimes
+
+414
+00:21:52,810 --> 00:21:56,560
+pretty useful when you can fit your fit
+
+415
+00:21:56,560 --> 00:22:00,880
+the API the original API into the event
+
+416
+00:22:00,880 --> 00:22:02,470
+emitter pattern that's a pretty good way
+
+417
+00:22:02,470 --> 00:22:06,930
+to go cheney book hauls like jquery are
+
+418
+00:22:06,930 --> 00:22:11,110
+often a very useful thing to do and when
+
+419
+00:22:11,110 --> 00:22:13,570
+you do this you can like manually cue
+
+420
+00:22:13,570 --> 00:22:16,390
+the work requests in your original fed
+
+421
+00:22:16,390 --> 00:22:18,490
+before you dispatch them to the thread
+
+422
+00:22:18,490 --> 00:22:21,850
+pool and i'll show you an example for
+
+423
+00:22:21,850 --> 00:22:27,730
+that in a bit some previous or some
+
+424
+00:22:27,730 --> 00:22:30,070
+examples basically create objects with
+
+425
+00:22:30,070 --> 00:22:33,430
+new for any kind of things you can also
+
+426
+00:22:33,430 --> 00:22:35,440
+just create a native function or like a
+
+427
+00:22:35,440 --> 00:22:36,940
+plane function you don't have to wrap it
+
+428
+00:22:36,940 --> 00:22:42,070
+an object so it is just a simple API
+
+429
+00:22:42,070 --> 00:22:45,850
+call just like write a simple function
+
+430
+00:22:45,850 --> 00:22:50,020
+doesn't have to be complicated and this
+
+431
+00:22:50,020 --> 00:22:53,110
+is probably the most important bit of
+
+432
+00:22:53,110 --> 00:22:56,940
+advice make it very hard to misuse so
+
+433
+00:22:56,940 --> 00:22:59,590
+JavaScript programmers usually expect
+
+434
+00:22:59,590 --> 00:23:02,020
+that like the program doesn't crash
+
+435
+00:23:02,020 --> 00:23:05,920
+randomly so that they have to like call
+
+436
+00:23:05,920 --> 00:23:10,870
+things in a specific order so antigua
+
+437
+00:23:10,870 --> 00:23:13,870
+and c and c++ api's are different so
+
+438
+00:23:13,870 --> 00:23:15,880
+your program can crash if you don't use
+
+439
+00:23:15,880 --> 00:23:20,020
+the C++ or C API in the correct order so
+
+440
+00:23:20,020 --> 00:23:22,210
+your code should make sure that it's
+
+441
+00:23:22,210 --> 00:23:24,010
+impossible that the program will crash
+
+442
+00:23:24,010 --> 00:23:27,730
+and and even if you misuse it just throw
+
+443
+00:23:27,730 --> 00:23:32,950
+errors as opposed to crashing and yeah
+
+444
+00:23:32,950 --> 00:23:35,350
+just like make you feel as JavaScript as
+
+445
+00:23:35,350 --> 00:23:38,350
+possible that's what I usually do when
+
+446
+00:23:38,350 --> 00:23:41,170
+starting to write a note extension yes I
+
+447
+00:23:41,170 --> 00:23:43,600
+just like open up my editor and come up
+
+448
+00:23:43,600 --> 00:23:46,780
+with an API or like write some
+
+449
+00:23:46,780 --> 00:23:48,700
+JavaScript code that should be the API
+
+450
+00:23:48,700 --> 00:23:51,990
+and then see how it can implement it in
+
+451
+00:23:51,990 --> 00:23:56,790
+the aid or node c++ code so that it
+
+452
+00:23:56,790 --> 00:24:00,590
+looks like a good API
+
+453
+00:24:00,590 --> 00:24:03,770
+some examples for this to like show you
+
+454
+00:24:03,770 --> 00:24:06,110
+what I'm talking about is the notes to
+
+455
+00:24:06,110 --> 00:24:08,809
+collect three API to create a new
+
+456
+00:24:08,809 --> 00:24:10,549
+database object you just call the new
+
+457
+00:24:10,549 --> 00:24:12,919
+operator on a view there's no open
+
+458
+00:24:12,919 --> 00:24:15,289
+function or anything because when you
+
+459
+00:24:15,289 --> 00:24:17,330
+create a new database object like
+
+460
+00:24:17,330 --> 00:24:19,610
+openness pretty much implicit you like
+
+461
+00:24:19,610 --> 00:24:22,490
+don't want to open it separately that
+
+462
+00:24:22,490 --> 00:24:24,980
+eliminates a few staff you like things
+
+463
+00:24:24,980 --> 00:24:27,740
+you have to check for like you don't
+
+464
+00:24:27,740 --> 00:24:29,659
+have to check when you run a query Oh
+
+465
+00:24:29,659 --> 00:24:32,110
+has the user already called open because
+
+466
+00:24:32,110 --> 00:24:36,020
+it's already open implicitly and all of
+
+467
+00:24:36,020 --> 00:24:38,809
+those requests are cute so that they're
+
+468
+00:24:38,809 --> 00:24:42,200
+always executed after the database is
+
+469
+00:24:42,200 --> 00:24:47,450
+actually open yeah and there's also no
+
+470
+00:24:47,450 --> 00:24:49,070
+need to close the database handle
+
+471
+00:24:49,070 --> 00:24:53,419
+because once there once the once we ate
+
+472
+00:24:53,419 --> 00:24:57,919
+garbage collects the DB object here we
+
+473
+00:24:57,919 --> 00:25:00,620
+automatically close the database handle
+
+474
+00:25:00,620 --> 00:25:03,140
+so the user doesn't have to call close
+
+475
+00:25:03,140 --> 00:25:10,159
+manually and one other thing that I
+
+476
+00:25:10,159 --> 00:25:12,320
+implemented here is if you don't pass a
+
+477
+00:25:12,320 --> 00:25:14,140
+call that function like in this example
+
+478
+00:25:14,140 --> 00:25:17,980
+and the query can still failure right
+
+479
+00:25:17,980 --> 00:25:22,279
+and in that case I just omit an error
+
+480
+00:25:22,279 --> 00:25:26,270
+event on the database object so a note
+
+481
+00:25:26,270 --> 00:25:27,380
+has some code in there that
+
+482
+00:25:27,380 --> 00:25:29,659
+automatically like throws errors when
+
+483
+00:25:29,659 --> 00:25:32,120
+there is an uncaught error object on
+
+484
+00:25:32,120 --> 00:25:36,500
+some other object so that way like you
+
+485
+00:25:36,500 --> 00:25:42,140
+can still catch those another example is
+
+486
+00:25:42,140 --> 00:25:44,990
+no blend which the module dead just
+
+487
+00:25:44,990 --> 00:25:48,500
+blends together two images and we don't
+
+488
+00:25:48,500 --> 00:25:50,720
+have to like create a new operator here
+
+489
+00:25:50,720 --> 00:25:52,789
+which is called a function with two
+
+490
+00:25:52,789 --> 00:25:55,399
+buffers and we get a buffer pack so
+
+491
+00:25:55,399 --> 00:25:57,350
+there's no need to instantiate anything
+
+492
+00:25:57,350 --> 00:26:00,830
+here like we don't need any state so
+
+493
+00:26:00,830 --> 00:26:02,779
+there's no like various plant states so
+
+494
+00:26:02,779 --> 00:26:05,360
+we just like take images and blend them
+
+495
+00:26:05,360 --> 00:26:09,110
+together um there's some more
+
+496
+00:26:09,110 --> 00:26:11,460
+documentation of these links here
+
+497
+00:26:11,460 --> 00:26:16,409
+and yeah I check out the github
+
+498
+00:26:16,409 --> 00:26:19,320
+repository there are a lot more comments
+
+499
+00:26:19,320 --> 00:26:22,669
+in there there's also some samples for
+
+500
+00:26:22,669 --> 00:26:25,470
+creating objects in there like the new
+
+501
+00:26:25,470 --> 00:26:30,899
+operator and yeah thanks to mr aleph and
+
+502
+00:26:30,899 --> 00:26:35,730
+ice axe and orlando for for some of the
+
+503
+00:26:35,730 --> 00:26:38,760
+examples that I used and some of their
+
+504
+00:26:38,760 --> 00:27:08,739
+modules and yeah any questions
+
+505
+00:27:08,749 --> 00:27:12,119
+you mean like as opposed to using run
+
+506
+00:27:12,119 --> 00:27:18,019
+and get I did consider that the reason
+
+507
+00:27:18,019 --> 00:27:20,700
+there are different methods is that
+
+508
+00:27:20,700 --> 00:27:22,830
+symptoms you'd like just don't care
+
+509
+00:27:22,830 --> 00:27:25,110
+about the result you don't have to like
+
+510
+00:27:25,110 --> 00:27:27,929
+step over the result object so when you
+
+511
+00:27:27,929 --> 00:27:30,119
+don't care about the result you just use
+
+512
+00:27:30,119 --> 00:27:32,039
+run if you wanted to get just a single
+
+513
+00:27:32,039 --> 00:27:34,470
+value you can use get and there are some
+
+514
+00:27:34,470 --> 00:27:36,059
+where methods as well that are described
+
+515
+00:27:36,059 --> 00:27:38,399
+on the module website so that's the
+
+516
+00:27:38,399 --> 00:27:40,859
+reason for it you can also just always
+
+517
+00:27:40,859 --> 00:27:47,309
+use all or get there's no look no
+
+518
+00:27:47,309 --> 00:27:53,400
+damaging that
+

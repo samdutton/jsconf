@@ -1,0 +1,1705 @@
+1
+00:00:09,830 --> 00:00:13,190
+
+so I'm talking about caste and nodejs
+
+2
+00:00:13,190 --> 00:00:15,690
+how the agenda two things I want to
+
+3
+00:00:15,690 --> 00:00:16,800
+really cover it's kind of almost two
+
+4
+00:00:16,800 --> 00:00:19,859
+different presentations in a way is an
+
+5
+00:00:19,859 --> 00:00:22,350
+introduction to cast and then kind of
+
+6
+00:00:22,350 --> 00:00:25,470
+things we learned as we as we built cast
+
+7
+00:00:25,470 --> 00:00:30,029
+as a project on top of nodejs so you
+
+8
+00:00:30,029 --> 00:00:32,399
+know the background of this is auto
+
+9
+00:00:32,399 --> 00:00:35,399
+scaling is mostly a dirty dirty lie it
+
+10
+00:00:35,399 --> 00:00:37,020
+doesn't really exist in the real world
+
+11
+00:00:37,020 --> 00:00:39,030
+some people do it you can Auto scale web
+
+12
+00:00:39,030 --> 00:00:42,149
+servers but overall most companies that
+
+13
+00:00:42,149 --> 00:00:43,710
+aren't Google or Facebook or you know
+
+14
+00:00:43,710 --> 00:00:45,149
+have massive investments in
+
+15
+00:00:45,149 --> 00:00:47,070
+infrastructure don't really have auto
+
+16
+00:00:47,070 --> 00:00:49,910
+scaling solutions but on the other hand
+
+17
+00:00:49,910 --> 00:00:52,260
+resources like servers or storage are
+
+18
+00:00:52,260 --> 00:00:54,390
+getting easier and easier to acquire but
+
+19
+00:00:54,390 --> 00:00:56,430
+the apps themselves are just not ready
+
+20
+00:00:56,430 --> 00:00:58,770
+to auto scale so what we start looking
+
+21
+00:00:58,770 --> 00:01:01,949
+at was what infrastructure is missing to
+
+22
+00:01:01,949 --> 00:01:04,019
+make this work and we really felt it
+
+23
+00:01:04,019 --> 00:01:05,850
+focus around deployment and service
+
+24
+00:01:05,850 --> 00:01:08,460
+management and that is very different
+
+25
+00:01:08,460 --> 00:01:10,170
+than configuration management there is
+
+26
+00:01:10,170 --> 00:01:11,580
+some overlap especially the closer you
+
+27
+00:01:11,580 --> 00:01:12,630
+get to service management with
+
+28
+00:01:12,630 --> 00:01:14,400
+configuration management chef and puppet
+
+29
+00:01:14,400 --> 00:01:17,250
+and such but we felt there's big enough
+
+30
+00:01:17,250 --> 00:01:19,500
+difference there it's you know you can
+
+31
+00:01:19,500 --> 00:01:21,600
+focus just on this deployment and
+
+32
+00:01:21,600 --> 00:01:23,340
+service management part and be very good
+
+33
+00:01:23,340 --> 00:01:27,150
+at that so at the time we're all working
+
+34
+00:01:27,150 --> 00:01:29,369
+for a startup called cloud kick and
+
+35
+00:01:29,369 --> 00:01:30,450
+we're like well screw this let's just
+
+36
+00:01:30,450 --> 00:01:32,009
+start writing code and do it so that's
+
+37
+00:01:32,009 --> 00:01:35,759
+what we did so a cast at the very
+
+38
+00:01:35,759 --> 00:01:38,729
+highest level today is deployment as an
+
+39
+00:01:38,729 --> 00:01:42,960
+HTTP API you can install applications
+
+40
+00:01:42,960 --> 00:01:44,579
+you create a tarball you upload it and
+
+41
+00:01:44,579 --> 00:01:47,250
+it goes you do things like upgrading it
+
+42
+00:01:47,250 --> 00:01:51,479
+once it's deployed start stop restart it
+
+43
+00:01:51,479 --> 00:01:53,159
+has built in monitor native applications
+
+44
+00:01:53,159 --> 00:01:53,939
+so you can tell if your application
+
+45
+00:01:53,939 --> 00:01:56,729
+actually started it has built an access
+
+46
+00:01:56,729 --> 00:01:58,290
+to the log files of those apps create
+
+47
+00:01:58,290 --> 00:02:00,090
+and then in a long run we want to do
+
+48
+00:02:00,090 --> 00:02:01,680
+things like full app configuration
+
+49
+00:02:01,680 --> 00:02:03,689
+across the cluster which is kind of a
+
+50
+00:02:03,689 --> 00:02:06,360
+miniature zookeeper
+
+51
+00:02:06,360 --> 00:02:09,820
+so at a high level this is what we want
+
+52
+00:02:09,820 --> 00:02:11,320
+Cass to look like in the long run it's
+
+53
+00:02:11,320 --> 00:02:13,660
+not all the way there right now but
+
+54
+00:02:13,660 --> 00:02:15,130
+basically have a series of agents that
+
+55
+00:02:15,130 --> 00:02:16,870
+install on your servers wherever they
+
+56
+00:02:16,870 --> 00:02:19,600
+are cast doesn't really care then
+
+57
+00:02:19,600 --> 00:02:21,760
+there's a set of rest ap is that used to
+
+58
+00:02:21,760 --> 00:02:23,710
+communicate with those agents and those
+
+59
+00:02:23,710 --> 00:02:24,970
+agents within cells are kind of
+
+60
+00:02:24,970 --> 00:02:26,710
+self-organizing talk to each other over
+
+61
+00:02:26,710 --> 00:02:29,770
+peer-to-peer protocol so basically your
+
+62
+00:02:29,770 --> 00:02:31,870
+cast client or a web app or whatever
+
+63
+00:02:31,870 --> 00:02:34,210
+interface you want talks over this rest
+
+64
+00:02:34,210 --> 00:02:36,490
+api to your servers which is very
+
+65
+00:02:36,490 --> 00:02:38,230
+different compared to the interaction
+
+66
+00:02:38,230 --> 00:02:39,880
+you have with a traditional system like
+
+67
+00:02:39,880 --> 00:02:42,040
+puppet or chef where it's generally you
+
+68
+00:02:42,040 --> 00:02:43,450
+have a central repository of your
+
+69
+00:02:43,450 --> 00:02:45,340
+configuration you know this puppet
+
+70
+00:02:45,340 --> 00:02:46,930
+master and there's all these puppet
+
+71
+00:02:46,930 --> 00:02:48,300
+agents that pull down that configuration
+
+72
+00:02:48,300 --> 00:02:51,850
+it's just for deployment stuff you want
+
+73
+00:02:51,850 --> 00:02:53,500
+much more control over when things are
+
+74
+00:02:53,500 --> 00:02:55,810
+happening you know when you do a upgrade
+
+75
+00:02:55,810 --> 00:02:57,520
+of your web app you want to all happen
+
+76
+00:02:57,520 --> 00:02:58,720
+in all your web servers at a specific
+
+77
+00:02:58,720 --> 00:03:00,670
+time we're doing incremental rolling out
+
+78
+00:03:00,670 --> 00:03:03,190
+of it which is just not how most
+
+79
+00:03:03,190 --> 00:03:05,050
+implementations of puppet and chef are
+
+80
+00:03:05,050 --> 00:03:09,340
+done so cast has been in development for
+
+81
+00:03:09,340 --> 00:03:12,459
+a while our first release like public
+
+82
+00:03:12,459 --> 00:03:14,050
+release that we actually think is usable
+
+83
+00:03:14,050 --> 00:03:17,170
+was about two weeks ago it's focused on
+
+84
+00:03:17,170 --> 00:03:18,790
+the single mesh machine experience which
+
+85
+00:03:18,790 --> 00:03:20,590
+means we don't do much stuff with multi
+
+86
+00:03:20,590 --> 00:03:23,170
+machine at all right now but it's
+
+87
+00:03:23,170 --> 00:03:24,730
+focused on giving you a REST API to
+
+88
+00:03:24,730 --> 00:03:27,060
+control your apps on top of that server
+
+89
+00:03:27,060 --> 00:03:30,010
+it's you know it's open source and
+
+90
+00:03:30,010 --> 00:03:31,570
+there's a big website and all that kind
+
+91
+00:03:31,570 --> 00:03:34,030
+of stuff so I wanted to give a little
+
+92
+00:03:34,030 --> 00:03:39,070
+mini demo of cast so I'm going to start
+
+93
+00:03:39,070 --> 00:03:44,480
+the agent oops
+
+94
+00:03:44,490 --> 00:03:48,690
+okay so it started an agent on my laptop
+
+95
+00:03:48,690 --> 00:03:55,300
+and the command line client just a
+
+96
+00:03:55,300 --> 00:03:56,980
+simple command line client that wraps
+
+97
+00:03:56,980 --> 00:04:02,070
+with things on the server so for example
+
+98
+00:04:02,070 --> 00:04:04,920
+services list shows my running services
+
+99
+00:04:04,920 --> 00:04:08,440
+then I can go to that service and tail
+
+100
+00:04:08,440 --> 00:04:14,380
+it and if I can do things like curl that
+
+101
+00:04:14,380 --> 00:04:19,780
+URL it you know the server logs that
+
+102
+00:04:19,780 --> 00:04:21,550
+request you know and you can see it over
+
+103
+00:04:21,550 --> 00:04:23,260
+this command line client so that's the
+
+104
+00:04:23,260 --> 00:04:24,880
+simplest things you know standing
+
+105
+00:04:24,880 --> 00:04:27,520
+started with cast you can do it has a
+
+106
+00:04:27,520 --> 00:04:30,730
+lot more to it well a lot more to it in
+
+107
+00:04:30,730 --> 00:04:32,800
+the ways so like how you make something
+
+108
+00:04:32,800 --> 00:04:35,560
+a cast project as a thing called cast
+
+109
+00:04:35,560 --> 00:04:39,730
+that JSON which defines you know general
+
+110
+00:04:39,730 --> 00:04:42,580
+things about the server defines how you
+
+111
+00:04:42,580 --> 00:04:45,370
+get into the service this example is
+
+112
+00:04:45,370 --> 00:04:47,830
+server Jas is Ritu nodejs but it could
+
+113
+00:04:47,830 --> 00:04:49,240
+be any app you know you could have a
+
+114
+00:04:49,240 --> 00:04:50,830
+rails thing there or a hmong girl or
+
+115
+00:04:50,830 --> 00:04:52,480
+whatever you wanted it's not really no
+
+116
+00:04:52,480 --> 00:04:54,670
+Jay a specific the actual thing you're
+
+117
+00:04:54,670 --> 00:04:56,830
+deploying it also has things like
+
+118
+00:04:56,830 --> 00:04:59,560
+built-in health checks so we know that
+
+119
+00:04:59,560 --> 00:05:02,230
+this service should create an HTTP
+
+120
+00:05:02,230 --> 00:05:04,510
+server on this port and we expect it 200
+
+121
+00:05:04,510 --> 00:05:05,800
+from it if we're not getting that we
+
+122
+00:05:05,800 --> 00:05:09,540
+consider the services down as a problem
+
+123
+00:05:09,540 --> 00:05:16,750
+okay so there's a little bit of history
+
+124
+00:05:16,750 --> 00:05:20,140
+to cast it's been kind of in development
+
+125
+00:05:20,140 --> 00:05:23,170
+for about 10 months and you can see
+
+126
+00:05:23,170 --> 00:05:24,790
+developments been up and down there's
+
+127
+00:05:24,790 --> 00:05:27,820
+some reason behind that the first thing
+
+128
+00:05:27,820 --> 00:05:29,770
+that happened why development kind of
+
+129
+00:05:29,770 --> 00:05:32,830
+paused I would say is we got our start
+
+130
+00:05:32,830 --> 00:05:35,140
+up got acquired by Rackspace and so all
+
+131
+00:05:35,140 --> 00:05:36,370
+of us were distracted with things like
+
+132
+00:05:36,370 --> 00:05:39,520
+you know lawyers making sure our source
+
+133
+00:05:39,520 --> 00:05:41,290
+code didn't have the wrong IP in it and
+
+134
+00:05:41,290 --> 00:05:43,690
+you know that kind of stuff and then we
+
+135
+00:05:43,690 --> 00:05:45,730
+got busy began year and then what really
+
+136
+00:05:45,730 --> 00:05:47,710
+changed our development and well we're
+
+137
+00:05:47,710 --> 00:05:49,810
+ready to go back on and work on it but
+
+138
+00:05:49,810 --> 00:05:51,640
+no Jay s04 came out and it really
+
+139
+00:05:51,640 --> 00:05:53,260
+enabled us and fix a lot of the issues
+
+140
+00:05:53,260 --> 00:05:55,270
+we saw in earlier versions of node and
+
+141
+00:05:55,270 --> 00:05:57,490
+so we kind of have this 10-month history
+
+142
+00:05:57,490 --> 00:05:58,280
+of
+
+143
+00:05:58,280 --> 00:06:00,500
+30 for you know we did a lot of
+
+144
+00:06:00,500 --> 00:06:02,270
+prototyping a lot of dev work but after
+
+145
+00:06:02,270 --> 00:06:03,530
+04 we actually have something that we
+
+146
+00:06:03,530 --> 00:06:07,430
+feel that's like usable by people so I
+
+147
+00:06:07,430 --> 00:06:08,600
+want to go through a lot of just our
+
+148
+00:06:08,600 --> 00:06:10,970
+lessons learned with building cast as a
+
+149
+00:06:10,970 --> 00:06:13,970
+node.js application because I think
+
+150
+00:06:13,970 --> 00:06:15,169
+that's where there's a lot of value for
+
+151
+00:06:15,169 --> 00:06:16,970
+people is you know we made a lot of
+
+152
+00:06:16,970 --> 00:06:18,110
+mistakes because we started 10 months
+
+153
+00:06:18,110 --> 00:06:19,040
+ago and there are lots of different
+
+154
+00:06:19,040 --> 00:06:20,680
+things that you do differently nowadays
+
+155
+00:06:20,680 --> 00:06:25,430
+the first one is just use NPM when we
+
+156
+00:06:25,430 --> 00:06:27,110
+started there were like three other
+
+157
+00:06:27,110 --> 00:06:29,750
+package managers and none of them were
+
+158
+00:06:29,750 --> 00:06:32,960
+particularly good and to say the truth I
+
+159
+00:06:32,960 --> 00:06:34,250
+don't think NPM was that good either at
+
+160
+00:06:34,250 --> 00:06:36,410
+the point but at this point there's no
+
+161
+00:06:36,410 --> 00:06:39,500
+reason not to choose em p.m. today
+
+162
+00:06:39,500 --> 00:06:41,720
+things like the local module install so
+
+163
+00:06:41,720 --> 00:06:43,700
+you'd bundling entire app into one we
+
+164
+00:06:43,700 --> 00:06:45,470
+put you know one set of node modules is
+
+165
+00:06:45,470 --> 00:06:47,570
+a huge improvement it makes it very easy
+
+166
+00:06:47,570 --> 00:06:50,450
+to move apps around servers the other
+
+167
+00:06:50,450 --> 00:06:52,790
+thing we've used a lot is internal NPM
+
+168
+00:06:52,790 --> 00:06:55,280
+registry cloud kick because we have some
+
+169
+00:06:55,280 --> 00:06:57,530
+products that are not open source but we
+
+170
+00:06:57,530 --> 00:06:58,820
+have so we want those modules use the
+
+171
+00:06:58,820 --> 00:07:00,169
+same pattern though so that if we ever
+
+172
+00:07:00,169 --> 00:07:01,520
+do make them open source is very easy
+
+173
+00:07:01,520 --> 00:07:05,419
+it's flipping a switch so one thing
+
+174
+00:07:05,419 --> 00:07:06,890
+about using things for mpm though is
+
+175
+00:07:06,890 --> 00:07:10,010
+that the community part of a module is
+
+176
+00:07:10,010 --> 00:07:12,710
+the most important thing careful of
+
+177
+00:07:12,710 --> 00:07:14,990
+single author you know I'm learning
+
+178
+00:07:14,990 --> 00:07:17,090
+nodejs modules because there's a lot of
+
+179
+00:07:17,090 --> 00:07:19,640
+them what you end up if you just have to
+
+180
+00:07:19,640 --> 00:07:21,050
+know that if you know this guy goes away
+
+181
+00:07:21,050 --> 00:07:22,460
+you're going to own that module and
+
+182
+00:07:22,460 --> 00:07:24,470
+we've done that a couple times sometimes
+
+183
+00:07:24,470 --> 00:07:26,180
+we submit patches they just ignore them
+
+184
+00:07:26,180 --> 00:07:27,800
+other times they're active and they take
+
+185
+00:07:27,800 --> 00:07:29,510
+them back but just be aware there's a
+
+186
+00:07:29,510 --> 00:07:31,070
+lot of modules out there that don't have
+
+187
+00:07:31,070 --> 00:07:35,750
+a lot of active maintain errs so a big
+
+188
+00:07:35,750 --> 00:07:37,130
+thing we learned when we started doing
+
+189
+00:07:37,130 --> 00:07:39,830
+node is you know we were originally a
+
+190
+00:07:39,830 --> 00:07:42,470
+twisted Python shop and so we had a lot
+
+191
+00:07:42,470 --> 00:07:44,450
+of unit tests already we're doing a lot
+
+192
+00:07:44,450 --> 00:07:46,280
+of heavy unit testing but it's very
+
+193
+00:07:46,280 --> 00:07:49,100
+important with JavaScript that there is
+
+194
+00:07:49,100 --> 00:07:51,050
+no compiler so you really need test
+
+195
+00:07:51,050 --> 00:07:52,850
+cases to show that you didn't break
+
+196
+00:07:52,850 --> 00:07:55,810
+something we started using expresso
+
+197
+00:07:55,810 --> 00:07:58,580
+which is pretty common for most people
+
+198
+00:07:58,580 --> 00:08:00,620
+and we felt it was great for little web
+
+199
+00:08:00,620 --> 00:08:03,530
+apps but we felt for our service
+
+200
+00:08:03,530 --> 00:08:04,640
+especially with the agent has a lot of
+
+201
+00:08:04,640 --> 00:08:07,460
+state in it it just wasn't sustainable
+
+202
+00:08:07,460 --> 00:08:10,099
+to keep using expresso so we wrote
+
+203
+00:08:10,099 --> 00:08:12,800
+something called whiskey which is a
+
+204
+00:08:12,800 --> 00:08:14,690
+you know test runner but does a lot of
+
+205
+00:08:14,690 --> 00:08:17,629
+things differently every test files ran
+
+206
+00:08:17,629 --> 00:08:19,610
+in a subprocess for example so if you a
+
+207
+00:08:19,610 --> 00:08:21,229
+lot of like global variable state or
+
+208
+00:08:21,229 --> 00:08:24,440
+state changes inside your app you can
+
+209
+00:08:24,440 --> 00:08:26,810
+test that in whiskey I mean need a lot
+
+210
+00:08:26,810 --> 00:08:28,849
+more isolation between processes which
+
+211
+00:08:28,849 --> 00:08:30,199
+was really important for us because our
+
+212
+00:08:30,199 --> 00:08:33,140
+a lot of our app is you know downloading
+
+213
+00:08:33,140 --> 00:08:35,810
+a file you know spawning a subprocess to
+
+214
+00:08:35,810 --> 00:08:38,180
+do tar things like that which are not
+
+215
+00:08:38,180 --> 00:08:43,820
+very easy to do in expresso so I want to
+
+216
+00:08:43,820 --> 00:08:47,600
+show one thing from expresso which yeah
+
+217
+00:08:47,600 --> 00:08:50,000
+internet it's not there good so one of
+
+218
+00:08:50,000 --> 00:08:51,410
+things we built on top of expresso is
+
+219
+00:08:51,410 --> 00:08:53,959
+test coverage sorry buildings have a
+
+220
+00:08:53,959 --> 00:08:56,570
+whiskey is test coverage so if you've
+
+221
+00:08:56,570 --> 00:08:58,370
+seen like coverage up high for python is
+
+222
+00:08:58,370 --> 00:09:01,790
+a very similar system you know so you
+
+223
+00:09:01,790 --> 00:09:03,980
+have the overall report of you know we
+
+224
+00:09:03,980 --> 00:09:05,420
+only have sixty-three percent test
+
+225
+00:09:05,420 --> 00:09:06,800
+coverage which is pretty terrible and
+
+226
+00:09:06,800 --> 00:09:09,769
+we're working on fixing that but the
+
+227
+00:09:09,769 --> 00:09:11,660
+cool thing is you can see exactly what
+
+228
+00:09:11,660 --> 00:09:14,540
+lines were run as part of whiskey so you
+
+229
+00:09:14,540 --> 00:09:16,130
+can see you know it parsed this this
+
+230
+00:09:16,130 --> 00:09:18,829
+file so this this line was ran but the
+
+231
+00:09:18,829 --> 00:09:20,209
+actual function was never called so this
+
+232
+00:09:20,209 --> 00:09:22,520
+line was never ran so it's you know very
+
+233
+00:09:22,520 --> 00:09:24,290
+easy to see how to improve your test
+
+234
+00:09:24,290 --> 00:09:32,810
+cases so that gets to like lint you
+
+235
+00:09:32,810 --> 00:09:35,029
+should also use Jace hint or jslint
+
+236
+00:09:35,029 --> 00:09:37,100
+depends on if you believe crockford is
+
+237
+00:09:37,100 --> 00:09:39,170
+right all the time it's kind of your
+
+238
+00:09:39,170 --> 00:09:42,680
+choice there is no J's hint which makes
+
+239
+00:09:42,680 --> 00:09:45,290
+it very easy just MPM install so you
+
+240
+00:09:45,290 --> 00:09:47,270
+know use that the one project we've been
+
+241
+00:09:47,270 --> 00:09:49,040
+using a lot of though is Google closure
+
+242
+00:09:49,040 --> 00:09:50,839
+linter which is actually written in
+
+243
+00:09:50,839 --> 00:09:54,230
+Python but in and it enforces code style
+
+244
+00:09:54,230 --> 00:09:55,699
+according to google's coding style
+
+245
+00:09:55,699 --> 00:09:58,399
+guidelines which if you don't like well
+
+246
+00:09:58,399 --> 00:10:00,020
+you probably shouldn't use it but we
+
+247
+00:10:00,020 --> 00:10:02,089
+felt we found that it was very helpful
+
+248
+00:10:02,089 --> 00:10:03,829
+just to have us you know coding standard
+
+249
+00:10:03,829 --> 00:10:05,000
+and we're just gonna here to the Google
+
+250
+00:10:05,000 --> 00:10:07,790
+coding standard and closure Lintz a very
+
+251
+00:10:07,790 --> 00:10:11,089
+helpful tool for maintaining that now
+
+252
+00:10:11,089 --> 00:10:12,800
+one thing you hear a lot about on the
+
+253
+00:10:12,800 --> 00:10:13,940
+front end side if you'll using the
+
+254
+00:10:13,940 --> 00:10:17,870
+closure compiler to you know detect to
+
+255
+00:10:17,870 --> 00:10:19,730
+do compile the JavaScript it's a single
+
+256
+00:10:19,730 --> 00:10:21,649
+file right and compress it but we're
+
+257
+00:10:21,649 --> 00:10:25,160
+using it as a linting step as a static
+
+258
+00:10:25,160 --> 00:10:26,380
+analysis tool
+
+259
+00:10:26,380 --> 00:10:30,320
+so right now it works great for single
+
+260
+00:10:30,320 --> 00:10:33,200
+file statical analysis but it doesn't
+
+261
+00:10:33,200 --> 00:10:34,970
+understand yet like the node module
+
+262
+00:10:34,970 --> 00:10:37,220
+structure or things like that we're
+
+263
+00:10:37,220 --> 00:10:39,230
+looking at how to do that so that you
+
+264
+00:10:39,230 --> 00:10:43,780
+know it understands cross module errors
+
+265
+00:10:43,780 --> 00:10:46,070
+so here's an example of what it can do
+
+266
+00:10:46,070 --> 00:10:48,200
+today very easily you can detect things
+
+267
+00:10:48,200 --> 00:10:50,450
+like inconsistent return types from the
+
+268
+00:10:50,450 --> 00:10:52,370
+documented types you know unused
+
+269
+00:10:52,370 --> 00:10:55,340
+variables in a lot of kind of basic
+
+270
+00:10:55,340 --> 00:10:56,540
+static analysis stuff that you just
+
+271
+00:10:56,540 --> 00:10:59,300
+don't have normally in JavaScript and so
+
+272
+00:10:59,300 --> 00:11:00,470
+it's a very easy tool to kind of
+
+273
+00:11:00,470 --> 00:11:05,780
+repurpose from the front end Express you
+
+274
+00:11:05,780 --> 00:11:08,420
+should just use it when we started we
+
+275
+00:11:08,420 --> 00:11:09,920
+thought oh HTTP is really easy there's
+
+276
+00:11:09,920 --> 00:11:11,990
+all these simple examples we'll just you
+
+277
+00:11:11,990 --> 00:11:13,730
+know right use HTTP router and do our
+
+278
+00:11:13,730 --> 00:11:15,530
+own thing and that was like totally a
+
+279
+00:11:15,530 --> 00:11:18,140
+mistake you know you should just use
+
+280
+00:11:18,140 --> 00:11:20,630
+Express there's no like it's so small
+
+281
+00:11:20,630 --> 00:11:23,030
+and the scale of things you know you
+
+282
+00:11:23,030 --> 00:11:24,290
+should just use it it has a lot of
+
+283
+00:11:24,290 --> 00:11:25,340
+utilities it's going to keep getting
+
+284
+00:11:25,340 --> 00:11:27,260
+better whereas if you just do your own
+
+285
+00:11:27,260 --> 00:11:28,400
+thing it's you're always going to come
+
+286
+00:11:28,400 --> 00:11:32,600
+be stuck in your world so a little story
+
+287
+00:11:32,600 --> 00:11:38,960
+about TLS when we started it frankly
+
+288
+00:11:38,960 --> 00:11:41,270
+didn't work well we started using just
+
+289
+00:11:41,270 --> 00:11:45,830
+HTTP which you know was easy but it just
+
+290
+00:11:45,830 --> 00:11:47,570
+didn't you know and then we like oh
+
+291
+00:11:47,570 --> 00:11:48,920
+we'll just turn on SSL one day when
+
+292
+00:11:48,920 --> 00:11:50,600
+we're ready and we turned it on and it
+
+293
+00:11:50,600 --> 00:11:52,640
+completely bombed just nothing would
+
+294
+00:11:52,640 --> 00:11:56,660
+work at all so that was 02 back in like
+
+295
+00:11:56,660 --> 00:11:59,030
+september-october last year and we're
+
+296
+00:11:59,030 --> 00:12:02,180
+like well okay so ice works with Ryan
+
+297
+00:12:02,180 --> 00:12:03,350
+Allah and Ryan did a lot of the work to
+
+298
+00:12:03,350 --> 00:12:08,480
+to rewrite the whole SSL stack and you
+
+299
+00:12:08,480 --> 00:12:10,940
+know we did it and it mostly works in 04
+
+300
+00:12:10,940 --> 00:12:15,590
+if you using since 06 for six or so it's
+
+301
+00:12:15,590 --> 00:12:18,050
+actually generally works for everything
+
+302
+00:12:18,050 --> 00:12:19,370
+we haven't found many bugs since then
+
+303
+00:12:19,370 --> 00:12:21,080
+but if you find a bug please let us know
+
+304
+00:12:21,080 --> 00:12:28,340
+we'll fix it streams so especially pries
+
+305
+00:12:28,340 --> 00:12:29,930
+ero for we had a lot of problems with
+
+306
+00:12:29,930 --> 00:12:32,180
+streams the API wasn't well defined
+
+307
+00:12:32,180 --> 00:12:34,700
+there's lots of other issues for example
+
+308
+00:12:34,700 --> 00:12:37,340
+we would untie our file or cat like over
+
+309
+00:12:37,340 --> 00:12:40,110
+sorry uploading a file over HTTP
+
+310
+00:12:40,110 --> 00:12:42,000
+streamed up pipe into the HTTP stream
+
+311
+00:12:42,000 --> 00:12:43,649
+and I would have like you know a twenty
+
+312
+00:12:43,649 --> 00:12:45,779
+percent chance of working successfully
+
+313
+00:12:45,779 --> 00:12:48,269
+that's not the truth anymore there's no
+
+314
+00:12:48,269 --> 00:12:49,410
+reason to like reinvent your own
+
+315
+00:12:49,410 --> 00:12:50,760
+streaming API if you're like moving
+
+316
+00:12:50,760 --> 00:12:52,589
+files around with HTTP you should just
+
+317
+00:12:52,589 --> 00:12:54,480
+use pipe there are some issues with
+
+318
+00:12:54,480 --> 00:12:56,779
+error handling so it's not great but
+
+319
+00:12:56,779 --> 00:12:58,680
+there's been a discussion as we
+
+320
+00:12:58,680 --> 00:13:00,750
+discussed yesterday node commit was kind
+
+321
+00:13:00,750 --> 00:13:02,040
+of trying to improve some of that stream
+
+322
+00:13:02,040 --> 00:13:06,269
+error handling I want talk about flow
+
+323
+00:13:06,269 --> 00:13:10,110
+control for a minute people come to node
+
+324
+00:13:10,110 --> 00:13:11,250
+there's a lot of people talking about
+
+325
+00:13:11,250 --> 00:13:13,560
+promises and other you know node fibers
+
+326
+00:13:13,560 --> 00:13:16,950
+and other solutions we've tried to stay
+
+327
+00:13:16,950 --> 00:13:21,329
+away from them as much as possible you
+
+328
+00:13:21,329 --> 00:13:24,240
+know it's not JA it's not javascript is
+
+329
+00:13:24,240 --> 00:13:25,920
+not VA it's not node at that point we
+
+330
+00:13:25,920 --> 00:13:27,899
+focused on using a sink is one we use a
+
+331
+00:13:27,899 --> 00:13:30,600
+lot we found that very good for our use
+
+332
+00:13:30,600 --> 00:13:33,480
+cases provides you know 20 odd utility
+
+333
+00:13:33,480 --> 00:13:35,570
+functions like parallel serialized map
+
+334
+00:13:35,570 --> 00:13:37,620
+that prevent you know the callback
+
+335
+00:13:37,620 --> 00:13:42,180
+chaining madness the other very common
+
+336
+00:13:42,180 --> 00:13:44,550
+popular one is called step you know be
+
+337
+00:13:44,550 --> 00:13:46,290
+so basically pick a way to do
+
+338
+00:13:46,290 --> 00:13:48,300
+asynchronous things that's not just
+
+339
+00:13:48,300 --> 00:13:49,800
+chaining callbacks you know pick a
+
+340
+00:13:49,800 --> 00:13:51,120
+library that gives you a little bit of
+
+341
+00:13:51,120 --> 00:13:52,980
+extraction but I wouldn't recommend
+
+342
+00:13:52,980 --> 00:13:54,779
+going off and using node fibers or
+
+343
+00:13:54,779 --> 00:13:56,640
+investing really having promises right
+
+344
+00:13:56,640 --> 00:14:02,339
+now kind of one lesson through all this
+
+345
+00:14:02,339 --> 00:14:07,769
+was just send patches you know Ryan is
+
+346
+00:14:07,769 --> 00:14:09,209
+very receptive to patches that fix
+
+347
+00:14:09,209 --> 00:14:12,060
+things you know when we started you know
+
+348
+00:14:12,060 --> 00:14:13,320
+different people on our team who
+
+349
+00:14:13,320 --> 00:14:14,610
+contribute quite a few patches at this
+
+350
+00:14:14,610 --> 00:14:16,829
+point and it's actually pretty easy you
+
+351
+00:14:16,829 --> 00:14:18,810
+know make a test case that breaks people
+
+352
+00:14:18,810 --> 00:14:21,360
+you know then he'll accept your patch
+
+353
+00:14:21,360 --> 00:14:24,420
+fix the code and make a pull request and
+
+354
+00:14:24,420 --> 00:14:26,279
+at this point the most important thing
+
+355
+00:14:26,279 --> 00:14:27,480
+for most people is it's mostly
+
+356
+00:14:27,480 --> 00:14:30,240
+JavaScript there's very few well there
+
+357
+00:14:30,240 --> 00:14:31,529
+are bugs we have to go to look in the
+
+358
+00:14:31,529 --> 00:14:33,660
+sea world but a lot of times there's
+
+359
+00:14:33,660 --> 00:14:35,279
+pure JavaScript bugs that you don't have
+
+360
+00:14:35,279 --> 00:14:38,160
+to look at you know you just use
+
+361
+00:14:38,160 --> 00:14:39,480
+patching javascript thing so it's much
+
+362
+00:14:39,480 --> 00:14:40,740
+easier and more accessible than most
+
+363
+00:14:40,740 --> 00:14:46,769
+people so as part of rackspace we've
+
+364
+00:14:46,769 --> 00:14:48,779
+kind of been leading the way inside
+
+365
+00:14:48,779 --> 00:14:50,190
+Rackspace to trying to do more and more
+
+366
+00:14:50,190 --> 00:14:52,529
+nodejs we're building on our team in San
+
+367
+00:14:52,529 --> 00:14:54,240
+Francisco just due to do
+
+368
+00:14:54,240 --> 00:14:56,370
+we've opened source a bunch of things
+
+369
+00:14:56,370 --> 00:14:58,890
+cast is the main one it's a ton of code
+
+370
+00:14:58,890 --> 00:15:00,940
+but we also open source things like our
+
+371
+00:15:00,940 --> 00:15:03,459
+node Cassandra client and we're doing a
+
+372
+00:15:03,459 --> 00:15:06,880
+bunch of things with our are we have a
+
+373
+00:15:06,880 --> 00:15:08,800
+serialization layer on top of Express
+
+374
+00:15:08,800 --> 00:15:11,140
+that we're open sourcing as well so I
+
+375
+00:15:11,140 --> 00:15:13,810
+just say go check out the code and if
+
+376
+00:15:13,810 --> 00:15:15,579
+there's any time or any questions I
+
+377
+00:15:15,579 --> 00:15:18,310
+guess okay so the question I think is
+
+378
+00:15:18,310 --> 00:15:19,690
+just our using cast in production right
+
+379
+00:15:19,690 --> 00:15:24,700
+now okay we are using it in kind of some
+
+380
+00:15:24,700 --> 00:15:26,050
+staging environments and playing with it
+
+381
+00:15:26,050 --> 00:15:27,820
+it's not yet in production and a large
+
+382
+00:15:27,820 --> 00:15:31,420
+scale our goal was really right now is
+
+383
+00:15:31,420 --> 00:15:33,279
+to get zero one out and we just kind of
+
+384
+00:15:33,279 --> 00:15:35,560
+finish that and then our next goal like
+
+385
+00:15:35,560 --> 00:15:38,560
+402 is to get cloud cake production use
+
+386
+00:15:38,560 --> 00:15:40,720
+as many places as we can so that's kind
+
+387
+00:15:40,720 --> 00:15:43,269
+of our next part of the project is we're
+
+388
+00:15:43,269 --> 00:15:44,410
+going to use in production and start
+
+389
+00:15:44,410 --> 00:15:46,450
+that feedback loop of you know that's
+
+390
+00:15:46,450 --> 00:15:48,070
+broken you know make the user interface
+
+391
+00:15:48,070 --> 00:15:50,950
+better because you know right now that
+
+392
+00:15:50,950 --> 00:15:53,410
+for example the cast client corresponds
+
+393
+00:15:53,410 --> 00:15:55,390
+very well with like the REST API but
+
+394
+00:15:55,390 --> 00:15:56,470
+like that's not what you want in a high
+
+395
+00:15:56,470 --> 00:15:58,600
+level client you want you know make this
+
+396
+00:15:58,600 --> 00:16:00,699
+thing go you know you don't want it to
+
+397
+00:16:00,699 --> 00:16:02,740
+match the rest api necessarily directly
+
+398
+00:16:02,740 --> 00:16:05,050
+so that's kind of our next big part of
+
+399
+00:16:05,050 --> 00:16:07,690
+the project is to production eyes it and
+
+400
+00:16:07,690 --> 00:16:11,579
+make it easier to use the question is
+
+401
+00:16:11,579 --> 00:16:14,250
+why didn't we use Express the first time
+
+402
+00:16:14,250 --> 00:16:17,110
+and that was you know last year it
+
+403
+00:16:17,110 --> 00:16:18,579
+wasn't even clear that sir that Express
+
+404
+00:16:18,579 --> 00:16:21,459
+would like win you know like 10 months
+
+405
+00:16:21,459 --> 00:16:22,750
+ago it was like there's a lot of the
+
+406
+00:16:22,750 --> 00:16:24,339
+million modules and all of them are kind
+
+407
+00:16:24,339 --> 00:16:27,990
+of crap and that's not the case anymore
+
+408
+00:16:27,990 --> 00:16:30,399
+you know and we said oh well HTTP is
+
+409
+00:16:30,399 --> 00:16:31,540
+really easy we'll just make out a little
+
+410
+00:16:31,540 --> 00:16:33,880
+router with a few reg X's you know what
+
+411
+00:16:33,880 --> 00:16:35,920
+you certainly could do it was fast but
+
+412
+00:16:35,920 --> 00:16:38,380
+like it's just not maintainable in the
+
+413
+00:16:38,380 --> 00:16:40,329
+long run right and you lose out on all
+
+414
+00:16:40,329 --> 00:16:41,560
+those middlewares you just want to you
+
+415
+00:16:41,560 --> 00:16:43,029
+know oh look someone may have sweet you
+
+416
+00:16:43,029 --> 00:16:44,740
+know rate-limiting middle where I want
+
+417
+00:16:44,740 --> 00:16:46,600
+to go pull that in well it's you know
+
+418
+00:16:46,600 --> 00:16:49,660
+not quite that easy so you end up you
+
+419
+00:16:49,660 --> 00:16:51,010
+know carrying a lot of burden in and
+
+420
+00:16:51,010 --> 00:16:52,750
+maintaining your own thing when Express
+
+421
+00:16:52,750 --> 00:16:54,459
+just gives you a lot it doesn't cost you
+
+422
+00:16:54,459 --> 00:16:56,529
+very much like the cost of using Express
+
+423
+00:16:56,529 --> 00:16:58,060
+is very low
+
+424
+00:16:58,060 --> 00:16:59,140
+overall that's why I think people should
+
+425
+00:16:59,140 --> 00:17:04,120
+just use it by default at this point any
+
+426
+00:17:04,120 --> 00:17:07,870
+other questions
+

@@ -1,0 +1,2941 @@
+1
+00:00:00,040 --> 00:00:04,180
+
+[Applause]
+
+2
+00:00:04,190 --> 00:00:08,130
+hey everybody I'm Taylor thanks so much
+
+3
+00:00:08,130 --> 00:00:09,840
+for the introduction Paul and today
+
+4
+00:00:09,840 --> 00:00:12,300
+we're going to talk about JavaScript's
+
+5
+00:00:12,300 --> 00:00:14,219
+performance in extreme environments
+
+6
+00:00:14,219 --> 00:00:16,470
+through the lens of our production web
+
+7
+00:00:16,470 --> 00:00:20,369
+app for refugee aid groups so start off
+
+8
+00:00:20,369 --> 00:00:21,930
+with some background on the aid movement
+
+9
+00:00:21,930 --> 00:00:23,640
+look at those extreme environments
+
+10
+00:00:23,640 --> 00:00:26,279
+setting performance goals is always a
+
+11
+00:00:26,279 --> 00:00:28,050
+great place to start when diving into
+
+12
+00:00:28,050 --> 00:00:30,630
+this stuff and outlining a strategy and
+
+13
+00:00:30,630 --> 00:00:32,369
+then look at the tools and techniques we
+
+14
+00:00:32,369 --> 00:00:34,290
+use to improve performance in our own
+
+15
+00:00:34,290 --> 00:00:38,219
+app this is my first-ever Tech Talk both
+
+16
+00:00:38,219 --> 00:00:46,240
+as an attendee and a speaker so I really
+
+17
+00:00:46,250 --> 00:00:49,170
+and I just want to emphasize like I'm
+
+18
+00:00:49,170 --> 00:00:51,899
+nothing special I'm just like an average
+
+19
+00:00:51,899 --> 00:00:53,879
+web dev I needed to do this to make our
+
+20
+00:00:53,879 --> 00:00:56,280
+stuff work in the field but to take away
+
+21
+00:00:56,280 --> 00:00:58,559
+from that is that you can do this too
+
+22
+00:00:58,559 --> 00:01:00,149
+you don't have to be an expert it's not
+
+23
+00:01:00,149 --> 00:01:01,980
+using some really advanced API or
+
+24
+00:01:01,980 --> 00:01:04,320
+anything so hopefully on Monday you can
+
+25
+00:01:04,320 --> 00:01:06,270
+go in take a look at some performance in
+
+26
+00:01:06,270 --> 00:01:08,430
+your own apps maybe do some improvements
+
+27
+00:01:08,430 --> 00:01:13,280
+who knows cool so the refugee movement
+
+28
+00:01:13,280 --> 00:01:16,950
+is one of the largest grassroots you
+
+29
+00:01:16,950 --> 00:01:18,869
+know volunteer-driven things in the
+
+30
+00:01:18,869 --> 00:01:19,229
+world
+
+31
+00:01:19,229 --> 00:01:21,479
+it has had tens of thousands of
+
+32
+00:01:21,479 --> 00:01:23,790
+volunteers working with hundreds of
+
+33
+00:01:23,790 --> 00:01:26,130
+grassroots aid groups welcomed millions
+
+34
+00:01:26,130 --> 00:01:29,340
+of newcomers to Europe it's kind of this
+
+35
+00:01:29,340 --> 00:01:31,200
+interesting network of distributed
+
+36
+00:01:31,200 --> 00:01:33,329
+autonomous groups they each do their own
+
+37
+00:01:33,329 --> 00:01:35,400
+part independently which means they can
+
+38
+00:01:35,400 --> 00:01:38,189
+respond really quickly to changing
+
+39
+00:01:38,189 --> 00:01:41,729
+conditions or new needs that governments
+
+40
+00:01:41,729 --> 00:01:45,420
+or larger multinational NGOs can't but
+
+41
+00:01:45,420 --> 00:01:47,009
+there's lots of communication overhead
+
+42
+00:01:47,009 --> 00:01:49,500
+and lots of in efficiencies around these
+
+43
+00:01:49,500 --> 00:01:53,700
+administrative processes so it's a
+
+44
+00:01:53,700 --> 00:01:55,920
+diverse movement it's led by women you
+
+45
+00:01:55,920 --> 00:01:59,759
+can see our board there on the left is
+
+46
+00:01:59,759 --> 00:02:03,210
+Stephanie who's a admin at movement on
+
+47
+00:02:03,210 --> 00:02:04,920
+the ground we'll be talking about some
+
+48
+00:02:04,920 --> 00:02:06,390
+of their work on the island of Lesbos
+
+49
+00:02:06,390 --> 00:02:09,060
+later the middle is our own director
+
+50
+00:02:09,060 --> 00:02:11,610
+Sarah say hi if you see her around the
+
+51
+00:02:11,610 --> 00:02:12,720
+conference
+
+52
+00:02:12,720 --> 00:02:15,570
+and on the right is Regina who has
+
+53
+00:02:15,570 --> 00:02:18,720
+started an aid group that takes donated
+
+54
+00:02:18,720 --> 00:02:21,210
+laptops and equipment loads educational
+
+55
+00:02:21,210 --> 00:02:22,710
+content on them and sends them to
+
+56
+00:02:22,710 --> 00:02:25,050
+informal schools in camps so I think
+
+57
+00:02:25,050 --> 00:02:26,970
+it's really cool to see women at the
+
+58
+00:02:26,970 --> 00:02:30,360
+forefront of this movement and this is
+
+59
+00:02:30,360 --> 00:02:32,460
+something that's not going to be solved
+
+60
+00:02:32,460 --> 00:02:36,060
+within our lifetimes there's 70 million
+
+61
+00:02:36,060 --> 00:02:38,400
+displaced people in the world today 20
+
+62
+00:02:38,400 --> 00:02:40,410
+million of them are refugees in another
+
+63
+00:02:40,410 --> 00:02:44,280
+country and due to climate change we're
+
+64
+00:02:44,280 --> 00:02:47,070
+looking at up to 1 billion displaced
+
+65
+00:02:47,070 --> 00:02:50,520
+people in the world by 2050 so this is
+
+66
+00:02:50,520 --> 00:02:51,900
+something that we need to pay attention
+
+67
+00:02:51,900 --> 00:02:53,640
+to now we need to build the
+
+68
+00:02:53,640 --> 00:02:56,070
+infrastructure for now and I'm really
+
+69
+00:02:56,070 --> 00:02:58,200
+grateful to indigenous people all over
+
+70
+00:02:58,200 --> 00:03:01,470
+the world and our youth like Greta who
+
+71
+00:03:01,470 --> 00:03:04,170
+are fighting you know to reduce the
+
+72
+00:03:04,170 --> 00:03:08,670
+impact of climate change so a little
+
+73
+00:03:08,670 --> 00:03:10,830
+overview of our tech leave three main
+
+74
+00:03:10,830 --> 00:03:12,959
+areas of our platform there's kind of
+
+75
+00:03:12,959 --> 00:03:14,400
+discovery and networking
+
+76
+00:03:14,400 --> 00:03:17,190
+there's the aid supply chain so tools
+
+77
+00:03:17,190 --> 00:03:19,940
+around getting things from A to B and
+
+78
+00:03:19,940 --> 00:03:23,010
+there's the knowledge sharing section to
+
+79
+00:03:23,010 --> 00:03:25,080
+help you know share knowledge things
+
+80
+00:03:25,080 --> 00:03:27,989
+like that so our goal is to increase
+
+81
+00:03:27,989 --> 00:03:30,870
+collaboration save time and help groups
+
+82
+00:03:30,870 --> 00:03:33,570
+make smarter better decisions really by
+
+83
+00:03:33,570 --> 00:03:35,550
+just surfacing more information in a
+
+84
+00:03:35,550 --> 00:03:37,350
+centralized place and then easy to
+
+85
+00:03:37,350 --> 00:03:39,570
+consume and structured way but the
+
+86
+00:03:39,570 --> 00:03:41,570
+important thing is that our tech
+
+87
+00:03:41,570 --> 00:03:43,950
+empowers groups which means if they
+
+88
+00:03:43,950 --> 00:03:45,780
+can't use it if it doesn't work where
+
+89
+00:03:45,780 --> 00:03:48,470
+they're at then what are we doing right
+
+90
+00:03:48,470 --> 00:03:54,390
+so yeah it were free as in freedom and
+
+91
+00:03:54,390 --> 00:03:57,269
+beer best of both worlds right we're
+
+92
+00:03:57,269 --> 00:04:00,239
+using the a GPL and we're nonprofit so
+
+93
+00:04:00,239 --> 00:04:02,130
+it's free for aid groups and this is
+
+94
+00:04:02,130 --> 00:04:03,510
+going to be important when we talk about
+
+95
+00:04:03,510 --> 00:04:06,239
+testing strategies and stuff I'm the
+
+96
+00:04:06,239 --> 00:04:08,519
+only full-time dev on our team we have a
+
+97
+00:04:08,519 --> 00:04:11,580
+great team of remote volunteers so we
+
+98
+00:04:11,580 --> 00:04:13,260
+need to approach kind of performance
+
+99
+00:04:13,260 --> 00:04:16,019
+testing through the lens of a scrappy
+
+100
+00:04:16,019 --> 00:04:19,410
+you know the volunteer-driven nonprofit
+
+101
+00:04:19,410 --> 00:04:21,479
+not through like a million dollar lab or
+
+102
+00:04:21,479 --> 00:04:22,770
+something that you can just have a bunch
+
+103
+00:04:22,770 --> 00:04:26,240
+of boxes like automate all of this away
+
+104
+00:04:26,240 --> 00:04:28,610
+cool just a couple of slides here about
+
+105
+00:04:28,610 --> 00:04:31,100
+our tech that's the profile this is the
+
+106
+00:04:31,100 --> 00:04:33,620
+aid marketplace the the inventory
+
+107
+00:04:33,620 --> 00:04:35,090
+manager or you can see what's available
+
+108
+00:04:35,090 --> 00:04:38,450
+and what people need and then we have
+
+109
+00:04:38,450 --> 00:04:40,130
+the shipment coordinator helps you keep
+
+110
+00:04:40,130 --> 00:04:42,290
+track of decisions that you make where
+
+111
+00:04:42,290 --> 00:04:44,120
+things are going and this is great cuz
+
+112
+00:04:44,120 --> 00:04:46,010
+it it shows you hey the town next door
+
+113
+00:04:46,010 --> 00:04:47,660
+is sending the shipment I can just throw
+
+114
+00:04:47,660 --> 00:04:49,760
+some stuff on there and they can include
+
+115
+00:04:49,760 --> 00:04:51,440
+it rather than sending another one
+
+116
+00:04:51,440 --> 00:04:52,480
+myself
+
+117
+00:04:52,480 --> 00:04:56,960
+cool so the impact in the real world we
+
+118
+00:04:56,960 --> 00:04:58,820
+coordinated a shipment of a hundred and
+
+119
+00:04:58,820 --> 00:05:00,980
+eighty thousand bars of soap from
+
+120
+00:05:00,980 --> 00:05:04,370
+Glasgow to caring City in Scotland it
+
+121
+00:05:04,370 --> 00:05:07,100
+went to central warehouses in Athens and
+
+122
+00:05:07,100 --> 00:05:09,680
+Thessaloniki and they distributed it to
+
+123
+00:05:09,680 --> 00:05:12,830
+dozens of aid groups all over Greece
+
+124
+00:05:12,830 --> 00:05:14,840
+including the islands and most
+
+125
+00:05:14,840 --> 00:05:16,910
+importantly the end result we get this
+
+126
+00:05:16,910 --> 00:05:20,410
+to the people who need it most so that
+
+127
+00:05:20,410 --> 00:05:23,390
+was kind of the intro section I'm glad
+
+128
+00:05:23,390 --> 00:05:25,580
+I'm doing well on time and now we're
+
+129
+00:05:25,580 --> 00:05:27,620
+gonna take a look at some of the extreme
+
+130
+00:05:27,620 --> 00:05:31,060
+environments that our users operate in
+
+131
+00:05:31,060 --> 00:05:37,420
+okay maybe not that extreme so this is
+
+132
+00:05:37,420 --> 00:05:38,600
+Moria
+
+133
+00:05:38,600 --> 00:05:41,630
+it's the largest refugee camp in Europe
+
+134
+00:05:41,630 --> 00:05:44,000
+it's on the remote and Greek island of
+
+135
+00:05:44,000 --> 00:05:46,480
+Lesbos right next to the Turkish border
+
+136
+00:05:46,480 --> 00:05:49,360
+it's a former prison designed to hold
+
+137
+00:05:49,360 --> 00:05:52,970
+2,000 inmates and that's the kind of
+
+138
+00:05:52,970 --> 00:05:54,680
+prison section right there
+
+139
+00:05:54,680 --> 00:05:57,680
+there are currently 10,000 newcomers
+
+140
+00:05:57,680 --> 00:06:00,020
+living in the Moria refugee camp and you
+
+141
+00:06:00,020 --> 00:06:02,390
+can see the massive overflow area and
+
+142
+00:06:02,390 --> 00:06:04,040
+kind of an informal camp in the four
+
+143
+00:06:04,040 --> 00:06:06,530
+grounds there that's called the olive
+
+144
+00:06:06,530 --> 00:06:10,220
+grove so this is the kind of border
+
+145
+00:06:10,220 --> 00:06:12,730
+outside Moria surrounded by barbed wire
+
+146
+00:06:12,730 --> 00:06:16,310
+and this is what you see every day as an
+
+147
+00:06:16,310 --> 00:06:18,080
+aid worker you're going into camp you're
+
+148
+00:06:18,080 --> 00:06:19,700
+doing all sorts of things to help people
+
+149
+00:06:19,700 --> 00:06:23,060
+out 10 to 12 hours a day it's like an
+
+150
+00:06:23,060 --> 00:06:25,160
+all-day thing you don't get a lot of
+
+151
+00:06:25,160 --> 00:06:27,290
+time to rest relax you don't get a lot
+
+152
+00:06:27,290 --> 00:06:29,120
+of time to go back to the office and
+
+153
+00:06:29,120 --> 00:06:31,130
+jump on the Wi-Fi or charge your phone
+
+154
+00:06:31,130 --> 00:06:33,620
+up as you can see there's not really any
+
+155
+00:06:33,620 --> 00:06:35,840
+power infrastructure there the cell
+
+156
+00:06:35,840 --> 00:06:38,210
+signal is spotty
+
+157
+00:06:38,210 --> 00:06:40,610
+and so we have to take all of this into
+
+158
+00:06:40,610 --> 00:06:42,350
+account when we're trying to figure out
+
+159
+00:06:42,350 --> 00:06:44,900
+how to make our app work for for the aid
+
+160
+00:06:44,900 --> 00:06:47,539
+workers so we don't operate here but
+
+161
+00:06:47,539 --> 00:06:49,310
+there's a little bit of interesting like
+
+162
+00:06:49,310 --> 00:06:51,380
+other extreme environments you have
+
+163
+00:06:51,380 --> 00:06:53,570
+search and rescue ships at sea who are
+
+164
+00:06:53,570 --> 00:06:55,960
+on the ocean for months at a time and
+
+165
+00:06:55,960 --> 00:07:00,889
+you have human rights like observers who
+
+166
+00:07:00,889 --> 00:07:02,650
+are on borders this is a photo of the
+
+167
+00:07:02,650 --> 00:07:06,199
+Hungarian Serbian border which has 500
+
+168
+00:07:06,199 --> 00:07:09,350
+kilometers of razor wire and so the
+
+169
+00:07:09,350 --> 00:07:10,580
+human rights observers are going to be
+
+170
+00:07:10,580 --> 00:07:12,440
+out in remote parts of the country
+
+171
+00:07:12,440 --> 00:07:15,020
+remote villages I'm kind of monitoring
+
+172
+00:07:15,020 --> 00:07:16,669
+for things like border pushback stuff
+
+173
+00:07:16,669 --> 00:07:20,000
+like that and last but not least my
+
+174
+00:07:20,000 --> 00:07:23,060
+favorite place which is warehouses so
+
+175
+00:07:23,060 --> 00:07:25,720
+this is really cool that warehouse was
+
+176
+00:07:25,720 --> 00:07:30,349
+actually the old 2003 Olympic basketball
+
+177
+00:07:30,349 --> 00:07:33,349
+Stadium in Greece like just a ton of fun
+
+178
+00:07:33,349 --> 00:07:36,440
+to walk around and explore and aid
+
+179
+00:07:36,440 --> 00:07:38,000
+groups really like they just popped up
+
+180
+00:07:38,000 --> 00:07:39,470
+overnight they asked the government hey
+
+181
+00:07:39,470 --> 00:07:41,030
+can we have some space and they have to
+
+182
+00:07:41,030 --> 00:07:42,830
+work with what they're given so it's not
+
+183
+00:07:42,830 --> 00:07:45,080
+something where they can design a
+
+184
+00:07:45,080 --> 00:07:47,030
+connected infrastructure set up the
+
+185
+00:07:47,030 --> 00:07:48,590
+Wi-Fi through the whole thing you know
+
+186
+00:07:48,590 --> 00:07:50,449
+it's like here's a shed in my backyard
+
+187
+00:07:50,449 --> 00:07:52,880
+here's a converted basketball Stadium
+
+188
+00:07:52,880 --> 00:07:57,860
+you know make it work so the storage
+
+189
+00:07:57,860 --> 00:08:00,020
+space there is in the ring in kind of
+
+190
+00:08:00,020 --> 00:08:03,409
+that concession area you know outside of
+
+191
+00:08:03,409 --> 00:08:05,659
+the main stadium and that's what it
+
+192
+00:08:05,659 --> 00:08:08,210
+looks like inside there so they have
+
+193
+00:08:08,210 --> 00:08:11,419
+self-service don't have Wi-Fi they do
+
+194
+00:08:11,419 --> 00:08:14,210
+have power but again people are dealing
+
+195
+00:08:14,210 --> 00:08:16,190
+with inventory and stuff all day every
+
+196
+00:08:16,190 --> 00:08:17,270
+day
+
+197
+00:08:17,270 --> 00:08:19,909
+so let's actually take a look at what we
+
+198
+00:08:19,909 --> 00:08:21,110
+mean when we're talking about
+
+199
+00:08:21,110 --> 00:08:24,380
+performance high speed situations this
+
+200
+00:08:24,380 --> 00:08:26,840
+is Amsterdam this is the office in San
+
+201
+00:08:26,840 --> 00:08:29,389
+Francisco low speed might be my own
+
+202
+00:08:29,389 --> 00:08:32,209
+office in Serbia you know gets the job
+
+203
+00:08:32,209 --> 00:08:34,190
+done sometimes the video calls are a bit
+
+204
+00:08:34,190 --> 00:08:37,579
+flaky but it's okay no speed there are
+
+205
+00:08:37,579 --> 00:08:40,130
+lots of situations we talked about some
+
+206
+00:08:40,130 --> 00:08:41,990
+of them like at sea on the borders and
+
+207
+00:08:41,990 --> 00:08:43,789
+then we have this fun one I like to call
+
+208
+00:08:43,789 --> 00:08:47,089
+maybe speed so this is really where
+
+209
+00:08:47,089 --> 00:08:50,180
+house is this is camps you might have
+
+210
+00:08:50,180 --> 00:08:51,900
+some cell signal you might have
+
+211
+00:08:51,900 --> 00:08:55,590
+and Wi-Fi there will be dead zones and
+
+212
+00:08:55,590 --> 00:08:57,960
+that produces a lot of problems it's not
+
+213
+00:08:57,960 --> 00:09:01,020
+just online offline online its
+
+214
+00:09:01,020 --> 00:09:03,270
+ping-ponging you back and forth so you
+
+215
+00:09:03,270 --> 00:09:05,190
+have random latency spikes race
+
+216
+00:09:05,190 --> 00:09:09,480
+conditions are a huge issue and the from
+
+217
+00:09:09,480 --> 00:09:11,580
+a UI standpoint you have to deal with
+
+218
+00:09:11,580 --> 00:09:13,470
+this back and forth between the
+
+219
+00:09:13,470 --> 00:09:14,910
+different states you don't want to just
+
+220
+00:09:14,910 --> 00:09:16,740
+be showing up the pop-up your online
+
+221
+00:09:16,740 --> 00:09:19,530
+your offline your online very rapid
+
+222
+00:09:19,530 --> 00:09:23,100
+succession so when we're talking about
+
+223
+00:09:23,100 --> 00:09:24,500
+speed we're really talking about latency
+
+224
+00:09:24,500 --> 00:09:28,470
+bandwidth and throughput that's an
+
+225
+00:09:28,470 --> 00:09:30,450
+example of a warehouse so that's the
+
+226
+00:09:30,450 --> 00:09:32,610
+office with the Wi-Fi there this is
+
+227
+00:09:32,610 --> 00:09:35,310
+about the size of the football field as
+
+228
+00:09:35,310 --> 00:09:37,320
+you can see that Wi-Fi is not going to
+
+229
+00:09:37,320 --> 00:09:38,790
+extend throughout the whole place it's
+
+230
+00:09:38,790 --> 00:09:41,970
+kind of like a giant Faraday cage and
+
+231
+00:09:41,970 --> 00:09:46,380
+then this is a fun one so to get Wi-Fi
+
+232
+00:09:46,380 --> 00:09:48,780
+in the olive grove which is that
+
+233
+00:09:48,780 --> 00:09:51,720
+overflow area outside of Moria this is
+
+234
+00:09:51,720 --> 00:09:53,220
+the town of MIT's aleady it's the
+
+235
+00:09:53,220 --> 00:09:55,860
+largest town in the islands they send
+
+236
+00:09:55,860 --> 00:09:57,270
+they have a satellite dish or something
+
+237
+00:09:57,270 --> 00:10:00,480
+that sends it to a water tower another
+
+238
+00:10:00,480 --> 00:10:02,820
+satellite dish there bounces it off to
+
+239
+00:10:02,820 --> 00:10:05,250
+the camp that's about 4 kilometers right
+
+240
+00:10:05,250 --> 00:10:07,260
+there just beaming that off a water
+
+241
+00:10:07,260 --> 00:10:07,860
+tower
+
+242
+00:10:07,860 --> 00:10:11,190
+it goes into a satellite dish on the the
+
+243
+00:10:11,190 --> 00:10:12,720
+the office there and then they have a
+
+244
+00:10:12,720 --> 00:10:16,080
+series of Wi-Fi repeaters around the
+
+245
+00:10:16,080 --> 00:10:16,440
+camp
+
+246
+00:10:16,440 --> 00:10:19,140
+so clearly dealing with super high
+
+247
+00:10:19,140 --> 00:10:21,270
+latency they're intermittent
+
+248
+00:10:21,270 --> 00:10:22,710
+connectivity
+
+249
+00:10:22,710 --> 00:10:24,600
+you know storm or something like can
+
+250
+00:10:24,600 --> 00:10:27,200
+just knock out that infrastructure
+
+251
+00:10:27,200 --> 00:10:29,700
+there's the office right there
+
+252
+00:10:29,700 --> 00:10:31,590
+and that's an example of a telephone
+
+253
+00:10:31,590 --> 00:10:33,420
+pole with one of the Wi-Fi routers or
+
+254
+00:10:33,420 --> 00:10:37,350
+the repeaters on it so something else we
+
+255
+00:10:37,350 --> 00:10:41,760
+need to consider is data and power so
+
+256
+00:10:41,760 --> 00:10:43,890
+you have like unmetered Wi-Fi you have
+
+257
+00:10:43,890 --> 00:10:46,140
+mobile data or you just don't have data
+
+258
+00:10:46,140 --> 00:10:48,750
+same thing with power you plugged into
+
+259
+00:10:48,750 --> 00:10:51,300
+the wall you're on the go or your
+
+260
+00:10:51,300 --> 00:10:54,360
+devices debt and these are all resources
+
+261
+00:10:54,360 --> 00:10:57,360
+that our users have in our context
+
+262
+00:10:57,360 --> 00:10:59,190
+they're very limited you're out and
+
+263
+00:10:59,190 --> 00:11:01,140
+about using your phone using our app all
+
+264
+00:11:01,140 --> 00:11:03,210
+day long we can't kill that battery
+
+265
+00:11:03,210 --> 00:11:04,980
+right you know you have a certain amount
+
+266
+00:11:04,980 --> 00:11:05,570
+of time
+
+267
+00:11:05,570 --> 00:11:06,980
+then your phone's dead and then you're
+
+268
+00:11:06,980 --> 00:11:09,350
+back to pit the old pen-and-paper way
+
+269
+00:11:09,350 --> 00:11:12,110
+same thing with data you know it's it's
+
+270
+00:11:12,110 --> 00:11:13,550
+nice when you have an unlimited plan
+
+271
+00:11:13,550 --> 00:11:16,280
+most aid workers that I know they might
+
+272
+00:11:16,280 --> 00:11:19,250
+buy one or two gigabytes at a time so
+
+273
+00:11:19,250 --> 00:11:20,810
+they're constantly having like running
+
+274
+00:11:20,810 --> 00:11:23,030
+out of data having to wait a day go back
+
+275
+00:11:23,030 --> 00:11:24,650
+to the cell phone store plug some more
+
+276
+00:11:24,650 --> 00:11:26,810
+data in and if your stuff just stops
+
+277
+00:11:26,810 --> 00:11:27,380
+working
+
+278
+00:11:27,380 --> 00:11:29,300
+when they run out of data again back to
+
+279
+00:11:29,300 --> 00:11:31,790
+the pen and paper way it's a bug it's my
+
+280
+00:11:31,790 --> 00:11:33,770
+problem you know it's it's their size
+
+281
+00:11:33,770 --> 00:11:35,860
+they're not gonna make it their problem
+
+282
+00:11:35,860 --> 00:11:38,990
+and then we have hardware so lots of old
+
+283
+00:11:38,990 --> 00:11:41,720
+donated equipment I'm gonna speed up a
+
+284
+00:11:41,720 --> 00:11:43,930
+little bit to make sure I stay on time
+
+285
+00:11:43,930 --> 00:11:47,210
+but this is an example with my friends
+
+286
+00:11:47,210 --> 00:11:49,160
+computer it just doesn't have a battery
+
+287
+00:11:49,160 --> 00:11:51,320
+right like she just leaves it plugged
+
+288
+00:11:51,320 --> 00:11:53,180
+into the wall if there's a gentle breeze
+
+289
+00:11:53,180 --> 00:11:54,980
+that knocks the cable out then she
+
+290
+00:11:54,980 --> 00:11:57,530
+immediately you know loses all her state
+
+291
+00:11:57,530 --> 00:11:59,660
+of what she's been working on it's my
+
+292
+00:11:59,660 --> 00:12:02,330
+friend's phone different friends he
+
+293
+00:12:02,330 --> 00:12:04,340
+can't use about half his screen so I
+
+294
+00:12:04,340 --> 00:12:05,930
+think that's maybe a different tech talk
+
+295
+00:12:05,930 --> 00:12:07,580
+like how to make your app work with a
+
+296
+00:12:07,580 --> 00:12:10,070
+busted phone but that's the type of
+
+297
+00:12:10,070 --> 00:12:13,000
+equipment that we're dealing with here
+
+298
+00:12:13,000 --> 00:12:16,340
+this is all more relevant than you might
+
+299
+00:12:16,340 --> 00:12:16,760
+think
+
+300
+00:12:16,760 --> 00:12:19,760
+right so a slow connection is a slow
+
+301
+00:12:19,760 --> 00:12:21,940
+connection where houses have dead zones
+
+302
+00:12:21,940 --> 00:12:24,140
+offices have dead zones there's some
+
+303
+00:12:24,140 --> 00:12:26,540
+poor guy in the basement you know trying
+
+304
+00:12:26,540 --> 00:12:28,310
+to just get the printer to work and yes
+
+305
+00:12:28,310 --> 00:12:30,530
+run up and down the stairs every time he
+
+306
+00:12:30,530 --> 00:12:31,820
+wants to print something they connect to
+
+307
+00:12:31,820 --> 00:12:34,400
+the Wi-Fi if you don't have a connection
+
+308
+00:12:34,400 --> 00:12:36,140
+you don't have a connection it doesn't
+
+309
+00:12:36,140 --> 00:12:37,100
+matter if you're in the middle of a
+
+310
+00:12:37,100 --> 00:12:39,080
+refugee camp or if you're on a six-hour
+
+311
+00:12:39,080 --> 00:12:41,480
+plane to come talk you know at ge'ez con
+
+312
+00:12:41,480 --> 00:12:44,510
+free to past a dead battery is a dead
+
+313
+00:12:44,510 --> 00:12:46,790
+battery regardless of how fancy your
+
+314
+00:12:46,790 --> 00:12:50,540
+phone is and old hardware exists in many
+
+315
+00:12:50,540 --> 00:12:53,630
+real-world businesses hospitals are a
+
+316
+00:12:53,630 --> 00:12:56,050
+great example where due to budget or
+
+317
+00:12:56,050 --> 00:12:59,270
+regulations they're running sometimes
+
+318
+00:12:59,270 --> 00:13:04,760
+internet explorer in 2019 right so let's
+
+319
+00:13:04,760 --> 00:13:07,180
+take a look at some performance goals
+
+320
+00:13:07,180 --> 00:13:09,890
+and you want to start here really
+
+321
+00:13:09,890 --> 00:13:10,910
+important when you have these
+
+322
+00:13:10,910 --> 00:13:12,800
+conversations with your managers you
+
+323
+00:13:12,800 --> 00:13:15,080
+know everyone the marketing department
+
+324
+00:13:15,080 --> 00:13:17,720
+the DevOps people they want their stuff
+
+325
+00:13:17,720 --> 00:13:18,630
+included
+
+326
+00:13:18,630 --> 00:13:20,610
+in that page-load and so you need to be
+
+327
+00:13:20,610 --> 00:13:22,470
+realistic and set those goals which will
+
+328
+00:13:22,470 --> 00:13:24,480
+then help you prioritize what's
+
+329
+00:13:24,480 --> 00:13:26,610
+necessary what can you cut what can you
+
+330
+00:13:26,610 --> 00:13:31,050
+delay so in our case we're looking at a
+
+331
+00:13:31,050 --> 00:13:33,840
+mid-range Android device on we're gonna
+
+332
+00:13:33,840 --> 00:13:37,710
+say a bad 3G connection 400 kilobytes a
+
+333
+00:13:37,710 --> 00:13:41,400
+second bandwidth and 400 milliseconds
+
+334
+00:13:41,400 --> 00:13:44,100
+latency we want to minimize data and
+
+335
+00:13:44,100 --> 00:13:47,340
+power usage and we're gonna focus for
+
+336
+00:13:47,340 --> 00:13:50,550
+speed on two key indicators there's time
+
+337
+00:13:50,550 --> 00:13:53,820
+to first paint and time to interactive
+
+338
+00:13:53,820 --> 00:13:58,800
+so we want on an initial load less than
+
+339
+00:13:58,800 --> 00:14:01,370
+two seconds to first paint and
+
+340
+00:14:01,370 --> 00:14:03,660
+subsequent loads less than one second
+
+341
+00:14:03,660 --> 00:14:06,330
+and for interactivity we want less than
+
+342
+00:14:06,330 --> 00:14:09,030
+five seconds on an initial load and less
+
+343
+00:14:09,030 --> 00:14:12,120
+than two seconds after that and remember
+
+344
+00:14:12,120 --> 00:14:14,670
+that latency here is the killer so
+
+345
+00:14:14,670 --> 00:14:16,860
+that's going to take up you know easily
+
+346
+00:14:16,860 --> 00:14:20,220
+twenty to forty percent just ping the
+
+347
+00:14:20,220 --> 00:14:24,180
+server for a roundtrip we have product
+
+348
+00:14:24,180 --> 00:14:24,510
+goals
+
+349
+00:14:24,510 --> 00:14:26,520
+hopefully we're building stuff to do
+
+350
+00:14:26,520 --> 00:14:28,830
+useful things whether that's relax and
+
+351
+00:14:28,830 --> 00:14:31,050
+have fun or you know make something that
+
+352
+00:14:31,050 --> 00:14:33,900
+people want to use in our case we try to
+
+353
+00:14:33,900 --> 00:14:36,600
+support modern browsers on desktop and
+
+354
+00:14:36,600 --> 00:14:38,940
+mobile we're not supporting Internet
+
+355
+00:14:38,940 --> 00:14:43,670
+Explorer and we need it to work offline
+
+356
+00:14:43,670 --> 00:14:48,060
+so it's ok we can cut some content on
+
+357
+00:14:48,060 --> 00:14:50,430
+functionality like our Maps page we need
+
+358
+00:14:50,430 --> 00:14:52,140
+to get tiles from a server if you're
+
+359
+00:14:52,140 --> 00:14:54,150
+offline we're just gonna say you know
+
+360
+00:14:54,150 --> 00:14:55,590
+don't use the maps wait until you
+
+361
+00:14:55,590 --> 00:14:57,420
+connect but there's lots of other stuff
+
+362
+00:14:57,420 --> 00:15:00,090
+that that doesn't need to work and I
+
+363
+00:15:00,090 --> 00:15:05,730
+think that ok so business goals no
+
+364
+00:15:05,730 --> 00:15:07,770
+ultimatums I think that performance is
+
+365
+00:15:07,770 --> 00:15:09,270
+something you should take an incremental
+
+366
+00:15:09,270 --> 00:15:11,250
+approach to you know make one
+
+367
+00:15:11,250 --> 00:15:13,170
+performance change at a time something
+
+368
+00:15:13,170 --> 00:15:14,040
+is better than nothing
+
+369
+00:15:14,040 --> 00:15:16,740
+build an offline support one step at a
+
+370
+00:15:16,740 --> 00:15:19,020
+time starting with the most used or most
+
+371
+00:15:19,020 --> 00:15:22,140
+impactful workflows in our case we need
+
+372
+00:15:22,140 --> 00:15:24,270
+reasonable testing overhead like I said
+
+373
+00:15:24,270 --> 00:15:27,870
+it's a volunteer team so we have to kind
+
+374
+00:15:27,870 --> 00:15:29,370
+of keep that in mind we're not gonna
+
+375
+00:15:29,370 --> 00:15:32,170
+have you know if you budget for extra
+
+376
+00:15:32,170 --> 00:15:36,310
+or lab and we need to balance you know
+
+377
+00:15:36,310 --> 00:15:38,080
+this sort of performance testing with
+
+378
+00:15:38,080 --> 00:15:40,440
+new feature development adding on there
+
+379
+00:15:40,440 --> 00:15:43,510
+and I think that one of the best things
+
+380
+00:15:43,510 --> 00:15:45,730
+you can do is if you're talking to your
+
+381
+00:15:45,730 --> 00:15:48,160
+users talk to them about performance
+
+382
+00:15:48,160 --> 00:15:50,650
+right it's you know you have your
+
+383
+00:15:50,650 --> 00:15:52,450
+product and application bugs and stuff
+
+384
+00:15:52,450 --> 00:15:55,240
+like that but tell them listen if it
+
+385
+00:15:55,240 --> 00:15:57,310
+takes too long to load and that makes
+
+386
+00:15:57,310 --> 00:15:59,800
+you frustrated that's a bug like talk to
+
+387
+00:15:59,800 --> 00:16:01,360
+me tell me about that I want to know
+
+388
+00:16:01,360 --> 00:16:03,310
+what device you're using what the the
+
+389
+00:16:03,310 --> 00:16:05,920
+connection was like go to speedtest.net
+
+390
+00:16:05,920 --> 00:16:08,620
+and send me a copy of the results so
+
+391
+00:16:08,620 --> 00:16:10,690
+that I can have realistic benchmarks you
+
+392
+00:16:10,690 --> 00:16:12,040
+know when we're doing our internal
+
+393
+00:16:12,040 --> 00:16:14,680
+testing I think that we have lots of
+
+394
+00:16:14,680 --> 00:16:16,810
+great conversations with users we should
+
+395
+00:16:16,810 --> 00:16:20,590
+definitely extend that to performance so
+
+396
+00:16:20,590 --> 00:16:24,940
+I'm gonna dive in here and look at our
+
+397
+00:16:24,940 --> 00:16:28,030
+strategy to make these improvements look
+
+398
+00:16:28,030 --> 00:16:31,300
+at the tools that we're using and look
+
+399
+00:16:31,300 --> 00:16:33,010
+at the techniques and results that we
+
+400
+00:16:33,010 --> 00:16:39,130
+had in our production application so our
+
+401
+00:16:39,130 --> 00:16:41,830
+stack I can hear the groans already yes
+
+402
+00:16:41,830 --> 00:16:45,340
+we're using jQuery in production in 2019
+
+403
+00:16:45,340 --> 00:16:48,160
+I think 2009 called and they want their
+
+404
+00:16:48,160 --> 00:16:53,920
+developer back so it's pretty modern on
+
+405
+00:16:53,920 --> 00:16:56,380
+the back ends we have elixir and phonics
+
+406
+00:16:56,380 --> 00:16:59,830
+I'm sitting behind an engines proxy we
+
+407
+00:16:59,830 --> 00:17:01,720
+used web back of course to kind of
+
+408
+00:17:01,720 --> 00:17:03,700
+bundle up all of our front-end assets
+
+409
+00:17:03,700 --> 00:17:06,459
+the reason for jQuery is that I love the
+
+410
+00:17:06,459 --> 00:17:07,990
+data tables plug-in and when you're
+
+411
+00:17:07,990 --> 00:17:10,380
+prototyping none of this matters right
+
+412
+00:17:10,380 --> 00:17:12,640
+we're going to be cutting that out and
+
+413
+00:17:12,640 --> 00:17:14,589
+probably go with no framework on the
+
+414
+00:17:14,589 --> 00:17:17,650
+front ends but this is good in this case
+
+415
+00:17:17,650 --> 00:17:19,660
+raise your hand if you're building a
+
+416
+00:17:19,660 --> 00:17:22,990
+single page application view react it's
+
+417
+00:17:22,990 --> 00:17:26,650
+a lot of hands so we're not I'm gonna
+
+418
+00:17:26,650 --> 00:17:28,209
+have some stuff that touches on
+
+419
+00:17:28,209 --> 00:17:30,340
+performance considerations with single
+
+420
+00:17:30,340 --> 00:17:32,590
+page applications but just in terms of
+
+421
+00:17:32,590 --> 00:17:34,960
+the numbers I'm showing on screen jQuery
+
+422
+00:17:34,960 --> 00:17:37,420
+is kind of halfway between you and react
+
+423
+00:17:37,420 --> 00:17:40,060
+in terms of in terms of like library
+
+424
+00:17:40,060 --> 00:17:44,540
+size so some realistic numbers there
+
+425
+00:17:44,540 --> 00:17:47,360
+so let's look at how our usage what's
+
+426
+00:17:47,360 --> 00:17:49,310
+really going to drain that device
+
+427
+00:17:49,310 --> 00:17:52,310
+battery it's gonna be two things it's
+
+428
+00:17:52,310 --> 00:17:55,010
+gonna be the antenna and it's going to
+
+429
+00:17:55,010 --> 00:17:58,070
+be running that CPU or on the laptop the
+
+430
+00:17:58,070 --> 00:18:01,730
+GPU and stuff like that so how to
+
+431
+00:18:01,730 --> 00:18:03,770
+minimize antennas just minimizing
+
+432
+00:18:03,770 --> 00:18:06,050
+networking right batch requests if
+
+433
+00:18:06,050 --> 00:18:07,550
+you're sending telemetry or something
+
+434
+00:18:07,550 --> 00:18:10,730
+you know if you could if you could batch
+
+435
+00:18:10,730 --> 00:18:12,710
+those collect all the data every 50
+
+436
+00:18:12,710 --> 00:18:14,420
+milliseconds or whatever you want but
+
+437
+00:18:14,420 --> 00:18:16,490
+only send it up to the server once a
+
+438
+00:18:16,490 --> 00:18:18,800
+second or once every 10 seconds or on
+
+439
+00:18:18,800 --> 00:18:23,420
+the next load we don't want to use
+
+440
+00:18:23,420 --> 00:18:25,310
+polling because that's going to send a
+
+441
+00:18:25,310 --> 00:18:27,080
+heartbeat out so there's some great tech
+
+442
+00:18:27,080 --> 00:18:29,090
+out there like WebSockets which do a
+
+443
+00:18:29,090 --> 00:18:32,470
+much better job of keeping a TCP
+
+444
+00:18:32,470 --> 00:18:36,370
+connection open without that heartbeat
+
+445
+00:18:36,370 --> 00:18:40,790
+we want to limit animations as much as
+
+446
+00:18:40,790 --> 00:18:42,890
+possible every time that you have an
+
+447
+00:18:42,890 --> 00:18:45,440
+animation going it's going to be
+
+448
+00:18:45,440 --> 00:18:47,630
+repainting on the browser running that
+
+449
+00:18:47,630 --> 00:18:50,330
+CPU and I'll show you some performance
+
+450
+00:18:50,330 --> 00:18:51,940
+stats on that in just a minute
+
+451
+00:18:51,940 --> 00:18:54,890
+sinking timers is important as well if
+
+452
+00:18:54,890 --> 00:18:56,330
+you have like 10 different timers
+
+453
+00:18:56,330 --> 00:18:58,310
+going off that aren't synchronized
+
+454
+00:18:58,310 --> 00:19:00,290
+that's gonna wake the CPU up every time
+
+455
+00:19:00,290 --> 00:19:03,320
+if you have something that you know 50
+
+456
+00:19:03,320 --> 00:19:05,510
+millisecond interval and then every
+
+457
+00:19:05,510 --> 00:19:07,430
+third time it goes off you run some
+
+458
+00:19:07,430 --> 00:19:09,230
+other function and synchronize it that
+
+459
+00:19:09,230 --> 00:19:12,050
+way it's a much better strategy and for
+
+460
+00:19:12,050 --> 00:19:14,390
+common events like the scroll events or
+
+461
+00:19:14,390 --> 00:19:16,700
+you know whenever a user types on the
+
+462
+00:19:16,700 --> 00:19:18,890
+keyboard things that are gonna fire a
+
+463
+00:19:18,890 --> 00:19:21,740
+lot like that you want to use timeouts
+
+464
+00:19:21,740 --> 00:19:23,690
+and just kind of take samples of them
+
+465
+00:19:23,690 --> 00:19:25,700
+rather than responding to every single
+
+466
+00:19:25,700 --> 00:19:29,210
+one so we're using the chrome dev tools
+
+467
+00:19:29,210 --> 00:19:31,340
+this is the network panel this is
+
+468
+00:19:31,340 --> 00:19:33,800
+Google's homepage and every time you
+
+469
+00:19:33,800 --> 00:19:36,350
+type in a character it makes another
+
+470
+00:19:36,350 --> 00:19:38,600
+Network request so this is what I'm
+
+471
+00:19:38,600 --> 00:19:40,220
+talking about with those events with
+
+472
+00:19:40,220 --> 00:19:42,080
+that networking this is going to keep
+
+473
+00:19:42,080 --> 00:19:44,990
+the antenna on your phone on that whole
+
+474
+00:19:44,990 --> 00:19:47,720
+time it's okay I think when you're
+
+475
+00:19:47,720 --> 00:19:49,940
+looking at really optimizing performance
+
+476
+00:19:49,940 --> 00:19:53,570
+this is great on a desktop but it's fine
+
+477
+00:19:53,570 --> 00:19:54,950
+to just let the use our type in their
+
+478
+00:19:54,950 --> 00:19:56,270
+search query and hit the search button
+
+479
+00:19:56,270 --> 00:19:57,200
+and make it
+
+480
+00:19:57,200 --> 00:19:59,840
+single requests up or to do it once a
+
+481
+00:19:59,840 --> 00:20:04,580
+second or once every half second this is
+
+482
+00:20:04,580 --> 00:20:06,980
+I've loaded up some page with like a
+
+483
+00:20:06,980 --> 00:20:10,070
+spinning loading animation on there and
+
+484
+00:20:10,070 --> 00:20:11,720
+this is what it looks like using
+
+485
+00:20:11,720 --> 00:20:14,120
+Chrome's dev tools performance panel you
+
+486
+00:20:14,120 --> 00:20:16,370
+can see all of that activity all of that
+
+487
+00:20:16,370 --> 00:20:20,120
+repainting constantly which is going to
+
+488
+00:20:20,120 --> 00:20:25,840
+run that CPU and drain that battery so
+
+489
+00:20:25,840 --> 00:20:29,510
+another strategy is minimizing a data
+
+490
+00:20:29,510 --> 00:20:32,840
+usage this is just small bundles is
+
+491
+00:20:32,840 --> 00:20:35,000
+really the answer and aggressive caching
+
+492
+00:20:35,000 --> 00:20:37,250
+you want to compress your payloads you
+
+493
+00:20:37,250 --> 00:20:41,990
+need to cache everything you can load
+
+494
+00:20:41,990 --> 00:20:44,029
+content as needed which means if you
+
+495
+00:20:44,029 --> 00:20:45,980
+don't need it up front just grab it in
+
+496
+00:20:45,980 --> 00:20:49,279
+the background if it's not on that you
+
+497
+00:20:49,279 --> 00:20:51,919
+know above the fold then load it as the
+
+498
+00:20:51,919 --> 00:20:53,750
+user Scrolls down if they scroll down
+
+499
+00:20:53,750 --> 00:20:55,279
+there's oftentimes they're just gonna
+
+500
+00:20:55,279 --> 00:20:56,840
+click a link on the main menu and then
+
+501
+00:20:56,840 --> 00:20:59,139
+never need that second half of the page
+
+502
+00:20:59,139 --> 00:21:03,289
+and then I think for pre-caching with a
+
+503
+00:21:03,289 --> 00:21:05,090
+serviceworker or something like that you
+
+504
+00:21:05,090 --> 00:21:07,460
+want to get your app working offline ask
+
+505
+00:21:07,460 --> 00:21:09,380
+for consent just a simple button like
+
+506
+00:21:09,380 --> 00:21:11,000
+hey would you like to download the
+
+507
+00:21:11,000 --> 00:21:13,700
+offline experience I think it's
+
+508
+00:21:13,700 --> 00:21:15,529
+important when you're looking at people
+
+509
+00:21:15,529 --> 00:21:19,070
+with low data like they're on a limited
+
+510
+00:21:19,070 --> 00:21:21,230
+metered plan to just give them a heads
+
+511
+00:21:21,230 --> 00:21:23,929
+up it's the white thing to do and then
+
+512
+00:21:23,929 --> 00:21:25,970
+improving speed a lot of the same thing
+
+513
+00:21:25,970 --> 00:21:28,700
+you need to compress payloads cache a
+
+514
+00:21:28,700 --> 00:21:31,549
+guest of Lee server-side rendering is
+
+515
+00:21:31,549 --> 00:21:33,529
+super useful here that's really going to
+
+516
+00:21:33,529 --> 00:21:35,659
+reduce the amount of time it takes to
+
+517
+00:21:35,659 --> 00:21:37,730
+get to that first paint which means if
+
+518
+00:21:37,730 --> 00:21:38,990
+you're building a single page
+
+519
+00:21:38,990 --> 00:21:41,389
+application you do need to do a little
+
+520
+00:21:41,389 --> 00:21:43,549
+bit of extra work and actually send down
+
+521
+00:21:43,549 --> 00:21:46,039
+some HTML at least send down an
+
+522
+00:21:46,039 --> 00:21:48,049
+application shell send down the the
+
+523
+00:21:48,049 --> 00:21:50,600
+header and the footer and a sidebar and
+
+524
+00:21:50,600 --> 00:21:52,580
+you know maybe a little loading message
+
+525
+00:21:52,580 --> 00:21:55,279
+or something to just get something on
+
+526
+00:21:55,279 --> 00:21:57,350
+the screen and then once your JavaScript
+
+527
+00:21:57,350 --> 00:21:59,539
+loads and pulls in the rest of the
+
+528
+00:21:59,539 --> 00:22:02,269
+content and compiles the templates it'll
+
+529
+00:22:02,269 --> 00:22:03,500
+it'll fill out the rest of the
+
+530
+00:22:03,500 --> 00:22:07,330
+experience
+
+531
+00:22:07,340 --> 00:22:10,980
+so images are going to delay
+
+532
+00:22:10,980 --> 00:22:13,380
+interactivity it'll-it'll show useful
+
+533
+00:22:13,380 --> 00:22:15,840
+stuff on the the browser right away but
+
+534
+00:22:15,840 --> 00:22:17,400
+it's not going to run the JavaScript
+
+535
+00:22:17,400 --> 00:22:19,890
+until after the images are loading so we
+
+536
+00:22:19,890 --> 00:22:21,570
+try to delay that as much as possible
+
+537
+00:22:21,570 --> 00:22:23,610
+there's also in limited bandwidth
+
+538
+00:22:23,610 --> 00:22:26,280
+situations you can be pulling multiple
+
+539
+00:22:26,280 --> 00:22:27,780
+things from the network at the same time
+
+540
+00:22:27,780 --> 00:22:30,059
+but if your pipes are really small like
+
+541
+00:22:30,059 --> 00:22:32,750
+trying to send it to the refugee camp
+
+542
+00:22:32,750 --> 00:22:35,820
+then you don't want your JavaScript
+
+543
+00:22:35,820 --> 00:22:38,100
+download to be competing with a bunch of
+
+544
+00:22:38,100 --> 00:22:42,510
+user uploaded images and minimizing the
+
+545
+00:22:42,510 --> 00:22:45,179
+amount of stuff on the critical path is
+
+546
+00:22:45,179 --> 00:22:46,679
+definitely a good technique especially
+
+547
+00:22:46,679 --> 00:22:49,410
+for single page applications you don't
+
+548
+00:22:49,410 --> 00:22:52,740
+need all of your templates at once load
+
+549
+00:22:52,740 --> 00:22:54,630
+the current template load the
+
+550
+00:22:54,630 --> 00:22:56,790
+interactivity above the fold and then
+
+551
+00:22:56,790 --> 00:22:58,740
+asynchronously grab the rest of that
+
+552
+00:22:58,740 --> 00:23:02,070
+once the page is up and running so we're
+
+553
+00:23:02,070 --> 00:23:05,400
+gonna be taking a look now at our groups
+
+554
+00:23:05,400 --> 00:23:08,040
+list page this has static content
+
+555
+00:23:08,040 --> 00:23:10,559
+static sections of the site user
+
+556
+00:23:10,559 --> 00:23:12,900
+uploaded text and images and some
+
+557
+00:23:12,900 --> 00:23:15,030
+JavaScript functionality you can sort
+
+558
+00:23:15,030 --> 00:23:16,860
+the table by name you can do a search
+
+559
+00:23:16,860 --> 00:23:21,150
+and we're using really for tools like
+
+560
+00:23:21,150 --> 00:23:24,750
+keeping it simple for our team is chrome
+
+561
+00:23:24,750 --> 00:23:27,059
+dev tools Network and performance panels
+
+562
+00:23:27,059 --> 00:23:30,419
+there is some setup here so to simulate
+
+563
+00:23:30,419 --> 00:23:33,780
+a bad 3G connection we're slowing down
+
+564
+00:23:33,780 --> 00:23:37,500
+the CPU as much as dev tools will allow
+
+565
+00:23:37,500 --> 00:23:41,250
+and we're putting in a custom network
+
+566
+00:23:41,250 --> 00:23:44,250
+throttling profile so remember it's 400
+
+567
+00:23:44,250 --> 00:23:47,309
+milliseconds latency and a 400 kilobyte
+
+568
+00:23:47,309 --> 00:23:51,929
+a second connection and we're gonna take
+
+569
+00:23:51,929 --> 00:23:53,880
+a look at a baseline this was our app
+
+570
+00:23:53,880 --> 00:23:57,510
+two weeks ago we already do have some
+
+571
+00:23:57,510 --> 00:23:59,370
+goodies so because we're doing a
+
+572
+00:23:59,370 --> 00:24:01,080
+server-side rendering model with onyx
+
+573
+00:24:01,080 --> 00:24:04,320
+and elixir that's there what pack
+
+574
+00:24:04,320 --> 00:24:06,299
+already does some minimization for us
+
+575
+00:24:06,299 --> 00:24:09,650
+and Phonics has built-in cache busting
+
+576
+00:24:09,650 --> 00:24:11,880
+raise your hand if you know what cache
+
+577
+00:24:11,880 --> 00:24:17,669
+busting is okay 50/50 so basically what
+
+578
+00:24:17,669 --> 00:24:19,759
+you do you compile your ass
+
+579
+00:24:19,759 --> 00:24:22,249
+and generate a hash of the file and
+
+580
+00:24:22,249 --> 00:24:24,259
+you're actually gonna serve up a file
+
+581
+00:24:24,259 --> 00:24:27,679
+with like you know app - the hash j/s
+
+582
+00:24:27,679 --> 00:24:31,549
+what this means is that you can send
+
+583
+00:24:31,549 --> 00:24:33,559
+your your caching headers right just
+
+584
+00:24:33,559 --> 00:24:35,659
+tell the browser to hold on to that
+
+585
+00:24:35,659 --> 00:24:38,480
+forever they never need to load it again
+
+586
+00:24:38,480 --> 00:24:40,009
+from your server as long as they have a
+
+587
+00:24:40,009 --> 00:24:42,169
+local copy when you make a change in
+
+588
+00:24:42,169 --> 00:24:44,090
+your application it generates a new hash
+
+589
+00:24:44,090 --> 00:24:45,860
+and you actually just download a
+
+590
+00:24:45,860 --> 00:24:48,529
+different file which is I think a pretty
+
+591
+00:24:48,529 --> 00:24:51,110
+good way of dealing with caching and
+
+592
+00:24:51,110 --> 00:24:53,419
+just trying to hold on to that data as
+
+593
+00:24:53,419 --> 00:24:59,929
+long as it's needed so likes this is our
+
+594
+00:24:59,929 --> 00:25:03,230
+initial load time it took five seconds
+
+595
+00:25:03,230 --> 00:25:05,809
+on our simulated connection to to paint
+
+596
+00:25:05,809 --> 00:25:08,840
+the page it took 22 seconds to become
+
+597
+00:25:08,840 --> 00:25:11,840
+interactive and we downloaded basically
+
+598
+00:25:11,840 --> 00:25:16,100
+a megabyte of content this seems really
+
+599
+00:25:16,100 --> 00:25:20,330
+bad it is a bad 3G connection in 2017
+
+600
+00:25:20,330 --> 00:25:22,700
+this was the average load time for
+
+601
+00:25:22,700 --> 00:25:25,190
+mobile there's 22 seconds to to just
+
+602
+00:25:25,190 --> 00:25:28,999
+grab a page so I think we can do better
+
+603
+00:25:28,999 --> 00:25:32,929
+than that this is the performance pane
+
+604
+00:25:32,929 --> 00:25:35,690
+and dev tools you see really long load
+
+605
+00:25:35,690 --> 00:25:39,139
+times grabbing that javascript file to
+
+606
+00:25:39,139 --> 00:25:41,359
+get to interactivity even just grabbing
+
+607
+00:25:41,359 --> 00:25:44,779
+the images and the HTML took quite a
+
+608
+00:25:44,779 --> 00:25:49,909
+while so secondary loads are better we
+
+609
+00:25:49,909 --> 00:25:51,739
+can take advantage of browser caching
+
+610
+00:25:51,739 --> 00:25:55,220
+takes about a second to paint the page
+
+611
+00:25:55,220 --> 00:25:58,399
+and become interactive and because we're
+
+612
+00:25:58,399 --> 00:26:00,559
+using cache busting we're just grabbing
+
+613
+00:26:00,559 --> 00:26:02,749
+the updated content so it's just the
+
+614
+00:26:02,749 --> 00:26:05,149
+HTML file this might be something with a
+
+615
+00:26:05,149 --> 00:26:07,909
+single page application it's cached all
+
+616
+00:26:07,909 --> 00:26:09,440
+your JavaScript and you just have to
+
+617
+00:26:09,440 --> 00:26:11,179
+make a JSON request or something like
+
+618
+00:26:11,179 --> 00:26:16,940
+that so you can see there it's it's
+
+619
+00:26:16,940 --> 00:26:17,720
+loading
+
+620
+00:26:17,720 --> 00:26:21,080
+just about everything compassion for the
+
+621
+00:26:21,080 --> 00:26:24,799
+HTML page so we're gonna focus on some
+
+622
+00:26:24,799 --> 00:26:28,369
+speed improvements here we didn't I
+
+623
+00:26:28,369 --> 00:26:30,559
+thought that we had gzip going it turns
+
+624
+00:26:30,559 --> 00:26:32,480
+out I got a configuration file wrong and
+
+625
+00:26:32,480 --> 00:26:32,800
+we do
+
+626
+00:26:32,800 --> 00:26:35,500
+at all so I did some research and I
+
+627
+00:26:35,500 --> 00:26:38,080
+threw on broadly it's basically the new
+
+628
+00:26:38,080 --> 00:26:41,860
+gzip it has about a 25% smaller file
+
+629
+00:26:41,860 --> 00:26:43,510
+sizes when the compression is done
+
+630
+00:26:43,510 --> 00:26:47,410
+I added HTTP to two engines which
+
+631
+00:26:47,410 --> 00:26:50,050
+multiplex requests it can reuse TCP
+
+632
+00:26:50,050 --> 00:26:51,550
+connections which means you don't have
+
+633
+00:26:51,550 --> 00:26:53,620
+to deal with that latency for every
+
+634
+00:26:53,620 --> 00:26:55,480
+single pipe that you have open you just
+
+635
+00:26:55,480 --> 00:26:57,370
+open up a handful of them at the start
+
+636
+00:26:57,370 --> 00:26:59,560
+and then you can load up more stuff and
+
+637
+00:26:59,560 --> 00:27:02,770
+through those pipes I implemented a
+
+638
+00:27:02,770 --> 00:27:05,590
+fairly simple bundle splitting strategy
+
+639
+00:27:05,590 --> 00:27:08,650
+in web pack and so I think that there we
+
+640
+00:27:08,650 --> 00:27:11,260
+could do even more here but for now I
+
+641
+00:27:11,260 --> 00:27:13,630
+just wanted to separate our application
+
+642
+00:27:13,630 --> 00:27:17,020
+code and styles from our vendor code and
+
+643
+00:27:17,020 --> 00:27:18,940
+styles because the libraries and stuff
+
+644
+00:27:18,940 --> 00:27:21,640
+we use don't change nearly as often as
+
+645
+00:27:21,640 --> 00:27:24,220
+updates to our actual business logic and
+
+646
+00:27:24,220 --> 00:27:26,800
+in front-end code this will allow me to
+
+647
+00:27:26,800 --> 00:27:30,190
+cache that vendor file and just keep it
+
+648
+00:27:30,190 --> 00:27:33,070
+there for weeks at a time until we throw
+
+649
+00:27:33,070 --> 00:27:34,600
+in the new import while we're making
+
+650
+00:27:34,600 --> 00:27:39,460
+daily changes to the application yeah
+
+651
+00:27:39,460 --> 00:27:41,550
+some image resizing just cutting down
+
+652
+00:27:41,550 --> 00:27:44,290
+take a look like you're throwing on fun
+
+653
+00:27:44,290 --> 00:27:46,320
+awesome or something you don't need a
+
+654
+00:27:46,320 --> 00:27:48,430
+thousand icons you're probably just
+
+655
+00:27:48,430 --> 00:27:51,690
+using 50 in your app double check that
+
+656
+00:27:51,690 --> 00:27:55,660
+and lazy load user-generated images you
+
+657
+00:27:55,660 --> 00:27:57,310
+can grab them after you get
+
+658
+00:27:57,310 --> 00:28:01,390
+interactivity so we hit our goals with
+
+659
+00:28:01,390 --> 00:28:03,400
+these improvements alone we got it down
+
+660
+00:28:03,400 --> 00:28:06,730
+to just under two seconds to first paint
+
+661
+00:28:06,730 --> 00:28:09,040
+four and a half seconds to interactive
+
+662
+00:28:09,040 --> 00:28:12,970
+and really cut down on the amount of
+
+663
+00:28:12,970 --> 00:28:14,560
+data we're transferring and the the
+
+664
+00:28:14,560 --> 00:28:16,810
+overall size there so just with some
+
+665
+00:28:16,810 --> 00:28:18,580
+like simple improvements a couple of
+
+666
+00:28:18,580 --> 00:28:20,800
+server configurations lazy loading the
+
+667
+00:28:20,800 --> 00:28:23,260
+images and doing some bundle splitting
+
+668
+00:28:23,260 --> 00:28:27,040
+with web pack we see you know over sixty
+
+669
+00:28:27,040 --> 00:28:28,750
+percent performance improvement in the
+
+670
+00:28:28,750 --> 00:28:32,470
+metrics that matter you can see here
+
+671
+00:28:32,470 --> 00:28:36,160
+that that side that's those images that
+
+672
+00:28:36,160 --> 00:28:38,680
+were lazy loading so the paint happens
+
+673
+00:28:38,680 --> 00:28:40,840
+really quickly we're reusing a lot of
+
+674
+00:28:40,840 --> 00:28:44,470
+the you know same TCP connections with
+
+675
+00:28:44,470 --> 00:28:46,490
+HTTP to it gets to
+
+676
+00:28:46,490 --> 00:28:48,470
+activity and then we just grab the rest
+
+677
+00:28:48,470 --> 00:28:52,429
+of that user content subsequent loads
+
+678
+00:28:52,429 --> 00:28:54,290
+similar source of improvement we're down
+
+679
+00:28:54,290 --> 00:28:57,190
+to under a second on a bad connection
+
+680
+00:28:57,190 --> 00:29:00,700
+for first paint and interactivity and
+
+681
+00:29:00,700 --> 00:29:04,490
+we're only serving up 2.6 kilobytes just
+
+682
+00:29:04,490 --> 00:29:08,179
+the updated content on the page so I got
+
+683
+00:29:08,179 --> 00:29:10,840
+one minute and I'm just gonna touch on
+
+684
+00:29:10,840 --> 00:29:14,240
+serviceworkers really quickly here our
+
+685
+00:29:14,240 --> 00:29:16,670
+basic strategy we want to cache all the
+
+686
+00:29:16,670 --> 00:29:21,020
+static assets on install and serve them
+
+687
+00:29:21,020 --> 00:29:23,090
+with a cache first approach so this is
+
+688
+00:29:23,090 --> 00:29:24,650
+where cache busting comes in really
+
+689
+00:29:24,650 --> 00:29:26,929
+useful is that if you have that file
+
+690
+00:29:26,929 --> 00:29:29,030
+there just serve it up no need to go to
+
+691
+00:29:29,030 --> 00:29:31,130
+the network if you don't then fall back
+
+692
+00:29:31,130 --> 00:29:33,170
+to the network grab it cache it for next
+
+693
+00:29:33,170 --> 00:29:36,440
+time and then for the pages because
+
+694
+00:29:36,440 --> 00:29:37,640
+those might be updated with
+
+695
+00:29:37,640 --> 00:29:40,520
+user-generated content we want to do a
+
+696
+00:29:40,520 --> 00:29:42,650
+network first approach but keep them
+
+697
+00:29:42,650 --> 00:29:44,120
+cached so grab them from the network
+
+698
+00:29:44,120 --> 00:29:46,960
+grab the latest copy if you go offline
+
+699
+00:29:46,960 --> 00:29:50,150
+be able to serve that copy from your
+
+700
+00:29:50,150 --> 00:29:51,740
+cache so we're using service workers
+
+701
+00:29:51,740 --> 00:29:57,020
+we're using the cache API yeah and it
+
+702
+00:29:57,020 --> 00:30:00,070
+gets really fast so this is with online
+
+703
+00:30:00,070 --> 00:30:03,590
+we have half a second to interactivity
+
+704
+00:30:03,590 --> 00:30:06,590
+and most of that is a 400 millisecond
+
+705
+00:30:06,590 --> 00:30:10,700
+latency to to grab the updated HTML page
+
+706
+00:30:10,700 --> 00:30:16,520
+and that's what we see here so it's just
+
+707
+00:30:16,520 --> 00:30:18,050
+grabbing that stuff and then loading
+
+708
+00:30:18,050 --> 00:30:20,000
+everything from cache what's really
+
+709
+00:30:20,000 --> 00:30:23,990
+interesting is that offline is actually
+
+710
+00:30:23,990 --> 00:30:25,940
+the best performance because we don't
+
+711
+00:30:25,940 --> 00:30:27,710
+have that latency we don't have to hit
+
+712
+00:30:27,710 --> 00:30:29,809
+the network up it just loads the the
+
+713
+00:30:29,809 --> 00:30:31,880
+last version of everything we cached a
+
+714
+00:30:31,880 --> 00:30:34,309
+hundred milliseconds to get there in one
+
+715
+00:30:34,309 --> 00:30:36,080
+hundred and fifty know day to day
+
+716
+00:30:36,080 --> 00:30:38,570
+transferred so once we kind of wrap this
+
+717
+00:30:38,570 --> 00:30:41,090
+up you know make a couple more touch-ups
+
+718
+00:30:41,090 --> 00:30:43,010
+to our service workers I'm just gonna
+
+719
+00:30:43,010 --> 00:30:44,960
+tell aid workers in the field hit
+
+720
+00:30:44,960 --> 00:30:46,580
+airplane mode like download the latest
+
+721
+00:30:46,580 --> 00:30:48,530
+copy in the morning hit airplane mode do
+
+722
+00:30:48,530 --> 00:30:50,660
+your work all day on hit airplane mode
+
+723
+00:30:50,660 --> 00:30:53,830
+and and upload it at the end of the day
+
+724
+00:30:53,830 --> 00:30:57,679
+cool so thank you so much that's kind of
+
+725
+00:30:57,679 --> 00:30:59,300
+my talk I hoped it served as like a good
+
+726
+00:30:59,300 --> 00:30:59,929
+overview
+
+727
+00:30:59,929 --> 00:31:02,330
+of performance optimizations you can
+
+728
+00:31:02,330 --> 00:31:04,279
+make and JavaScript and a little bit
+
+729
+00:31:04,279 --> 00:31:07,909
+about the refugee aid movement you can
+
+730
+00:31:07,909 --> 00:31:09,919
+check out the offline functionality on
+
+731
+00:31:09,919 --> 00:31:12,679
+our app all the code is publicly
+
+732
+00:31:12,679 --> 00:31:14,990
+available on github and I'll be throwing
+
+733
+00:31:14,990 --> 00:31:16,879
+the slides up along with some links to
+
+734
+00:31:16,879 --> 00:31:18,860
+further research and tutorials on our
+
+735
+00:31:18,860 --> 00:31:21,010
+Twitter cool enjoy your lunch
+

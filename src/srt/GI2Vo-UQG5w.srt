@@ -1,0 +1,2449 @@
+1
+00:00:06,140 --> 00:00:10,320
+
+hey everybody I'm Shelly 4 and today I'm
+
+2
+00:00:10,320 --> 00:00:11,940
+gonna talk a little bit about the
+
+3
+00:00:11,940 --> 00:00:16,080
+process of API and modernization for a
+
+4
+00:00:16,080 --> 00:00:18,660
+little brief background on me I work
+
+5
+00:00:18,660 --> 00:00:21,000
+full-time on the electron project on
+
+6
+00:00:21,000 --> 00:00:23,640
+behalf of github where I've been for the
+
+7
+00:00:23,640 --> 00:00:27,060
+past about two and a half years this
+
+8
+00:00:27,060 --> 00:00:30,119
+work has also allowed me to explore and
+
+9
+00:00:30,119 --> 00:00:32,730
+actively contribute to a pretty wide
+
+10
+00:00:32,730 --> 00:00:34,950
+range of open-source projects and
+
+11
+00:00:34,950 --> 00:00:37,680
+committees including node chromium and
+
+12
+00:00:37,680 --> 00:00:41,340
+tc39 I'm based in San Francisco drink a
+
+13
+00:00:41,340 --> 00:00:42,960
+lot of coffee and do a lot of crossword
+
+14
+00:00:42,960 --> 00:00:47,809
+puzzles so what is modernization
+
+15
+00:00:47,809 --> 00:00:50,940
+modernization means very little out of
+
+16
+00:00:50,940 --> 00:00:54,260
+context especially in the software world
+
+17
+00:00:54,260 --> 00:00:57,930
+it's a fun fancy buzzword but I can't
+
+18
+00:00:57,930 --> 00:01:00,750
+really give a whole presentation on how
+
+19
+00:01:00,750 --> 00:01:03,120
+you can apply its principles to your own
+
+20
+00:01:03,120 --> 00:01:05,549
+organization without first establishing
+
+21
+00:01:05,549 --> 00:01:08,970
+some shared context for what I mean
+
+22
+00:01:08,970 --> 00:01:12,380
+when I say it in service of that goal
+
+23
+00:01:12,380 --> 00:01:15,119
+let's start with the most basic
+
+24
+00:01:15,119 --> 00:01:17,729
+definition of the term I could find as
+
+25
+00:01:17,729 --> 00:01:22,009
+it applies to software so as we see here
+
+26
+00:01:22,009 --> 00:01:24,860
+modernization can be understood as the
+
+27
+00:01:24,860 --> 00:01:29,130
+conversion rewriting or porting of a
+
+28
+00:01:29,130 --> 00:01:32,270
+legacy system to a modern language
+
+29
+00:01:32,270 --> 00:01:36,060
+software library protocol or hardware
+
+30
+00:01:36,060 --> 00:01:40,229
+platform that's an OK start but it still
+
+31
+00:01:40,229 --> 00:01:41,790
+leaves us with quite a lot of unanswered
+
+32
+00:01:41,790 --> 00:01:44,670
+questions what does it mean for
+
+33
+00:01:44,670 --> 00:01:47,549
+something to even be modern there's
+
+34
+00:01:47,549 --> 00:01:49,259
+still a lot of wiggle room in that
+
+35
+00:01:49,259 --> 00:01:52,380
+definition that I just gave and even
+
+36
+00:01:52,380 --> 00:01:54,540
+some of its different components might
+
+37
+00:01:54,540 --> 00:01:56,700
+not all be understood in the same way
+
+38
+00:01:56,700 --> 00:02:00,210
+even amongst you the audience for
+
+39
+00:02:00,210 --> 00:02:02,880
+example a highly doubt that we all
+
+40
+00:02:02,880 --> 00:02:05,520
+understand modern language to be the
+
+41
+00:02:05,520 --> 00:02:09,509
+same thing for example beyond the Erb
+
+42
+00:02:09,509 --> 00:02:12,480
+sorry beyond that can modernization even
+
+43
+00:02:12,480 --> 00:02:13,170
+be universe
+
+44
+00:02:13,170 --> 00:02:16,830
+we understood across contexts the answer
+
+45
+00:02:16,830 --> 00:02:19,590
+to that question for better or worse is
+
+46
+00:02:19,590 --> 00:02:23,160
+that it depends and I know that's
+
+47
+00:02:23,160 --> 00:02:24,510
+probably not something a lot of you
+
+48
+00:02:24,510 --> 00:02:27,540
+really love to hear it's kind of like
+
+49
+00:02:27,540 --> 00:02:29,550
+running a non-deterministic software
+
+50
+00:02:29,550 --> 00:02:32,520
+program it doesn't really inspire a
+
+51
+00:02:32,520 --> 00:02:36,030
+whole lot of confidence but I'm not
+
+52
+00:02:36,030 --> 00:02:37,650
+really here today to give you 30 minutes
+
+53
+00:02:37,650 --> 00:02:40,890
+worth of maybe so let's unpack that a
+
+54
+00:02:40,890 --> 00:02:44,250
+little bit further modernization is
+
+55
+00:02:44,250 --> 00:02:46,230
+something that takes on different
+
+56
+00:02:46,230 --> 00:02:49,860
+meanings in different contexts and so
+
+57
+00:02:49,860 --> 00:02:52,980
+for you to really understand and gain
+
+58
+00:02:52,980 --> 00:02:55,880
+concrete lessons from its discussion I'm
+
+59
+00:02:55,880 --> 00:02:59,250
+going to ground it in practical examples
+
+60
+00:02:59,250 --> 00:03:02,010
+from something I work on every day the
+
+61
+00:03:02,010 --> 00:03:05,519
+electron framework modernization as
+
+62
+00:03:05,519 --> 00:03:06,660
+we'll soon see
+
+63
+00:03:06,660 --> 00:03:10,739
+can also feel a little bit like this but
+
+64
+00:03:10,739 --> 00:03:12,450
+there's not always an obvious path to
+
+65
+00:03:12,450 --> 00:03:15,630
+take and whichever one you do take can
+
+66
+00:03:15,630 --> 00:03:20,130
+often lay waste your best laid plans you
+
+67
+00:03:20,130 --> 00:03:22,070
+may now be wondering why is
+
+68
+00:03:22,070 --> 00:03:24,660
+modernization even something that we
+
+69
+00:03:24,660 --> 00:03:27,260
+actively want to do in the first place I
+
+70
+00:03:27,260 --> 00:03:29,940
+haven't exactly opened with the most
+
+71
+00:03:29,940 --> 00:03:32,570
+shiny and positive take on the thing
+
+72
+00:03:32,570 --> 00:03:36,600
+some principle we modernize in order to
+
+73
+00:03:36,600 --> 00:03:40,470
+retain and extend the value of a legacy
+
+74
+00:03:40,470 --> 00:03:43,530
+investment which is an investment that
+
+75
+00:03:43,530 --> 00:03:47,519
+continues to provide core services to an
+
+76
+00:03:47,519 --> 00:03:50,730
+organization there's a lot of different
+
+77
+00:03:50,730 --> 00:03:53,280
+reasons that you as a developer might
+
+78
+00:03:53,280 --> 00:03:55,650
+want to do this but for better or worse
+
+79
+00:03:55,650 --> 00:03:58,230
+it's something that almost all of us
+
+80
+00:03:58,230 --> 00:04:02,970
+will at some point need to do now some
+
+81
+00:04:02,970 --> 00:04:04,859
+of you might be familiar with electron
+
+82
+00:04:04,859 --> 00:04:06,870
+but before you really get to the good
+
+83
+00:04:06,870 --> 00:04:08,910
+stuff I think I'm gonna do a brief
+
+84
+00:04:08,910 --> 00:04:11,700
+overview just to make sure that we all
+
+85
+00:04:11,700 --> 00:04:14,160
+have the same base understanding of what
+
+86
+00:04:14,160 --> 00:04:18,150
+it is electron is the JavaScript
+
+87
+00:04:18,150 --> 00:04:20,630
+framework that allows you to write
+
+88
+00:04:20,630 --> 00:04:23,460
+desktop applications with web
+
+89
+00:04:23,460 --> 00:04:26,889
+technologies like JavaScript HTML
+
+90
+00:04:26,889 --> 00:04:31,090
+and CSS it can be used on Windows Mac
+
+91
+00:04:31,090 --> 00:04:34,919
+and Linux as well as a variety of other
+
+92
+00:04:34,919 --> 00:04:37,900
+architectures and platforms like Windows
+
+93
+00:04:37,900 --> 00:04:42,370
+on arm and even Raspberry Pi it works by
+
+94
+00:04:42,370 --> 00:04:45,090
+integrating chromium and node in
+
+95
+00:04:45,090 --> 00:04:47,979
+addition to a layer of C++
+
+96
+00:04:47,979 --> 00:04:51,550
+an objective-c which allows it to create
+
+97
+00:04:51,550 --> 00:04:56,889
+fully formed GUI GUIs as well as take
+
+98
+00:04:56,889 --> 00:04:59,650
+advantage of file system and networking
+
+99
+00:04:59,650 --> 00:05:04,659
+capabilities with node typically desktop
+
+100
+00:05:04,659 --> 00:05:07,750
+applications for an operating system are
+
+101
+00:05:07,750 --> 00:05:10,750
+written in the native language for each
+
+102
+00:05:10,750 --> 00:05:16,180
+if we take Windows Mac and Linux that
+
+103
+00:05:16,180 --> 00:05:18,580
+now means that you have three teams
+
+104
+00:05:18,580 --> 00:05:20,740
+writing three different desktop
+
+105
+00:05:20,740 --> 00:05:23,169
+applications to do functionally the same
+
+106
+00:05:23,169 --> 00:05:27,159
+thing this can be pretty costly both in
+
+107
+00:05:27,159 --> 00:05:29,800
+terms of monetary resources feature and
+
+108
+00:05:29,800 --> 00:05:31,839
+development and velocity and developer
+
+109
+00:05:31,839 --> 00:05:35,169
+hours with electron you will only need
+
+110
+00:05:35,169 --> 00:05:37,659
+to write your app once and then it will
+
+111
+00:05:37,659 --> 00:05:42,819
+work on all applicable platforms and we
+
+112
+00:05:42,819 --> 00:05:44,409
+can't really understand how
+
+113
+00:05:44,409 --> 00:05:47,529
+modernization affects users without
+
+114
+00:05:47,529 --> 00:05:52,330
+first discussing API versioning an API
+
+115
+00:05:52,330 --> 00:05:56,919
+is fundamentally a contract that you as
+
+116
+00:05:56,919 --> 00:06:00,370
+a maintainer establish with the people
+
+117
+00:06:00,370 --> 00:06:03,520
+consuming your API about how it's going
+
+118
+00:06:03,520 --> 00:06:08,800
+to behave when developers have their API
+
+119
+00:06:08,800 --> 00:06:12,310
+is consumed the consumers are implicitly
+
+120
+00:06:12,310 --> 00:06:16,180
+signing their end of a contract and you
+
+121
+00:06:16,180 --> 00:06:19,300
+as the maintainer are implicitly signing
+
+122
+00:06:19,300 --> 00:06:23,500
+your end you can think of an API a
+
+123
+00:06:23,500 --> 00:06:26,949
+little bit like buying a new car when
+
+124
+00:06:26,949 --> 00:06:29,169
+you buy that car you've probably got a
+
+125
+00:06:29,169 --> 00:06:31,990
+set of expectations for how that car is
+
+126
+00:06:31,990 --> 00:06:34,779
+going to behave and how various controls
+
+127
+00:06:34,779 --> 00:06:37,180
+on the car or going to affect that cars
+
+128
+00:06:37,180 --> 00:06:38,169
+movement
+
+129
+00:06:38,169 --> 00:06:40,509
+now let's say you've bought that car and
+
+130
+00:06:40,509 --> 00:06:43,030
+it's pretty it's shiny and you get on
+
+131
+00:06:43,030 --> 00:06:44,710
+the highway and you're going 80 and then
+
+132
+00:06:44,710 --> 00:06:46,930
+suddenly the accelerator and the brake
+
+133
+00:06:46,930 --> 00:06:49,900
+they switch now I don't know about you I
+
+134
+00:06:49,900 --> 00:06:52,659
+love a good adventure but I really like
+
+135
+00:06:52,659 --> 00:06:54,430
+knowing what my gas pedal is gonna do a
+
+136
+00:06:54,430 --> 00:06:57,849
+hundred percent of the time your users
+
+137
+00:06:57,849 --> 00:07:01,449
+are the same they don't want to risk
+
+138
+00:07:01,449 --> 00:07:03,729
+their app on something they don't feel
+
+139
+00:07:03,729 --> 00:07:08,020
+like they can trust so now back to one
+
+140
+00:07:08,020 --> 00:07:09,879
+of the questions I had on an earlier
+
+141
+00:07:09,879 --> 00:07:13,020
+slide how do you set these expectations
+
+142
+00:07:13,020 --> 00:07:16,270
+one of the more common ways to set
+
+143
+00:07:16,270 --> 00:07:19,330
+expectations for an API contract is
+
+144
+00:07:19,330 --> 00:07:22,509
+known as semantic versioning or cember
+
+145
+00:07:22,509 --> 00:07:26,319
+in this approach to versioning a version
+
+146
+00:07:26,319 --> 00:07:29,139
+is specified with three numeric
+
+147
+00:07:29,139 --> 00:07:32,939
+components first major then minor
+
+148
+00:07:32,939 --> 00:07:37,870
+finally patch as its name suggests each
+
+149
+00:07:37,870 --> 00:07:40,900
+one of these components confers semantic
+
+150
+00:07:40,900 --> 00:07:44,409
+meaning and allows a consumer to quickly
+
+151
+00:07:44,409 --> 00:07:47,139
+understand how updating their app to a
+
+152
+00:07:47,139 --> 00:07:49,300
+new version is going to affect their
+
+153
+00:07:49,300 --> 00:07:52,719
+apps potential behavior major version
+
+154
+00:07:52,719 --> 00:07:55,599
+bumps are made when you add incompatible
+
+155
+00:07:55,599 --> 00:07:59,469
+or braking API changes minor bumps
+
+156
+00:07:59,469 --> 00:08:02,229
+indicate new but backwards compatible
+
+157
+00:08:02,229 --> 00:08:05,349
+functionality and then finally patch
+
+158
+00:08:05,349 --> 00:08:08,169
+updates indicate fixes to existing
+
+159
+00:08:08,169 --> 00:08:12,189
+functionality but nothing new for our
+
+160
+00:08:12,189 --> 00:08:15,159
+purposes today I'm gonna focus on three
+
+161
+00:08:15,159 --> 00:08:18,580
+main buckets modernization spurned by
+
+162
+00:08:18,580 --> 00:08:21,460
+updates to platform modernization
+
+163
+00:08:21,460 --> 00:08:24,779
+related to dependencies and then finally
+
+164
+00:08:24,779 --> 00:08:27,250
+modernization related to programming
+
+165
+00:08:27,250 --> 00:08:30,839
+language specification first off
+
+166
+00:08:30,839 --> 00:08:35,260
+platform modernization operating systems
+
+167
+00:08:35,260 --> 00:08:39,329
+maintain their own unique API surfaces
+
+168
+00:08:39,329 --> 00:08:42,430
+which don't always adhere to the kind of
+
+169
+00:08:42,430 --> 00:08:45,930
+API contract you might be accustomed to
+
+170
+00:08:45,930 --> 00:08:48,430
+platforms can't really adhere to
+
+171
+00:08:48,430 --> 00:08:50,350
+something like cember when they're
+
+172
+00:08:50,350 --> 00:08:51,410
+versioning
+
+173
+00:08:51,410 --> 00:08:54,440
+so instead they often choose to make
+
+174
+00:08:54,440 --> 00:08:57,530
+updates to their API surface area based
+
+175
+00:08:57,530 --> 00:08:59,930
+on updates with their operating system
+
+176
+00:08:59,930 --> 00:09:03,260
+versions as you might imagine this can
+
+177
+00:09:03,260 --> 00:09:05,660
+create some mismatches with libraries
+
+178
+00:09:05,660 --> 00:09:08,350
+which often need to work across multiple
+
+179
+00:09:08,350 --> 00:09:12,400
+versions of a single operating system
+
+180
+00:09:12,400 --> 00:09:15,860
+one example of this is Apple's App Gate
+
+181
+00:09:15,860 --> 00:09:18,830
+framework which contains all the objects
+
+182
+00:09:18,830 --> 00:09:21,230
+that a developer needs in order to
+
+183
+00:09:21,230 --> 00:09:23,870
+implement the user interface for a Mac
+
+184
+00:09:23,870 --> 00:09:28,040
+OS app like Windows panels menus
+
+185
+00:09:28,040 --> 00:09:30,500
+scrollers text fields you get the idea
+
+186
+00:09:30,500 --> 00:09:34,430
+as such frameworks like electron which
+
+187
+00:09:34,430 --> 00:09:36,080
+hook into you and depend on this
+
+188
+00:09:36,080 --> 00:09:39,500
+framework need to monitor and adapt for
+
+189
+00:09:39,500 --> 00:09:42,320
+changes as Apple releases new versions
+
+190
+00:09:42,320 --> 00:09:46,370
+of its operating system the question we
+
+191
+00:09:46,370 --> 00:09:49,610
+then want to ask ourselves is what's the
+
+192
+00:09:49,610 --> 00:09:53,570
+optimal way to account for this let's
+
+193
+00:09:53,570 --> 00:09:55,550
+look at how electron handled a recent
+
+194
+00:09:55,550 --> 00:09:58,790
+snafu with just such an issue if you've
+
+195
+00:09:58,790 --> 00:10:01,130
+used Mac OS you'll know that there's a
+
+196
+00:10:01,130 --> 00:10:04,490
+tree bar at the top of the screen the
+
+197
+00:10:04,490 --> 00:10:07,280
+tree bar can contain individual elements
+
+198
+00:10:07,280 --> 00:10:10,280
+which are known to Apple as NS status
+
+199
+00:10:10,280 --> 00:10:15,140
+items electron exposes a module that
+
+200
+00:10:15,140 --> 00:10:17,530
+enables you to create and control
+
+201
+00:10:17,530 --> 00:10:20,240
+individual instances of these elements
+
+202
+00:10:20,240 --> 00:10:23,720
+through the tree module from the very
+
+203
+00:10:23,720 --> 00:10:27,920
+first release of Mac OS until 10.14
+
+204
+00:10:27,920 --> 00:10:31,400
+mojave developers could use instance
+
+205
+00:10:31,400 --> 00:10:34,670
+properties on these NS status items to
+
+206
+00:10:34,670 --> 00:10:37,600
+customize their appearance and behavior
+
+207
+00:10:37,600 --> 00:10:41,720
+then in Mac OS 10 point 10 they
+
+208
+00:10:41,720 --> 00:10:44,210
+introduced a new instance property the
+
+209
+00:10:44,210 --> 00:10:46,670
+button property which also allows you to
+
+210
+00:10:46,670 --> 00:10:48,830
+customize the appearance and behavior of
+
+211
+00:10:48,830 --> 00:10:52,190
+the items at the same time they
+
+212
+00:10:52,190 --> 00:10:54,380
+deprecated the previous instance
+
+213
+00:10:54,380 --> 00:10:57,850
+properties and then finally in Mac OS
+
+214
+00:10:57,850 --> 00:10:59,570
+10.15 katalina
+
+215
+00:10:59,570 --> 00:11:01,570
+these deprecated instance properties
+
+216
+00:11:01,570 --> 00:11:04,070
+finally ceased to work
+
+217
+00:11:04,070 --> 00:11:06,470
+an electron this created some pretty
+
+218
+00:11:06,470 --> 00:11:08,930
+nasty consequences we've been using the
+
+219
+00:11:08,930 --> 00:11:11,990
+previous instance properties up until
+
+220
+00:11:11,990 --> 00:11:14,329
+then and only actually realize this
+
+221
+00:11:14,329 --> 00:11:15,829
+issue had happened because the tray
+
+222
+00:11:15,829 --> 00:11:17,570
+issues when we are testing our catalina
+
+223
+00:11:17,570 --> 00:11:19,699
+literally just stopped showing up which
+
+224
+00:11:19,699 --> 00:11:22,730
+is you can imagine was pretty awesome so
+
+225
+00:11:22,730 --> 00:11:25,339
+as a result we had to quickly and
+
+226
+00:11:25,339 --> 00:11:28,190
+efficiently modernize our own code for
+
+227
+00:11:28,190 --> 00:11:30,980
+these new constraints but there is one
+
+228
+00:11:30,980 --> 00:11:34,399
+catch the button property no longer
+
+229
+00:11:34,399 --> 00:11:37,180
+allowed developers to manually manage
+
+230
+00:11:37,180 --> 00:11:39,850
+highlighting of NS status items
+
+231
+00:11:39,850 --> 00:11:42,380
+highlighting in this case is the way
+
+232
+00:11:42,380 --> 00:11:44,029
+that the icon appears when you click on
+
+233
+00:11:44,029 --> 00:11:46,670
+it previously you could set it to always
+
+234
+00:11:46,670 --> 00:11:48,709
+appear highlighted only appear
+
+235
+00:11:48,709 --> 00:11:51,050
+highlighted when clicked or never appear
+
+236
+00:11:51,050 --> 00:11:53,839
+highlighted so how do we handle this
+
+237
+00:11:53,839 --> 00:11:56,600
+change by necessity this is a breaking
+
+238
+00:11:56,600 --> 00:12:00,290
+change what we chose to do is to remove
+
+239
+00:12:00,290 --> 00:12:03,230
+this method from electron version 7
+
+240
+00:12:03,230 --> 00:12:06,290
+without replacement since at the time it
+
+241
+00:12:06,290 --> 00:12:09,139
+was in an early beta and so we wouldn't
+
+242
+00:12:09,139 --> 00:12:12,490
+be breaking our API contract by doing so
+
+243
+00:12:12,490 --> 00:12:15,440
+we then noted that the tray would
+
+244
+00:12:15,440 --> 00:12:18,170
+experience display issues in older
+
+245
+00:12:18,170 --> 00:12:20,510
+versions of electron and encouraged
+
+246
+00:12:20,510 --> 00:12:25,130
+users to update where they could as you
+
+247
+00:12:25,130 --> 00:12:28,149
+consider your own apps platform
+
+248
+00:12:28,149 --> 00:12:30,980
+modernization strategies there are some
+
+249
+00:12:30,980 --> 00:12:32,990
+things I think that electrons experience
+
+250
+00:12:32,990 --> 00:12:36,470
+demonstrates here we don't always make
+
+251
+00:12:36,470 --> 00:12:38,959
+the right choices and so we want to
+
+252
+00:12:38,959 --> 00:12:41,779
+share both our successes and the things
+
+253
+00:12:41,779 --> 00:12:44,720
+that we think we can do better we
+
+254
+00:12:44,720 --> 00:12:46,639
+determined these breaking changes in
+
+255
+00:12:46,639 --> 00:12:49,040
+practice because one of the core team
+
+256
+00:12:49,040 --> 00:12:51,380
+was doing some testing on Mac OS
+
+257
+00:12:51,380 --> 00:12:53,839
+Catalina but this change was ultimately
+
+258
+00:12:53,839 --> 00:12:56,480
+more reactionary than I think we wanted
+
+259
+00:12:56,480 --> 00:13:00,050
+it to be it's important to strategize
+
+260
+00:13:00,050 --> 00:13:02,089
+research around upcoming platform
+
+261
+00:13:02,089 --> 00:13:04,939
+changes in advance so that you don't end
+
+262
+00:13:04,939 --> 00:13:07,009
+up scrambling to minimize and user
+
+263
+00:13:07,009 --> 00:13:10,850
+changes in the same way that we did how
+
+264
+00:13:10,850 --> 00:13:12,740
+do we done that we could have avoided
+
+265
+00:13:12,740 --> 00:13:16,070
+users experiencing any braking changes
+
+266
+00:13:16,070 --> 00:13:18,320
+more than one supportive version of
+
+267
+00:13:18,320 --> 00:13:21,800
+electron next up is language
+
+268
+00:13:21,800 --> 00:13:25,010
+modernization language modernization is
+
+269
+00:13:25,010 --> 00:13:27,230
+that relating to the programming
+
+270
+00:13:27,230 --> 00:13:30,320
+language in which a framework or library
+
+271
+00:13:30,320 --> 00:13:33,350
+is consumed that's important in the case
+
+272
+00:13:33,350 --> 00:13:36,560
+of electron because while electron is a
+
+273
+00:13:36,560 --> 00:13:38,750
+JavaScript framework its underlying
+
+274
+00:13:38,750 --> 00:13:41,060
+architecture is actually written in a
+
+275
+00:13:41,060 --> 00:13:44,150
+combination of Objective C and C++ and
+
+276
+00:13:44,150 --> 00:13:48,040
+so modernization and electron is
+
+277
+00:13:48,040 --> 00:13:50,750
+modernization that allows developers to
+
+278
+00:13:50,750 --> 00:13:53,530
+use new additions or changes to
+
+279
+00:13:53,530 --> 00:13:56,570
+JavaScript as they are added to the
+
+280
+00:13:56,570 --> 00:13:58,700
+JavaScript frame or to the JavaScript
+
+281
+00:13:58,700 --> 00:14:00,320
+language through the Ekman script
+
+282
+00:14:00,320 --> 00:14:03,350
+specification a variety of these are
+
+283
+00:14:03,350 --> 00:14:06,830
+outlined here some you might be more
+
+284
+00:14:06,830 --> 00:14:10,220
+familiar with include promises async
+
+285
+00:14:10,220 --> 00:14:12,440
+await optional catch binding our
+
+286
+00:14:12,440 --> 00:14:15,650
+knowledge coalescing some of these
+
+287
+00:14:15,650 --> 00:14:18,380
+capabilities get to electron for free
+
+288
+00:14:18,380 --> 00:14:21,590
+when we update our dependencies like v8
+
+289
+00:14:21,590 --> 00:14:24,440
+but we'll save that for later and focus
+
+290
+00:14:24,440 --> 00:14:26,660
+on the more costly updates right now
+
+291
+00:14:26,660 --> 00:14:30,380
+a notable effort in the electron
+
+292
+00:14:30,380 --> 00:14:33,500
+codebase this past spring was known as
+
+293
+00:14:33,500 --> 00:14:36,590
+the promise of vacation initiative which
+
+294
+00:14:36,590 --> 00:14:40,090
+took most of our asynchronous api's and
+
+295
+00:14:40,090 --> 00:14:42,860
+transformed their usage from call back
+
+296
+00:14:42,860 --> 00:14:46,250
+to promise based we undertook this
+
+297
+00:14:46,250 --> 00:14:48,530
+initiative for a variety of the reasons
+
+298
+00:14:48,530 --> 00:14:51,230
+I've already outlined call backs have
+
+299
+00:14:51,230 --> 00:14:54,350
+their place undoubtedly but developers
+
+300
+00:14:54,350 --> 00:14:56,720
+can write arguably simpler and more
+
+301
+00:14:56,720 --> 00:15:00,320
+elegant code and open the doors to even
+
+302
+00:15:00,320 --> 00:15:02,480
+more functionality when they can write
+
+303
+00:15:02,480 --> 00:15:06,290
+promise based code so how do we do this
+
+304
+00:15:06,290 --> 00:15:08,960
+and then how did we communicate this to
+
+305
+00:15:08,960 --> 00:15:11,630
+our users we actually chose to do it
+
+306
+00:15:11,630 --> 00:15:14,000
+natively and I can see some of you look
+
+307
+00:15:14,000 --> 00:15:15,470
+a little bit confused by that aren't
+
+308
+00:15:15,470 --> 00:15:18,050
+promises a JavaScript thing so the
+
+309
+00:15:18,050 --> 00:15:19,730
+answer to that is actually yes but also
+
+310
+00:15:19,730 --> 00:15:23,930
+know to do this we actually used an
+
+311
+00:15:23,930 --> 00:15:27,620
+engine called v8 which Google wrote for
+
+312
+00:15:27,620 --> 00:15:28,750
+Google Chrome
+
+313
+00:15:28,750 --> 00:15:31,839
+it implements the same specification as
+
+314
+00:15:31,839 --> 00:15:35,949
+JavaScript but in C++ by writing a
+
+315
+00:15:35,949 --> 00:15:38,319
+wrapper over its promise functionality
+
+316
+00:15:38,319 --> 00:15:41,829
+we could enable our api's to cleanly
+
+317
+00:15:41,829 --> 00:15:44,709
+return promises at the C++ an
+
+318
+00:15:44,709 --> 00:15:48,009
+objective-c level without needing to
+
+319
+00:15:48,009 --> 00:15:51,160
+paper over them at the JavaScript level
+
+320
+00:15:51,160 --> 00:15:53,350
+with something from node like util dot
+
+321
+00:15:53,350 --> 00:15:57,040
+promise fie so basically promises but
+
+322
+00:15:57,040 --> 00:15:59,620
+with surprise multi-threading this looks
+
+323
+00:15:59,620 --> 00:16:01,750
+a little horrifying I recognize but
+
+324
+00:16:01,750 --> 00:16:04,209
+honestly it was pretty fun and arguably
+
+325
+00:16:04,209 --> 00:16:07,149
+a lot better for consumers we also
+
+326
+00:16:07,149 --> 00:16:10,600
+created a document to track progress of
+
+327
+00:16:10,600 --> 00:16:13,480
+this migration and conform to our own
+
+328
+00:16:13,480 --> 00:16:16,389
+cember contract by ensuring that the
+
+329
+00:16:16,389 --> 00:16:18,970
+changes were backwards compatible where
+
+330
+00:16:18,970 --> 00:16:21,550
+possible which means that they supported
+
+331
+00:16:21,550 --> 00:16:23,970
+both callbacks and promises
+
+332
+00:16:23,970 --> 00:16:26,949
+simultaneously for at least one major
+
+333
+00:16:26,949 --> 00:16:30,129
+version to ensure the developers had
+
+334
+00:16:30,129 --> 00:16:31,990
+enough lead time to make necessary
+
+335
+00:16:31,990 --> 00:16:36,160
+changes we also logged these backwards
+
+336
+00:16:36,160 --> 00:16:38,559
+compatible functions with deprecation
+
+337
+00:16:38,559 --> 00:16:42,279
+warnings at runtime so is this a totally
+
+338
+00:16:42,279 --> 00:16:45,879
+smooth process also no on a high level
+
+339
+00:16:45,879 --> 00:16:48,879
+we accomplished our goal with relatively
+
+340
+00:16:48,879 --> 00:16:51,250
+few hiccups but that's not to say we
+
+341
+00:16:51,250 --> 00:16:54,129
+didn't hit any snags and one of our more
+
+342
+00:16:54,129 --> 00:16:56,170
+fun bugs we actually found that if you
+
+343
+00:16:56,170 --> 00:16:58,689
+called one API in just the right way a
+
+344
+00:16:58,689 --> 00:17:01,329
+native promise chain would trigger an
+
+345
+00:17:01,329 --> 00:17:03,819
+uncatchable promise rejection that the
+
+346
+00:17:03,819 --> 00:17:06,069
+user would only ever see as a silent
+
+347
+00:17:06,069 --> 00:17:08,319
+failure because we'd actually introduced
+
+348
+00:17:08,319 --> 00:17:11,799
+a way to write non typesafe C++ Jeff
+
+349
+00:17:11,799 --> 00:17:15,850
+Goldblum was ashamed of us for that so
+
+350
+00:17:15,850 --> 00:17:17,500
+what have we learned from that adventure
+
+351
+00:17:17,500 --> 00:17:20,789
+and what can you take away from it
+
+352
+00:17:20,789 --> 00:17:24,789
+for starters deprecating methods well is
+
+353
+00:17:24,789 --> 00:17:28,360
+a non-trivial task that shouldn't be
+
+354
+00:17:28,360 --> 00:17:32,230
+done haphazardly we should have been
+
+355
+00:17:32,230 --> 00:17:37,070
+more clear upfront that all changes what
+
+356
+00:17:37,070 --> 00:17:40,010
+be taking place in one major version
+
+357
+00:17:40,010 --> 00:17:42,680
+since we occasionally still get issues
+
+358
+00:17:42,680 --> 00:17:45,190
+saying that a promise based function
+
+359
+00:17:45,190 --> 00:17:47,930
+didn't work for promises when it hadn't
+
+360
+00:17:47,930 --> 00:17:50,840
+yet been converted we're looking towards
+
+361
+00:17:50,840 --> 00:17:52,820
+our docks to help us better fill that
+
+362
+00:17:52,820 --> 00:17:55,610
+gap we do want to continue our
+
+363
+00:17:55,610 --> 00:17:59,210
+transition path pattern however feedback
+
+364
+00:17:59,210 --> 00:18:01,460
+from our users indicated that they felt
+
+365
+00:18:01,460 --> 00:18:03,670
+we provided clear context and
+
+366
+00:18:03,670 --> 00:18:06,410
+information on how to upgrade methods
+
+367
+00:18:06,410 --> 00:18:07,880
+that they were already using in
+
+368
+00:18:07,880 --> 00:18:11,990
+production finally we move to dependency
+
+369
+00:18:11,990 --> 00:18:15,410
+modernization this is modernization that
+
+370
+00:18:15,410 --> 00:18:17,480
+enables access to more modern
+
+371
+00:18:17,480 --> 00:18:19,850
+capabilities through dependencies and
+
+372
+00:18:19,850 --> 00:18:23,450
+not through code we wrote ourselves for
+
+373
+00:18:23,450 --> 00:18:26,570
+electron three key dependencies of this
+
+374
+00:18:26,570 --> 00:18:31,490
+nature our chromium v8 and node updating
+
+375
+00:18:31,490 --> 00:18:34,520
+each of these gives users access to new
+
+376
+00:18:34,520 --> 00:18:37,700
+features but also brings with them
+
+377
+00:18:37,700 --> 00:18:40,580
+potentially breaking changes and so we
+
+378
+00:18:40,580 --> 00:18:42,440
+need to be very mindful about how we
+
+379
+00:18:42,440 --> 00:18:47,120
+coordinate these upgrades upgrading node
+
+380
+00:18:47,120 --> 00:18:50,480
+for example gives us access to new file
+
+381
+00:18:50,480 --> 00:18:52,850
+system and networking capabilities like
+
+382
+00:18:52,850 --> 00:18:56,870
+for example or cursive RM der since node
+
+383
+00:18:56,870 --> 00:19:00,140
+also adheres December minor bumps in
+
+384
+00:19:00,140 --> 00:19:03,080
+node also necessitate minor bumps an
+
+385
+00:19:03,080 --> 00:19:05,510
+electron and major bumps in node
+
+386
+00:19:05,510 --> 00:19:09,140
+necessitate major bumps an electron by
+
+387
+00:19:09,140 --> 00:19:11,720
+upgrading node we ensure that we stay on
+
+388
+00:19:11,720 --> 00:19:13,910
+top of security updates and see
+
+389
+00:19:13,910 --> 00:19:15,830
+performance improvements thanks to the
+
+390
+00:19:15,830 --> 00:19:17,510
+great work of the benchmarking working
+
+391
+00:19:17,510 --> 00:19:20,870
+group within notes governance chromium
+
+392
+00:19:20,870 --> 00:19:23,060
+is a bit of a different story and that
+
+393
+00:19:23,060 --> 00:19:25,670
+they don't really adhere to the same API
+
+394
+00:19:25,670 --> 00:19:28,190
+contract we do and they don't support
+
+395
+00:19:28,190 --> 00:19:30,260
+older versions passed a fairly short
+
+396
+00:19:30,260 --> 00:19:33,710
+tail we're therefore always chasing the
+
+397
+00:19:33,710 --> 00:19:37,070
+tip of chromium source tree security and
+
+398
+00:19:37,070 --> 00:19:39,500
+performance are our primary forcing
+
+399
+00:19:39,500 --> 00:19:41,840
+functions here as the most secure
+
+400
+00:19:41,840 --> 00:19:44,570
+chromium is always going to be the
+
+401
+00:19:44,570 --> 00:19:47,210
+latest chromium and the performance of
+
+402
+00:19:47,210 --> 00:19:50,570
+chromium and therefore electron is also
+
+403
+00:19:50,570 --> 00:19:51,110
+going to be
+
+404
+00:19:51,110 --> 00:19:53,330
+better the more recent a version of
+
+405
+00:19:53,330 --> 00:19:56,809
+chromium that we're using we also do get
+
+406
+00:19:56,809 --> 00:19:58,880
+some upgrades and new capabilities for
+
+407
+00:19:58,880 --> 00:20:01,640
+free from chromium like for example the
+
+408
+00:20:01,640 --> 00:20:04,160
+wick lock API that allows you to control
+
+409
+00:20:04,160 --> 00:20:06,640
+screen sleep on different platforms
+
+410
+00:20:06,640 --> 00:20:09,290
+these capabilities are still a work in
+
+411
+00:20:09,290 --> 00:20:11,870
+progress and are constantly being scoped
+
+412
+00:20:11,870 --> 00:20:14,210
+out and experimented on through what's
+
+413
+00:20:14,210 --> 00:20:18,080
+known as the fugu initiative finally v8
+
+414
+00:20:18,080 --> 00:20:22,340
+I mentioned v8 a bit earlier on as
+
+415
+00:20:22,340 --> 00:20:24,410
+Google's JavaScript engine that
+
+416
+00:20:24,410 --> 00:20:26,390
+implements the equi script specification
+
+417
+00:20:26,390 --> 00:20:30,380
+but in C++ for electrons purposes it's
+
+418
+00:20:30,380 --> 00:20:32,900
+also very important that we try to use
+
+419
+00:20:32,900 --> 00:20:35,179
+the latest compatible version that we
+
+420
+00:20:35,179 --> 00:20:38,330
+can this enables us to access the latest
+
+421
+00:20:38,330 --> 00:20:40,390
+features of the JavaScript spec
+
+422
+00:20:40,390 --> 00:20:42,440
+including some that you can see on the
+
+423
+00:20:42,440 --> 00:20:45,919
+slide here on the left-hand portion v8
+
+424
+00:20:45,919 --> 00:20:47,809
+also works extremely hard to be
+
+425
+00:20:47,809 --> 00:20:50,450
+performin and so as we look to make
+
+426
+00:20:50,450 --> 00:20:53,360
+electron faster and less costly it's
+
+427
+00:20:53,360 --> 00:20:55,669
+also in our best interest to track v8 as
+
+428
+00:20:55,669 --> 00:20:59,410
+closely as we can and now to the lessons
+
+429
+00:20:59,410 --> 00:21:01,910
+we've managed to consistently be
+
+430
+00:21:01,910 --> 00:21:04,160
+updating against chromium's tip of tree
+
+431
+00:21:04,160 --> 00:21:07,700
+and the latest stable node but our newly
+
+432
+00:21:07,700 --> 00:21:10,160
+short feedback loop was not without a
+
+433
+00:21:10,160 --> 00:21:13,700
+few difficult lessons sometimes your
+
+434
+00:21:13,700 --> 00:21:15,470
+dependencies won't all play nicely in
+
+435
+00:21:15,470 --> 00:21:17,690
+the sandbox together and if you know
+
+436
+00:21:17,690 --> 00:21:18,830
+that's gonna be the case
+
+437
+00:21:18,830 --> 00:21:21,260
+it's best to make your version bundling
+
+438
+00:21:21,260 --> 00:21:24,220
+decisions as far in advance as possible
+
+439
+00:21:24,220 --> 00:21:26,540
+we didn't really do that well for
+
+440
+00:21:26,540 --> 00:21:28,790
+electron version 6 and so at one point
+
+441
+00:21:28,790 --> 00:21:31,010
+we ended up having to scramble a little
+
+442
+00:21:31,010 --> 00:21:33,380
+bit and had to use a slowly less than
+
+443
+00:21:33,380 --> 00:21:35,570
+stable version of node version 12
+
+444
+00:21:35,570 --> 00:21:38,090
+because we were releasing slowly before
+
+445
+00:21:38,090 --> 00:21:42,350
+went stable this was unfortunate as it
+
+446
+00:21:42,350 --> 00:21:43,910
+didn't really change too much from the
+
+447
+00:21:43,910 --> 00:21:46,820
+consumer end but it did mildly change
+
+448
+00:21:46,820 --> 00:21:48,620
+some of their dependency modernization
+
+449
+00:21:48,620 --> 00:21:54,169
+expectations you as a developer probably
+
+450
+00:21:54,169 --> 00:21:56,360
+want to give your users the ability to
+
+451
+00:21:56,360 --> 00:21:58,429
+use whatever you've defined as the
+
+452
+00:21:58,429 --> 00:22:01,460
+latest and the greatest and your users
+
+453
+00:22:01,460 --> 00:22:04,040
+want to access these spicey latest and
+
+454
+00:22:04,040 --> 00:22:04,550
+greatest
+
+455
+00:22:04,550 --> 00:22:07,940
+without communication however these two
+
+456
+00:22:07,940 --> 00:22:10,700
+converging desires are like a chemical
+
+457
+00:22:10,700 --> 00:22:13,100
+reaction that given just the wrong
+
+458
+00:22:13,100 --> 00:22:15,560
+measurement of a single ingredient can
+
+459
+00:22:15,560 --> 00:22:18,470
+accidentally explode the whole lab what
+
+460
+00:22:18,470 --> 00:22:20,540
+if you and your users have different
+
+461
+00:22:20,540 --> 00:22:23,230
+understandings of latest and greatest
+
+462
+00:22:23,230 --> 00:22:25,600
+that's a non-trivial possibility
+
+463
+00:22:25,600 --> 00:22:27,620
+considering that you need to take into
+
+464
+00:22:27,620 --> 00:22:29,900
+account different platforms opinions
+
+465
+00:22:29,900 --> 00:22:32,480
+conventions and what you yourselves are
+
+466
+00:22:32,480 --> 00:22:35,330
+functionally capable of delivering the
+
+467
+00:22:35,330 --> 00:22:38,540
+only way to set expectations and ensure
+
+468
+00:22:38,540 --> 00:22:40,730
+that your users are aligned with your
+
+469
+00:22:40,730 --> 00:22:43,040
+efforts is to communicate with them as
+
+470
+00:22:43,040 --> 00:22:45,650
+far in advance and with this high a
+
+471
+00:22:45,650 --> 00:22:49,750
+degree of detail as possible to that end
+
+472
+00:22:49,750 --> 00:22:52,670
+optimal communication can be understood
+
+473
+00:22:52,670 --> 00:22:56,300
+to fall into three big buckets ensuring
+
+474
+00:22:56,300 --> 00:22:58,640
+redundancy communicating early and
+
+475
+00:22:58,640 --> 00:23:02,570
+providing context your users aren't and
+
+476
+00:23:02,570 --> 00:23:04,700
+shouldn't be responsible for digging
+
+477
+00:23:04,700 --> 00:23:06,520
+into the deep dark depths of your
+
+478
+00:23:06,520 --> 00:23:08,750
+documentation to figure out what's
+
+479
+00:23:08,750 --> 00:23:11,750
+coming up soon that burden is on you the
+
+480
+00:23:11,750 --> 00:23:15,380
+maintainer upcoming changes especially
+
+481
+00:23:15,380 --> 00:23:17,960
+those that break or alter existing
+
+482
+00:23:17,960 --> 00:23:20,660
+functionality should be as discoverable
+
+483
+00:23:20,660 --> 00:23:23,450
+and as context rich as you can make them
+
+484
+00:23:23,450 --> 00:23:26,930
+if there's only a single place that your
+
+485
+00:23:26,930 --> 00:23:29,630
+users can go to determine upcoming
+
+486
+00:23:29,630 --> 00:23:31,930
+changes that's a single point of failure
+
+487
+00:23:31,930 --> 00:23:34,490
+they missed that and they might get
+
+488
+00:23:34,490 --> 00:23:38,090
+blindsided in my opinion the opposite of
+
+489
+00:23:38,090 --> 00:23:40,430
+a single point of failure is not
+
+490
+00:23:40,430 --> 00:23:43,430
+necessarily no points of failure instead
+
+491
+00:23:43,430 --> 00:23:46,570
+its multiple discrete points of failure
+
+492
+00:23:46,570 --> 00:23:49,490
+we want to ensure that your users can
+
+493
+00:23:49,490 --> 00:23:53,090
+miss one or even two notices and still
+
+494
+00:23:53,090 --> 00:23:55,310
+be made aware of changes which can only
+
+495
+00:23:55,310 --> 00:23:57,980
+happen if you saturate the information
+
+496
+00:23:57,980 --> 00:24:00,310
+in as many places as possible
+
+497
+00:24:00,310 --> 00:24:03,460
+and next communicating early
+
+498
+00:24:03,460 --> 00:24:05,840
+communication is always great on
+
+499
+00:24:05,840 --> 00:24:08,330
+principle but not all communication
+
+500
+00:24:08,330 --> 00:24:11,090
+benefits users equally telling your
+
+501
+00:24:11,090 --> 00:24:13,490
+consumers about a change right as it is
+
+502
+00:24:13,490 --> 00:24:14,990
+about to affect them
+
+503
+00:24:14,990 --> 00:24:16,420
+is for all intents and purposes
+
+504
+00:24:16,420 --> 00:24:18,230
+indistinguishable from not telling them
+
+505
+00:24:18,230 --> 00:24:21,200
+at all to that end you should look
+
+506
+00:24:21,200 --> 00:24:23,480
+towards informing your users of upcoming
+
+507
+00:24:23,480 --> 00:24:26,330
+changes as soon as plans are clear
+
+508
+00:24:26,330 --> 00:24:28,520
+enough that it's unlikely you'll need to
+
+509
+00:24:28,520 --> 00:24:32,179
+alter or recant them your users should
+
+510
+00:24:32,179 --> 00:24:34,850
+also be made aware of when a change is
+
+511
+00:24:34,850 --> 00:24:37,010
+scheduled to take effect on what
+
+512
+00:24:37,010 --> 00:24:39,230
+versions that change is going to take
+
+513
+00:24:39,230 --> 00:24:42,350
+effect and what their need going to need
+
+514
+00:24:42,350 --> 00:24:45,320
+to consider in doing work for dealing
+
+515
+00:24:45,320 --> 00:24:46,280
+with your changes
+
+516
+00:24:46,280 --> 00:24:48,710
+a team of five might and probably is
+
+517
+00:24:48,710 --> 00:24:51,110
+going to be incredible but they're gonna
+
+518
+00:24:51,110 --> 00:24:52,760
+have to consider this work in a
+
+519
+00:24:52,760 --> 00:24:54,800
+fundamentally different way than a team
+
+520
+00:24:54,800 --> 00:25:00,350
+of say 50 might and finally context when
+
+521
+00:25:00,350 --> 00:25:02,540
+you make changes to your API surface
+
+522
+00:25:02,540 --> 00:25:04,790
+there's going to be a reason that you're
+
+523
+00:25:04,790 --> 00:25:07,340
+doing so unless there's a security
+
+524
+00:25:07,340 --> 00:25:09,800
+related or similar concern requiring
+
+525
+00:25:09,800 --> 00:25:12,650
+discretion why not share that context
+
+526
+00:25:12,650 --> 00:25:14,780
+with your users it'll help them
+
+527
+00:25:14,780 --> 00:25:16,850
+understand your processes more and
+
+528
+00:25:16,850 --> 00:25:19,960
+likely foster better community relations
+
+529
+00:25:19,960 --> 00:25:23,210
+when providing that context there's four
+
+530
+00:25:23,210 --> 00:25:25,490
+main questions I think are important to
+
+531
+00:25:25,490 --> 00:25:28,520
+ask yourself why are you making these
+
+532
+00:25:28,520 --> 00:25:31,220
+changes how does this benefit your users
+
+533
+00:25:31,220 --> 00:25:35,179
+how might this hurt them and then how
+
+534
+00:25:35,179 --> 00:25:38,270
+can they prepare answering these and
+
+535
+00:25:38,270 --> 00:25:41,000
+provide a strong contextual base for
+
+536
+00:25:41,000 --> 00:25:43,100
+smoother updates as your project
+
+537
+00:25:43,100 --> 00:25:47,559
+continues to grow unfortunately
+
+538
+00:25:47,559 --> 00:25:49,460
+communication can help against some
+
+539
+00:25:49,460 --> 00:25:52,429
+limits you can communicate your list of
+
+540
+00:25:52,429 --> 00:25:54,880
+breaking changes really far in advance
+
+541
+00:25:54,880 --> 00:25:58,040
+but if every major version has a hundred
+
+542
+00:25:58,040 --> 00:26:00,290
+breaking changes it's gonna be difficult
+
+543
+00:26:00,290 --> 00:26:02,809
+to keep up and the cost of updating your
+
+544
+00:26:02,809 --> 00:26:05,480
+library might become too high for some
+
+545
+00:26:05,480 --> 00:26:08,660
+of your users to that end it's important
+
+546
+00:26:08,660 --> 00:26:10,970
+to be intentional about minimizing churn
+
+547
+00:26:10,970 --> 00:26:13,400
+where possible you don't want to throw
+
+548
+00:26:13,400 --> 00:26:15,170
+your users onto an endless hamster wheel
+
+549
+00:26:15,170 --> 00:26:17,530
+of Terror because as we see here
+
+550
+00:26:17,530 --> 00:26:20,660
+everyone suffers and you don't want that
+
+551
+00:26:20,660 --> 00:26:23,240
+your consumers don't want that nobody
+
+552
+00:26:23,240 --> 00:26:25,430
+wants that
+
+553
+00:26:25,430 --> 00:26:28,030
+and as vital as modernization can be
+
+554
+00:26:28,030 --> 00:26:30,890
+sometimes the best choice can be either
+
+555
+00:26:30,890 --> 00:26:33,910
+to defer or not to modernize in
+
+556
+00:26:33,910 --> 00:26:36,230
+considering whether this is the decision
+
+557
+00:26:36,230 --> 00:26:38,750
+best for you and your team there are
+
+558
+00:26:38,750 --> 00:26:40,190
+several things you're going to want to
+
+559
+00:26:40,190 --> 00:26:43,100
+take into account chiefly as I've said
+
+560
+00:26:43,100 --> 00:26:44,390
+over and over again through this
+
+561
+00:26:44,390 --> 00:26:48,200
+presentation context is key the
+
+562
+00:26:48,200 --> 00:26:50,780
+information you have today might guide
+
+563
+00:26:50,780 --> 00:26:52,010
+you towards a slightly different
+
+564
+00:26:52,010 --> 00:26:53,810
+decision than the information you have
+
+565
+00:26:53,810 --> 00:26:56,240
+six months from now or the information
+
+566
+00:26:56,240 --> 00:26:59,060
+you had six months ago code base is live
+
+567
+00:26:59,060 --> 00:27:01,520
+and breathe and your decision now
+
+568
+00:27:01,520 --> 00:27:03,410
+doesn't mean you can't take a different
+
+569
+00:27:03,410 --> 00:27:05,960
+path down the road you want to ensure
+
+570
+00:27:05,960 --> 00:27:08,060
+that this change will have veritable
+
+571
+00:27:08,060 --> 00:27:11,570
+positive impact on your project perhaps
+
+572
+00:27:11,570 --> 00:27:14,120
+end-users won't see a change but it'll
+
+573
+00:27:14,120 --> 00:27:15,860
+decrease maintenance burden across big
+
+574
+00:27:15,860 --> 00:27:18,770
+parts of your codebase the real danger
+
+575
+00:27:18,770 --> 00:27:21,620
+lies in modernization for its own sake
+
+576
+00:27:21,620 --> 00:27:25,490
+if you can't prove impact to some part
+
+577
+00:27:25,490 --> 00:27:27,350
+of your ecosystem you should ask
+
+578
+00:27:27,350 --> 00:27:29,630
+yourself are these developer hours gonna
+
+579
+00:27:29,630 --> 00:27:31,910
+be worth it if it would increase
+
+580
+00:27:31,910 --> 00:27:33,890
+maintenance cost or increased technical
+
+581
+00:27:33,890 --> 00:27:36,230
+debt that would also likely be a vote
+
+582
+00:27:36,230 --> 00:27:40,160
+against electron has learned a lot from
+
+583
+00:27:40,160 --> 00:27:43,040
+both its successes and its failures on
+
+584
+00:27:43,040 --> 00:27:45,710
+all these fronts these examples are
+
+585
+00:27:45,710 --> 00:27:48,740
+provided in light of our experiences can
+
+586
+00:27:48,740 --> 00:27:50,900
+hopefully help you to shed light on how
+
+587
+00:27:50,900 --> 00:27:53,240
+to make better choices in your own code
+
+588
+00:27:53,240 --> 00:27:55,580
+bases but our constraints and
+
+589
+00:27:55,580 --> 00:27:58,100
+considerations are going to be different
+
+590
+00:27:58,100 --> 00:28:00,980
+than yours and so it follows that your
+
+591
+00:28:00,980 --> 00:28:04,010
+decisions may also be when you return to
+
+592
+00:28:04,010 --> 00:28:06,260
+your code bases next week I encourage
+
+593
+00:28:06,260 --> 00:28:08,300
+you to view these as heuristics rather
+
+594
+00:28:08,300 --> 00:28:11,030
+than rules heuristics require
+
+595
+00:28:11,030 --> 00:28:13,730
+situational interpretation but rules
+
+596
+00:28:13,730 --> 00:28:17,450
+hold fast across contexts you also have
+
+597
+00:28:17,450 --> 00:28:19,700
+primary responsibility for the success
+
+598
+00:28:19,700 --> 00:28:22,820
+of you users you should want the barrier
+
+599
+00:28:22,820 --> 00:28:24,950
+to their success and using your library
+
+600
+00:28:24,950 --> 00:28:28,030
+or framework to be as low as possible
+
+601
+00:28:28,030 --> 00:28:30,980
+finally all modernization requires
+
+602
+00:28:30,980 --> 00:28:33,650
+non-trivial work if this is something
+
+603
+00:28:33,650 --> 00:28:35,420
+that matters to you it should never be
+
+604
+00:28:35,420 --> 00:28:38,360
+planned as an afterthought and finally I
+
+605
+00:28:38,360 --> 00:28:39,140
+want to hear from
+
+606
+00:28:39,140 --> 00:28:40,760
+you do you have thoughts on the future
+
+607
+00:28:40,760 --> 00:28:43,370
+of electron the boundary between web and
+
+608
+00:28:43,370 --> 00:28:45,140
+desktop or what it's like to work
+
+609
+00:28:45,140 --> 00:28:47,180
+full-time on open source I'll be around
+
+610
+00:28:47,180 --> 00:28:48,620
+for the next two days and be more than
+
+611
+00:28:48,620 --> 00:28:50,390
+happy to answer any of your questions
+
+612
+00:28:50,390 --> 00:28:52,020
+thank you very much
+

@@ -1,0 +1,2093 @@
+1
+00:00:17,530 --> 00:00:22,720
+
+hi everybody well that was loud I know
+
+2
+00:00:22,720 --> 00:00:26,560
+the schedule says awesomer MVC with 0
+
+3
+00:00:26,560 --> 00:00:31,630
+CSS but I called an audible on my on my
+
+4
+00:00:31,630 --> 00:00:35,700
+talk so we're going to be talking about
+
+5
+00:00:35,700 --> 00:00:40,690
+why rjs today a new library that
+
+6
+00:00:40,690 --> 00:00:44,850
+provides inversion of control
+
+7
+00:00:44,850 --> 00:00:48,370
+aspect-oriented programming and a lot of
+
+8
+00:00:48,370 --> 00:00:51,129
+other stuff to help you bootstrap kick
+
+9
+00:00:51,129 --> 00:00:55,449
+off and write apps in a very structured
+
+10
+00:00:55,449 --> 00:01:02,489
+way in JavaScript so if you were here
+
+11
+00:01:02,489 --> 00:01:06,600
+this morning for John hands talk on
+
+12
+00:01:06,600 --> 00:01:11,740
+modules you probably saw this little app
+
+13
+00:01:11,740 --> 00:01:15,970
+here pirate script or noob script where
+
+14
+00:01:15,970 --> 00:01:19,060
+you can pick which one you think is more
+
+15
+00:01:19,060 --> 00:01:25,240
+piratey we'll go with this one hey all
+
+16
+00:01:25,240 --> 00:01:32,619
+right play our little game here all
+
+17
+00:01:32,619 --> 00:01:38,170
+right I got them both right and so
+
+18
+00:01:38,170 --> 00:01:40,539
+you've probably built an app that sort
+
+19
+00:01:40,539 --> 00:01:42,340
+of looks similar to that under the hood
+
+20
+00:01:42,340 --> 00:01:44,079
+and it probably looks something like
+
+21
+00:01:44,079 --> 00:01:47,649
+this you've got on the front end you've
+
+22
+00:01:47,649 --> 00:01:50,320
+got some views you've got a controller
+
+23
+00:01:50,320 --> 00:01:52,359
+so we're managing those guys you've got
+
+24
+00:01:52,359 --> 00:01:54,930
+some models that are accessing some data
+
+25
+00:01:54,930 --> 00:01:57,850
+and all those are communicating with one
+
+26
+00:01:57,850 --> 00:02:02,740
+another but who creates those things
+
+27
+00:02:02,740 --> 00:02:04,719
+those are the application who creates
+
+28
+00:02:04,719 --> 00:02:06,369
+the controller the controller creates
+
+29
+00:02:06,369 --> 00:02:09,369
+the views who creates the models if the
+
+30
+00:02:09,369 --> 00:02:11,410
+controller who creates the controller if
+
+31
+00:02:11,410 --> 00:02:12,790
+the controller creates the models who
+
+32
+00:02:12,790 --> 00:02:19,470
+who does all that
+
+33
+00:02:19,480 --> 00:02:23,510
+that a little smaller so one thing you
+
+34
+00:02:23,510 --> 00:02:24,920
+can do and you've probably done this and
+
+35
+00:02:24,920 --> 00:02:26,930
+I've done it is you write some piece of
+
+36
+00:02:26,930 --> 00:02:30,530
+code that you load the whatever
+
+37
+00:02:30,530 --> 00:02:32,930
+mechanism and it does all of that for
+
+38
+00:02:32,930 --> 00:02:35,570
+you you write programmatic code to new
+
+39
+00:02:35,570 --> 00:02:37,940
+your controller new your views hand them
+
+40
+00:02:37,940 --> 00:02:40,459
+to the controller new your models do all
+
+41
+00:02:40,459 --> 00:02:42,380
+of that stuff set everything up set it
+
+42
+00:02:42,380 --> 00:02:45,890
+all in motion and then your code looks
+
+43
+00:02:45,890 --> 00:02:50,560
+like this and everything's good except
+
+44
+00:02:50,560 --> 00:02:53,030
+you kind of keep doing that over and
+
+45
+00:02:53,030 --> 00:02:55,580
+over for every page in your application
+
+46
+00:02:55,580 --> 00:02:57,170
+and every application you're right and
+
+47
+00:02:57,170 --> 00:02:59,959
+it always kind of goes the same way you
+
+48
+00:02:59,959 --> 00:03:01,550
+create some views you create a
+
+49
+00:03:01,550 --> 00:03:03,590
+controller you create some modules you
+
+50
+00:03:03,590 --> 00:03:05,959
+realize that I should have done it in
+
+51
+00:03:05,959 --> 00:03:07,970
+this order because hey I can do a bunch
+
+52
+00:03:07,970 --> 00:03:09,620
+of this stuff before damas the DOM is
+
+53
+00:03:09,620 --> 00:03:11,270
+ready so i can give the user a better
+
+54
+00:03:11,270 --> 00:03:13,340
+experience so i can do some x hr's
+
+55
+00:03:13,340 --> 00:03:15,140
+pulling some data all right let's
+
+56
+00:03:15,140 --> 00:03:17,900
+refactor all right first we'll load some
+
+57
+00:03:17,900 --> 00:03:19,820
+models will wait for Dom ready we'll
+
+58
+00:03:19,820 --> 00:03:20,840
+create some views will create a
+
+59
+00:03:20,840 --> 00:03:23,090
+controller ah I could create the
+
+60
+00:03:23,090 --> 00:03:25,130
+controller before dawn ready to okay we
+
+61
+00:03:25,130 --> 00:03:27,440
+refactor again we load some more models
+
+62
+00:03:27,440 --> 00:03:29,680
+we create a controller crap my
+
+63
+00:03:29,680 --> 00:03:31,930
+controller expected my views in the
+
+64
+00:03:31,930 --> 00:03:34,519
+constructor so I've got to refactor my
+
+65
+00:03:34,519 --> 00:03:38,209
+controller oh geez okay I do all of this
+
+66
+00:03:38,209 --> 00:03:40,130
+I debug I fix all the errors finally I
+
+67
+00:03:40,130 --> 00:03:42,320
+have a running app right no I get a
+
+68
+00:03:42,320 --> 00:03:46,310
+blank page so I debug again I fix all of
+
+69
+00:03:46,310 --> 00:03:48,470
+those errors and then I'm fed up right I
+
+70
+00:03:48,470 --> 00:03:50,510
+do I'm doing all this just so I can run
+
+71
+00:03:50,510 --> 00:03:52,820
+my app not this is not really my appt at
+
+72
+00:03:52,820 --> 00:03:58,160
+all and even if you're writing a single
+
+73
+00:03:58,160 --> 00:04:02,150
+page application and you only have to
+
+74
+00:04:02,150 --> 00:04:05,350
+write one loader well so you think
+
+75
+00:04:05,350 --> 00:04:07,190
+you're probably going to want to
+
+76
+00:04:07,190 --> 00:04:08,630
+structure your applications so that you
+
+77
+00:04:08,630 --> 00:04:10,430
+have if it's a single page app you have
+
+78
+00:04:10,430 --> 00:04:12,530
+different areas of your application that
+
+79
+00:04:12,530 --> 00:04:13,910
+the user can navigate to and you don't
+
+80
+00:04:13,910 --> 00:04:15,350
+want to load all of that in the
+
+81
+00:04:15,350 --> 00:04:20,630
+beginning so you have a user preferences
+
+82
+00:04:20,630 --> 00:04:23,210
+area that has a few tabs some HTML
+
+83
+00:04:23,210 --> 00:04:24,740
+templates for each of the tabs some
+
+84
+00:04:24,740 --> 00:04:27,110
+JavaScript driving at all you don't
+
+85
+00:04:27,110 --> 00:04:29,940
+really want to load that at least
+
+86
+00:04:29,940 --> 00:04:31,770
+most of the time until the user actually
+
+87
+00:04:31,770 --> 00:04:33,450
+needs it because how often do users
+
+88
+00:04:33,450 --> 00:04:34,950
+change their preferences maybe once then
+
+89
+00:04:34,950 --> 00:04:40,620
+they first log in so you go and you
+
+90
+00:04:40,620 --> 00:04:43,260
+write some code to load your user
+
+91
+00:04:43,260 --> 00:04:45,180
+preferences and create all the objects
+
+92
+00:04:45,180 --> 00:04:47,490
+and set the whole thing in motion and it
+
+93
+00:04:47,490 --> 00:04:53,400
+looks kinda like this so you do it all
+
+94
+00:04:53,400 --> 00:04:55,470
+over again and then you have another
+
+95
+00:04:55,470 --> 00:04:57,150
+section of your application and you do
+
+96
+00:04:57,150 --> 00:04:58,950
+it all over again and you write this
+
+97
+00:04:58,950 --> 00:05:00,930
+same code over and over even though it's
+
+98
+00:05:00,930 --> 00:05:06,390
+a single page app and not only do you
+
+99
+00:05:06,390 --> 00:05:07,980
+have to create it all you have to clean
+
+100
+00:05:07,980 --> 00:05:09,840
+it all up when the user clicks save or
+
+101
+00:05:09,840 --> 00:05:11,640
+cancel in their preferences you have to
+
+102
+00:05:11,640 --> 00:05:13,170
+destroy all those Dom nodes that you
+
+103
+00:05:13,170 --> 00:05:15,240
+created get it off the screen free all
+
+104
+00:05:15,240 --> 00:05:17,880
+your objects you know make the browser
+
+105
+00:05:17,880 --> 00:05:24,530
+happy don't keep it all around so can we
+
+106
+00:05:24,530 --> 00:05:27,240
+automate or make this process easier how
+
+107
+00:05:27,240 --> 00:05:30,570
+can we do that and that's what why rjs
+
+108
+00:05:30,570 --> 00:05:34,310
+aims to do it aims to allow you to
+
+109
+00:05:34,310 --> 00:05:38,250
+declaratively specify what your
+
+110
+00:05:38,250 --> 00:05:41,460
+controller is what your views are what
+
+111
+00:05:41,460 --> 00:05:44,510
+your models are what Dom nodes you need
+
+112
+00:05:44,510 --> 00:05:49,650
+other things like what events should be
+
+113
+00:05:49,650 --> 00:05:51,750
+hooked up between your view and your
+
+114
+00:05:51,750 --> 00:05:53,669
+controller so the controller can respond
+
+115
+00:05:53,669 --> 00:05:55,140
+to actions that the user takes in the
+
+116
+00:05:55,140 --> 00:05:58,220
+view and it allows you to do that all
+
+117
+00:05:58,220 --> 00:06:01,169
+declaratively you don't have to worry
+
+118
+00:06:01,169 --> 00:06:02,940
+about the order you don't have to worry
+
+119
+00:06:02,940 --> 00:06:05,700
+about when Dom ready happens why I was
+
+120
+00:06:05,700 --> 00:06:07,110
+going to figure all of that out for you
+
+121
+00:06:07,110 --> 00:06:08,640
+assemble it all into a running
+
+122
+00:06:08,640 --> 00:06:14,750
+application kick it off
+
+123
+00:06:14,760 --> 00:06:18,630
+so you write a JavaScript object literal
+
+124
+00:06:18,630 --> 00:06:23,760
+or you know Jason like spec that wire
+
+125
+00:06:23,760 --> 00:06:27,540
+assembles into a running app or a
+
+126
+00:06:27,540 --> 00:06:30,420
+running section of your app for you and
+
+127
+00:06:30,420 --> 00:06:32,700
+manages that so that you can then
+
+128
+00:06:32,700 --> 00:06:34,590
+destroy it with a single line of code
+
+129
+00:06:34,590 --> 00:06:41,790
+later so these are the things that wire
+
+130
+00:06:41,790 --> 00:06:45,330
+does we already mentioned component
+
+131
+00:06:45,330 --> 00:06:49,010
+lifecycle management it also provides
+
+132
+00:06:49,010 --> 00:06:52,770
+dependency injection including Dom nodes
+
+133
+00:06:52,770 --> 00:06:55,410
+so if you have a view that you want to
+
+134
+00:06:55,410 --> 00:06:57,780
+create in wire and it needs a dom node a
+
+135
+00:06:57,780 --> 00:06:59,310
+Dom container where it's going to put at
+
+136
+00:06:59,310 --> 00:07:02,580
+HTML you can hand that Dom node to the
+
+137
+00:07:02,580 --> 00:07:06,150
+view in the wire spec and again wire
+
+138
+00:07:06,150 --> 00:07:10,530
+will work out the order of things it
+
+139
+00:07:10,530 --> 00:07:13,830
+provides a set of connectors which allow
+
+140
+00:07:13,830 --> 00:07:15,780
+you to hook up your objects to one
+
+141
+00:07:15,780 --> 00:07:17,190
+another hook your views up to your
+
+142
+00:07:17,190 --> 00:07:19,350
+controllers hook your models up to your
+
+143
+00:07:19,350 --> 00:07:23,610
+views hook plain old objects up to each
+
+144
+00:07:23,610 --> 00:07:27,890
+other and it provides some
+
+145
+00:07:27,890 --> 00:07:30,780
+aspect-oriented programming we'll take a
+
+146
+00:07:30,780 --> 00:07:35,940
+look at that a little bit later so why
+
+147
+00:07:35,940 --> 00:07:37,950
+are managers life cycles by allowing you
+
+148
+00:07:37,950 --> 00:07:41,930
+to create configure initialize and
+
+149
+00:07:41,930 --> 00:07:46,980
+destroy components and it does this
+
+150
+00:07:46,980 --> 00:07:49,830
+through a plug-in architecture so that
+
+151
+00:07:49,830 --> 00:07:53,280
+you can do this with any type of object
+
+152
+00:07:53,280 --> 00:07:56,370
+it supports plain JavaScript objects out
+
+153
+00:07:56,370 --> 00:07:59,670
+of the box but it comes with a plug-in
+
+154
+00:07:59,670 --> 00:08:02,240
+now that allows you to do this with
+
+155
+00:08:02,240 --> 00:08:05,250
+digits so that if you don't want to use
+
+156
+00:08:05,250 --> 00:08:07,950
+dojo type in your HTML to create digits
+
+157
+00:08:07,950 --> 00:08:11,370
+you can create them in wire and it will
+
+158
+00:08:11,370 --> 00:08:13,350
+create them for you and then clean them
+
+159
+00:08:13,350 --> 00:08:15,930
+up when you when you want the to destroy
+
+160
+00:08:15,930 --> 00:08:17,550
+that section of your application you
+
+161
+00:08:17,550 --> 00:08:19,620
+could also there'll be plugins coming
+
+162
+00:08:19,620 --> 00:08:22,350
+for jQuery since jQuery widgets are sort
+
+163
+00:08:22,350 --> 00:08:26,249
+of non-standard JavaScript objects they
+
+164
+00:08:26,249 --> 00:08:27,269
+you have to create them through the
+
+165
+00:08:27,269 --> 00:08:29,099
+widget factory and you have to destroy
+
+166
+00:08:29,099 --> 00:08:32,610
+them through the jQuery API so you can't
+
+167
+00:08:32,610 --> 00:08:35,699
+just knew a JavaScript object so that
+
+168
+00:08:35,699 --> 00:08:40,269
+can be handled through wire plugins also
+
+169
+00:08:40,279 --> 00:08:43,169
+so remember that user preferences screen
+
+170
+00:08:43,169 --> 00:08:45,600
+that we had to write a loader for to
+
+171
+00:08:45,600 --> 00:08:48,449
+bring it into existence set up all the
+
+172
+00:08:48,449 --> 00:08:51,240
+events we had to knew all the the the
+
+173
+00:08:51,240 --> 00:08:52,829
+views and the controller hook them up
+
+174
+00:08:52,829 --> 00:08:55,860
+and then remember to destroy it all when
+
+175
+00:08:55,860 --> 00:08:58,860
+we're done you can wire that whole thing
+
+176
+00:08:58,860 --> 00:09:02,850
+into existence with one line of code you
+
+177
+00:09:02,850 --> 00:09:04,500
+write a spec for it wire it into
+
+178
+00:09:04,500 --> 00:09:06,660
+existence wire will manage all of that
+
+179
+00:09:06,660 --> 00:09:08,370
+for you hook it all up the user
+
+180
+00:09:08,370 --> 00:09:10,649
+interacts with it and then when the user
+
+181
+00:09:10,649 --> 00:09:13,680
+is done they click save or cancel in
+
+182
+00:09:13,680 --> 00:09:16,559
+your spec you've hooked up that save or
+
+183
+00:09:16,559 --> 00:09:20,189
+cancel event to your controller your
+
+184
+00:09:20,189 --> 00:09:23,370
+controller then destroys the wired
+
+185
+00:09:23,370 --> 00:09:26,699
+container and all of that stuff goes
+
+186
+00:09:26,699 --> 00:09:34,920
+away but isn't this when we're talking
+
+187
+00:09:34,920 --> 00:09:38,100
+about dependencies so if we have a view
+
+188
+00:09:38,100 --> 00:09:42,240
+that depends on some data isn't this
+
+189
+00:09:42,240 --> 00:09:44,819
+what we already talked about when we
+
+190
+00:09:44,819 --> 00:09:52,720
+talk about an AMD loader yes and no
+
+191
+00:09:52,730 --> 00:09:54,959
+we're going to divert just a second and
+
+192
+00:09:54,959 --> 00:09:58,889
+talk about why that's the case good
+
+193
+00:09:58,889 --> 00:10:00,569
+software is built on abstractions we
+
+194
+00:10:00,569 --> 00:10:03,149
+know this we'd like to be able to write
+
+195
+00:10:03,149 --> 00:10:04,800
+generic components that can be
+
+196
+00:10:04,800 --> 00:10:07,139
+configured to solve this problem in a
+
+197
+00:10:07,139 --> 00:10:08,550
+specific situation for us so we don't
+
+198
+00:10:08,550 --> 00:10:09,839
+have to write that component over and
+
+199
+00:10:09,839 --> 00:10:12,420
+over and over and over again and if you
+
+200
+00:10:12,420 --> 00:10:17,689
+do that you can mix and match them dojo
+
+201
+00:10:17,689 --> 00:10:20,069
+data stores are a good example of this
+
+202
+00:10:20,069 --> 00:10:22,949
+they provide a JSON rest or they provide
+
+203
+00:10:22,949 --> 00:10:25,290
+a memory store and they provide a
+
+204
+00:10:25,290 --> 00:10:28,110
+standard API for accessing those get put
+
+205
+00:10:28,110 --> 00:10:32,459
+add remove they also provide some
+
+206
+00:10:32,459 --> 00:10:34,579
+decorators that allow you to do caching
+
+207
+00:10:34,579 --> 00:10:38,040
+allow you to observe new objects being
+
+208
+00:10:38,040 --> 00:10:38,850
+added to the store
+
+209
+00:10:38,850 --> 00:10:40,800
+in your in your application so you can
+
+210
+00:10:40,800 --> 00:10:42,240
+react to that display a new item in the
+
+211
+00:10:42,240 --> 00:10:45,000
+list and the reason this all works is
+
+212
+00:10:45,000 --> 00:10:48,269
+because they created a standard API that
+
+213
+00:10:48,269 --> 00:10:50,730
+matches what we expect from a rest
+
+214
+00:10:50,730 --> 00:10:55,889
+endpoint so you could with this API
+
+215
+00:10:55,889 --> 00:10:58,019
+design of you that's very generic and
+
+216
+00:10:58,019 --> 00:11:00,930
+could draw its data from a rest endpoint
+
+217
+00:11:00,930 --> 00:11:03,810
+or from a memory store for testing or
+
+218
+00:11:03,810 --> 00:11:06,000
+maybe you have some data that you just
+
+219
+00:11:06,000 --> 00:11:08,670
+want to you don't need to fetch it from
+
+220
+00:11:08,670 --> 00:11:10,709
+from a rest store it's a small amount of
+
+221
+00:11:10,709 --> 00:11:13,589
+data like you know name prefixes mr.
+
+222
+00:11:13,589 --> 00:11:15,420
+mrs. things like that it's not going to
+
+223
+00:11:15,420 --> 00:11:17,550
+change so you just use a memory store
+
+224
+00:11:17,550 --> 00:11:19,290
+for that you could design a view that
+
+225
+00:11:19,290 --> 00:11:21,300
+could use either of those or any
+
+226
+00:11:21,300 --> 00:11:24,750
+combination of those things and so
+
+227
+00:11:24,750 --> 00:11:27,720
+really there are many kinds of
+
+228
+00:11:27,720 --> 00:11:30,899
+dependencies there are integral
+
+229
+00:11:30,899 --> 00:11:33,329
+dependencies which your component just
+
+230
+00:11:33,329 --> 00:11:35,759
+simply can't function without these it
+
+231
+00:11:35,759 --> 00:11:38,850
+needs these exact things and AMD is
+
+232
+00:11:38,850 --> 00:11:41,389
+really good and other module loaders
+
+233
+00:11:41,389 --> 00:11:43,529
+dependency managers are really good at
+
+234
+00:11:43,529 --> 00:11:46,199
+solving that problem those are also
+
+235
+00:11:46,199 --> 00:11:48,240
+required dependencies it just can't work
+
+236
+00:11:48,240 --> 00:11:50,579
+without those but then there also a set
+
+237
+00:11:50,579 --> 00:11:53,430
+of configurable dependencies like a data
+
+238
+00:11:53,430 --> 00:11:55,740
+store you might want to point a data
+
+239
+00:11:55,740 --> 00:11:57,990
+store at this rest endpoint or you might
+
+240
+00:11:57,990 --> 00:11:59,339
+want to use a memory store and you might
+
+241
+00:11:59,339 --> 00:12:00,959
+want to hand either one of those to a
+
+242
+00:12:00,959 --> 00:12:03,089
+view you don't want to specify that data
+
+243
+00:12:03,089 --> 00:12:05,639
+store as a dependency in your module
+
+244
+00:12:05,639 --> 00:12:07,980
+dependencies because then you can't use
+
+245
+00:12:07,980 --> 00:12:11,130
+that component anywhere else and then
+
+246
+00:12:11,130 --> 00:12:12,959
+there are optional dependencies your
+
+247
+00:12:12,959 --> 00:12:15,899
+component may behave in one way if you
+
+248
+00:12:15,899 --> 00:12:18,750
+give it some extra information but maybe
+
+249
+00:12:18,750 --> 00:12:21,089
+that information is a isn't available or
+
+250
+00:12:21,089 --> 00:12:22,380
+you don't need it in a particular
+
+251
+00:12:22,380 --> 00:12:24,990
+situation so you'd like your component
+
+252
+00:12:24,990 --> 00:12:27,569
+to still function but maybe in a more
+
+253
+00:12:27,569 --> 00:12:29,370
+limited way and that's perfectly
+
+254
+00:12:29,370 --> 00:12:31,160
+reasonable so there are optional
+
+255
+00:12:31,160 --> 00:12:37,139
+dependencies module loaders don't
+
+256
+00:12:37,139 --> 00:12:40,290
+necessarily solve the configurable and
+
+257
+00:12:40,290 --> 00:12:43,079
+optional dependencies problem they
+
+258
+00:12:43,079 --> 00:12:44,939
+certainly solve the integral and
+
+259
+00:12:44,939 --> 00:12:49,070
+required dependencies problem
+
+260
+00:12:49,080 --> 00:12:53,010
+and this is the whole one of the holes
+
+261
+00:12:53,010 --> 00:12:57,090
+that why rjs fills it allows you to
+
+262
+00:12:57,090 --> 00:13:00,120
+inject specific dependencies concrete
+
+263
+00:13:00,120 --> 00:13:02,190
+dependencies the actual objects that are
+
+264
+00:13:02,190 --> 00:13:03,630
+going to be used when the application
+
+265
+00:13:03,630 --> 00:13:06,840
+runs for the specific situation that you
+
+266
+00:13:06,840 --> 00:13:08,460
+need so if you have a view you want to
+
+267
+00:13:08,460 --> 00:13:09,930
+use multiple times you want to give it
+
+268
+00:13:09,930 --> 00:13:12,420
+different kinds of data just instantiate
+
+269
+00:13:12,420 --> 00:13:15,000
+three copies of it and inject the data
+
+270
+00:13:15,000 --> 00:13:22,020
+stores that each one needs so for
+
+271
+00:13:22,020 --> 00:13:27,060
+example let's take a look at what that
+
+272
+00:13:27,060 --> 00:13:34,240
+looks like
+
+273
+00:13:34,250 --> 00:13:38,270
+this is actually code from the pirate
+
+274
+00:13:38,270 --> 00:13:41,260
+script or nude script application and
+
+275
+00:13:41,260 --> 00:13:46,910
+this is a wire spec this is what you
+
+276
+00:13:46,910 --> 00:13:48,920
+would write to bring all the components
+
+277
+00:13:48,920 --> 00:13:51,470
+of your application together you'll
+
+278
+00:13:51,470 --> 00:13:54,340
+notice that it itself is an AMD module
+
+279
+00:13:54,340 --> 00:13:58,160
+but it's just basically a JavaScript
+
+280
+00:13:58,160 --> 00:14:03,440
+object literal and you can see down here
+
+281
+00:14:03,440 --> 00:14:06,740
+at the bottom we're declaring that hey
+
+282
+00:14:06,740 --> 00:14:11,890
+I've got a view called codes view it's
+
+283
+00:14:11,890 --> 00:14:15,110
+comes from this AMD module instantiate
+
+284
+00:14:15,110 --> 00:14:18,590
+me one of these I want to pass it it's I
+
+285
+00:14:18,590 --> 00:14:20,930
+want to pass its constructor a dom node
+
+286
+00:14:20,930 --> 00:14:23,270
+that i'm going to query for it has the
+
+287
+00:14:23,270 --> 00:14:25,550
+class codes container which might return
+
+288
+00:14:25,550 --> 00:14:28,460
+many but i want the first one I've got
+
+289
+00:14:28,460 --> 00:14:30,470
+heading view which was up at the top you
+
+290
+00:14:30,470 --> 00:14:33,830
+saw the pictures of the Pirates that
+
+291
+00:14:33,830 --> 00:14:35,810
+comes that's going to instantiate this
+
+292
+00:14:35,810 --> 00:14:37,930
+AMD module called Hayt heading view
+
+293
+00:14:37,930 --> 00:14:41,740
+again we're going to hand at a dom node
+
+294
+00:14:41,740 --> 00:14:45,110
+I've got some results that we're going
+
+295
+00:14:45,110 --> 00:14:46,730
+to put in this results container but
+
+296
+00:14:46,730 --> 00:14:50,000
+notice there's no results view here we
+
+297
+00:14:50,000 --> 00:14:51,950
+don't need that when we start we'll see
+
+298
+00:14:51,950 --> 00:14:54,350
+how that happens later and then we've
+
+299
+00:14:54,350 --> 00:14:57,200
+got our controller and it's a pirate
+
+300
+00:14:57,200 --> 00:15:00,170
+script controller and we're going to
+
+301
+00:15:00,170 --> 00:15:01,250
+create it we're going to call its
+
+302
+00:15:01,250 --> 00:15:02,810
+constructor with no arguments and then
+
+303
+00:15:02,810 --> 00:15:03,860
+we're going to set a bunch of properties
+
+304
+00:15:03,860 --> 00:15:08,180
+on it and if you're familiar with JSON
+
+305
+00:15:08,180 --> 00:15:11,030
+referencing the syntax dollar ref this
+
+306
+00:15:11,030 --> 00:15:14,990
+is wire uses Jason referencing syntax so
+
+307
+00:15:14,990 --> 00:15:16,940
+what we're saying is there's a coat
+
+308
+00:15:16,940 --> 00:15:19,100
+underscore codes view property on the
+
+309
+00:15:19,100 --> 00:15:23,180
+controller and hey make it point to this
+
+310
+00:15:23,180 --> 00:15:27,530
+view up here that we just created so I'm
+
+311
+00:15:27,530 --> 00:15:32,600
+wiring in the views the codes view some
+
+312
+00:15:32,600 --> 00:15:36,710
+data a node that the controller is going
+
+313
+00:15:36,710 --> 00:15:38,360
+to manage for the whole application and
+
+314
+00:15:38,360 --> 00:15:43,010
+and some data turns and thresholds up
+
+315
+00:15:43,010 --> 00:15:45,110
+here so these can be just plain old
+
+316
+00:15:45,110 --> 00:15:46,670
+JavaScript objects if you want they can
+
+317
+00:15:46,670 --> 00:15:48,019
+be arrays they can be value
+
+318
+00:15:48,019 --> 00:15:49,220
+they can be strings they can be whatever
+
+319
+00:15:49,220 --> 00:15:52,670
+you want but wire is going to create all
+
+320
+00:15:52,670 --> 00:15:54,709
+of this it's going to manage the order
+
+321
+00:15:54,709 --> 00:15:56,119
+of creating these views it's going to
+
+322
+00:15:56,119 --> 00:15:58,579
+make sure the dom is ready before it
+
+323
+00:15:58,579 --> 00:16:02,869
+creates this view and before it hands it
+
+324
+00:16:02,869 --> 00:16:05,149
+to the controller because the controller
+
+325
+00:16:05,149 --> 00:16:06,679
+can't really do anything with it until
+
+326
+00:16:06,679 --> 00:16:08,119
+the view is ready and the view can't be
+
+327
+00:16:08,119 --> 00:16:15,679
+ready until the dom is ready and i just
+
+328
+00:16:15,679 --> 00:16:18,170
+mentioned that the ordering very
+
+329
+00:16:18,170 --> 00:16:22,730
+important wire takes care of that for
+
+330
+00:16:22,730 --> 00:16:27,139
+you if you notice you could move this
+
+331
+00:16:27,139 --> 00:16:30,290
+stuff around in this spec and the
+
+332
+00:16:30,290 --> 00:16:34,100
+application would still work so you
+
+333
+00:16:34,100 --> 00:16:37,040
+don't have to think about it I'll take
+
+334
+00:16:37,040 --> 00:16:44,040
+this controller and put it up here
+
+335
+00:16:44,050 --> 00:16:47,780
+Oh
+
+336
+00:16:47,790 --> 00:16:50,610
+let's just lent that real quick oh haha
+
+337
+00:16:50,610 --> 00:17:01,470
+all right let's reload oh no anyway must
+
+338
+00:17:01,470 --> 00:17:08,380
+have it comma to have a comment there
+
+339
+00:17:08,390 --> 00:17:10,710
+anyway I might worry about commas right
+
+340
+00:17:10,710 --> 00:17:16,320
+now okay so you have component a that
+
+341
+00:17:16,320 --> 00:17:17,430
+needs component of B that needs
+
+342
+00:17:17,430 --> 00:17:20,190
+component C D and E and C needs a dom
+
+343
+00:17:20,190 --> 00:17:22,500
+node normally you'd have to think about
+
+344
+00:17:22,500 --> 00:17:23,730
+that you would have to write the code
+
+345
+00:17:23,730 --> 00:17:25,110
+create the objects in the right order
+
+346
+00:17:25,110 --> 00:17:27,660
+access the Dom use your Dom ready
+
+347
+00:17:27,660 --> 00:17:29,730
+function put the right set of code
+
+348
+00:17:29,730 --> 00:17:32,850
+inside of that Dom ready call back make
+
+349
+00:17:32,850 --> 00:17:34,980
+sure you've got your variable scope
+
+350
+00:17:34,980 --> 00:17:36,930
+correctly for all of that you don't need
+
+351
+00:17:36,930 --> 00:17:38,850
+to worry about that here just declare
+
+352
+00:17:38,850 --> 00:17:42,360
+what you need and wire will make it
+
+353
+00:17:42,360 --> 00:17:49,330
+happen when it needs to happen
+
+354
+00:17:49,340 --> 00:17:51,780
+connectors is the next thing that wire
+
+355
+00:17:51,780 --> 00:17:54,750
+offers and these are when you draw a box
+
+356
+00:17:54,750 --> 00:17:57,470
+in line diagram these are the lines
+
+357
+00:17:57,470 --> 00:18:00,480
+these are just as important how your
+
+358
+00:18:00,480 --> 00:18:02,280
+components communicate are just as
+
+359
+00:18:02,280 --> 00:18:05,920
+important as the components themselves
+
+360
+00:18:05,930 --> 00:18:11,610
+and wire offers a couple of these out of
+
+361
+00:18:11,610 --> 00:18:13,740
+the box you can inject dependencies
+
+362
+00:18:13,740 --> 00:18:15,390
+directly so that objects get references
+
+363
+00:18:15,390 --> 00:18:16,860
+to other objects and you can call
+
+364
+00:18:16,860 --> 00:18:18,270
+methods on them that's one type of
+
+365
+00:18:18,270 --> 00:18:20,370
+connector but that's pretty tight
+
+366
+00:18:20,370 --> 00:18:22,080
+tightly coupled but sometimes you need
+
+367
+00:18:22,080 --> 00:18:25,440
+it it's less tightly coupled and
+
+368
+00:18:25,440 --> 00:18:27,030
+actually creating the object inside
+
+369
+00:18:27,030 --> 00:18:28,830
+you're inside your component and then
+
+370
+00:18:28,830 --> 00:18:30,060
+you're using it because here you could
+
+371
+00:18:30,060 --> 00:18:32,400
+swap different ones in but you can also
+
+372
+00:18:32,400 --> 00:18:37,080
+hook up events and pub sub and wire does
+
+373
+00:18:37,080 --> 00:18:39,060
+this through plugins right now it
+
+374
+00:18:39,060 --> 00:18:41,220
+supports dojo so it actually has a
+
+375
+00:18:41,220 --> 00:18:44,550
+plug-in that when you use the wire event
+
+376
+00:18:44,550 --> 00:18:46,470
+connector and you're using the dojo
+
+377
+00:18:46,470 --> 00:18:48,270
+plug-in it's using dojo connect under
+
+378
+00:18:48,270 --> 00:18:50,490
+the under the scenes same with pub sub
+
+379
+00:18:50,490 --> 00:18:52,530
+if you do pub sub and even you use the
+
+380
+00:18:52,530 --> 00:18:55,920
+dojo plugin it's going to use dojo pub
+
+381
+00:18:55,920 --> 00:18:58,680
+sub so you're integrating with if you're
+
+382
+00:18:58,680 --> 00:18:59,700
+already using dojo
+
+383
+00:18:59,700 --> 00:19:01,799
+pub sub you can leverage that you don't
+
+384
+00:19:01,799 --> 00:19:04,919
+have another pub sub system to take care
+
+385
+00:19:04,919 --> 00:19:11,230
+of and work with
+
+386
+00:19:11,240 --> 00:19:15,090
+and lastly it provides aspect-oriented
+
+387
+00:19:15,090 --> 00:19:17,880
+programming also through a plug-in and
+
+388
+00:19:17,880 --> 00:19:20,700
+if you're not familiar with aop it's a
+
+389
+00:19:20,700 --> 00:19:23,100
+way that you can augment and customize
+
+390
+00:19:23,100 --> 00:19:25,680
+the functionality of existing components
+
+391
+00:19:25,680 --> 00:19:27,660
+maybe you wrote maybe you didn't write
+
+392
+00:19:27,660 --> 00:19:29,910
+without actually modifying the source
+
+393
+00:19:29,910 --> 00:19:32,780
+code it allows you to add aspects to
+
+394
+00:19:32,780 --> 00:19:36,210
+components some examples of those you
+
+395
+00:19:36,210 --> 00:19:39,270
+can apply decorators you can add advice
+
+396
+00:19:39,270 --> 00:19:42,360
+before after around you can introduce
+
+397
+00:19:42,360 --> 00:19:44,850
+mix-ins in the fly introduce new methods
+
+398
+00:19:44,850 --> 00:19:46,680
+introduce new interfaces into an object
+
+399
+00:19:46,680 --> 00:19:49,470
+and you know these are all useful in
+
+400
+00:19:49,470 --> 00:19:54,180
+various specific situations one the sort
+
+401
+00:19:54,180 --> 00:19:56,430
+of canonical aop example is adding
+
+402
+00:19:56,430 --> 00:19:58,230
+logging to some component that you don't
+
+403
+00:19:58,230 --> 00:20:00,360
+have access to all right that's great
+
+404
+00:20:00,360 --> 00:20:04,260
+but it's kind of boring so more fun is
+
+405
+00:20:04,260 --> 00:20:07,860
+to take dojos Jason rest or write
+
+406
+00:20:07,860 --> 00:20:10,910
+yourself a validating decorator for it
+
+407
+00:20:10,910 --> 00:20:15,330
+that uses JSON schema use wire to inject
+
+408
+00:20:15,330 --> 00:20:17,160
+the schema into your decorator and then
+
+409
+00:20:17,160 --> 00:20:20,220
+apply your decorator to dojos Jason rest
+
+410
+00:20:20,220 --> 00:20:22,650
+or and then inject that store into your
+
+411
+00:20:22,650 --> 00:20:24,660
+controller all without changing any of
+
+412
+00:20:24,660 --> 00:20:27,060
+the code in Jason restore or your
+
+413
+00:20:27,060 --> 00:20:34,230
+controller so let's see what some of
+
+414
+00:20:34,230 --> 00:20:39,360
+this stuff looks like so we already saw
+
+415
+00:20:39,360 --> 00:20:41,910
+this example this is from pirate script
+
+416
+00:20:41,910 --> 00:20:45,060
+or noob script and here's another
+
+417
+00:20:45,060 --> 00:20:49,550
+example that I've pulled from an
+
+418
+00:20:49,550 --> 00:20:53,870
+application where wire is being used
+
+419
+00:20:53,870 --> 00:20:55,590
+it's going to be a production
+
+420
+00:20:55,590 --> 00:21:00,750
+application and some pieces of this I'm
+
+421
+00:21:00,750 --> 00:21:04,050
+using some wire plugins this is just an
+
+422
+00:21:04,050 --> 00:21:05,310
+array there's nothing special about it
+
+423
+00:21:05,310 --> 00:21:06,990
+why are just notices that hey these
+
+424
+00:21:06,990 --> 00:21:09,710
+modules are plugins as it loads them and
+
+425
+00:21:09,710 --> 00:21:13,890
+instantiate them as plugins so in this
+
+426
+00:21:13,890 --> 00:21:15,270
+app we're going to have some we're going
+
+427
+00:21:15,270 --> 00:21:17,970
+to have some data stores we've got a
+
+428
+00:21:17,970 --> 00:21:20,580
+JSON rest or that points to some people
+
+429
+00:21:20,580 --> 00:21:23,530
+and hey we're going to decorate that
+
+430
+00:21:23,530 --> 00:21:27,350
+with this and what is this well up here
+
+431
+00:21:27,350 --> 00:21:31,130
+in the wire aop module we're declaring
+
+432
+00:21:31,130 --> 00:21:32,840
+some decorators we're saying hey there's
+
+433
+00:21:32,840 --> 00:21:35,600
+a caching decorator and it is going to
+
+434
+00:21:35,600 --> 00:21:38,570
+use dojos cashing store we've got a
+
+435
+00:21:38,570 --> 00:21:40,010
+validating decorator that we wrote
+
+436
+00:21:40,010 --> 00:21:42,740
+ourselves so down here we're going to
+
+437
+00:21:42,740 --> 00:21:46,250
+apply a validating decorator to the JSON
+
+438
+00:21:46,250 --> 00:21:50,640
+rest or that we're creating for people
+
+439
+00:21:50,650 --> 00:21:55,660
+and we're going to hand it a schema that
+
+440
+00:21:55,660 --> 00:21:59,120
+we're loading here this is AMD module
+
+441
+00:21:59,120 --> 00:22:01,400
+AMD loading we're loading a schema
+
+442
+00:22:01,400 --> 00:22:03,650
+handing it to our decorator and then
+
+443
+00:22:03,650 --> 00:22:05,300
+applying the decorator to the Jason rest
+
+444
+00:22:05,300 --> 00:22:08,000
+or all without changing any of those in
+
+445
+00:22:08,000 --> 00:22:11,180
+the JSON dress store we've got another
+
+446
+00:22:11,180 --> 00:22:14,150
+store for occupations and hey we're
+
+447
+00:22:14,150 --> 00:22:17,450
+going to use a caching decorator here
+
+448
+00:22:17,450 --> 00:22:18,530
+because I know that these occupations
+
+449
+00:22:18,530 --> 00:22:20,840
+just don't change very very often so
+
+450
+00:22:20,840 --> 00:22:22,430
+while the users logged in I don't care
+
+451
+00:22:22,430 --> 00:22:23,810
+you know i'm just going to present them
+
+452
+00:22:23,810 --> 00:22:27,020
+always with the same set of occupations
+
+453
+00:22:27,020 --> 00:22:29,690
+so we apply a caching decorator and
+
+454
+00:22:29,690 --> 00:22:30,800
+we're going to use the dojo memory
+
+455
+00:22:30,800 --> 00:22:32,870
+stored as thick as the backing store for
+
+456
+00:22:32,870 --> 00:22:38,720
+the cash then we've got some name
+
+457
+00:22:38,720 --> 00:22:40,490
+prefixes that we're going to load to
+
+458
+00:22:40,490 --> 00:22:42,260
+this is something else that wire
+
+459
+00:22:42,260 --> 00:22:44,780
+provides is the notion of reference
+
+460
+00:22:44,780 --> 00:22:48,200
+resolvers you'll see this in a couple of
+
+461
+00:22:48,200 --> 00:22:51,200
+places this is resolving a reference to
+
+462
+00:22:51,200 --> 00:22:53,480
+a rest resource so what this ends up
+
+463
+00:22:53,480 --> 00:22:55,310
+being is actually another Jason rest
+
+464
+00:22:55,310 --> 00:22:59,120
+store and this is just shorthand oh it's
+
+465
+00:22:59,120 --> 00:23:00,290
+not going to be a jason rusch store i'm
+
+466
+00:23:00,290 --> 00:23:02,390
+sorry it's going to create a Jason rest
+
+467
+00:23:02,390 --> 00:23:04,340
+or issue a query on it and return a
+
+468
+00:23:04,340 --> 00:23:08,180
+promise so that when that when that data
+
+469
+00:23:08,180 --> 00:23:11,690
+comes back from the server name prefixes
+
+470
+00:23:11,690 --> 00:23:14,840
+is going to be the actual data not a
+
+471
+00:23:14,840 --> 00:23:17,600
+store and that's fine because that's
+
+472
+00:23:17,600 --> 00:23:19,190
+what I need I need the prefixes I don't
+
+473
+00:23:19,190 --> 00:23:20,570
+need the store here we're going to
+
+474
+00:23:20,570 --> 00:23:25,630
+create a view hand at a Dom reference
+
+475
+00:23:25,630 --> 00:23:27,300
+and then we're going to create a
+
+476
+00:23:27,300 --> 00:23:32,500
+controller from our our application
+
+477
+00:23:32,500 --> 00:23:34,150
+going to set some properties on it we're
+
+478
+00:23:34,150 --> 00:23:36,160
+going to hand our stores to our
+
+479
+00:23:36,160 --> 00:23:37,360
+controller because we want our
+
+480
+00:23:37,360 --> 00:23:39,070
+controller to be managing the data not
+
+481
+00:23:39,070 --> 00:23:41,380
+the view the controller can decide how
+
+482
+00:23:41,380 --> 00:23:44,800
+to hand that data to the view and then
+
+483
+00:23:44,800 --> 00:23:47,920
+we're going to apply an event connector
+
+484
+00:23:47,920 --> 00:23:50,350
+this is one of wires supported
+
+485
+00:23:50,350 --> 00:23:54,370
+connectors and up at the top we're using
+
+486
+00:23:54,370 --> 00:23:57,040
+the dojo events plugin so this is going
+
+487
+00:23:57,040 --> 00:24:00,120
+to use dojo connect to do this operation
+
+488
+00:24:00,120 --> 00:24:05,230
+so you know you could load the jQuery
+
+489
+00:24:05,230 --> 00:24:08,140
+events plugin and it would use jQuery to
+
+490
+00:24:08,140 --> 00:24:14,710
+do this so what this is saying is I want
+
+491
+00:24:14,710 --> 00:24:19,960
+to connect person views on save event to
+
+492
+00:24:19,960 --> 00:24:22,630
+the controller's handle save person
+
+493
+00:24:22,630 --> 00:24:26,290
+method so you can imagine when the user
+
+494
+00:24:26,290 --> 00:24:28,810
+clicks the Save button in the view the
+
+495
+00:24:28,810 --> 00:24:33,310
+view fires a non-save event and the
+
+496
+00:24:33,310 --> 00:24:35,800
+controller's handles save method gets
+
+497
+00:24:35,800 --> 00:24:38,680
+gets called same thing with with on
+
+498
+00:24:38,680 --> 00:24:41,710
+cancel cause the controller's handle
+
+499
+00:24:41,710 --> 00:24:44,800
+cancel method and what's interesting
+
+500
+00:24:44,800 --> 00:24:47,050
+here is if you were writing this app
+
+501
+00:24:47,050 --> 00:24:50,290
+yourself without wire or maybe with a
+
+502
+00:24:50,290 --> 00:24:52,000
+framework or something like that you
+
+503
+00:24:52,000 --> 00:24:53,470
+might be tempted to actually give a
+
+504
+00:24:53,470 --> 00:24:56,980
+reference of the view to the controller
+
+505
+00:24:56,980 --> 00:24:59,440
+and have it do that but the controller
+
+506
+00:24:59,440 --> 00:25:01,810
+really doesn't care it doesn't need to
+
+507
+00:25:01,810 --> 00:25:03,790
+have a reference to the view all it
+
+508
+00:25:03,790 --> 00:25:05,560
+really needs to know is when the data
+
+509
+00:25:05,560 --> 00:25:11,380
+was either saved or canceled so here we
+
+510
+00:25:11,380 --> 00:25:14,380
+can avoid that very loose coupling we
+
+511
+00:25:14,380 --> 00:25:16,840
+just care about the events we don't care
+
+512
+00:25:16,840 --> 00:25:19,420
+about the reference itself about the
+
+513
+00:25:19,420 --> 00:25:36,169
+view itself
+
+514
+00:25:36,179 --> 00:25:39,119
+and that's it that's why rjs you can
+
+515
+00:25:39,119 --> 00:25:43,860
+find it on github the currently released
+
+516
+00:25:43,860 --> 00:25:46,830
+version like I said supports dojo
+
+517
+00:25:46,830 --> 00:25:48,480
+through set of plugins there'll be
+
+518
+00:25:48,480 --> 00:25:54,509
+jQuery plugins coming soon and if you've
+
+519
+00:25:54,509 --> 00:25:57,570
+heard a lot of the talk about modules at
+
+520
+00:25:57,570 --> 00:26:00,570
+this this conference wire works really
+
+521
+00:26:00,570 --> 00:26:03,269
+well with modules and AMD so if you're
+
+522
+00:26:03,269 --> 00:26:06,570
+using AMD or you want to use AMD that's
+
+523
+00:26:06,570 --> 00:26:08,720
+another reason to check out why rjs
+

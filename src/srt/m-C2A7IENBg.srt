@@ -1,0 +1,2493 @@
+1
+00:00:08,179 --> 00:00:09,980
+
+all right so what we're going to talk
+
+2
+00:00:09,980 --> 00:00:11,900
+about today is building a gesture
+
+3
+00:00:11,900 --> 00:00:13,699
+recognition system with machine learning
+
+4
+00:00:13,699 --> 00:00:16,180
+Arduino and JavaScript so all together
+
+5
+00:00:16,180 --> 00:00:18,650
+but before I start just a little bit
+
+6
+00:00:18,650 --> 00:00:20,869
+about me my name is Charlie Gerard I'm
+
+7
+00:00:20,869 --> 00:00:23,509
+recently a senior content of apparently
+
+8
+00:00:23,509 --> 00:00:26,060
+fie and outside of my job I'm also part
+
+9
+00:00:26,060 --> 00:00:27,949
+of two tech communities called the
+
+10
+00:00:27,949 --> 00:00:29,990
+Google developer experts and Mozilla
+
+11
+00:00:29,990 --> 00:00:31,550
+tech speaker I'm not going to go too
+
+12
+00:00:31,550 --> 00:00:33,080
+much in detail right now but if you have
+
+13
+00:00:33,080 --> 00:00:34,910
+any questions about these two we can
+
+14
+00:00:34,910 --> 00:00:37,010
+talk about it afterwards what this talk
+
+15
+00:00:37,010 --> 00:00:39,710
+is more related to is my passion about
+
+16
+00:00:39,710 --> 00:00:41,570
+human-computer interaction so if you
+
+17
+00:00:41,570 --> 00:00:43,430
+don't know what this is it is kind of
+
+18
+00:00:43,430 --> 00:00:45,290
+like the study or the research of how
+
+19
+00:00:45,290 --> 00:00:47,839
+humans interact with computers so when
+
+20
+00:00:47,839 --> 00:00:48,949
+you think about the way you interact
+
+21
+00:00:48,949 --> 00:00:50,570
+normally with technology on a day to day
+
+22
+00:00:50,570 --> 00:00:52,100
+basis you might be typing on your
+
+23
+00:00:52,100 --> 00:00:54,229
+keyboard or swiping on your phone but
+
+24
+00:00:54,229 --> 00:00:56,089
+there's a lot more types of interactions
+
+25
+00:00:56,089 --> 00:00:57,650
+that we could actually program that
+
+26
+00:00:57,650 --> 00:00:59,030
+would be a lot more playful and a lot
+
+27
+00:00:59,030 --> 00:01:01,939
+more interesting than that and well the
+
+28
+00:01:01,939 --> 00:01:03,320
+like one thing that I'm going to talk
+
+29
+00:01:03,320 --> 00:01:04,879
+about today that this talk is about is
+
+30
+00:01:04,879 --> 00:01:07,850
+to build prototype of a street fighter
+
+31
+00:01:07,850 --> 00:01:09,710
+game that you play with your own body
+
+32
+00:01:09,710 --> 00:01:11,869
+movements so instead of punching with a
+
+33
+00:01:11,869 --> 00:01:14,270
+keyboard you actually what we're going
+
+34
+00:01:14,270 --> 00:01:15,440
+to talk about we're going to go through
+
+35
+00:01:15,440 --> 00:01:17,480
+the process of how you can play that but
+
+36
+00:01:17,480 --> 00:01:19,070
+with your own body movements so when you
+
+37
+00:01:19,070 --> 00:01:21,050
+punch you actually punch and how do you
+
+38
+00:01:21,050 --> 00:01:23,630
+can and then uppercut so we're gonna
+
+39
+00:01:23,630 --> 00:01:26,150
+have three different gestures so this
+
+40
+00:01:26,150 --> 00:01:28,130
+was the idea that I started with so what
+
+41
+00:01:28,130 --> 00:01:30,350
+are we going to need to build this so we
+
+42
+00:01:30,350 --> 00:01:31,970
+start with some hardware because we need
+
+43
+00:01:31,970 --> 00:01:33,680
+to gather data about motions about
+
+44
+00:01:33,680 --> 00:01:35,720
+unlocking body movements so to do that
+
+45
+00:01:35,720 --> 00:01:37,159
+to be able to gather the data we're
+
+46
+00:01:37,159 --> 00:01:38,210
+going to use a bit of hardware that
+
+47
+00:01:38,210 --> 00:01:40,400
+we're going to hold in our hands the
+
+48
+00:01:40,400 --> 00:01:41,770
+second thing that we're going to need is
+
+49
+00:01:41,770 --> 00:01:43,880
+machine learning to kind of find
+
+50
+00:01:43,880 --> 00:01:46,130
+patterns in the data that we gather and
+
+51
+00:01:46,130 --> 00:01:47,510
+put that we're going to use tensorflow
+
+52
+00:01:47,510 --> 00:01:50,030
+but we are at a scomp so we're going to
+
+53
+00:01:50,030 --> 00:01:51,320
+use JavaScript so we're gonna use
+
+54
+00:01:51,320 --> 00:01:51,920
+tensorflow
+
+55
+00:01:51,920 --> 00:01:54,049
+GS all right so this is the material
+
+56
+00:01:54,049 --> 00:01:56,060
+that we're gonna need and now that we
+
+57
+00:01:56,060 --> 00:01:57,680
+kind of know what we want to build and
+
+58
+00:01:57,680 --> 00:01:59,180
+what we're going to need the first step
+
+59
+00:01:59,180 --> 00:02:02,720
+is gathering data again we it's machine
+
+60
+00:02:02,720 --> 00:02:04,430
+learning so we need a bit of data to
+
+61
+00:02:04,430 --> 00:02:06,740
+find patterns and recognize what makes a
+
+62
+00:02:06,740 --> 00:02:08,539
+punch or what makes a Hydra cane or an
+
+63
+00:02:08,539 --> 00:02:10,039
+uppercut so we're going to start with
+
+64
+00:02:10,039 --> 00:02:13,700
+that and to gather data as I said we're
+
+65
+00:02:13,700 --> 00:02:15,379
+going to use a bit of hardware so the
+
+66
+00:02:15,379 --> 00:02:16,760
+first time is that I put the type this
+
+67
+00:02:16,760 --> 00:02:19,129
+little project I used this so this is an
+
+68
+00:02:19,129 --> 00:02:20,840
+Arduino but this is not like the you
+
+69
+00:02:20,840 --> 00:02:21,280
+know that
+
+70
+00:02:21,280 --> 00:02:22,840
+with my if you just get started without
+
+71
+00:02:22,840 --> 00:02:25,000
+we know this is a maker 1000 and the
+
+72
+00:02:25,000 --> 00:02:26,380
+reason why I use that one is because it
+
+73
+00:02:26,380 --> 00:02:28,360
+has built-in Wi-Fi if you play with an
+
+74
+00:02:28,360 --> 00:02:30,130
+Arduino Uno you have to be plugged to
+
+75
+00:02:30,130 --> 00:02:31,510
+your computer so you're not really free
+
+76
+00:02:31,510 --> 00:02:32,980
+in the movements that you make you know
+
+77
+00:02:32,980 --> 00:02:34,150
+if you punch you might just like totally
+
+78
+00:02:34,150 --> 00:02:35,440
+disconnect from your computer's which is
+
+79
+00:02:35,440 --> 00:02:38,560
+not really what you want so this one is
+
+80
+00:02:38,560 --> 00:02:40,540
+so it has beauty in my face you can just
+
+81
+00:02:40,540 --> 00:02:41,950
+be you know remotely connected to your
+
+82
+00:02:41,950 --> 00:02:43,330
+laptop you can be anywhere in the room
+
+83
+00:02:43,330 --> 00:02:45,280
+and play that game so it just felt like
+
+84
+00:02:45,280 --> 00:02:47,530
+it would be easier but the board itself
+
+85
+00:02:47,530 --> 00:02:50,260
+doesn't actually gather any data it runs
+
+86
+00:02:50,260 --> 00:02:51,760
+a program but you don't actually get
+
+87
+00:02:51,760 --> 00:02:53,620
+anything from the board itself so to be
+
+88
+00:02:53,620 --> 00:02:56,110
+able to get data from motion we're gonna
+
+89
+00:02:56,110 --> 00:02:58,390
+add an accelerometer and gyroscope so
+
+90
+00:02:58,390 --> 00:03:00,550
+this module gathers both accelerometer
+
+91
+00:03:00,550 --> 00:03:02,470
+and gyroscope so it means that you get
+
+92
+00:03:02,470 --> 00:03:05,560
+data for X Y z axis of how fast you're
+
+93
+00:03:05,560 --> 00:03:07,660
+moving but also in terms of the
+
+94
+00:03:07,660 --> 00:03:08,860
+gyroscope that takes care of the
+
+95
+00:03:08,860 --> 00:03:11,050
+rotation so when you're you know if you
+
+96
+00:03:11,050 --> 00:03:12,130
+think about when you're punching you
+
+97
+00:03:12,130 --> 00:03:13,390
+kind of like retaining your arm that way
+
+98
+00:03:13,390 --> 00:03:15,489
+so you're mixing speed and rotation and
+
+99
+00:03:15,489 --> 00:03:17,620
+this particular module can give you the
+
+100
+00:03:17,620 --> 00:03:19,690
+data about both so in the end we end up
+
+101
+00:03:19,690 --> 00:03:21,640
+with six points of data XY 0 of
+
+102
+00:03:21,640 --> 00:03:24,730
+accelerometer and XYZ of gyroscope but
+
+103
+00:03:24,730 --> 00:03:26,230
+that's not it to make it a bit easier
+
+104
+00:03:26,230 --> 00:03:29,230
+for me to build this I also added a bit
+
+105
+00:03:29,230 --> 00:03:30,970
+and the reason why I did over N is
+
+106
+00:03:30,970 --> 00:03:33,160
+because when I gather data I want to
+
+107
+00:03:33,160 --> 00:03:34,959
+gather data only what I'm doing the
+
+108
+00:03:34,959 --> 00:03:36,340
+punch I don't want to gather data on
+
+109
+00:03:36,340 --> 00:03:37,630
+when I'm resting because that's kind of
+
+110
+00:03:37,630 --> 00:03:39,940
+a pollute my data set so the reason why
+
+111
+00:03:39,940 --> 00:03:41,140
+I did Oberon is that I want to be able
+
+112
+00:03:41,140 --> 00:03:43,420
+to press do my punch and record the data
+
+113
+00:03:43,420 --> 00:03:44,890
+while I'm doing it is only when I
+
+114
+00:03:44,890 --> 00:03:47,230
+release only gathered the data so while
+
+115
+00:03:47,230 --> 00:03:48,519
+the button is pressed and I'm doing the
+
+116
+00:03:48,519 --> 00:03:50,440
+gesture I only save this so that then I
+
+117
+00:03:50,440 --> 00:03:52,000
+can do whatever that is not the gesture
+
+118
+00:03:52,000 --> 00:03:54,160
+that I want and it won't be recorded so
+
+119
+00:03:54,160 --> 00:03:56,290
+if we imagine that we wired all of this
+
+120
+00:03:56,290 --> 00:03:58,269
+together we have a Burin extramental
+
+121
+00:03:58,269 --> 00:04:00,430
+java scope and arduino this is for the
+
+122
+00:04:00,430 --> 00:04:01,390
+hardware this is what we're going to
+
+123
+00:04:01,390 --> 00:04:03,310
+hold in our hand but in terms of code
+
+124
+00:04:03,310 --> 00:04:05,709
+we're going to use a bit of node.js so
+
+125
+00:04:05,709 --> 00:04:08,109
+we start by requiring the support module
+
+126
+00:04:08,109 --> 00:04:10,180
+is called client to establish the
+
+127
+00:04:10,180 --> 00:04:12,280
+communication between our Arduino and a
+
+128
+00:04:12,280 --> 00:04:14,290
+laptop then we use johnny-five
+
+129
+00:04:14,290 --> 00:04:15,790
+which is the main JavaScript framework
+
+130
+00:04:15,790 --> 00:04:17,859
+to interact with hardware and the last
+
+131
+00:04:17,859 --> 00:04:21,900
+one that we're going to need is oh no I
+
+132
+00:04:21,900 --> 00:04:27,270
+don't want that what right so way back
+
+133
+00:04:27,270 --> 00:04:30,909
+ok so so yeah so we're gonna we're gonna
+
+134
+00:04:30,909 --> 00:04:32,950
+need the final system module because
+
+135
+00:04:32,950 --> 00:04:34,659
+we're going to record our data but we
+
+136
+00:04:34,659 --> 00:04:34,960
+need to
+
+137
+00:04:34,960 --> 00:04:37,120
+fabien file so we can use it later then
+
+138
+00:04:37,120 --> 00:04:38,680
+we accentuate our board where we
+
+139
+00:04:38,680 --> 00:04:40,060
+establish the connection with the host
+
+140
+00:04:40,060 --> 00:04:42,039
+and the port of our of our Arduino and
+
+141
+00:04:42,039 --> 00:04:45,370
+when the board is ready we have to tell
+
+142
+00:04:45,370 --> 00:04:46,780
+it where the button is connected to so
+
+143
+00:04:46,780 --> 00:04:49,750
+mine was on pin a zero but it can be
+
+144
+00:04:49,750 --> 00:04:51,940
+anything then we create the stream that
+
+145
+00:04:51,940 --> 00:04:53,199
+we saw the file that we're going to
+
+146
+00:04:53,199 --> 00:04:55,660
+write to for this little code simple you
+
+147
+00:04:55,660 --> 00:04:58,030
+know I had like simple punch zeroes like
+
+148
+00:04:58,030 --> 00:04:59,410
+the first punch that I'm going to train
+
+149
+00:04:59,410 --> 00:05:00,910
+I'm going to call you know I'm gonna
+
+150
+00:05:00,910 --> 00:05:02,800
+save it in a text file but as to repeat
+
+151
+00:05:02,800 --> 00:05:04,750
+the gesture a lot of times to create
+
+152
+00:05:04,750 --> 00:05:06,130
+your data set you would change that name
+
+153
+00:05:06,130 --> 00:05:08,199
+of the file over time then we also
+
+154
+00:05:08,199 --> 00:05:10,240
+accentuate an IMU sensor which is our
+
+155
+00:05:10,240 --> 00:05:11,710
+motion sensor we give it the pins that
+
+156
+00:05:11,710 --> 00:05:13,840
+is connected to and the type of model
+
+157
+00:05:13,840 --> 00:05:17,789
+which was an MP u 60 50 and unchanged so
+
+158
+00:05:17,789 --> 00:05:19,990
+every time that we're moving every time
+
+159
+00:05:19,990 --> 00:05:21,460
+that you get data from that little
+
+160
+00:05:21,460 --> 00:05:23,830
+module you actually keep all of those
+
+161
+00:05:23,830 --> 00:05:25,330
+six points of data into a variable and
+
+162
+00:05:25,330 --> 00:05:26,710
+when you're holding the button you're
+
+163
+00:05:26,710 --> 00:05:28,570
+writing to the file system so you're
+
+164
+00:05:28,570 --> 00:05:29,979
+writing to the stream all of the data
+
+165
+00:05:29,979 --> 00:05:32,169
+that you get and on when you release you
+
+166
+00:05:32,169 --> 00:05:33,849
+close the stream so you end it so all of
+
+167
+00:05:33,849 --> 00:05:35,349
+a sudden you're not writing to the text
+
+168
+00:05:35,349 --> 00:05:37,630
+file anymore and what this code sample
+
+169
+00:05:37,630 --> 00:05:39,610
+gives you in the end is a file like this
+
+170
+00:05:39,610 --> 00:05:40,960
+so that's like a sample there's a lot
+
+171
+00:05:40,960 --> 00:05:42,430
+more lines depending on how long you do
+
+172
+00:05:42,430 --> 00:05:44,409
+the gesture for but you expect that kind
+
+173
+00:05:44,409 --> 00:05:46,810
+of data on the x-axis of the file you
+
+174
+00:05:46,810 --> 00:05:48,880
+have your six points of data so X Y Z of
+
+175
+00:05:48,880 --> 00:05:51,520
+X parameter and XYZ or gyroscope and the
+
+176
+00:05:51,520 --> 00:05:53,530
+number of lines is how long you're doing
+
+177
+00:05:53,530 --> 00:05:55,990
+the gesture force so and you know like
+
+178
+00:05:55,990 --> 00:05:57,340
+you don't have to read all the numbers
+
+179
+00:05:57,340 --> 00:05:58,750
+but it's quite precise so it means that
+
+180
+00:05:58,750 --> 00:06:00,460
+there's quite a difference that it
+
+181
+00:06:00,460 --> 00:06:02,229
+really records your entire gesture for
+
+182
+00:06:02,229 --> 00:06:03,849
+how long as you're pressing the button
+
+183
+00:06:03,849 --> 00:06:05,770
+so that's really cool so we did step one
+
+184
+00:06:05,770 --> 00:06:08,169
+we got the data this is like for only
+
+185
+00:06:08,169 --> 00:06:10,780
+one sample the first punch but you would
+
+186
+00:06:10,780 --> 00:06:12,520
+imagine that you would have to record it
+
+187
+00:06:12,520 --> 00:06:13,750
+probably a hundred times for each
+
+188
+00:06:13,750 --> 00:06:15,460
+gesture so you wind up with a lot of
+
+189
+00:06:15,460 --> 00:06:17,830
+files so the step two that we have to go
+
+190
+00:06:17,830 --> 00:06:19,810
+through is that our processing because
+
+191
+00:06:19,810 --> 00:06:21,130
+at the moment all that we did is
+
+192
+00:06:21,130 --> 00:06:23,289
+recording data into text files but we
+
+193
+00:06:23,289 --> 00:06:26,080
+didn't do anything else so if we go back
+
+194
+00:06:26,080 --> 00:06:29,169
+to our data that looks like this it is
+
+195
+00:06:29,169 --> 00:06:31,509
+just strings inside text files and we
+
+196
+00:06:31,509 --> 00:06:32,500
+know that indian we want to use
+
+197
+00:06:32,500 --> 00:06:34,120
+tensorflow J's and ten topologist
+
+198
+00:06:34,120 --> 00:06:35,919
+doesn't really work with strings so we
+
+199
+00:06:35,919 --> 00:06:38,310
+have to transform a data data by little
+
+200
+00:06:38,310 --> 00:06:41,320
+so first of all we're going to have to
+
+201
+00:06:41,320 --> 00:06:43,630
+transform it into objects of features
+
+202
+00:06:43,630 --> 00:06:45,930
+and labels and features and labels are
+
+203
+00:06:45,930 --> 00:06:48,099
+words that are related to machine
+
+204
+00:06:48,099 --> 00:06:48,820
+learning so
+
+205
+00:06:48,820 --> 00:06:49,780
+what it means is that we're actually
+
+206
+00:06:49,780 --> 00:06:53,020
+transforming text files into so features
+
+207
+00:06:53,020 --> 00:06:54,850
+is the content of the text file so what
+
+208
+00:06:54,850 --> 00:06:57,010
+makes a punch and the label is going to
+
+209
+00:06:57,010 --> 00:06:59,020
+be like the name but again we don't use
+
+210
+00:06:59,020 --> 00:07:01,690
+string so we transform the name into an
+
+211
+00:07:01,690 --> 00:07:02,890
+index so if we have a gesture of
+
+212
+00:07:02,890 --> 00:07:06,580
+Hadouken punch and uppercut label one is
+
+213
+00:07:06,580 --> 00:07:09,280
+index 1 which is going to be punch so
+
+214
+00:07:09,280 --> 00:07:10,420
+it's kind of like a way of transforming
+
+215
+00:07:10,420 --> 00:07:12,460
+our data so we end up with numbers and
+
+216
+00:07:12,460 --> 00:07:15,280
+no strings so this would be for only one
+
+217
+00:07:15,280 --> 00:07:17,170
+gesture so my first punch all of the
+
+218
+00:07:17,170 --> 00:07:19,870
+data would be in the features and label
+
+219
+00:07:19,870 --> 00:07:22,030
+one would be punched but as I said you
+
+220
+00:07:22,030 --> 00:07:23,740
+have to gather quite a lot of data so
+
+221
+00:07:23,740 --> 00:07:25,420
+you end up creating the same thing for
+
+222
+00:07:25,420 --> 00:07:26,920
+each of your files so each of your text
+
+223
+00:07:26,920 --> 00:07:29,080
+file actually becomes an object and you
+
+224
+00:07:29,080 --> 00:07:30,880
+end up with a giant array of all of your
+
+225
+00:07:30,880 --> 00:07:33,640
+data sample ok so that's the first step
+
+226
+00:07:33,640 --> 00:07:35,350
+the thing is tensorflow doesn't really
+
+227
+00:07:35,350 --> 00:07:37,030
+work with objects it works more with
+
+228
+00:07:37,030 --> 00:07:39,580
+something that you know like arrays this
+
+229
+00:07:39,580 --> 00:07:40,810
+would there be another step afterwards
+
+230
+00:07:40,810 --> 00:07:42,730
+but so how would you then transform
+
+231
+00:07:42,730 --> 00:07:46,060
+these objects into another arrays so
+
+232
+00:07:46,060 --> 00:07:48,750
+what you have to do you end up with
+
+233
+00:07:48,750 --> 00:07:50,650
+multi-dimensional arrays and this is
+
+234
+00:07:50,650 --> 00:07:51,790
+where it gets a bit complicated to
+
+235
+00:07:51,790 --> 00:07:54,460
+explain but I'm gonna try my best so if
+
+236
+00:07:54,460 --> 00:07:55,780
+you look at you're going to split the
+
+237
+00:07:55,780 --> 00:07:58,330
+labels and the features so if we look at
+
+238
+00:07:58,330 --> 00:08:00,190
+the first layer of our multi-dimensional
+
+239
+00:08:00,190 --> 00:08:02,470
+labels array you have all of the zeros
+
+240
+00:08:02,470 --> 00:08:04,600
+so you have all of the hydrogens that
+
+241
+00:08:04,600 --> 00:08:06,730
+you trained and it's mapped to the first
+
+242
+00:08:06,730 --> 00:08:09,040
+layer of the features multi-dimensional
+
+243
+00:08:09,040 --> 00:08:11,200
+arrays so if we go a bit further and we
+
+244
+00:08:11,200 --> 00:08:13,390
+say our first ever hadouken that we
+
+245
+00:08:13,390 --> 00:08:15,190
+trained it's going to be mapped to the
+
+246
+00:08:15,190 --> 00:08:18,250
+first the first array of features in the
+
+247
+00:08:18,250 --> 00:08:22,060
+first layer of peaches and then so if
+
+248
+00:08:22,060 --> 00:08:23,170
+you do the second one is going to be
+
+249
+00:08:23,170 --> 00:08:24,700
+mapped as well so your second hydrogen
+
+250
+00:08:24,700 --> 00:08:26,440
+is going to be mapped to the second
+
+251
+00:08:26,440 --> 00:08:29,050
+array of features etc and then we move
+
+252
+00:08:29,050 --> 00:08:30,640
+on to the punches it's going to be the
+
+253
+00:08:30,640 --> 00:08:32,380
+same everything is mapped so it's in
+
+254
+00:08:32,380 --> 00:08:33,550
+like the same position but it's in
+
+255
+00:08:33,550 --> 00:08:37,360
+different arrays because in the end now
+
+256
+00:08:37,360 --> 00:08:39,219
+we're finally getting to a format that
+
+257
+00:08:39,219 --> 00:08:41,530
+tensorflow can work with now we don't
+
+258
+00:08:41,530 --> 00:08:43,150
+have strings we don't have objects we
+
+259
+00:08:43,150 --> 00:08:44,950
+have multi-dimensional arrays which is
+
+260
+00:08:44,950 --> 00:08:47,080
+closer to what to what tensorflow works
+
+261
+00:08:47,080 --> 00:08:48,970
+with and so I don't know if you noticed
+
+262
+00:08:48,970 --> 00:08:50,620
+well I didn't show any actual code
+
+263
+00:08:50,620 --> 00:08:52,360
+sample because so far it's not any
+
+264
+00:08:52,360 --> 00:08:54,280
+tensorflow specific code its
+
+265
+00:08:54,280 --> 00:08:56,800
+transformation of of data in a race and
+
+266
+00:08:56,800 --> 00:08:57,850
+objects that you would do in like
+
+267
+00:08:57,850 --> 00:08:59,700
+standard JavaScript if I could say so
+
+268
+00:08:59,700 --> 00:09:02,140
+but now now that we have
+
+269
+00:09:02,140 --> 00:09:04,840
+that resembles what what test we can
+
+270
+00:09:04,840 --> 00:09:06,280
+work with we can we can finally
+
+271
+00:09:06,280 --> 00:09:09,610
+transform that into tenses so if you
+
+272
+00:09:09,610 --> 00:09:12,130
+can't it's a bit small but don't worry
+
+273
+00:09:12,130 --> 00:09:14,020
+about really understanding what these
+
+274
+00:09:14,020 --> 00:09:15,310
+lines of code do because if you've never
+
+275
+00:09:15,310 --> 00:09:17,110
+played with tensorflow before it's going
+
+276
+00:09:17,110 --> 00:09:18,970
+to be like reading it will not really
+
+277
+00:09:18,970 --> 00:09:21,460
+make sense it's more about I only put it
+
+278
+00:09:21,460 --> 00:09:22,780
+there to show the amount of coordinated
+
+279
+00:09:22,780 --> 00:09:24,310
+to do that but what is really more
+
+280
+00:09:24,310 --> 00:09:26,560
+important well I'd be happy with is if
+
+281
+00:09:26,560 --> 00:09:28,240
+you understand more the process to go
+
+282
+00:09:28,240 --> 00:09:29,770
+through if you know if you want to know
+
+283
+00:09:29,770 --> 00:09:31,930
+exactly how to write a the repos are on
+
+284
+00:09:31,930 --> 00:09:33,700
+github or the documentation is pretty
+
+285
+00:09:33,700 --> 00:09:34,870
+good I'm sure that you'll figure out
+
+286
+00:09:34,870 --> 00:09:37,210
+later on the understanding the steps is
+
+287
+00:09:37,210 --> 00:09:39,130
+the most important thing so first of all
+
+288
+00:09:39,130 --> 00:09:41,140
+before transforming the our data to
+
+289
+00:09:41,140 --> 00:09:43,420
+tenses we have to shuffle it because if
+
+290
+00:09:43,420 --> 00:09:44,530
+I just go back to the slide before
+
+291
+00:09:44,530 --> 00:09:47,140
+everything is in order and you don't
+
+292
+00:09:47,140 --> 00:09:48,550
+really want to give your data that way
+
+293
+00:09:48,550 --> 00:09:50,620
+to a machine learning algorithm because
+
+294
+00:09:50,620 --> 00:09:51,820
+it's just going to get used to the way
+
+295
+00:09:51,820 --> 00:09:53,830
+you feed it so for example it's going to
+
+296
+00:09:53,830 --> 00:09:56,110
+look at it's gonna be like oh well the
+
+297
+00:09:56,110 --> 00:09:58,000
+five previous samples that you gave me
+
+298
+00:09:58,000 --> 00:09:59,680
+we're all hadoukens so this mean one
+
+299
+00:09:59,680 --> 00:10:01,060
+must be a hadouken it's not really going
+
+300
+00:10:01,060 --> 00:10:03,100
+to try to find any pattern in the data
+
+301
+00:10:03,100 --> 00:10:04,180
+and that's not what you want you wanted
+
+302
+00:10:04,180 --> 00:10:06,160
+to really understand what makes how do
+
+303
+00:10:06,160 --> 00:10:07,960
+you know what makes a punch based on the
+
+304
+00:10:07,960 --> 00:10:09,780
+data so it's not by shuffling it and
+
+305
+00:10:09,780 --> 00:10:11,950
+then you're gonna use the tensorflow
+
+306
+00:10:11,950 --> 00:10:14,680
+methods like tensor 2d because our
+
+307
+00:10:14,680 --> 00:10:17,530
+gestures are two-dimensional we have six
+
+308
+00:10:17,530 --> 00:10:19,240
+numbers over a certain amount of lines
+
+309
+00:10:19,240 --> 00:10:20,860
+so it's like an x and y axis for your
+
+310
+00:10:20,860 --> 00:10:23,620
+data and the labels is a one-dimensional
+
+311
+00:10:23,620 --> 00:10:25,540
+tensor because the label is only one
+
+312
+00:10:25,540 --> 00:10:29,470
+thing it's either either 0 1 or 2 or
+
+313
+00:10:29,470 --> 00:10:31,200
+more if you decide to do more classes
+
+314
+00:10:31,200 --> 00:10:33,730
+the next step is to splitting between
+
+315
+00:10:33,730 --> 00:10:35,680
+training set and test it so you just
+
+316
+00:10:35,680 --> 00:10:38,260
+have to calculate the amount of your
+
+317
+00:10:38,260 --> 00:10:40,210
+data that you're gonna split so the
+
+318
+00:10:40,210 --> 00:10:42,250
+reason why you do that is because you
+
+319
+00:10:42,250 --> 00:10:44,620
+have your entire label data set and the
+
+320
+00:10:44,620 --> 00:10:46,450
+training set is going to be given to
+
+321
+00:10:46,450 --> 00:10:48,610
+create the model so you keep 80% of your
+
+322
+00:10:48,610 --> 00:10:51,460
+data set to to create the model and you
+
+323
+00:10:51,460 --> 00:10:53,770
+keep 20% of it for the test set so the
+
+324
+00:10:53,770 --> 00:10:54,940
+test that is going to be used to
+
+325
+00:10:54,940 --> 00:10:56,860
+validate against the model that you
+
+326
+00:10:56,860 --> 00:10:59,020
+created because your test set is already
+
+327
+00:10:59,020 --> 00:11:00,820
+labeled again it's something that you
+
+328
+00:11:00,820 --> 00:11:02,260
+trained and you labeled yourself and
+
+329
+00:11:02,260 --> 00:11:04,120
+just to check that the accuracy of your
+
+330
+00:11:04,120 --> 00:11:05,950
+model is good you're going to use 20% of
+
+331
+00:11:05,950 --> 00:11:09,340
+your data set to train it against so so
+
+332
+00:11:09,340 --> 00:11:10,990
+yeah you end up doing that so you slice
+
+333
+00:11:10,990 --> 00:11:12,850
+your cereal tensors between training
+
+334
+00:11:12,850 --> 00:11:14,620
+features and testing features training
+
+335
+00:11:14,620 --> 00:11:15,370
+levels
+
+336
+00:11:15,370 --> 00:11:18,160
+testing levels once again if the code
+
+337
+00:11:18,160 --> 00:11:19,420
+doesn't make sense it's fine it's more
+
+338
+00:11:19,420 --> 00:11:22,420
+about the steps and now finally our data
+
+339
+00:11:22,420 --> 00:11:25,240
+is processed so it's it's ready but we
+
+340
+00:11:25,240 --> 00:11:27,100
+still haven't done anything so the step
+
+341
+00:11:27,100 --> 00:11:28,360
+3 is to create the model at the moment
+
+342
+00:11:28,360 --> 00:11:30,279
+we just reformatted the data so that we
+
+343
+00:11:30,279 --> 00:11:33,040
+can do something with it so to create
+
+344
+00:11:33,040 --> 00:11:35,770
+the model so this is more this at the
+
+345
+00:11:35,770 --> 00:11:37,029
+part where it's more of an art than a
+
+346
+00:11:37,029 --> 00:11:39,940
+science when you want to play with
+
+347
+00:11:39,940 --> 00:11:41,110
+machine learning you might not know in
+
+348
+00:11:41,110 --> 00:11:42,700
+advance what model you can use or what
+
+349
+00:11:42,700 --> 00:11:44,740
+parameters do you see it's more a step
+
+350
+00:11:44,740 --> 00:11:46,330
+where you play around here I use the
+
+351
+00:11:46,330 --> 00:11:48,370
+sequential model I could not explain why
+
+352
+00:11:48,370 --> 00:11:51,460
+it just worked so I used it and then
+
+353
+00:11:51,460 --> 00:11:53,290
+there's this other types of models but
+
+354
+00:11:53,290 --> 00:11:55,779
+it works for me sardine changing then in
+
+355
+00:11:55,779 --> 00:11:58,150
+terms of the amount of layers in your in
+
+356
+00:11:58,150 --> 00:12:00,880
+your own neural network you have to but
+
+357
+00:12:00,880 --> 00:12:02,050
+you can have four or five and the
+
+358
+00:12:02,050 --> 00:12:03,880
+parameters can be changing as well so
+
+359
+00:12:03,880 --> 00:12:05,320
+I'm not going to go in-depth into this
+
+360
+00:12:05,320 --> 00:12:08,170
+because again what works for you just
+
+361
+00:12:08,170 --> 00:12:11,380
+keep it then we we just add like an
+
+362
+00:12:11,380 --> 00:12:13,870
+optimizer layer as well and then finally
+
+363
+00:12:13,870 --> 00:12:15,339
+what's important here is that the fit
+
+364
+00:12:15,339 --> 00:12:17,529
+method is what is going to train the
+
+365
+00:12:17,529 --> 00:12:19,120
+model so you pass it your training
+
+366
+00:12:19,120 --> 00:12:20,620
+features and training labels and you
+
+367
+00:12:20,620 --> 00:12:22,690
+have a parameter of validation data when
+
+368
+00:12:22,690 --> 00:12:24,790
+you give your test set as well so this
+
+369
+00:12:24,790 --> 00:12:26,290
+step is actually going to be the
+
+370
+00:12:26,290 --> 00:12:28,209
+training process and in the end once
+
+371
+00:12:28,209 --> 00:12:29,920
+this is done with all of the data that
+
+372
+00:12:29,920 --> 00:12:32,140
+you gave it you can save your model in
+
+373
+00:12:32,140 --> 00:12:34,630
+your file system so now we actually
+
+374
+00:12:34,630 --> 00:12:36,070
+gathered our data which once formed it
+
+375
+00:12:36,070 --> 00:12:40,029
+we created the model but okay step for
+
+376
+00:12:40,029 --> 00:12:41,529
+prediction you actually want to use that
+
+377
+00:12:41,529 --> 00:12:42,459
+model you're not going to go through all
+
+378
+00:12:42,459 --> 00:12:45,040
+of this to like know run predictions
+
+379
+00:12:45,040 --> 00:12:47,170
+later on so the final step of all of
+
+380
+00:12:47,170 --> 00:12:50,370
+this is the prediction so to do this I
+
+381
+00:12:50,370 --> 00:12:52,720
+like my application was more of like you
+
+382
+00:12:52,720 --> 00:12:54,790
+know GS fine but you can do that in the
+
+383
+00:12:54,790 --> 00:12:57,610
+browser you don't require tensorflow GS
+
+384
+00:12:57,610 --> 00:12:59,920
+instead of Tesla J's node but basically
+
+385
+00:12:59,920 --> 00:13:02,920
+you you import the framework we have a
+
+386
+00:13:02,920 --> 00:13:05,110
+gesture classes arrays that has how you
+
+387
+00:13:05,110 --> 00:13:08,589
+can punch and uppercut we load our model
+
+388
+00:13:08,589 --> 00:13:11,080
+to be able to use it and then if we go
+
+389
+00:13:11,080 --> 00:13:13,660
+back to our our code to get the data
+
+390
+00:13:13,660 --> 00:13:15,130
+from the accelerometer and gyroscope
+
+391
+00:13:15,130 --> 00:13:18,250
+when we hold the button we we save all
+
+392
+00:13:18,250 --> 00:13:19,690
+of our data into a variable we push it
+
+393
+00:13:19,690 --> 00:13:21,700
+into an array and this time we're not
+
+394
+00:13:21,700 --> 00:13:23,230
+setting it to the first system because
+
+395
+00:13:23,230 --> 00:13:25,270
+we are not training an algorithm we're
+
+396
+00:13:25,270 --> 00:13:26,709
+predicting life data that it's never
+
+397
+00:13:26,709 --> 00:13:27,339
+seen before
+
+398
+00:13:27,339 --> 00:13:28,780
+so we tip Laura in the variable
+
+399
+00:13:28,780 --> 00:13:30,940
+and when we release the button we're
+
+400
+00:13:30,940 --> 00:13:32,320
+sending all of that data to a predict
+
+401
+00:13:32,320 --> 00:13:34,660
+function and what our predict question
+
+402
+00:13:34,660 --> 00:13:36,580
+does it's going to transform a live data
+
+403
+00:13:36,580 --> 00:13:38,080
+that we just had in a variable into a
+
+404
+00:13:38,080 --> 00:13:39,910
+tensor as well so it can be compared to
+
+405
+00:13:39,910 --> 00:13:42,880
+what the model was trained with we call
+
+406
+00:13:42,880 --> 00:13:44,770
+the predict method with that input
+
+407
+00:13:44,770 --> 00:13:46,480
+that's been transformed and in the end
+
+408
+00:13:46,480 --> 00:13:47,890
+the prediction that you get is going to
+
+409
+00:13:47,890 --> 00:13:49,780
+be an index just the same way that our
+
+410
+00:13:49,780 --> 00:13:51,640
+label was a number the prediction is
+
+411
+00:13:51,640 --> 00:13:52,930
+going to come back as a number as well
+
+412
+00:13:52,930 --> 00:13:54,760
+so we have to look up what it means in
+
+413
+00:13:54,760 --> 00:13:56,620
+the gesture classes array so if the
+
+414
+00:13:56,620 --> 00:13:58,930
+prediction comes back as 0 it means that
+
+415
+00:13:58,930 --> 00:14:00,280
+is the first index in our gesture
+
+416
+00:14:00,280 --> 00:14:01,750
+classes which is going to be the
+
+417
+00:14:01,750 --> 00:14:04,500
+Hadouken or punch or a pocket whatever
+
+418
+00:14:04,500 --> 00:14:07,450
+okay so this is this was like a very
+
+419
+00:14:07,450 --> 00:14:10,450
+short version of everything that you
+
+420
+00:14:10,450 --> 00:14:12,160
+have to go through but as we can see
+
+421
+00:14:12,160 --> 00:14:14,380
+it's not it's not that much code I think
+
+422
+00:14:14,380 --> 00:14:16,780
+then the like the thing that takes
+
+423
+00:14:16,780 --> 00:14:18,940
+longer is to record the data and to
+
+424
+00:14:18,940 --> 00:14:20,380
+understand what's going on but once you
+
+425
+00:14:20,380 --> 00:14:22,210
+have an understanding of the steps it's
+
+426
+00:14:22,210 --> 00:14:24,220
+about finding the right syntax it's the
+
+427
+00:14:24,220 --> 00:14:26,170
+same way that you would do if you were I
+
+428
+00:14:26,170 --> 00:14:27,550
+don't know migrating from reactor to
+
+429
+00:14:27,550 --> 00:14:28,900
+view you know what you have to do but
+
+430
+00:14:28,900 --> 00:14:31,390
+you have to learn the syntax okay so now
+
+431
+00:14:31,390 --> 00:14:33,700
+that I told you what you should do or
+
+432
+00:14:33,700 --> 00:14:37,270
+what yeah I thought I would try to show
+
+433
+00:14:37,270 --> 00:14:41,140
+you how it works and this is where I'm
+
+434
+00:14:41,140 --> 00:14:42,700
+always like so excited but then it
+
+435
+00:14:42,700 --> 00:14:46,750
+doesn't work okay so I'm gonna try but I
+
+436
+00:14:46,750 --> 00:14:48,430
+have quite a bit of time so I can try it
+
+437
+00:14:48,430 --> 00:14:53,560
+like until it works so yeah so I'll just
+
+438
+00:14:53,560 --> 00:14:55,030
+put like a little gift in case it
+
+439
+00:14:55,030 --> 00:14:56,200
+doesn't work but what is supposed to
+
+440
+00:14:56,200 --> 00:14:57,820
+happen I'm supposed to do this and then
+
+441
+00:14:57,820 --> 00:14:58,900
+it's a point so there's a delay but
+
+442
+00:14:58,900 --> 00:15:01,870
+let's not talk about the delay and this
+
+443
+00:15:01,870 --> 00:15:03,400
+normal that there's a delay but yeah
+
+444
+00:15:03,400 --> 00:15:05,170
+that's another talk but I'm supposed to
+
+445
+00:15:05,170 --> 00:15:06,690
+be able to read these three gestures
+
+446
+00:15:06,690 --> 00:15:10,690
+okay sorry okay so I'm going to exit my
+
+447
+00:15:10,690 --> 00:15:15,940
+slides okay so Bluetooth is on and I
+
+448
+00:15:15,940 --> 00:15:23,110
+have that okay I okay I just need to
+
+449
+00:15:23,110 --> 00:15:25,150
+check that you didn't break oh yeah
+
+450
+00:15:25,150 --> 00:15:26,290
+there's errors in the console but not
+
+451
+00:15:26,290 --> 00:15:28,840
+everybody
+
+452
+00:15:28,850 --> 00:15:37,189
+okay so if I do like sorry I was
+
+453
+00:15:37,189 --> 00:15:38,899
+thinking it's not gonna work okay let me
+
+454
+00:15:38,899 --> 00:15:40,039
+try again I just want to
+
+455
+00:15:40,039 --> 00:15:45,179
+oh it's still okay still on so if I do
+
+456
+00:15:45,189 --> 00:15:50,839
+wait can I do like oh sorry
+
+457
+00:15:50,839 --> 00:15:59,869
+Wow they work the first time like it's
+
+458
+00:15:59,869 --> 00:16:01,669
+the first time that it actually works
+
+459
+00:16:01,669 --> 00:16:05,410
+the first time so I'm like super excited
+
+460
+00:16:05,410 --> 00:16:07,639
+cool like there's once I had to try it
+
+461
+00:16:07,639 --> 00:16:09,169
+ten times and I think people wanted me
+
+462
+00:16:09,169 --> 00:16:11,109
+off the stage I was like I'm not leaving
+
+463
+00:16:11,109 --> 00:16:12,259
+okay
+
+464
+00:16:12,259 --> 00:16:15,589
+so this was for Street Fighter okay cool
+
+465
+00:16:15,589 --> 00:16:16,669
+but maybe you don't like Street Fighter
+
+466
+00:16:16,669 --> 00:16:18,709
+so I built another one hopefully it's
+
+467
+00:16:18,709 --> 00:16:20,479
+gonna work as well but I put a little
+
+468
+00:16:20,479 --> 00:16:27,269
+bit hint I don't know if it's gonna load
+
+469
+00:16:27,279 --> 00:16:33,169
+okay so once movements so maybe you
+
+470
+00:16:33,169 --> 00:16:34,639
+don't like Street Fighter maybe you like
+
+471
+00:16:34,639 --> 00:16:37,100
+Harry Potter so I know you know that
+
+472
+00:16:37,100 --> 00:16:39,319
+spells have a name you can say hello for
+
+473
+00:16:39,319 --> 00:16:40,579
+more our experiments but they're also
+
+474
+00:16:40,579 --> 00:16:42,859
+happy shape so you can be a real wizard
+
+475
+00:16:42,859 --> 00:16:45,079
+now hopefully okay let's see if it works
+
+476
+00:16:45,079 --> 00:16:51,559
+so for this demo I'm I'm hopeful that
+
+477
+00:16:51,559 --> 00:16:54,470
+it's really gonna work cool okay so I
+
+478
+00:16:54,470 --> 00:17:00,889
+still still know okay so steel air is
+
+479
+00:17:00,889 --> 00:17:03,100
+still fine
+
+480
+00:17:03,100 --> 00:17:09,259
+wait okay so I'm just gonna check it I'm
+
+481
+00:17:09,259 --> 00:17:11,449
+still I'm still on okay so I have I
+
+482
+00:17:11,449 --> 00:17:19,009
+think I have like experience nope so it
+
+483
+00:17:19,009 --> 00:17:19,970
+was too good to be true
+
+484
+00:17:19,970 --> 00:17:21,649
+it did crash so then that would be
+
+485
+00:17:21,649 --> 00:17:23,059
+another talk about why it crashes I
+
+486
+00:17:23,059 --> 00:17:24,769
+dunno why it crushes but I don't want to
+
+487
+00:17:24,769 --> 00:17:30,620
+talk about it so if I do like
+
+488
+00:17:30,630 --> 00:17:39,360
+oh we're good so this is how I spend my
+
+489
+00:17:39,360 --> 00:17:41,010
+weekend I have another one I don't so
+
+490
+00:17:41,010 --> 00:17:42,240
+the only one is Loomis I don't know if
+
+491
+00:17:42,240 --> 00:17:45,720
+it's gonna work no I'm gonna try again
+
+492
+00:17:45,720 --> 00:17:47,250
+because now I have time I have time
+
+493
+00:17:47,250 --> 00:17:51,930
+crushed okay okay I want to do there
+
+494
+00:17:51,930 --> 00:18:07,110
+Loomis I think it's funny all right all
+
+495
+00:18:07,110 --> 00:18:08,880
+right anyway it's just to show you that
+
+496
+00:18:08,880 --> 00:18:11,550
+the process is the same like I was still
+
+497
+00:18:11,550 --> 00:18:13,740
+recording data I was still processing it
+
+498
+00:18:13,740 --> 00:18:14,850
+still training a machine learning model
+
+499
+00:18:14,850 --> 00:18:16,530
+it's just that NBN I was training
+
+500
+00:18:16,530 --> 00:18:18,510
+different gestures so you had Hadouken
+
+501
+00:18:18,510 --> 00:18:19,950
+punch and a poker the name the other one
+
+502
+00:18:19,950 --> 00:18:23,010
+you had experiments and dumas but the
+
+503
+00:18:23,010 --> 00:18:24,360
+process is the same so then you can just
+
+504
+00:18:24,360 --> 00:18:26,220
+replace bits to create what you want you
+
+505
+00:18:26,220 --> 00:18:27,540
+probably might have liked better ideas
+
+506
+00:18:27,540 --> 00:18:30,210
+than what I just did the what else so
+
+507
+00:18:30,210 --> 00:18:32,010
+the thing is that I really the reason
+
+508
+00:18:32,010 --> 00:18:33,240
+why I like playing with that stuff is
+
+509
+00:18:33,240 --> 00:18:34,830
+because I want more people to do it but
+
+510
+00:18:34,830 --> 00:18:36,870
+in the first versions that I use so I
+
+511
+00:18:36,870 --> 00:18:38,610
+used an Arduino and everybody has we
+
+512
+00:18:38,610 --> 00:18:40,380
+knows where I also used like a daydream
+
+513
+00:18:40,380 --> 00:18:42,450
+controller sensor that is kind of like
+
+514
+00:18:42,450 --> 00:18:45,000
+the same but different and but the thing
+
+515
+00:18:45,000 --> 00:18:46,800
+is it's stuff that you have to buy and I
+
+516
+00:18:46,800 --> 00:18:48,360
+don't think that's really cool I think
+
+517
+00:18:48,360 --> 00:18:50,250
+it stops people from trying so I was
+
+518
+00:18:50,250 --> 00:18:51,720
+thinking do you know what else has a
+
+519
+00:18:51,720 --> 00:18:54,470
+gyroscope and accelerometer your phone
+
+520
+00:18:54,470 --> 00:18:56,910
+so the phone that you have in your
+
+521
+00:18:56,910 --> 00:18:59,430
+pocket if you have one of the motor it
+
+522
+00:18:59,430 --> 00:19:01,560
+doesn't even have to be an iPhone X or
+
+523
+00:19:01,560 --> 00:19:03,260
+tennis you don't know how to say but
+
+524
+00:19:03,260 --> 00:19:05,550
+none of these like even even an older
+
+525
+00:19:05,550 --> 00:19:07,530
+phone probably still has an X parameter
+
+526
+00:19:07,530 --> 00:19:09,510
+and a gyroscope and the way to access
+
+527
+00:19:09,510 --> 00:19:11,880
+this data in JavaScript is using the
+
+528
+00:19:11,880 --> 00:19:14,640
+generic sensor API so again you might
+
+529
+00:19:14,640 --> 00:19:16,380
+you would probably have to refactor the
+
+530
+00:19:16,380 --> 00:19:17,700
+code because all of a sudden window in
+
+531
+00:19:17,700 --> 00:19:19,620
+node anymore we can just do it directly
+
+532
+00:19:19,620 --> 00:19:21,450
+in the browser but the way you would do
+
+533
+00:19:21,450 --> 00:19:22,980
+this is you would essentially eight and
+
+534
+00:19:22,980 --> 00:19:24,300
+it's really too small I'm sorry I'll
+
+535
+00:19:24,300 --> 00:19:26,520
+share the slides later but you have a
+
+536
+00:19:26,520 --> 00:19:28,680
+gyroscope and you have an event listener
+
+537
+00:19:28,680 --> 00:19:30,480
+for reading so whenever the it's
+
+538
+00:19:30,480 --> 00:19:32,520
+streaming data you have the same for
+
+539
+00:19:32,520 --> 00:19:34,170
+accelerometer and it gives you the same
+
+540
+00:19:34,170 --> 00:19:36,510
+data it gives you the XYZ axis of the
+
+541
+00:19:36,510 --> 00:19:38,880
+gyroscope and accelerometer and when I
+
+542
+00:19:38,880 --> 00:19:40,710
+say that you can do that I actually I
+
+543
+00:19:40,710 --> 00:19:42,150
+did so I did I'm not going to show it
+
+544
+00:19:42,150 --> 00:19:45,029
+because now I have less time but
+
+545
+00:19:45,029 --> 00:19:47,220
+I have like the repo is on github so you
+
+546
+00:19:47,220 --> 00:19:48,749
+can play around with it as well so it
+
+547
+00:19:48,749 --> 00:19:50,460
+means that without having to buy any
+
+548
+00:19:50,460 --> 00:19:51,990
+hardware you can actually play with
+
+549
+00:19:51,990 --> 00:19:53,519
+training a machine learning algorithm
+
+550
+00:19:53,519 --> 00:19:55,590
+just by using your phone all of it in
+
+551
+00:19:55,590 --> 00:19:58,110
+JavaScript so I think this is pretty
+
+552
+00:19:58,110 --> 00:20:01,110
+cool but anyway just a little bit of a
+
+553
+00:20:01,110 --> 00:20:02,730
+recap because there was a lot of code
+
+554
+00:20:02,730 --> 00:20:04,320
+and if you've never done that before it
+
+555
+00:20:04,320 --> 00:20:06,570
+can be a bit overwhelming but again I
+
+556
+00:20:06,570 --> 00:20:08,759
+think the steps are what's important so
+
+557
+00:20:08,759 --> 00:20:10,830
+you have to get data somehow I used
+
+558
+00:20:10,830 --> 00:20:12,600
+Arduino daydream and the phone but any
+
+559
+00:20:12,600 --> 00:20:15,539
+other any other piece of hardware that
+
+560
+00:20:15,539 --> 00:20:17,549
+you know transmits data you can actually
+
+561
+00:20:17,549 --> 00:20:19,919
+use that as well then you have to
+
+562
+00:20:19,919 --> 00:20:21,179
+process the data because when you say
+
+563
+00:20:21,179 --> 00:20:22,740
+that it's just strings so you have to
+
+564
+00:20:22,740 --> 00:20:25,200
+transform it into tenses it somehow then
+
+565
+00:20:25,200 --> 00:20:27,119
+you have to split to be able to test and
+
+566
+00:20:27,119 --> 00:20:28,710
+validate that your predictions are
+
+567
+00:20:28,710 --> 00:20:31,110
+accurate then you have to Train
+
+568
+00:20:31,110 --> 00:20:33,119
+well yeah you have to train to generate
+
+569
+00:20:33,119 --> 00:20:34,590
+a model in the end and then you have to
+
+570
+00:20:34,590 --> 00:20:36,389
+run the predictions so once you know
+
+571
+00:20:36,389 --> 00:20:37,649
+that this is the steps that you have to
+
+572
+00:20:37,649 --> 00:20:39,690
+go through then you can you know look at
+
+573
+00:20:39,690 --> 00:20:41,279
+the documentation of a few different
+
+574
+00:20:41,279 --> 00:20:43,740
+frameworks and you'll get there
+
+575
+00:20:43,740 --> 00:20:45,389
+but anyway I'm almost done but just
+
+576
+00:20:45,389 --> 00:20:46,950
+before I finish I really wanted to say I
+
+577
+00:20:46,950 --> 00:20:48,210
+say that all the time but I feel like I
+
+578
+00:20:48,210 --> 00:20:50,789
+still need to say it so I know that all
+
+579
+00:20:50,789 --> 00:20:51,840
+of that stuff is not something that
+
+580
+00:20:51,840 --> 00:20:53,549
+you're gonna go back to work and you
+
+581
+00:20:53,549 --> 00:20:55,409
+know make millions with definitely not
+
+582
+00:20:55,409 --> 00:20:57,720
+but I know that it's maybe you know what
+
+583
+00:20:57,720 --> 00:20:59,730
+you came here for maybe you wanted to
+
+584
+00:20:59,730 --> 00:21:02,190
+learn something that you call useful but
+
+585
+00:21:02,190 --> 00:21:04,080
+to me it's really you I'm not making fun
+
+586
+00:21:04,080 --> 00:21:05,669
+of people who think this is useful
+
+587
+00:21:05,669 --> 00:21:08,639
+anyway so the reason why I'm saying that
+
+588
+00:21:08,639 --> 00:21:09,929
+is that I learned a lot during the
+
+589
+00:21:09,929 --> 00:21:11,730
+process and for example there's a lot of
+
+590
+00:21:11,730 --> 00:21:13,110
+times where you look at machine learning
+
+591
+00:21:13,110 --> 00:21:14,549
+and you're like oh I don't want to like
+
+592
+00:21:14,549 --> 00:21:16,409
+just crunch data into spreadsheets it's
+
+593
+00:21:16,409 --> 00:21:18,869
+like boring but the thing is you end up
+
+594
+00:21:18,869 --> 00:21:20,389
+being able to take machine learning and
+
+595
+00:21:20,389 --> 00:21:22,860
+put it into something playful and that
+
+596
+00:21:22,860 --> 00:21:24,570
+you know that makes you keep going to
+
+597
+00:21:24,570 --> 00:21:26,879
+learn more about that technology by just
+
+598
+00:21:26,879 --> 00:21:28,499
+playing something that gets you excited
+
+599
+00:21:28,499 --> 00:21:31,259
+and you just you know so much if you if
+
+600
+00:21:31,259 --> 00:21:32,850
+you end up doing that kind of stuff you
+
+601
+00:21:32,850 --> 00:21:34,440
+would learn about Arduino and machine
+
+602
+00:21:34,440 --> 00:21:36,269
+running and WebSockets to go from a node
+
+603
+00:21:36,269 --> 00:21:38,249
+to the browser and just play like
+
+604
+00:21:38,249 --> 00:21:39,149
+industry would learn about
+
+605
+00:21:39,149 --> 00:21:40,679
+human-computer interaction as well which
+
+606
+00:21:40,679 --> 00:21:42,450
+is I think well something I'm really
+
+607
+00:21:42,450 --> 00:21:44,249
+passionate about but anyway that
+
+608
+00:21:44,249 --> 00:21:45,720
+sometimes I really wish that I was
+
+609
+00:21:45,720 --> 00:21:47,639
+seeing more of these playful things that
+
+610
+00:21:47,639 --> 00:21:49,110
+play with technology rather than you
+
+611
+00:21:49,110 --> 00:21:50,759
+know some of the fights that we have on
+
+612
+00:21:50,759 --> 00:21:53,879
+twitter / CSS engineers but it's like
+
+613
+00:21:53,879 --> 00:21:56,070
+that's what I know that to me useless is
+
+614
+00:21:56,070 --> 00:21:58,080
+not worthless it's definitely worth it
+
+615
+00:21:58,080 --> 00:21:59,880
+if it just makes you excited for like an
+
+616
+00:21:59,880 --> 00:22:01,380
+hour that's definitely worth it
+
+617
+00:22:01,380 --> 00:22:03,870
+but anyway I spoke very fast as always
+
+618
+00:22:03,870 --> 00:22:06,630
+so I am done I will share the slides
+
+619
+00:22:06,630 --> 00:22:08,580
+later on on Twitter if you have any
+
+620
+00:22:08,580 --> 00:22:10,230
+questions I'll be around as well for the
+
+621
+00:22:10,230 --> 00:22:12,360
+next few days but thank you so much for
+
+622
+00:22:12,360 --> 00:22:13,980
+having me and thank you thank you so
+
+623
+00:22:13,980 --> 00:22:15,160
+much
+

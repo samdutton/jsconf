@@ -1,0 +1,3185 @@
+1
+00:00:00,320 --> 00:00:02,070
+
+[Music]
+
+2
+00:00:02,070 --> 00:00:03,840
+[Applause]
+
+3
+00:00:03,840 --> 00:00:05,660
+[Music]
+
+4
+00:00:05,660 --> 00:00:07,410
+[Applause]
+
+5
+00:00:07,410 --> 00:00:09,280
+[Music]
+
+6
+00:00:09,280 --> 00:00:11,020
+[Applause]
+
+7
+00:00:11,020 --> 00:00:12,780
+[Music]
+
+8
+00:00:12,780 --> 00:00:16,860
+[Applause]
+
+9
+00:00:16,870 --> 00:00:22,740
+[Music]
+
+10
+00:00:22,740 --> 00:00:25,110
+all right
+
+11
+00:00:25,110 --> 00:00:28,059
+Lovelace out here well thanks everyone
+
+12
+00:00:28,059 --> 00:00:30,640
+for for coming and thanks to all the
+
+13
+00:00:30,640 --> 00:00:32,110
+event organizers before putting together
+
+14
+00:00:32,110 --> 00:00:34,989
+this great event today I'm going to be
+
+15
+00:00:34,989 --> 00:00:38,160
+talking to you about end-to-end testing
+
+16
+00:00:38,160 --> 00:00:41,410
+my talk is titled I like my tests like I
+
+17
+00:00:41,410 --> 00:00:44,200
+like my friends flake-free and reliable
+
+18
+00:00:44,200 --> 00:00:48,239
+and some of your laughing but you know
+
+19
+00:00:48,239 --> 00:00:51,220
+the reason why I chose a picture of
+
+20
+00:00:51,220 --> 00:00:54,070
+friends camping outside together is
+
+21
+00:00:54,070 --> 00:00:56,020
+because if you've ever planned the
+
+22
+00:00:56,020 --> 00:00:58,420
+camping trip with your friends you know
+
+23
+00:00:58,420 --> 00:01:00,250
+that some of them are not reliable they
+
+24
+00:01:00,250 --> 00:01:01,660
+flake they don't show up they don't
+
+25
+00:01:01,660 --> 00:01:03,370
+bring the right things and the
+
+26
+00:01:03,370 --> 00:01:08,670
+experience isn't that enjoyable but I
+
+27
+00:01:08,670 --> 00:01:11,310
+want to show you that end-to-end testing
+
+28
+00:01:11,310 --> 00:01:14,920
+can be enjoyable and it can be
+
+29
+00:01:14,920 --> 00:01:17,440
+flake-free and it can be reliable if
+
+30
+00:01:17,440 --> 00:01:23,200
+done properly so Who am I I am Amira
+
+31
+00:01:23,200 --> 00:01:25,870
+Sam's a bit I am an engineer on the
+
+32
+00:01:25,870 --> 00:01:28,720
+Cypress i/o team feel free to reach out
+
+33
+00:01:28,720 --> 00:01:31,390
+to me Twitter or email if you have any
+
+34
+00:01:31,390 --> 00:01:34,299
+questions about the talk so Before we
+
+35
+00:01:34,299 --> 00:01:37,900
+jump into things let's visit the testing
+
+36
+00:01:37,900 --> 00:01:41,350
+pyramid this is the pyramid that's
+
+37
+00:01:41,350 --> 00:01:42,820
+typically shown when people talk about
+
+38
+00:01:42,820 --> 00:01:45,909
+testing at the bottom of the pyramid
+
+39
+00:01:45,909 --> 00:01:48,939
+here we have unit tests and then we move
+
+40
+00:01:48,939 --> 00:01:51,010
+up to integration tests and end-to-end
+
+41
+00:01:51,010 --> 00:01:53,619
+tests finally the reason why unit tests
+
+42
+00:01:53,619 --> 00:01:55,119
+are at the very bottom of the pyramid is
+
+43
+00:01:55,119 --> 00:01:58,840
+because developers love to write a bunch
+
+44
+00:01:58,840 --> 00:02:01,090
+of these unit tests right they're very
+
+45
+00:02:01,090 --> 00:02:03,520
+easy to write we have a lot of fantastic
+
+46
+00:02:03,520 --> 00:02:07,060
+tools to write them with but as we move
+
+47
+00:02:07,060 --> 00:02:09,369
+up the pyramid and get to end-to-end
+
+48
+00:02:09,369 --> 00:02:11,709
+testing we find that writing end-to-end
+
+49
+00:02:11,709 --> 00:02:16,209
+tests can be difficult costly slow flaky
+
+50
+00:02:16,209 --> 00:02:18,909
+and this leads to a lot of people
+
+51
+00:02:18,909 --> 00:02:20,680
+actually just not writing end-to-end
+
+52
+00:02:20,680 --> 00:02:24,489
+tests which is not very good because
+
+53
+00:02:24,489 --> 00:02:27,939
+the best kind of test to ensure a great
+
+54
+00:02:27,939 --> 00:02:30,430
+experience for users is Antoine tests
+
+55
+00:02:30,430 --> 00:02:32,290
+it's great for them it's great for the
+
+56
+00:02:32,290 --> 00:02:33,700
+business it's great for everyone
+
+57
+00:02:33,700 --> 00:02:38,920
+but it's difficult so before I get into
+
+58
+00:02:38,920 --> 00:02:41,319
+the nitty-gritty parts let's kind of
+
+59
+00:02:41,319 --> 00:02:44,769
+step back and look at the Renaissance of
+
+60
+00:02:44,769 --> 00:02:46,060
+the web we've been seeing for the past
+
+61
+00:02:46,060 --> 00:02:48,159
+decade or so and this is just within the
+
+62
+00:02:48,159 --> 00:02:50,230
+context of frameworks that have come out
+
+63
+00:02:50,230 --> 00:02:52,000
+that have made web development
+
+64
+00:02:52,000 --> 00:02:54,400
+significantly easier you know around
+
+65
+00:02:54,400 --> 00:02:56,919
+2005 or so we had things like Ruby on
+
+66
+00:02:56,919 --> 00:02:58,840
+Rails and Django come out and they made
+
+67
+00:02:58,840 --> 00:03:00,849
+it significantly easier to write
+
+68
+00:03:00,849 --> 00:03:03,430
+applications this is their in time we we
+
+69
+00:03:03,430 --> 00:03:05,169
+had things like Twitter and Shopify and
+
+70
+00:03:05,169 --> 00:03:06,639
+things like that come out it was just
+
+71
+00:03:06,639 --> 00:03:08,260
+the hell of a lot easier to write these
+
+72
+00:03:08,260 --> 00:03:10,030
+types of apps it gave us a nice
+
+73
+00:03:10,030 --> 00:03:12,329
+construct to think and reason about
+
+74
+00:03:12,329 --> 00:03:15,129
+shortly after we had things like jQuery
+
+75
+00:03:15,129 --> 00:03:17,650
+come out which made it really easy to
+
+76
+00:03:17,650 --> 00:03:20,200
+write JavaScript across multiple
+
+77
+00:03:20,200 --> 00:03:21,819
+browsers that kind of no more normalized
+
+78
+00:03:21,819 --> 00:03:23,829
+all those little edge cases that you
+
+79
+00:03:23,829 --> 00:03:27,750
+would experience writing JavaScript and
+
+80
+00:03:27,750 --> 00:03:30,400
+during this time frame you know 2006
+
+81
+00:03:30,400 --> 00:03:32,109
+then we have like smartphones come out
+
+82
+00:03:32,109 --> 00:03:35,250
+around 2007 and more and more people
+
+83
+00:03:35,250 --> 00:03:38,290
+started using actual software as part of
+
+84
+00:03:38,290 --> 00:03:39,849
+their daily life they started to rely on
+
+85
+00:03:39,849 --> 00:03:41,439
+and more and more and they were
+
+86
+00:03:41,439 --> 00:03:43,900
+experiencing and very well done
+
+87
+00:03:43,900 --> 00:03:45,609
+applications they were very snappy they
+
+88
+00:03:45,609 --> 00:03:47,260
+were very user friendly and this is what
+
+89
+00:03:47,260 --> 00:03:50,079
+people majority of people not us techie
+
+90
+00:03:50,079 --> 00:03:54,159
+guys but you know they started to to
+
+91
+00:03:54,159 --> 00:03:56,079
+demand these types of experiences about
+
+92
+00:03:56,079 --> 00:03:57,790
+every about all the software they were
+
+93
+00:03:57,790 --> 00:04:01,659
+experiencing and this essentially you
+
+94
+00:04:01,659 --> 00:04:03,129
+know at around the same time browsers
+
+95
+00:04:03,129 --> 00:04:04,629
+got their act together right they
+
+96
+00:04:04,629 --> 00:04:05,979
+started actually playing nice with
+
+97
+00:04:05,979 --> 00:04:09,220
+standards and computers got a little
+
+98
+00:04:09,220 --> 00:04:11,590
+faster too and then we ended up with
+
+99
+00:04:11,590 --> 00:04:14,109
+very fancy frameworks like react and
+
+100
+00:04:14,109 --> 00:04:16,329
+view j/s so now we're starting to write
+
+101
+00:04:16,329 --> 00:04:19,750
+very rich web applications which are
+
+102
+00:04:19,750 --> 00:04:21,820
+very snappy they give a really good user
+
+103
+00:04:21,820 --> 00:04:25,919
+experience and just fantastic overall
+
+104
+00:04:25,919 --> 00:04:29,490
+one important thing to note here is that
+
+105
+00:04:29,490 --> 00:04:32,919
+this progress is essentially led to the
+
+106
+00:04:32,919 --> 00:04:35,349
+movement of complexity from the back end
+
+107
+00:04:35,349 --> 00:04:37,169
+to the front end
+
+108
+00:04:37,169 --> 00:04:38,909
+the past we would just render very
+
+109
+00:04:38,909 --> 00:04:41,099
+simple HTML and ship it down the wire
+
+110
+00:04:41,099 --> 00:04:44,629
+but now we're sending really large
+
+111
+00:04:44,629 --> 00:04:47,340
+JavaScript applications down the wire so
+
+112
+00:04:47,340 --> 00:04:49,439
+the way we write applications have
+
+113
+00:04:49,439 --> 00:04:52,680
+significantly changed but the way we've
+
+114
+00:04:52,680 --> 00:04:55,499
+been testing them has not changed we you
+
+115
+00:04:55,499 --> 00:04:57,360
+know we now tools have always improved
+
+116
+00:04:57,360 --> 00:04:59,819
+they have always progressed but the way
+
+117
+00:04:59,819 --> 00:05:01,560
+we've done end-to-end testing has
+
+118
+00:05:01,560 --> 00:05:05,370
+changed very little before all this new
+
+119
+00:05:05,370 --> 00:05:06,930
+fancy frameworks came out all the way
+
+120
+00:05:06,930 --> 00:05:09,419
+back in 2004 selenium came out which
+
+121
+00:05:09,419 --> 00:05:11,300
+many of you probably have used to
+
+122
+00:05:11,300 --> 00:05:15,210
+end-to-end test your websites you know
+
+123
+00:05:15,210 --> 00:05:17,370
+shortly after you know selenium
+
+124
+00:05:17,370 --> 00:05:19,580
+webdriver came out and there have been
+
+125
+00:05:19,580 --> 00:05:22,229
+other wrappers and tools that have made
+
+126
+00:05:22,229 --> 00:05:24,919
+using selenium much more easier to use
+
+127
+00:05:24,919 --> 00:05:28,919
+to kind of give a shame work of time
+
+128
+00:05:28,919 --> 00:05:29,460
+here
+
+129
+00:05:29,460 --> 00:05:34,469
+Seifer sale came out in 2014 so the just
+
+130
+00:05:34,469 --> 00:05:36,569
+at this point here is that the way we've
+
+131
+00:05:36,569 --> 00:05:38,219
+been writing applications has changed by
+
+132
+00:05:38,219 --> 00:05:40,469
+the way we're testing them has changed
+
+133
+00:05:40,469 --> 00:05:44,310
+very little let's look at the status quo
+
+134
+00:05:44,310 --> 00:05:47,129
+of n2n testing which is selenium now the
+
+135
+00:05:47,129 --> 00:05:49,409
+architecture of selenium is like this
+
+136
+00:05:49,409 --> 00:05:51,180
+you write your tests in any language you
+
+137
+00:05:51,180 --> 00:05:54,930
+want and your tests essentially talk to
+
+138
+00:05:54,930 --> 00:05:58,139
+the proxy server of selenium selenium
+
+139
+00:05:58,139 --> 00:06:00,020
+server is just the proxy server and
+
+140
+00:06:00,020 --> 00:06:03,180
+selenium server makes request to the web
+
+141
+00:06:03,180 --> 00:06:05,039
+drivers that are actually controlling
+
+142
+00:06:05,039 --> 00:06:08,629
+the browser to make your test happen and
+
+143
+00:06:08,629 --> 00:06:11,460
+what we have here is the classical
+
+144
+00:06:11,460 --> 00:06:13,770
+sinking dilemma we have two separate
+
+145
+00:06:13,770 --> 00:06:15,539
+systems and we're constantly trying to
+
+146
+00:06:15,539 --> 00:06:18,149
+keep them in sync together this is very
+
+147
+00:06:18,149 --> 00:06:20,399
+difficult to do the selenium can only
+
+148
+00:06:20,399 --> 00:06:22,499
+ask about what's going on in the browser
+
+149
+00:06:22,499 --> 00:06:24,779
+it doesn't actually know what's going on
+
+150
+00:06:24,779 --> 00:06:28,289
+at the right time this is what
+
+151
+00:06:28,289 --> 00:06:30,719
+essentially leads to flakiness and
+
+152
+00:06:30,719 --> 00:06:34,529
+non-deterministic tests selenium has to
+
+153
+00:06:34,529 --> 00:06:36,360
+go through this proxy server and has to
+
+154
+00:06:36,360 --> 00:06:37,830
+wait for all these Network hops to
+
+155
+00:06:37,830 --> 00:06:39,180
+happen before it can actually know
+
+156
+00:06:39,180 --> 00:06:42,270
+what's going on it's not it isn't
+
+157
+00:06:42,270 --> 00:06:44,490
+exactly it doesn't know exactly when an
+
+158
+00:06:44,490 --> 00:06:48,629
+event took place in the browser and so
+
+159
+00:06:48,629 --> 00:06:50,590
+you might say well the hell with
+
+160
+00:06:50,590 --> 00:06:52,840
+at all I'll just use a stone or some
+
+161
+00:06:52,840 --> 00:06:54,640
+other type of dom emulation well the
+
+162
+00:06:54,640 --> 00:06:56,200
+thing is none of the users are using
+
+163
+00:06:56,200 --> 00:06:57,880
+Jaya stomp to run your application
+
+164
+00:06:57,880 --> 00:07:01,720
+none of them zero so you have to do real
+
+165
+00:07:01,720 --> 00:07:05,520
+browser testing and that enables you to
+
+166
+00:07:05,520 --> 00:07:09,400
+test your users real actions it's the
+
+167
+00:07:09,400 --> 00:07:10,990
+best way to do end-to-end testing and
+
+168
+00:07:10,990 --> 00:07:12,580
+it's the primary reason you would do end
+
+169
+00:07:12,580 --> 00:07:13,810
+to end testing because you want to
+
+170
+00:07:13,810 --> 00:07:15,640
+simulate your at your users actual
+
+171
+00:07:15,640 --> 00:07:19,870
+actions the thing is which I really want
+
+172
+00:07:19,870 --> 00:07:22,570
+to emphasize is that don't let your your
+
+173
+00:07:22,570 --> 00:07:25,030
+users be the first ones to test your app
+
+174
+00:07:25,030 --> 00:07:26,320
+the answer and test your application
+
+175
+00:07:26,320 --> 00:07:28,420
+right it's gonna be a bad experience for
+
+176
+00:07:28,420 --> 00:07:30,970
+them and it's gonna cost you time and
+
+177
+00:07:30,970 --> 00:07:31,930
+money
+
+178
+00:07:31,930 --> 00:07:34,240
+and it's just not good all around for
+
+179
+00:07:34,240 --> 00:07:36,820
+for anyone some people will like to rely
+
+180
+00:07:36,820 --> 00:07:38,410
+on let's say you know like a crash
+
+181
+00:07:38,410 --> 00:07:40,090
+reporting service or error reporting
+
+182
+00:07:40,090 --> 00:07:41,770
+service or like well I'll ship my
+
+183
+00:07:41,770 --> 00:07:44,410
+application out and if anything goes
+
+184
+00:07:44,410 --> 00:07:46,120
+wrong well my error reporting service is
+
+185
+00:07:46,120 --> 00:07:47,590
+gonna tell me what went wrong and I can
+
+186
+00:07:47,590 --> 00:07:49,330
+just go ahead and fix it well the thing
+
+187
+00:07:49,330 --> 00:07:51,280
+is not all errors are perfect errors
+
+188
+00:07:51,280 --> 00:07:52,900
+that can be caught by your you know a
+
+189
+00:07:52,900 --> 00:07:54,190
+crash reporter they don't all have
+
+190
+00:07:54,190 --> 00:07:55,930
+stacked races that could be simply
+
+191
+00:07:55,930 --> 00:07:58,960
+experienced user experience problems and
+
+192
+00:07:58,960 --> 00:08:01,300
+frankly most users don't actually report
+
+193
+00:08:01,300 --> 00:08:03,760
+problems when one day when they see them
+
+194
+00:08:03,760 --> 00:08:06,070
+so this is not the way to go you need to
+
+195
+00:08:06,070 --> 00:08:09,070
+be testing the exact experience of your
+
+196
+00:08:09,070 --> 00:08:10,600
+users before you ship yourself where
+
+197
+00:08:10,600 --> 00:08:13,620
+it's the only way you can confidently
+
+198
+00:08:13,620 --> 00:08:15,370
+expect that everything is gonna go
+
+199
+00:08:15,370 --> 00:08:19,060
+smoothly so let's get back to kind of
+
+200
+00:08:19,060 --> 00:08:21,220
+the historical context of things in the
+
+201
+00:08:21,220 --> 00:08:21,790
+past
+
+202
+00:08:21,790 --> 00:08:25,920
+we mostly wrote stateless websites right
+
+203
+00:08:25,920 --> 00:08:28,960
+very simple stuff ship HTML down the
+
+204
+00:08:28,960 --> 00:08:31,570
+wire now we're running writing very
+
+205
+00:08:31,570 --> 00:08:34,120
+stateful apps and it's a completely
+
+206
+00:08:34,120 --> 00:08:36,430
+different ballgame they they're just
+
+207
+00:08:36,430 --> 00:08:37,990
+completely different beasts and we need
+
+208
+00:08:37,990 --> 00:08:41,110
+a much more optimal way of testing these
+
+209
+00:08:41,110 --> 00:08:43,060
+types of applications and this is why
+
+210
+00:08:43,060 --> 00:08:46,030
+Cypress exists so Cypress is a really
+
+211
+00:08:46,030 --> 00:08:48,490
+nice and fast and easy way for you to
+
+212
+00:08:48,490 --> 00:08:50,050
+test anything that runs in the browser
+
+213
+00:08:50,050 --> 00:08:52,180
+it's completely free it's open source
+
+214
+00:08:52,180 --> 00:08:55,750
+and it's MIT license it's very easy to
+
+215
+00:08:55,750 --> 00:08:57,640
+install all you got to do is just NPM
+
+216
+00:08:57,640 --> 00:09:00,250
+install Cypress and with that you're
+
+217
+00:09:00,250 --> 00:09:02,350
+gonna get everything you need you're
+
+218
+00:09:02,350 --> 00:09:04,329
+gonna get the familiar tools
+
+219
+00:09:04,329 --> 00:09:06,399
+you you've probably seen before like
+
+220
+00:09:06,399 --> 00:09:09,910
+mocha test framework chai assertions and
+
+221
+00:09:09,910 --> 00:09:14,139
+sign-on for subbing and mocking so with
+
+222
+00:09:14,139 --> 00:09:16,929
+a simple install line you're gonna get
+
+223
+00:09:16,929 --> 00:09:18,720
+everything all in one tool
+
+224
+00:09:18,720 --> 00:09:21,939
+alright so let's go ahead and see it in
+
+225
+00:09:21,939 --> 00:09:31,809
+action for a little bit okay so I'm
+
+226
+00:09:31,809 --> 00:09:34,509
+going to demonstrate to do MBC app if
+
+227
+00:09:34,509 --> 00:09:37,569
+you're not familiar with to do MBC it's
+
+228
+00:09:37,569 --> 00:09:39,579
+essentially a to do application that's
+
+229
+00:09:39,579 --> 00:09:42,160
+implemented in various frameworks to
+
+230
+00:09:42,160 --> 00:09:45,220
+kind of show how you know how we'll look
+
+231
+00:09:45,220 --> 00:09:47,049
+in those frameworks if you're working to
+
+232
+00:09:47,049 --> 00:09:49,600
+write it to do that so the way I
+
+233
+00:09:49,600 --> 00:09:53,230
+launched Cyprus is by just typing in
+
+234
+00:09:53,230 --> 00:09:54,850
+after I've installed it I can just type
+
+235
+00:09:54,850 --> 00:10:00,229
+in MPX let me make it a little bigger
+
+236
+00:10:00,239 --> 00:10:02,980
+Cyprus is a binary that you know just
+
+237
+00:10:02,980 --> 00:10:04,989
+goes into my node modules so that's why
+
+238
+00:10:04,989 --> 00:10:07,059
+I'm using MPX right here to run the
+
+239
+00:10:07,059 --> 00:10:09,579
+local version of Cyprus and I'm just
+
+240
+00:10:09,579 --> 00:10:14,949
+going to type in Cyprus open let's get
+
+241
+00:10:14,949 --> 00:10:16,569
+the sizing down here and give some
+
+242
+00:10:16,569 --> 00:10:18,339
+people a chance to sit down new people
+
+243
+00:10:18,339 --> 00:10:21,040
+coming in so the Cyprus command is going
+
+244
+00:10:21,040 --> 00:10:23,410
+to bring up the desktop GUI
+
+245
+00:10:23,410 --> 00:10:26,079
+that is Cyprus this is the electron
+
+246
+00:10:26,079 --> 00:10:29,889
+application and what it shows you when
+
+247
+00:10:29,889 --> 00:10:32,470
+it first launches is all the spec files
+
+248
+00:10:32,470 --> 00:10:34,929
+that exist in your project directory
+
+249
+00:10:34,929 --> 00:10:37,119
+this is a simple to do application
+
+250
+00:10:37,119 --> 00:10:38,470
+there's only one spec file to test
+
+251
+00:10:38,470 --> 00:10:41,259
+everything so the way I can start my
+
+252
+00:10:41,259 --> 00:10:43,089
+test I just have to select the spec file
+
+253
+00:10:43,089 --> 00:10:44,709
+that I want simply click on it and
+
+254
+00:10:44,709 --> 00:10:46,869
+Cyprus is going to immediately bring up
+
+255
+00:10:46,869 --> 00:10:49,959
+a browser electron in this case and it's
+
+256
+00:10:49,959 --> 00:10:52,119
+going to start running my tests after it
+
+257
+00:10:52,119 --> 00:10:54,639
+has pulled in that to do application as
+
+258
+00:10:54,639 --> 00:10:57,939
+you can see Cyprus runs very fast and
+
+259
+00:10:57,939 --> 00:11:00,489
+actually once the once the GUI is up
+
+260
+00:11:00,489 --> 00:11:01,869
+it's going to start up the browser very
+
+261
+00:11:01,869 --> 00:11:04,660
+fast as well so right now this is a
+
+262
+00:11:04,660 --> 00:11:05,980
+to-do app it's going through all the
+
+263
+00:11:05,980 --> 00:11:07,749
+various permutations of a to-do
+
+264
+00:11:07,749 --> 00:11:09,730
+application creating new to do's marking
+
+265
+00:11:09,730 --> 00:11:11,410
+them complete making sure they're right
+
+266
+00:11:11,410 --> 00:11:13,449
+that they're the right count'em to do is
+
+267
+00:11:13,449 --> 00:11:16,569
+exist and so on so let's hit that lets
+
+268
+00:11:16,569 --> 00:11:18,949
+get that finished
+
+269
+00:11:18,949 --> 00:11:21,629
+but I mean but and we're done
+
+270
+00:11:21,629 --> 00:11:26,029
+all test pass yay so this is your
+
+271
+00:11:26,029 --> 00:11:29,600
+cypress experiences how will look like
+
+272
+00:11:29,600 --> 00:11:32,279
+Cypress runs right alongside your
+
+273
+00:11:32,279 --> 00:11:34,889
+application it runs within the same run
+
+274
+00:11:34,889 --> 00:11:36,779
+loop as your application so it knows
+
+275
+00:11:36,779 --> 00:11:38,309
+exactly what's going on in your
+
+276
+00:11:38,309 --> 00:11:40,139
+application it can react quickly it can
+
+277
+00:11:40,139 --> 00:11:42,389
+make assertions right away
+
+278
+00:11:42,389 --> 00:11:44,429
+unlike let's say selenium where it has
+
+279
+00:11:44,429 --> 00:11:46,980
+to just make make a request over over
+
+280
+00:11:46,980 --> 00:11:48,629
+the wire and hopefully it will get back
+
+281
+00:11:48,629 --> 00:11:50,809
+the right information in needs in time
+
+282
+00:11:50,809 --> 00:11:52,859
+so let's look at what we what we're
+
+283
+00:11:52,859 --> 00:11:55,589
+seeing here on the right hand side this
+
+284
+00:11:55,589 --> 00:11:57,660
+is your application we reloaded an
+
+285
+00:11:57,660 --> 00:11:59,609
+iframe on on that's on the right hand
+
+286
+00:11:59,609 --> 00:12:01,769
+side and up top this is the URL that
+
+287
+00:12:01,769 --> 00:12:04,139
+correlates to what you're seeing on on
+
+288
+00:12:04,139 --> 00:12:06,540
+the page and on the left hand side this
+
+289
+00:12:06,540 --> 00:12:08,279
+is what's called a command log this
+
+290
+00:12:08,279 --> 00:12:10,470
+shows all your test Suites and all the
+
+291
+00:12:10,470 --> 00:12:13,649
+tests that were executed let's look at
+
+292
+00:12:13,649 --> 00:12:16,529
+the first one which is we're very
+
+293
+00:12:16,529 --> 00:12:20,249
+certain that when the app loads the the
+
+294
+00:12:20,249 --> 00:12:21,959
+cursor should be focused in the input
+
+295
+00:12:21,959 --> 00:12:23,639
+box which makes sense because you know
+
+296
+00:12:23,639 --> 00:12:25,079
+right when you open it to do app you
+
+297
+00:12:25,079 --> 00:12:26,339
+want to immediately start typing in
+
+298
+00:12:26,339 --> 00:12:31,009
+to-do items and as we hover over
+
+299
+00:12:31,009 --> 00:12:33,209
+different Cypress commands that were
+
+300
+00:12:33,209 --> 00:12:38,069
+executed right here we'll see the app on
+
+301
+00:12:38,069 --> 00:12:40,109
+the right-hand side change Cypress takes
+
+302
+00:12:40,109 --> 00:12:42,929
+a dump snapshot of you know whenever it
+
+303
+00:12:42,929 --> 00:12:44,730
+runs a command so it can show you
+
+304
+00:12:44,730 --> 00:12:46,519
+exactly what happened with each command
+
+305
+00:12:46,519 --> 00:12:49,139
+so the first thing we do is we visit the
+
+306
+00:12:49,139 --> 00:12:50,699
+root directory of this app which is
+
+307
+00:12:50,699 --> 00:12:52,259
+that's why we're not seeing anything yet
+
+308
+00:12:52,259 --> 00:12:54,959
+after we visited it we're going to use
+
+309
+00:12:54,959 --> 00:12:57,829
+the Cypress focus command to assert that
+
+310
+00:12:57,829 --> 00:13:01,230
+we are focused in this input box and as
+
+311
+00:13:01,230 --> 00:13:02,730
+I hover over that you know it will
+
+312
+00:13:02,730 --> 00:13:06,209
+actually select that input box if you
+
+313
+00:13:06,209 --> 00:13:07,919
+look at another test right here actually
+
+314
+00:13:07,919 --> 00:13:09,269
+we're going to create a new to do with
+
+315
+00:13:09,269 --> 00:13:12,119
+this test we're going to go ahead and
+
+316
+00:13:12,119 --> 00:13:14,369
+make it to do item for buying some
+
+317
+00:13:14,369 --> 00:13:18,569
+cheese so as you can see if I'm hovering
+
+318
+00:13:18,569 --> 00:13:20,549
+my mouse over that command its
+
+319
+00:13:20,549 --> 00:13:22,529
+alternating the before and after
+
+320
+00:13:22,529 --> 00:13:24,239
+snapshot so I can see what happened
+
+321
+00:13:24,239 --> 00:13:26,939
+before this command ran and I can
+
+322
+00:13:26,939 --> 00:13:30,269
+actually pin that Dom snapshot and I can
+
+323
+00:13:30,269 --> 00:13:31,440
+just see what how the
+
+324
+00:13:31,440 --> 00:13:33,180
+look like before and after myself and I
+
+325
+00:13:33,180 --> 00:13:36,779
+can unpin that so what's cool about this
+
+326
+00:13:36,779 --> 00:13:38,279
+is you can hover and you can essentially
+
+327
+00:13:38,279 --> 00:13:41,370
+travel back in time and see how how
+
+328
+00:13:41,370 --> 00:13:43,589
+things look like it's a very nice way to
+
+329
+00:13:43,589 --> 00:13:45,509
+inspect how your application is
+
+330
+00:13:45,509 --> 00:13:48,420
+functioning another cool thing is that
+
+331
+00:13:48,420 --> 00:13:51,000
+Cypress you know is just running a
+
+332
+00:13:51,000 --> 00:13:53,310
+normal chromium browser so you get
+
+333
+00:13:53,310 --> 00:13:56,910
+access to dev tools right here and
+
+334
+00:13:56,910 --> 00:13:58,920
+whenever you hover and click on a
+
+335
+00:13:58,920 --> 00:14:01,620
+command it clears the console log out
+
+336
+00:14:01,620 --> 00:14:03,029
+and it gives you relevant information
+
+337
+00:14:03,029 --> 00:14:05,610
+about that command that ran so this is
+
+338
+00:14:05,610 --> 00:14:07,009
+great when we're you know especially
+
+339
+00:14:07,009 --> 00:14:09,839
+inspecting you know requests and things
+
+340
+00:14:09,839 --> 00:14:11,310
+like that we can see the request and
+
+341
+00:14:11,310 --> 00:14:13,920
+response payload it's it's very nice so
+
+342
+00:14:13,920 --> 00:14:17,100
+it's very easy to to debug because you
+
+343
+00:14:17,100 --> 00:14:19,139
+get access to dev tools right
+
+344
+00:14:19,139 --> 00:14:21,990
+out-of-the-box now let's look at
+
+345
+00:14:21,990 --> 00:14:23,850
+something interesting I'm going to go
+
+346
+00:14:23,850 --> 00:14:29,160
+ahead and let's go bring it let's go
+
+347
+00:14:29,160 --> 00:14:30,750
+look at that tests we were writing so
+
+348
+00:14:30,750 --> 00:14:34,259
+here's that test for making an ascension
+
+349
+00:14:34,259 --> 00:14:36,000
+that assertion that when the app is
+
+350
+00:14:36,000 --> 00:14:38,759
+loaded we're focused on the input box
+
+351
+00:14:38,759 --> 00:14:41,579
+and this is how the test for that looks
+
+352
+00:14:41,579 --> 00:14:43,949
+like all ciphers commands start with
+
+353
+00:14:43,949 --> 00:14:46,500
+this global CY command and then you
+
+354
+00:14:46,500 --> 00:14:48,269
+essentially have a chain of commands
+
+355
+00:14:48,269 --> 00:14:52,290
+that you can execute and that's our
+
+356
+00:14:52,290 --> 00:14:54,089
+ciphers tests are written so we're doing
+
+357
+00:14:54,089 --> 00:14:56,550
+sideout focused which is asserting that
+
+358
+00:14:56,550 --> 00:14:58,740
+hey are we focused on the input box and
+
+359
+00:14:58,740 --> 00:15:00,269
+it's how that looks like so let's only
+
+360
+00:15:00,269 --> 00:15:15,800
+run this test
+
+361
+00:15:15,810 --> 00:15:28,800
+oh there we go that's alright okay so
+
+362
+00:15:28,800 --> 00:15:30,540
+now we're only running that one test now
+
+363
+00:15:30,540 --> 00:15:32,550
+this test passes let's go ahead and
+
+364
+00:15:32,550 --> 00:15:35,940
+break this app right now so I'm going to
+
+365
+00:15:35,940 --> 00:15:37,740
+go in this app and I'm seeing that the
+
+366
+00:15:37,740 --> 00:15:39,540
+autofocus for this input box is set to
+
+367
+00:15:39,540 --> 00:15:41,040
+true well let's go ahead and break in
+
+368
+00:15:41,040 --> 00:15:43,260
+and set set it to false which is going
+
+369
+00:15:43,260 --> 00:15:48,420
+to make this make this test fail so
+
+370
+00:15:48,420 --> 00:15:49,500
+everyone's going to wait and be like hey
+
+371
+00:15:49,500 --> 00:15:51,660
+I kept I kept retrying to see if this
+
+372
+00:15:51,660 --> 00:15:54,029
+test will pass but it didn't and notice
+
+373
+00:15:54,029 --> 00:15:55,890
+this is how it looks like when problems
+
+374
+00:15:55,890 --> 00:15:59,339
+occur and we go out of our way to give
+
+375
+00:15:59,339 --> 00:16:02,070
+you very human readable messages these
+
+376
+00:16:02,070 --> 00:16:05,339
+are all handwritten messages so I'm very
+
+377
+00:16:05,339 --> 00:16:06,960
+proud of that so nobody wants to see a
+
+378
+00:16:06,960 --> 00:16:09,630
+kid garbled you know nonsense when
+
+379
+00:16:09,630 --> 00:16:12,120
+something goes wrong so let's go ahead
+
+380
+00:16:12,120 --> 00:16:15,270
+and rerun this test and Cypress is
+
+381
+00:16:15,270 --> 00:16:16,680
+trying to make this assertion but I'm
+
+382
+00:16:16,680 --> 00:16:18,450
+going to click the info box myself and
+
+383
+00:16:18,450 --> 00:16:21,570
+force this test to pass so the stat when
+
+384
+00:16:21,570 --> 00:16:22,860
+you're Cypress loads the app this is
+
+385
+00:16:22,860 --> 00:16:24,660
+your actual app you can play with it you
+
+386
+00:16:24,660 --> 00:16:26,940
+can type things in right here it's it's
+
+387
+00:16:26,940 --> 00:16:28,920
+not some weird version of your app it's
+
+388
+00:16:28,920 --> 00:16:33,240
+the full thing and me in focusing on the
+
+389
+00:16:33,240 --> 00:16:35,250
+input boxes is essentially changing the
+
+390
+00:16:35,250 --> 00:16:36,780
+state of the Dom and making this test
+
+391
+00:16:36,780 --> 00:16:45,620
+pass alright so exit out of here and
+
+392
+00:16:45,620 --> 00:16:48,210
+it's actually fix this before we move on
+
+393
+00:16:48,210 --> 00:16:51,150
+and let's get back to our discussion all
+
+394
+00:16:51,150 --> 00:16:54,930
+right so very overly simplified view of
+
+395
+00:16:54,930 --> 00:16:58,350
+Cyprus architecture it's that the Cyprus
+
+396
+00:16:58,350 --> 00:17:00,630
+test runner runs right alongside your
+
+397
+00:17:00,630 --> 00:17:02,820
+app on the same run loop as your
+
+398
+00:17:02,820 --> 00:17:04,800
+application which is drastically
+
+399
+00:17:04,800 --> 00:17:08,640
+different than anything out there so the
+
+400
+00:17:08,640 --> 00:17:10,230
+benefits of this as I said before you
+
+401
+00:17:10,230 --> 00:17:11,850
+get direct native access to the DOM and
+
+402
+00:17:11,850 --> 00:17:14,150
+therefore your app and this allows for
+
+403
+00:17:14,150 --> 00:17:17,010
+interesting types of tests you can run
+
+404
+00:17:17,010 --> 00:17:19,230
+and we'll see some of that shortly your
+
+405
+00:17:19,230 --> 00:17:21,420
+tests run very fast they can they'd run
+
+406
+00:17:21,420 --> 00:17:23,010
+actually just as fast as your
+
+407
+00:17:23,010 --> 00:17:25,709
+application so it's that's just
+
+408
+00:17:25,709 --> 00:17:26,880
+fantastic you're just going to get a
+
+409
+00:17:26,880 --> 00:17:29,130
+hell of a lot faster tests and as you
+
+410
+00:17:29,130 --> 00:17:29,900
+saw
+
+411
+00:17:29,900 --> 00:17:32,580
+Cypress there was no weight command
+
+412
+00:17:32,580 --> 00:17:34,260
+there was no like timeouts or anything
+
+413
+00:17:34,260 --> 00:17:34,950
+like that
+
+414
+00:17:34,950 --> 00:17:37,260
+Cyprus automatically retries and keeps
+
+415
+00:17:37,260 --> 00:17:40,050
+me trying to assert the state of the Dom
+
+416
+00:17:40,050 --> 00:17:42,300
+that you're expecting so you don't have
+
+417
+00:17:42,300 --> 00:17:43,770
+to mess with timeouts or weights or
+
+418
+00:17:43,770 --> 00:17:45,720
+anything like that and I get full access
+
+419
+00:17:45,720 --> 00:17:48,000
+to dev tools which you know it helps a
+
+420
+00:17:48,000 --> 00:17:51,810
+lot for debugging my app and I can have
+
+421
+00:17:51,810 --> 00:17:54,810
+my editor and Cyprus side-by-side and as
+
+422
+00:17:54,810 --> 00:17:57,330
+I'm changing the mice my my test specs
+
+423
+00:17:57,330 --> 00:17:59,340
+Cyprus will automatically reload and run
+
+424
+00:17:59,340 --> 00:18:01,460
+the test so that's just fantastic and
+
+425
+00:18:01,460 --> 00:18:03,900
+what this all leads to is flake-free
+
+426
+00:18:03,900 --> 00:18:08,550
+consistent and reliable tests so how the
+
+427
+00:18:08,550 --> 00:18:12,480
+Cyprus make this happen well here's an
+
+428
+00:18:12,480 --> 00:18:14,190
+example we got three commands that are
+
+429
+00:18:14,190 --> 00:18:16,620
+running these are very simple they're
+
+430
+00:18:16,620 --> 00:18:19,380
+just trying to you know select the three
+
+431
+00:18:19,380 --> 00:18:21,330
+Dom elements Cyprus will look at this
+
+432
+00:18:21,330 --> 00:18:23,880
+and it will essentially queue these
+
+433
+00:18:23,880 --> 00:18:25,500
+commands up and run them in the order
+
+434
+00:18:25,500 --> 00:18:27,870
+that you've declared them so we'll you
+
+435
+00:18:27,870 --> 00:18:29,760
+know you'd find the first one second one
+
+436
+00:18:29,760 --> 00:18:31,500
+third one exactly how you've written it
+
+437
+00:18:31,500 --> 00:18:33,300
+in this way things happen
+
+438
+00:18:33,300 --> 00:18:39,180
+deterministically so as I said you get
+
+439
+00:18:39,180 --> 00:18:40,830
+direct access to the Dom and this allows
+
+440
+00:18:40,830 --> 00:18:43,680
+for cool types of tests my brilliant
+
+441
+00:18:43,680 --> 00:18:45,780
+colleague Gleb amitabh has written a
+
+442
+00:18:45,780 --> 00:18:48,900
+series of component testing libraries
+
+443
+00:18:48,900 --> 00:18:51,240
+for all your favorite frameworks out
+
+444
+00:18:51,240 --> 00:18:53,760
+there and with this essentially
+
+445
+00:18:53,760 --> 00:18:56,880
+essentially allows you to do is take one
+
+446
+00:18:56,880 --> 00:18:59,160
+of your components here in let's say in
+
+447
+00:18:59,160 --> 00:19:01,410
+react you can just take just that one
+
+448
+00:19:01,410 --> 00:19:04,170
+component you know in isolation and
+
+449
+00:19:04,170 --> 00:19:06,840
+mount it to a real browser Dom and then
+
+450
+00:19:06,840 --> 00:19:10,050
+you can run Cypress tests against it so
+
+451
+00:19:10,050 --> 00:19:11,640
+let's go ahead and see an example of
+
+452
+00:19:11,640 --> 00:19:15,990
+this I will be showing this to you in
+
+453
+00:19:15,990 --> 00:19:25,660
+the view version so let's go ahead and
+
+454
+00:19:25,670 --> 00:19:30,140
+but wait for that to open up so this is
+
+455
+00:19:30,140 --> 00:19:32,000
+essentially an example within the
+
+456
+00:19:32,000 --> 00:19:36,140
+Cypress V unit test library it's a it's
+
+457
+00:19:36,140 --> 00:19:38,690
+a simple counter
+
+458
+00:19:38,690 --> 00:19:41,270
+component but which is not interesting
+
+459
+00:19:41,270 --> 00:19:42,920
+but if the part that is interesting is
+
+460
+00:19:42,920 --> 00:19:46,010
+that this counter uses view X to manage
+
+461
+00:19:46,010 --> 00:19:47,660
+its state if you're not familiar view X
+
+462
+00:19:47,660 --> 00:19:49,520
+it's like Redux it's just a central
+
+463
+00:19:49,520 --> 00:19:59,060
+state store just see how it runs there
+
+464
+00:19:59,060 --> 00:20:02,230
+we go whew we got a nice little counter
+
+465
+00:20:02,230 --> 00:20:04,580
+so that's how it looks like but more
+
+466
+00:20:04,580 --> 00:20:05,930
+importantly we want to look at the code
+
+467
+00:20:05,930 --> 00:20:09,890
+for this so the Cypress view unit test
+
+468
+00:20:09,890 --> 00:20:12,590
+library is going to give you this Mount
+
+469
+00:20:12,590 --> 00:20:14,840
+View function if you were using Cypress
+
+470
+00:20:14,840 --> 00:20:17,000
+react unit test you would get a mount
+
+471
+00:20:17,000 --> 00:20:19,040
+function for mounting react components
+
+472
+00:20:19,040 --> 00:20:22,840
+and before each test I can go ahead and
+
+473
+00:20:22,840 --> 00:20:26,300
+mount my component however I wish so I'm
+
+474
+00:20:26,300 --> 00:20:27,980
+passing in the template for my component
+
+475
+00:20:27,980 --> 00:20:30,350
+the central store instance for it to use
+
+476
+00:20:30,350 --> 00:20:32,180
+any extensions or anything else I want
+
+477
+00:20:32,180 --> 00:20:33,620
+to use along with it and it would just
+
+478
+00:20:33,620 --> 00:20:35,540
+take that component and mount it to the
+
+479
+00:20:35,540 --> 00:20:39,290
+dom and here's the cool part i can
+
+480
+00:20:39,290 --> 00:20:41,330
+directly manipulate the state of this
+
+481
+00:20:41,330 --> 00:20:45,260
+app with just plain old JavaScript the
+
+482
+00:20:45,260 --> 00:20:46,940
+Cypress for unit test library is going
+
+483
+00:20:46,940 --> 00:20:50,240
+to give me a view instance on the
+
+484
+00:20:50,240 --> 00:20:52,340
+Cypress global variable right here and I
+
+485
+00:20:52,340 --> 00:20:54,650
+can directly get access to the central
+
+486
+00:20:54,650 --> 00:20:57,260
+store and I can get the state of the
+
+487
+00:20:57,260 --> 00:20:59,360
+count in the counter or I can change the
+
+488
+00:20:59,360 --> 00:21:01,640
+state I can I can change this directly
+
+489
+00:21:01,640 --> 00:21:05,600
+in my tests now a real world example of
+
+490
+00:21:05,600 --> 00:21:07,370
+this is let's say you want to test your
+
+491
+00:21:07,370 --> 00:21:09,950
+login page right and you need you need
+
+492
+00:21:09,950 --> 00:21:11,510
+to authenticate before you can do other
+
+493
+00:21:11,510 --> 00:21:12,590
+things in your test
+
+494
+00:21:12,590 --> 00:21:15,380
+well maybe you only need to do that once
+
+495
+00:21:15,380 --> 00:21:18,080
+if via the UI of your app right you you
+
+496
+00:21:18,080 --> 00:21:19,700
+go ahead and you type in your username
+
+497
+00:21:19,700 --> 00:21:21,560
+password then you hit the login button
+
+498
+00:21:21,560 --> 00:21:24,500
+in your tests but you really need to do
+
+499
+00:21:24,500 --> 00:21:25,940
+that every single time you want to
+
+500
+00:21:25,940 --> 00:21:29,090
+authenticate to run on one test no you
+
+501
+00:21:29,090 --> 00:21:30,590
+just want to do it once you had now you
+
+502
+00:21:30,590 --> 00:21:32,420
+have confidence that the login UI works
+
+503
+00:21:32,420 --> 00:21:34,490
+and then every other time you need
+
+504
+00:21:34,490 --> 00:21:36,320
+authentication in your test you would
+
+505
+00:21:36,320 --> 00:21:39,140
+simply authenticate that user via
+
+506
+00:21:39,140 --> 00:21:40,670
+javascript directly you don't have to
+
+507
+00:21:40,670 --> 00:21:42,140
+keep going through the UI just to
+
+508
+00:21:42,140 --> 00:21:44,030
+authenticate you can just do it in plain
+
+509
+00:21:44,030 --> 00:21:46,280
+old JavaScript and this is going to be a
+
+510
+00:21:46,280 --> 00:21:50,610
+much faster way of running your tests
+
+511
+00:21:50,620 --> 00:21:57,830
+let's close that out okay so so far I've
+
+512
+00:21:57,830 --> 00:21:59,360
+just been showing you the ciphers open
+
+513
+00:21:59,360 --> 00:22:01,220
+command you've constantly seen me run
+
+514
+00:22:01,220 --> 00:22:03,530
+Cypress open and that's great for your
+
+515
+00:22:03,530 --> 00:22:05,780
+everyday you know developmental workflow
+
+516
+00:22:05,780 --> 00:22:07,720
+Cypress on one side editor on one side
+
+517
+00:22:07,720 --> 00:22:10,340
+test-driven development whoa ah well
+
+518
+00:22:10,340 --> 00:22:11,630
+there's a whole other side to Cypress
+
+519
+00:22:11,630 --> 00:22:13,460
+and that's you can run it headless lis
+
+520
+00:22:13,460 --> 00:22:16,370
+using the Cypress run command this is
+
+521
+00:22:16,370 --> 00:22:18,230
+great for writing Cypress tests in your
+
+522
+00:22:18,230 --> 00:22:20,930
+CI and it's a much more efficient way of
+
+523
+00:22:20,930 --> 00:22:22,460
+running all your tests you know any
+
+524
+00:22:22,460 --> 00:22:24,410
+real-world app has like hundreds of
+
+525
+00:22:24,410 --> 00:22:26,810
+thousands of tests and I there's no need
+
+526
+00:22:26,810 --> 00:22:28,970
+to run that like visually you can but
+
+527
+00:22:28,970 --> 00:22:30,440
+it's just a hell of a lot faster running
+
+528
+00:22:30,440 --> 00:22:33,530
+headless Lee and the cool thing about
+
+529
+00:22:33,530 --> 00:22:37,250
+running Cypress headless Lee is that you
+
+530
+00:22:37,250 --> 00:22:39,080
+can actually get a recording a video
+
+531
+00:22:39,080 --> 00:22:41,780
+recording of your entire test run by
+
+532
+00:22:41,780 --> 00:22:43,340
+just you know passing in this record
+
+533
+00:22:43,340 --> 00:22:49,300
+flag and we'll see that let's go then so
+
+534
+00:22:49,300 --> 00:22:53,840
+that to do NBC app I had now we fixed it
+
+535
+00:22:53,840 --> 00:22:56,450
+right here and let's go ahead and remove
+
+536
+00:22:56,450 --> 00:22:59,090
+this only right here and let's bring it
+
+537
+00:22:59,090 --> 00:23:03,470
+back up okay so now I'm going to run
+
+538
+00:23:03,470 --> 00:23:06,830
+Cypress run past the record flag and
+
+539
+00:23:06,830 --> 00:23:09,410
+there's also this key flag this is this
+
+540
+00:23:09,410 --> 00:23:11,330
+this key flag is provided by Cypress and
+
+541
+00:23:11,330 --> 00:23:13,460
+a uniquely identifies your project and
+
+542
+00:23:13,460 --> 00:23:15,620
+this is useful when you're using the
+
+543
+00:23:15,620 --> 00:23:17,180
+Cypress dashboard which is a
+
+544
+00:23:17,180 --> 00:23:18,890
+complimentary service to Cypress and
+
+545
+00:23:18,890 --> 00:23:21,380
+we'll see that shortly but I'm going to
+
+546
+00:23:21,380 --> 00:23:23,870
+go ahead and run this and this is going
+
+547
+00:23:23,870 --> 00:23:27,470
+to bring up a headless browser and it's
+
+548
+00:23:27,470 --> 00:23:30,350
+going to start running Cypress headless
+
+549
+00:23:30,350 --> 00:23:39,230
+Lee great now it's brought them up so I
+
+550
+00:23:39,230 --> 00:23:40,700
+don't think I have proper internet
+
+551
+00:23:40,700 --> 00:23:41,930
+connection here that's probably why it
+
+552
+00:23:41,930 --> 00:23:44,930
+didn't said that message your votes
+
+553
+00:23:44,930 --> 00:24:00,790
+ringing let's see
+
+554
+00:24:00,800 --> 00:24:07,970
+hope
+
+555
+00:24:07,980 --> 00:24:13,930
+that's the one anyone know the password
+
+556
+00:24:13,940 --> 00:24:19,389
+what is it
+
+557
+00:24:19,399 --> 00:24:30,769
+who is sports horse okay that's right
+
+558
+00:24:30,769 --> 00:24:33,409
+thank you
+
+559
+00:24:33,409 --> 00:24:36,240
+Wow cool
+
+560
+00:24:36,240 --> 00:24:40,139
+so while that's doing that my my test
+
+561
+00:24:40,139 --> 00:24:43,380
+run ran and and it ran headless Lee and
+
+562
+00:24:43,380 --> 00:24:46,740
+after was done it gave me this this the
+
+563
+00:24:46,740 --> 00:24:49,950
+path to the video it took of my test so
+
+564
+00:24:49,950 --> 00:24:53,010
+I can actually bring that up and I can
+
+565
+00:24:53,010 --> 00:24:57,090
+play that and so this is exactly what
+
+566
+00:24:57,090 --> 00:24:59,909
+you were seeing in the browser it's the
+
+567
+00:24:59,909 --> 00:25:11,680
+exact video of that entire test run
+
+568
+00:25:11,690 --> 00:25:14,970
+okay so now this leads to the whole
+
+569
+00:25:14,970 --> 00:25:16,409
+other part of Cyprus which is this
+
+570
+00:25:16,409 --> 00:25:18,179
+complimentary dashboard service which is
+
+571
+00:25:18,179 --> 00:25:21,179
+actually also optional to use but it's
+
+572
+00:25:21,179 --> 00:25:22,950
+great one your writing test in CI
+
+573
+00:25:22,950 --> 00:25:25,259
+because when it's running a CI you have
+
+574
+00:25:25,259 --> 00:25:26,549
+no idea how what's going on in the
+
+575
+00:25:26,549 --> 00:25:27,749
+browser you don't know how it looks like
+
+576
+00:25:27,749 --> 00:25:29,369
+you need a way to see what's going on
+
+577
+00:25:29,369 --> 00:25:33,179
+and the dashboard it records all your
+
+578
+00:25:33,179 --> 00:25:35,789
+tests it tells you which specs ran which
+
+579
+00:25:35,789 --> 00:25:37,440
+ones passed or fail will show you error
+
+580
+00:25:37,440 --> 00:25:39,119
+messages it will show you video
+
+581
+00:25:39,119 --> 00:25:40,619
+recordings that like the ones you just
+
+582
+00:25:40,619 --> 00:25:42,809
+saw will show you screen shots automatic
+
+583
+00:25:42,809 --> 00:25:44,429
+screen shots are taking when something
+
+584
+00:25:44,429 --> 00:25:47,759
+goes goes wrong so it's it's a it's
+
+585
+00:25:47,759 --> 00:25:50,039
+great for that and we can actually take
+
+586
+00:25:50,039 --> 00:25:53,309
+a quick look at that so here's an
+
+587
+00:25:53,309 --> 00:25:55,289
+example of actually one of our own tests
+
+588
+00:25:55,289 --> 00:25:57,779
+this is test for the Cyprus dashboard we
+
+589
+00:25:57,779 --> 00:25:59,820
+use Cyprus internally obviously if to
+
+590
+00:25:59,820 --> 00:26:01,499
+test everything we use Cyprus to test
+
+591
+00:26:01,499 --> 00:26:05,639
+Cyprus so yeah so that's works great
+
+592
+00:26:05,639 --> 00:26:09,090
+great for that this is an example of a
+
+593
+00:26:09,090 --> 00:26:11,190
+test run where you know things fail for
+
+594
+00:26:11,190 --> 00:26:14,850
+whatever reason and we have those exact
+
+595
+00:26:14,850 --> 00:26:17,389
+error messages of things went wrong
+
+596
+00:26:17,389 --> 00:26:19,739
+there there right here is a key I assume
+
+597
+00:26:19,739 --> 00:26:21,359
+you can see the exact standard output
+
+598
+00:26:21,359 --> 00:26:22,980
+kind of like how you would see them main
+
+599
+00:26:22,980 --> 00:26:27,539
+CI you get to see screenshots that of
+
+600
+00:26:27,539 --> 00:26:31,460
+the problem place and you can see videos
+
+601
+00:26:31,460 --> 00:26:33,929
+kind of like the one you just saw right
+
+602
+00:26:33,929 --> 00:26:37,379
+now so it's great for then you can
+
+603
+00:26:37,379 --> 00:26:38,999
+actually you know it's you look at
+
+604
+00:26:38,999 --> 00:26:44,940
+everyone that like passed so a passing
+
+605
+00:26:44,940 --> 00:26:46,379
+test will look like this
+
+606
+00:26:46,379 --> 00:26:48,210
+and we'll get to some of this cool stuff
+
+607
+00:26:48,210 --> 00:26:54,450
+in a little bit so until recently you
+
+608
+00:26:54,450 --> 00:26:56,580
+know the dashboard was just for seeing
+
+609
+00:26:56,580 --> 00:26:57,960
+what's going on in your CI environment
+
+610
+00:26:57,960 --> 00:27:00,570
+it was great for that you know it's also
+
+611
+00:27:00,570 --> 00:27:02,190
+great for collaboration because you can
+
+612
+00:27:02,190 --> 00:27:03,749
+like link your co-workers like here this
+
+613
+00:27:03,749 --> 00:27:05,009
+is the exact thing that we're on here's
+
+614
+00:27:05,009 --> 00:27:07,159
+a video of it here's a screenshot of it
+
+615
+00:27:07,159 --> 00:27:11,100
+but now you know we recently released
+
+616
+00:27:11,100 --> 00:27:14,249
+the Cyprus 3.1 which adds the
+
+617
+00:27:14,249 --> 00:27:16,739
+parallelization feature and we've kind
+
+618
+00:27:16,739 --> 00:27:18,600
+of been you know not very vocal about
+
+619
+00:27:18,600 --> 00:27:20,159
+this feature and we haven't talked too
+
+620
+00:27:20,159 --> 00:27:21,419
+much about it publicly so this is the
+
+621
+00:27:21,419 --> 00:27:22,830
+first time we've ever talked about it
+
+622
+00:27:22,830 --> 00:27:25,470
+publicly so you know congratulations
+
+623
+00:27:25,470 --> 00:27:29,550
+so yeah 3.1 is out it's been and we're
+
+624
+00:27:29,550 --> 00:27:31,320
+offering parallelization in that and
+
+625
+00:27:31,320 --> 00:27:33,240
+it's been along the way this feature and
+
+626
+00:27:33,240 --> 00:27:35,580
+what parallelization allows you to do is
+
+627
+00:27:35,580 --> 00:27:39,960
+it can automatically load balance your
+
+628
+00:27:39,960 --> 00:27:44,100
+test runs across your CI resources and
+
+629
+00:27:44,100 --> 00:27:46,140
+all you got to do is bring up how many
+
+630
+00:27:46,140 --> 00:27:48,270
+CI resources you want you know three
+
+631
+00:27:48,270 --> 00:27:50,760
+machines time machines whatever and all
+
+632
+00:27:50,760 --> 00:27:52,320
+you got to do is just pass this new
+
+633
+00:27:52,320 --> 00:27:54,360
+parallel flag in when you're running
+
+634
+00:27:54,360 --> 00:27:56,610
+your tests let's go ahead and see how
+
+635
+00:27:56,610 --> 00:27:58,650
+this works so let's say you you
+
+636
+00:27:58,650 --> 00:28:00,960
+configure your CI environment to you
+
+637
+00:28:00,960 --> 00:28:03,690
+know use three machines and this is
+
+638
+00:28:03,690 --> 00:28:05,220
+what's going to happen the first machine
+
+639
+00:28:05,220 --> 00:28:06,930
+is going to contact Cypress and it's
+
+640
+00:28:06,930 --> 00:28:08,670
+gonna be like hey buddy I'm ready for
+
+641
+00:28:08,670 --> 00:28:10,620
+some work and here all the tests they
+
+642
+00:28:10,620 --> 00:28:12,870
+need to run for this project we're like
+
+643
+00:28:12,870 --> 00:28:15,150
+cool great we're going to now
+
+644
+00:28:15,150 --> 00:28:17,460
+intelligently figure out what is the
+
+645
+00:28:17,460 --> 00:28:20,250
+first thing this new machine is supposed
+
+646
+00:28:20,250 --> 00:28:22,020
+to do which test specs should this
+
+647
+00:28:22,020 --> 00:28:25,410
+machine run well we determine and we'll
+
+648
+00:28:25,410 --> 00:28:27,690
+see how that's done that this machine
+
+649
+00:28:27,690 --> 00:28:29,250
+should go ahead and start with the login
+
+650
+00:28:29,250 --> 00:28:32,190
+spec to test the login page and then the
+
+651
+00:28:32,190 --> 00:28:33,210
+second machine is going to like alright
+
+652
+00:28:33,210 --> 00:28:35,250
+I'm ready to and then we're like okay
+
+653
+00:28:35,250 --> 00:28:36,960
+great you can do the signup page and
+
+654
+00:28:36,960 --> 00:28:39,120
+then the third one here you can test
+
+655
+00:28:39,120 --> 00:28:41,100
+this widget and this all happens
+
+656
+00:28:41,100 --> 00:28:45,810
+obviously in parallel so as you can see
+
+657
+00:28:45,810 --> 00:28:50,100
+you know now we can optimally use our CI
+
+658
+00:28:50,100 --> 00:28:53,190
+resources now how do we know which
+
+659
+00:28:53,190 --> 00:28:55,710
+respect to give first and which to do
+
+660
+00:28:55,710 --> 00:28:57,900
+second which to give third right how do
+
+661
+00:28:57,900 --> 00:29:00,660
+we go about doing that well this is how
+
+662
+00:29:00,660 --> 00:29:04,140
+we do load balancing when you start
+
+663
+00:29:04,140 --> 00:29:05,970
+using the cypress dashboard you know
+
+664
+00:29:05,970 --> 00:29:08,580
+you're recording your test to it and you
+
+665
+00:29:08,580 --> 00:29:09,870
+know Cypress is in a very intimate
+
+666
+00:29:09,870 --> 00:29:12,120
+relationship with with your test and
+
+667
+00:29:12,120 --> 00:29:14,520
+that was everything you know about them
+
+668
+00:29:14,520 --> 00:29:16,800
+how long it takes to run each of your
+
+669
+00:29:16,800 --> 00:29:20,430
+specs and so we have a test duration
+
+670
+00:29:20,430 --> 00:29:24,420
+history of any given spec and then we do
+
+671
+00:29:24,420 --> 00:29:26,550
+some clever math do some analysis on
+
+672
+00:29:26,550 --> 00:29:29,190
+that and then we can forecast how long
+
+673
+00:29:29,190 --> 00:29:31,980
+the next test run for a given spec will
+
+674
+00:29:31,980 --> 00:29:35,280
+take once we have that information we've
+
+675
+00:29:35,280 --> 00:29:37,050
+configured it so that we'll run the
+
+676
+00:29:37,050 --> 00:29:39,600
+longest test first because
+
+677
+00:29:39,600 --> 00:29:41,100
+it's gonna take the longest we should
+
+678
+00:29:41,100 --> 00:29:42,690
+probably get started on that first right
+
+679
+00:29:42,690 --> 00:29:48,059
+and and we do this on the fly for every
+
+680
+00:29:48,059 --> 00:29:50,519
+test spec that you want to test so we'll
+
+681
+00:29:50,519 --> 00:29:52,529
+go ahead and automatically compute and
+
+682
+00:29:52,529 --> 00:29:54,929
+forecast how long it's going to take to
+
+683
+00:29:54,929 --> 00:29:57,210
+run the log in spec and sign up spec and
+
+684
+00:29:57,210 --> 00:29:59,820
+widget spec and then this is how we go
+
+685
+00:29:59,820 --> 00:30:02,330
+about load-balancing them across your CI
+
+686
+00:30:02,330 --> 00:30:06,720
+environment and so what this allows you
+
+687
+00:30:06,720 --> 00:30:09,359
+to do is you know get the most bang for
+
+688
+00:30:09,359 --> 00:30:12,899
+buck from your CI right because yes you
+
+689
+00:30:12,899 --> 00:30:15,059
+can say like that you're using circle CI
+
+690
+00:30:15,059 --> 00:30:16,919
+and you can configure it to have 10
+
+691
+00:30:16,919 --> 00:30:19,409
+machines running it's great but it's
+
+692
+00:30:19,409 --> 00:30:20,759
+kind of like having a really powerful
+
+693
+00:30:20,759 --> 00:30:22,859
+computer and not having the proper
+
+694
+00:30:22,859 --> 00:30:24,690
+software to use all the cores and all
+
+695
+00:30:24,690 --> 00:30:27,629
+the memory right but Cypress allows you
+
+696
+00:30:27,629 --> 00:30:31,919
+to optimize your test runs across your
+
+697
+00:30:31,919 --> 00:30:34,529
+CI resources and what this essentially
+
+698
+00:30:34,529 --> 00:30:36,840
+leads to is you saving a lot of time and
+
+699
+00:30:36,840 --> 00:30:39,899
+money because your tests run faster and
+
+700
+00:30:39,899 --> 00:30:44,820
+the developers cost a lot so we can
+
+701
+00:30:44,820 --> 00:30:46,830
+actually go ahead and look at how a
+
+702
+00:30:46,830 --> 00:30:51,019
+parallelized test run looks like this is
+
+703
+00:30:51,019 --> 00:30:53,639
+for actually our cypress dashboard thing
+
+704
+00:30:53,639 --> 00:30:58,979
+I had another one there we go this one's
+
+705
+00:30:58,979 --> 00:31:11,000
+good okay
+
+706
+00:31:11,010 --> 00:31:12,910
+all right
+
+707
+00:31:12,910 --> 00:31:16,890
+so this is showing you three different
+
+708
+00:31:16,890 --> 00:31:21,640
+test runs over here and we've labeled
+
+709
+00:31:21,640 --> 00:31:23,500
+them and I'll show you how that labeling
+
+710
+00:31:23,500 --> 00:31:25,000
+works it's actually a new feature as
+
+711
+00:31:25,000 --> 00:31:28,120
+well and you see like this one says 2x
+
+712
+00:31:28,120 --> 00:31:32,110
+chrome zoom that a little bit 2x chrome
+
+713
+00:31:32,110 --> 00:31:34,300
+another next one says like 1x electron
+
+714
+00:31:34,300 --> 00:31:35,890
+4x electron this is just a naming
+
+715
+00:31:35,890 --> 00:31:37,960
+convention we're using to say okay this
+
+716
+00:31:37,960 --> 00:31:41,860
+test run was testing in chrome and it
+
+717
+00:31:41,860 --> 00:31:44,530
+used to you know to machine CI machines
+
+718
+00:31:44,530 --> 00:31:46,600
+to run this test and this one uses four
+
+719
+00:31:46,600 --> 00:31:48,910
+machines so if you look at the duration
+
+720
+00:31:48,910 --> 00:31:50,950
+history of each one of these for example
+
+721
+00:31:50,950 --> 00:31:54,250
+if we look at the the electron tests the
+
+722
+00:31:54,250 --> 00:31:55,810
+one that just used one machine it took
+
+723
+00:31:55,810 --> 00:31:58,900
+two minutes 38 seconds and the one we
+
+724
+00:31:58,900 --> 00:32:01,450
+use for machines only took 46 seconds
+
+725
+00:32:01,450 --> 00:32:04,240
+and you know 2 minutes 38 seconds is not
+
+726
+00:32:04,240 --> 00:32:05,920
+a lot but when you're looking this is
+
+727
+00:32:05,920 --> 00:32:07,540
+just the example project but when you're
+
+728
+00:32:07,540 --> 00:32:10,420
+running this against a real big project
+
+729
+00:32:10,420 --> 00:32:12,400
+you're really gonna see the time time
+
+730
+00:32:12,400 --> 00:32:15,370
+savings here and it only aggregates over
+
+731
+00:32:15,370 --> 00:32:21,630
+over time and the next thing we have
+
+732
+00:32:21,630 --> 00:32:25,690
+that's with 3.1 is now we enable you to
+
+733
+00:32:25,690 --> 00:32:28,390
+group all your test runs together it's
+
+734
+00:32:28,390 --> 00:32:30,430
+it's like a nice general-purpose way of
+
+735
+00:32:30,430 --> 00:32:32,170
+grouping different test runs so for
+
+736
+00:32:32,170 --> 00:32:34,630
+example you want to test your main user
+
+737
+00:32:34,630 --> 00:32:37,240
+facing front-end app and you want to
+
+738
+00:32:37,240 --> 00:32:39,370
+label that as like front-end and then
+
+739
+00:32:39,370 --> 00:32:41,860
+you want to test like your admin page or
+
+740
+00:32:41,860 --> 00:32:43,750
+your ad in an application then you can
+
+741
+00:32:43,750 --> 00:32:46,660
+you know label that as admin so then
+
+742
+00:32:46,660 --> 00:32:48,700
+when you go to the dashboard kind of
+
+743
+00:32:48,700 --> 00:32:52,120
+like you saw here we use like the names
+
+744
+00:32:52,120 --> 00:32:54,910
+2x chrome 1x electron whatever but these
+
+745
+00:32:54,910 --> 00:32:57,850
+are the group names we chose and and
+
+746
+00:32:57,850 --> 00:33:00,490
+we're able to see them all in one test
+
+747
+00:33:00,490 --> 00:33:02,200
+run we group them all together you get
+
+748
+00:33:02,200 --> 00:33:05,020
+to see them all in one page and this is
+
+749
+00:33:05,020 --> 00:33:06,640
+how like you can associate them all
+
+750
+00:33:06,640 --> 00:33:08,980
+together and so if we kind of look at
+
+751
+00:33:08,980 --> 00:33:11,110
+these parallelized tests use and this is
+
+752
+00:33:11,110 --> 00:33:14,050
+kind of like a timeline view it's very
+
+753
+00:33:14,050 --> 00:33:16,080
+similar to like how the dev tools
+
+754
+00:33:16,080 --> 00:33:19,510
+waterfall network of you looks like so
+
+755
+00:33:19,510 --> 00:33:21,160
+you can see like we ran the action spec
+
+756
+00:33:21,160 --> 00:33:23,470
+first and then you know and so on and
+
+757
+00:33:23,470 --> 00:33:26,040
+the longest one ran first and as
+
+758
+00:33:26,040 --> 00:33:28,590
+go down the duration of the test specs
+
+759
+00:33:28,590 --> 00:33:30,090
+get smaller and you can like hover over
+
+760
+00:33:30,090 --> 00:33:31,170
+them and get some more information about
+
+761
+00:33:31,170 --> 00:33:34,260
+them and then there's this lower number
+
+762
+00:33:34,260 --> 00:33:36,510
+that shows you like which machine ran
+
+763
+00:33:36,510 --> 00:33:39,060
+this so this tells me that you know this
+
+764
+00:33:39,060 --> 00:33:43,660
+spec was ran with machine number two
+
+765
+00:33:43,670 --> 00:33:50,280
+cool alright and another thing to know
+
+766
+00:33:50,280 --> 00:33:52,380
+about Cypress is that it has fantastic
+
+767
+00:33:52,380 --> 00:33:54,450
+document documentation something that
+
+768
+00:33:54,450 --> 00:33:56,340
+we're actually very proud of so whenever
+
+769
+00:33:56,340 --> 00:33:57,780
+you have any questions it's like the
+
+770
+00:33:57,780 --> 00:33:59,100
+first place you shoot you should go to
+
+771
+00:33:59,100 --> 00:34:01,620
+has also a great search so you get to
+
+772
+00:34:01,620 --> 00:34:05,040
+see everything there and we have
+
+773
+00:34:05,040 --> 00:34:07,590
+literally have a command to do anything
+
+774
+00:34:07,590 --> 00:34:11,370
+and so refer to that please and then we
+
+775
+00:34:11,370 --> 00:34:14,370
+also have a best practices page and
+
+776
+00:34:14,370 --> 00:34:15,990
+there's actually a video of the creator
+
+777
+00:34:15,990 --> 00:34:17,610
+of Cypress he gave a talk on best
+
+778
+00:34:17,610 --> 00:34:20,040
+practices and there's the link for that
+
+779
+00:34:20,040 --> 00:34:22,020
+and I'll be sharing these slides so
+
+780
+00:34:22,020 --> 00:34:23,700
+that's another one I recommend that you
+
+781
+00:34:23,700 --> 00:34:24,990
+know he goes over how to you know
+
+782
+00:34:24,990 --> 00:34:29,160
+organize and write your tests and you
+
+783
+00:34:29,160 --> 00:34:31,230
+know to conclude you know Cypress you
+
+784
+00:34:31,230 --> 00:34:33,179
+know we're completely trying to change
+
+785
+00:34:33,179 --> 00:34:35,400
+the status quo of end-to-end testing
+
+786
+00:34:35,400 --> 00:34:36,390
+it's something that's been very
+
+787
+00:34:36,390 --> 00:34:38,880
+difficult to do properly in the past and
+
+788
+00:34:38,880 --> 00:34:41,130
+we're hell-bent on just completely
+
+789
+00:34:41,130 --> 00:34:42,600
+changing that and creating the best
+
+790
+00:34:42,600 --> 00:34:44,820
+testing experience that this industry
+
+791
+00:34:44,820 --> 00:34:48,570
+has ever seen and I'm you know I'm here
+
+792
+00:34:48,570 --> 00:34:50,700
+with Randal Kent he's one of the
+
+793
+00:34:50,700 --> 00:34:52,260
+cofounders of Cypress so we'll be around
+
+794
+00:34:52,260 --> 00:34:54,000
+if you guys want to talk to us and chat
+
+795
+00:34:54,000 --> 00:34:56,550
+with us and thank you happy testing and
+
+796
+00:34:56,550 --> 00:35:01,050
+go ahead and try out Cypress
+

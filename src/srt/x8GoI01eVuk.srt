@@ -1,0 +1,3037 @@
+1
+00:00:00,320 --> 00:00:02,070
+
+[Music]
+
+2
+00:00:02,070 --> 00:00:03,840
+[Applause]
+
+3
+00:00:03,840 --> 00:00:05,660
+[Music]
+
+4
+00:00:05,660 --> 00:00:07,410
+[Applause]
+
+5
+00:00:07,410 --> 00:00:09,280
+[Music]
+
+6
+00:00:09,280 --> 00:00:11,020
+[Applause]
+
+7
+00:00:11,020 --> 00:00:12,780
+[Music]
+
+8
+00:00:12,780 --> 00:00:16,860
+[Applause]
+
+9
+00:00:16,870 --> 00:00:24,679
+[Music]
+
+10
+00:00:24,689 --> 00:00:29,529
+how's everybody doing today alright okay
+
+11
+00:00:29,529 --> 00:00:30,849
+so today I'm talking a little bit about
+
+12
+00:00:30,849 --> 00:00:33,040
+compilers and why I think they're at the
+
+13
+00:00:33,040 --> 00:00:35,440
+core of the next evolution of web
+
+14
+00:00:35,440 --> 00:00:38,950
+performance as I mentioned my name is
+
+15
+00:00:38,950 --> 00:00:40,930
+Chad I tell I'm a senior staff software
+
+16
+00:00:40,930 --> 00:00:42,789
+engineer at LinkedIn where I get to work
+
+17
+00:00:42,789 --> 00:00:43,920
+on a bunch of open-source JavaScript
+
+18
+00:00:43,920 --> 00:00:46,240
+infrastructure that help power
+
+19
+00:00:46,240 --> 00:00:48,730
+LinkedIn's applications I'm also part of
+
+20
+00:00:48,730 --> 00:00:50,650
+the Emer j/s core team where I help
+
+21
+00:00:50,650 --> 00:00:53,829
+maintain and work on different libraries
+
+22
+00:00:53,829 --> 00:00:55,390
+and frameworks within the Ember
+
+23
+00:00:55,390 --> 00:00:57,399
+ecosystem you have any questions about
+
+24
+00:00:57,399 --> 00:01:00,670
+LinkedIn or ember come find me after my
+
+25
+00:01:00,670 --> 00:01:03,340
+talk but Before we jump into my talk we
+
+26
+00:01:03,340 --> 00:01:04,930
+first have to have a baseline
+
+27
+00:01:04,930 --> 00:01:07,060
+understanding of what actually is a
+
+28
+00:01:07,060 --> 00:01:09,790
+compiler and I think this topic can be
+
+29
+00:01:09,790 --> 00:01:11,380
+rather intimidating for a lot of people
+
+30
+00:01:11,380 --> 00:01:12,729
+because as associated with things like
+
+31
+00:01:12,729 --> 00:01:14,890
+computer science and theory and not
+
+32
+00:01:14,890 --> 00:01:16,360
+everybody has a background in those
+
+33
+00:01:16,360 --> 00:01:18,790
+things so when I think about a compiler
+
+34
+00:01:18,790 --> 00:01:21,370
+and what it is at a high level what it
+
+35
+00:01:21,370 --> 00:01:23,650
+really is is that it's really just a
+
+36
+00:01:23,650 --> 00:01:25,000
+code translator
+
+37
+00:01:25,000 --> 00:01:27,520
+it's gonna take some source code in the
+
+38
+00:01:27,520 --> 00:01:29,409
+compilers in a transformer in various
+
+39
+00:01:29,409 --> 00:01:31,000
+different ways and what you're gonna get
+
+40
+00:01:31,000 --> 00:01:34,020
+as output is another executable program
+
+41
+00:01:34,020 --> 00:01:37,270
+so for instance and the browser you can
+
+42
+00:01:37,270 --> 00:01:38,979
+write something like this a super simple
+
+43
+00:01:38,979 --> 00:01:41,110
+add one function and what the browser
+
+44
+00:01:41,110 --> 00:01:43,360
+has to do before it can actually execute
+
+45
+00:01:43,360 --> 00:01:46,960
+this function is parse and compile it
+
+46
+00:01:46,960 --> 00:01:48,250
+into something that's much more
+
+47
+00:01:48,250 --> 00:01:50,140
+low-level something that can actually
+
+48
+00:01:50,140 --> 00:01:52,600
+run on top of a CPU and it's the
+
+49
+00:01:52,600 --> 00:01:54,250
+browser's ability to do this just
+
+50
+00:01:54,250 --> 00:01:56,770
+just-in-time compilation that has made
+
+51
+00:01:56,770 --> 00:01:58,390
+the web a viable platform for building
+
+52
+00:01:58,390 --> 00:02:02,920
+very sophisticated applications but I'm
+
+53
+00:02:02,920 --> 00:02:04,360
+not actually here today to talk about
+
+54
+00:02:04,360 --> 00:02:06,640
+these compilers I'm here to talk about
+
+55
+00:02:06,640 --> 00:02:08,920
+the compilers that we use every single
+
+56
+00:02:08,920 --> 00:02:11,799
+day inside of our tool chains and we've
+
+57
+00:02:11,799 --> 00:02:14,260
+actually been using compilers for quite
+
+58
+00:02:14,260 --> 00:02:16,599
+a long period of time about 15 years or
+
+59
+00:02:16,599 --> 00:02:16,780
+so
+
+60
+00:02:16,780 --> 00:02:19,030
+maybe a little bit more and so we're
+
+61
+00:02:19,030 --> 00:02:20,560
+going to quickly look through kind of
+
+62
+00:02:20,560 --> 00:02:22,330
+the history of compilers in the front
+
+63
+00:02:22,330 --> 00:02:23,860
+and tooling space and what they've
+
+64
+00:02:23,860 --> 00:02:24,819
+afforded us and
+
+65
+00:02:24,819 --> 00:02:27,370
+terms of like performance or developer
+
+66
+00:02:27,370 --> 00:02:29,769
+ergonomics so we first have to go back
+
+67
+00:02:29,769 --> 00:02:32,439
+to 2003 when Douglas Crockford writes
+
+68
+00:02:32,439 --> 00:02:36,819
+Jasmine and Jasmine is a one file cc
+
+69
+00:02:36,819 --> 00:02:38,650
+library that just removed all the
+
+70
+00:02:38,650 --> 00:02:40,900
+meaningless white space from your
+
+71
+00:02:40,900 --> 00:02:42,760
+JavaScript code and things like comments
+
+72
+00:02:42,760 --> 00:02:44,859
+and stuff like that and this drastically
+
+73
+00:02:44,859 --> 00:02:48,010
+shrunk the size of the applications that
+
+74
+00:02:48,010 --> 00:02:51,879
+we were shipping to the browser right
+
+75
+00:02:51,879 --> 00:02:53,560
+along the same period of time Yui
+
+76
+00:02:53,560 --> 00:02:55,269
+compressor comes out and right Yui
+
+77
+00:02:55,269 --> 00:02:57,760
+compressor has this very similar type of
+
+78
+00:02:57,760 --> 00:02:59,950
+goals it wants to reduce the size of the
+
+79
+00:02:59,950 --> 00:03:01,599
+JavaScript that's being sent over the
+
+80
+00:03:01,599 --> 00:03:03,400
+wire and it does things like removing
+
+81
+00:03:03,400 --> 00:03:05,290
+this meaningless whitespace and removing
+
+82
+00:03:05,290 --> 00:03:08,730
+comments but it introduces the notion of
+
+83
+00:03:08,730 --> 00:03:12,129
+mangling or symbol mangling and it goes
+
+84
+00:03:12,129 --> 00:03:14,139
+something like this so this is a unique
+
+85
+00:03:14,139 --> 00:03:17,629
+and functional
+
+86
+00:03:17,639 --> 00:03:21,280
+2003 this is like ballad es 3 code and
+
+87
+00:03:21,280 --> 00:03:23,469
+so what the compiler is gonna do is that
+
+88
+00:03:23,469 --> 00:03:25,510
+it's gonna pull out all of the user
+
+89
+00:03:25,510 --> 00:03:28,389
+identify or user specified identifiers
+
+90
+00:03:28,389 --> 00:03:31,720
+so this is unique our red-eye item and
+
+91
+00:03:31,720 --> 00:03:34,269
+what the compiler does is it Maps them
+
+92
+00:03:34,269 --> 00:03:36,609
+onto a set of new identifiers in this
+
+93
+00:03:36,609 --> 00:03:38,979
+case a b c d and e and it can do this
+
+94
+00:03:38,979 --> 00:03:41,229
+because the compiler has all the lexical
+
+95
+00:03:41,229 --> 00:03:43,479
+and semantic information inside of it so
+
+96
+00:03:43,479 --> 00:03:45,909
+it knows that it safely can remap this
+
+97
+00:03:45,909 --> 00:03:48,040
+thing that you wrote into something that
+
+98
+00:03:48,040 --> 00:03:51,909
+is much smaller and so while in 2018
+
+99
+00:03:51,909 --> 00:03:54,930
+this is not like a new novel idea
+
+100
+00:03:54,930 --> 00:03:57,069
+anybody that's building JavaScript
+
+101
+00:03:57,069 --> 00:03:59,139
+applications is going through a
+
+102
+00:03:59,139 --> 00:04:01,060
+minification step but at the time this
+
+103
+00:04:01,060 --> 00:04:04,870
+was rather novel and it sped up
+
+104
+00:04:04,870 --> 00:04:08,620
+applications quite a bit next comes this
+
+105
+00:04:08,620 --> 00:04:13,299
+period from 2003 to 2008 and not a whole
+
+106
+00:04:13,299 --> 00:04:15,849
+lot happens during this time in terms of
+
+107
+00:04:15,849 --> 00:04:17,469
+like developer tool chains and
+
+108
+00:04:17,469 --> 00:04:19,840
+everything like that and that's because
+
+109
+00:04:19,840 --> 00:04:22,930
+this is the life and death of es 4 and
+
+110
+00:04:22,930 --> 00:04:24,820
+so for those who are familiar with what
+
+111
+00:04:24,820 --> 00:04:27,729
+es 4 is or was it was an actual
+
+112
+00:04:27,729 --> 00:04:29,590
+specification of JavaScript that never
+
+113
+00:04:29,590 --> 00:04:32,770
+actually shipped but looking back at es
+
+114
+00:04:32,770 --> 00:04:35,380
+4 today we would actually say that es 4
+
+115
+00:04:35,380 --> 00:04:37,479
+has shipped because it specified things
+
+116
+00:04:37,479 --> 00:04:38,740
+like cloud
+
+117
+00:04:38,740 --> 00:04:41,170
+module system generators iterators
+
+118
+00:04:41,170 --> 00:04:43,240
+destructuring assignment all the things
+
+119
+00:04:43,240 --> 00:04:46,270
+that we're using today inside of our
+
+120
+00:04:46,270 --> 00:04:49,500
+applications but mind you this is
+
+121
+00:04:49,500 --> 00:04:51,880
+developers wanted these types of
+
+122
+00:04:51,880 --> 00:04:53,880
+features from the language back then and
+
+123
+00:04:53,880 --> 00:04:56,970
+this is also when Google comes out with
+
+124
+00:04:56,970 --> 00:04:59,860
+Google Maps and kind of shows the types
+
+125
+00:04:59,860 --> 00:05:01,300
+of things that we can build it build for
+
+126
+00:05:01,300 --> 00:05:02,470
+the web and we can be a little bit more
+
+127
+00:05:02,470 --> 00:05:05,260
+ambitious in terms of the applications
+
+128
+00:05:05,260 --> 00:05:07,900
+that we want to build there so next
+
+129
+00:05:07,900 --> 00:05:11,170
+comes this period from 2008 to 2010 and
+
+130
+00:05:11,170 --> 00:05:13,090
+what do we see during this period of
+
+131
+00:05:13,090 --> 00:05:15,340
+time well we actually see like an
+
+132
+00:05:15,340 --> 00:05:18,730
+explosion of compilers enter the tooling
+
+133
+00:05:18,730 --> 00:05:21,250
+space and actually like to call this
+
+134
+00:05:21,250 --> 00:05:23,290
+period of time the Enlightenment it's
+
+135
+00:05:23,290 --> 00:05:25,630
+kind of like the origin story of where
+
+136
+00:05:25,630 --> 00:05:28,440
+we are today from a tooling perspective
+
+137
+00:05:28,440 --> 00:05:31,810
+so we have projects like cappuccino GWT
+
+138
+00:05:31,810 --> 00:05:33,790
+and CoffeeScript that are all kind of
+
+139
+00:05:33,790 --> 00:05:35,200
+birthed out of the sentiment that they
+
+140
+00:05:35,200 --> 00:05:36,880
+no longer run be beholden to the
+
+141
+00:05:36,880 --> 00:05:39,190
+standardization process so in case of
+
+142
+00:05:39,190 --> 00:05:41,440
+cappuccino they create objective J which
+
+143
+00:05:41,440 --> 00:05:45,030
+is a dialect of Objective C GWT bothers
+
+144
+00:05:45,030 --> 00:05:47,920
+borrows Java and CoffeeScript and takes
+
+145
+00:05:47,920 --> 00:05:50,050
+the best parts of Python and Ruby to
+
+146
+00:05:50,050 --> 00:05:52,090
+create a new language and what all these
+
+147
+00:05:52,090 --> 00:05:53,530
+projects kind of have in common is that
+
+148
+00:05:53,530 --> 00:05:56,050
+they are their own language and they
+
+149
+00:05:56,050 --> 00:05:58,960
+build sophisticated compilers in between
+
+150
+00:05:58,960 --> 00:06:01,660
+there to turn that language into
+
+151
+00:06:01,660 --> 00:06:04,030
+JavaScript code that could run in the
+
+152
+00:06:04,030 --> 00:06:07,090
+browser of the time and so this allowed
+
+153
+00:06:07,090 --> 00:06:08,980
+them to do things like shed away runtime
+
+154
+00:06:08,980 --> 00:06:10,570
+libraries for doing things like class
+
+155
+00:06:10,570 --> 00:06:13,150
+systems but the big idea here is that
+
+156
+00:06:13,150 --> 00:06:15,400
+javascript is effectively a bytecode
+
+157
+00:06:15,400 --> 00:06:17,290
+format you don't actually have to write
+
+158
+00:06:17,290 --> 00:06:18,760
+in the programming language of the web
+
+159
+00:06:18,760 --> 00:06:20,140
+as long as you can build the
+
+160
+00:06:20,140 --> 00:06:21,970
+sophisticated enough compiler that map's
+
+161
+00:06:21,970 --> 00:06:23,440
+the what the language that you wrote in
+
+162
+00:06:23,440 --> 00:06:26,230
+on to the semantics of the JavaScript
+
+163
+00:06:26,230 --> 00:06:29,350
+language the other thing that comes out
+
+164
+00:06:29,350 --> 00:06:30,610
+during this period of time is more
+
+165
+00:06:30,610 --> 00:06:33,250
+advanced minifiers so this is closure
+
+166
+00:06:33,250 --> 00:06:35,710
+compiler and closure compiler is pretty
+
+167
+00:06:35,710 --> 00:06:38,290
+unique so let's say you have some
+
+168
+00:06:38,290 --> 00:06:40,600
+JavaScript code in your application like
+
+169
+00:06:40,600 --> 00:06:42,400
+this this is very silly code but in a
+
+170
+00:06:42,400 --> 00:06:45,010
+large-enough application you will end up
+
+171
+00:06:45,010 --> 00:06:47,260
+having code like this even if you try
+
+172
+00:06:47,260 --> 00:06:49,480
+really hard so we can see that like
+
+173
+00:06:49,480 --> 00:06:51,580
+predicate is never actually getting
+
+174
+00:06:51,580 --> 00:06:52,240
+reassigned
+
+175
+00:06:52,240 --> 00:06:53,919
+so the first conditional is always going
+
+176
+00:06:53,919 --> 00:06:55,930
+to execute the second conditional is
+
+177
+00:06:55,930 --> 00:06:57,310
+never going to execute and then we have
+
+178
+00:06:57,310 --> 00:07:00,580
+this do stuff function declaration here
+
+179
+00:07:00,580 --> 00:07:01,810
+where we're just something left and
+
+180
+00:07:01,810 --> 00:07:03,789
+right and we've left off callback and
+
+181
+00:07:03,789 --> 00:07:05,650
+then last time we're doing some type of
+
+182
+00:07:05,650 --> 00:07:08,470
+string interpolation it's drink
+
+183
+00:07:08,470 --> 00:07:11,410
+interpolation or concatenation type of
+
+184
+00:07:11,410 --> 00:07:13,389
+thing so if you give this code to a
+
+185
+00:07:13,389 --> 00:07:15,580
+closure compiler what you get out of it
+
+186
+00:07:15,580 --> 00:07:17,830
+is something like this so not only has
+
+187
+00:07:17,830 --> 00:07:20,410
+it minified the code it has done a whole
+
+188
+00:07:20,410 --> 00:07:23,229
+lot more so the closure compiler can
+
+189
+00:07:23,229 --> 00:07:25,150
+figure out that this first branch is
+
+190
+00:07:25,150 --> 00:07:26,860
+always going to execute so just in line
+
+191
+00:07:26,860 --> 00:07:29,319
+the body of the conditional the second
+
+192
+00:07:29,319 --> 00:07:30,669
+conditional was never going to execute
+
+193
+00:07:30,669 --> 00:07:33,009
+so just throw it away and then the
+
+194
+00:07:33,009 --> 00:07:34,960
+interesting part here is that do stuff
+
+195
+00:07:34,960 --> 00:07:37,270
+just doesn't exist so closure compiler
+
+196
+00:07:37,270 --> 00:07:39,340
+has this technique in it known as
+
+197
+00:07:39,340 --> 00:07:41,349
+concept folding where it can see if
+
+198
+00:07:41,349 --> 00:07:43,479
+calls to the function are going to be
+
+199
+00:07:43,479 --> 00:07:45,970
+side-effect free it can just do that
+
+200
+00:07:45,970 --> 00:07:48,370
+work in ahead of time and just inline
+
+201
+00:07:48,370 --> 00:07:50,289
+the result it's also done the same thing
+
+202
+00:07:50,289 --> 00:07:52,500
+with a and B here where it is just
+
+203
+00:07:52,500 --> 00:07:54,370
+concatenated them into the string
+
+204
+00:07:54,370 --> 00:07:55,389
+because there is no observable
+
+205
+00:07:55,389 --> 00:07:58,840
+side-effects and so because closure
+
+206
+00:07:58,840 --> 00:08:00,130
+compiler takes in your entire
+
+207
+00:08:00,130 --> 00:08:01,900
+application and produces this more
+
+208
+00:08:01,900 --> 00:08:03,669
+optimal subset of the code what we
+
+209
+00:08:03,669 --> 00:08:06,130
+actually call closure compiler is an
+
+210
+00:08:06,130 --> 00:08:08,680
+optimizing compiler it's a really cool
+
+211
+00:08:08,680 --> 00:08:10,509
+piece of technology and it's still used
+
+212
+00:08:10,509 --> 00:08:14,860
+today on a lot of web properties and so
+
+213
+00:08:14,860 --> 00:08:17,500
+that brings us to today and I think
+
+214
+00:08:17,500 --> 00:08:19,539
+today we have like really great tools we
+
+215
+00:08:19,539 --> 00:08:21,159
+have web pack we have roll-up
+
+216
+00:08:21,159 --> 00:08:22,599
+we had tracer for some period of time
+
+217
+00:08:22,599 --> 00:08:25,210
+but like babel is kind of superseded in
+
+218
+00:08:25,210 --> 00:08:28,840
+turn in translation space and so what
+
+219
+00:08:28,840 --> 00:08:31,479
+are those tools doing well they're
+
+220
+00:08:31,479 --> 00:08:33,099
+actually building off the backs that
+
+221
+00:08:33,099 --> 00:08:35,349
+things of the things that came before it
+
+222
+00:08:35,349 --> 00:08:38,260
+so in the case they allow you to use it
+
+223
+00:08:38,260 --> 00:08:39,880
+like new language features which kind of
+
+224
+00:08:39,880 --> 00:08:42,250
+harkens back to the sentiment of like
+
+225
+00:08:42,250 --> 00:08:45,130
+the objective J's and the coffee scripts
+
+226
+00:08:45,130 --> 00:08:47,350
+of the world they can do more optimized
+
+227
+00:08:47,350 --> 00:08:49,390
+code bundles they can do different forms
+
+228
+00:08:49,390 --> 00:08:51,430
+of dead code elimination so this is like
+
+229
+00:08:51,430 --> 00:08:53,890
+scope poising and tree shaking and so
+
+230
+00:08:53,890 --> 00:08:57,790
+you'd think in 2018 we're kind of like
+
+231
+00:08:57,790 --> 00:09:01,029
+pinnacle of performance here we've had
+
+232
+00:09:01,029 --> 00:09:03,430
+15 years of really sophisticated tool
+
+233
+00:09:03,430 --> 00:09:05,740
+chains being developed so everything is
+
+234
+00:09:05,740 --> 00:09:06,170
+great
+
+235
+00:09:06,170 --> 00:09:10,250
+right well I actually say that there are
+
+236
+00:09:10,250 --> 00:09:13,220
+quite a few problems in what we do today
+
+237
+00:09:13,220 --> 00:09:16,160
+I think that's because we've kind of
+
+238
+00:09:16,160 --> 00:09:18,230
+fundamentally changed on how we approach
+
+239
+00:09:18,230 --> 00:09:21,440
+to building applications for the web and
+
+240
+00:09:21,440 --> 00:09:24,620
+so this is a tweet by Alex Russell who
+
+241
+00:09:24,620 --> 00:09:26,180
+is a developer on the chrome team he
+
+242
+00:09:26,180 --> 00:09:27,620
+also might be some of you guys
+
+243
+00:09:27,620 --> 00:09:30,589
+colleagues and what he says is the web
+
+244
+00:09:30,589 --> 00:09:32,240
+is getting slower because no matter how
+
+245
+00:09:32,240 --> 00:09:34,699
+much faster we make Chrome developers
+
+246
+00:09:34,699 --> 00:09:36,529
+abuse users with ever larger piles of
+
+247
+00:09:36,529 --> 00:09:38,089
+JavaScript and JavaScript is the most
+
+248
+00:09:38,089 --> 00:09:41,000
+expensive thing so let me unpack this a
+
+249
+00:09:41,000 --> 00:09:43,579
+little bit so I think about five years
+
+250
+00:09:43,579 --> 00:09:47,120
+ago we kind of shifted quite drastically
+
+251
+00:09:47,120 --> 00:09:48,649
+and how we approach to building web
+
+252
+00:09:48,649 --> 00:09:51,440
+applications we used to start with HTML
+
+253
+00:09:51,440 --> 00:09:54,139
+and then you style it with CSS and then
+
+254
+00:09:54,139 --> 00:09:55,790
+you would layer on the JavaScript to get
+
+255
+00:09:55,790 --> 00:09:57,680
+a little bit of interactivity and we've
+
+256
+00:09:57,680 --> 00:10:00,380
+basically inverted this world we start
+
+257
+00:10:00,380 --> 00:10:02,089
+with JavaScript a lot of the times and
+
+258
+00:10:02,089 --> 00:10:06,170
+we add CSS to it and hTML is this out of
+
+259
+00:10:06,170 --> 00:10:08,269
+the picture for a lot of applications
+
+260
+00:10:08,269 --> 00:10:11,959
+nowadays and so because we are pushing
+
+261
+00:10:11,959 --> 00:10:14,000
+more and more responsibility onto
+
+262
+00:10:14,000 --> 00:10:15,949
+JavaScript there tends to be a lot more
+
+263
+00:10:15,949 --> 00:10:19,190
+of it and we have to ship that down to
+
+264
+00:10:19,190 --> 00:10:21,170
+our users and what he's talking about
+
+265
+00:10:21,170 --> 00:10:23,149
+in this last part about JavaScript being
+
+266
+00:10:23,149 --> 00:10:26,570
+the most expensive thing is this it is
+
+267
+00:10:26,570 --> 00:10:29,209
+the parse and compile step of JavaScript
+
+268
+00:10:29,209 --> 00:10:32,180
+that is very very expensive so if you
+
+269
+00:10:32,180 --> 00:10:33,800
+think about it you're writing JavaScript
+
+270
+00:10:33,800 --> 00:10:35,050
+code it's the textual representation
+
+271
+00:10:35,050 --> 00:10:37,610
+that code needs to go to the browser and
+
+272
+00:10:37,610 --> 00:10:40,459
+needs to turn into an executable like
+
+273
+00:10:40,459 --> 00:10:42,740
+thing like it just doesn't run the text
+
+274
+00:10:42,740 --> 00:10:45,890
+that you wrote and so in 2017 addy
+
+275
+00:10:45,890 --> 00:10:48,230
+osmani wrote a really great blog article
+
+276
+00:10:48,230 --> 00:10:49,970
+called JavaScript startup time and he
+
+277
+00:10:49,970 --> 00:10:51,980
+had this really great graphic in it and
+
+278
+00:10:51,980 --> 00:10:54,800
+what it's saying is that the bytes of
+
+279
+00:10:54,800 --> 00:10:56,990
+JavaScript are not the same bytes as a
+
+280
+00:10:56,990 --> 00:10:59,750
+jpg and so this is on a constrained
+
+281
+00:10:59,750 --> 00:11:01,670
+network and a constraint is a device so
+
+282
+00:11:01,670 --> 00:11:04,370
+if you have 170 KB of anything it takes
+
+283
+00:11:04,370 --> 00:11:06,470
+roughly the same amount of time to pull
+
+284
+00:11:06,470 --> 00:11:07,699
+it over the wire so in this case it
+
+285
+00:11:07,699 --> 00:11:09,139
+takes three and a half seconds to
+
+286
+00:11:09,139 --> 00:11:12,230
+transmit both of these asset types but
+
+287
+00:11:12,230 --> 00:11:13,699
+once they get on to the device it's a
+
+288
+00:11:13,699 --> 00:11:16,790
+whole nother ballgame so in the case of
+
+289
+00:11:16,790 --> 00:11:20,000
+a JPEG it is binary data so it just
+
+290
+00:11:20,000 --> 00:11:21,590
+goes through a decoder like pretty
+
+291
+00:11:21,590 --> 00:11:23,960
+quickly and it takes about 70
+
+292
+00:11:23,960 --> 00:11:25,850
+milliseconds to do that whereas the
+
+293
+00:11:25,850 --> 00:11:28,100
+JavaScript takes an additional two
+
+294
+00:11:28,100 --> 00:11:30,860
+seconds for it just the process on the
+
+295
+00:11:30,860 --> 00:11:32,960
+device and I think this is some of the
+
+296
+00:11:32,960 --> 00:11:35,120
+stuff that both Chris and Malte we're
+
+297
+00:11:35,120 --> 00:11:38,990
+talking about two days ago and then from
+
+298
+00:11:38,990 --> 00:11:40,550
+there the JavaScript then executes for
+
+299
+00:11:40,550 --> 00:11:44,600
+another 1/2 seconds whereas the JPEG
+
+300
+00:11:44,600 --> 00:11:46,310
+just needs to paint of the screen takes
+
+301
+00:11:46,310 --> 00:11:50,390
+point 0 to 8 mills are 2.8 milliseconds
+
+302
+00:11:50,390 --> 00:11:53,150
+AG are seconds to do that so very
+
+303
+00:11:53,150 --> 00:11:56,300
+different types of resources that we're
+
+304
+00:11:56,300 --> 00:12:01,040
+talking about here and so as I mentioned
+
+305
+00:12:01,040 --> 00:12:02,900
+I'm on the ember.js core team and over
+
+306
+00:12:02,900 --> 00:12:04,370
+the past couple years I've been working
+
+307
+00:12:04,370 --> 00:12:06,680
+on this project known as the glimmer VM
+
+308
+00:12:06,680 --> 00:12:09,800
+and we think about the glimmer being at
+
+309
+00:12:09,800 --> 00:12:12,170
+VM as an example of the types of tools
+
+310
+00:12:12,170 --> 00:12:14,120
+that I think that we have to start
+
+311
+00:12:14,120 --> 00:12:16,280
+thinking about building or building to
+
+312
+00:12:16,280 --> 00:12:17,960
+help mitigate some of these inherent
+
+313
+00:12:17,960 --> 00:12:22,400
+problems with JavaScript and so for
+
+314
+00:12:22,400 --> 00:12:24,140
+those who are familiar with what the
+
+315
+00:12:24,140 --> 00:12:26,270
+glimmer VM is it is the rendering engine
+
+316
+00:12:26,270 --> 00:12:29,270
+inside of ember and this is the San
+
+317
+00:12:29,270 --> 00:12:31,760
+Diego ember meetups mascot it's pretty
+
+318
+00:12:31,760 --> 00:12:35,210
+cool so for those who are familiar with
+
+319
+00:12:35,210 --> 00:12:37,280
+what it means to build an ember
+
+320
+00:12:37,280 --> 00:12:38,270
+application I'm going to go through a
+
+321
+00:12:38,270 --> 00:12:40,490
+really quick example so this is your
+
+322
+00:12:40,490 --> 00:12:43,550
+quintessential to do MVC type of app so
+
+323
+00:12:43,550 --> 00:12:45,200
+you would have a - duze component you
+
+324
+00:12:45,200 --> 00:12:46,940
+would each over each one of the two dues
+
+325
+00:12:46,940 --> 00:12:49,160
+every iteration of the loop
+
+326
+00:12:49,160 --> 00:12:50,900
+you're gonna invoke an item component
+
+327
+00:12:50,900 --> 00:12:52,940
+and you're past the to do at that index
+
+328
+00:12:52,940 --> 00:12:56,360
+into the item component item component
+
+329
+00:12:56,360 --> 00:12:58,070
+is what we call a template only
+
+330
+00:12:58,070 --> 00:12:59,540
+component if you're familiar with
+
+331
+00:12:59,540 --> 00:13:01,670
+reactor solutions like it we would call
+
+332
+00:13:01,670 --> 00:13:04,040
+it a pure component it just draws from
+
+333
+00:13:04,040 --> 00:13:06,440
+its inputs and then the backing class
+
+334
+00:13:06,440 --> 00:13:08,390
+for the - dues component would look
+
+335
+00:13:08,390 --> 00:13:09,650
+something like this we have a couple
+
+336
+00:13:09,650 --> 00:13:13,280
+different decorators here tract is just
+
+337
+00:13:13,280 --> 00:13:14,780
+our mechanism for doing change detection
+
+338
+00:13:14,780 --> 00:13:17,530
+in the system and action is this binding
+
+339
+00:13:17,530 --> 00:13:21,560
+the instance - basically doing the bind
+
+340
+00:13:21,560 --> 00:13:23,600
+so that when we put it into the template
+
+341
+00:13:23,600 --> 00:13:25,220
+layer you can just freely pass it around
+
+342
+00:13:25,220 --> 00:13:28,459
+so this isn't all that important but the
+
+343
+00:13:28,459 --> 00:13:31,760
+important part is that ember uses
+
+344
+00:13:31,760 --> 00:13:33,500
+templates and it's one of the large
+
+345
+00:13:33,500 --> 00:13:36,260
+just reasons why it broke away from this
+
+346
+00:13:36,260 --> 00:13:37,640
+other framework which was known as
+
+347
+00:13:37,640 --> 00:13:39,590
+sprout core which is used to build like
+
+348
+00:13:39,590 --> 00:13:42,380
+things like mobile me at Apple it was to
+
+349
+00:13:42,380 --> 00:13:44,120
+bring this declarative templating
+
+350
+00:13:44,120 --> 00:13:48,680
+language to a framework and we're not
+
+351
+00:13:48,680 --> 00:13:51,560
+actually alone in this philosophy of
+
+352
+00:13:51,560 --> 00:13:53,810
+having a domain-specific language to
+
+353
+00:13:53,810 --> 00:13:56,390
+declaratively declaratively describe our
+
+354
+00:13:56,390 --> 00:13:58,160
+views and something that actually isn't
+
+355
+00:13:58,160 --> 00:14:00,170
+in JavaScript both of you and angular
+
+356
+00:14:00,170 --> 00:14:02,780
+have I think a very similar philosophy
+
+357
+00:14:02,780 --> 00:14:04,400
+and angular actually wrote pretty
+
+358
+00:14:04,400 --> 00:14:06,860
+extensively about why angular uses
+
+359
+00:14:06,860 --> 00:14:09,290
+templates in 2016 it's a really great
+
+360
+00:14:09,290 --> 00:14:12,200
+blog article but at the end of the day
+
+361
+00:14:12,200 --> 00:14:14,240
+even though that view and angular are
+
+362
+00:14:14,240 --> 00:14:18,110
+owning complete languages with our own
+
+363
+00:14:18,110 --> 00:14:20,240
+semantics and their own compiler stacks
+
+364
+00:14:20,240 --> 00:14:22,370
+at the end of the day both view and
+
+365
+00:14:22,370 --> 00:14:24,710
+angular still compile the templates to
+
+366
+00:14:24,710 --> 00:14:27,020
+JavaScript and so it's not really
+
+367
+00:14:27,020 --> 00:14:29,450
+working towards solving this parse and
+
+368
+00:14:29,450 --> 00:14:31,130
+compile problem or problem or just
+
+369
+00:14:31,130 --> 00:14:34,850
+property of JavaScript so how does
+
+370
+00:14:34,850 --> 00:14:38,210
+glimmr VM approach this problem well
+
+371
+00:14:38,210 --> 00:14:40,310
+instead of compiling the templates to
+
+372
+00:14:40,310 --> 00:14:43,280
+JavaScript we actually compile them to a
+
+373
+00:14:43,280 --> 00:14:45,980
+binary executable anytime that you're
+
+374
+00:14:45,980 --> 00:14:47,750
+talking about binary like we have to
+
+375
+00:14:47,750 --> 00:14:51,589
+have the matrix background so what does
+
+376
+00:14:51,589 --> 00:14:53,990
+that actually mean that means if you
+
+377
+00:14:53,990 --> 00:14:56,240
+write a template like this at Build time
+
+378
+00:14:56,240 --> 00:14:57,950
+so this is ahead of time compilation
+
+379
+00:14:57,950 --> 00:15:01,070
+step we compile that template into a
+
+380
+00:15:01,070 --> 00:15:04,400
+binary blob that encodes all of the
+
+381
+00:15:04,400 --> 00:15:06,500
+instructions to recreate that template
+
+382
+00:15:06,500 --> 00:15:09,860
+at runtime and so you may be saying to
+
+383
+00:15:09,860 --> 00:15:12,380
+yourself ah this is like quite novel but
+
+384
+00:15:12,380 --> 00:15:14,870
+how does it actually help mitigate this
+
+385
+00:15:14,870 --> 00:15:16,430
+parse and compile problem
+
+386
+00:15:16,430 --> 00:15:20,600
+well binary data in the browser is can
+
+387
+00:15:20,600 --> 00:15:22,850
+be represented by an API known as a
+
+388
+00:15:22,850 --> 00:15:25,460
+typed array if you go find the
+
+389
+00:15:25,460 --> 00:15:26,930
+documentation for a typed array you'll
+
+390
+00:15:26,930 --> 00:15:28,339
+come across this great definition that
+
+391
+00:15:28,339 --> 00:15:30,290
+says a typed array is a slab of memory
+
+392
+00:15:30,290 --> 00:15:32,120
+with a type view into it much like how
+
+393
+00:15:32,120 --> 00:15:34,220
+arrays work and see because of typed
+
+394
+00:15:34,220 --> 00:15:35,720
+array is backed by raw memory the
+
+395
+00:15:35,720 --> 00:15:37,370
+JavaScript engine can pass that memory
+
+396
+00:15:37,370 --> 00:15:38,810
+directly to native libraries without
+
+397
+00:15:38,810 --> 00:15:40,820
+having to painstakingly convert the data
+
+398
+00:15:40,820 --> 00:15:43,070
+into a native representation so what
+
+399
+00:15:43,070 --> 00:15:44,780
+it's talking about and that last part is
+
+400
+00:15:44,780 --> 00:15:46,680
+parsing a pile
+
+401
+00:15:46,680 --> 00:15:48,960
+with typed arrays and the data inside of
+
+402
+00:15:48,960 --> 00:15:50,580
+them they never actually see the parse
+
+403
+00:15:50,580 --> 00:15:53,790
+and compile pipeline of JavaScript so
+
+404
+00:15:53,790 --> 00:15:57,779
+that's a pretty cool property of them so
+
+405
+00:15:57,779 --> 00:16:00,690
+if we look at open source java open
+
+406
+00:16:00,690 --> 00:16:02,220
+source ember applications and even
+
+407
+00:16:02,220 --> 00:16:04,020
+internal applications what we tend to
+
+408
+00:16:04,020 --> 00:16:05,910
+find is anywhere from 25 to 40 percent
+
+409
+00:16:05,910 --> 00:16:08,730
+of these applications are built up of
+
+410
+00:16:08,730 --> 00:16:11,160
+this templating layer and so if we can
+
+411
+00:16:11,160 --> 00:16:12,930
+take those templates and compile them
+
+412
+00:16:12,930 --> 00:16:15,000
+into something that isn't JavaScript
+
+413
+00:16:15,000 --> 00:16:16,620
+that doesn't have these inherent parse
+
+414
+00:16:16,620 --> 00:16:20,610
+and compile not issues but it's just the
+
+415
+00:16:20,610 --> 00:16:22,709
+reality of the world then what we can do
+
+416
+00:16:22,709 --> 00:16:26,540
+is we can actually speed up applications
+
+417
+00:16:26,540 --> 00:16:29,760
+so how do we actually do this we're
+
+418
+00:16:29,760 --> 00:16:31,380
+gonna kind of walk through kind of a
+
+419
+00:16:31,380 --> 00:16:33,330
+quick example of how both the
+
+420
+00:16:33,330 --> 00:16:36,480
+compilation part works and then how we
+
+421
+00:16:36,480 --> 00:16:40,160
+actually execute that code at runtime so
+
+422
+00:16:40,160 --> 00:16:43,680
+valid HTML in handlebars templates is
+
+423
+00:16:43,680 --> 00:16:46,020
+valid a valid template so we're going to
+
+424
+00:16:46,020 --> 00:16:48,570
+use this super simple hello world
+
+425
+00:16:48,570 --> 00:16:50,730
+esque example to kind of walk through
+
+426
+00:16:50,730 --> 00:16:53,490
+the process so the first thing that
+
+427
+00:16:53,490 --> 00:16:54,810
+we're actually going to do is we're
+
+428
+00:16:54,810 --> 00:16:57,060
+gonna take that template and we're going
+
+429
+00:16:57,060 --> 00:16:59,250
+to tokenize it into an abstract syntax
+
+430
+00:16:59,250 --> 00:17:01,380
+tree and then it's gonna get passed
+
+431
+00:17:01,380 --> 00:17:03,510
+through a couple different compilers
+
+432
+00:17:03,510 --> 00:17:06,300
+stages and at the end of the day what
+
+433
+00:17:06,300 --> 00:17:08,010
+you're gonna get out of this phase is
+
+434
+00:17:08,010 --> 00:17:10,530
+something that looks like this so we
+
+435
+00:17:10,530 --> 00:17:12,150
+started with this declarative templating
+
+436
+00:17:12,150 --> 00:17:15,480
+layer and now what we get is like this
+
+437
+00:17:15,480 --> 00:17:19,140
+JSON that is very declarative it title
+
+438
+00:17:19,140 --> 00:17:22,020
+looks like the message format that the
+
+439
+00:17:22,020 --> 00:17:27,600
+worker Dom uses and so this is JSON this
+
+440
+00:17:27,600 --> 00:17:29,550
+isn't actually binary so we actually
+
+441
+00:17:29,550 --> 00:17:32,160
+have to further compile this format down
+
+442
+00:17:32,160 --> 00:17:35,070
+and that's where the OP code compiler
+
+443
+00:17:35,070 --> 00:17:38,400
+comes in before we actually jump into
+
+444
+00:17:38,400 --> 00:17:40,290
+what the role of the OpCo compiler is
+
+445
+00:17:40,290 --> 00:17:43,500
+let me unpack some terminology so an
+
+446
+00:17:43,500 --> 00:17:47,910
+opcode is just a number a number that is
+
+447
+00:17:47,910 --> 00:17:50,100
+significant to a virtual machine that is
+
+448
+00:17:50,100 --> 00:17:53,220
+tied to some level or a small bit of
+
+449
+00:17:53,220 --> 00:17:55,559
+functionality so you can think of it as
+
+450
+00:17:55,559 --> 00:17:58,050
+just a function that is going to do a
+
+451
+00:17:58,050 --> 00:17:59,290
+little bit of work
+
+452
+00:17:59,290 --> 00:18:03,040
+and an opcode takes operands and you can
+
+453
+00:18:03,040 --> 00:18:05,140
+think of operands is just arguments to
+
+454
+00:18:05,140 --> 00:18:07,060
+that function and together you would
+
+455
+00:18:07,060 --> 00:18:09,490
+call this an instruction a bytecode set
+
+456
+00:18:09,490 --> 00:18:12,490
+is just many instructions that is
+
+457
+00:18:12,490 --> 00:18:14,290
+encoding where these instructions begin
+
+458
+00:18:14,290 --> 00:18:17,860
+and end so it's just a bunch of numbers
+
+459
+00:18:17,860 --> 00:18:19,810
+but those numbers are encoded in a very
+
+460
+00:18:19,810 --> 00:18:22,990
+specific way so going back to our JSON
+
+461
+00:18:22,990 --> 00:18:24,790
+example we're going to start compiling
+
+462
+00:18:24,790 --> 00:18:29,620
+this into that binary format so the
+
+463
+00:18:29,620 --> 00:18:30,910
+first thing that we do is that we're
+
+464
+00:18:30,910 --> 00:18:34,680
+going to pop each item off of this list
+
+465
+00:18:34,680 --> 00:18:36,940
+so in this case we're going to compile
+
+466
+00:18:36,940 --> 00:18:38,860
+open out the open element statement
+
+467
+00:18:38,860 --> 00:18:41,380
+we're gonna map that the first element
+
+468
+00:18:41,380 --> 00:18:43,780
+of that array into a method of the same
+
+469
+00:18:43,780 --> 00:18:45,880
+name so open element maps into an open
+
+470
+00:18:45,880 --> 00:18:47,980
+Ellyn element method and then it's going
+
+471
+00:18:47,980 --> 00:18:50,320
+to take some arguments here for open
+
+472
+00:18:50,320 --> 00:18:52,000
+element it's gonna take the tag name and
+
+473
+00:18:52,000 --> 00:18:54,370
+the first thing that we actually do here
+
+474
+00:18:54,370 --> 00:18:56,500
+is that we push the tag name into a
+
+475
+00:18:56,500 --> 00:18:59,440
+strings constants pool the constants
+
+476
+00:18:59,440 --> 00:19:00,910
+pool is this gonna hold on to our
+
+477
+00:19:00,910 --> 00:19:04,530
+user-defined literals in the system and
+
+478
+00:19:04,530 --> 00:19:07,180
+from that we're gonna get a number in
+
+479
+00:19:07,180 --> 00:19:08,440
+this case that's the first thing that
+
+480
+00:19:08,440 --> 00:19:11,110
+we're pushing in so we'll get 0 out of
+
+481
+00:19:11,110 --> 00:19:14,020
+the the constants pool and so tag is 0
+
+482
+00:19:14,020 --> 00:19:16,090
+at this point and then we pass that into
+
+483
+00:19:16,090 --> 00:19:19,120
+the stop builder open element so because
+
+484
+00:19:19,120 --> 00:19:22,900
+the VM is working on these op codes and
+
+485
+00:19:22,900 --> 00:19:24,400
+they're just numbers we create an
+
+486
+00:19:24,400 --> 00:19:26,260
+abstraction around those numbers so
+
+487
+00:19:26,260 --> 00:19:28,780
+almost like a DSL type of type of thing
+
+488
+00:19:28,780 --> 00:19:30,820
+that's holding on to you know the
+
+489
+00:19:30,820 --> 00:19:32,380
+significant numbers in the VM this way
+
+490
+00:19:32,380 --> 00:19:34,240
+so you're not like hard coding you know
+
+491
+00:19:34,240 --> 00:19:37,150
+45 36 all over the place we have like an
+
+492
+00:19:37,150 --> 00:19:39,370
+abstraction on that and the purpose of
+
+493
+00:19:39,370 --> 00:19:41,950
+that abstraction is just to create this
+
+494
+00:19:41,950 --> 00:19:46,180
+linear list of numbers and so at the end
+
+495
+00:19:46,180 --> 00:19:48,010
+of this compilation what what do we get
+
+496
+00:19:48,010 --> 00:19:50,770
+we get a linear list of numbers and then
+
+497
+00:19:50,770 --> 00:19:54,370
+we get this JSON map thing that is just
+
+498
+00:19:54,370 --> 00:19:56,200
+the user-defined literals in the system
+
+499
+00:19:56,200 --> 00:19:59,800
+and that's it that's the basically the
+
+500
+00:19:59,800 --> 00:20:03,790
+entire process of compiling this from
+
+501
+00:20:03,790 --> 00:20:05,710
+this a declarative template language all
+
+502
+00:20:05,710 --> 00:20:10,090
+the way to a binary format so next comes
+
+503
+00:20:10,090 --> 00:20:13,860
+actually executing this thing
+
+504
+00:20:13,860 --> 00:20:16,750
+before we get into executing I probably
+
+505
+00:20:16,750 --> 00:20:19,270
+should unpack what a virtual machine is
+
+506
+00:20:19,270 --> 00:20:24,070
+a virtual machine is a CPU written in in
+
+507
+00:20:24,070 --> 00:20:26,740
+software but at the end of the day what
+
+508
+00:20:26,740 --> 00:20:28,419
+you can really think of it as is just a
+
+509
+00:20:28,419 --> 00:20:29,770
+while loop with a switch statement
+
+510
+00:20:29,770 --> 00:20:32,740
+inside of it and every time you iterate
+
+511
+00:20:32,740 --> 00:20:34,809
+that loop you're pointing at an
+
+512
+00:20:34,809 --> 00:20:37,090
+instruction that you need to execute and
+
+513
+00:20:37,090 --> 00:20:40,600
+then that that opcode is goes into the
+
+514
+00:20:40,600 --> 00:20:42,010
+switch and then the switch disc
+
+515
+00:20:42,010 --> 00:20:46,240
+dispatches the instruction so that's
+
+516
+00:20:46,240 --> 00:20:48,280
+probably the easiest way of explaining a
+
+517
+00:20:48,280 --> 00:20:52,330
+virtual machine so because we're dealing
+
+518
+00:20:52,330 --> 00:20:55,390
+with binary data we actually use the
+
+519
+00:20:55,390 --> 00:20:58,630
+fetch API in the browser and so we asked
+
+520
+00:20:58,630 --> 00:21:00,280
+for the templates to come back as an
+
+521
+00:21:00,280 --> 00:21:02,020
+array buffer and then we just take that
+
+522
+00:21:02,020 --> 00:21:04,990
+array buffer and we pass it into a UN 16
+
+523
+00:21:04,990 --> 00:21:07,570
+array which is a typed array and that's
+
+524
+00:21:07,570 --> 00:21:09,280
+it that's that's how we get the
+
+525
+00:21:09,280 --> 00:21:13,600
+executable into the virtual machine so
+
+526
+00:21:13,600 --> 00:21:16,000
+this is kind of my visualization of what
+
+527
+00:21:16,000 --> 00:21:18,490
+is actually going on inside the inside
+
+528
+00:21:18,490 --> 00:21:21,669
+of the VM the VM works on like an
+
+529
+00:21:21,669 --> 00:21:23,409
+iterator type of pattern so you drive
+
+530
+00:21:23,409 --> 00:21:25,720
+the state forward you're iterating the
+
+531
+00:21:25,720 --> 00:21:27,850
+internal loop by just calling next from
+
+532
+00:21:27,850 --> 00:21:30,730
+the outside and then on the right we
+
+533
+00:21:30,730 --> 00:21:32,320
+kind of have a bunch of different state
+
+534
+00:21:32,320 --> 00:21:34,390
+here so the top is the executable that
+
+535
+00:21:34,390 --> 00:21:36,280
+we compiled and below that is our
+
+536
+00:21:36,280 --> 00:21:38,169
+constants pool and then we have some
+
+537
+00:21:38,169 --> 00:21:40,390
+registers here and you can think of
+
+538
+00:21:40,390 --> 00:21:44,080
+registers as just basically you could
+
+539
+00:21:44,080 --> 00:21:45,280
+think of them as like an object that's
+
+540
+00:21:45,280 --> 00:21:47,049
+holding on to state that we're going to
+
+541
+00:21:47,049 --> 00:21:49,960
+consult as the VM is running so we have
+
+542
+00:21:49,960 --> 00:21:51,850
+a constructing register and that
+
+543
+00:21:51,850 --> 00:21:55,360
+register is going to hold on to HTML
+
+544
+00:21:55,360 --> 00:21:59,309
+elements as we are building them PC is
+
+545
+00:21:59,309 --> 00:22:01,840
+program counter or in other virtual
+
+546
+00:22:01,840 --> 00:22:03,610
+machines you call an instruction pointer
+
+547
+00:22:03,610 --> 00:22:06,429
+and it's always this pointing at the
+
+548
+00:22:06,429 --> 00:22:07,720
+instruction that's currently being
+
+549
+00:22:07,720 --> 00:22:11,230
+executed and then we have our a which is
+
+550
+00:22:11,230 --> 00:22:13,630
+a return address for this presentation
+
+551
+00:22:13,630 --> 00:22:16,210
+it's gonna stain negative 1 but because
+
+552
+00:22:16,210 --> 00:22:18,720
+of the VM has components in it
+
+553
+00:22:18,720 --> 00:22:21,730
+components are modeled like function
+
+554
+00:22:21,730 --> 00:22:24,549
+calls so after you call into a function
+
+555
+00:22:24,549 --> 00:22:26,200
+you need to come you need to know where
+
+556
+00:22:26,200 --> 00:22:26,770
+you're going
+
+557
+00:22:26,770 --> 00:22:28,060
+once you've done executing it that's
+
+558
+00:22:28,060 --> 00:22:29,920
+what that registers for typically used
+
+559
+00:22:29,920 --> 00:22:31,840
+for and then we have a couple different
+
+560
+00:22:31,840 --> 00:22:34,420
+stacks there's an execution stack which
+
+561
+00:22:34,420 --> 00:22:35,680
+isn't shown here because you don't need
+
+562
+00:22:35,680 --> 00:22:36,940
+it for this example
+
+563
+00:22:36,940 --> 00:22:38,860
+and then there's an element stack which
+
+564
+00:22:38,860 --> 00:22:40,890
+is just going to hold on to our HTML
+
+565
+00:22:40,890 --> 00:22:44,380
+elements once they've been constructed
+
+566
+00:22:44,380 --> 00:22:47,350
+so we're gonna walk through this example
+
+567
+00:22:47,350 --> 00:22:51,160
+step by step to show how we actually
+
+568
+00:22:51,160 --> 00:22:54,880
+execute this binary format the other
+
+569
+00:22:54,880 --> 00:22:57,430
+thing I'll also note is that we have the
+
+570
+00:22:57,430 --> 00:22:58,930
+code the actual code that is being
+
+571
+00:22:58,930 --> 00:23:00,790
+executed when we were doing this and
+
+572
+00:23:00,790 --> 00:23:02,560
+what you'll find is the code is not all
+
+573
+00:23:02,560 --> 00:23:04,690
+that much so the first thing that we are
+
+574
+00:23:04,690 --> 00:23:07,180
+going to execute is open element open
+
+575
+00:23:07,180 --> 00:23:10,120
+element is 31 and it takes one operand
+
+576
+00:23:10,120 --> 00:23:13,990
+and that operand is 0 in this case 0 is
+
+577
+00:23:13,990 --> 00:23:16,810
+used to be the index into the constants
+
+578
+00:23:16,810 --> 00:23:19,660
+pool and so what it does is it pulls out
+
+579
+00:23:19,660 --> 00:23:23,290
+the string h1 it creates a HTML heading
+
+580
+00:23:23,290 --> 00:23:25,450
+element and places it on to the
+
+581
+00:23:25,450 --> 00:23:29,020
+constructing register the next step is
+
+582
+00:23:29,020 --> 00:23:31,330
+flush element now if there is actual
+
+583
+00:23:31,330 --> 00:23:34,180
+attributes on this HTML element there
+
+584
+00:23:34,180 --> 00:23:35,620
+would have been more instructions
+
+585
+00:23:35,620 --> 00:23:37,750
+between open element and flushing the
+
+586
+00:23:37,750 --> 00:23:39,850
+element but since there were none
+
+587
+00:23:39,850 --> 00:23:42,010
+we immediately flushed the element from
+
+588
+00:23:42,010 --> 00:23:44,080
+the constructing register and we just
+
+589
+00:23:44,080 --> 00:23:48,700
+put it on to the element stack next is
+
+590
+00:23:48,700 --> 00:23:52,330
+text text is pretty simple it's going to
+
+591
+00:23:52,330 --> 00:23:54,640
+pop the element at the head of the
+
+592
+00:23:54,640 --> 00:23:56,770
+element stack off create a text node
+
+593
+00:23:56,770 --> 00:23:59,350
+append it and then push it back on to
+
+594
+00:23:59,350 --> 00:24:03,370
+the stack and I guess yeah it's 26 + 1
+
+595
+00:24:03,370 --> 00:24:05,770
+is this pointing at the first item
+
+596
+00:24:05,770 --> 00:24:07,300
+inside of the constants pool so it knows
+
+597
+00:24:07,300 --> 00:24:12,040
+how to pick up hello Chad next is close
+
+598
+00:24:12,040 --> 00:24:14,260
+element what close element does is it
+
+599
+00:24:14,260 --> 00:24:16,000
+just takes the element that's at the
+
+600
+00:24:16,000 --> 00:24:17,860
+head of the stack and appends it to the
+
+601
+00:24:17,860 --> 00:24:23,110
+dom and then finally we return and what
+
+602
+00:24:23,110 --> 00:24:25,630
+return does is it just sets the the
+
+603
+00:24:25,630 --> 00:24:27,430
+return address to the program counter
+
+604
+00:24:27,430 --> 00:24:30,100
+which sets it to negative 1 negative 1
+
+605
+00:24:30,100 --> 00:24:32,640
+is our way in the system to say
+
+606
+00:24:32,640 --> 00:24:35,050
+basically halt there is no more
+
+607
+00:24:35,050 --> 00:24:37,360
+instructions to actually execute and
+
+608
+00:24:37,360 --> 00:24:40,400
+that's that's pretty much it that's how
+
+609
+00:24:40,400 --> 00:24:42,890
+we take this binary format and actually
+
+610
+00:24:42,890 --> 00:24:48,140
+turn it into a working UI so we really
+
+611
+00:24:48,140 --> 00:24:49,970
+think about the glimmer VM as a
+
+612
+00:24:49,970 --> 00:24:52,070
+declarative programming language for
+
+613
+00:24:52,070 --> 00:24:54,320
+creating you eyes and the glimmer VM is
+
+614
+00:24:54,320 --> 00:24:56,150
+a virtual machine in byte code format
+
+615
+00:24:56,150 --> 00:25:00,080
+for constructing those you eyes so you
+
+616
+00:25:00,080 --> 00:25:02,450
+may have also heard of this thing called
+
+617
+00:25:02,450 --> 00:25:04,760
+web assembly and it is quote/unquote a
+
+618
+00:25:04,760 --> 00:25:07,460
+bytecode for the web so what how does
+
+619
+00:25:07,460 --> 00:25:09,620
+this like relate to the thing that
+
+620
+00:25:09,620 --> 00:25:10,190
+you're building
+
+621
+00:25:10,190 --> 00:25:13,520
+well web assembly is more of like a
+
+622
+00:25:13,520 --> 00:25:16,280
+portable binary format than it is
+
+623
+00:25:16,280 --> 00:25:18,440
+anything really to do with the web right
+
+624
+00:25:18,440 --> 00:25:20,240
+now so for example you cannot call
+
+625
+00:25:20,240 --> 00:25:22,610
+web-based api's inside of web assembly
+
+626
+00:25:22,610 --> 00:25:24,679
+it's really good for number crunching
+
+627
+00:25:24,679 --> 00:25:26,780
+and doing these types of really awesome
+
+628
+00:25:26,780 --> 00:25:28,970
+demos like porting the unity gaming
+
+629
+00:25:28,970 --> 00:25:34,130
+engine to to the web but it's still
+
+630
+00:25:34,130 --> 00:25:36,110
+pretty interesting it has a lot of cool
+
+631
+00:25:36,110 --> 00:25:38,720
+properties associated with it so some of
+
+632
+00:25:38,720 --> 00:25:41,870
+those properties are how it did how its
+
+633
+00:25:41,870 --> 00:25:44,090
+actually process on the client so on the
+
+634
+00:25:44,090 --> 00:25:45,860
+top here we have JavaScript and
+
+635
+00:25:45,860 --> 00:25:47,090
+JavaScript goes through parse and
+
+636
+00:25:47,090 --> 00:25:48,470
+compile stuff and then goes through an
+
+637
+00:25:48,470 --> 00:25:51,590
+optimization step if the code because
+
+638
+00:25:51,590 --> 00:25:54,679
+JavaScript is a dynamic language you can
+
+639
+00:25:54,679 --> 00:25:56,450
+deopt as you're running it so then you
+
+640
+00:25:56,450 --> 00:25:58,460
+have to reoptimize it and throwing away
+
+641
+00:25:58,460 --> 00:26:00,890
+any optimized code that you you have it
+
+642
+00:26:00,890 --> 00:26:02,780
+has to execute and then you have you
+
+643
+00:26:02,780 --> 00:26:05,170
+have to GC at certain points of time
+
+644
+00:26:05,170 --> 00:26:08,510
+whereas web assembly it parses and
+
+645
+00:26:08,510 --> 00:26:10,820
+compiles directly to optimized code it
+
+646
+00:26:10,820 --> 00:26:14,360
+has no optimizing the when you actually
+
+647
+00:26:14,360 --> 00:26:16,190
+compile it it compiles into the most
+
+648
+00:26:16,190 --> 00:26:18,620
+optimized code and it cannot deopt
+
+649
+00:26:18,620 --> 00:26:21,920
+and that's because you it is a compile
+
+650
+00:26:21,920 --> 00:26:24,320
+target and you're taking languages that
+
+651
+00:26:24,320 --> 00:26:25,940
+have static type information you're
+
+652
+00:26:25,940 --> 00:26:28,280
+compiling it into something that is
+
+653
+00:26:28,280 --> 00:26:31,070
+strong guarantees around it the other
+
+654
+00:26:31,070 --> 00:26:33,740
+thing that that's really great about web
+
+655
+00:26:33,740 --> 00:26:36,860
+assembly here is that you get it has the
+
+656
+00:26:36,860 --> 00:26:40,190
+ability to compile faster than it is to
+
+657
+00:26:40,190 --> 00:26:42,920
+download so it has a streaming compiler
+
+658
+00:26:42,920 --> 00:26:45,170
+a streaming parser and compiler and
+
+659
+00:26:45,170 --> 00:26:49,010
+javascript has this also but like like
+
+660
+00:26:49,010 --> 00:26:50,840
+almost like the JPEG format it's already
+
+661
+00:26:50,840 --> 00:26:53,180
+closer to the binary format so
+
+662
+00:26:53,180 --> 00:26:56,180
+it can happen much quicker the other
+
+663
+00:26:56,180 --> 00:26:58,160
+thing is about webassembly is that it
+
+664
+00:26:58,160 --> 00:27:00,380
+has predictable performance and this
+
+665
+00:27:00,380 --> 00:27:03,020
+kind of goes back to the Diop tree
+
+666
+00:27:03,020 --> 00:27:06,140
+optimization step I'm not sure how many
+
+667
+00:27:06,140 --> 00:27:08,810
+people saw this blog article where
+
+668
+00:27:08,810 --> 00:27:12,200
+Mozilla took the source map library and
+
+669
+00:27:12,200 --> 00:27:14,810
+converted parts of it to rust and then
+
+670
+00:27:14,810 --> 00:27:16,490
+compiled the web assembly and got some
+
+671
+00:27:16,490 --> 00:27:18,920
+like ridiculous performance benefits out
+
+672
+00:27:18,920 --> 00:27:20,900
+of it because of the code being like
+
+673
+00:27:20,900 --> 00:27:25,400
+highly could be highly polymorphic now
+
+674
+00:27:25,400 --> 00:27:27,860
+you can write highly tuned JavaScript
+
+675
+00:27:27,860 --> 00:27:30,020
+code to get to that same level of
+
+676
+00:27:30,020 --> 00:27:32,540
+performance but not everybody is a
+
+677
+00:27:32,540 --> 00:27:34,820
+browser engineer and knows all the fast
+
+678
+00:27:34,820 --> 00:27:37,520
+paths inside of the actual JavaScript
+
+679
+00:27:37,520 --> 00:27:40,670
+engine so webassembly kind of alleviates
+
+680
+00:27:40,670 --> 00:27:44,020
+having to know all of those details but
+
+681
+00:27:44,020 --> 00:27:47,240
+one of the issues with web assembly is
+
+682
+00:27:47,240 --> 00:27:49,700
+that you typically have to write in a
+
+683
+00:27:49,700 --> 00:27:52,880
+systems like language so C C++ rust and
+
+684
+00:27:52,880 --> 00:27:57,470
+then compile them to web assembly and I
+
+685
+00:27:57,470 --> 00:28:00,080
+don't know about you guys but this is
+
+686
+00:28:00,080 --> 00:28:02,240
+not what I do in my day to day job I'm
+
+687
+00:28:02,240 --> 00:28:04,820
+not writing C C simple C++ or rust
+
+688
+00:28:04,820 --> 00:28:08,960
+applications so we we kind of it's kind
+
+689
+00:28:08,960 --> 00:28:13,100
+of a high bar to a new entrance I think
+
+690
+00:28:13,100 --> 00:28:15,050
+right now but I don't think it actually
+
+691
+00:28:15,050 --> 00:28:19,580
+has to be or we we can use the fact that
+
+692
+00:28:19,580 --> 00:28:23,390
+we have things inside the JavaScript
+
+693
+00:28:23,390 --> 00:28:25,700
+ecosystem where we can get the benefit
+
+694
+00:28:25,700 --> 00:28:27,650
+without actually having to directly
+
+695
+00:28:27,650 --> 00:28:31,880
+write rust or C++ or any of those other
+
+696
+00:28:31,880 --> 00:28:34,940
+languages and that's because in within
+
+697
+00:28:34,940 --> 00:28:36,860
+the web community we actually have quite
+
+698
+00:28:36,860 --> 00:28:39,590
+a few domain-specific languages already
+
+699
+00:28:39,590 --> 00:28:42,470
+and those domain-specific languages and
+
+700
+00:28:42,470 --> 00:28:44,510
+the runtimes for them are already
+
+701
+00:28:44,510 --> 00:28:47,450
+written in JavaScript and so if we can
+
+702
+00:28:47,450 --> 00:28:50,900
+pour the the runtimes of these languages
+
+703
+00:28:50,900 --> 00:28:54,260
+to web assembly then we as people that
+
+704
+00:28:54,260 --> 00:28:55,640
+work with JavaScript there and building
+
+705
+00:28:55,640 --> 00:28:57,560
+things for the web can immediately get
+
+706
+00:28:57,560 --> 00:28:59,120
+the benefit of them without actually
+
+707
+00:28:59,120 --> 00:29:02,240
+having to learn how that stuff actually
+
+708
+00:29:02,240 --> 00:29:06,260
+works so earlier this year we worked
+
+709
+00:29:06,260 --> 00:29:06,840
+with
+
+710
+00:29:06,840 --> 00:29:10,230
+folks at Mozilla and a couple people
+
+711
+00:29:10,230 --> 00:29:12,240
+from there Russ core team to figure out
+
+712
+00:29:12,240 --> 00:29:15,990
+how we can utilize web assembly inside
+
+713
+00:29:15,990 --> 00:29:18,390
+of the glimmer VM so these are kind of
+
+714
+00:29:18,390 --> 00:29:21,390
+all the high-level components of the
+
+715
+00:29:21,390 --> 00:29:23,880
+goomar VM and what we notice is that all
+
+716
+00:29:23,880 --> 00:29:25,170
+this stuff on the bottom
+
+717
+00:29:25,170 --> 00:29:27,090
+the registers the opcodes the stack the
+
+718
+00:29:27,090 --> 00:29:29,910
+heap the constants the execution are all
+
+719
+00:29:29,910 --> 00:29:32,820
+things that if we were writing the VM
+
+720
+00:29:32,820 --> 00:29:35,400
+and for any other platform you would
+
+721
+00:29:35,400 --> 00:29:38,640
+probably pick a C C++ rust type of
+
+722
+00:29:38,640 --> 00:29:42,000
+language and so what we did was that we
+
+723
+00:29:42,000 --> 00:29:44,520
+took those implementations that were
+
+724
+00:29:44,520 --> 00:29:46,680
+written in JavaScript and we wrote them
+
+725
+00:29:46,680 --> 00:29:49,410
+and rust and compiled them to web
+
+726
+00:29:49,410 --> 00:29:54,540
+assembly and everything just worked so
+
+727
+00:29:54,540 --> 00:29:56,490
+we were able to drop that into an
+
+728
+00:29:56,490 --> 00:29:58,530
+existing ember we were able to like take
+
+729
+00:29:58,530 --> 00:30:01,200
+this branch build it and then drop this
+
+730
+00:30:01,200 --> 00:30:03,000
+version in the glimmer VM directly into
+
+731
+00:30:03,000 --> 00:30:05,220
+an existing ember application and that
+
+732
+00:30:05,220 --> 00:30:08,550
+ember application can run the web
+
+733
+00:30:08,550 --> 00:30:10,530
+assembly under the hood the end consumer
+
+734
+00:30:10,530 --> 00:30:13,680
+as you are like the developer the person
+
+735
+00:30:13,680 --> 00:30:15,420
+that wrote the application has no idea
+
+736
+00:30:15,420 --> 00:30:18,090
+that this actually occurred and you can
+
+737
+00:30:18,090 --> 00:30:20,190
+get the benefits that are I think now
+
+738
+00:30:20,190 --> 00:30:22,560
+starting to really land inside of web
+
+739
+00:30:22,560 --> 00:30:27,150
+assembly so these are all the ways I
+
+740
+00:30:27,150 --> 00:30:30,360
+think we're actually thinking about the
+
+741
+00:30:30,360 --> 00:30:34,290
+startup performance of applications it's
+
+742
+00:30:34,290 --> 00:30:36,510
+a pretty tricky problem because you
+
+743
+00:30:36,510 --> 00:30:38,910
+don't actually notice like parse and
+
+744
+00:30:38,910 --> 00:30:40,230
+compile problems when you're first
+
+745
+00:30:40,230 --> 00:30:42,150
+building your application and your first
+
+746
+00:30:42,150 --> 00:30:44,370
+couple features or even when you first
+
+747
+00:30:44,370 --> 00:30:46,530
+launch your application it's a problem
+
+748
+00:30:46,530 --> 00:30:50,180
+that sneaks up on you over time and like
+
+749
+00:30:50,180 --> 00:30:52,890
+we we don't do a very good job at
+
+750
+00:30:52,890 --> 00:30:55,770
+testing the whole Rea of devices for
+
+751
+00:30:55,770 --> 00:30:57,360
+making sure that our JavaScript startup
+
+752
+00:30:57,360 --> 00:31:01,500
+performance is always top notch so
+
+753
+00:31:01,500 --> 00:31:02,820
+hopefully today I showed that we
+
+754
+00:31:02,820 --> 00:31:05,040
+actually have the technology to help
+
+755
+00:31:05,040 --> 00:31:07,080
+mitigate a lot of these problems we just
+
+756
+00:31:07,080 --> 00:31:08,730
+have to think I think a little bit
+
+757
+00:31:08,730 --> 00:31:10,670
+different about how we're approaching
+
+758
+00:31:10,670 --> 00:31:14,400
+our problems and just in development in
+
+759
+00:31:14,400 --> 00:31:18,150
+general so that's it Thanks
+

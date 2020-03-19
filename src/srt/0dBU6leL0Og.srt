@@ -1,0 +1,2613 @@
+1
+00:00:38,010 --> 00:00:41,020
+
+alright thanks for taking your lunch in
+
+2
+00:00:41,020 --> 00:00:42,460
+here to talk about web application
+
+3
+00:00:42,460 --> 00:00:44,980
+performance everyone's favorite
+
+4
+00:00:44,980 --> 00:00:47,170
+lunchtime conversation I know so I'm
+
+5
+00:00:47,170 --> 00:00:50,440
+genre vlo I'm a web developer working
+
+6
+00:00:50,440 --> 00:00:51,670
+for comcast right now out of
+
+7
+00:00:51,670 --> 00:00:54,130
+Philadelphia and as you can see in going
+
+8
+00:00:54,130 --> 00:00:55,540
+to be talking about web application
+
+9
+00:00:55,540 --> 00:00:58,360
+performance this talk is based on some
+
+10
+00:00:58,360 --> 00:01:00,850
+work I've done or the past year and a
+
+11
+00:01:00,850 --> 00:01:03,550
+half or so on a product known as x2
+
+12
+00:01:03,550 --> 00:01:06,430
+cloud TV it's currently in a market
+
+13
+00:01:06,430 --> 00:01:08,590
+trial and we're slowly rolling it out
+
+14
+00:01:08,590 --> 00:01:10,870
+across the country and specifically it's
+
+15
+00:01:10,870 --> 00:01:12,400
+about what we learned about measuring
+
+16
+00:01:12,400 --> 00:01:15,909
+performance data so provide some
+
+17
+00:01:15,909 --> 00:01:19,690
+background on the application if you're
+
+18
+00:01:19,690 --> 00:01:21,250
+in a comcast mark you may have heard of
+
+19
+00:01:21,250 --> 00:01:23,940
+x1 already this is the new set-top box
+
+20
+00:01:23,940 --> 00:01:26,409
+it's leaps and bounds better than the
+
+21
+00:01:26,409 --> 00:01:29,500
+other ones you've had and basically x2
+
+22
+00:01:29,500 --> 00:01:31,479
+is a design update to that first and
+
+23
+00:01:31,479 --> 00:01:34,390
+foremost and secondly involves storing
+
+24
+00:01:34,390 --> 00:01:37,390
+your DVR recordings in the cloud so this
+
+25
+00:01:37,390 --> 00:01:39,580
+has a couple of benefits one you get
+
+26
+00:01:39,580 --> 00:01:41,530
+additional space for your DVR recordings
+
+27
+00:01:41,530 --> 00:01:44,020
+and this also allows you to string or
+
+28
+00:01:44,020 --> 00:01:46,210
+DVR recordings to any device inside your
+
+29
+00:01:46,210 --> 00:01:50,140
+home be that a desktop laptop you know a
+
+30
+00:01:50,140 --> 00:01:56,290
+mobile phone tablet which is great you
+
+31
+00:01:56,290 --> 00:01:57,909
+can also stream live TV and on-demand
+
+32
+00:01:57,909 --> 00:02:00,820
+content so the idea was that we'd have a
+
+33
+00:02:00,820 --> 00:02:02,470
+consistent experience across all these
+
+34
+00:02:02,470 --> 00:02:04,330
+devices so we basically split the teams
+
+35
+00:02:04,330 --> 00:02:07,420
+up into the set-top box team iOS Android
+
+36
+00:02:07,420 --> 00:02:09,909
+and web and I was one of the developers
+
+37
+00:02:09,909 --> 00:02:11,680
+working on the web application for this
+
+38
+00:02:11,680 --> 00:02:14,889
+and such what we're doing is turning
+
+39
+00:02:14,889 --> 00:02:15,300
+your
+
+40
+00:02:15,300 --> 00:02:18,480
+browser into a TV and part of that
+
+41
+00:02:18,480 --> 00:02:20,190
+experience is you know you turn your TV
+
+42
+00:02:20,190 --> 00:02:22,470
+and video is always playing so because
+
+43
+00:02:22,470 --> 00:02:24,270
+of that requirement of kind of video
+
+44
+00:02:24,270 --> 00:02:25,770
+being first and foremost and always
+
+45
+00:02:25,770 --> 00:02:27,990
+playing we built it as a single page web
+
+46
+00:02:27,990 --> 00:02:30,420
+app we used backbone on the front end I
+
+47
+00:02:30,420 --> 00:02:33,450
+was a ruby on rails application talking
+
+48
+00:02:33,450 --> 00:02:34,890
+to a hypermedia API that all the
+
+49
+00:02:34,890 --> 00:02:37,350
+applications talked with but I'm going
+
+50
+00:02:37,350 --> 00:02:38,850
+to talk about really doesn't matter if
+
+51
+00:02:38,850 --> 00:02:40,650
+you're using backbone or any other
+
+52
+00:02:40,650 --> 00:02:42,900
+framework or even for just building a
+
+53
+00:02:42,900 --> 00:02:45,930
+website these rules will play apply
+
+54
+00:02:45,930 --> 00:02:49,590
+regardless also we consider that you
+
+55
+00:02:49,590 --> 00:02:51,030
+know your experience of watching TV is
+
+56
+00:02:51,030 --> 00:02:53,370
+you turn on the television and you know
+
+57
+00:02:53,370 --> 00:02:55,920
+boom video starts playing so obviously
+
+58
+00:02:55,920 --> 00:02:58,500
+you want this app to be fat just like TV
+
+59
+00:02:58,500 --> 00:03:01,680
+is fast so in our quest to make it fast
+
+60
+00:03:01,680 --> 00:03:04,140
+we asked ourselves a few questions I'm
+
+61
+00:03:04,140 --> 00:03:06,270
+going to cover in this talk so one what
+
+62
+00:03:06,270 --> 00:03:09,540
+do existing tools provide what data do
+
+63
+00:03:09,540 --> 00:03:11,580
+you care about head to go ahead and
+
+64
+00:03:11,580 --> 00:03:13,410
+gather that data and then once you have
+
+65
+00:03:13,410 --> 00:03:15,770
+that data with you ahead and do with it
+
+66
+00:03:15,770 --> 00:03:17,730
+now before we can fulfill a requirement
+
+67
+00:03:17,730 --> 00:03:21,420
+to just make your website fast you need
+
+68
+00:03:21,420 --> 00:03:24,090
+to know first how fast we're slow your
+
+69
+00:03:24,090 --> 00:03:26,730
+app or website currently is and a way to
+
+70
+00:03:26,730 --> 00:03:28,709
+consistently monitor those metrics so
+
+71
+00:03:28,709 --> 00:03:30,120
+that when you get a target that you're
+
+72
+00:03:30,120 --> 00:03:32,040
+shooting for you can know that as you're
+
+73
+00:03:32,040 --> 00:03:33,630
+doing different performance improvements
+
+74
+00:03:33,630 --> 00:03:35,070
+know that that's actually helping or
+
+75
+00:03:35,070 --> 00:03:40,020
+hurting performance all right so let's
+
+76
+00:03:40,020 --> 00:03:41,640
+take a look at some existing tools to
+
+77
+00:03:41,640 --> 00:03:44,580
+throw up with one that we use often is
+
+78
+00:03:44,580 --> 00:03:46,860
+webpagetest org this was originally
+
+79
+00:03:46,860 --> 00:03:50,520
+developed by AOL and they ended up open
+
+80
+00:03:50,520 --> 00:03:52,110
+sourcing it and Google is kind of taking
+
+81
+00:03:52,110 --> 00:03:54,120
+the reins on this and they've done an
+
+82
+00:03:54,120 --> 00:03:57,300
+excellent job provides a bunch of great
+
+83
+00:03:57,300 --> 00:03:59,040
+data and suggestions as well for what to
+
+84
+00:03:59,040 --> 00:04:01,709
+do with your website you have to see an
+
+85
+00:04:01,709 --> 00:04:03,690
+overall performance of the page on its
+
+86
+00:04:03,690 --> 00:04:05,880
+first load and then repeat view when
+
+87
+00:04:05,880 --> 00:04:07,709
+assets are cash to see what the time
+
+88
+00:04:07,709 --> 00:04:10,080
+differences are give you a nice
+
+89
+00:04:10,080 --> 00:04:11,880
+waterfall view you can usually see in
+
+90
+00:04:11,880 --> 00:04:14,250
+like your network tab of your
+
+91
+00:04:14,250 --> 00:04:17,130
+performance tools showing the detail and
+
+92
+00:04:17,130 --> 00:04:19,830
+the timing information connection view
+
+93
+00:04:19,830 --> 00:04:22,370
+shows you each individual TCP connection
+
+94
+00:04:22,370 --> 00:04:24,510
+so you can see how different browsers
+
+95
+00:04:24,510 --> 00:04:28,350
+shard those you get a nice PageSpeed
+
+96
+00:04:28,350 --> 00:04:29,190
+optimization
+
+97
+00:04:29,190 --> 00:04:30,510
+to basically tell you hey here's then
+
+98
+00:04:30,510 --> 00:04:31,560
+just can do to improve performance
+
+99
+00:04:31,560 --> 00:04:34,020
+somewhere to what why slow does it's
+
+100
+00:04:34,020 --> 00:04:37,350
+right there in your face but here's one
+
+101
+00:04:37,350 --> 00:04:39,800
+spot where kind of fall short a bit so I
+
+102
+00:04:39,800 --> 00:04:42,180
+assure you when our app is fully loaded
+
+103
+00:04:42,180 --> 00:04:45,210
+it does not look like this this is a
+
+104
+00:04:45,210 --> 00:04:47,040
+loading screen which I mean the best
+
+105
+00:04:47,040 --> 00:04:48,360
+loading screen is in the loading screen
+
+106
+00:04:48,360 --> 00:04:51,260
+but the fact matter is we do have one
+
+107
+00:04:51,260 --> 00:04:53,550
+and when I got that down as short as
+
+108
+00:04:53,550 --> 00:04:57,480
+possible and by default web page test
+
+109
+00:04:57,480 --> 00:04:59,400
+will be like okay the onload event fired
+
+110
+00:04:59,400 --> 00:05:00,990
+we see the pages play Lotus we're to say
+
+111
+00:05:00,990 --> 00:05:04,080
+this is the fully loaded spot that's not
+
+112
+00:05:04,080 --> 00:05:05,610
+really the case in our application any
+
+113
+00:05:05,610 --> 00:05:06,870
+other one that does load additional
+
+114
+00:05:06,870 --> 00:05:10,560
+stuff after the pages loaded there is a
+
+115
+00:05:10,560 --> 00:05:12,540
+way to fix this in some browsers and
+
+116
+00:05:12,540 --> 00:05:13,380
+I'll kind of get to that little bit
+
+117
+00:05:13,380 --> 00:05:15,990
+later but that's a hile overview of web
+
+118
+00:05:15,990 --> 00:05:19,290
+page test fan tomas is another tool will
+
+119
+00:05:19,290 --> 00:05:22,710
+use as a much cooler name and as you can
+
+120
+00:05:22,710 --> 00:05:25,470
+see it is a phantom j/s based web
+
+121
+00:05:25,470 --> 00:05:28,260
+performance metrics collector and a
+
+122
+00:05:28,260 --> 00:05:31,350
+monitoring tool and this is basically a
+
+123
+00:05:31,350 --> 00:05:32,730
+tool that you would want to use in your
+
+124
+00:05:32,730 --> 00:05:35,070
+continuous integration environment or
+
+125
+00:05:35,070 --> 00:05:37,140
+with each commit of your codebase you
+
+126
+00:05:37,140 --> 00:05:38,520
+deploy your code to some development
+
+127
+00:05:38,520 --> 00:05:41,370
+server and then run phantom us against
+
+128
+00:05:41,370 --> 00:05:44,100
+it and this will spit out a ridiculous
+
+129
+00:05:44,100 --> 00:05:45,990
+amount of performance metrics for you
+
+130
+00:05:45,990 --> 00:05:49,890
+it's very useful we run it with grunt
+
+131
+00:05:49,890 --> 00:05:51,720
+dev perf which I'd recommend you check
+
+132
+00:05:51,720 --> 00:05:54,090
+out as well that gives you a couple of
+
+133
+00:05:54,090 --> 00:05:56,340
+benefits one you know it's grunt so it's
+
+134
+00:05:56,340 --> 00:05:57,960
+pretty easy just run the command and it
+
+135
+00:05:57,960 --> 00:06:00,960
+goes ahead and runs it plus since
+
+136
+00:06:00,960 --> 00:06:02,669
+phantom mas gives you so much data it's
+
+137
+00:06:02,669 --> 00:06:04,950
+kind of nice to see a smaller chunk of
+
+138
+00:06:04,950 --> 00:06:06,750
+information that grunt def gives you
+
+139
+00:06:06,750 --> 00:06:09,120
+which is this little view this is
+
+140
+00:06:09,120 --> 00:06:10,470
+actually in a web browser but they have
+
+141
+00:06:10,470 --> 00:06:13,590
+it styled to be like a terminal they
+
+142
+00:06:13,590 --> 00:06:15,000
+gives you that overall kind of time to
+
+143
+00:06:15,000 --> 00:06:17,790
+first byte on thumb reading time various
+
+144
+00:06:17,790 --> 00:06:20,880
+other things there some file information
+
+145
+00:06:20,880 --> 00:06:22,770
+on the size number of requests and then
+
+146
+00:06:22,770 --> 00:06:25,169
+warnings and then this is broken down by
+
+147
+00:06:25,169 --> 00:06:26,370
+each time you run it can kind of see
+
+148
+00:06:26,370 --> 00:06:29,010
+these charts go up and down I'll give
+
+149
+00:06:29,010 --> 00:06:31,080
+you a quick glance over it what ours is
+
+150
+00:06:31,080 --> 00:06:35,190
+like if the video plays well for us okay
+
+151
+00:06:35,190 --> 00:06:37,950
+so again this is a ridiculous amount of
+
+152
+00:06:37,950 --> 00:06:40,020
+information I'll just touch on a few
+
+153
+00:06:40,020 --> 00:06:41,640
+things real quick so for one there's
+
+154
+00:06:41,640 --> 00:06:43,680
+smalls latency and biggest latency
+
+155
+00:06:43,680 --> 00:06:45,780
+that's the file with the smallest
+
+156
+00:06:45,780 --> 00:06:47,700
+latency and the largest for the response
+
+157
+00:06:47,700 --> 00:06:51,930
+times from the timing section there's
+
+158
+00:06:51,930 --> 00:06:55,290
+time to first CSS time to first j/s on
+
+159
+00:06:55,290 --> 00:06:58,140
+Dom ready time or things let's typically
+
+160
+00:06:58,140 --> 00:07:03,570
+take a look at HTML for the JavaScript
+
+161
+00:07:03,570 --> 00:07:05,730
+if you're not using JSON to catch like
+
+162
+00:07:05,730 --> 00:07:08,370
+jeaious console messages that's there
+
+163
+00:07:08,370 --> 00:07:10,110
+also there's any j/s errors it's going
+
+164
+00:07:10,110 --> 00:07:11,640
+to throw those as well those pop up in
+
+165
+00:07:11,640 --> 00:07:15,090
+the browser for the Dom there's a bunch
+
+166
+00:07:15,090 --> 00:07:15,900
+of different things around different
+
+167
+00:07:15,900 --> 00:07:17,400
+dumb queries you can see how many of
+
+168
+00:07:17,400 --> 00:07:18,810
+those you're doing and see if there's
+
+169
+00:07:18,810 --> 00:07:21,050
+some l have an impact on performance
+
+170
+00:07:21,050 --> 00:07:23,010
+because again you can see that basically
+
+171
+00:07:23,010 --> 00:07:24,300
+each one of these things that it marks
+
+172
+00:07:24,300 --> 00:07:27,260
+is for each individual time you run the
+
+173
+00:07:27,260 --> 00:07:29,940
+grunt task which is nice you can tie
+
+174
+00:07:29,940 --> 00:07:31,830
+this anything the changes to individual
+
+175
+00:07:31,830 --> 00:07:35,040
+commit cows and sizes you can see our
+
+176
+00:07:35,040 --> 00:07:38,790
+body size HTML size change CSS sais je s
+
+177
+00:07:38,790 --> 00:07:44,100
+is for using jQuery like most people you
+
+178
+00:07:44,100 --> 00:07:46,110
+can see the sizzle calls that are being
+
+179
+00:07:46,110 --> 00:07:48,570
+used and then again you get this nice
+
+180
+00:07:48,570 --> 00:07:50,490
+film strip but kind of stuff with that
+
+181
+00:07:50,490 --> 00:07:52,770
+same issue again where thinks it's done
+
+182
+00:07:52,770 --> 00:07:54,870
+loading but really not done loading and
+
+183
+00:07:54,870 --> 00:07:58,080
+then it spits out basically for all the
+
+184
+00:07:58,080 --> 00:08:00,270
+data that populates those charts up top
+
+185
+00:08:00,270 --> 00:08:01,919
+you get a list of all the files that
+
+186
+00:08:01,919 --> 00:08:03,810
+were the reasons why those numbers are
+
+187
+00:08:03,810 --> 00:08:06,440
+where they are at in those charts there
+
+188
+00:08:06,440 --> 00:08:09,390
+so I don't recommend checking that out
+
+189
+00:08:09,390 --> 00:08:16,350
+for sure that's a grunt dev perfect it's
+
+190
+00:08:16,350 --> 00:08:17,750
+very useful but also has its limitations
+
+191
+00:08:17,750 --> 00:08:21,630
+for one I am pretty much bet no one is
+
+192
+00:08:21,630 --> 00:08:23,720
+using phantom j/s to surf your website
+
+193
+00:08:23,720 --> 00:08:26,340
+so I mean it's obviously similar to
+
+194
+00:08:26,340 --> 00:08:27,810
+Chrome in many ways but again there's
+
+195
+00:08:27,810 --> 00:08:30,930
+differences there and also you want to
+
+196
+00:08:30,930 --> 00:08:32,940
+know about what our users actually doing
+
+197
+00:08:32,940 --> 00:08:35,039
+on your website it's what you really
+
+198
+00:08:35,039 --> 00:08:38,070
+want is rum and I'm not talking about
+
+199
+00:08:38,070 --> 00:08:39,440
+the booze I'm actually talking about
+
+200
+00:08:39,440 --> 00:08:42,270
+real user monitoring or this is also
+
+201
+00:08:42,270 --> 00:08:43,740
+called real user metrics real user
+
+202
+00:08:43,740 --> 00:08:47,010
+measurement the M is not important it's
+
+203
+00:08:47,010 --> 00:08:48,630
+the real user part that's important
+
+204
+00:08:48,630 --> 00:08:52,260
+and New Relic is a tool used for this
+
+205
+00:08:52,260 --> 00:08:53,820
+the response er here so I'm sure they
+
+206
+00:08:53,820 --> 00:08:55,350
+can do a better job than I can about
+
+207
+00:08:55,350 --> 00:08:56,820
+their whole suite but i'll touch on a
+
+208
+00:08:56,820 --> 00:08:59,810
+few things about how we leverage them
+
+209
+00:08:59,810 --> 00:09:02,430
+for one they can break up the page load
+
+210
+00:09:02,430 --> 00:09:06,120
+times by request queuing server time
+
+211
+00:09:06,120 --> 00:09:08,340
+network time Dom processing page
+
+212
+00:09:08,340 --> 00:09:10,140
+rendering time show you a little more
+
+213
+00:09:10,140 --> 00:09:11,340
+fine-grain view into what the
+
+214
+00:09:11,340 --> 00:09:12,630
+application is actually doing what the
+
+215
+00:09:12,630 --> 00:09:15,450
+browser is doing and again this is all
+
+216
+00:09:15,450 --> 00:09:17,100
+for stuff happening on your server with
+
+217
+00:09:17,100 --> 00:09:18,630
+real users which is the benefit you want
+
+218
+00:09:18,630 --> 00:09:21,510
+to see there they can instrument all of
+
+219
+00:09:21,510 --> 00:09:23,820
+your Ajax requests just kind of nice so
+
+220
+00:09:23,820 --> 00:09:25,230
+you can get performs dataran any other
+
+221
+00:09:25,230 --> 00:09:27,510
+page X requests in our case for the
+
+222
+00:09:27,510 --> 00:09:28,740
+loading screen we're loading in
+
+223
+00:09:28,740 --> 00:09:30,150
+additional data so it's nice to get
+
+224
+00:09:30,150 --> 00:09:32,610
+those metrics for that you end up with
+
+225
+00:09:32,610 --> 00:09:34,530
+these charts you can do for individual
+
+226
+00:09:34,530 --> 00:09:36,480
+Ajax requests to get break down those
+
+227
+00:09:36,480 --> 00:09:40,200
+different network times and they also
+
+228
+00:09:40,200 --> 00:09:42,630
+allow you to manually report page load
+
+229
+00:09:42,630 --> 00:09:44,910
+timing data so with that issue there
+
+230
+00:09:44,910 --> 00:09:46,440
+with the fully loaded not actually being
+
+231
+00:09:46,440 --> 00:09:47,790
+fully loaded you can get around that
+
+232
+00:09:47,790 --> 00:09:50,070
+with new relic by vehicles saying hey
+
+233
+00:09:50,070 --> 00:09:52,800
+your support in time where this is where
+
+234
+00:09:52,800 --> 00:09:54,390
+I want to say my app is actually loaded
+
+235
+00:09:54,390 --> 00:09:56,130
+and send it back to New Relic in them
+
+236
+00:09:56,130 --> 00:09:57,480
+when it builds as charts it can take
+
+237
+00:09:57,480 --> 00:09:59,280
+that into account so you get the real
+
+238
+00:09:59,280 --> 00:10:01,380
+actual full time for your app being
+
+239
+00:10:01,380 --> 00:10:06,360
+ready all right now that we discussed a
+
+240
+00:10:06,360 --> 00:10:08,550
+few existing tools let's talk about the
+
+241
+00:10:08,550 --> 00:10:11,130
+data you care about so we care about
+
+242
+00:10:11,130 --> 00:10:13,890
+real users and New Relic is useful for
+
+243
+00:10:13,890 --> 00:10:16,130
+that but you may not be using New Relic
+
+244
+00:10:16,130 --> 00:10:18,390
+n even if you are there's some pieces I
+
+245
+00:10:18,390 --> 00:10:19,860
+feel its kind of best to gather yourself
+
+246
+00:10:19,860 --> 00:10:21,510
+so you can get the raw data and really
+
+247
+00:10:21,510 --> 00:10:23,490
+you know munge it and get the debut one
+
+248
+00:10:23,490 --> 00:10:26,280
+out of it so let's talk about a feature
+
+249
+00:10:26,280 --> 00:10:28,680
+that both fans muscle New Relic rely on
+
+250
+00:10:28,680 --> 00:10:31,830
+instrumentation and that is aw three
+
+251
+00:10:31,830 --> 00:10:34,830
+spec w3c spec called navigation timing
+
+252
+00:10:34,830 --> 00:10:37,290
+and if you want to see what this day is
+
+253
+00:10:37,290 --> 00:10:39,030
+basically if you open up your favorite
+
+254
+00:10:39,030 --> 00:10:42,480
+developer console and type window dot
+
+255
+00:10:42,480 --> 00:10:44,970
+performance timing then you'll get this
+
+256
+00:10:44,970 --> 00:10:47,030
+which is basically a bunch of different
+
+257
+00:10:47,030 --> 00:10:50,340
+timestamps then mark the different parts
+
+258
+00:10:50,340 --> 00:10:52,850
+of your full application request and
+
+259
+00:10:52,850 --> 00:10:55,350
+from these it's just a bunch of numbers
+
+260
+00:10:55,350 --> 00:10:56,400
+there but if you look at the
+
+261
+00:10:56,400 --> 00:10:58,170
+illustration the spec it kind of gives
+
+262
+00:10:58,170 --> 00:11:00,780
+you a nice break down so you can take a
+
+263
+00:11:00,780 --> 00:11:02,339
+look at each individual times
+
+264
+00:11:02,339 --> 00:11:05,269
+amp and then chart it out so you've got
+
+265
+00:11:05,269 --> 00:11:07,319
+unloading the previous document if one
+
+266
+00:11:07,319 --> 00:11:09,600
+was open there's checking html5
+
+267
+00:11:09,600 --> 00:11:13,199
+application cache the DNS lookup TCP
+
+268
+00:11:13,199 --> 00:11:15,480
+handshake and then you get to be actual
+
+269
+00:11:15,480 --> 00:11:17,309
+request itself and the response coming
+
+270
+00:11:17,309 --> 00:11:20,399
+back from the server and then the
+
+271
+00:11:20,399 --> 00:11:22,170
+various Dom events happen to build at
+
+272
+00:11:22,170 --> 00:11:24,300
+the document the CSS object model that
+
+273
+00:11:24,300 --> 00:11:26,459
+kind of stuff and finally the onload
+
+274
+00:11:26,459 --> 00:11:29,730
+event fires so that's some really useful
+
+275
+00:11:29,730 --> 00:11:31,649
+stuff you can really get a good glimpse
+
+276
+00:11:31,649 --> 00:11:34,110
+into what each user experienced as far
+
+277
+00:11:34,110 --> 00:11:37,319
+as setting the first page to them kind
+
+278
+00:11:37,319 --> 00:11:38,730
+of step back at a wider level view you
+
+279
+00:11:38,730 --> 00:11:41,100
+can see that basically network latency
+
+280
+00:11:41,100 --> 00:11:42,779
+is the time from one that first app
+
+281
+00:11:42,779 --> 00:11:44,670
+cache that up happens to response coming
+
+282
+00:11:44,670 --> 00:11:46,529
+back from the server and then there's
+
+283
+00:11:46,529 --> 00:11:48,180
+that processing that happens between the
+
+284
+00:11:48,180 --> 00:11:49,980
+processing all the Dom information then
+
+285
+00:11:49,980 --> 00:11:52,410
+finally load event and then those
+
+286
+00:11:52,410 --> 00:11:54,930
+together along with some initial unload
+
+287
+00:11:54,930 --> 00:11:58,470
+stuff make up that full HTP request so
+
+288
+00:11:58,470 --> 00:11:59,939
+then you have all that data available to
+
+289
+00:11:59,939 --> 00:12:01,709
+you which is nice but of course we still
+
+290
+00:12:01,709 --> 00:12:04,290
+have this problem with fully loaded not
+
+291
+00:12:04,290 --> 00:12:05,610
+necessarily being fully loaded because
+
+292
+00:12:05,610 --> 00:12:07,670
+that's not going to be part of that
+
+293
+00:12:07,670 --> 00:12:12,959
+navigation timing interface so you need
+
+294
+00:12:12,959 --> 00:12:14,459
+to account for that loading screen time
+
+295
+00:12:14,459 --> 00:12:16,350
+and if we have a way to kind of mark
+
+296
+00:12:16,350 --> 00:12:18,809
+that loading screen time being done and
+
+297
+00:12:18,809 --> 00:12:20,220
+you can kind of grab that calculation
+
+298
+00:12:20,220 --> 00:12:23,790
+there for that point in time to see how
+
+299
+00:12:23,790 --> 00:12:25,110
+much long delays free is up so you can
+
+300
+00:12:25,110 --> 00:12:27,059
+produce that time and then once you
+
+301
+00:12:27,059 --> 00:12:28,110
+gather all that data can start to build
+
+302
+00:12:28,110 --> 00:12:32,009
+some nice charts like this one that kind
+
+303
+00:12:32,009 --> 00:12:33,449
+of show the breakdown of network latency
+
+304
+00:12:33,449 --> 00:12:36,120
+the processing time splash screen time
+
+305
+00:12:36,120 --> 00:12:37,350
+loading screen time for that kind of
+
+306
+00:12:37,350 --> 00:12:40,559
+things but you really can't have one
+
+307
+00:12:40,559 --> 00:12:42,720
+chart to be like this is my web app
+
+308
+00:12:42,720 --> 00:12:44,579
+performance because there's a lot of
+
+309
+00:12:44,579 --> 00:12:46,019
+things that could be affecting these and
+
+310
+00:12:46,019 --> 00:12:47,639
+you can't really represent them in one
+
+311
+00:12:47,639 --> 00:12:53,009
+graph so talk about a few of those so
+
+312
+00:12:53,009 --> 00:12:55,529
+for one the user authentication state so
+
+313
+00:12:55,529 --> 00:12:57,240
+I'm willing to bet that for the most
+
+314
+00:12:57,240 --> 00:12:59,069
+part if the user is signed in in your
+
+315
+00:12:59,069 --> 00:13:00,569
+web app there's going to be more stuff
+
+316
+00:13:00,569 --> 00:13:02,720
+going on than if user is not signed in
+
+317
+00:13:02,720 --> 00:13:06,420
+and then once they are signed in there
+
+318
+00:13:06,420 --> 00:13:07,709
+are different types of users like for
+
+319
+00:13:07,709 --> 00:13:10,769
+example in our application the user may
+
+320
+00:13:10,769 --> 00:13:12,509
+have a DVR that mean not the may just be
+
+321
+00:13:12,509 --> 00:13:14,939
+live streaming they may subscribe to
+
+322
+00:13:14,939 --> 00:13:16,080
+premium networks
+
+323
+00:13:16,080 --> 00:13:18,570
+HBO there could be a bunch of parental
+
+324
+00:13:18,570 --> 00:13:19,710
+controls they've configured and that's
+
+325
+00:13:19,710 --> 00:13:20,760
+going to affect you know what we need to
+
+326
+00:13:20,760 --> 00:13:22,860
+do as far as returning there are TV
+
+327
+00:13:22,860 --> 00:13:25,590
+listings good to them or the recordings
+
+328
+00:13:25,590 --> 00:13:28,920
+that they've set up and if the users not
+
+329
+00:13:28,920 --> 00:13:30,360
+signed in its past three also doing some
+
+330
+00:13:30,360 --> 00:13:32,310
+sort of a/b testing so you have unless
+
+331
+00:13:32,310 --> 00:13:34,260
+an accuser sadder than being you know
+
+332
+00:13:34,260 --> 00:13:36,060
+segments into different groups and those
+
+333
+00:13:36,060 --> 00:13:37,560
+could be seeing different experiences
+
+334
+00:13:37,560 --> 00:13:38,640
+and then getting different response
+
+335
+00:13:38,640 --> 00:13:40,500
+times and you really need to gather all
+
+336
+00:13:40,500 --> 00:13:45,330
+of that also the number of items
+
+337
+00:13:45,330 --> 00:13:48,420
+returned in this case I'm kind of
+
+338
+00:13:48,420 --> 00:13:51,660
+talking about so for us we're making
+
+339
+00:13:51,660 --> 00:13:53,280
+another request to get your recordings
+
+340
+00:13:53,280 --> 00:13:55,170
+when you load up the application so if
+
+341
+00:13:55,170 --> 00:13:57,030
+you have a DVR you could have three
+
+342
+00:13:57,030 --> 00:13:59,280
+things record you could have a hundred
+
+343
+00:13:59,280 --> 00:14:00,360
+things recorded you could have a
+
+344
+00:14:00,360 --> 00:14:03,150
+thousand things recorded and if you have
+
+345
+00:14:03,150 --> 00:14:04,650
+a thousand recording as I need to return
+
+346
+00:14:04,650 --> 00:14:06,330
+that to you that's be much slower than
+
+347
+00:14:06,330 --> 00:14:08,760
+if you only have two so it's important
+
+348
+00:14:08,760 --> 00:14:10,530
+that when you're instrumenting these a
+
+349
+00:14:10,530 --> 00:14:12,090
+dr. quest that you take into account
+
+350
+00:14:12,090 --> 00:14:13,800
+what is the actual contents of that
+
+351
+00:14:13,800 --> 00:14:16,530
+response you know how much is the number
+
+352
+00:14:16,530 --> 00:14:18,030
+of items affecting the response time for
+
+353
+00:14:18,030 --> 00:14:21,900
+that and one piece that may be a little
+
+354
+00:14:21,900 --> 00:14:23,730
+bit specific to us but basically then
+
+355
+00:14:23,730 --> 00:14:25,710
+when dealing with video or games at this
+
+356
+00:14:25,710 --> 00:14:28,580
+point is we have a flash Swift that we
+
+357
+00:14:28,580 --> 00:14:32,700
+drop in the page because videos so corn
+
+358
+00:14:32,700 --> 00:14:35,490
+essential to this product we tie the
+
+359
+00:14:35,490 --> 00:14:37,410
+authentication in with the video players
+
+360
+00:14:37,410 --> 00:14:39,480
+so basically as soon as you start
+
+361
+00:14:39,480 --> 00:14:40,880
+loading the page we drop this
+
+362
+00:14:40,880 --> 00:14:44,580
+authentication Swift that typically just
+
+363
+00:14:44,580 --> 00:14:46,680
+you know drop it does this thing real
+
+364
+00:14:46,680 --> 00:14:49,440
+quick and then it happens but that can
+
+365
+00:14:49,440 --> 00:14:51,630
+bleed into that loading screen time so
+
+366
+00:14:51,630 --> 00:14:52,650
+that's one of the thing that we like to
+
+367
+00:14:52,650 --> 00:14:54,030
+monitor is how long is take from the
+
+368
+00:14:54,030 --> 00:14:56,130
+time we drop that Swift to the point
+
+369
+00:14:56,130 --> 00:14:57,540
+where it says okay we've got all the
+
+370
+00:14:57,540 --> 00:14:58,950
+data we need and we can move forward
+
+371
+00:14:58,950 --> 00:15:03,810
+with the application taking a step
+
+372
+00:15:03,810 --> 00:15:05,190
+outside of our application here's an
+
+373
+00:15:05,190 --> 00:15:09,260
+example from gmail now in this case
+
+374
+00:15:09,260 --> 00:15:12,060
+gmail will slow at one point when these
+
+375
+00:15:12,060 --> 00:15:14,940
+three specific factors were true so it
+
+376
+00:15:14,940 --> 00:15:17,520
+had to be the user had the people widget
+
+377
+00:15:17,520 --> 00:15:20,130
+enabled they had to be viewing gmail on
+
+378
+00:15:20,130 --> 00:15:22,620
+the web and they had to open email with
+
+379
+00:15:22,620 --> 00:15:25,410
+a large number of participants so as you
+
+380
+00:15:25,410 --> 00:15:27,060
+can see that are basically if you're
+
+381
+00:15:27,060 --> 00:15:29,790
+just logging overall response times then
+
+382
+00:15:29,790 --> 00:15:31,230
+you would never know that there is this
+
+383
+00:15:31,230 --> 00:15:33,150
+segment of users that are being affected
+
+384
+00:15:33,150 --> 00:15:35,850
+by slowness and so we much more
+
+385
+00:15:35,850 --> 00:15:37,110
+difficult to kind of diagnose
+
+386
+00:15:37,110 --> 00:15:38,730
+performance issues if you're just doing
+
+387
+00:15:38,730 --> 00:15:40,890
+these overall views of here's my
+
+388
+00:15:40,890 --> 00:15:44,220
+response time so make sure you consider
+
+389
+00:15:44,220 --> 00:15:45,840
+what other unique factors in your
+
+390
+00:15:45,840 --> 00:15:48,120
+application may impact performance when
+
+391
+00:15:48,120 --> 00:15:49,110
+you're thinking about web performance
+
+392
+00:15:49,110 --> 00:15:54,770
+data alright so gathering the data so as
+
+393
+00:15:54,770 --> 00:15:57,510
+I said we basically need a way to mark
+
+394
+00:15:57,510 --> 00:16:01,320
+the point when the application is loaded
+
+395
+00:16:01,320 --> 00:16:03,890
+completely so that we know at that point
+
+396
+00:16:03,890 --> 00:16:06,780
+and when that users truly ready for any
+
+397
+00:16:06,780 --> 00:16:09,450
+interaction we need a way to mark that
+
+398
+00:16:09,450 --> 00:16:11,610
+essentially so how to do that so back in
+
+399
+00:16:11,610 --> 00:16:14,460
+the day we would do something like new
+
+400
+00:16:14,460 --> 00:16:16,350
+date good time get back a nice time
+
+401
+00:16:16,350 --> 00:16:19,620
+stamp heck no script 5.1 gave us date
+
+402
+00:16:19,620 --> 00:16:21,890
+now which is the easier way to get that
+
+403
+00:16:21,890 --> 00:16:24,150
+but now most modern browsers have an
+
+404
+00:16:24,150 --> 00:16:25,920
+easier solution and a better one
+
+405
+00:16:25,920 --> 00:16:27,780
+actually and that is high resolution
+
+406
+00:16:27,780 --> 00:16:29,820
+time which sounds awesome right who
+
+407
+00:16:29,820 --> 00:16:32,670
+doesn't love high resolution things so
+
+408
+00:16:32,670 --> 00:16:35,460
+what is that exactly so for one that
+
+409
+00:16:35,460 --> 00:16:37,740
+creates a dumb high-res timestamp you
+
+410
+00:16:37,740 --> 00:16:39,150
+can see this if you type window duh
+
+411
+00:16:39,150 --> 00:16:40,860
+performance now and call that method in
+
+412
+00:16:40,860 --> 00:16:43,710
+your console and that provides a time
+
+413
+00:16:43,710 --> 00:16:46,350
+with sub millisecond accuracy measured
+
+414
+00:16:46,350 --> 00:16:47,730
+relative from the navigation stark
+
+415
+00:16:47,730 --> 00:16:49,110
+attribute of the performance timing
+
+416
+00:16:49,110 --> 00:16:50,670
+interface so that's that first part in
+
+417
+00:16:50,670 --> 00:16:54,900
+that big w w3c graph there and it's also
+
+418
+00:16:54,900 --> 00:16:56,850
+not subject to system clock skew or
+
+419
+00:16:56,850 --> 00:16:59,460
+adjustments adjustments because it uses
+
+420
+00:16:59,460 --> 00:17:03,300
+a monotonically increasing clock so
+
+421
+00:17:03,300 --> 00:17:04,380
+let's dig a little bit into what that
+
+422
+00:17:04,380 --> 00:17:05,970
+actually means they're so here's a quick
+
+423
+00:17:05,970 --> 00:17:07,680
+example about Y sub milliseconds it's
+
+424
+00:17:07,680 --> 00:17:09,540
+nice I'm gonna write a quick function
+
+425
+00:17:09,540 --> 00:17:12,360
+that marks a point in time is a start
+
+426
+00:17:12,360 --> 00:17:14,670
+time then just multiplies the width and
+
+427
+00:17:14,670 --> 00:17:15,960
+height of the window to do a quick
+
+428
+00:17:15,960 --> 00:17:17,700
+calculation going to return the
+
+429
+00:17:17,700 --> 00:17:20,550
+difference of that run that and we get 0
+
+430
+00:17:20,550 --> 00:17:22,350
+so it's like you know that took no time
+
+431
+00:17:22,350 --> 00:17:24,480
+at all to happen if you write the same
+
+432
+00:17:24,480 --> 00:17:27,000
+function by use window dot performance
+
+433
+00:17:27,000 --> 00:17:30,480
+now and go through that those steps then
+
+434
+00:17:30,480 --> 00:17:33,990
+you get this extremely accurate time in
+
+435
+00:17:33,990 --> 00:17:36,840
+this case it was 0.012 blah blah blah
+
+436
+00:17:36,840 --> 00:17:39,600
+milliseconds the spec mentions that it
+
+437
+00:17:39,600 --> 00:17:41,070
+should be accurate to the thousandth of
+
+438
+00:17:41,070 --> 00:17:43,430
+a millisecond I've seen some
+
+439
+00:17:43,430 --> 00:17:45,920
+just be more accurate than that others
+
+440
+00:17:45,920 --> 00:17:47,300
+especially on windows are only accurate
+
+441
+00:17:47,300 --> 00:17:49,400
+to the millisecond but again you get the
+
+442
+00:17:49,400 --> 00:17:53,060
+benefit of the monotonic clock which may
+
+443
+00:17:53,060 --> 00:17:55,520
+be wondering what exactly that is which
+
+444
+00:17:55,520 --> 00:17:58,430
+I did my first heard about it so for
+
+445
+00:17:58,430 --> 00:17:59,780
+what that is I went to the person
+
+446
+00:17:59,780 --> 00:18:01,790
+actually reviewed the commit in chromium
+
+447
+00:18:01,790 --> 00:18:03,980
+and here's that explanation of what that
+
+448
+00:18:03,980 --> 00:18:06,620
+means so most systems run the daemon
+
+449
+00:18:06,620 --> 00:18:09,050
+which regularly synchronizes the time it
+
+450
+00:18:09,050 --> 00:18:10,850
+is common for the clock to be tweaked a
+
+451
+00:18:10,850 --> 00:18:12,650
+few milliseconds every 15 to 20 minutes
+
+452
+00:18:12,650 --> 00:18:16,010
+so at that rate about 1% of 10 second
+
+453
+00:18:16,010 --> 00:18:18,620
+intervals measured will be inaccurate so
+
+454
+00:18:18,620 --> 00:18:19,610
+now you kind of see the benefit of why
+
+455
+00:18:19,610 --> 00:18:22,160
+that monotonic clock is a nice thing to
+
+456
+00:18:22,160 --> 00:18:25,220
+have so now we've got this app writing
+
+457
+00:18:25,220 --> 00:18:27,380
+marked using this high resolution time
+
+458
+00:18:27,380 --> 00:18:29,210
+and now we know the actual load time of
+
+459
+00:18:29,210 --> 00:18:30,830
+the full application there's no math
+
+460
+00:18:30,830 --> 00:18:32,870
+needed the value of it is the low time
+
+461
+00:18:32,870 --> 00:18:36,680
+up to that point but if we want to kind
+
+462
+00:18:36,680 --> 00:18:38,030
+of figure out what is the actual loading
+
+463
+00:18:38,030 --> 00:18:40,280
+screen time we've got a problem because
+
+464
+00:18:40,280 --> 00:18:43,370
+load event end is measured in a
+
+465
+00:18:43,370 --> 00:18:45,380
+timestamp based on you know the epoch
+
+466
+00:18:45,380 --> 00:18:48,680
+back on january first 1970 and we've got
+
+467
+00:18:48,680 --> 00:18:50,690
+this operating mark which is you know
+
+468
+00:18:50,690 --> 00:18:52,280
+based off of zero point being a few
+
+469
+00:18:52,280 --> 00:18:54,770
+seconds ago so we can't even do any math
+
+470
+00:18:54,770 --> 00:18:56,840
+to figure out what is that loading time
+
+471
+00:18:56,840 --> 00:18:59,690
+there unless we go ahead and mark a load
+
+472
+00:18:59,690 --> 00:19:02,870
+event n spot using a high resolution
+
+473
+00:19:02,870 --> 00:19:06,290
+time stamp on the onload event fires and
+
+474
+00:19:06,290 --> 00:19:07,490
+then we can do math but it's kind of a
+
+475
+00:19:07,490 --> 00:19:08,390
+bummer that we need to actually go
+
+476
+00:19:08,390 --> 00:19:11,360
+through that and the w3c recognize this
+
+477
+00:19:11,360 --> 00:19:13,400
+and they're working on a new spec which
+
+478
+00:19:13,400 --> 00:19:15,830
+is navigation timing too and that
+
+479
+00:19:15,830 --> 00:19:17,570
+basically uses the high resolution time
+
+480
+00:19:17,570 --> 00:19:19,040
+for each of the timestamps in that
+
+481
+00:19:19,040 --> 00:19:21,410
+performance timeline with a couple
+
+482
+00:19:21,410 --> 00:19:24,140
+tweaks but it's still in the draft state
+
+483
+00:19:24,140 --> 00:19:25,790
+so you can't use this anywhere right now
+
+484
+00:19:25,790 --> 00:19:27,890
+unfortunately but there is something
+
+485
+00:19:27,890 --> 00:19:30,950
+else and that is user timing and this is
+
+486
+00:19:30,950 --> 00:19:33,530
+great for a couple of reasons one it
+
+487
+00:19:33,530 --> 00:19:35,960
+allows you to get high resolution
+
+488
+00:19:35,960 --> 00:19:37,820
+durations between not only a couple
+
+489
+00:19:37,820 --> 00:19:40,190
+manually set user marks but you can take
+
+490
+00:19:40,190 --> 00:19:41,600
+one of those use remarks and then do a
+
+491
+00:19:41,600 --> 00:19:43,430
+higher restoration between that and a
+
+492
+00:19:43,430 --> 00:19:46,400
+window performance timing interface and
+
+493
+00:19:46,400 --> 00:19:47,960
+that's really nice this also solved the
+
+494
+00:19:47,960 --> 00:19:51,890
+problem of the web page test issue with
+
+495
+00:19:51,890 --> 00:19:54,320
+a 911 your browser's fully when they
+
+496
+00:19:54,320 --> 00:19:55,820
+absolutely loaded this will solve that
+
+497
+00:19:55,820 --> 00:19:57,850
+problem for the browsers that support
+
+498
+00:19:57,850 --> 00:20:01,070
+so as far as browser support goes let's
+
+499
+00:20:01,070 --> 00:20:03,470
+talk about that so there's the
+
+500
+00:20:03,470 --> 00:20:05,330
+navigation Tommy's and pretty much all
+
+501
+00:20:05,330 --> 00:20:07,370
+browsers except for ie I'm sorry except
+
+502
+00:20:07,370 --> 00:20:11,360
+for Safari I add this in version 9 high
+
+503
+00:20:11,360 --> 00:20:14,330
+resolution time is was added to ie in
+
+504
+00:20:14,330 --> 00:20:16,490
+version 10 and Android recently added it
+
+505
+00:20:16,490 --> 00:20:20,660
+again safaris not in that party and user
+
+506
+00:20:20,660 --> 00:20:23,179
+Tommy has even less support fire fax has
+
+507
+00:20:23,179 --> 00:20:25,340
+an implemented yet I checked the bug
+
+508
+00:20:25,340 --> 00:20:27,140
+report this morning it's was basically
+
+509
+00:20:27,140 --> 00:20:29,090
+created in August of 2012 and no one's
+
+510
+00:20:29,090 --> 00:20:30,710
+picked it up yet so I can will write
+
+511
+00:20:30,710 --> 00:20:32,000
+some code for Firefox this would be
+
+512
+00:20:32,000 --> 00:20:35,750
+great respect to implement so this means
+
+513
+00:20:35,750 --> 00:20:37,490
+basically we need to do a bunch of marks
+
+514
+00:20:37,490 --> 00:20:39,770
+we need a user timing mark we need a
+
+515
+00:20:39,770 --> 00:20:41,320
+high resolution mark who need a
+
+516
+00:20:41,320 --> 00:20:44,299
+old-school timestamp mark follows
+
+517
+00:20:44,299 --> 00:20:47,240
+different points in time so basically if
+
+518
+00:20:47,240 --> 00:20:48,799
+you go ahead and you mark a page start
+
+519
+00:20:48,799 --> 00:20:51,049
+mark in the head of the document using
+
+520
+00:20:51,049 --> 00:20:52,910
+all three of those marks a load event
+
+521
+00:20:52,910 --> 00:20:54,440
+and when the onload event fires and then
+
+522
+00:20:54,440 --> 00:20:56,480
+app ready when the app is ready you kind
+
+523
+00:20:56,480 --> 00:20:58,059
+of break things up in these different
+
+524
+00:20:58,059 --> 00:21:00,679
+sections here so there's the the blue is
+
+525
+00:21:00,679 --> 00:21:02,840
+the browsers that support navigation
+
+526
+00:21:02,840 --> 00:21:03,890
+timing you get through the network
+
+527
+00:21:03,890 --> 00:21:05,980
+latency processing the loading screen
+
+528
+00:21:05,980 --> 00:21:07,940
+red is browsers that don't support
+
+529
+00:21:07,940 --> 00:21:10,280
+navigation timing you can completely do
+
+530
+00:21:10,280 --> 00:21:12,710
+like a smaller version of processing and
+
+531
+00:21:12,710 --> 00:21:15,679
+the full application and then you can be
+
+532
+00:21:15,679 --> 00:21:17,000
+something green as things can get with
+
+533
+00:21:17,000 --> 00:21:20,330
+any browser because it's it's basically
+
+534
+00:21:20,330 --> 00:21:21,559
+after the facts you can use either the
+
+535
+00:21:21,559 --> 00:21:24,770
+timestamps to do those calculations so
+
+536
+00:21:24,770 --> 00:21:26,780
+on cloud TV we do all this we mark we
+
+537
+00:21:26,780 --> 00:21:28,390
+set these marks we do these calculations
+
+538
+00:21:28,390 --> 00:21:30,740
+we also log the information about the
+
+539
+00:21:30,740 --> 00:21:32,720
+user we take the number of items
+
+540
+00:21:32,720 --> 00:21:35,929
+returned by certain a toast calls into
+
+541
+00:21:35,929 --> 00:21:38,570
+effect and we consider the browser as
+
+542
+00:21:38,570 --> 00:21:42,710
+well and we log on that data so I want
+
+543
+00:21:42,710 --> 00:21:43,970
+to go ahead and actually do that work I
+
+544
+00:21:43,970 --> 00:21:45,770
+first went to check github of course to
+
+545
+00:21:45,770 --> 00:21:46,970
+see if someone actually was doing that
+
+546
+00:21:46,970 --> 00:21:50,000
+so I can just use their work and besides
+
+547
+00:21:50,000 --> 00:21:52,730
+a user timing polyfill I'm I didn't
+
+548
+00:21:52,730 --> 00:21:56,630
+really find anything so that I decide
+
+549
+00:21:56,630 --> 00:21:58,640
+okay go ahead I'll do the work and today
+
+550
+00:21:58,640 --> 00:22:00,290
+actually I'm open sourcing the library
+
+551
+00:22:00,290 --> 00:22:02,900
+we did for this and the spirit of a
+
+552
+00:22:02,900 --> 00:22:05,540
+conference at the beach I call it surf
+
+553
+00:22:05,540 --> 00:22:07,779
+and turf so
+
+554
+00:22:07,779 --> 00:22:10,479
+so this is available right now from our
+
+555
+00:22:10,479 --> 00:22:12,759
+github page go to github.com / comcast
+
+556
+00:22:12,759 --> 00:22:15,909
+it's there it's also an NPM so if you do
+
+557
+00:22:15,909 --> 00:22:18,450
+npm install surf and / always one string
+
+558
+00:22:18,450 --> 00:22:21,489
+it's available there as well and this
+
+559
+00:22:21,489 --> 00:22:22,629
+will allow you to set all these
+
+560
+00:22:22,629 --> 00:22:24,399
+different marks it will also have a
+
+561
+00:22:24,399 --> 00:22:26,139
+concept of events which is a start and
+
+562
+00:22:26,139 --> 00:22:28,119
+end mark as well as additional data such
+
+563
+00:22:28,119 --> 00:22:29,619
+as you may want to log again the number
+
+564
+00:22:29,619 --> 00:22:33,190
+of items custom data points like if you
+
+565
+00:22:33,190 --> 00:22:35,289
+want to set is user authenticated it or
+
+566
+00:22:35,289 --> 00:22:37,690
+not and all that duration calculation is
+
+567
+00:22:37,690 --> 00:22:38,769
+built in there for you so it's going to
+
+568
+00:22:38,769 --> 00:22:40,629
+handle do you use your timing high
+
+569
+00:22:40,629 --> 00:22:45,879
+resolution time or not all for you so
+
+570
+00:22:45,879 --> 00:22:47,529
+real quickly I will go through analyzing
+
+571
+00:22:47,529 --> 00:22:49,029
+this data so I mean you've gone ahead
+
+572
+00:22:49,029 --> 00:22:51,249
+now you've got all the stuff on your
+
+573
+00:22:51,249 --> 00:22:52,690
+logs and filling it up with all this
+
+574
+00:22:52,690 --> 00:22:54,489
+data about performance what are you to
+
+575
+00:22:54,489 --> 00:22:56,619
+do with it so we build charts like this
+
+576
+00:22:56,619 --> 00:22:58,989
+one using splunk there are other tools
+
+577
+00:22:58,989 --> 00:23:01,389
+such as Kabana and gray log to that you
+
+578
+00:23:01,389 --> 00:23:03,519
+can use if you don't have splunk those
+
+579
+00:23:03,519 --> 00:23:06,849
+are open source now here the y-axis is
+
+580
+00:23:06,849 --> 00:23:10,809
+the response time the x-axis is the time
+
+581
+00:23:10,809 --> 00:23:13,929
+kind of by our but the thing may be
+
+582
+00:23:13,929 --> 00:23:14,710
+wondering is what are we actually
+
+583
+00:23:14,710 --> 00:23:17,379
+charting in this in this graph and the
+
+584
+00:23:17,379 --> 00:23:18,789
+one thing that may pop into your head is
+
+585
+00:23:18,789 --> 00:23:21,639
+average response time and I would argue
+
+586
+00:23:21,639 --> 00:23:23,409
+that you don't want to chart that or at
+
+587
+00:23:23,409 --> 00:23:24,759
+the very least you don't want that to be
+
+588
+00:23:24,759 --> 00:23:27,700
+your primary focus because average
+
+589
+00:23:27,700 --> 00:23:29,379
+response times are for average products
+
+590
+00:23:29,379 --> 00:23:31,179
+and you're obviously not building an
+
+591
+00:23:31,179 --> 00:23:32,139
+average product because you're here at
+
+592
+00:23:32,139 --> 00:23:33,549
+jas comp this is the best conference
+
+593
+00:23:33,549 --> 00:23:34,389
+you're building some of the best
+
+594
+00:23:34,389 --> 00:23:37,029
+products out there so when you think
+
+595
+00:23:37,029 --> 00:23:37,960
+about it if you say that your
+
+596
+00:23:37,960 --> 00:23:41,049
+application returns a response in under
+
+597
+00:23:41,049 --> 00:23:43,450
+second on average there doesn't sound
+
+598
+00:23:43,450 --> 00:23:45,789
+that great talking about averages you
+
+599
+00:23:45,789 --> 00:23:47,109
+wouldn't want your web host to be you
+
+600
+00:23:47,109 --> 00:23:49,080
+know up and running greatly you know
+
+601
+00:23:49,080 --> 00:23:51,099
+returning quick response on average you
+
+602
+00:23:51,099 --> 00:23:52,859
+want them to always be doing that and
+
+603
+00:23:52,859 --> 00:23:55,899
+users want that as well so as you should
+
+604
+00:23:55,899 --> 00:23:59,109
+focus on is the 99th percentile at a
+
+605
+00:23:59,109 --> 00:24:00,639
+minimum to pay on your level of traffic
+
+606
+00:24:00,639 --> 00:24:03,489
+you maybe want to go to 99.9 or 99.99
+
+607
+00:24:03,489 --> 00:24:05,739
+percentile for that and that way you get
+
+608
+00:24:05,739 --> 00:24:07,419
+to look at what are the vast majority of
+
+609
+00:24:07,419 --> 00:24:10,059
+your users experiencing if you look at
+
+610
+00:24:10,059 --> 00:24:11,529
+averages it's gonna start to mass that
+
+611
+00:24:11,529 --> 00:24:15,039
+data so we basically we take our 90
+
+612
+00:24:15,039 --> 00:24:17,409
+percentile and we plot this Ford all
+
+613
+00:24:17,409 --> 00:24:18,729
+different parts of our applications so
+
+614
+00:24:18,729 --> 00:24:20,580
+this is an example of
+
+615
+00:24:20,580 --> 00:24:22,860
+user comes in via the default which is
+
+616
+00:24:22,860 --> 00:24:26,340
+your recent recordings or the grid or if
+
+617
+00:24:26,340 --> 00:24:28,289
+they're not authenticated or turn pages
+
+618
+00:24:28,289 --> 00:24:29,970
+and we break that up by network latency
+
+619
+00:24:29,970 --> 00:24:34,679
+processing and spawn time for recordings
+
+620
+00:24:34,679 --> 00:24:36,690
+you can see that we're recordings lead
+
+621
+00:24:36,690 --> 00:24:38,130
+to large response time so we noticed
+
+622
+00:24:38,130 --> 00:24:41,399
+this from our charts it seems for us
+
+623
+00:24:41,399 --> 00:24:42,630
+that the number of channels does not
+
+624
+00:24:42,630 --> 00:24:45,179
+affect response time and let's say
+
+625
+00:24:45,179 --> 00:24:46,260
+you're kind of drive on the point that
+
+626
+00:24:46,260 --> 00:24:49,440
+99 percentile is useful this is our all
+
+627
+00:24:49,440 --> 00:24:52,980
+Swift which is again that piece of flesh
+
+628
+00:24:52,980 --> 00:24:55,409
+will be dropping the page and here's the
+
+629
+00:24:55,409 --> 00:24:57,389
+chart comparing that to the loading
+
+630
+00:24:57,389 --> 00:24:59,820
+screen response time for 99 percentile
+
+631
+00:24:59,820 --> 00:25:01,769
+you can see that these are pretty much
+
+632
+00:25:01,769 --> 00:25:03,330
+in line with each other's then we know
+
+633
+00:25:03,330 --> 00:25:06,179
+that okay the worst users are having
+
+634
+00:25:06,179 --> 00:25:08,220
+that experience because of this Swift so
+
+635
+00:25:08,220 --> 00:25:10,380
+we need to focus on that the 95
+
+636
+00:25:10,380 --> 00:25:11,789
+percentile that still looks good it
+
+637
+00:25:11,789 --> 00:25:13,710
+starts to kind of not be as clear as you
+
+638
+00:25:13,710 --> 00:25:16,289
+get down to the 50th percentile then an
+
+639
+00:25:16,289 --> 00:25:18,570
+average there's really no relationship
+
+640
+00:25:18,570 --> 00:25:19,649
+there so if you're just looking at
+
+641
+00:25:19,649 --> 00:25:21,000
+averages you're not going to notice that
+
+642
+00:25:21,000 --> 00:25:24,419
+this is in fact a big impact on the
+
+643
+00:25:24,419 --> 00:25:28,409
+application so to recap make sure you
+
+644
+00:25:28,409 --> 00:25:31,919
+measure first at the 99 percentile log
+
+645
+00:25:31,919 --> 00:25:33,659
+the network latency processing time and
+
+646
+00:25:33,659 --> 00:25:36,269
+full web page requests also like any
+
+647
+00:25:36,269 --> 00:25:38,190
+major a specific events with the details
+
+648
+00:25:38,190 --> 00:25:40,039
+that you need to determine information
+
+649
+00:25:40,039 --> 00:25:42,929
+and leverage those w3c performance API
+
+650
+00:25:42,929 --> 00:25:45,419
+is for that you can talk to me on
+
+651
+00:25:45,419 --> 00:25:46,860
+Twitter at John rave and once again
+
+652
+00:25:46,860 --> 00:25:48,389
+there's a link to the github repository
+
+653
+00:25:48,389 --> 00:25:49,930
+thank you
+

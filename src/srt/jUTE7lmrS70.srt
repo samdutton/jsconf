@@ -1,0 +1,2581 @@
+1
+00:00:00,060 --> 00:00:04,230
+
+how's it going that last talk was really
+
+2
+00:00:04,230 --> 00:00:07,020
+freakin great like I wondered to myself
+
+3
+00:00:07,020 --> 00:00:10,260
+I'm like I maintain this web compiler
+
+4
+00:00:10,260 --> 00:00:12,509
+and like how many like tiny character
+
+5
+00:00:12,509 --> 00:00:13,889
+tricks can we take from this
+
+6
+00:00:13,889 --> 00:00:16,230
+but anyways maybe that's for a minute
+
+7
+00:00:16,230 --> 00:00:19,680
+fire so yes thank you so the title of
+
+8
+00:00:19,680 --> 00:00:23,279
+this talk is web pack for the state of
+
+9
+00:00:23,279 --> 00:00:26,490
+the art and so for those who don't know
+
+10
+00:00:26,490 --> 00:00:29,189
+me I am Sean Larkin and so I'm a project
+
+11
+00:00:29,189 --> 00:00:31,340
+manager or program manager at Microsoft
+
+12
+00:00:31,340 --> 00:00:34,530
+working at Microsoft edge and edge dev
+
+13
+00:00:34,530 --> 00:00:38,040
+tools but you may know me as being one
+
+14
+00:00:38,040 --> 00:00:39,149
+of the maintainer x' of the web pack
+
+15
+00:00:39,149 --> 00:00:42,570
+core team and also spent time working on
+
+16
+00:00:42,570 --> 00:00:44,870
+the angular CLI and just a general
+
+17
+00:00:44,870 --> 00:00:46,230
+evangelist for open-source
+
+18
+00:00:46,230 --> 00:00:49,110
+sustainability and then now kind of with
+
+19
+00:00:49,110 --> 00:00:50,550
+my involvement through Microsoft and web
+
+20
+00:00:50,550 --> 00:00:53,969
+pack helping represent you all at the
+
+21
+00:00:53,969 --> 00:00:56,280
+node.js foundation for modules and also
+
+22
+00:00:56,280 --> 00:01:00,030
+web assembly in their community group so
+
+23
+00:01:00,030 --> 00:01:02,010
+a little bit about myself is I'm a tech
+
+24
+00:01:02,010 --> 00:01:04,530
+support technical support rep gone rogue
+
+25
+00:01:04,530 --> 00:01:06,720
+I got tired of not being able to solve
+
+26
+00:01:06,720 --> 00:01:09,240
+people's problems and so I started
+
+27
+00:01:09,240 --> 00:01:11,700
+learning AppleScript like who wrote
+
+28
+00:01:11,700 --> 00:01:14,850
+AppleScript like yeah like that was my
+
+29
+00:01:14,850 --> 00:01:17,390
+first programming language and then Ruby
+
+30
+00:01:17,390 --> 00:01:20,070
+and then objective-c and then finally I
+
+31
+00:01:20,070 --> 00:01:23,000
+found JavaScript you know I also like
+
+32
+00:01:23,000 --> 00:01:27,030
+woodworking and Internet of Things but
+
+33
+00:01:27,030 --> 00:01:28,500
+like I said sustainable open-source
+
+34
+00:01:28,500 --> 00:01:30,240
+practices is one of probably my latest
+
+35
+00:01:30,240 --> 00:01:33,409
+passions that I've been following now
+
+36
+00:01:33,409 --> 00:01:36,900
+you can find me anywhere like anywhere
+
+37
+00:01:36,900 --> 00:01:40,700
+most in most places with at the lark in
+
+38
+00:01:40,700 --> 00:01:43,350
+and so if you wanted to tweet this out
+
+39
+00:01:43,350 --> 00:01:44,939
+right now I'll give you a second take
+
+40
+00:01:44,939 --> 00:01:46,770
+your time
+
+41
+00:01:46,770 --> 00:01:49,409
+there's no rush but you can find me on
+
+42
+00:01:49,409 --> 00:01:50,899
+any of those places
+
+43
+00:01:50,899 --> 00:01:54,119
+so back back to the talk okay so web
+
+44
+00:01:54,119 --> 00:01:58,439
+pack for the state of the art and state
+
+45
+00:01:58,439 --> 00:02:02,189
+of the art so like I just wanted to pull
+
+46
+00:02:02,189 --> 00:02:04,590
+up a little definition and there is that
+
+47
+00:02:04,590 --> 00:02:06,570
+how you'd say it I stand off the list
+
+48
+00:02:06,570 --> 00:02:08,550
+and is that the Icelandic version of
+
+49
+00:02:08,550 --> 00:02:13,410
+that I'm not sure but you know we're
+
+50
+00:02:13,410 --> 00:02:13,780
+talking
+
+51
+00:02:13,780 --> 00:02:16,030
+about the recent stage of development or
+
+52
+00:02:16,030 --> 00:02:18,520
+I don't want to call what we do
+
+53
+00:02:18,520 --> 00:02:21,970
+avant-garde but at least you know the
+
+54
+00:02:21,970 --> 00:02:23,380
+the latest release and what we're
+
+55
+00:02:23,380 --> 00:02:26,080
+talking about today and so you know like
+
+56
+00:02:26,080 --> 00:02:27,520
+it was mentioned we did just release
+
+57
+00:02:27,520 --> 00:02:31,480
+webpack a hundred and twenty hours ago
+
+58
+00:02:31,480 --> 00:02:34,990
+and it's here it's in latest web pack
+
+59
+00:02:34,990 --> 00:02:38,500
+for is out and you can get it today but
+
+60
+00:02:38,500 --> 00:02:40,510
+I want to talk about what web pack four
+
+61
+00:02:40,510 --> 00:02:44,530
+represents and so for the first time we
+
+62
+00:02:44,530 --> 00:02:46,600
+decided to take and give our major
+
+63
+00:02:46,600 --> 00:02:48,520
+releases a codename and so this is
+
+64
+00:02:48,520 --> 00:02:51,250
+called web pack legato so you might be
+
+65
+00:02:51,250 --> 00:02:53,230
+like what like I know who's a like I'm a
+
+66
+00:02:53,230 --> 00:02:55,750
+music major so in college so anybody
+
+67
+00:02:55,750 --> 00:02:58,900
+else did music okay so you understand
+
+68
+00:02:58,900 --> 00:03:02,530
+what legato means it's to express notes
+
+69
+00:03:02,530 --> 00:03:04,870
+in a flowing matter without gaps in
+
+70
+00:03:04,870 --> 00:03:09,670
+between them but we got this term from
+
+71
+00:03:09,670 --> 00:03:12,850
+our major sponsor trivago so we we want
+
+72
+00:03:12,850 --> 00:03:14,920
+to give the opportunity for one of our
+
+73
+00:03:14,920 --> 00:03:18,310
+largest sponsors to name the to name
+
+74
+00:03:18,310 --> 00:03:21,250
+this major release and so this was kind
+
+75
+00:03:21,250 --> 00:03:24,220
+of their explanation you know at trivago
+
+76
+00:03:24,220 --> 00:03:26,170
+we usually give our projects a name and
+
+77
+00:03:26,170 --> 00:03:29,260
+a musical theme so for example they're
+
+78
+00:03:29,260 --> 00:03:30,730
+all JavaScript framework was called
+
+79
+00:03:30,730 --> 00:03:32,440
+harmony our new framework is called
+
+80
+00:03:32,440 --> 00:03:35,080
+melody and on the PHP side they're using
+
+81
+00:03:35,080 --> 00:03:37,750
+Symphony and the top layer is called
+
+82
+00:03:37,750 --> 00:03:40,959
+Orchestra and so legato meaning to play
+
+83
+00:03:40,959 --> 00:03:44,739
+without gaps expressive through through
+
+84
+00:03:44,739 --> 00:03:47,890
+each note to them really embodied what
+
+85
+00:03:47,890 --> 00:03:51,190
+it meant to have webpack for you know in
+
+86
+00:03:51,190 --> 00:03:52,690
+their build system and how it ties
+
+87
+00:03:52,690 --> 00:03:56,829
+everything together and you know before
+
+88
+00:03:56,829 --> 00:03:58,930
+I go on and explain more I want you to
+
+89
+00:03:58,930 --> 00:04:02,470
+just look at one of these slides or to
+
+90
+00:04:02,470 --> 00:04:04,989
+each of them and if you see your company
+
+91
+00:04:04,989 --> 00:04:08,950
+there or yourself I just want you to
+
+92
+00:04:08,950 --> 00:04:14,200
+stand up right now so if any of this is
+
+93
+00:04:14,200 --> 00:04:16,989
+you stand up I know I know there are
+
+94
+00:04:16,989 --> 00:04:19,989
+many please so I want you to look around
+
+95
+00:04:19,989 --> 00:04:21,489
+and I want to give I want you all to
+
+96
+00:04:21,489 --> 00:04:23,680
+give them a round of applause because
+
+97
+00:04:23,680 --> 00:04:28,070
+this is
+
+98
+00:04:28,080 --> 00:04:30,970
+because without these people we would
+
+99
+00:04:30,970 --> 00:04:33,310
+not be here today
+
+100
+00:04:33,310 --> 00:04:36,790
+and webpack four may not exist so I just
+
+101
+00:04:36,790 --> 00:04:38,260
+wanted to take take a second and
+
+102
+00:04:38,260 --> 00:04:42,220
+recognize those people mm-hmm so you
+
+103
+00:04:42,220 --> 00:04:44,260
+know we wanted to kind of create this
+
+104
+00:04:44,260 --> 00:04:45,910
+higher level story about what webpack
+
+105
+00:04:45,910 --> 00:04:49,150
+four meant meant for our users meant for
+
+106
+00:04:49,150 --> 00:04:51,640
+us and so you know the first thing with
+
+107
+00:04:51,640 --> 00:04:55,630
+smaller builds and faster builds the
+
+108
+00:04:55,630 --> 00:04:59,110
+second was modernization and then
+
+109
+00:04:59,110 --> 00:05:00,460
+finally probably one of the most
+
+110
+00:05:00,460 --> 00:05:02,980
+important well I mean all of these are
+
+111
+00:05:02,980 --> 00:05:05,140
+really important and not mutually
+
+112
+00:05:05,140 --> 00:05:05,890
+exclusive
+
+113
+00:05:05,890 --> 00:05:10,810
+which is developer experience and if I
+
+114
+00:05:10,810 --> 00:05:13,060
+talk about smaller and faster builds and
+
+115
+00:05:13,060 --> 00:05:16,000
+we try and break it down you can kind of
+
+116
+00:05:16,000 --> 00:05:17,950
+categorize it here so like to have a
+
+117
+00:05:17,950 --> 00:05:20,560
+smaller build you're going to need to do
+
+118
+00:05:20,560 --> 00:05:24,340
+more analysis on the code and you're
+
+119
+00:05:24,340 --> 00:05:26,410
+gonna have to process more of the module
+
+120
+00:05:26,410 --> 00:05:29,860
+graph and then for faster builds though
+
+121
+00:05:29,860 --> 00:05:32,880
+you're gonna have to do less work and
+
+122
+00:05:32,880 --> 00:05:36,280
+reuse existing work that's already been
+
+123
+00:05:36,280 --> 00:05:40,950
+done so these are kind of conflicting
+
+124
+00:05:40,950 --> 00:05:46,080
+but for faster builds we completely
+
+125
+00:05:46,080 --> 00:05:48,130
+reacted the way that we define what a
+
+126
+00:05:48,130 --> 00:05:50,640
+chunk is and a chunk is just the
+
+127
+00:05:50,640 --> 00:05:53,020
+in-memory version of the bundle you see
+
+128
+00:05:53,020 --> 00:05:55,960
+created but we also added additional
+
+129
+00:05:55,960 --> 00:05:58,690
+features like uglify j/s we're gonna be
+
+130
+00:05:58,690 --> 00:06:00,820
+using it in parallel and cashing it out
+
+131
+00:06:00,820 --> 00:06:04,390
+of the box and we also modernized a lot
+
+132
+00:06:04,390 --> 00:06:07,260
+of the pieces that we had in just old
+
+133
+00:06:07,260 --> 00:06:10,360
+es5 object syntax and we moved to using
+
+134
+00:06:10,360 --> 00:06:15,040
+maps and sets but specifically I think
+
+135
+00:06:15,040 --> 00:06:17,290
+one of the most important is the
+
+136
+00:06:17,290 --> 00:06:20,440
+migration of our plug-in system we wrote
+
+137
+00:06:20,440 --> 00:06:22,150
+it completely from the graph from the
+
+138
+00:06:22,150 --> 00:06:26,110
+ground up and now we have what are
+
+139
+00:06:26,110 --> 00:06:27,820
+called hooks which are create
+
+140
+00:06:27,820 --> 00:06:30,820
+monomorphic code and we lazy compile
+
+141
+00:06:30,820 --> 00:06:32,230
+them and I want to actually take a
+
+142
+00:06:32,230 --> 00:06:34,900
+moment to explain well what is what is
+
+143
+00:06:34,900 --> 00:06:35,360
+this
+
+144
+00:06:35,360 --> 00:06:38,870
+mean who here is familiar with mano
+
+145
+00:06:38,870 --> 00:06:42,439
+morphism or polymorphism okay so this
+
+146
+00:06:42,439 --> 00:06:43,659
+may look familiar
+
+147
+00:06:43,659 --> 00:06:46,430
+so this is an example of one of the
+
+148
+00:06:46,430 --> 00:06:48,500
+methods that is available in our plug-in
+
+149
+00:06:48,500 --> 00:06:52,460
+system prior to rewriting it and so if
+
+150
+00:06:52,460 --> 00:06:56,050
+you see here this this method is what
+
+151
+00:06:56,050 --> 00:06:58,340
+certain classes in web pack will call
+
+152
+00:06:58,340 --> 00:07:00,469
+and plugins are listening to this event
+
+153
+00:07:00,469 --> 00:07:03,530
+and what's passed in is a arbitrary like
+
+154
+00:07:03,530 --> 00:07:05,360
+event string it's like an event emitter
+
+155
+00:07:05,360 --> 00:07:07,550
+if you've ever used it before but the
+
+156
+00:07:07,550 --> 00:07:09,849
+problem here is that this is polymorphic
+
+157
+00:07:09,849 --> 00:07:12,849
+it can be any amount of arguments and
+
+158
+00:07:12,849 --> 00:07:15,289
+there's no way for the JavaScript engine
+
+159
+00:07:15,289 --> 00:07:20,539
+stopped mices so you know our initial
+
+160
+00:07:20,539 --> 00:07:22,099
+answer was like oh why don't we get
+
+161
+00:07:22,099 --> 00:07:24,050
+clever and just make separate methods
+
+162
+00:07:24,050 --> 00:07:26,330
+with single arguments for each of them
+
+163
+00:07:26,330 --> 00:07:28,340
+well that was not going to work one
+
+164
+00:07:28,340 --> 00:07:30,620
+because we could have a plug-in system
+
+165
+00:07:30,620 --> 00:07:32,930
+that's ginormous you have infinite
+
+166
+00:07:32,930 --> 00:07:34,639
+amount of different event names and
+
+167
+00:07:34,639 --> 00:07:37,219
+argument types that can be passed in and
+
+168
+00:07:37,219 --> 00:07:38,870
+so it's unmaintainable and not really a
+
+169
+00:07:38,870 --> 00:07:42,740
+great contributor experience and so it's
+
+170
+00:07:42,740 --> 00:07:45,740
+like how could we how could we solve
+
+171
+00:07:45,740 --> 00:07:49,250
+this where we're creating monomorphic
+
+172
+00:07:49,250 --> 00:07:53,930
+functions but they're unique and you
+
+173
+00:07:53,930 --> 00:07:55,159
+know we don't have a billion of them
+
+174
+00:07:55,159 --> 00:07:58,610
+that we have to maintain so we use the
+
+175
+00:07:58,610 --> 00:08:02,779
+technique to lazily compile based on
+
+176
+00:08:02,779 --> 00:08:04,759
+what is listening to these events and I
+
+177
+00:08:04,759 --> 00:08:06,319
+know I'm going a little deep here but it
+
+178
+00:08:06,319 --> 00:08:08,990
+might make more sense in a moment but
+
+179
+00:08:08,990 --> 00:08:10,879
+you can see at the bottom we're
+
+180
+00:08:10,879 --> 00:08:14,110
+literally just composing a bunch of
+
+181
+00:08:14,110 --> 00:08:17,449
+strings that are JavaScript that compile
+
+182
+00:08:17,449 --> 00:08:20,919
+to these hooks and then we evaluate it
+
+183
+00:08:20,919 --> 00:08:23,479
+and so like a really great resource if
+
+184
+00:08:23,479 --> 00:08:25,490
+you're interested in this and I'll try
+
+185
+00:08:25,490 --> 00:08:27,560
+not to butcher the name but V dot J's
+
+186
+00:08:27,560 --> 00:08:31,219
+luff I got off wrote a great explainer
+
+187
+00:08:31,219 --> 00:08:32,599
+article that you can go to and take a
+
+188
+00:08:32,599 --> 00:08:34,399
+look at it to understand how this
+
+189
+00:08:34,399 --> 00:08:37,729
+accomplishes monomorphic code and if
+
+190
+00:08:37,729 --> 00:08:39,949
+you're on Twitter a lot like myself you
+
+191
+00:08:39,949 --> 00:08:41,810
+may have seen this article that was like
+
+192
+00:08:41,810 --> 00:08:44,660
+hey you may not need you know rust and
+
+193
+00:08:44,660 --> 00:08:46,310
+webassembly to speed up your JavaScript
+
+194
+00:08:46,310 --> 00:08:48,180
+well it turns out
+
+195
+00:08:48,180 --> 00:08:51,000
+like how that looks pretty familiar the
+
+196
+00:08:51,000 --> 00:08:55,290
+code that he showcased and look he's
+
+197
+00:08:55,290 --> 00:08:57,750
+doing the same thing so the point is
+
+198
+00:08:57,750 --> 00:09:00,170
+that we can create this monomorphic code
+
+199
+00:09:00,170 --> 00:09:03,180
+but we're doing it kind of evaluative ly
+
+200
+00:09:03,180 --> 00:09:06,330
+or lazy compiling it but please do not
+
+201
+00:09:06,330 --> 00:09:09,600
+do this in your normal projects this is
+
+202
+00:09:09,600 --> 00:09:11,940
+you know there are some parts of webpack
+
+203
+00:09:11,940 --> 00:09:14,310
+that execute 19 million times on large
+
+204
+00:09:14,310 --> 00:09:16,530
+code bases and so everything is in the
+
+205
+00:09:16,530 --> 00:09:20,820
+hot path for us and so just as Benedict
+
+206
+00:09:20,820 --> 00:09:25,440
+Moyer says or v8 senpai don't please
+
+207
+00:09:25,440 --> 00:09:26,190
+don't do this
+
+208
+00:09:26,190 --> 00:09:30,480
+please don't but so like what did this
+
+209
+00:09:30,480 --> 00:09:36,840
+represent to us and so on most web pack
+
+210
+00:09:36,840 --> 00:09:39,530
+builds we saw it get 98 percent faster
+
+211
+00:09:39,530 --> 00:09:44,780
+so 98% of the build time was reduced
+
+212
+00:09:44,780 --> 00:09:50,450
+just by people upgrading to web pack 498
+
+213
+00:09:50,450 --> 00:09:57,000
+yeah and you'd be like Shawn you're
+
+214
+00:09:57,000 --> 00:09:58,770
+lying stop you embellish all the time
+
+215
+00:09:58,770 --> 00:10:01,770
+and I'm like well it turns out that we
+
+216
+00:10:01,770 --> 00:10:03,420
+have people who are reporting 6 hours of
+
+217
+00:10:03,420 --> 00:10:05,820
+their build times on web pack 3 actually
+
+218
+00:10:05,820 --> 00:10:09,090
+who's 9 hours but this he stopped at 6
+
+219
+00:10:09,090 --> 00:10:14,790
+on this run and so we were like we have
+
+220
+00:10:14,790 --> 00:10:19,470
+an idea and after after showcasing this
+
+221
+00:10:19,470 --> 00:10:21,810
+in the in the web pack for alpha we
+
+222
+00:10:21,810 --> 00:10:26,030
+found 17 minutes 17 minutes from 9 hours
+
+223
+00:10:26,030 --> 00:10:30,000
+so like there's the URL you can go to it
+
+224
+00:10:30,000 --> 00:10:34,770
+I'm not lying and just to make sure so
+
+225
+00:10:34,770 --> 00:10:36,480
+that people would be like Shawn you're
+
+226
+00:10:36,480 --> 00:10:37,980
+still lying
+
+227
+00:10:37,980 --> 00:10:40,590
+we just before once we got into our
+
+228
+00:10:40,590 --> 00:10:43,950
+release candidacy I decided to you know
+
+229
+00:10:43,950 --> 00:10:47,970
+play a little game to see hey 1 could we
+
+230
+00:10:47,970 --> 00:10:49,530
+get people to upgrade to the beta so
+
+231
+00:10:49,530 --> 00:10:51,600
+that we could catch early bugs warning
+
+232
+00:10:51,600 --> 00:10:54,420
+signs things like that but - is this
+
+233
+00:10:54,420 --> 00:10:56,330
+like speed boost really is this for real
+
+234
+00:10:56,330 --> 00:11:01,740
+so um yeah I shot this out and like we
+
+235
+00:11:01,740 --> 00:11:06,560
+seeing 75% on some cases we were seeing
+
+236
+00:11:06,560 --> 00:11:17,430
+90% 80% and so it's the real deal and so
+
+237
+00:11:17,430 --> 00:11:20,160
+you know that build speed you know to
+
+238
+00:11:20,160 --> 00:11:22,680
+sum it up we were able to accomplish
+
+239
+00:11:22,680 --> 00:11:25,070
+that first piece in what our goals were
+
+240
+00:11:25,070 --> 00:11:28,410
+but then we still had smaller builds now
+
+241
+00:11:28,410 --> 00:11:29,850
+we have to do something basically
+
+242
+00:11:29,850 --> 00:11:31,830
+completely opposite to what trying to
+
+243
+00:11:31,830 --> 00:11:35,790
+get a faster build will do for you so
+
+244
+00:11:35,790 --> 00:11:36,870
+the first thing that we tried to
+
+245
+00:11:36,870 --> 00:11:40,470
+implement and we were able to do so is
+
+246
+00:11:40,470 --> 00:11:43,680
+JSON tree-shaking so if you ever use
+
+247
+00:11:43,680 --> 00:11:46,830
+JSON with webpack you'll notice that in
+
+248
+00:11:46,830 --> 00:11:49,080
+version 3 it would bundle all of the
+
+249
+00:11:49,080 --> 00:11:51,900
+pieces that you would import into it but
+
+250
+00:11:51,900 --> 00:11:54,270
+we found out that really like JSON is
+
+251
+00:11:54,270 --> 00:11:57,990
+just as a a stricter set of what
+
+252
+00:11:57,990 --> 00:12:01,020
+JavaScript is and so we could treat it
+
+253
+00:12:01,020 --> 00:12:04,800
+like an atmosphere module and only the
+
+254
+00:12:04,800 --> 00:12:07,290
+pieces that are now used will actually
+
+255
+00:12:07,290 --> 00:12:10,230
+get will stay in your code and so in
+
+256
+00:12:10,230 --> 00:12:11,580
+this case you know you can just see
+
+257
+00:12:11,580 --> 00:12:13,770
+we're just pulling in and importing one
+
+258
+00:12:13,770 --> 00:12:15,780
+property and that's all that actually
+
+259
+00:12:15,780 --> 00:12:21,600
+compiles when we minify the code we also
+
+260
+00:12:21,600 --> 00:12:24,360
+have a feature well I'll explain the
+
+261
+00:12:24,360 --> 00:12:27,150
+problem first so according to Equus grip
+
+262
+00:12:27,150 --> 00:12:29,880
+module specification or the harmony
+
+263
+00:12:29,880 --> 00:12:33,770
+module spec when you have multiple
+
+264
+00:12:33,770 --> 00:12:37,530
+exports inside of a file every single
+
+265
+00:12:37,530 --> 00:12:40,130
+one of them has to be evaluated and
+
+266
+00:12:40,130 --> 00:12:43,710
+executed to ensure that they are not
+
+267
+00:12:43,710 --> 00:12:46,040
+creating side-effects against each other
+
+268
+00:12:46,040 --> 00:12:50,900
+so what does that mean well if lodash is
+
+269
+00:12:50,900 --> 00:12:53,730
+exporting from a file essentially a
+
+270
+00:12:53,730 --> 00:12:56,790
+thousand exports each one of them has to
+
+271
+00:12:56,790 --> 00:13:00,630
+be included into your bundle so what we
+
+272
+00:13:00,630 --> 00:13:02,670
+did and you can see that here in this
+
+273
+00:13:02,670 --> 00:13:07,710
+tiny example so we did as we created
+
+274
+00:13:07,710 --> 00:13:09,480
+this trick we had to tell the compiler
+
+275
+00:13:09,480 --> 00:13:11,790
+some way like hey there are no side
+
+276
+00:13:11,790 --> 00:13:13,710
+effects here you can go ahead and ignore
+
+277
+00:13:13,710 --> 00:13:15,050
+those properties
+
+278
+00:13:15,050 --> 00:13:17,060
+and so that's what we did we created the
+
+279
+00:13:17,060 --> 00:13:19,940
+side effects property which now we're
+
+280
+00:13:19,940 --> 00:13:21,860
+asking library authors to include in
+
+281
+00:13:21,860 --> 00:13:24,589
+their package Jason's because what
+
+282
+00:13:24,589 --> 00:13:27,019
+webpack will do in production mode is it
+
+283
+00:13:27,019 --> 00:13:29,269
+will look for the presence of this this
+
+284
+00:13:29,269 --> 00:13:32,060
+property and it will simply prune it out
+
+285
+00:13:32,060 --> 00:13:35,810
+and in fact it actually makes builds
+
+286
+00:13:35,810 --> 00:13:38,450
+faster when we are in the beta stages we
+
+287
+00:13:38,450 --> 00:13:39,860
+found that our production builds were
+
+288
+00:13:39,860 --> 00:13:41,839
+faster than the develop memo builds
+
+289
+00:13:41,839 --> 00:13:44,630
+because of this feature because what
+
+290
+00:13:44,630 --> 00:13:46,370
+you're doing is you're ignoring tracing
+
+291
+00:13:46,370 --> 00:13:47,630
+those parts of the graph because you
+
+292
+00:13:47,630 --> 00:13:50,120
+know they aren't actually used so in
+
+293
+00:13:50,120 --> 00:13:52,579
+this case we saw something like in
+
+294
+00:13:52,579 --> 00:13:57,560
+webpack 3 you know 200 KB of minimize
+
+295
+00:13:57,560 --> 00:14:03,640
+code actually turned to 1 KB so hmm
+
+296
+00:14:03,640 --> 00:14:04,820
+really
+
+297
+00:14:04,820 --> 00:14:08,120
+all you need to do if you you know it's
+
+298
+00:14:08,120 --> 00:14:11,089
+so easy all I have to do is just tree
+
+299
+00:14:11,089 --> 00:14:12,620
+shake mangle your exports go POIs
+
+300
+00:14:12,620 --> 00:14:14,329
+minimize and then package authors have
+
+301
+00:14:14,329 --> 00:14:18,110
+to set side-effects oh that's ridiculous
+
+302
+00:14:18,110 --> 00:14:21,050
+you shouldn't have to do any of that and
+
+303
+00:14:21,050 --> 00:14:22,820
+that kind of gets into what developer
+
+304
+00:14:22,820 --> 00:14:24,950
+experience is about all you should have
+
+305
+00:14:24,950 --> 00:14:29,000
+to do is freakin run web pack and so out
+
+306
+00:14:29,000 --> 00:14:33,260
+of the box now in web pack four we
+
+307
+00:14:33,260 --> 00:14:36,470
+default to a production mode so all of
+
+308
+00:14:36,470 --> 00:14:37,850
+those things you saw in that bullet
+
+309
+00:14:37,850 --> 00:14:42,890
+point they just happen and so developer
+
+310
+00:14:42,890 --> 00:14:44,660
+experience to us meant we need to lower
+
+311
+00:14:44,660 --> 00:14:46,220
+the barrier to entry to people who are
+
+312
+00:14:46,220 --> 00:14:47,839
+trying these tools for the first time
+
+313
+00:14:47,839 --> 00:14:50,990
+not everybody understands the rigorous
+
+314
+00:14:50,990 --> 00:14:53,390
+and obnoxious history of JavaScript
+
+315
+00:14:53,390 --> 00:14:55,010
+modules and where they started and where
+
+316
+00:14:55,010 --> 00:14:57,380
+they are now and we also need to have
+
+317
+00:14:57,380 --> 00:15:01,520
+better defaults and thanks to libraries
+
+318
+00:15:01,520 --> 00:15:04,339
+like parcel we can now coin something
+
+319
+00:15:04,339 --> 00:15:09,649
+like zero config j/s and us zero config
+
+320
+00:15:09,649 --> 00:15:12,050
+doesn't mean you know like letting you
+
+321
+00:15:12,050 --> 00:15:13,640
+do whatever you want and shoving it into
+
+322
+00:15:13,640 --> 00:15:16,040
+one package and then hoping not the
+
+323
+00:15:16,040 --> 00:15:17,570
+feature that you don't use breaks and
+
+324
+00:15:17,570 --> 00:15:20,029
+causes a major breaking change it means
+
+325
+00:15:20,029 --> 00:15:25,699
+being able to actually extend a base
+
+326
+00:15:25,699 --> 00:15:28,400
+scenario to your users so that it can
+
+327
+00:15:28,400 --> 00:15:30,890
+you I oh you know bring your own zero
+
+328
+00:15:30,890 --> 00:15:33,980
+config j/s and so this is really the
+
+329
+00:15:33,980 --> 00:15:37,760
+line that we wanted to to cross so you
+
+330
+00:15:37,760 --> 00:15:40,490
+know by defaults you don't even need a
+
+331
+00:15:40,490 --> 00:15:43,570
+web pack config to use web pack for
+
+332
+00:15:43,570 --> 00:15:48,140
+every property has been defaulted and
+
+333
+00:15:48,140 --> 00:15:56,390
+what the future yeah now I'm not so that
+
+334
+00:15:56,390 --> 00:15:58,340
+what I'm trying to say though is that
+
+335
+00:15:58,340 --> 00:16:01,040
+not everybody will end up you know just
+
+336
+00:16:01,040 --> 00:16:03,010
+ripping out their web pack config
+
+337
+00:16:03,010 --> 00:16:06,290
+because the power of web pack is is
+
+338
+00:16:06,290 --> 00:16:08,840
+deeply rooted in how extensible we are
+
+339
+00:16:08,840 --> 00:16:14,000
+and so instead why don't we extend this
+
+340
+00:16:14,000 --> 00:16:16,910
+idea so we also created this feature
+
+341
+00:16:16,910 --> 00:16:19,910
+called mode and so mode is a property on
+
+342
+00:16:19,910 --> 00:16:21,530
+the config or a flag that you can pass
+
+343
+00:16:21,530 --> 00:16:23,390
+in the CLI and we default to production
+
+344
+00:16:23,390 --> 00:16:27,080
+like I said and you know what it
+
+345
+00:16:27,080 --> 00:16:28,610
+represents is that for development
+
+346
+00:16:28,610 --> 00:16:29,840
+you're going to want to have tooling for
+
+347
+00:16:29,840 --> 00:16:31,490
+the browser you're going to want to have
+
+348
+00:16:31,490 --> 00:16:34,040
+really fast incremental compilation and
+
+349
+00:16:34,040 --> 00:16:36,440
+you're gonna have better error messages
+
+350
+00:16:36,440 --> 00:16:38,600
+that you know don't take up an entire
+
+351
+00:16:38,600 --> 00:16:42,590
+console and then for production we're
+
+352
+00:16:42,590 --> 00:16:45,740
+optimizing for size we're optimizing for
+
+353
+00:16:45,740 --> 00:16:48,410
+the right kind of source code and we're
+
+354
+00:16:48,410 --> 00:16:51,500
+optimizing for file paths that are
+
+355
+00:16:51,500 --> 00:16:53,930
+understandable but don't leak you know
+
+356
+00:16:53,930 --> 00:16:55,910
+information to the people using your
+
+357
+00:16:55,910 --> 00:16:59,840
+website but it also means getting rid of
+
+358
+00:16:59,840 --> 00:17:01,670
+things that used to really cause us
+
+359
+00:17:01,670 --> 00:17:03,260
+problems like the Commons chunk plugin
+
+360
+00:17:03,260 --> 00:17:06,380
+and web pack for it's gone we've
+
+361
+00:17:06,380 --> 00:17:09,260
+replaced it with an API that does much
+
+362
+00:17:09,260 --> 00:17:12,560
+of this out of the box by default but on
+
+363
+00:17:12,560 --> 00:17:14,690
+top of that we have properties that give
+
+364
+00:17:14,690 --> 00:17:17,800
+you more control than Commons chunk did
+
+365
+00:17:17,800 --> 00:17:22,190
+and then finally you know build speed
+
+366
+00:17:22,190 --> 00:17:23,750
+was something that we took so seriously
+
+367
+00:17:23,750 --> 00:17:25,640
+that we wanted to be able to profile and
+
+368
+00:17:25,640 --> 00:17:29,390
+analyze really deeply any long-running
+
+369
+00:17:29,390 --> 00:17:34,300
+build and so we worked with Sam saucony
+
+370
+00:17:34,300 --> 00:17:37,840
+from Google who helped us implement a
+
+371
+00:17:37,840 --> 00:17:40,550
+special profiler that allows you to see
+
+372
+00:17:40,550 --> 00:17:41,870
+every plug-in and how long
+
+373
+00:17:41,870 --> 00:17:45,830
+takes right inside of the dev tools
+
+374
+00:17:45,830 --> 00:17:52,730
+timeline viewer online yeah so now you
+
+375
+00:17:52,730 --> 00:17:55,610
+can literally see and I mean this this
+
+376
+00:17:55,610 --> 00:17:57,580
+information may be more valuable to us
+
+377
+00:17:57,580 --> 00:18:00,410
+but it allows us to just say hey pop in
+
+378
+00:18:00,410 --> 00:18:03,410
+a plugin and send us the events JSON
+
+379
+00:18:03,410 --> 00:18:06,770
+file and it it's really useful for those
+
+380
+00:18:06,770 --> 00:18:09,230
+who are creating plugins themselves and
+
+381
+00:18:09,230 --> 00:18:14,120
+trying to analyze interactions and that
+
+382
+00:18:14,120 --> 00:18:15,650
+kind of leaves us to you know the
+
+383
+00:18:15,650 --> 00:18:18,920
+modernization in the Ryoka tech chure so
+
+384
+00:18:18,920 --> 00:18:20,809
+you know one of the most important
+
+385
+00:18:20,809 --> 00:18:22,790
+things that kind of held us back in web
+
+386
+00:18:22,790 --> 00:18:24,740
+pack three is that we treat everything
+
+387
+00:18:24,740 --> 00:18:29,540
+as a JavaScript module but we also were
+
+388
+00:18:29,540 --> 00:18:31,190
+championed with being able to implement
+
+389
+00:18:31,190 --> 00:18:33,830
+web assembly as a first-class citizen
+
+390
+00:18:33,830 --> 00:18:36,380
+and so this gave us the opportunity to
+
+391
+00:18:36,380 --> 00:18:39,290
+remove all of these everything is j/s
+
+392
+00:18:39,290 --> 00:18:42,920
+hacks or it allowed us to actually
+
+393
+00:18:42,920 --> 00:18:47,000
+implement wasm as a module type which
+
+394
+00:18:47,000 --> 00:18:49,220
+allowed us to also implement JSON as a
+
+395
+00:18:49,220 --> 00:18:51,290
+module type and it gave us JSON
+
+396
+00:18:51,290 --> 00:18:53,750
+tree-shaking and then what we're working
+
+397
+00:18:53,750 --> 00:18:56,330
+on right now is HTML and CSS module
+
+398
+00:18:56,330 --> 00:19:00,230
+types so we had to take and remove all
+
+399
+00:19:00,230 --> 00:19:02,360
+from you know our module factories is
+
+400
+00:19:02,360 --> 00:19:04,309
+what we call them all of the code
+
+401
+00:19:04,309 --> 00:19:06,140
+generation system that was specific to
+
+402
+00:19:06,140 --> 00:19:08,390
+JavaScript and we've you know isolated
+
+403
+00:19:08,390 --> 00:19:13,190
+it and so now with our web assembly is a
+
+404
+00:19:13,190 --> 00:19:15,679
+first-class module type you have code
+
+405
+00:19:15,679 --> 00:19:18,980
+like this this is um a newer library
+
+406
+00:19:18,980 --> 00:19:21,770
+called Walt who has heard of Walt it's a
+
+407
+00:19:21,770 --> 00:19:23,809
+subset of I guess you could say
+
+408
+00:19:23,809 --> 00:19:27,500
+typescript and it allows you to write a
+
+409
+00:19:27,500 --> 00:19:30,800
+very JavaScript like syntax as you see
+
+410
+00:19:30,800 --> 00:19:33,650
+up at the top and then all you have to
+
+411
+00:19:33,650 --> 00:19:35,360
+do is import it just like it's a
+
+412
+00:19:35,360 --> 00:19:37,790
+JavaScript module into your code and you
+
+413
+00:19:37,790 --> 00:19:40,070
+have used web assembly without doing
+
+414
+00:19:40,070 --> 00:19:47,240
+anything else at your fingertips this is
+
+415
+00:19:47,240 --> 00:19:48,440
+probably one of the most exciting things
+
+416
+00:19:48,440 --> 00:19:50,840
+to me is that you want to use a frame or
+
+417
+00:19:50,840 --> 00:19:53,270
+you want to use these things now what
+
+418
+00:19:53,270 --> 00:19:55,690
+these these library authors can do
+
+419
+00:19:55,690 --> 00:19:57,909
+is instantly compiled a web assembly
+
+420
+00:19:57,909 --> 00:20:00,789
+module and if it's available in the
+
+421
+00:20:00,789 --> 00:20:02,559
+package web pack will consume that
+
+422
+00:20:02,559 --> 00:20:04,929
+instead of the JavaScript and so you get
+
+423
+00:20:04,929 --> 00:20:07,240
+the 10x speed up instantly at your
+
+424
+00:20:07,240 --> 00:20:10,870
+fingertips and so the other pieces were
+
+425
+00:20:10,870 --> 00:20:13,779
+dropping node four so node four is no
+
+426
+00:20:13,779 --> 00:20:15,669
+longer supported for web pack and node
+
+427
+00:20:15,669 --> 00:20:18,460
+six is our minimum version but this
+
+428
+00:20:18,460 --> 00:20:20,860
+allowed us to convert the rest of the
+
+429
+00:20:20,860 --> 00:20:24,039
+codebase to using es6 features it a lot
+
+430
+00:20:24,039 --> 00:20:27,250
+of code to be more readable easier to
+
+431
+00:20:27,250 --> 00:20:29,320
+change using syntax that people
+
+432
+00:20:29,320 --> 00:20:30,970
+understand and contributors want to
+
+433
+00:20:30,970 --> 00:20:34,299
+actually leverage and now you know by
+
+434
+00:20:34,299 --> 00:20:37,179
+using these this new code v8 actually
+
+435
+00:20:37,179 --> 00:20:38,740
+has a great test bench for optimizing
+
+436
+00:20:38,740 --> 00:20:40,870
+paths that aren't as hot yet that should
+
+437
+00:20:40,870 --> 00:20:46,179
+be and I mean like as it was said
+
+438
+00:20:46,179 --> 00:20:48,250
+there's we're just scratching the
+
+439
+00:20:48,250 --> 00:20:49,659
+surface on all the different changes
+
+440
+00:20:49,659 --> 00:20:54,429
+that we've made and so you know smaller
+
+441
+00:20:54,429 --> 00:20:58,360
+builds and faster builds modernization
+
+442
+00:20:58,360 --> 00:21:00,399
+developer experience that is where
+
+443
+00:21:00,399 --> 00:21:04,299
+everything was routed in and so you
+
+444
+00:21:04,299 --> 00:21:05,919
+might be like alright Sean this is great
+
+445
+00:21:05,919 --> 00:21:10,299
+like how do i migrate so right now we
+
+446
+00:21:10,299 --> 00:21:11,950
+have the pr pending for our migration
+
+447
+00:21:11,950 --> 00:21:13,840
+guide and i'll talk about a little bit
+
+448
+00:21:13,840 --> 00:21:17,230
+more and then what about four frameworks
+
+449
+00:21:17,230 --> 00:21:19,679
+and plugins we've been working you know
+
+450
+00:21:19,679 --> 00:21:23,230
+ever since we released our alpha behind
+
+451
+00:21:23,230 --> 00:21:26,200
+the scenes with create react app pre-act
+
+452
+00:21:26,200 --> 00:21:31,779
+CLI the angular CLI view CLI teams to
+
+453
+00:21:31,779 --> 00:21:34,690
+make sure that and we we put extra focus
+
+454
+00:21:34,690 --> 00:21:37,600
+on them to ensure that they had a steady
+
+455
+00:21:37,600 --> 00:21:39,159
+path and there weren't blockers for them
+
+456
+00:21:39,159 --> 00:21:43,029
+to test early but for right now you know
+
+457
+00:21:43,029 --> 00:21:45,220
+in until we get that that migration
+
+458
+00:21:45,220 --> 00:21:47,200
+guide merged i'd say jump on our medium
+
+459
+00:21:47,200 --> 00:21:49,570
+publication or submit an issue and ask
+
+460
+00:21:49,570 --> 00:21:53,379
+how you can help and like I said the
+
+461
+00:21:53,379 --> 00:21:54,220
+angular CLI
+
+462
+00:21:54,220 --> 00:21:55,990
+is actually going to be now supporting
+
+463
+00:21:55,990 --> 00:21:57,580
+it in their next major release which I
+
+464
+00:21:57,580 --> 00:22:02,169
+believe is like next week so look to
+
+465
+00:22:02,169 --> 00:22:03,580
+have that automatically out-of-the-box
+
+466
+00:22:03,580 --> 00:22:06,909
+for you and then you know a shameless
+
+467
+00:22:06,909 --> 00:22:09,610
+plug to me you can always jump on my
+
+468
+00:22:09,610 --> 00:22:11,740
+twitch livestream which I do two times a
+
+469
+00:22:11,740 --> 00:22:14,799
+week and you can ask me questions any
+
+470
+00:22:14,799 --> 00:22:16,480
+time we work with people just to help
+
+471
+00:22:16,480 --> 00:22:18,910
+them migrate we also get people to
+
+472
+00:22:18,910 --> 00:22:21,100
+contribute to the codebase and you know
+
+473
+00:22:21,100 --> 00:22:25,450
+submit their first PR ever and even more
+
+474
+00:22:25,450 --> 00:22:27,010
+so we wanted to make sure that this
+
+475
+00:22:27,010 --> 00:22:30,100
+worked at scale and so Ken Shaw who's
+
+476
+00:22:30,100 --> 00:22:33,670
+surprised appearing in these slides you
+
+477
+00:22:33,670 --> 00:22:36,010
+know he is one of the lead engineers for
+
+478
+00:22:36,010 --> 00:22:39,160
+the Outlook Web App team well as of I
+
+479
+00:22:39,160 --> 00:22:42,150
+think a few days ago or was it yesterday
+
+480
+00:22:42,150 --> 00:22:44,799
+the Outlook Web App is now using webpack
+
+481
+00:22:44,799 --> 00:22:48,490
+for not only did the size of their
+
+482
+00:22:48,490 --> 00:22:50,290
+builds instantly shrink without making
+
+483
+00:22:50,290 --> 00:22:52,600
+any changes but their build times their
+
+484
+00:22:52,600 --> 00:22:55,090
+inner dev loop jumped from a hundred
+
+485
+00:22:55,090 --> 00:22:57,640
+seconds to 20 seconds and on a hundred
+
+486
+00:22:57,640 --> 00:23:00,010
+fifty person team we're talking millions
+
+487
+00:23:00,010 --> 00:23:02,740
+of dollars of Deb's time saved and so
+
+488
+00:23:02,740 --> 00:23:04,390
+we're hoping to accomplish that not just
+
+489
+00:23:04,390 --> 00:23:06,640
+for you know Microsoft and the outlook
+
+490
+00:23:06,640 --> 00:23:09,549
+team but by vetting it in dogfooding it
+
+491
+00:23:09,549 --> 00:23:11,020
+in that way we can ensure that it's a
+
+492
+00:23:11,020 --> 00:23:14,890
+great experience for you so what's next
+
+493
+00:23:14,890 --> 00:23:20,410
+like what's beyond web pack four so the
+
+494
+00:23:20,410 --> 00:23:21,880
+things that we're gonna focus on are
+
+495
+00:23:21,880 --> 00:23:25,330
+finishing the CSS is a module type HTML
+
+496
+00:23:25,330 --> 00:23:28,360
+is a module type URL and file as a
+
+497
+00:23:28,360 --> 00:23:31,870
+module type but as you can see what this
+
+498
+00:23:31,870 --> 00:23:33,640
+means is you don't have to use extract
+
+499
+00:23:33,640 --> 00:23:35,740
+text plug-in anymore you might not even
+
+500
+00:23:35,740 --> 00:23:38,290
+need he I know you might not even need
+
+501
+00:23:38,290 --> 00:23:43,059
+to have a CSS URL file loader we might
+
+502
+00:23:43,059 --> 00:23:44,380
+just have this supported out-of-the-box
+
+503
+00:23:44,380 --> 00:23:48,790
+as a module you'll be able to say hello
+
+504
+00:23:48,790 --> 00:23:51,340
+to CSS code splitting something that
+
+505
+00:23:51,340 --> 00:23:53,440
+doesn't exist today and actually you
+
+506
+00:23:53,440 --> 00:23:55,950
+know cause this kind of a pain point for
+
+507
+00:23:55,950 --> 00:23:59,919
+you know browser and load times but you
+
+508
+00:23:59,919 --> 00:24:03,210
+could also have HTML as an entry point
+
+509
+00:24:03,210 --> 00:24:07,210
+and then the other big feature that I'm
+
+510
+00:24:07,210 --> 00:24:09,580
+really excited about which is called web
+
+511
+00:24:09,580 --> 00:24:13,120
+packing lazon part two so you know when
+
+512
+00:24:13,120 --> 00:24:14,860
+we introduce what web assembly is a
+
+513
+00:24:14,860 --> 00:24:16,960
+first-class citizen we kind of can you
+
+514
+00:24:16,960 --> 00:24:18,760
+know the module type is called web
+
+515
+00:24:18,760 --> 00:24:22,660
+assembly / experimental and so the first
+
+516
+00:24:22,660 --> 00:24:23,590
+thing is to stay
+
+517
+00:24:23,590 --> 00:24:26,289
+lies it but then we're going to go ahead
+
+518
+00:24:26,289 --> 00:24:29,159
+and add a bunch of the features that we
+
+519
+00:24:29,159 --> 00:24:32,140
+that we already have on JavaScript and
+
+520
+00:24:32,140 --> 00:24:34,179
+apply it to web assembly and so this
+
+521
+00:24:34,179 --> 00:24:36,539
+means tree-shaking you can do that
+
+522
+00:24:36,539 --> 00:24:40,150
+dead code elimination scope hosting wise
+
+523
+00:24:40,150 --> 00:24:44,679
+modules and so this is super exciting
+
+524
+00:24:44,679 --> 00:24:47,440
+because now web assembly goes from being
+
+525
+00:24:47,440 --> 00:24:48,820
+something that you can use once or twice
+
+526
+00:24:48,820 --> 00:24:51,549
+to using it just like any other
+
+527
+00:24:51,549 --> 00:24:53,380
+JavaScript module and not taking a
+
+528
+00:24:53,380 --> 00:24:56,580
+perfect or a size hit or a runtime hit
+
+529
+00:24:56,580 --> 00:24:58,750
+and then maybe something that's really
+
+530
+00:24:58,750 --> 00:25:02,380
+special for me is it's presets so like I
+
+531
+00:25:02,380 --> 00:25:04,360
+said you know bring your own zero config
+
+532
+00:25:04,360 --> 00:25:06,909
+j/s these are just examples that I
+
+533
+00:25:06,909 --> 00:25:09,539
+played around with in a prototype but
+
+534
+00:25:09,539 --> 00:25:12,279
+what if it would be just this easy to
+
+535
+00:25:12,279 --> 00:25:15,600
+say at web pack can use Babel if exists
+
+536
+00:25:15,600 --> 00:25:18,279
+you can install that package and it just
+
+537
+00:25:18,279 --> 00:25:20,350
+reads your babel RC and throws in babel
+
+538
+00:25:20,350 --> 00:25:24,820
+loader what if as a package author you
+
+539
+00:25:24,820 --> 00:25:26,710
+have these composable parts that you can
+
+540
+00:25:26,710 --> 00:25:29,409
+share and leverage this looks very
+
+541
+00:25:29,409 --> 00:25:31,450
+similar to babel if you understand their
+
+542
+00:25:31,450 --> 00:25:33,880
+package structure and we're you know at
+
+543
+00:25:33,880 --> 00:25:35,350
+least i took the inspiration in this
+
+544
+00:25:35,350 --> 00:25:38,500
+prototype to kind of leverage it but can
+
+545
+00:25:38,500 --> 00:25:40,480
+use typescript really could just be can
+
+546
+00:25:40,480 --> 00:25:41,860
+it resolve type scripting can it load it
+
+547
+00:25:41,860 --> 00:25:45,090
+using a loader but the point is that
+
+548
+00:25:45,090 --> 00:25:48,669
+this is how you can extend 0 config so
+
+549
+00:25:48,669 --> 00:25:49,960
+with a couple packages that you would
+
+550
+00:25:49,960 --> 00:25:51,880
+add you still don't need a web pack
+
+551
+00:25:51,880 --> 00:26:01,029
+config yep thank you and so what's
+
+552
+00:26:01,029 --> 00:26:04,210
+beyond what's beyond for point X so
+
+553
+00:26:04,210 --> 00:26:05,980
+those are they're kind of like the
+
+554
+00:26:05,980 --> 00:26:08,110
+things that we can do right now without
+
+555
+00:26:08,110 --> 00:26:09,520
+causing a breaking change but what
+
+556
+00:26:09,520 --> 00:26:12,549
+what's beyond that so one of the most
+
+557
+00:26:12,549 --> 00:26:14,770
+important things that is lacking for web
+
+558
+00:26:14,770 --> 00:26:18,039
+pack is that we don't have a fully
+
+559
+00:26:18,039 --> 00:26:22,059
+persistent cache and so that's that's
+
+560
+00:26:22,059 --> 00:26:23,049
+the first one that we're gonna be
+
+561
+00:26:23,049 --> 00:26:24,880
+working on and so we actually kind of
+
+562
+00:26:24,880 --> 00:26:27,039
+worked really closely with the author of
+
+563
+00:26:27,039 --> 00:26:28,570
+hard source web pack plug-in new who has
+
+564
+00:26:28,570 --> 00:26:30,220
+probably the most experience with our
+
+565
+00:26:30,220 --> 00:26:33,010
+code base and you know disk caching and
+
+566
+00:26:33,010 --> 00:26:35,380
+so he wrote up a specification and you
+
+567
+00:26:35,380 --> 00:26:36,970
+can take a look at it on github
+
+568
+00:26:36,970 --> 00:26:38,470
+think it's under the the webpack five
+
+569
+00:26:38,470 --> 00:26:41,890
+tag but also things like multi-threading
+
+570
+00:26:41,890 --> 00:26:44,380
+our builds actually when we saw the
+
+571
+00:26:44,380 --> 00:26:46,030
+presentation or when I saw the
+
+572
+00:26:46,030 --> 00:26:48,220
+presentation yesterday about having
+
+573
+00:26:48,220 --> 00:26:49,720
+workers be native that was really
+
+574
+00:26:49,720 --> 00:26:51,970
+exciting especially to us who wants to
+
+575
+00:26:51,970 --> 00:26:53,350
+be able to have something right out of
+
+576
+00:26:53,350 --> 00:26:56,890
+the box from node but also have all of
+
+577
+00:26:56,890 --> 00:26:58,600
+our experimental module types become
+
+578
+00:26:58,600 --> 00:27:03,250
+stable and then what if we could bring
+
+579
+00:27:03,250 --> 00:27:05,320
+your own module type what if you could
+
+580
+00:27:05,320 --> 00:27:07,179
+write a module type that makes you not
+
+581
+00:27:07,179 --> 00:27:09,130
+even need a type script loader what if
+
+582
+00:27:09,130 --> 00:27:10,480
+you could take those types and treat it
+
+583
+00:27:10,480 --> 00:27:14,049
+as metadata and allow it to do static
+
+584
+00:27:14,049 --> 00:27:16,630
+you know program flow analysis and make
+
+585
+00:27:16,630 --> 00:27:18,820
+your code even smaller I see a future
+
+586
+00:27:18,820 --> 00:27:21,130
+where it's you want to use typescript
+
+587
+00:27:21,130 --> 00:27:23,770
+with web pack because it creates smaller
+
+588
+00:27:23,770 --> 00:27:27,370
+bundles and so I really have a you know
+
+589
+00:27:27,370 --> 00:27:29,350
+see a promise for bring your own module
+
+590
+00:27:29,350 --> 00:27:33,730
+type I mean I mean to be honest these
+
+591
+00:27:33,730 --> 00:27:35,320
+things are just a reflection of what you
+
+592
+00:27:35,320 --> 00:27:39,700
+asked for and so did you know that every
+
+593
+00:27:39,700 --> 00:27:41,049
+single one of you if you have a github
+
+594
+00:27:41,049 --> 00:27:43,179
+account can go to web packages or
+
+595
+00:27:43,179 --> 00:27:46,270
+forward slash vote and everyday even not
+
+596
+00:27:46,270 --> 00:27:48,580
+as a contributor or sponsor you get one
+
+597
+00:27:48,580 --> 00:27:51,700
+piece of influence every day that you
+
+598
+00:27:51,700 --> 00:27:54,789
+can vote on a specific feature so I mean
+
+599
+00:27:54,789 --> 00:27:57,490
+literally we put the power in you all
+
+600
+00:27:57,490 --> 00:28:00,159
+because that's who we represent you saw
+
+601
+00:28:00,159 --> 00:28:01,659
+our sponsors and backers we're a
+
+602
+00:28:01,659 --> 00:28:03,429
+grassroots project that represents
+
+603
+00:28:03,429 --> 00:28:05,710
+exactly what it means to have web
+
+604
+00:28:05,710 --> 00:28:07,630
+performance and developer experience
+
+605
+00:28:07,630 --> 00:28:12,010
+without making a sacrifice to each and
+
+606
+00:28:12,010 --> 00:28:15,100
+you know finally you know we shipped web
+
+607
+00:28:15,100 --> 00:28:17,280
+pack for what do we take away from it
+
+608
+00:28:17,280 --> 00:28:19,419
+one of the things that we announced when
+
+609
+00:28:19,419 --> 00:28:21,309
+we released the release candidate was
+
+610
+00:28:21,309 --> 00:28:25,090
+that you know we we said here's 30 days
+
+611
+00:28:25,090 --> 00:28:28,150
+log plugin and loader authors you get 30
+
+612
+00:28:28,150 --> 00:28:30,039
+days to upgrade we're not going to break
+
+613
+00:28:30,039 --> 00:28:33,039
+any changes between our RCE and final
+
+614
+00:28:33,039 --> 00:28:36,940
+and that was great for our team who owns
+
+615
+00:28:36,940 --> 00:28:38,520
+a lot of the core plugins and loaders
+
+616
+00:28:38,520 --> 00:28:41,770
+but it was a lot harder for people who
+
+617
+00:28:41,770 --> 00:28:45,340
+you know third-party plugins and so I
+
+618
+00:28:45,340 --> 00:28:47,049
+think what we're gonna do is focus more
+
+619
+00:28:47,049 --> 00:28:50,049
+on providing a migration guide for
+
+620
+00:28:50,049 --> 00:28:50,559
+loaders and
+
+621
+00:28:50,559 --> 00:28:53,470
+plugins and even just general updating
+
+622
+00:28:53,470 --> 00:28:59,080
+versus having a time window and I mean
+
+623
+00:28:59,080 --> 00:29:01,240
+overall like you know like I just said I
+
+624
+00:29:01,240 --> 00:29:03,789
+rambled about it a little early but we
+
+625
+00:29:03,789 --> 00:29:07,120
+are like what we do is exactly what you
+
+626
+00:29:07,120 --> 00:29:11,470
+asked us to and so we see this year of
+
+627
+00:29:11,470 --> 00:29:13,749
+JavaScript as being you know no more
+
+628
+00:29:13,749 --> 00:29:16,720
+talk of this fatigue but instead it's
+
+629
+00:29:16,720 --> 00:29:18,820
+having this mindset of embracing the
+
+630
+00:29:18,820 --> 00:29:20,529
+changes of our technology that are so
+
+631
+00:29:20,529 --> 00:29:22,029
+beautiful in JavaScript
+
+632
+00:29:22,029 --> 00:29:23,950
+some joke that we see a new framework
+
+633
+00:29:23,950 --> 00:29:25,419
+every two weeks but that's the most
+
+634
+00:29:25,419 --> 00:29:28,149
+beautiful part of our language in what
+
+635
+00:29:28,149 --> 00:29:30,669
+other language do you get to use syntax
+
+636
+00:29:30,669 --> 00:29:34,960
+that doesn't exist yet without a VM for
+
+637
+00:29:34,960 --> 00:29:38,860
+you Java people does that doesn't count
+
+638
+00:29:38,860 --> 00:29:41,649
+there is no other language it's it's a
+
+639
+00:29:41,649 --> 00:29:44,769
+JavaScript Renaissance and so we embrace
+
+640
+00:29:44,769 --> 00:29:46,809
+this we call it even a growth mindset at
+
+641
+00:29:46,809 --> 00:29:48,909
+Microsoft and so we ask you to do the
+
+642
+00:29:48,909 --> 00:29:52,840
+same and and help web pack just not be
+
+643
+00:29:52,840 --> 00:29:54,669
+yet another build tool so thank you guys
+
+644
+00:29:54,669 --> 00:29:55,210
+very much
+
+645
+00:29:55,210 --> 00:30:01,430
+oh yeah and try web back today
+

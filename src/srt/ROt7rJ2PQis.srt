@@ -1,0 +1,4549 @@
+1
+00:00:31,989 --> 00:00:36,199
+
+right thank you good afternoon as Chris
+
+2
+00:00:36,199 --> 00:00:38,180
+said my name is Daniel Austin I'm senior
+
+3
+00:00:38,180 --> 00:00:39,530
+principal architect for Yahoo's
+
+4
+00:00:39,530 --> 00:00:43,430
+exceptional performance group the I want
+
+5
+00:00:43,430 --> 00:00:45,019
+to warn you i'm not going to stand up
+
+6
+00:00:45,019 --> 00:00:47,649
+here and edit any javascript in VI and
+
+7
+00:00:47,649 --> 00:00:50,000
+and there's no hovers or anything like
+
+8
+00:00:50,000 --> 00:00:52,190
+that what i want to do is talk to you
+
+9
+00:00:52,190 --> 00:00:55,070
+about what we're doing to use javascript
+
+10
+00:00:55,070 --> 00:00:58,579
+and json to make the web faster and if
+
+11
+00:00:58,579 --> 00:01:00,229
+there's any theme to this talk it's
+
+12
+00:01:00,229 --> 00:01:02,329
+making the web faster by making it
+
+13
+00:01:02,329 --> 00:01:05,530
+smarter so that's where we're headed
+
+14
+00:01:05,530 --> 00:01:08,150
+just but for our agenda today we're
+
+15
+00:01:08,150 --> 00:01:09,770
+going to talk about a new protocol
+
+16
+00:01:09,770 --> 00:01:12,710
+called scratch it's not related to the
+
+17
+00:01:12,710 --> 00:01:15,320
+MIT product that we saw earlier at all
+
+18
+00:01:15,320 --> 00:01:17,450
+that was sort of a anti serendipitous
+
+19
+00:01:17,450 --> 00:01:19,820
+moment for me even though I did go to
+
+20
+00:01:19,820 --> 00:01:23,210
+the Institute protocol design is our
+
+21
+00:01:23,210 --> 00:01:25,220
+next agenda item will talk about results
+
+22
+00:01:25,220 --> 00:01:27,799
+in current state and where do we go from
+
+23
+00:01:27,799 --> 00:01:30,950
+here fairly standard agenda a few words
+
+24
+00:01:30,950 --> 00:01:33,290
+about my group at Yahoo and what we do a
+
+25
+00:01:33,290 --> 00:01:35,299
+lot of what we do is building tools I
+
+26
+00:01:35,299 --> 00:01:37,540
+think everyone here knows about why slow
+
+27
+00:01:37,540 --> 00:01:41,180
+anybody not know about why slow I didn't
+
+28
+00:01:41,180 --> 00:01:42,920
+think so okay everybody knows why slows
+
+29
+00:01:42,920 --> 00:01:46,940
+written in JavaScript lot of what we do
+
+30
+00:01:46,940 --> 00:01:49,100
+is optimizing these are experience every
+
+31
+00:01:49,100 --> 00:01:51,140
+time you go to yahoo page we're out
+
+32
+00:01:51,140 --> 00:01:53,360
+there trying to make it faster every day
+
+33
+00:01:53,360 --> 00:01:56,780
+and to touch on today's topic we do a
+
+34
+00:01:56,780 --> 00:01:58,610
+lot of research forward thinking
+
+35
+00:01:58,610 --> 00:02:01,130
+advanced technology what are we going to
+
+36
+00:02:01,130 --> 00:02:02,659
+do to make the web faster and smarter
+
+37
+00:02:02,659 --> 00:02:05,479
+today and that's where we're headed
+
+38
+00:02:05,479 --> 00:02:09,709
+today so our goals I want to explain the
+
+39
+00:02:09,709 --> 00:02:13,010
+design for the scratch protocol why we
+
+40
+00:02:13,010 --> 00:02:15,379
+went where we win why we are excited
+
+41
+00:02:15,379 --> 00:02:18,560
+about JSON why we think that it's
+
+42
+00:02:18,560 --> 00:02:19,700
+something that we wanted to come and
+
+43
+00:02:19,700 --> 00:02:21,709
+talk to you about because one of our
+
+44
+00:02:21,709 --> 00:02:24,230
+goals is to leverage the collective
+
+45
+00:02:24,230 --> 00:02:27,319
+intelligence of this group on making
+
+46
+00:02:27,319 --> 00:02:29,780
+scratch better we want to describe our
+
+47
+00:02:29,780 --> 00:02:32,629
+experiments request some feedback ideas
+
+48
+00:02:32,629 --> 00:02:34,939
+improvements criticism constructive
+
+49
+00:02:34,939 --> 00:02:39,980
+criticism very welcome so the first
+
+50
+00:02:39,980 --> 00:02:41,329
+question I always get when I give this
+
+51
+00:02:41,329 --> 00:02:43,459
+talk right after why am I going to burn
+
+52
+00:02:43,459 --> 00:02:45,450
+the internet down and start over
+
+53
+00:02:45,450 --> 00:02:49,410
+is why did I call it scratch and we
+
+54
+00:02:49,410 --> 00:02:52,190
+started out to design this protocol
+
+55
+00:02:52,190 --> 00:02:54,780
+performance first in mind and it went
+
+56
+00:02:54,780 --> 00:02:56,810
+through several area several iterations
+
+57
+00:02:56,810 --> 00:02:58,530
+initially we ended up rewriting
+
+58
+00:02:58,530 --> 00:03:01,730
+something that looked a lot like TCP I
+
+59
+00:03:01,730 --> 00:03:03,720
+think everybody that goes through this
+
+60
+00:03:03,720 --> 00:03:06,180
+exercise ends up doing something very
+
+61
+00:03:06,180 --> 00:03:08,190
+similar we had congestion control we
+
+62
+00:03:08,190 --> 00:03:09,989
+didn't quite it reinvents slow start I
+
+63
+00:03:09,989 --> 00:03:11,760
+won't plead guilty to something that bad
+
+64
+00:03:11,760 --> 00:03:13,860
+but we went through this process of
+
+65
+00:03:13,860 --> 00:03:16,319
+redesigning TCP and that really was not
+
+66
+00:03:16,319 --> 00:03:19,110
+the right solution and and so he's
+
+67
+00:03:19,110 --> 00:03:20,910
+toured up we started all over again and
+
+68
+00:03:20,910 --> 00:03:22,799
+and we didn't like that version either
+
+69
+00:03:22,799 --> 00:03:24,630
+we had a bunch of homegrown UDP
+
+70
+00:03:24,630 --> 00:03:26,910
+libraries that didn't really work for us
+
+71
+00:03:26,910 --> 00:03:28,590
+so we burned it down again and started
+
+72
+00:03:28,590 --> 00:03:30,989
+over and and we tore it up and we
+
+73
+00:03:30,989 --> 00:03:32,970
+started all over again and we did that
+
+74
+00:03:32,970 --> 00:03:34,260
+several times that's why we call it
+
+75
+00:03:34,260 --> 00:03:37,019
+scratch because we started from scratch
+
+76
+00:03:37,019 --> 00:03:40,019
+several different times so just the
+
+77
+00:03:40,019 --> 00:03:41,370
+elevator pitch you're in an elevator
+
+78
+00:03:41,370 --> 00:03:43,530
+with an executive you've got 30 seconds
+
+79
+00:03:43,530 --> 00:03:45,120
+to describe it I can't do it in 30
+
+80
+00:03:45,120 --> 00:03:48,030
+seconds I'm sorry but maybe 90 seconds
+
+81
+00:03:48,030 --> 00:03:51,090
+scratch is new dual band data protocol
+
+82
+00:03:51,090 --> 00:03:52,980
+for the web it's designed to work
+
+83
+00:03:52,980 --> 00:03:56,130
+together with HTTP over TCP when we all
+
+84
+00:03:56,130 --> 00:03:58,829
+know we'll call that the control channel
+
+85
+00:03:58,829 --> 00:04:01,530
+alpha channel not related to your 8-bit
+
+86
+00:04:01,530 --> 00:04:04,769
+intensity map we'll also talk about
+
+87
+00:04:04,769 --> 00:04:08,069
+scratch UDP which is the data channel
+
+88
+00:04:08,069 --> 00:04:09,630
+for our protocol will call that the
+
+89
+00:04:09,630 --> 00:04:12,139
+Delta Channel if you look at my
+
+90
+00:04:12,139 --> 00:04:14,389
+well-designed engineering diagram
+
+91
+00:04:14,389 --> 00:04:16,739
+produced over here you can kind of see
+
+92
+00:04:16,739 --> 00:04:19,970
+that we have a erstwhile user going to a
+
+93
+00:04:19,970 --> 00:04:22,889
+set of machines somewhere presumably
+
+94
+00:04:22,889 --> 00:04:25,560
+data center obtaining some control
+
+95
+00:04:25,560 --> 00:04:28,200
+information and then going out making
+
+96
+00:04:28,200 --> 00:04:29,520
+requests against what are apparently
+
+97
+00:04:29,520 --> 00:04:32,010
+some data nodes using the scratch UDP
+
+98
+00:04:32,010 --> 00:04:35,280
+data protocol in order to access that
+
+99
+00:04:35,280 --> 00:04:38,570
+data this is one of the primary
+
+100
+00:04:38,570 --> 00:04:42,740
+architectures and the intention for our
+
+101
+00:04:42,740 --> 00:04:45,110
+architecture it looks a little weird
+
+102
+00:04:45,110 --> 00:04:48,090
+until you think about oh wait those are
+
+103
+00:04:48,090 --> 00:04:54,870
+CDN notes so the way we load pages today
+
+104
+00:04:54,870 --> 00:04:57,990
+we go and we download the base HTML we
+
+105
+00:04:57,990 --> 00:04:59,249
+parse through that gap
+
+106
+00:04:59,249 --> 00:05:00,719
+up all the links do some other things
+
+107
+00:05:00,719 --> 00:05:03,389
+then we go out to the CDN and we gather
+
+108
+00:05:03,389 --> 00:05:06,809
+multiple data objects obviously you're
+
+109
+00:05:06,809 --> 00:05:09,149
+small noncommercial website doesn't do
+
+110
+00:05:09,149 --> 00:05:10,529
+something like this but all of the major
+
+111
+00:05:10,529 --> 00:05:14,249
+sites do this scratch was designed to
+
+112
+00:05:14,249 --> 00:05:16,499
+make that scenario a lot easier this is
+
+113
+00:05:16,499 --> 00:05:18,659
+not the only scenario it's just one of
+
+114
+00:05:18,659 --> 00:05:20,459
+them all of our large commercial
+
+115
+00:05:20,459 --> 00:05:23,159
+providers really want to use cdns it
+
+116
+00:05:23,159 --> 00:05:25,199
+helps performance we're trying to make
+
+117
+00:05:25,199 --> 00:05:28,399
+that work in a completely different way
+
+118
+00:05:28,399 --> 00:05:31,199
+so this is basically the elevator pitch
+
+119
+00:05:31,199 --> 00:05:33,719
+for scratch there's absolutely no detail
+
+120
+00:05:33,719 --> 00:05:35,549
+here beyond the small engineering
+
+121
+00:05:35,549 --> 00:05:38,929
+diagram we're going to get into that so
+
+122
+00:05:38,929 --> 00:05:40,919
+motivation why do we want to do this
+
+123
+00:05:40,919 --> 00:05:43,049
+first thing as we look at it the web and
+
+124
+00:05:43,049 --> 00:05:44,399
+what we do on it today and we know that
+
+125
+00:05:44,399 --> 00:05:46,889
+TCP is not terribly efficient for what
+
+126
+00:05:46,889 --> 00:05:49,199
+we're trying to do small objects are not
+
+127
+00:05:49,199 --> 00:05:52,259
+terribly efficient via TCP you can kind
+
+128
+00:05:52,259 --> 00:05:54,119
+of see here we have some graphs showing
+
+129
+00:05:54,119 --> 00:05:57,289
+number of objects and their sizes Yahoo
+
+130
+00:05:57,289 --> 00:06:00,889
+Amazon you can see that these
+
+131
+00:06:00,889 --> 00:06:02,519
+distributions are heavily weighted
+
+132
+00:06:02,519 --> 00:06:04,679
+toward very small objects this is not a
+
+133
+00:06:04,679 --> 00:06:06,749
+mystery most things on the web are not
+
+134
+00:06:06,749 --> 00:06:09,539
+very large another issue we have is the
+
+135
+00:06:09,539 --> 00:06:11,939
+parallel ISM across the browsers is not
+
+136
+00:06:11,939 --> 00:06:13,229
+useful we all know that the browser
+
+137
+00:06:13,229 --> 00:06:15,779
+tries to gather all the data from the
+
+138
+00:06:15,779 --> 00:06:19,019
+CDN in some parallel way make it as fast
+
+139
+00:06:19,019 --> 00:06:20,549
+as possible if anybody's seen a
+
+140
+00:06:20,549 --> 00:06:22,889
+waterfall diagram we know how this works
+
+141
+00:06:22,889 --> 00:06:24,629
+but we know it isn't very uniform I
+
+142
+00:06:24,629 --> 00:06:27,779
+think ie9 opens what's the browser
+
+143
+00:06:27,779 --> 00:06:29,729
+connection constant friday night i think
+
+144
+00:06:29,729 --> 00:06:31,769
+it's six connections per unique hostname
+
+145
+00:06:31,769 --> 00:06:35,909
+and in firefox it's in firefox for its
+
+146
+00:06:35,909 --> 00:06:39,509
+15 individual connections on to a unique
+
+147
+00:06:39,509 --> 00:06:41,729
+hostname that's a little crazy and it
+
+148
+00:06:41,729 --> 00:06:44,219
+doesn't work Firefox is not twice as
+
+149
+00:06:44,219 --> 00:06:47,939
+fast as I eat one of the other problems
+
+150
+00:06:47,939 --> 00:06:50,429
+we have with TCP there's no context the
+
+151
+00:06:50,429 --> 00:06:51,989
+server doesn't remember you every time
+
+152
+00:06:51,989 --> 00:06:53,639
+you make a request you have to tell it
+
+153
+00:06:53,639 --> 00:06:56,879
+yes I take text HTML oh and I take gifts
+
+154
+00:06:56,879 --> 00:06:59,759
+to lot of redundancy in that information
+
+155
+00:06:59,759 --> 00:07:01,829
+will talk about state and why we need to
+
+156
+00:07:01,829 --> 00:07:03,599
+manage that and the fact that we do
+
+157
+00:07:03,599 --> 00:07:05,219
+manage state today even though we
+
+158
+00:07:05,219 --> 00:07:06,959
+pretend we don't or we often claim we
+
+159
+00:07:06,959 --> 00:07:11,279
+don't tcp treads two tries to trade
+
+160
+00:07:11,279 --> 00:07:13,090
+reliability for performance
+
+161
+00:07:13,090 --> 00:07:15,520
+in allotted cases that's a really good
+
+162
+00:07:15,520 --> 00:07:17,290
+trade-off it's not necessarily the
+
+163
+00:07:17,290 --> 00:07:18,940
+trade-off we want to make on the web if
+
+164
+00:07:18,940 --> 00:07:20,530
+we're going to make the web faster we've
+
+165
+00:07:20,530 --> 00:07:23,650
+got to make it smarter being forcing
+
+166
+00:07:23,650 --> 00:07:25,210
+everything to make a trade off between
+
+167
+00:07:25,210 --> 00:07:27,550
+reliability and performance in favor of
+
+168
+00:07:27,550 --> 00:07:30,100
+reliability is not a performance
+
+169
+00:07:30,100 --> 00:07:33,760
+optimization not designed for small
+
+170
+00:07:33,760 --> 00:07:35,860
+incremental changes bandwidth
+
+171
+00:07:35,860 --> 00:07:38,740
+efficiencies are typically very small so
+
+172
+00:07:38,740 --> 00:07:40,990
+typical beta for a website less than
+
+173
+00:07:40,990 --> 00:07:43,210
+twenty five percent I went measured the
+
+174
+00:07:43,210 --> 00:07:46,150
+yahoo homepage bandwidth efficiency for
+
+175
+00:07:46,150 --> 00:07:50,440
+the Yahoo home page eleven percent never
+
+176
+00:07:50,440 --> 00:07:52,090
+been able to get it past eleven percent
+
+177
+00:07:52,090 --> 00:07:54,040
+that's terrible we've got to be able to
+
+178
+00:07:54,040 --> 00:07:54,940
+do better than that one of the
+
+179
+00:07:54,940 --> 00:07:57,340
+motivations for scratch TCP does not
+
+180
+00:07:57,340 --> 00:07:58,960
+work for the way we want to use the web
+
+181
+00:07:58,960 --> 00:08:02,470
+today or in the future so some of our
+
+182
+00:08:02,470 --> 00:08:04,930
+goals around this and obviously work in
+
+183
+00:08:04,930 --> 00:08:07,389
+progress right we want to increase that
+
+184
+00:08:07,389 --> 00:08:09,190
+bandwidth efficiency could we get fifty
+
+185
+00:08:09,190 --> 00:08:11,169
+percent I bet I could I bet if I
+
+186
+00:08:11,169 --> 00:08:13,150
+eliminated the redundant headers I bet
+
+187
+00:08:13,150 --> 00:08:14,770
+if I manage the connection stayed a
+
+188
+00:08:14,770 --> 00:08:16,900
+little more intelligently I bet if I use
+
+189
+00:08:16,900 --> 00:08:18,940
+JavaScript to send objects down to the
+
+190
+00:08:18,940 --> 00:08:20,650
+browser without a lot of intervening
+
+191
+00:08:20,650 --> 00:08:23,440
+hassle hey maybe I could get fifty
+
+192
+00:08:23,440 --> 00:08:26,220
+percent improvement what do you think
+
+193
+00:08:26,220 --> 00:08:29,860
+once again the theme of the talks faster
+
+194
+00:08:29,860 --> 00:08:32,020
+equals smarter we need semantic
+
+195
+00:08:32,020 --> 00:08:34,810
+awareness we need manage contexts for
+
+196
+00:08:34,810 --> 00:08:37,479
+the web identity state first class
+
+197
+00:08:37,479 --> 00:08:40,750
+objects in the system we do this today
+
+198
+00:08:40,750 --> 00:08:42,640
+we manage state we have persistent
+
+199
+00:08:42,640 --> 00:08:45,970
+connections so that HTTP 1.1 thing we
+
+200
+00:08:45,970 --> 00:08:48,190
+manage state there's those cookies oh
+
+201
+00:08:48,190 --> 00:08:50,500
+don't get me started on cookies just do
+
+202
+00:08:50,500 --> 00:08:53,440
+not get me started first class objects
+
+203
+00:08:53,440 --> 00:08:56,050
+in the system for state identity for
+
+204
+00:08:56,050 --> 00:08:58,959
+encryption for several other aspects of
+
+205
+00:08:58,959 --> 00:09:01,540
+things that are bolted on after the fact
+
+206
+00:09:01,540 --> 00:09:04,180
+should be first class objects in the web
+
+207
+00:09:04,180 --> 00:09:06,190
+should not be treated as second-class
+
+208
+00:09:06,190 --> 00:09:09,459
+citizens scratch tries to remedy some of
+
+209
+00:09:09,459 --> 00:09:11,980
+those problems we wanted it to be robust
+
+210
+00:09:11,980 --> 00:09:15,220
+we don't need all of TCP and I don't
+
+211
+00:09:15,220 --> 00:09:18,970
+need 30 years of development on TCP we
+
+212
+00:09:18,970 --> 00:09:21,280
+want to target slow networks global
+
+213
+00:09:21,280 --> 00:09:23,170
+networks not everybody's network works
+
+214
+00:09:23,170 --> 00:09:25,510
+as well as Comcast want mobile and
+
+215
+00:09:25,510 --> 00:09:26,830
+tablet devices low
+
+216
+00:09:26,830 --> 00:09:28,210
+and with Internet of Things chatter
+
+217
+00:09:28,210 --> 00:09:29,470
+we'll talk a little bit about the
+
+218
+00:09:29,470 --> 00:09:31,060
+Internet of Things the role JavaScript
+
+219
+00:09:31,060 --> 00:09:33,490
+can play there those are really the
+
+220
+00:09:33,490 --> 00:09:36,400
+goals that we set for ourselves want to
+
+221
+00:09:36,400 --> 00:09:37,810
+talk a little bit about the design
+
+222
+00:09:37,810 --> 00:09:41,260
+decisions that we made so when we went
+
+223
+00:09:41,260 --> 00:09:44,740
+to look at all the work that's been done
+
+224
+00:09:44,740 --> 00:09:46,960
+in this space we found a lot of it we
+
+225
+00:09:46,960 --> 00:09:48,670
+are not the first people to think of
+
+226
+00:09:48,670 --> 00:09:51,670
+this idea all of these people are fellow
+
+227
+00:09:51,670 --> 00:09:53,380
+travelers in the goal of making the web
+
+228
+00:09:53,380 --> 00:09:54,940
+faster and smarter in different
+
+229
+00:09:54,940 --> 00:09:56,350
+directions some of them are protocols
+
+230
+00:09:56,350 --> 00:09:58,180
+are different layers of the stack others
+
+231
+00:09:58,180 --> 00:10:00,760
+are data exchange formats others have
+
+232
+00:10:00,760 --> 00:10:03,100
+various aspects PD is something from
+
+233
+00:10:03,100 --> 00:10:05,590
+google trying to multiplex HTML streams
+
+234
+00:10:05,590 --> 00:10:08,890
+rack Nets often used by mobile games
+
+235
+00:10:08,890 --> 00:10:13,540
+multiplayer games w3c just released exi
+
+236
+00:10:13,540 --> 00:10:16,270
+this is sort of a compact binary version
+
+237
+00:10:16,270 --> 00:10:19,240
+of the XML infoset sort of takes away a
+
+238
+00:10:19,240 --> 00:10:21,310
+lot of the ideas that we had for using
+
+239
+00:10:21,310 --> 00:10:23,560
+JSON to begin with they're too late to
+
+240
+00:10:23,560 --> 00:10:26,070
+the game for this but it's on here
+
+241
+00:10:26,070 --> 00:10:28,900
+another thing that we that did not make
+
+242
+00:10:28,900 --> 00:10:30,280
+this slide at something called tella
+
+243
+00:10:30,280 --> 00:10:31,930
+hash I don't know if anybody's heard of
+
+244
+00:10:31,930 --> 00:10:33,640
+this but I just found it last week it
+
+245
+00:10:33,640 --> 00:10:35,740
+didn't make my slide but I suggest that
+
+246
+00:10:35,740 --> 00:10:37,210
+you go and check it out because I just
+
+247
+00:10:37,210 --> 00:10:38,560
+think tella hash is doing something
+
+248
+00:10:38,560 --> 00:10:41,650
+extremely cool regardless of what you
+
+249
+00:10:41,650 --> 00:10:44,170
+think all of these folks are heading in
+
+250
+00:10:44,170 --> 00:10:48,040
+the same direction we tried to first Rob
+
+251
+00:10:48,040 --> 00:10:49,780
+these guys of every single good idea
+
+252
+00:10:49,780 --> 00:10:52,060
+they had to their names and and we say
+
+253
+00:10:52,060 --> 00:10:53,650
+thank you to everybody who worked on
+
+254
+00:10:53,650 --> 00:10:55,480
+those because we unashamedly stole your
+
+255
+00:10:55,480 --> 00:10:59,290
+ideas and and we also I don't want to to
+
+256
+00:10:59,290 --> 00:11:00,520
+give anybody the idea that the
+
+257
+00:11:00,520 --> 00:11:02,620
+relationship shown here are really
+
+258
+00:11:02,620 --> 00:11:04,240
+intended to illustrate the exact
+
+259
+00:11:04,240 --> 00:11:06,460
+relationships between scratch and all
+
+260
+00:11:06,460 --> 00:11:09,010
+these others I just want to give you an
+
+261
+00:11:09,010 --> 00:11:11,290
+idea the multitude of the different
+
+262
+00:11:11,290 --> 00:11:13,660
+groups working in this space and the
+
+263
+00:11:13,660 --> 00:11:16,150
+different approaches that they're taking
+
+264
+00:11:16,150 --> 00:11:19,300
+as far as i know we are the only group
+
+265
+00:11:19,300 --> 00:11:21,220
+that's taking the approach based on
+
+266
+00:11:21,220 --> 00:11:23,650
+semantic awareness all the other folks
+
+267
+00:11:23,650 --> 00:11:26,110
+are doing what we call faster trash
+
+268
+00:11:26,110 --> 00:11:28,420
+which just means we're trying to shove
+
+269
+00:11:28,420 --> 00:11:30,190
+the same headers the same web garbage
+
+270
+00:11:30,190 --> 00:11:32,710
+down on the user make it faster we call
+
+271
+00:11:32,710 --> 00:11:34,630
+this faster trash we don't think it's
+
+272
+00:11:34,630 --> 00:11:39,280
+satisfactory why UDP I had one person I
+
+273
+00:11:39,280 --> 00:11:40,390
+think said they didn't know what you
+
+274
+00:11:40,390 --> 00:11:40,660
+need
+
+275
+00:11:40,660 --> 00:11:43,600
+he is another protocol not similar to
+
+276
+00:11:43,600 --> 00:11:47,019
+TCP but has its own things about it that
+
+277
+00:11:47,019 --> 00:11:49,029
+make it worthwhile it's widely is for
+
+278
+00:11:49,029 --> 00:11:50,410
+all kinds of different things if you've
+
+279
+00:11:50,410 --> 00:11:52,000
+logged into your VPN lately you were
+
+280
+00:11:52,000 --> 00:11:55,180
+using UDP for that why did we choose it
+
+281
+00:11:55,180 --> 00:11:59,649
+need for speed for various reasons UDP
+
+282
+00:11:59,649 --> 00:12:01,540
+is just simply faster this is not
+
+283
+00:12:01,540 --> 00:12:05,199
+something that's unknown we need
+
+284
+00:12:05,199 --> 00:12:07,329
+flexible multi-point architectures the
+
+285
+00:12:07,329 --> 00:12:09,819
+little stick figure diagram I showed you
+
+286
+00:12:09,819 --> 00:12:10,990
+earlier with its three point
+
+287
+00:12:10,990 --> 00:12:12,670
+architectures very difficult in your
+
+288
+00:12:12,670 --> 00:12:15,579
+connection based TC tcp system doesn't
+
+289
+00:12:15,579 --> 00:12:16,899
+make a lot of sense because the
+
+290
+00:12:16,899 --> 00:12:18,699
+individual connections have no awareness
+
+291
+00:12:18,699 --> 00:12:21,550
+of each other small messages transient
+
+292
+00:12:21,550 --> 00:12:23,949
+data we didn't need consistent ordering
+
+293
+00:12:23,949 --> 00:12:26,740
+I mean seriously does it really matter
+
+294
+00:12:26,740 --> 00:12:28,269
+whether that beacon gets on your page
+
+295
+00:12:28,269 --> 00:12:29,980
+before they add wouldn't you rather have
+
+296
+00:12:29,980 --> 00:12:33,459
+the add first you don't care neither did
+
+297
+00:12:33,459 --> 00:12:36,790
+we we tried a different strategy instead
+
+298
+00:12:36,790 --> 00:12:39,040
+of trying to do a TCP does and make sure
+
+299
+00:12:39,040 --> 00:12:41,110
+that every packet arrives in time in
+
+300
+00:12:41,110 --> 00:12:43,509
+order we just said hey you didn't a kiss
+
+301
+00:12:43,509 --> 00:12:44,769
+fine we're just going to resend it's
+
+302
+00:12:44,769 --> 00:12:47,019
+cheap to resend resend don't transmit
+
+303
+00:12:47,019 --> 00:12:48,880
+there's already a significant amount of
+
+304
+00:12:48,880 --> 00:12:50,709
+prior art and we wanted it to be very
+
+305
+00:12:50,709 --> 00:12:52,750
+very simple which is not something you
+
+306
+00:12:52,750 --> 00:12:57,100
+can say about TCP so enough on that how
+
+307
+00:12:57,100 --> 00:12:59,199
+did we get there like I said originally
+
+308
+00:12:59,199 --> 00:13:01,089
+we started out we wrote our own UDP
+
+309
+00:13:01,089 --> 00:13:03,610
+libraries man this was really really a
+
+310
+00:13:03,610 --> 00:13:05,230
+bad idea because we learned a lot about
+
+311
+00:13:05,230 --> 00:13:06,670
+network programming but what we really
+
+312
+00:13:06,670 --> 00:13:08,199
+learned is that other people had been
+
+313
+00:13:08,199 --> 00:13:10,180
+there before us and they had already
+
+314
+00:13:10,180 --> 00:13:12,459
+done so much work and put in so much
+
+315
+00:13:12,459 --> 00:13:13,750
+effort that we were never going to catch
+
+316
+00:13:13,750 --> 00:13:15,399
+up no matter what we did and that we
+
+317
+00:13:15,399 --> 00:13:17,579
+were going to have to embrace and extend
+
+318
+00:13:17,579 --> 00:13:20,439
+use other people's stuff because on our
+
+319
+00:13:20,439 --> 00:13:22,180
+time schedules with our group we were
+
+320
+00:13:22,180 --> 00:13:23,500
+simply not going to reinvent everything
+
+321
+00:13:23,500 --> 00:13:25,809
+all by ourselves we ended up using
+
+322
+00:13:25,809 --> 00:13:27,730
+something called the UDT library
+
+323
+00:13:27,730 --> 00:13:29,550
+originally developed at urbana-champaign
+
+324
+00:13:29,550 --> 00:13:32,170
+won several sukham supercomputer
+
+325
+00:13:32,170 --> 00:13:34,269
+challenge awards for high performance
+
+326
+00:13:34,269 --> 00:13:38,949
+data transport it does a lot of cool
+
+327
+00:13:38,949 --> 00:13:41,470
+things connection semantics there's
+
+328
+00:13:41,470 --> 00:13:44,110
+hooks in there to rebuild TCP if you're
+
+329
+00:13:44,110 --> 00:13:45,850
+really dying to do that we avoided that
+
+330
+00:13:45,850 --> 00:13:49,300
+like the plague third generation code
+
+331
+00:13:49,300 --> 00:13:52,180
+works really well the API is similar to
+
+332
+00:13:52,180 --> 00:13:54,220
+the traditional bsd sockets any
+
+333
+00:13:54,220 --> 00:13:55,810
+and that sort of programming is not
+
+334
+00:13:55,810 --> 00:13:58,210
+going to feel terribly uncomfortable one
+
+335
+00:13:58,210 --> 00:13:59,830
+problem we had with it is that it's
+
+336
+00:13:59,830 --> 00:14:02,680
+almost too powerful too many features we
+
+337
+00:14:02,680 --> 00:14:04,000
+had to strip a lot of stuff out there
+
+338
+00:14:04,000 --> 00:14:05,860
+was data serialization already built
+
+339
+00:14:05,860 --> 00:14:07,660
+into it there was a number of things
+
+340
+00:14:07,660 --> 00:14:09,160
+that we did not need we just stripped
+
+341
+00:14:09,160 --> 00:14:11,800
+all that stuff out and in this pattern
+
+342
+00:14:11,800 --> 00:14:13,990
+of finding something that worked to do
+
+343
+00:14:13,990 --> 00:14:15,970
+what we wanted on the net stripping
+
+344
+00:14:15,970 --> 00:14:18,280
+everything out and then using the result
+
+345
+00:14:18,280 --> 00:14:21,250
+is pretty typical for scratch and and
+
+346
+00:14:21,250 --> 00:14:23,310
+you'll see that as we go through here
+
+347
+00:14:23,310 --> 00:14:26,890
+json Doug Crockford here I guess not so
+
+348
+00:14:26,890 --> 00:14:28,330
+i can probably get away with this slide
+
+349
+00:14:28,330 --> 00:14:30,550
+I was kind of hoping he was going to be
+
+350
+00:14:30,550 --> 00:14:32,580
+downstairs when I put the slide on
+
+351
+00:14:32,580 --> 00:14:35,260
+scratch uses JSON is its data layer
+
+352
+00:14:35,260 --> 00:14:40,540
+format why well Jeremy Johnson got up
+
+353
+00:14:40,540 --> 00:14:42,460
+here yesterday he said you know what the
+
+354
+00:14:42,460 --> 00:14:43,570
+reason we do this is because it's
+
+355
+00:14:43,570 --> 00:14:45,660
+JavaScript and Java Script is cool I
+
+356
+00:14:45,660 --> 00:14:47,770
+think that's pretty fair description
+
+357
+00:14:47,770 --> 00:14:50,010
+actually it's easy to encode and decode
+
+358
+00:14:50,010 --> 00:14:52,120
+available for all our platforms
+
+359
+00:14:52,120 --> 00:14:54,130
+gentleman before me Tom Fuchs was just
+
+360
+00:14:54,130 --> 00:14:56,680
+talking about iOS and how it deals with
+
+361
+00:14:56,680 --> 00:15:01,060
+the various JSON aspects very important
+
+362
+00:15:01,060 --> 00:15:04,000
+json is true to our ethical standard for
+
+363
+00:15:04,000 --> 00:15:05,110
+the web that everything should be
+
+364
+00:15:05,110 --> 00:15:06,760
+understandable by a human being and that
+
+365
+00:15:06,760 --> 00:15:09,670
+you don't require a machine to interpret
+
+366
+00:15:09,670 --> 00:15:11,470
+anything for you on the web this is a
+
+367
+00:15:11,470 --> 00:15:14,380
+serious ideal it's compact and
+
+368
+00:15:14,380 --> 00:15:17,110
+lightweight we love JSON how did we live
+
+369
+00:15:17,110 --> 00:15:18,550
+all those years without it I'm not
+
+370
+00:15:18,550 --> 00:15:20,350
+entirely sure but now that it's here
+
+371
+00:15:20,350 --> 00:15:22,420
+we're not going to would miss the chance
+
+372
+00:15:22,420 --> 00:15:24,820
+it just makes everything else a whole
+
+373
+00:15:24,820 --> 00:15:26,680
+lot easier I don't think this is an
+
+374
+00:15:26,680 --> 00:15:28,870
+audience that I need to belabor the fine
+
+375
+00:15:28,870 --> 00:15:31,180
+points of JSON about other audiences
+
+376
+00:15:31,180 --> 00:15:32,710
+they're like what's Jay saw and tell us
+
+377
+00:15:32,710 --> 00:15:35,230
+about it you guys are already sold I'm
+
+378
+00:15:35,230 --> 00:15:37,030
+standing up here preaching to the choir
+
+379
+00:15:37,030 --> 00:15:41,410
+and I'm actually enjoying it so we went
+
+380
+00:15:41,410 --> 00:15:43,510
+to do JSON and we went and did exactly
+
+381
+00:15:43,510 --> 00:15:45,820
+what we've done before we stole somebody
+
+382
+00:15:45,820 --> 00:15:47,230
+else's library stripped out the good
+
+383
+00:15:47,230 --> 00:15:49,600
+parts and left the rest in this case we
+
+384
+00:15:49,600 --> 00:15:52,240
+used an Apache project called Avro i'm
+
+385
+00:15:52,240 --> 00:15:54,040
+not sure if anybody's heard of it was
+
+386
+00:15:54,040 --> 00:15:56,680
+designed to do RPC data transport for
+
+387
+00:15:56,680 --> 00:15:58,630
+nodes on the grid Doug cutting if
+
+388
+00:15:58,630 --> 00:16:00,340
+anybody recognizes that name from the
+
+389
+00:16:00,340 --> 00:16:02,410
+hadoop world was one of the primary
+
+390
+00:16:02,410 --> 00:16:05,800
+committers for Avro that in itself
+
+391
+00:16:05,800 --> 00:16:07,600
+probably means it's pretty good code but
+
+392
+00:16:07,600 --> 00:16:07,810
+it
+
+393
+00:16:07,810 --> 00:16:09,600
+has some really interesting features
+
+394
+00:16:09,600 --> 00:16:12,190
+well managed current code base for an
+
+395
+00:16:12,190 --> 00:16:13,960
+Apache project I think everybody knows
+
+396
+00:16:13,960 --> 00:16:15,460
+that's pretty important a lot of
+
+397
+00:16:15,460 --> 00:16:19,540
+abandoned Apache projects out there avro
+
+398
+00:16:19,540 --> 00:16:21,820
+makes JSON a lot more robust by
+
+399
+00:16:21,820 --> 00:16:24,220
+extending the type system enforcing the
+
+400
+00:16:24,220 --> 00:16:26,560
+types with a well-defined grammar has
+
+401
+00:16:26,560 --> 00:16:28,779
+self contained schemas as metadata and
+
+402
+00:16:28,779 --> 00:16:30,010
+that's one of the cooler features I'm
+
+403
+00:16:30,010 --> 00:16:31,660
+going to save that feature to the end to
+
+404
+00:16:31,660 --> 00:16:32,980
+explain it in a little more detail
+
+405
+00:16:32,980 --> 00:16:34,870
+because we have something that almost
+
+406
+00:16:34,870 --> 00:16:37,390
+resembles an actual bit of code over
+
+407
+00:16:37,390 --> 00:16:40,210
+here oh my god another thing that Avro
+
+408
+00:16:40,210 --> 00:16:42,220
+has is it's got hooks in for encryption
+
+409
+00:16:42,220 --> 00:16:45,279
+sasal lexical sorting oh my god we can
+
+410
+00:16:45,279 --> 00:16:47,470
+sort things on the web and JSON this is
+
+411
+00:16:47,470 --> 00:16:49,900
+absolutely required there's nothing you
+
+412
+00:16:49,900 --> 00:16:52,330
+can do without sorting has to be there
+
+413
+00:16:52,330 --> 00:16:54,640
+one of the best features was really the
+
+414
+00:16:54,640 --> 00:16:57,450
+ability to do the lexical sorting
+
+415
+00:16:57,450 --> 00:17:00,460
+against the Avro framework well there's
+
+416
+00:17:00,460 --> 00:17:02,320
+not a whole lot of cons it does exactly
+
+417
+00:17:02,320 --> 00:17:04,780
+what it's intended to do you know it was
+
+418
+00:17:04,780 --> 00:17:07,420
+very RPC centric it's not bad but it's
+
+419
+00:17:07,420 --> 00:17:09,189
+not what we wanted we stripped a lot of
+
+420
+00:17:09,189 --> 00:17:10,990
+that stuff out we did not use it to
+
+421
+00:17:10,990 --> 00:17:13,600
+compile code we did not use IDL to
+
+422
+00:17:13,600 --> 00:17:15,459
+define our data types although we might
+
+423
+00:17:15,459 --> 00:17:18,490
+at some point what we really wanted was
+
+424
+00:17:18,490 --> 00:17:21,189
+very robust JSON that could be generated
+
+425
+00:17:21,189 --> 00:17:25,689
+at scale and and that was really the the
+
+426
+00:17:25,689 --> 00:17:27,520
+key feature and a ver a framework
+
+427
+00:17:27,520 --> 00:17:30,310
+provided that for us just to hit on the
+
+428
+00:17:30,310 --> 00:17:32,140
+point about the self-contained schemas
+
+429
+00:17:32,140 --> 00:17:35,140
+as metadata this is a key idea in Avro
+
+430
+00:17:35,140 --> 00:17:37,179
+and and really a very key idea for
+
+431
+00:17:37,179 --> 00:17:39,960
+programming I think in order to consume
+
+432
+00:17:39,960 --> 00:17:43,300
+JSON produced in this way you don't need
+
+433
+00:17:43,300 --> 00:17:46,030
+anything on the client you don't need
+
+434
+00:17:46,030 --> 00:17:48,400
+fancy tools interpreters anything like
+
+435
+00:17:48,400 --> 00:17:50,650
+this because appended to the header of
+
+436
+00:17:50,650 --> 00:17:54,520
+your JSON Datagram so to speak you have
+
+437
+00:17:54,520 --> 00:17:57,010
+added the schema for the data that
+
+438
+00:17:57,010 --> 00:17:59,140
+you're sending it can be read on site
+
+439
+00:17:59,140 --> 00:18:02,020
+it's self-contained encapsulated with
+
+440
+00:18:02,020 --> 00:18:04,210
+its own metadata and you can see this
+
+441
+00:18:04,210 --> 00:18:07,060
+ridiculously bad little code segment
+
+442
+00:18:07,060 --> 00:18:09,700
+over here where I'm starting to model a
+
+443
+00:18:09,700 --> 00:18:11,080
+cookie and you can see that I've got
+
+444
+00:18:11,080 --> 00:18:13,600
+name and value like I said don't get me
+
+445
+00:18:13,600 --> 00:18:16,030
+started on cookies but but I wanted to
+
+446
+00:18:16,030 --> 00:18:18,130
+kind of give you a sense of how this
+
+447
+00:18:18,130 --> 00:18:20,530
+works to attach the schema for the data
+
+448
+00:18:20,530 --> 00:18:21,250
+at the began
+
+449
+00:18:21,250 --> 00:18:23,740
+of each Datagram because I think that
+
+450
+00:18:23,740 --> 00:18:26,200
+that is an extremely cool feature it
+
+451
+00:18:26,200 --> 00:18:29,230
+relieves us of having to do a lot of
+
+452
+00:18:29,230 --> 00:18:31,840
+client work where we would have to build
+
+453
+00:18:31,840 --> 00:18:33,400
+some sort of interpreter there'd have to
+
+454
+00:18:33,400 --> 00:18:35,620
+be some exchange of metadata you have to
+
+455
+00:18:35,620 --> 00:18:37,060
+understand what it is you're trying to
+
+456
+00:18:37,060 --> 00:18:40,330
+read JSON or otherwise and and we found
+
+457
+00:18:40,330 --> 00:18:42,070
+that this approach worked really well
+
+458
+00:18:42,070 --> 00:18:44,470
+for us you know I don't know if anybody
+
+459
+00:18:44,470 --> 00:18:46,180
+from this team is here but if so we
+
+460
+00:18:46,180 --> 00:18:48,580
+thank you we're looking out for your
+
+461
+00:18:48,580 --> 00:18:52,690
+stuff that's basically the part that I
+
+462
+00:18:52,690 --> 00:18:54,820
+wanted to talk about with respect to the
+
+463
+00:18:54,820 --> 00:18:57,850
+protocol design just quick time check
+
+464
+00:18:57,850 --> 00:19:01,000
+and make sure I know where I am and I
+
+465
+00:19:01,000 --> 00:19:02,500
+don't because my clock stopped but
+
+466
+00:19:02,500 --> 00:19:06,400
+that's okay let's talk about the results
+
+467
+00:19:06,400 --> 00:19:09,090
+let's talk about the current state the
+
+468
+00:19:09,090 --> 00:19:12,070
+just going back through the protocol
+
+469
+00:19:12,070 --> 00:19:15,310
+stack here really quickly for review UDP
+
+470
+00:19:15,310 --> 00:19:17,320
+odd the transport layer we're using this
+
+471
+00:19:17,320 --> 00:19:19,780
+UDP library for session management does
+
+472
+00:19:19,780 --> 00:19:22,720
+some concatenation connection semantics
+
+473
+00:19:22,720 --> 00:19:25,780
+stuff like that not as important as the
+
+474
+00:19:25,780 --> 00:19:27,520
+stuff above it and that's generally true
+
+475
+00:19:27,520 --> 00:19:32,260
+of any network stack in true OSI form
+
+476
+00:19:32,260 --> 00:19:34,420
+i'm using the OSI terminology wrongly
+
+477
+00:19:34,420 --> 00:19:37,330
+JSON is not a presentation framework
+
+478
+00:19:37,330 --> 00:19:40,960
+right nobody looks at it ray it is
+
+479
+00:19:40,960 --> 00:19:42,970
+actually a data exchange format but it
+
+480
+00:19:42,970 --> 00:19:45,180
+fits nicely here into the OSI stack
+
+481
+00:19:45,180 --> 00:19:48,190
+labeling it that way with the caveat
+
+482
+00:19:48,190 --> 00:19:50,310
+that we as we know it's not really a
+
+483
+00:19:50,310 --> 00:19:52,770
+presentation format but data exchange
+
+484
+00:19:52,770 --> 00:19:56,230
+still it fits into the stack nicely and
+
+485
+00:19:56,230 --> 00:19:58,030
+if we just sort of warped the OSI
+
+486
+00:19:58,030 --> 00:19:59,470
+terminology a little bit we can probably
+
+487
+00:19:59,470 --> 00:20:01,240
+get away with it I think everybody knows
+
+488
+00:20:01,240 --> 00:20:04,120
+what I'm trying to get at scratch Delta
+
+489
+00:20:04,120 --> 00:20:06,850
+is at the application level that's where
+
+490
+00:20:06,850 --> 00:20:09,370
+we want to talk about that's what's
+
+491
+00:20:09,370 --> 00:20:11,350
+really important about what's happening
+
+492
+00:20:11,350 --> 00:20:16,000
+here so special plea from the developer
+
+493
+00:20:16,000 --> 00:20:18,100
+of scratch I know that all the node
+
+494
+00:20:18,100 --> 00:20:20,860
+developers are in this room or at least
+
+495
+00:20:20,860 --> 00:20:21,910
+maybe not some of them might be
+
+496
+00:20:21,910 --> 00:20:24,820
+downstairs but guys I need your help on
+
+497
+00:20:24,820 --> 00:20:26,680
+this because there's nothing that's more
+
+498
+00:20:26,680 --> 00:20:31,330
+suited for using node then scratch great
+
+499
+00:20:31,330 --> 00:20:34,120
+scratch is about sending JavaScript
+
+500
+00:20:34,120 --> 00:20:34,930
+objects in
+
+501
+00:20:34,930 --> 00:20:38,350
+coated in JSON what do I need for that
+
+502
+00:20:38,350 --> 00:20:41,770
+other than node bruh no brainer this was
+
+503
+00:20:41,770 --> 00:20:43,900
+made for node node was invented for this
+
+504
+00:20:43,900 --> 00:20:45,040
+you guys didn't know that when you
+
+505
+00:20:45,040 --> 00:20:49,330
+invented node but now you know why can't
+
+506
+00:20:49,330 --> 00:20:51,450
+we use the existing node situation well
+
+507
+00:20:51,450 --> 00:20:54,550
+UDP support is still somewhat basic I
+
+508
+00:20:54,550 --> 00:20:57,460
+know that Paul kerna had written a a
+
+509
+00:20:57,460 --> 00:21:01,270
+little UDP transport module for for node
+
+510
+00:21:01,270 --> 00:21:04,390
+he presented that at node camp and his
+
+511
+00:21:04,390 --> 00:21:07,000
+very minimalist there's a there's a pcap
+
+512
+00:21:07,000 --> 00:21:09,730
+library Isaac schluter pointed this out
+
+513
+00:21:09,730 --> 00:21:11,230
+to me I was actually able to use his
+
+514
+00:21:11,230 --> 00:21:12,820
+little node package manager worked
+
+515
+00:21:12,820 --> 00:21:14,890
+really well and installed the pcap a
+
+516
+00:21:14,890 --> 00:21:17,470
+library and knowed it works I was able
+
+517
+00:21:17,470 --> 00:21:20,080
+to see packets coming across it doesn't
+
+518
+00:21:20,080 --> 00:21:21,730
+work very well I need your help node
+
+519
+00:21:21,730 --> 00:21:25,630
+guys really I do we expect that this
+
+520
+00:21:25,630 --> 00:21:27,790
+rather this situation is temporary hint
+
+521
+00:21:27,790 --> 00:21:31,950
+hint okay so enough for the special
+
+522
+00:21:31,950 --> 00:21:35,220
+pleading from the developer here the
+
+523
+00:21:35,220 --> 00:21:38,350
+let's talk about some test results so so
+
+524
+00:21:38,350 --> 00:21:41,260
+this isn't all blowin smoke right we've
+
+525
+00:21:41,260 --> 00:21:43,240
+actually gone and written some code and
+
+526
+00:21:43,240 --> 00:21:45,220
+made things work so let me tell you
+
+527
+00:21:45,220 --> 00:21:46,870
+about our test setup we wrote a little a
+
+528
+00:21:46,870 --> 00:21:49,660
+little app I'm sure that you can guess
+
+529
+00:21:49,660 --> 00:21:52,000
+we called it scratch pad there's a lot
+
+530
+00:21:52,000 --> 00:21:54,040
+of scratch puns I'm not going to
+
+531
+00:21:54,040 --> 00:21:57,850
+apologize for them first pass results
+
+532
+00:21:57,850 --> 00:22:00,070
+let me explain to you our test setup we
+
+533
+00:22:00,070 --> 00:22:03,160
+set up instances on AWS and five global
+
+534
+00:22:03,160 --> 00:22:04,960
+locations everybody knows you know
+
+535
+00:22:04,960 --> 00:22:06,790
+there's one in the east and the West in
+
+536
+00:22:06,790 --> 00:22:10,180
+the US Europe couple in Asia we set up a
+
+537
+00:22:10,180 --> 00:22:14,020
+circularbuffer test we created link
+
+538
+00:22:14,020 --> 00:22:17,860
+objects encapsulate a hypertext link the
+
+539
+00:22:17,860 --> 00:22:20,080
+part of HTML that actually is really
+
+540
+00:22:20,080 --> 00:22:21,760
+interesting and important or the links
+
+541
+00:22:21,760 --> 00:22:24,310
+so we created a thousand of those as
+
+542
+00:22:24,310 --> 00:22:27,820
+JSON scratch Delta objects and we patted
+
+543
+00:22:27,820 --> 00:22:31,360
+them out to the the same segment size as
+
+544
+00:22:31,360 --> 00:22:33,640
+we use for TCP because we wanted to do a
+
+545
+00:22:33,640 --> 00:22:36,700
+comparison tcpd UDP and see exactly what
+
+546
+00:22:36,700 --> 00:22:38,230
+was going to happen so we padded things
+
+547
+00:22:38,230 --> 00:22:40,420
+appropriately and and you can kind of
+
+548
+00:22:40,420 --> 00:22:41,950
+see some of the results here I don't
+
+549
+00:22:41,950 --> 00:22:43,900
+know if my pointers actually visible but
+
+550
+00:22:43,900 --> 00:22:45,670
+in the table here you can kind of see
+
+551
+00:22:45,670 --> 00:22:48,519
+that if we went to update a single link
+
+552
+00:22:48,519 --> 00:22:50,019
+globally so remember we've got a
+
+553
+00:22:50,019 --> 00:22:51,580
+thousand of these they're out there in a
+
+554
+00:22:51,580 --> 00:22:53,919
+buffer and we want to update a single
+
+555
+00:22:53,919 --> 00:22:57,429
+one globally all across the world how
+
+556
+00:22:57,429 --> 00:22:59,919
+long is that going to take us three
+
+557
+00:22:59,919 --> 00:23:01,509
+hundred and thirty eight milliseconds if
+
+558
+00:23:01,509 --> 00:23:06,700
+we use scratch 20 240 milliseconds if we
+
+559
+00:23:06,700 --> 00:23:11,889
+use HTTP / UDP that's huge when we went
+
+560
+00:23:11,889 --> 00:23:15,369
+to update all the links all 1000 of them
+
+561
+00:23:15,369 --> 00:23:17,950
+globally imagine how this is going to
+
+562
+00:23:17,950 --> 00:23:19,869
+work first you have to sort them first
+
+563
+00:23:19,869 --> 00:23:21,759
+have to find them then you've got to
+
+564
+00:23:21,759 --> 00:23:24,579
+modify the link to the new value we went
+
+565
+00:23:24,579 --> 00:23:26,019
+through that took us 12 hundred
+
+566
+00:23:26,019 --> 00:23:29,259
+milliseconds and actually that's right
+
+567
+00:23:29,259 --> 00:23:31,719
+we couldn't get the HTTP TCP data on
+
+568
+00:23:31,719 --> 00:23:33,549
+this one because it timed out every
+
+569
+00:23:33,549 --> 00:23:40,059
+single time the next test that we did oh
+
+570
+00:23:40,059 --> 00:23:41,679
+and the other thing I wanted to mention
+
+571
+00:23:41,679 --> 00:23:44,320
+here is that we were really concerned
+
+572
+00:23:44,320 --> 00:23:47,619
+about packet loss I don't know if any of
+
+573
+00:23:47,619 --> 00:23:50,739
+the the Google guys are here but one of
+
+574
+00:23:50,739 --> 00:23:52,450
+the things that they've found out with
+
+575
+00:23:52,450 --> 00:23:53,859
+their speedy protocol is it's very
+
+576
+00:23:53,859 --> 00:23:56,109
+subject to pack it was very sensitive to
+
+577
+00:23:56,109 --> 00:23:58,539
+packet loss we're obviously sensitive to
+
+578
+00:23:58,539 --> 00:24:00,190
+packet loss to we were really concerned
+
+579
+00:24:00,190 --> 00:24:02,919
+we did not see major differences in
+
+580
+00:24:02,919 --> 00:24:04,989
+packet loss now these numbers by the way
+
+581
+00:24:04,989 --> 00:24:08,109
+are for the only for the scratch demo we
+
+582
+00:24:08,109 --> 00:24:09,940
+did not get packet loss numbers for the
+
+583
+00:24:09,940 --> 00:24:13,259
+HTTP transport so the the point 11
+
+584
+00:24:13,259 --> 00:24:15,940
+number there is really only for the
+
+585
+00:24:15,940 --> 00:24:17,499
+scratch data but you can see the the
+
+586
+00:24:17,499 --> 00:24:19,839
+packet loss data is very low compared to
+
+587
+00:24:19,839 --> 00:24:23,440
+what we had expected to see so that's
+
+588
+00:24:23,440 --> 00:24:25,299
+you know that's it's an interesting test
+
+589
+00:24:25,299 --> 00:24:27,249
+we did a circularbuffer and we updated
+
+590
+00:24:27,249 --> 00:24:29,799
+some objects in memory you know it's
+
+591
+00:24:29,799 --> 00:24:32,950
+it's it's it's interesting in and the
+
+592
+00:24:32,950 --> 00:24:35,649
+results are okay more interesting still
+
+593
+00:24:35,649 --> 00:24:37,239
+not real still not you in front of a
+
+594
+00:24:37,239 --> 00:24:38,679
+real user but more interesting is that
+
+595
+00:24:38,679 --> 00:24:40,989
+we tested a real text buffer we took the
+
+596
+00:24:40,989 --> 00:24:43,299
+Yahoo home page and we send it around
+
+597
+00:24:43,299 --> 00:24:45,519
+into our circular buffer and we looked
+
+598
+00:24:45,519 --> 00:24:48,039
+at how fast we could send that around
+
+599
+00:24:48,039 --> 00:24:50,019
+and we looked at how fast we could do it
+
+600
+00:24:50,019 --> 00:24:51,489
+if we compressed it and we haven't
+
+601
+00:24:51,489 --> 00:24:52,950
+talked about compression but we will
+
+602
+00:24:52,950 --> 00:24:55,269
+compression is a first class object in
+
+603
+00:24:55,269 --> 00:24:58,629
+scratch everything is compressed accept
+
+604
+00:24:58,629 --> 00:25:01,110
+the things that are already compressed
+
+605
+00:25:01,110 --> 00:25:04,500
+so for sending the base file metro yahoo
+
+606
+00:25:04,500 --> 00:25:08,340
+homepage by gosh 217 seconds to get that
+
+607
+00:25:08,340 --> 00:25:09,840
+puppy around the world now speed of
+
+608
+00:25:09,840 --> 00:25:12,330
+light times around the world are not
+
+609
+00:25:12,330 --> 00:25:15,330
+that much less than that right same
+
+610
+00:25:15,330 --> 00:25:20,700
+order of magnitude the HTTP TCP method
+
+611
+00:25:20,700 --> 00:25:23,670
+three times as long I'm not sure I don't
+
+612
+00:25:23,670 --> 00:25:24,900
+think anybody's really going to be
+
+613
+00:25:24,900 --> 00:25:28,110
+surprised about that sorry I keep got to
+
+614
+00:25:28,110 --> 00:25:29,820
+stay in the light here I don't think
+
+615
+00:25:29,820 --> 00:25:31,860
+anybody's really surprised that it takes
+
+616
+00:25:31,860 --> 00:25:34,020
+three times as long with HTTP to do this
+
+617
+00:25:34,020 --> 00:25:36,900
+it is after all stateful or stateless
+
+618
+00:25:36,900 --> 00:25:39,210
+and and we know that because of the size
+
+619
+00:25:39,210 --> 00:25:40,980
+of this object is going to be several
+
+620
+00:25:40,980 --> 00:25:43,260
+packets in length 35 k is multiple
+
+621
+00:25:43,260 --> 00:25:45,360
+packets you can see in the graph here
+
+622
+00:25:45,360 --> 00:25:47,640
+you know and this is just visually
+
+623
+00:25:47,640 --> 00:25:49,320
+showing what's in the table here but in
+
+624
+00:25:49,320 --> 00:25:51,360
+the graph you can kind of see what the
+
+625
+00:25:51,360 --> 00:25:55,880
+result is 3x for scratch over HTTP tcp
+
+626
+00:25:55,880 --> 00:25:58,950
+know when I was practicing my talk today
+
+627
+00:25:58,950 --> 00:26:01,200
+I kinda I wondered whether I wanted to
+
+628
+00:26:01,200 --> 00:26:03,210
+make that previous statement because I
+
+629
+00:26:03,210 --> 00:26:05,100
+don't want you guys going until the New
+
+630
+00:26:05,100 --> 00:26:06,690
+York Times hey Yahoo's going to make the
+
+631
+00:26:06,690 --> 00:26:09,270
+web three times as fast it's not going
+
+632
+00:26:09,270 --> 00:26:13,650
+to happen a experimental lab tests in in
+
+633
+00:26:13,650 --> 00:26:16,169
+in a closed environment there's no real
+
+634
+00:26:16,169 --> 00:26:18,210
+relationship to what actually happens in
+
+635
+00:26:18,210 --> 00:26:19,919
+front of users especially on the
+
+636
+00:26:19,919 --> 00:26:22,020
+Internet we all know that so I don't
+
+637
+00:26:22,020 --> 00:26:23,490
+want everybody to leave here saying
+
+638
+00:26:23,490 --> 00:26:25,679
+Yahoo's going to make the the net three
+
+639
+00:26:25,679 --> 00:26:28,380
+times faster with scratch we do think
+
+640
+00:26:28,380 --> 00:26:30,990
+that these results have some promise and
+
+641
+00:26:30,990 --> 00:26:32,580
+that they're showing us something very
+
+642
+00:26:32,580 --> 00:26:34,500
+very interesting about our ability to
+
+643
+00:26:34,500 --> 00:26:40,620
+use UDP to be TCPS performance so this
+
+644
+00:26:40,620 --> 00:26:42,570
+is basically our first set of test
+
+645
+00:26:42,570 --> 00:26:44,850
+results this was actually pretty much
+
+646
+00:26:44,850 --> 00:26:47,580
+complete by mid-february at that point I
+
+647
+00:26:47,580 --> 00:26:49,080
+got called off to do some other things
+
+648
+00:26:49,080 --> 00:26:53,309
+and and this is really most of the test
+
+649
+00:26:53,309 --> 00:26:55,350
+results I have because I was going to
+
+650
+00:26:55,350 --> 00:26:58,140
+show a demo really I was and and the
+
+651
+00:26:58,140 --> 00:27:00,210
+demo has been scratched I ran out of
+
+652
+00:27:00,210 --> 00:27:03,929
+time and sleep I apologize so so no demo
+
+653
+00:27:03,929 --> 00:27:06,270
+this time but I did talk to Chris before
+
+654
+00:27:06,270 --> 00:27:09,900
+I came up here to talk and I made him a
+
+655
+00:27:09,900 --> 00:27:11,010
+deal i said i'm gonna get up here and
+
+656
+00:27:11,010 --> 00:27:13,260
+i'm gonna give the coolest talk but you
+
+657
+00:27:13,260 --> 00:27:14,640
+got to invite me back next year
+
+658
+00:27:14,640 --> 00:27:16,860
+so that I can show the results of all
+
+659
+00:27:16,860 --> 00:27:18,330
+the work that we've done because I
+
+660
+00:27:18,330 --> 00:27:20,340
+really don't have that much this time
+
+661
+00:27:20,340 --> 00:27:22,890
+we're talking about the design we're
+
+662
+00:27:22,890 --> 00:27:25,440
+still in the design state like I said
+
+663
+00:27:25,440 --> 00:27:27,150
+I'm not editing code and VI for the
+
+664
+00:27:27,150 --> 00:27:29,880
+presentation and I do apologize for not
+
+665
+00:27:29,880 --> 00:27:34,230
+having the demo one of the questions it
+
+666
+00:27:34,230 --> 00:27:36,480
+often comes to us when we do this is you
+
+667
+00:27:36,480 --> 00:27:38,940
+know as scratch TCP or scratch Network
+
+668
+00:27:38,940 --> 00:27:41,460
+friendly in TCP we have this idea about
+
+669
+00:27:41,460 --> 00:27:43,830
+TCP friendliness you shouldn't flood the
+
+670
+00:27:43,830 --> 00:27:45,300
+network you shouldn't congest the
+
+671
+00:27:45,300 --> 00:27:47,610
+network in favor of your traffic over
+
+672
+00:27:47,610 --> 00:27:49,470
+somebody else's traffic you shouldn't
+
+673
+00:27:49,470 --> 00:27:51,990
+send syn floods to the server obvious
+
+674
+00:27:51,990 --> 00:27:53,790
+things like this you need to be a good
+
+675
+00:27:53,790 --> 00:27:56,160
+citizen on the internet there's no such
+
+676
+00:27:56,160 --> 00:27:58,440
+concept really for UDP nobody has ever
+
+677
+00:27:58,440 --> 00:28:00,720
+defined I think UDP friendliness but we
+
+678
+00:28:00,720 --> 00:28:05,040
+want to make sure that scratch really is
+
+679
+00:28:05,040 --> 00:28:06,900
+Network friendly and there is some
+
+680
+00:28:06,900 --> 00:28:09,270
+interaction between TCP and UDP I don't
+
+681
+00:28:09,270 --> 00:28:10,860
+want to get into it because it gets into
+
+682
+00:28:10,860 --> 00:28:12,960
+network hairiness they'd sort of off
+
+683
+00:28:12,960 --> 00:28:15,450
+topic but there is some some interaction
+
+684
+00:28:15,450 --> 00:28:18,000
+this question comes up Daniel if you go
+
+685
+00:28:18,000 --> 00:28:20,310
+and fled the internet with UDP packets
+
+686
+00:28:20,310 --> 00:28:22,530
+from scratch what about those folks that
+
+687
+00:28:22,530 --> 00:28:24,600
+are still using TCP or need some other
+
+688
+00:28:24,600 --> 00:28:26,640
+protocol are you flooding them are you
+
+689
+00:28:26,640 --> 00:28:28,260
+blocking them are you congesting them
+
+690
+00:28:28,260 --> 00:28:30,330
+making their life more miserable in
+
+691
+00:28:30,330 --> 00:28:32,880
+order to make your life better we don't
+
+692
+00:28:32,880 --> 00:28:35,760
+want to do that our answer to the
+
+693
+00:28:35,760 --> 00:28:37,230
+question of whether scratches Network
+
+694
+00:28:37,230 --> 00:28:40,890
+friendly is yes and here's why we send
+
+695
+00:28:40,890 --> 00:28:42,960
+fewer packets more updates remember we
+
+696
+00:28:42,960 --> 00:28:45,570
+only send the headers once rights and we
+
+697
+00:28:45,570 --> 00:28:47,930
+only change send an update once up
+
+698
+00:28:47,930 --> 00:28:49,950
+something actually changes and it's
+
+699
+00:28:49,950 --> 00:28:52,950
+worth actually making an update we do
+
+700
+00:28:52,950 --> 00:28:55,080
+throttling or we can at least based on
+
+701
+00:28:55,080 --> 00:28:58,080
+the MTU and the rtt I think the the
+
+702
+00:28:58,080 --> 00:29:00,240
+initial when I wrote the initial UDP
+
+703
+00:29:00,240 --> 00:29:01,920
+library I've actually based some
+
+704
+00:29:01,920 --> 00:29:04,350
+throttling on the old jacobsen algorithm
+
+705
+00:29:04,350 --> 00:29:08,790
+right with this 778 coefficients and so
+
+706
+00:29:08,790 --> 00:29:11,670
+forth because the metadata and scratch
+
+707
+00:29:11,670 --> 00:29:15,450
+is a first class object it improves the
+
+708
+00:29:15,450 --> 00:29:17,160
+way that we interact with the network
+
+709
+00:29:17,160 --> 00:29:20,460
+because it plays a significant role in
+
+710
+00:29:20,460 --> 00:29:22,800
+the data that you receive or don't
+
+711
+00:29:22,800 --> 00:29:24,780
+receive we don't send you data that your
+
+712
+00:29:24,780 --> 00:29:27,060
+device cannot handle we don't send you
+
+713
+00:29:27,060 --> 00:29:28,290
+data that's already been
+
+714
+00:29:28,290 --> 00:29:30,420
+sent to your device we don't intend to
+
+715
+00:29:30,420 --> 00:29:32,310
+send you any superfluous data at all
+
+716
+00:29:32,310 --> 00:29:35,040
+because we know you we're managing your
+
+717
+00:29:35,040 --> 00:29:36,780
+connection we're managing your state
+
+718
+00:29:36,780 --> 00:29:39,450
+there's not a lot of repeated redundancy
+
+719
+00:29:39,450 --> 00:29:41,670
+that we need to go through metadata is a
+
+720
+00:29:41,670 --> 00:29:43,770
+first class object improves the web
+
+721
+00:29:43,770 --> 00:29:47,640
+performance for everybody we'll defined
+
+722
+00:29:47,640 --> 00:29:49,440
+endpoints and connection establishment
+
+723
+00:29:49,440 --> 00:29:52,320
+this helps a lot with it would Network
+
+724
+00:29:52,320 --> 00:29:53,640
+friendliness as well one of the things
+
+725
+00:29:53,640 --> 00:29:55,620
+about UDP packets is you can't really
+
+726
+00:29:55,620 --> 00:29:57,210
+tell what the heck is up with them I
+
+727
+00:29:57,210 --> 00:30:00,090
+mean unlike TCP they really have a port
+
+728
+00:30:00,090 --> 00:30:02,760
+in an IP number and maybe that's it if
+
+729
+00:30:02,760 --> 00:30:05,550
+we define additional semantics around
+
+730
+00:30:05,550 --> 00:30:07,140
+the connections we can make things much
+
+731
+00:30:07,140 --> 00:30:09,090
+more stable we can make it better for
+
+732
+00:30:09,090 --> 00:30:11,550
+everybody on the Internet we handle
+
+733
+00:30:11,550 --> 00:30:14,280
+smaller MTU size it's one of our goals
+
+734
+00:30:14,280 --> 00:30:16,460
+here was to be able to serve the web
+
+735
+00:30:16,460 --> 00:30:19,200
+globally anybody who's tried to serve
+
+736
+00:30:19,200 --> 00:30:21,480
+web pages into Indonesia into Singapore
+
+737
+00:30:21,480 --> 00:30:23,550
+and Australia knows that there's just
+
+738
+00:30:23,550 --> 00:30:24,990
+serious difficulties with the
+
+739
+00:30:24,990 --> 00:30:27,330
+infrastructure with sending packets
+
+740
+00:30:27,330 --> 00:30:29,430
+under the ocean or down through the
+
+741
+00:30:29,430 --> 00:30:33,120
+satellite over the cable one of the
+
+742
+00:30:33,120 --> 00:30:34,530
+effects of that is often that the
+
+743
+00:30:34,530 --> 00:30:36,270
+packets get shrunk down to the smallest
+
+744
+00:30:36,270 --> 00:30:38,040
+common denominator that can make it from
+
+745
+00:30:38,040 --> 00:30:41,670
+A to B and and of course this makes
+
+746
+00:30:41,670 --> 00:30:43,380
+everything a bit slower because things
+
+747
+00:30:43,380 --> 00:30:44,640
+have to be disassembled and then
+
+748
+00:30:44,640 --> 00:30:46,560
+reassembled at the end one of the goals
+
+749
+00:30:46,560 --> 00:30:49,800
+we had for scratch was to minimize that
+
+750
+00:30:49,800 --> 00:30:51,920
+make sure that we were able to handle
+
+751
+00:30:51,920 --> 00:30:56,070
+gracefully this global traffic the
+
+752
+00:30:56,070 --> 00:30:58,200
+nearest node potential to reduce the
+
+753
+00:30:58,200 --> 00:31:02,970
+payloads is a huge win what if what if
+
+754
+00:31:02,970 --> 00:31:04,980
+we manage the internet more like a p2p
+
+755
+00:31:04,980 --> 00:31:08,310
+network and and you know maybe the yahoo
+
+756
+00:31:08,310 --> 00:31:10,860
+logos and brendan's cash and you know I
+
+757
+00:31:10,860 --> 00:31:12,270
+don't have to go back to the yahoo
+
+758
+00:31:12,270 --> 00:31:14,760
+server for that I could just go into
+
+759
+00:31:14,760 --> 00:31:16,830
+someone else's cash and grab that logo I
+
+760
+00:31:16,830 --> 00:31:20,040
+mean the TTL on it hasn't expired why
+
+761
+00:31:20,040 --> 00:31:22,350
+not certain amount of nearest node
+
+762
+00:31:22,350 --> 00:31:24,870
+potential involved in scratch helps us
+
+763
+00:31:24,870 --> 00:31:28,050
+reduce the overall overhead make things
+
+764
+00:31:28,050 --> 00:31:32,490
+a lot more network friendly just a
+
+765
+00:31:32,490 --> 00:31:33,990
+little bit of talk about where we go
+
+766
+00:31:33,990 --> 00:31:35,760
+from here obviously we're in the design
+
+767
+00:31:35,760 --> 00:31:38,400
+stage for scratch first thing we want to
+
+768
+00:31:38,400 --> 00:31:40,650
+do is we want to get you guys to tell us
+
+769
+00:31:40,650 --> 00:31:41,789
+not that we're crazy
+
+770
+00:31:41,789 --> 00:31:44,429
+we already knew that right don't tell us
+
+771
+00:31:44,429 --> 00:31:47,249
+we're crazy tell us how you can help us
+
+772
+00:31:47,249 --> 00:31:49,889
+improve it tell us what we're doing
+
+773
+00:31:49,889 --> 00:31:52,590
+wrong what we've missed undoubtedly
+
+774
+00:31:52,590 --> 00:31:55,470
+missed a number of things here some of
+
+775
+00:31:55,470 --> 00:31:57,119
+the must-haves going forward that we
+
+776
+00:31:57,119 --> 00:31:58,649
+really need that are not there yet
+
+777
+00:31:58,649 --> 00:32:00,899
+better semantics currently we really
+
+778
+00:32:00,899 --> 00:32:05,220
+only have three of these schemas for 144
+
+779
+00:32:05,220 --> 00:32:07,649
+HTTP headers obviously the cookie object
+
+780
+00:32:07,649 --> 00:32:10,950
+descends from that one for the URIs this
+
+781
+00:32:10,950 --> 00:32:13,200
+is the one we use for the the link def
+
+782
+00:32:13,200 --> 00:32:17,159
+test with the circular buffers another
+
+783
+00:32:17,159 --> 00:32:18,859
+thing that we really need resource
+
+784
+00:32:18,859 --> 00:32:20,970
+encapsulation obviously a big part of
+
+785
+00:32:20,970 --> 00:32:23,429
+the web are these big blind binary blobs
+
+786
+00:32:23,429 --> 00:32:24,929
+we've got to find a better way to
+
+787
+00:32:24,929 --> 00:32:27,840
+encapsulate those so that we only send
+
+788
+00:32:27,840 --> 00:32:30,149
+those the minimum number of times across
+
+789
+00:32:30,149 --> 00:32:32,849
+the minimum distance once again if we
+
+790
+00:32:32,849 --> 00:32:34,799
+can dynamically update the IP of the
+
+791
+00:32:34,799 --> 00:32:36,899
+nearest copy if we can dynamically
+
+792
+00:32:36,899 --> 00:32:39,059
+update the time to live for that object
+
+793
+00:32:39,059 --> 00:32:42,450
+we can manage the users cash in a much
+
+794
+00:32:42,450 --> 00:32:44,879
+smarter much more dynamic way that
+
+795
+00:32:44,879 --> 00:32:46,710
+doesn't involve sending the whole earth
+
+796
+00:32:46,710 --> 00:32:50,039
+over the internet every day encryption
+
+797
+00:32:50,039 --> 00:32:51,840
+is another thing obviously that we want
+
+798
+00:32:51,840 --> 00:32:55,309
+to get at sasol ssl/tls all these
+
+799
+00:32:55,309 --> 00:32:58,979
+acronyms almost impossible to make any
+
+800
+00:32:58,979 --> 00:33:01,649
+of this stuff work over a proxy / UDP we
+
+801
+00:33:01,649 --> 00:33:03,919
+have simply not solve this problem yet
+
+802
+00:33:03,919 --> 00:33:06,479
+don't know that we will we may have to
+
+803
+00:33:06,479 --> 00:33:08,489
+find a different way to handle security
+
+804
+00:33:08,489 --> 00:33:11,609
+but we want security to be a first-class
+
+805
+00:33:11,609 --> 00:33:13,799
+object in our system as distinct from
+
+806
+00:33:13,799 --> 00:33:17,009
+privacy which is also a first-class
+
+807
+00:33:17,009 --> 00:33:22,320
+object in our system compression so so
+
+808
+00:33:22,320 --> 00:33:23,940
+compression is definitely one of the
+
+809
+00:33:23,940 --> 00:33:27,090
+things that we want for scratch it needs
+
+810
+00:33:27,090 --> 00:33:29,340
+to be there if you look at the data for
+
+811
+00:33:29,340 --> 00:33:31,710
+uncompressed versus compressed data it's
+
+812
+00:33:31,710 --> 00:33:33,029
+pretty obvious things have to be
+
+813
+00:33:33,029 --> 00:33:36,029
+compressed well you know gzip is
+
+814
+00:33:36,029 --> 00:33:38,309
+everybody's favorite devices supported
+
+815
+00:33:38,309 --> 00:33:39,960
+everywhere one thing we found though is
+
+816
+00:33:39,960 --> 00:33:42,899
+that in a lot of cases mobile devices
+
+817
+00:33:42,899 --> 00:33:45,090
+not the really fancy high powered ones
+
+818
+00:33:45,090 --> 00:33:46,859
+that we all know and love in this room
+
+819
+00:33:46,859 --> 00:33:48,929
+but a lot of the others have some
+
+820
+00:33:48,929 --> 00:33:50,909
+difficulties they struggle with gzip
+
+821
+00:33:50,909 --> 00:33:54,210
+gzip is a computationally intensive
+
+822
+00:33:54,210 --> 00:33:55,290
+algorithm
+
+823
+00:33:55,290 --> 00:33:57,660
+and sometimes the the decompression of
+
+824
+00:33:57,660 --> 00:33:59,280
+the data as it arrives on the device can
+
+825
+00:33:59,280 --> 00:34:00,840
+actually take longer than if you send it
+
+826
+00:34:00,840 --> 00:34:03,510
+uncompressed we've seen cases where this
+
+827
+00:34:03,510 --> 00:34:05,790
+has happened so we've looked at some
+
+828
+00:34:05,790 --> 00:34:08,280
+alternatives for compression one of the
+
+829
+00:34:08,280 --> 00:34:10,110
+ones we looked at in particular was
+
+830
+00:34:10,110 --> 00:34:12,240
+called bite pair compression I don't
+
+831
+00:34:12,240 --> 00:34:14,640
+know if anybody's actually heard of it
+
+832
+00:34:14,640 --> 00:34:16,590
+originally sort of showed up I think on
+
+833
+00:34:16,590 --> 00:34:19,710
+the modern radar screen through a dr.
+
+834
+00:34:19,710 --> 00:34:22,200
+Dobbs article in 1992 I'm not sure how
+
+835
+00:34:22,200 --> 00:34:25,070
+modern that is I might be dating myself
+
+836
+00:34:25,070 --> 00:34:30,330
+anybody here born in 1992 maybe anyway
+
+837
+00:34:30,330 --> 00:34:32,340
+bite pair compression came out man it
+
+838
+00:34:32,340 --> 00:34:33,900
+was completely lost one of the guys at
+
+839
+00:34:33,900 --> 00:34:35,970
+Stack Overflow much much more modern
+
+840
+00:34:35,970 --> 00:34:37,980
+than that actually went rewrote the code
+
+841
+00:34:37,980 --> 00:34:39,210
+in the modern world and it actually
+
+842
+00:34:39,210 --> 00:34:41,190
+works we've been experimenting with the
+
+843
+00:34:41,190 --> 00:34:43,320
+byte pair compression it takes a lot
+
+844
+00:34:43,320 --> 00:34:45,660
+longer to compress a file using bite
+
+845
+00:34:45,660 --> 00:34:48,240
+pair compression the decompression phase
+
+846
+00:34:48,240 --> 00:34:50,880
+is much faster much less computationally
+
+847
+00:34:50,880 --> 00:34:53,370
+intensive if you think about the the
+
+848
+00:34:53,370 --> 00:34:55,380
+nature of compression you're going to
+
+849
+00:34:55,380 --> 00:34:57,390
+compress something only once uncompress
+
+850
+00:34:57,390 --> 00:35:00,630
+it many times if you want to have the
+
+851
+00:35:00,630 --> 00:35:03,240
+computational intensity or the
+
+852
+00:35:03,240 --> 00:35:05,490
+computational cycles distributed equity
+
+853
+00:35:05,490 --> 00:35:08,540
+equitably much better with the byte pair
+
+854
+00:35:08,540 --> 00:35:10,950
+exchanged then perhaps with some other
+
+855
+00:35:10,950 --> 00:35:13,800
+compression mechanisms we haven't made a
+
+856
+00:35:13,800 --> 00:35:15,960
+design decision about compression for
+
+857
+00:35:15,960 --> 00:35:17,790
+scratch yet we may end up with bite pair
+
+858
+00:35:17,790 --> 00:35:20,070
+compression we may end up sticking with
+
+859
+00:35:20,070 --> 00:35:22,890
+gzip I mean it does work it's not you
+
+860
+00:35:22,890 --> 00:35:25,230
+know not the end of the world if we go
+
+861
+00:35:25,230 --> 00:35:27,390
+that way the mobile devices will catch
+
+862
+00:35:27,390 --> 00:35:30,480
+up there swiftly doing that obviously
+
+863
+00:35:30,480 --> 00:35:32,100
+when another one of the must-haves i
+
+864
+00:35:32,100 --> 00:35:33,900
+know i said there wouldn't be any more
+
+865
+00:35:33,900 --> 00:35:35,610
+special pleading earlier but here's one
+
+866
+00:35:35,610 --> 00:35:37,110
+last little bit of special pleading node
+
+867
+00:35:37,110 --> 00:35:44,700
+guys please back to the theme of the
+
+868
+00:35:44,700 --> 00:35:48,800
+talk smarter and faster the same things
+
+869
+00:35:48,800 --> 00:35:53,130
+we went and found out in doing this that
+
+870
+00:35:53,130 --> 00:35:56,460
+the whole notion of shoving data down to
+
+871
+00:35:56,460 --> 00:36:02,310
+the user did not work with the current
+
+872
+00:36:02,310 --> 00:36:03,840
+environment or the current web
+
+873
+00:36:03,840 --> 00:36:06,300
+technologies as they are too many
+
+874
+00:36:06,300 --> 00:36:07,980
+redundant headers too many redundant
+
+875
+00:36:07,980 --> 00:36:09,270
+style ships
+
+876
+00:36:09,270 --> 00:36:12,390
+stylesheets too many scripts being sent
+
+877
+00:36:12,390 --> 00:36:14,730
+over the wire I know anybody that's ever
+
+878
+00:36:14,730 --> 00:36:17,850
+used Yui Yui has every feature possible
+
+879
+00:36:17,850 --> 00:36:19,200
+but it's often a very heavy weight
+
+880
+00:36:19,200 --> 00:36:23,040
+package it's a good example of what we
+
+881
+00:36:23,040 --> 00:36:26,280
+want to do in terms of reducing the
+
+882
+00:36:26,280 --> 00:36:30,060
+volume of bytes sent over the wire the
+
+883
+00:36:30,060 --> 00:36:32,010
+theme of the talk in order to make the
+
+884
+00:36:32,010 --> 00:36:33,570
+web go faster we've got to make it
+
+885
+00:36:33,570 --> 00:36:37,170
+smarter we can't just do the faster
+
+886
+00:36:37,170 --> 00:36:39,060
+trash type model where we're taking the
+
+887
+00:36:39,060 --> 00:36:42,420
+same document the same HTML same headers
+
+888
+00:36:42,420 --> 00:36:45,240
+cookies all that nonsense and shoving it
+
+889
+00:36:45,240 --> 00:36:47,190
+down to the user this is what we like I
+
+890
+00:36:47,190 --> 00:36:50,340
+said what we call faster trash not the
+
+891
+00:36:50,340 --> 00:36:53,100
+way we're intending to go with scratch
+
+892
+00:36:53,100 --> 00:36:59,610
+scratch wants to be smart just a few
+
+893
+00:36:59,610 --> 00:37:01,410
+science fiction ideas what could we do
+
+894
+00:37:01,410 --> 00:37:03,810
+with scratch provided of course that my
+
+895
+00:37:03,810 --> 00:37:05,850
+team actually gets it to work and that
+
+896
+00:37:05,850 --> 00:37:08,610
+we solve some of these issues and and
+
+897
+00:37:08,610 --> 00:37:10,170
+the technology is working what are some
+
+898
+00:37:10,170 --> 00:37:11,580
+of the cooler things that we could do
+
+899
+00:37:11,580 --> 00:37:15,210
+with it so so we can improve hypertext I
+
+900
+00:37:15,210 --> 00:37:17,100
+don't know if anybody has really thought
+
+901
+00:37:17,100 --> 00:37:19,410
+about it but hypertext has not changed
+
+902
+00:37:19,410 --> 00:37:23,100
+since tim wrote the HTML spec back in
+
+903
+00:37:23,100 --> 00:37:25,530
+the day it doesn't really resemble a lot
+
+904
+00:37:25,530 --> 00:37:27,600
+of the work that douglas engelbart did
+
+905
+00:37:27,600 --> 00:37:30,060
+in inventing hypertext back in the 60s
+
+906
+00:37:30,060 --> 00:37:32,070
+if you go read the vision for hypertext
+
+907
+00:37:32,070 --> 00:37:33,690
+then and you compare it to the pathetic
+
+908
+00:37:33,690 --> 00:37:35,490
+little single-ended links we have now
+
+909
+00:37:35,490 --> 00:37:38,520
+you'll be disappointed the web as far as
+
+910
+00:37:38,520 --> 00:37:41,640
+hypertext goes very disappointing could
+
+911
+00:37:41,640 --> 00:37:43,490
+we fix that maybe we could just scratch
+
+912
+00:37:43,490 --> 00:37:45,780
+to do something like that we can make
+
+913
+00:37:45,780 --> 00:37:48,870
+links sofa where self-healing anybody
+
+914
+00:37:48,870 --> 00:37:50,550
+think 404s or a little past their
+
+915
+00:37:50,550 --> 00:37:53,040
+sell-by so always seemed a little crazy
+
+916
+00:37:53,040 --> 00:37:56,090
+to me that things break like that the
+
+917
+00:37:56,090 --> 00:37:59,010
+yes I was on the excellent group back in
+
+918
+00:37:59,010 --> 00:38:02,310
+the day we want to make links multi-home
+
+919
+00:38:02,310 --> 00:38:03,780
+there's no reason that the link can only
+
+920
+00:38:03,780 --> 00:38:06,090
+point to a single point there's no
+
+921
+00:38:06,090 --> 00:38:07,440
+reason for that doesn't make a lot of
+
+922
+00:38:07,440 --> 00:38:09,840
+sense want to make it context-aware the
+
+923
+00:38:09,840 --> 00:38:11,580
+link might point to different places
+
+924
+00:38:11,580 --> 00:38:14,100
+depending on who you in particular are
+
+925
+00:38:14,100 --> 00:38:18,120
+if we know something about you and you
+
+926
+00:38:18,120 --> 00:38:19,650
+know we know that for instance your
+
+927
+00:38:19,650 --> 00:38:21,780
+JavaScript programmer and you write in
+
+928
+00:38:21,780 --> 00:38:22,430
+you know
+
+929
+00:38:22,430 --> 00:38:23,569
+so you're going to search for something
+
+930
+00:38:23,569 --> 00:38:26,150
+along the lines of programming we might
+
+931
+00:38:26,150 --> 00:38:28,069
+send you to JavaScript resources or
+
+932
+00:38:28,069 --> 00:38:30,589
+provide multiple links to JavaScript
+
+933
+00:38:30,589 --> 00:38:33,589
+resources and order in a way that makes
+
+934
+00:38:33,589 --> 00:38:36,290
+sense based on what we know about you we
+
+935
+00:38:36,290 --> 00:38:38,780
+could make hypertext a heck of a lot
+
+936
+00:38:38,780 --> 00:38:41,839
+better Pierre caching the browser's
+
+937
+00:38:41,839 --> 00:38:44,900
+cache is sort of a disaster it's a bit
+
+938
+00:38:44,900 --> 00:38:47,510
+of a nightmare we stick stuff in there
+
+939
+00:38:47,510 --> 00:38:49,490
+god knows what really happens to it
+
+940
+00:38:49,490 --> 00:38:52,760
+we've added all these clue ght p headers
+
+941
+00:38:52,760 --> 00:38:55,670
+to try and get this max age and friends
+
+942
+00:38:55,670 --> 00:38:58,579
+you know it works and it works fairly
+
+943
+00:38:58,579 --> 00:39:00,200
+well I don't want to criticize it too
+
+944
+00:39:00,200 --> 00:39:02,480
+much but still it's kludgy it's a bolt
+
+945
+00:39:02,480 --> 00:39:05,180
+on that we added afterwards maybe we
+
+946
+00:39:05,180 --> 00:39:07,790
+could think about managing the cash in a
+
+947
+00:39:07,790 --> 00:39:12,619
+stateful way all of Yahoo at least all
+
+948
+00:39:12,619 --> 00:39:14,329
+the standard assets that go on most
+
+949
+00:39:14,329 --> 00:39:17,390
+people's pages about forty megabytes we
+
+950
+00:39:17,390 --> 00:39:19,160
+could probably just pre load this stuff
+
+951
+00:39:19,160 --> 00:39:20,720
+in your browser and you would like
+
+952
+00:39:20,720 --> 00:39:22,790
+surfing Yahoo a heck of a lot better if
+
+953
+00:39:22,790 --> 00:39:25,130
+we could manage that using scratch and
+
+954
+00:39:25,130 --> 00:39:26,960
+do these little micro updates may be in
+
+955
+00:39:26,960 --> 00:39:29,000
+a p2p fashion maybe just directly from
+
+956
+00:39:29,000 --> 00:39:31,579
+the control channel doesn't really
+
+957
+00:39:31,579 --> 00:39:33,680
+matter maybe we could make things a lot
+
+958
+00:39:33,680 --> 00:39:37,040
+better that way another idea that one of
+
+959
+00:39:37,040 --> 00:39:39,319
+the developers came up with is and this
+
+960
+00:39:39,319 --> 00:39:40,790
+guy's really big on this idea is the
+
+961
+00:39:40,790 --> 00:39:43,460
+Internet of Things this is the the idea
+
+962
+00:39:43,460 --> 00:39:45,859
+where you're walking past the pizza shop
+
+963
+00:39:45,859 --> 00:39:48,440
+and they blast a pizza coupon on to your
+
+964
+00:39:48,440 --> 00:39:50,630
+mobile device and you go into their shop
+
+965
+00:39:50,630 --> 00:39:52,880
+and spend some money I know that this
+
+966
+00:39:52,880 --> 00:39:54,859
+use case has been batted around for
+
+967
+00:39:54,859 --> 00:39:56,809
+years I think there's some places where
+
+968
+00:39:56,809 --> 00:39:58,309
+they sort of kind of maybe have it
+
+969
+00:39:58,309 --> 00:40:00,380
+working with some are fed and somewhat
+
+970
+00:40:00,380 --> 00:40:02,960
+not one of my developers popped up he
+
+971
+00:40:02,960 --> 00:40:05,210
+says hey what if all those little
+
+972
+00:40:05,210 --> 00:40:07,339
+objects were just emitting little bits
+
+973
+00:40:07,339 --> 00:40:09,049
+of JSON that described what they were
+
+974
+00:40:09,049 --> 00:40:10,970
+and what they were up to then you could
+
+975
+00:40:10,970 --> 00:40:13,609
+sort of have this background UDP sizzle
+
+976
+00:40:13,609 --> 00:40:15,380
+of things as you're walking along and
+
+977
+00:40:15,380 --> 00:40:18,170
+your device could just read that data
+
+978
+00:40:18,170 --> 00:40:19,670
+and know what to do with it in some
+
+979
+00:40:19,670 --> 00:40:21,619
+rational way because hey we sent the
+
+980
+00:40:21,619 --> 00:40:23,770
+schema along the beginning of the header
+
+981
+00:40:23,770 --> 00:40:26,180
+there's a number of different crazy
+
+982
+00:40:26,180 --> 00:40:28,220
+things that we could do these are some
+
+983
+00:40:28,220 --> 00:40:31,450
+science fiction level ideas I admit that
+
+984
+00:40:31,450 --> 00:40:33,740
+large part of what our research team
+
+985
+00:40:33,740 --> 00:40:36,200
+does is trying to think about how
+
+986
+00:40:36,200 --> 00:40:38,020
+make it better in the future not just
+
+987
+00:40:38,020 --> 00:40:40,339
+obsessing about the micro seconds in the
+
+988
+00:40:40,339 --> 00:40:43,820
+milliseconds today performance it's
+
+989
+00:40:43,820 --> 00:40:45,950
+really really really important and to
+
+990
+00:40:45,950 --> 00:40:48,170
+make the web faster we've got to make
+
+991
+00:40:48,170 --> 00:40:51,500
+its murder so that's really all I have
+
+992
+00:40:51,500 --> 00:40:54,680
+to say thank you for listening I hope
+
+993
+00:40:54,680 --> 00:40:56,780
+that this made some sort of sense to you
+
+994
+00:40:56,780 --> 00:40:59,800
+and I'll be happy to take some questions
+
+995
+00:40:59,800 --> 00:41:02,300
+just before I do my email address is
+
+996
+00:41:02,300 --> 00:41:04,790
+here on the slides also my my Twitter
+
+997
+00:41:04,790 --> 00:41:07,310
+tag and and I'd like to have somebody
+
+998
+00:41:07,310 --> 00:41:09,500
+see if they could red laser that QR code
+
+999
+00:41:09,500 --> 00:41:11,450
+on my slides I was just curious as to
+
+1000
+00:41:11,450 --> 00:41:13,369
+whether you could actually red laser a
+
+1001
+00:41:13,369 --> 00:41:15,619
+QR code from somebody's slides don't
+
+1002
+00:41:15,619 --> 00:41:17,060
+worry doesn't go to any porn site or
+
+1003
+00:41:17,060 --> 00:41:18,260
+anything just goes to my twitter feed
+
+1004
+00:41:18,260 --> 00:41:20,930
+but I'm just curious can you actually
+
+1005
+00:41:20,930 --> 00:41:24,980
+cure red laser a QR code from a slide on
+
+1006
+00:41:24,980 --> 00:41:26,930
+the screen at a conference somebody try
+
+1007
+00:41:26,930 --> 00:41:30,920
+it let me know all right with that thing
+
+1008
+00:41:30,920 --> 00:41:33,170
+said let me take some questions here's a
+
+1009
+00:41:33,170 --> 00:41:34,490
+gentleman in the back I can't really
+
+1010
+00:41:34,490 --> 00:41:36,589
+make you out there sir but I'll be happy
+
+1011
+00:41:36,589 --> 00:41:41,730
+to answer your question if i can
+
+1012
+00:41:41,740 --> 00:41:44,300
+actually there's not this is the world
+
+1013
+00:41:44,300 --> 00:41:46,040
+premiere for scratch but there will be
+
+1014
+00:41:46,040 --> 00:41:50,180
+stuff out by monday the we wanted to to
+
+1015
+00:41:50,180 --> 00:41:51,710
+come up here and talk to you about this
+
+1016
+00:41:51,710 --> 00:41:54,319
+first and and we kind of wanted to to
+
+1017
+00:41:54,319 --> 00:41:55,640
+make this the world premiere for this
+
+1018
+00:41:55,640 --> 00:41:58,760
+idea not a whole lot out there you're
+
+1019
+00:41:58,760 --> 00:42:00,800
+the first folks to see it you get the
+
+1020
+00:42:00,800 --> 00:42:02,990
+first chance to criticize on it there
+
+1021
+00:42:02,990 --> 00:42:04,700
+will be some code and some other stuff
+
+1022
+00:42:04,700 --> 00:42:10,730
+on github by Monday we're questions sir
+
+1023
+00:42:10,730 --> 00:42:15,650
+I was just wondering since SPD's already
+
+1024
+00:42:15,650 --> 00:42:17,390
+starting being deployed sort of by Fiat
+
+1025
+00:42:17,390 --> 00:42:18,530
+I'm have you measured it head-to-head
+
+1026
+00:42:18,530 --> 00:42:21,170
+against speedy for the same content we
+
+1027
+00:42:21,170 --> 00:42:23,030
+have not gone directly head-to-head
+
+1028
+00:42:23,030 --> 00:42:24,800
+against speedy I think speedy is at a
+
+1029
+00:42:24,800 --> 00:42:27,109
+more advanced state of development they
+
+1030
+00:42:27,109 --> 00:42:28,790
+have a lot more people working on it and
+
+1031
+00:42:28,790 --> 00:42:30,410
+so we have not done that but we're
+
+1032
+00:42:30,410 --> 00:42:32,180
+really anxious to do it we really like
+
+1033
+00:42:32,180 --> 00:42:33,560
+what the Google guys are doing with
+
+1034
+00:42:33,560 --> 00:42:35,210
+speedy I guess you're probably one of
+
+1035
+00:42:35,210 --> 00:42:38,270
+them no oh but the we like what they're
+
+1036
+00:42:38,270 --> 00:42:40,250
+doing the multiplexing thing is really
+
+1037
+00:42:40,250 --> 00:42:51,530
+interesting it's still faster trash
+
+1038
+00:42:51,540 --> 00:42:54,700
+if before but sorry if performance is
+
+1039
+00:42:54,700 --> 00:42:57,400
+such a concern my are using JSON instead
+
+1040
+00:42:57,400 --> 00:43:00,250
+of be Jason there was some talk about
+
+1041
+00:43:00,250 --> 00:43:02,140
+that we could use bj song we could've
+
+1042
+00:43:02,140 --> 00:43:04,600
+used exi which is also binary asn.1
+
+1043
+00:43:04,600 --> 00:43:06,610
+there's some other things we wanted to
+
+1044
+00:43:06,610 --> 00:43:09,490
+be true to the web ideal everything is
+
+1045
+00:43:09,490 --> 00:43:11,830
+human readable you don't need a machine
+
+1046
+00:43:11,830 --> 00:43:13,510
+to understand what's going on on the
+
+1047
+00:43:13,510 --> 00:43:15,760
+internet and also it's just a lot easier
+
+1048
+00:43:15,760 --> 00:43:23,470
+to deal with I know people don't get up
+
+1049
+00:43:23,470 --> 00:43:25,480
+here and talk about ideals that often I
+
+1050
+00:43:25,480 --> 00:43:29,770
+hope that that's that's okay so you had
+
+1051
+00:43:29,770 --> 00:43:31,390
+mentioned that there's no support yet
+
+1052
+00:43:31,390 --> 00:43:34,060
+for SSL or TLS seems like that might be
+
+1053
+00:43:34,060 --> 00:43:35,950
+a deal-breaker for a lot of people can
+
+1054
+00:43:35,950 --> 00:43:38,260
+you look comment on the roadmap ahead
+
+1055
+00:43:38,260 --> 00:43:40,690
+about if that's a man certainly a
+
+1056
+00:43:40,690 --> 00:43:43,060
+priority but timeline wise when that may
+
+1057
+00:43:43,060 --> 00:43:47,560
+or may not be implemented so so this is
+
+1058
+00:43:47,560 --> 00:43:49,810
+one of the largest outstanding and solve
+
+1059
+00:43:49,810 --> 00:43:51,790
+problems the gentleman's put his finger
+
+1060
+00:43:51,790 --> 00:43:53,830
+right on it if you know if there's
+
+1061
+00:43:53,830 --> 00:43:56,080
+really blockers to acceptance of scratch
+
+1062
+00:43:56,080 --> 00:43:57,370
+beyond the fact that the client can
+
+1063
+00:43:57,370 --> 00:43:59,920
+understand it right now it's that we
+
+1064
+00:43:59,920 --> 00:44:01,900
+don't have a really good story to tell
+
+1065
+00:44:01,900 --> 00:44:04,180
+on security it's at the top of the
+
+1066
+00:44:04,180 --> 00:44:06,430
+priority list for working on as far as a
+
+1067
+00:44:06,430 --> 00:44:10,720
+date I would not even want to hesitate
+
+1068
+00:44:10,720 --> 00:44:13,570
+guess we will work on it thinking about
+
+1069
+00:44:13,570 --> 00:44:15,430
+time cycles it's not going to happen
+
+1070
+00:44:15,430 --> 00:44:17,110
+until later in the summer at the
+
+1071
+00:44:17,110 --> 00:44:18,850
+earliest but it's definitely a high
+
+1072
+00:44:18,850 --> 00:44:22,650
+priority and thank you for noticing it
+
+1073
+00:44:22,650 --> 00:44:26,260
+so hundred I may have been hey I may
+
+1074
+00:44:26,260 --> 00:44:27,850
+miss this did you talk about error
+
+1075
+00:44:27,850 --> 00:44:31,540
+control so I did not talk about error
+
+1076
+00:44:31,540 --> 00:44:33,280
+control although I probably should have
+
+1077
+00:44:33,280 --> 00:44:35,020
+I talked a little bit about packet loss
+
+1078
+00:44:35,020 --> 00:44:37,060
+but I didn't talk about Eric control I
+
+1079
+00:44:37,060 --> 00:44:40,060
+only get 40 minutes for error control
+
+1080
+00:44:40,060 --> 00:44:41,740
+what we really want to do beyond the
+
+1081
+00:44:41,740 --> 00:44:44,920
+obvious crcs and and and other kinds of
+
+1082
+00:44:44,920 --> 00:44:47,500
+check sums is we have in the control
+
+1083
+00:44:47,500 --> 00:44:51,130
+channel a section of data actually it's
+
+1084
+00:44:51,130 --> 00:44:52,840
+three packets not just one that
+
+1085
+00:44:52,840 --> 00:44:55,030
+describes what's happening on the data
+
+1086
+00:44:55,030 --> 00:44:57,940
+channels and allows us to do akin
+
+1087
+00:44:57,940 --> 00:45:01,780
+harris and for checking the the validity
+
+1088
+00:45:01,780 --> 00:45:03,790
+or the the integrity of the day so
+
+1089
+00:45:03,790 --> 00:45:05,650
+you're doing selective retransmission
+
+1090
+00:45:05,650 --> 00:45:08,460
+that yeah and any firewall issues
+
+1091
+00:45:08,460 --> 00:45:11,050
+firewall issues we actually went and
+
+1092
+00:45:11,050 --> 00:45:13,060
+wholeheartedly and I knew somebody was
+
+1093
+00:45:13,060 --> 00:45:14,349
+going to bring this up thank you for
+
+1094
+00:45:14,349 --> 00:45:15,790
+bringing it up because I was prepared to
+
+1095
+00:45:15,790 --> 00:45:18,099
+answer that one for that we actually
+
+1096
+00:45:18,099 --> 00:45:19,720
+just went and grabbed the ton code
+
+1097
+00:45:19,720 --> 00:45:21,819
+that's a that's out there is several
+
+1098
+00:45:21,819 --> 00:45:23,560
+people are using this there's three or
+
+1099
+00:45:23,560 --> 00:45:24,730
+four different ways I don't know if
+
+1100
+00:45:24,730 --> 00:45:27,369
+people are aware of how to get past
+
+1101
+00:45:27,369 --> 00:45:29,859
+firewalls with UDP but things like Skype
+
+1102
+00:45:29,859 --> 00:45:32,349
+use something called ton which basically
+
+1103
+00:45:32,349 --> 00:45:35,290
+does a rendezvous type of approach
+
+1104
+00:45:35,290 --> 00:45:36,940
+basically where you establish a
+
+1105
+00:45:36,940 --> 00:45:39,790
+connection to the first possible closest
+
+1106
+00:45:39,790 --> 00:45:42,190
+node to your destination then you try
+
+1107
+00:45:42,190 --> 00:45:43,540
+and open a connection a little further
+
+1108
+00:45:43,540 --> 00:45:45,880
+back and sort of leapfrog yourself I
+
+1109
+00:45:45,880 --> 00:45:47,380
+know I'm not doing a great job of
+
+1110
+00:45:47,380 --> 00:45:48,790
+describing it it really needs a
+
+1111
+00:45:48,790 --> 00:45:51,250
+whiteboard but there is technology to
+
+1112
+00:45:51,250 --> 00:45:53,230
+help us get through firewalls if you
+
+1113
+00:45:53,230 --> 00:45:54,700
+think about the programs that are out
+
+1114
+00:45:54,700 --> 00:45:56,920
+there using UDP like Skype and some of
+
+1115
+00:45:56,920 --> 00:45:58,569
+the others they've obviously solved this
+
+1116
+00:45:58,569 --> 00:46:01,690
+problem as physicists we can consider
+
+1117
+00:46:01,690 --> 00:46:03,400
+this to be a problem you know that we
+
+1118
+00:46:03,400 --> 00:46:13,000
+reduce this to a problem already solved
+
+1119
+00:46:13,010 --> 00:46:17,670
+I'm sorry multicast is definitely on the
+
+1120
+00:46:17,670 --> 00:46:19,410
+agenda if you think about the way that
+
+1121
+00:46:19,410 --> 00:46:20,880
+things like the peer-to-peer cash
+
+1122
+00:46:20,880 --> 00:46:22,620
+maintenance and so forth that I talked
+
+1123
+00:46:22,620 --> 00:46:25,650
+about work that's a multicast solution
+
+1124
+00:46:25,650 --> 00:46:28,350
+if we look at one of the features that
+
+1125
+00:46:28,350 --> 00:46:30,260
+we wanted to put into scratch was a
+
+1126
+00:46:30,260 --> 00:46:33,420
+nearest object location channel which
+
+1127
+00:46:33,420 --> 00:46:36,300
+would have data about the objects that
+
+1128
+00:46:36,300 --> 00:46:38,910
+you know or love or have in your cash
+
+1129
+00:46:38,910 --> 00:46:40,800
+have some association with we want to
+
+1130
+00:46:40,800 --> 00:46:42,570
+have a data channel that shows where
+
+1131
+00:46:42,570 --> 00:46:45,270
+those are or their nearest points near
+
+1132
+00:46:45,270 --> 00:46:47,100
+its nearby point that's going to have to
+
+1133
+00:46:47,100 --> 00:46:49,050
+be a multicast solution so multicast
+
+1134
+00:46:49,050 --> 00:46:51,750
+definitely on our agenda it's a little
+
+1135
+00:46:51,750 --> 00:46:54,690
+more complicated but it's definitely got
+
+1136
+00:46:54,690 --> 00:47:05,160
+to be there Laura did you remember to
+
+1137
+00:47:05,160 --> 00:47:07,230
+load the bacon oh I knew I forgot
+

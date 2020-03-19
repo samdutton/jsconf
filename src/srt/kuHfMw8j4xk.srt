@@ -1,0 +1,2381 @@
+1
+00:00:00,180 --> 00:00:13,310
+
+[Music]
+
+2
+00:00:13,320 --> 00:00:15,150
+so in this talks you'll learn how to
+
+3
+00:00:15,150 --> 00:00:18,119
+write perfect code so just install
+
+4
+00:00:18,119 --> 00:00:22,360
+standard and that's it thank you
+
+5
+00:00:22,360 --> 00:00:26,660
+[Applause]
+
+6
+00:00:26,660 --> 00:00:28,380
+of course I'm kidding
+
+7
+00:00:28,380 --> 00:00:30,510
+so I will be talking about how to use
+
+8
+00:00:30,510 --> 00:00:33,960
+standard NDS lint to catch programmer
+
+9
+00:00:33,960 --> 00:00:36,210
+errors before they cause problems for
+
+10
+00:00:36,210 --> 00:00:37,190
+your users
+
+11
+00:00:37,190 --> 00:00:39,390
+we'll discuss how to get started with
+
+12
+00:00:39,390 --> 00:00:43,190
+linting as well as how to improve
+
+13
+00:00:43,190 --> 00:00:46,590
+the setup of your linter if you already
+
+14
+00:00:46,590 --> 00:00:50,670
+have one in your codebase so i'm for us
+
+15
+00:00:50,670 --> 00:00:53,550
+i work on lots of projects most of them
+
+16
+00:00:53,550 --> 00:00:55,710
+are open source and you might have heard
+
+17
+00:00:55,710 --> 00:00:58,640
+of web torrent a torn app that works in
+
+18
+00:00:58,640 --> 00:01:01,980
+the browser on the web or maybe standard
+
+19
+00:01:01,980 --> 00:01:03,390
+jeaious which will be discussed in this
+
+20
+00:01:03,390 --> 00:01:08,369
+talk and i spoke it jaesik on asia
+
+21
+00:01:08,369 --> 00:01:11,010
+actually about web torn in 2014 so i'm
+
+22
+00:01:11,010 --> 00:01:12,360
+really honored to be back here speaking
+
+23
+00:01:12,360 --> 00:01:15,409
+about standard this year so thank you so
+
+24
+00:01:15,409 --> 00:01:18,150
+if you know me you know I never wear a
+
+25
+00:01:18,150 --> 00:01:20,549
+suit but since standard is all about
+
+26
+00:01:20,549 --> 00:01:22,290
+writing pretty code code that's
+
+27
+00:01:22,290 --> 00:01:25,610
+enterprise approved and you know all
+
+28
+00:01:25,610 --> 00:01:27,720
+dressed up for business I figured
+
+29
+00:01:27,720 --> 00:01:29,280
+there's no better time to try wearing a
+
+30
+00:01:29,280 --> 00:01:33,950
+suit so what do you guys think thank you
+
+31
+00:01:33,950 --> 00:01:37,710
+okay so let's start what's a winter so a
+
+32
+00:01:37,710 --> 00:01:41,820
+linter catches bugs it analyzes source
+
+33
+00:01:41,820 --> 00:01:43,950
+code to flag bugs and suspicious
+
+34
+00:01:43,950 --> 00:01:46,259
+constructs so suspicious constructs
+
+35
+00:01:46,259 --> 00:01:48,329
+meaning things that you know maybe bugs
+
+36
+00:01:48,329 --> 00:01:51,509
+but aren't necessarily bugs the term
+
+37
+00:01:51,509 --> 00:01:53,250
+lint comes from a UNIX utility that
+
+38
+00:01:53,250 --> 00:01:58,920
+examined C code we still use it today so
+
+39
+00:01:58,920 --> 00:02:02,840
+what's a bug when your code doesn't work
+
+40
+00:02:02,840 --> 00:02:05,430
+but that's pretty broad right so we
+
+41
+00:02:05,430 --> 00:02:07,710
+should try to be more specific about the
+
+42
+00:02:07,710 --> 00:02:10,410
+cause of code not working that way we
+
+43
+00:02:10,410 --> 00:02:11,819
+can think about how to address the true
+
+44
+00:02:11,819 --> 00:02:12,790
+cause of the bug
+
+45
+00:02:12,790 --> 00:02:16,480
+in our code so let's look at the word
+
+46
+00:02:16,480 --> 00:02:20,859
+bug as commonly used by programmers some
+
+47
+00:02:20,859 --> 00:02:23,379
+people say bug is an old term for a
+
+48
+00:02:23,379 --> 00:02:26,980
+monster you can see this meaning still
+
+49
+00:02:26,980 --> 00:02:29,379
+used in obscure terms like bug bear
+
+50
+00:02:29,379 --> 00:02:33,400
+Bugaboo or even boogeyman which is I
+
+51
+00:02:33,400 --> 00:02:37,299
+guess still sort of related to bug but
+
+52
+00:02:37,299 --> 00:02:38,319
+there's actually a better story for
+
+53
+00:02:38,319 --> 00:02:39,790
+where the term bug comes from maybe
+
+54
+00:02:39,790 --> 00:02:45,370
+you've heard it already in 1947 the US
+
+55
+00:02:45,370 --> 00:02:47,560
+Navy used this electromechanical
+
+56
+00:02:47,560 --> 00:02:50,470
+computer really big computer called the
+
+57
+00:02:50,470 --> 00:02:53,739
+mark to to perform computations and one
+
+58
+00:02:53,739 --> 00:02:56,109
+day they were getting wrong results so
+
+59
+00:02:56,109 --> 00:02:57,819
+to fix the problem they actually opened
+
+60
+00:02:57,819 --> 00:03:00,430
+up the computer and found a moth stuck
+
+61
+00:03:00,430 --> 00:03:01,950
+inside which was causing the problem
+
+62
+00:03:01,950 --> 00:03:05,739
+real story so the operators removed it
+
+63
+00:03:05,739 --> 00:03:07,930
+and they they pinned it on the log
+
+64
+00:03:07,930 --> 00:03:09,879
+report and they wrote the following
+
+65
+00:03:09,879 --> 00:03:11,349
+description which you can see up here
+
+66
+00:03:11,349 --> 00:03:15,870
+first actual case of bug being found
+
+67
+00:03:15,870 --> 00:03:19,090
+so some versions of this story say that
+
+68
+00:03:19,090 --> 00:03:21,819
+Grace Hopper herself actually found the
+
+69
+00:03:21,819 --> 00:03:23,709
+bug and and then also coined the term
+
+70
+00:03:23,709 --> 00:03:27,250
+debug at the exact same time so it's
+
+71
+00:03:27,250 --> 00:03:29,530
+such a debug meant taking the bug out of
+
+72
+00:03:29,530 --> 00:03:32,440
+the computer to get it working again so
+
+73
+00:03:32,440 --> 00:03:34,569
+I like this story a lot it's a it's a
+
+74
+00:03:34,569 --> 00:03:36,790
+great story but the thing is there's
+
+75
+00:03:36,790 --> 00:03:38,560
+actually some evidence that Thomas
+
+76
+00:03:38,560 --> 00:03:40,989
+Edison actually used the word word bug
+
+77
+00:03:40,989 --> 00:03:43,959
+about 70 years before this story
+
+78
+00:03:43,959 --> 00:03:46,239
+happened but the thing is it's such a
+
+79
+00:03:46,239 --> 00:03:48,310
+good story that I think like it just
+
+80
+00:03:48,310 --> 00:03:50,169
+always gets retold in conference talks
+
+81
+00:03:50,169 --> 00:03:53,709
+like this one so I digress
+
+82
+00:03:53,709 --> 00:03:55,720
+so anyway in both of these origins
+
+83
+00:03:55,720 --> 00:03:58,569
+stories the one about you know bug being
+
+84
+00:03:58,569 --> 00:04:01,449
+a monster that comes from outside into
+
+85
+00:04:01,449 --> 00:04:04,060
+your into your code and you know takes
+
+86
+00:04:04,060 --> 00:04:05,560
+otherwise perfectly working code and
+
+87
+00:04:05,560 --> 00:04:08,500
+ruins it and then this this actual bug
+
+88
+00:04:08,500 --> 00:04:09,669
+that goes in the computer and both of
+
+89
+00:04:09,669 --> 00:04:12,489
+these stories the term bug is implying
+
+90
+00:04:12,489 --> 00:04:15,280
+that a bug is an external force that
+
+91
+00:04:15,280 --> 00:04:17,440
+that that messes up your code and the
+
+92
+00:04:17,440 --> 00:04:20,019
+thing is this is just not true when's
+
+93
+00:04:20,019 --> 00:04:21,219
+the last time that a bug in your code
+
+94
+00:04:21,219 --> 00:04:22,930
+has actually been caused by hardware
+
+95
+00:04:22,930 --> 00:04:26,200
+malfunction right there's a saying that
+
+96
+00:04:26,200 --> 00:04:26,550
+goes
+
+97
+00:04:26,550 --> 00:04:28,620
+you know if if you think you found a bug
+
+98
+00:04:28,620 --> 00:04:31,379
+in the compiler you probably have an
+
+99
+00:04:31,379 --> 00:04:38,340
+it's just a bug in your code right so
+
+100
+00:04:38,340 --> 00:04:41,729
+the famed computer science a computer
+
+101
+00:04:41,729 --> 00:04:45,780
+scientist Edsger Dijkstra once spoke
+
+102
+00:04:45,780 --> 00:04:47,840
+about how he despised the term bug
+
+103
+00:04:47,840 --> 00:04:50,610
+because he said it just it's disguises
+
+104
+00:04:50,610 --> 00:04:53,340
+where bugs in software where software
+
+105
+00:04:53,340 --> 00:04:55,259
+sorry where software defects actually
+
+106
+00:04:55,259 --> 00:04:58,650
+come from he said that we could for
+
+107
+00:04:58,650 --> 00:05:00,900
+instance begin with cleaning up our
+
+108
+00:05:00,900 --> 00:05:03,840
+language by no longer calling a bug a
+
+109
+00:05:03,840 --> 00:05:06,860
+bug but by calling it an error and
+
+110
+00:05:06,860 --> 00:05:09,330
+that's much more honest because it
+
+111
+00:05:09,330 --> 00:05:10,909
+squarely puts the blame where it belongs
+
+112
+00:05:10,909 --> 00:05:13,169
+namely with the programmer who made the
+
+113
+00:05:13,169 --> 00:05:15,840
+air the the animistic metaphor of the
+
+114
+00:05:15,840 --> 00:05:18,090
+bug that maliciously sneaked in while
+
+115
+00:05:18,090 --> 00:05:19,379
+the programmer was not looking is
+
+116
+00:05:19,379 --> 00:05:21,659
+intellectually dishonest as it disguises
+
+117
+00:05:21,659 --> 00:05:22,919
+that the error is the programmers own
+
+118
+00:05:22,919 --> 00:05:28,919
+creation end quote ok Dijkstra so calm
+
+119
+00:05:28,919 --> 00:05:31,590
+down a lot of a lot of Dijkstra's talks
+
+120
+00:05:31,590 --> 00:05:33,449
+and writings can often sound like an old
+
+121
+00:05:33,449 --> 00:05:35,340
+man yelling at a cloud he's a very
+
+122
+00:05:35,340 --> 00:05:38,370
+grumpy person but I think he's actually
+
+123
+00:05:38,370 --> 00:05:40,229
+right about this this terminology
+
+124
+00:05:40,229 --> 00:05:45,360
+confusion so back to yes lint so so what
+
+125
+00:05:45,360 --> 00:05:46,919
+is the point of a linter the point of a
+
+126
+00:05:46,919 --> 00:05:48,630
+linter and the point of the eslint is to
+
+127
+00:05:48,630 --> 00:05:52,919
+catch programmer errors so let's let's
+
+128
+00:05:52,919 --> 00:05:55,139
+dive into the the history of linters and
+
+129
+00:05:55,139 --> 00:05:58,620
+j/s really quickly so jslint was the
+
+130
+00:05:58,620 --> 00:06:01,139
+original winter it was created by
+
+131
+00:06:01,139 --> 00:06:06,000
+Douglas Crockford in 2002 that's 16
+
+132
+00:06:06,000 --> 00:06:09,479
+years ago which in I guess in JavaScript
+
+133
+00:06:09,479 --> 00:06:12,090
+years that's like a hundred years or
+
+134
+00:06:12,090 --> 00:06:15,509
+something so so then then Gia's hints
+
+135
+00:06:15,509 --> 00:06:18,029
+came out in 2010 and that was basically
+
+136
+00:06:18,029 --> 00:06:19,560
+designed to offer a little more
+
+137
+00:06:19,560 --> 00:06:20,279
+configurability
+
+138
+00:06:20,279 --> 00:06:23,610
+and added a few more rules finally we
+
+139
+00:06:23,610 --> 00:06:25,229
+have es lint which came out in 2013 and
+
+140
+00:06:25,229 --> 00:06:28,590
+that offered better es6 support more
+
+141
+00:06:28,590 --> 00:06:30,779
+rules that specifically rules about a
+
+142
+00:06:30,779 --> 00:06:33,750
+code style so that's like punctuation
+
+143
+00:06:33,750 --> 00:06:35,279
+and things like that that don't have
+
+144
+00:06:35,279 --> 00:06:37,529
+anything to do with correctness as well
+
+145
+00:06:37,529 --> 00:06:39,719
+as a flexible plug-in system that let
+
+146
+00:06:39,719 --> 00:06:40,139
+develop
+
+147
+00:06:40,139 --> 00:06:44,219
+make their own style rules so these
+
+148
+00:06:44,219 --> 00:06:46,889
+three categories of things are what what
+
+149
+00:06:46,889 --> 00:06:50,039
+es Lynch x4 so the first is the most
+
+150
+00:06:50,039 --> 00:06:52,610
+important the first is programmer errors
+
+151
+00:06:52,610 --> 00:06:55,289
+so programmer errors are a correctness
+
+152
+00:06:55,289 --> 00:06:58,830
+issue they they happen when the they
+
+153
+00:06:58,830 --> 00:07:00,419
+basically cause the program to do the
+
+154
+00:07:00,419 --> 00:07:02,219
+wrong thing we never want these in our
+
+155
+00:07:02,219 --> 00:07:04,199
+program there's there's they're never
+
+156
+00:07:04,199 --> 00:07:08,610
+okay basically now best practices these
+
+157
+00:07:08,610 --> 00:07:12,539
+are about avoiding confusing code that
+
+158
+00:07:12,539 --> 00:07:14,430
+they're about avoiding patterns that
+
+159
+00:07:14,430 --> 00:07:18,509
+lead to that often lead to errors so
+
+160
+00:07:18,509 --> 00:07:20,729
+it's possible for code to be correct but
+
+161
+00:07:20,729 --> 00:07:23,520
+still be very confusing and and so so
+
+162
+00:07:23,520 --> 00:07:26,550
+when you when you check for best
+
+163
+00:07:26,550 --> 00:07:27,719
+practices what you're doing is you're
+
+164
+00:07:27,719 --> 00:07:30,449
+it's about minimizing the risk and and
+
+165
+00:07:30,449 --> 00:07:32,759
+also helping with clarity so that
+
+166
+00:07:32,759 --> 00:07:34,439
+programmers that come along later can
+
+167
+00:07:34,439 --> 00:07:37,310
+quickly understand what's going on and
+
+168
+00:07:37,310 --> 00:07:40,499
+lastly we have style issues so these are
+
+169
+00:07:40,499 --> 00:07:42,960
+about spacing punctuation how the code
+
+170
+00:07:42,960 --> 00:07:47,759
+looks and you want a team to agree on
+
+171
+00:07:47,759 --> 00:07:50,819
+like tabs or spaces for instance so the
+
+172
+00:07:50,819 --> 00:07:54,389
+code looks consistent and so the the I
+
+173
+00:07:54,389 --> 00:07:56,370
+guess the ultimate goal here is to to
+
+174
+00:07:56,370 --> 00:07:57,930
+make an entire code base look like it
+
+175
+00:07:57,930 --> 00:08:01,500
+was written by a single person so if you
+
+176
+00:08:01,500 --> 00:08:02,460
+can get your entire code base to look
+
+177
+00:08:02,460 --> 00:08:03,389
+like it was written by a single person
+
+178
+00:08:03,389 --> 00:08:08,520
+that's that's easiest and best for for
+
+179
+00:08:08,520 --> 00:08:11,099
+readability and and and you won't you
+
+180
+00:08:11,099 --> 00:08:12,810
+won't get distracted by you know things
+
+181
+00:08:12,810 --> 00:08:14,669
+that look at a place for example this is
+
+182
+00:08:14,669 --> 00:08:16,589
+why we have copy editors and newspapers
+
+183
+00:08:16,589 --> 00:08:19,050
+at least we used to before we went to
+
+184
+00:08:19,050 --> 00:08:23,039
+online news okay so let's talk about the
+
+185
+00:08:23,039 --> 00:08:24,689
+first and most important use of a winter
+
+186
+00:08:24,689 --> 00:08:27,149
+catching programmer errors so you can
+
+187
+00:08:27,149 --> 00:08:29,279
+obviously just like run your program and
+
+188
+00:08:29,279 --> 00:08:32,519
+try to test all the cases at runtime and
+
+189
+00:08:32,519 --> 00:08:34,560
+and you know that's what qada
+
+190
+00:08:34,560 --> 00:08:36,209
+the point of QA is at the point of
+
+191
+00:08:36,209 --> 00:08:38,479
+integration tests and even unit tests
+
+192
+00:08:38,479 --> 00:08:40,589
+but a linter can help us catch these
+
+193
+00:08:40,589 --> 00:08:43,260
+errors statically which means we should
+
+194
+00:08:43,260 --> 00:08:45,000
+be shortening the feedback loop we don't
+
+195
+00:08:45,000 --> 00:08:47,370
+need to run our test suite or or
+
+196
+00:08:47,370 --> 00:08:49,199
+actually use our app and make sure we've
+
+197
+00:08:49,199 --> 00:08:51,120
+exercised all the possible code paths in
+
+198
+00:08:51,120 --> 00:08:54,250
+order to to catch an error so we can
+
+199
+00:08:54,250 --> 00:08:56,770
+catch it immediately ideally directly in
+
+200
+00:08:56,770 --> 00:08:59,050
+our editor so let's look at a few
+
+201
+00:08:59,050 --> 00:09:00,670
+examples of the types of errors that can
+
+202
+00:09:00,670 --> 00:09:04,870
+be detected okay so quick quiz do you
+
+203
+00:09:04,870 --> 00:09:11,680
+see the bug in this code raise your hand
+
+204
+00:09:11,680 --> 00:09:14,610
+if you see it okay
+
+205
+00:09:14,610 --> 00:09:17,320
+not very many yeah it's tricky
+
+206
+00:09:17,320 --> 00:09:18,880
+it's it's subtle basically what's going
+
+207
+00:09:18,880 --> 00:09:20,290
+on is the for loop is going in the wrong
+
+208
+00:09:20,290 --> 00:09:22,750
+direction the eye is being decremented
+
+209
+00:09:22,750 --> 00:09:25,150
+with each iteration of the loop and so
+
+210
+00:09:25,150 --> 00:09:26,500
+this will never terminate this is an
+
+211
+00:09:26,500 --> 00:09:28,150
+infinite loop because it's going down
+
+212
+00:09:28,150 --> 00:09:29,470
+and we're only going to stop when we get
+
+213
+00:09:29,470 --> 00:09:32,650
+up to ten so this is a kind of bug that
+
+214
+00:09:32,650 --> 00:09:34,780
+you know if it's in your code base and
+
+215
+00:09:34,780 --> 00:09:36,520
+it's not exercised in your integration
+
+216
+00:09:36,520 --> 00:09:38,530
+tests or by your by your you know your
+
+217
+00:09:38,530 --> 00:09:40,360
+testing your manual testing you're going
+
+218
+00:09:40,360 --> 00:09:42,130
+to miss it and you're only going to
+
+219
+00:09:42,130 --> 00:09:45,040
+discover this when when this bug affects
+
+220
+00:09:45,040 --> 00:09:47,650
+your users in production so a for loop
+
+221
+00:09:47,650 --> 00:09:48,820
+with the stop condition that can never
+
+222
+00:09:48,820 --> 00:09:51,970
+be reached such as this one just should
+
+223
+00:09:51,970 --> 00:09:53,200
+never be in your codebase that's what
+
+224
+00:09:53,200 --> 00:09:55,000
+that's what es lint is is an example of
+
+225
+00:09:55,000 --> 00:09:56,620
+a rule that he has not will enforce for
+
+226
+00:09:56,620 --> 00:10:00,940
+you here's another one this is another
+
+227
+00:10:00,940 --> 00:10:04,260
+useful one so this is this is a
+
+228
+00:10:04,260 --> 00:10:06,339
+assignment that's actually happening
+
+229
+00:10:06,339 --> 00:10:08,820
+inside this conditional so it's actually
+
+230
+00:10:08,820 --> 00:10:11,080
+going to always be a truthy value or
+
+231
+00:10:11,080 --> 00:10:13,330
+actually not comparing the string to the
+
+232
+00:10:13,330 --> 00:10:15,970
+to the property here it's actually a
+
+233
+00:10:15,970 --> 00:10:17,589
+signing manager manager string to the
+
+234
+00:10:17,589 --> 00:10:19,630
+property and then returning the value of
+
+235
+00:10:19,630 --> 00:10:20,830
+that whole expression is the string
+
+236
+00:10:20,830 --> 00:10:21,820
+manager so it's always gonna be true
+
+237
+00:10:21,820 --> 00:10:24,550
+the-- so this is easy mistake to make
+
+238
+00:10:24,550 --> 00:10:27,700
+but it's very easy for a linter to
+
+239
+00:10:27,700 --> 00:10:30,520
+detect so this is another example
+
+240
+00:10:30,520 --> 00:10:33,190
+something that you'll get saved by feeis
+
+241
+00:10:33,190 --> 00:10:35,680
+lint let's do a few more so here's
+
+242
+00:10:35,680 --> 00:10:38,170
+another one um this one here is this is
+
+243
+00:10:38,170 --> 00:10:42,370
+actually this is an example of really
+
+244
+00:10:42,370 --> 00:10:43,390
+something that probably should have just
+
+245
+00:10:43,390 --> 00:10:45,130
+been like a syntax error in the language
+
+246
+00:10:45,130 --> 00:10:48,250
+honestly having having parameters to a
+
+247
+00:10:48,250 --> 00:10:49,990
+function that are named exactly the same
+
+248
+00:10:49,990 --> 00:10:52,930
+like that's so silly that that's all
+
+249
+00:10:52,930 --> 00:10:55,990
+hard but but it is and so what actually
+
+250
+00:10:55,990 --> 00:10:58,120
+happens is the second parameter that
+
+251
+00:10:58,120 --> 00:11:00,100
+will actually take will actually shadow
+
+252
+00:11:00,100 --> 00:11:02,950
+the preceding one and so this this is
+
+253
+00:11:02,950 --> 00:11:04,649
+probably like a typo and
+
+254
+00:11:04,649 --> 00:11:05,759
+practice is probably typos in your
+
+255
+00:11:05,759 --> 00:11:08,430
+codebase or like something that happened
+
+256
+00:11:08,430 --> 00:11:11,149
+by accident while refactoring and so
+
+257
+00:11:11,149 --> 00:11:13,110
+this will just you know yes some will
+
+258
+00:11:13,110 --> 00:11:16,939
+just catch this for you here's one more
+
+259
+00:11:16,939 --> 00:11:20,040
+so this rule enforces comparing type of
+
+260
+00:11:20,040 --> 00:11:25,079
+to valid string literals so type of can
+
+261
+00:11:25,079 --> 00:11:26,879
+only return one of like five or six
+
+262
+00:11:26,879 --> 00:11:29,339
+strings so let's just make sure that
+
+263
+00:11:29,339 --> 00:11:30,899
+every where we're using type of we're
+
+264
+00:11:30,899 --> 00:11:32,249
+comparing it to one of those five or six
+
+265
+00:11:32,249 --> 00:11:33,749
+strings if we compare it to any other
+
+266
+00:11:33,749 --> 00:11:36,860
+string than those five or six then we're
+
+267
+00:11:36,860 --> 00:11:40,170
+it's always gonna be false so it's an
+
+268
+00:11:40,170 --> 00:11:46,199
+error this one's kind of subtle so if
+
+269
+00:11:46,199 --> 00:11:47,850
+you actually have a reg X in your code
+
+270
+00:11:47,850 --> 00:11:49,920
+base that uses the literal the reg X
+
+271
+00:11:49,920 --> 00:11:51,809
+literal syntax that's the one with the
+
+272
+00:11:51,809 --> 00:11:53,790
+slashes where you put your X between the
+
+273
+00:11:53,790 --> 00:11:56,670
+two slashes that one is actually parsed
+
+274
+00:11:56,670 --> 00:11:59,819
+and if you have an invalid reg X that
+
+275
+00:11:59,819 --> 00:12:01,199
+will be caught and it'll be a syntax
+
+276
+00:12:01,199 --> 00:12:03,720
+error but if you have one that's a
+
+277
+00:12:03,720 --> 00:12:05,129
+string and you're doing Arreaga click
+
+278
+00:12:05,129 --> 00:12:07,350
+this then then this is going to be
+
+279
+00:12:07,350 --> 00:12:09,059
+caught at runtime only when this code
+
+280
+00:12:09,059 --> 00:12:11,790
+code path is executed but we can catch
+
+281
+00:12:11,790 --> 00:12:14,029
+this with the winter
+
+282
+00:12:14,029 --> 00:12:15,959
+okay so there's dozens more of these
+
+283
+00:12:15,959 --> 00:12:18,120
+they're all great things to check in
+
+284
+00:12:18,120 --> 00:12:20,129
+your code and you can you can get them
+
+285
+00:12:20,129 --> 00:12:20,999
+all but I'm not going to go over them
+
+286
+00:12:20,999 --> 00:12:23,550
+all obviously okay so let's let's take a
+
+287
+00:12:23,550 --> 00:12:25,019
+break from talking about the examples of
+
+288
+00:12:25,019 --> 00:12:26,370
+things that can be caught and let's talk
+
+289
+00:12:26,370 --> 00:12:29,429
+about how you actually use es lines
+
+290
+00:12:29,429 --> 00:12:30,839
+because you obviously want to use it now
+
+291
+00:12:30,839 --> 00:12:35,939
+right so you make an es on our C file
+
+292
+00:12:35,939 --> 00:12:37,529
+and add it to your code base this is
+
+293
+00:12:37,529 --> 00:12:40,370
+actually the one that standard uses it's
+
+294
+00:12:40,370 --> 00:12:43,279
+over 200 lines long
+
+295
+00:12:43,279 --> 00:12:46,889
+so yes the config files can be really
+
+296
+00:12:46,889 --> 00:12:49,350
+long they're often really long and if
+
+297
+00:12:49,350 --> 00:12:50,970
+you don't want to decide on each of
+
+298
+00:12:50,970 --> 00:12:53,759
+these rules one at a time you can extend
+
+299
+00:12:53,759 --> 00:12:55,850
+what's what's called a shareable config
+
+300
+00:12:55,850 --> 00:12:58,529
+c by extending a shareable config that
+
+301
+00:12:58,529 --> 00:13:00,600
+gets you a bunch of rules that you can
+
+302
+00:13:00,600 --> 00:13:03,929
+inherit by default so in this case we're
+
+303
+00:13:03,929 --> 00:13:07,879
+inheriting from the standard rule set
+
+304
+00:13:07,879 --> 00:13:10,079
+there's a few other alternatives you can
+
+305
+00:13:10,079 --> 00:13:12,209
+look at there's one by Airbnb that's
+
+306
+00:13:12,209 --> 00:13:13,649
+really popular and there's another one
+
+307
+00:13:13,649 --> 00:13:15,389
+by Google that's quite popular as well
+
+308
+00:13:15,389 --> 00:13:17,309
+it doesn't matter which one you choose
+
+309
+00:13:17,309 --> 00:13:18,270
+just pick one
+
+310
+00:13:18,270 --> 00:13:23,310
+and stick with it one thing I'll say
+
+311
+00:13:23,310 --> 00:13:25,110
+though is if you use an ESL into our C
+
+312
+00:13:25,110 --> 00:13:26,280
+file in your codebase
+
+313
+00:13:26,280 --> 00:13:29,430
+beware of rule overrides so one
+
+314
+00:13:29,430 --> 00:13:31,650
+disadvantage to using this file is that
+
+315
+00:13:31,650 --> 00:13:34,920
+anyone can go in and override the rules
+
+316
+00:13:34,920 --> 00:13:38,310
+by just adding a new line to this rules
+
+317
+00:13:38,310 --> 00:13:42,900
+array here and that's where standard
+
+318
+00:13:42,900 --> 00:13:44,640
+comes in so so and this is where
+
+319
+00:13:44,640 --> 00:13:48,900
+standard really shines so it's it's more
+
+320
+00:13:48,900 --> 00:13:51,090
+than a shareable config it's actually an
+
+321
+00:13:51,090 --> 00:13:53,220
+entire command line program that you
+
+322
+00:13:53,220 --> 00:13:56,010
+install and then you run directly and it
+
+323
+00:13:56,010 --> 00:13:57,420
+comes with the more than 200
+
+324
+00:13:57,420 --> 00:14:00,330
+pre-configured you slunt rules but the
+
+325
+00:14:00,330 --> 00:14:01,860
+thing is it bundles them up into a
+
+326
+00:14:01,860 --> 00:14:04,560
+single command that you can just run or
+
+327
+00:14:04,560 --> 00:14:07,890
+that you can add to your test suite so
+
+328
+00:14:07,890 --> 00:14:10,590
+this is how you would use it and I think
+
+329
+00:14:10,590 --> 00:14:11,940
+it's the easiest way to add a linter to
+
+330
+00:14:11,940 --> 00:14:13,680
+your project because there's no need to
+
+331
+00:14:13,680 --> 00:14:15,750
+setup any config files there's no need
+
+332
+00:14:15,750 --> 00:14:17,160
+to decide on which rules you're going to
+
+333
+00:14:17,160 --> 00:14:20,370
+use you just install it and then you run
+
+334
+00:14:20,370 --> 00:14:21,630
+it and then it tells you whether your
+
+335
+00:14:21,630 --> 00:14:25,260
+code passes or not you can also add - -
+
+336
+00:14:25,260 --> 00:14:27,480
+fix and it will try to fix any errors
+
+337
+00:14:27,480 --> 00:14:29,250
+that it sees so for example this error
+
+338
+00:14:29,250 --> 00:14:31,920
+here with the triple equals can be a can
+
+339
+00:14:31,920 --> 00:14:33,180
+be actually fixed automatically in some
+
+340
+00:14:33,180 --> 00:14:37,980
+cases which is really nice so standard
+
+341
+00:14:37,980 --> 00:14:39,660
+has a vibrant community it's downloaded
+
+342
+00:14:39,660 --> 00:14:41,340
+a million times per month and there's
+
+343
+00:14:41,340 --> 00:14:43,230
+editor plug-ins for every major editor
+
+344
+00:14:43,230 --> 00:14:45,510
+and it's also built into the webstorm
+
+345
+00:14:45,510 --> 00:14:47,310
+editor by default and you can go into
+
+346
+00:14:47,310 --> 00:14:51,210
+preferences to turn it on so I don't
+
+347
+00:14:51,210 --> 00:14:52,170
+want to make this too much of a sales
+
+348
+00:14:52,170 --> 00:14:56,370
+pitch but I will say that oh yeah this
+
+349
+00:14:56,370 --> 00:14:58,470
+is just how to how to add it as a dev
+
+350
+00:14:58,470 --> 00:15:01,110
+dependency you can you can then just add
+
+351
+00:15:01,110 --> 00:15:04,200
+standard to your test script and prepend
+
+352
+00:15:04,200 --> 00:15:05,640
+it to whatever your normal node tests
+
+353
+00:15:05,640 --> 00:15:07,340
+are and there's nothing to configure but
+
+354
+00:15:07,340 --> 00:15:10,710
+the point is that you should probably be
+
+355
+00:15:10,710 --> 00:15:12,780
+using you know yes lint or standard or
+
+356
+00:15:12,780 --> 00:15:14,070
+something like this in your code and you
+
+357
+00:15:14,070 --> 00:15:17,070
+probably already are but I guess I want
+
+358
+00:15:17,070 --> 00:15:18,240
+to go into a little bit about sort of
+
+359
+00:15:18,240 --> 00:15:19,350
+the choices and the trade-offs for
+
+360
+00:15:19,350 --> 00:15:22,200
+thinking about what to what to use so
+
+361
+00:15:22,200 --> 00:15:24,330
+using the eslint directly is a totally
+
+362
+00:15:24,330 --> 00:15:28,710
+valid choice and it's it's
+
+363
+00:15:28,710 --> 00:15:30,990
+it's something that some of the projects
+
+364
+00:15:30,990 --> 00:15:32,760
+I've worked on do but there's just a few
+
+365
+00:15:32,760 --> 00:15:34,110
+gotchas that you should be aware of if
+
+366
+00:15:34,110 --> 00:15:37,620
+you do this so the first one is bike
+
+367
+00:15:37,620 --> 00:15:40,890
+shedding so some teammates will propose
+
+368
+00:15:40,890 --> 00:15:44,820
+rule changes to suit their own personal
+
+369
+00:15:44,820 --> 00:15:47,610
+coding style and now your team has to
+
+370
+00:15:47,610 --> 00:15:49,470
+debate the pros and the cons of like
+
+371
+00:15:49,470 --> 00:15:52,290
+tabs or spaces or whatever in your issue
+
+372
+00:15:52,290 --> 00:15:54,420
+tracker so this can take like days or
+
+373
+00:15:54,420 --> 00:15:57,030
+weeks and the thing is like the less
+
+374
+00:15:57,030 --> 00:15:59,850
+important topic is the more like the
+
+375
+00:15:59,850 --> 00:16:01,320
+more subjective it is the the more
+
+376
+00:16:01,320 --> 00:16:05,040
+opinions people have and it's so easy to
+
+377
+00:16:05,040 --> 00:16:08,400
+have an opinion when when when the the
+
+378
+00:16:08,400 --> 00:16:09,990
+issue is like insignificant it doesn't
+
+379
+00:16:09,990 --> 00:16:11,880
+matter and this is why you know the
+
+380
+00:16:11,880 --> 00:16:13,260
+example of bike shedding is the color
+
+381
+00:16:13,260 --> 00:16:14,790
+everyone has an opinion about what color
+
+382
+00:16:14,790 --> 00:16:16,050
+we should paint the bike shed but no one
+
+383
+00:16:16,050 --> 00:16:17,970
+has an opinion about like you know let's
+
+384
+00:16:17,970 --> 00:16:20,580
+say the like shape of the bike shed or
+
+385
+00:16:20,580 --> 00:16:23,100
+like how how how to architect it so that
+
+386
+00:16:23,100 --> 00:16:24,720
+doesn't fall over that stuff's harder
+
+387
+00:16:24,720 --> 00:16:26,820
+and and and so only the experts can
+
+388
+00:16:26,820 --> 00:16:27,960
+actually participate in that part of the
+
+389
+00:16:27,960 --> 00:16:29,940
+discussion but the more trivial the
+
+390
+00:16:29,940 --> 00:16:32,610
+issues the more like everyone just wants
+
+391
+00:16:32,610 --> 00:16:35,370
+to wants to like debate it and talk
+
+392
+00:16:35,370 --> 00:16:37,260
+about the pros and the cons so these
+
+393
+00:16:37,260 --> 00:16:38,490
+kinds of things can suck up a lot of
+
+394
+00:16:38,490 --> 00:16:40,560
+time for a little to no benefit so
+
+395
+00:16:40,560 --> 00:16:43,050
+really when it comes to these decisions
+
+396
+00:16:43,050 --> 00:16:45,210
+stainer just picks something and then
+
+397
+00:16:45,210 --> 00:16:46,860
+you know if it's a tries to be
+
+398
+00:16:46,860 --> 00:16:48,420
+reasonable and just pick something and
+
+399
+00:16:48,420 --> 00:16:50,700
+then you can move on
+
+400
+00:16:50,700 --> 00:16:52,650
+so when debates happen they happen on
+
+401
+00:16:52,650 --> 00:16:55,530
+the standard issue tracker and me and
+
+402
+00:16:55,530 --> 00:16:57,300
+all the other contributors we do the
+
+403
+00:16:57,300 --> 00:16:58,560
+bike shedding so that your team doesn't
+
+404
+00:16:58,560 --> 00:17:02,640
+have to anyway if you want to use the
+
+405
+00:17:02,640 --> 00:17:04,589
+eslint directly that's fine just be
+
+406
+00:17:04,589 --> 00:17:06,450
+aware that some teammates on your team
+
+407
+00:17:06,450 --> 00:17:08,190
+may mean we try to change it they might
+
+408
+00:17:08,190 --> 00:17:09,570
+try to debate the rules they may
+
+409
+00:17:09,570 --> 00:17:12,180
+actually was just talking to Tim Tim
+
+410
+00:17:12,180 --> 00:17:13,170
+earlier and he was telling me that
+
+411
+00:17:13,170 --> 00:17:14,970
+someone on his I guess what if it was
+
+412
+00:17:14,970 --> 00:17:16,230
+his team I don't want to call it anybody
+
+413
+00:17:16,230 --> 00:17:20,450
+but someone that he knows frequently
+
+414
+00:17:20,450 --> 00:17:23,720
+well in their poll requests actually add
+
+415
+00:17:23,720 --> 00:17:27,000
+like an es lint change to the rules to
+
+416
+00:17:27,000 --> 00:17:28,980
+get the the pro requests to pass and
+
+417
+00:17:28,980 --> 00:17:30,810
+they'll sneak it in inside of a huge
+
+418
+00:17:30,810 --> 00:17:31,860
+polar quest with a bunch of other
+
+419
+00:17:31,860 --> 00:17:33,900
+unrelated changes and that's their way
+
+420
+00:17:33,900 --> 00:17:36,090
+of avoiding actually convincing their
+
+421
+00:17:36,090 --> 00:17:37,530
+teammates to make the change they just
+
+422
+00:17:37,530 --> 00:17:39,570
+kind of sneak it in like that so maybe
+
+423
+00:17:39,570 --> 00:17:41,200
+you know someone who does that
+
+424
+00:17:41,200 --> 00:17:43,929
+um so really you want to lock down the
+
+425
+00:17:43,929 --> 00:17:45,940
+file and make it like much harder or
+
+426
+00:17:45,940 --> 00:17:52,450
+impossible to change it one other thing
+
+427
+00:17:52,450 --> 00:17:56,380
+beware of duplication so checking the is
+
+428
+00:17:56,380 --> 00:17:59,019
+lint RC file into every repository that
+
+429
+00:17:59,019 --> 00:18:00,370
+your team manages can lead to
+
+430
+00:18:00,370 --> 00:18:02,289
+maintenance headaches to keep them all
+
+431
+00:18:02,289 --> 00:18:04,809
+in sync so you you want to think about
+
+432
+00:18:04,809 --> 00:18:07,899
+how to solve this you can put the es
+
+433
+00:18:07,899 --> 00:18:09,519
+lint file into its own package that's
+
+434
+00:18:09,519 --> 00:18:11,049
+one solution there's another one I'll
+
+435
+00:18:11,049 --> 00:18:12,970
+talk about at the end of this talk - you
+
+436
+00:18:12,970 --> 00:18:17,769
+can use okay so we we said there's three
+
+437
+00:18:17,769 --> 00:18:21,070
+reasons why you would use a linter let's
+
+438
+00:18:21,070 --> 00:18:23,679
+talk just quickly about a few of the
+
+439
+00:18:23,679 --> 00:18:25,480
+best practices types of rules that es
+
+440
+00:18:25,480 --> 00:18:26,559
+lint has because we've already talked
+
+441
+00:18:26,559 --> 00:18:29,019
+about the first the first one programmer
+
+442
+00:18:29,019 --> 00:18:31,840
+errors so remember best practices were
+
+443
+00:18:31,840 --> 00:18:34,149
+about avoiding confusing code patterns
+
+444
+00:18:34,149 --> 00:18:35,620
+that like often lead to errors but
+
+445
+00:18:35,620 --> 00:18:37,389
+they're not necessarily like the code
+
+446
+00:18:37,389 --> 00:18:38,860
+can be technically correct but still be
+
+447
+00:18:38,860 --> 00:18:42,460
+terrible so here's another quiz for you
+
+448
+00:18:42,460 --> 00:18:45,730
+guys which are what do these expressions
+
+449
+00:18:45,730 --> 00:18:46,389
+up here these three expressions
+
+450
+00:18:46,389 --> 00:18:49,360
+evaluates to think about it very
+
+451
+00:18:49,360 --> 00:18:55,779
+carefully yeah so this is all or
+
+452
+00:18:55,779 --> 00:18:58,750
+probably should just be never written in
+
+453
+00:18:58,750 --> 00:19:01,779
+any code base the answer it who thinks
+
+454
+00:19:01,779 --> 00:19:02,950
+they have an answer actually I'm curious
+
+455
+00:19:02,950 --> 00:19:04,570
+raise your hand if you think you have an
+
+456
+00:19:04,570 --> 00:19:07,830
+answer I can't see anyone their hand up
+
+457
+00:19:07,830 --> 00:19:14,260
+Wow okay so they're all true makes sense
+
+458
+00:19:14,260 --> 00:19:17,919
+right so what there's a whole talk
+
+459
+00:19:17,919 --> 00:19:19,960
+filled with examples of stuff like this
+
+460
+00:19:19,960 --> 00:19:22,029
+in JavaScript the the lesson of that
+
+461
+00:19:22,029 --> 00:19:24,399
+talk was or to me was don't just don't
+
+462
+00:19:24,399 --> 00:19:25,570
+try to memorize the rules they don't
+
+463
+00:19:25,570 --> 00:19:27,490
+make sense they're pointless to remember
+
+464
+00:19:27,490 --> 00:19:30,909
+use a linter and use rules that try to
+
+465
+00:19:30,909 --> 00:19:33,580
+make it harder to to own yourself like
+
+466
+00:19:33,580 --> 00:19:36,850
+this just here's an example use require
+
+467
+00:19:36,850 --> 00:19:39,279
+trip require triple equals and you'll
+
+468
+00:19:39,279 --> 00:19:43,000
+never run into this issue oh and that's
+
+469
+00:19:43,000 --> 00:19:44,279
+because that's because triple equals
+
+470
+00:19:44,279 --> 00:19:45,970
+enforces that the types that you're
+
+471
+00:19:45,970 --> 00:19:47,350
+comparing are the same in addition to
+
+472
+00:19:47,350 --> 00:19:50,679
+their set values being the same but I
+
+473
+00:19:50,679 --> 00:19:52,000
+want to say one thing so standard tries
+
+474
+00:19:52,000 --> 00:19:53,169
+to help you write good code but it
+
+475
+00:19:53,169 --> 00:19:54,880
+doesn't want to get in the way of being
+
+476
+00:19:54,880 --> 00:19:57,120
+- you just want to be too pedantic and
+
+477
+00:19:57,120 --> 00:20:00,130
+and be annoying to use so it the focus
+
+478
+00:20:00,130 --> 00:20:02,290
+is on preventing like actual errors so
+
+479
+00:20:02,290 --> 00:20:03,400
+if you want to use like the double
+
+480
+00:20:03,400 --> 00:20:05,830
+equals null shorthand to test whether a
+
+481
+00:20:05,830 --> 00:20:07,450
+variable is null or undefined that's
+
+482
+00:20:07,450 --> 00:20:08,980
+fine standard doesn't treat it as an
+
+483
+00:20:08,980 --> 00:20:10,450
+error because it's a comment JavaScript
+
+484
+00:20:10,450 --> 00:20:14,770
+idiom all right this is is actually C
+
+485
+00:20:14,770 --> 00:20:17,470
+code but you should should still be able
+
+486
+00:20:17,470 --> 00:20:20,200
+to figure it out do you see the
+
+487
+00:20:20,200 --> 00:20:29,650
+programmer error in this yeah so this
+
+488
+00:20:29,650 --> 00:20:31,810
+actually comes from Apple's SSL
+
+489
+00:20:31,810 --> 00:20:35,470
+implementation and this was in the news
+
+490
+00:20:35,470 --> 00:20:38,680
+I think like a few years ago and this is
+
+491
+00:20:38,680 --> 00:20:40,060
+the reason why you should never omit
+
+492
+00:20:40,060 --> 00:20:43,450
+curly braces if you have multiple if if
+
+493
+00:20:43,450 --> 00:20:44,890
+statements that that go onto multiple
+
+494
+00:20:44,890 --> 00:20:47,860
+lines so if you see like right there
+
+495
+00:20:47,860 --> 00:20:51,160
+there's to go to fails this was called
+
+496
+00:20:51,160 --> 00:20:54,460
+the go-to fail bug which is great
+
+497
+00:20:54,460 --> 00:20:57,340
+because it was quite a fail it led to
+
+498
+00:20:57,340 --> 00:20:59,230
+basically SSL not even working correctly
+
+499
+00:20:59,230 --> 00:21:01,960
+and you could get men in the middle by
+
+500
+00:21:01,960 --> 00:21:03,850
+like anyone who is running the Wi-Fi
+
+501
+00:21:03,850 --> 00:21:07,030
+network you were on really bad bug so
+
+502
+00:21:07,030 --> 00:21:08,650
+this is yeah this is the other part that
+
+503
+00:21:08,650 --> 00:21:09,880
+was the problem so what's actually
+
+504
+00:21:09,880 --> 00:21:11,020
+happening is this codes being
+
+505
+00:21:11,020 --> 00:21:12,940
+interpreted like this so even though
+
+506
+00:21:12,940 --> 00:21:15,340
+they're the two are indented like the
+
+507
+00:21:15,340 --> 00:21:17,020
+only the first expression after an if
+
+508
+00:21:17,020 --> 00:21:19,180
+statement is gonna be part of the if
+
+509
+00:21:19,180 --> 00:21:22,000
+body and so you have to use curly braces
+
+510
+00:21:22,000 --> 00:21:22,990
+if you want to make more than one
+
+511
+00:21:22,990 --> 00:21:25,120
+expression be part of the body so like
+
+512
+00:21:25,120 --> 00:21:26,500
+you we can require curly brace
+
+513
+00:21:26,500 --> 00:21:29,200
+conventions and prevent things like this
+
+514
+00:21:29,200 --> 00:21:33,350
+from from getting into our our code base
+
+515
+00:21:33,360 --> 00:21:36,400
+so this will like hopefully reduce bugs
+
+516
+00:21:36,400 --> 00:21:39,430
+in your code but again standards
+
+517
+00:21:39,430 --> 00:21:41,470
+pragmatic so it doesn't want to get in
+
+518
+00:21:41,470 --> 00:21:42,910
+the way if there's a common community
+
+519
+00:21:42,910 --> 00:21:44,740
+pattern that that doesn't introduce
+
+520
+00:21:44,740 --> 00:21:45,850
+significant risk
+
+521
+00:21:45,850 --> 00:21:48,070
+so omitting curly braces for single line
+
+522
+00:21:48,070 --> 00:21:50,170
+if statements is allowed in standard so
+
+523
+00:21:50,170 --> 00:21:51,850
+you can see the first line is it's
+
+524
+00:21:51,850 --> 00:21:53,500
+pretty clear unlike little leads issues
+
+525
+00:21:53,500 --> 00:21:55,510
+it's just when you when you when you put
+
+526
+00:21:55,510 --> 00:21:56,800
+it on the next line without curly braces
+
+527
+00:21:56,800 --> 00:21:58,120
+that's when it starts to get dangerous
+
+528
+00:21:58,120 --> 00:21:59,830
+that's when you start to get this kind
+
+529
+00:21:59,830 --> 00:22:01,630
+of thing where someone will come in and
+
+530
+00:22:01,630 --> 00:22:03,250
+add a second go-to and think that it's
+
+531
+00:22:03,250 --> 00:22:07,420
+some kind of work
+
+532
+00:22:07,430 --> 00:22:11,400
+okay so just some final tips for before
+
+533
+00:22:11,400 --> 00:22:14,430
+we conclude here so if you don't want to
+
+534
+00:22:14,430 --> 00:22:16,320
+use standard that's fine if you want to
+
+535
+00:22:16,320 --> 00:22:17,400
+use the Esalen directly because your
+
+536
+00:22:17,400 --> 00:22:19,020
+team has its own style too much work to
+
+537
+00:22:19,020 --> 00:22:20,490
+change blah blah blah that's that's
+
+538
+00:22:20,490 --> 00:22:21,510
+great it's fine
+
+539
+00:22:21,510 --> 00:22:23,400
+I just recommend one thing consider
+
+540
+00:22:23,400 --> 00:22:25,080
+wrapping your excellent rules into a
+
+541
+00:22:25,080 --> 00:22:29,190
+package and and that way all of your
+
+542
+00:22:29,190 --> 00:22:30,810
+repositories can depend on that package
+
+543
+00:22:30,810 --> 00:22:32,580
+and you also raise the barrier a little
+
+544
+00:22:32,580 --> 00:22:34,920
+bit to having people just go in and
+
+545
+00:22:34,920 --> 00:22:36,720
+change it whenever they want and you
+
+546
+00:22:36,720 --> 00:22:37,920
+make it harder for there to be like
+
+547
+00:22:37,920 --> 00:22:39,330
+waste of time and debates about style
+
+548
+00:22:39,330 --> 00:22:42,600
+things also you consider providing a
+
+549
+00:22:42,600 --> 00:22:44,460
+command line program so that you can
+
+550
+00:22:44,460 --> 00:22:46,650
+just install it and add it directly to
+
+551
+00:22:46,650 --> 00:22:49,710
+your to your npm tests script field and
+
+552
+00:22:49,710 --> 00:22:51,210
+if you want to do that there's a really
+
+553
+00:22:51,210 --> 00:22:53,160
+great package for this called standard
+
+554
+00:22:53,160 --> 00:22:54,480
+engine this is what actually powers
+
+555
+00:22:54,480 --> 00:22:56,880
+standard itself so a standard engine you
+
+556
+00:22:56,880 --> 00:22:59,070
+just point it's here you slunt rules and
+
+557
+00:22:59,070 --> 00:23:01,320
+then it will give you a binary like a
+
+558
+00:23:01,320 --> 00:23:02,880
+command line program you can just run
+
+559
+00:23:02,880 --> 00:23:05,250
+that'll that'll you know run the checker
+
+560
+00:23:05,250 --> 00:23:06,900
+and it's not configurable at all so
+
+561
+00:23:06,900 --> 00:23:08,310
+you've kind of encapsulated your rules
+
+562
+00:23:08,310 --> 00:23:11,540
+and made them unconfigured
+
+563
+00:23:11,540 --> 00:23:13,560
+and it's probably worth mentioning
+
+564
+00:23:13,560 --> 00:23:15,870
+prettier here because prettier is gotten
+
+565
+00:23:15,870 --> 00:23:19,140
+a lot more popular in the last year so
+
+566
+00:23:19,140 --> 00:23:19,980
+what about prettier what do I think
+
+567
+00:23:19,980 --> 00:23:23,280
+about prettier so prettier is great it
+
+568
+00:23:23,280 --> 00:23:25,130
+formats your code to have a consistent
+
+569
+00:23:25,130 --> 00:23:28,110
+style it's kind of like go formats but
+
+570
+00:23:28,110 --> 00:23:30,360
+for JavaScript the thing is though that
+
+571
+00:23:30,360 --> 00:23:32,310
+out of these three things that the es
+
+572
+00:23:32,310 --> 00:23:34,860
+line checks for prettier is only
+
+573
+00:23:34,860 --> 00:23:36,990
+handling the last one is handling style
+
+574
+00:23:36,990 --> 00:23:40,380
+so it's not going to check for for
+
+575
+00:23:40,380 --> 00:23:42,840
+potential bugs over for like actual bugs
+
+576
+00:23:42,840 --> 00:23:44,760
+and your code it's just gonna it's gonna
+
+577
+00:23:44,760 --> 00:23:47,370
+read in your code make an ast and then
+
+578
+00:23:47,370 --> 00:23:49,650
+how to put your code and then you know
+
+579
+00:23:49,650 --> 00:23:50,910
+it'll look nice so you still need a
+
+580
+00:23:50,910 --> 00:23:52,860
+linter in my opinion and I think that's
+
+581
+00:23:52,860 --> 00:23:56,220
+I think it's it's fine because prettier
+
+582
+00:23:56,220 --> 00:23:59,030
+and and a eslint work great together
+
+583
+00:23:59,030 --> 00:24:01,950
+cool so one last thing before I go I've
+
+584
+00:24:01,950 --> 00:24:03,270
+been working full time on open source
+
+585
+00:24:03,270 --> 00:24:05,370
+for the past three years but it's not
+
+586
+00:24:05,370 --> 00:24:07,980
+sustainable so last month I launched a
+
+587
+00:24:07,980 --> 00:24:10,500
+fundraising campaign on patreon so the
+
+588
+00:24:10,500 --> 00:24:11,880
+goal is to get enough donations that I
+
+589
+00:24:11,880 --> 00:24:13,680
+can continue to work on standard and the
+
+590
+00:24:13,680 --> 00:24:16,320
+other 100 plus NPM packages that I
+
+591
+00:24:16,320 --> 00:24:18,510
+maintain so at least for like a few days
+
+592
+00:24:18,510 --> 00:24:19,350
+a week
+
+593
+00:24:19,350 --> 00:24:20,670
+so if you like what I do consider
+
+594
+00:24:20,670 --> 00:24:24,400
+becoming a supporter cool thank you
+
+595
+00:24:24,400 --> 00:24:26,360
+[Applause]
+

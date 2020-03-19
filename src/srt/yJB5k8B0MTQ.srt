@@ -1,0 +1,1349 @@
+1
+00:00:11,490 --> 00:00:14,410
+
+thank you hey everyone my name is
+
+2
+00:00:14,410 --> 00:00:15,480
+Alejandra
+
+3
+00:00:15,480 --> 00:00:18,250
+and this talk will be about JavaScript
+
+4
+00:00:18,250 --> 00:00:20,920
+engines you'll find that through all the
+
+5
+00:00:20,920 --> 00:00:22,869
+documentation and references
+
+6
+00:00:22,869 --> 00:00:26,050
+they are also referenced Bertil machine
+
+7
+00:00:26,050 --> 00:00:28,060
+so this could be considered as an
+
+8
+00:00:28,060 --> 00:00:29,949
+introduction to a subtype of virtual
+
+9
+00:00:29,949 --> 00:00:33,550
+machines but before we continue I wanted
+
+10
+00:00:33,550 --> 00:00:35,230
+to say three things about this talk
+
+11
+00:00:35,230 --> 00:00:38,769
+first the first one is why I care about
+
+12
+00:00:38,769 --> 00:00:41,949
+these things at some point I became
+
+13
+00:00:41,949 --> 00:00:44,949
+obsessed with performance and speed but
+
+14
+00:00:44,949 --> 00:00:47,710
+it's something I think we all can relate
+
+15
+00:00:47,710 --> 00:00:50,530
+to which for the fastest card the
+
+16
+00:00:50,530 --> 00:00:53,140
+fastest swimmer the fastest runner and
+
+17
+00:00:53,140 --> 00:00:55,150
+in programming we look for faster
+
+18
+00:00:55,150 --> 00:00:57,940
+applications of faster algorithms faster
+
+19
+00:00:57,940 --> 00:01:01,589
+functions run faster micro operations I
+
+20
+00:01:01,589 --> 00:01:09,070
+realized that to answer some of these
+
+21
+00:01:09,070 --> 00:01:12,880
+questions I needed to understand these
+
+22
+00:01:12,880 --> 00:01:16,780
+things the second thing I wanted to tell
+
+23
+00:01:16,780 --> 00:01:18,670
+you is why I think you should care about
+
+24
+00:01:18,670 --> 00:01:22,600
+this talk I believe that having some
+
+25
+00:01:22,600 --> 00:01:25,030
+understanding on this subject will give
+
+26
+00:01:25,030 --> 00:01:27,970
+you the tools to think and reason about
+
+27
+00:01:27,970 --> 00:01:31,960
+what makes your code fast or slow and as
+
+28
+00:01:31,960 --> 00:01:34,600
+you are deeper into the more complex
+
+29
+00:01:34,600 --> 00:01:37,450
+details you will gain insight in all the
+
+30
+00:01:37,450 --> 00:01:41,409
+ranges between those two extremes the
+
+31
+00:01:41,409 --> 00:01:45,250
+third one on last is a really big
+
+32
+00:01:45,250 --> 00:01:47,440
+disclaimer I'm fascinated by virtual
+
+33
+00:01:47,440 --> 00:01:49,300
+machines and compilers but I'm not a
+
+34
+00:01:49,300 --> 00:01:52,420
+virtual machine specialist and certainly
+
+35
+00:01:52,420 --> 00:01:53,950
+do not represent any of the browser
+
+36
+00:01:53,950 --> 00:01:56,320
+vendors mentioned here if you find
+
+37
+00:01:56,320 --> 00:01:57,909
+something that's wrong or could be faced
+
+38
+00:01:57,909 --> 00:02:00,780
+in a better way please reach out to me
+
+39
+00:02:00,780 --> 00:02:04,150
+so I started my path going through that
+
+40
+00:02:04,150 --> 00:02:05,590
+by the way that's me
+
+41
+00:02:05,590 --> 00:02:07,420
+if you can recognize me it's probably
+
+42
+00:02:07,420 --> 00:02:09,280
+the hurt
+
+43
+00:02:09,280 --> 00:02:11,680
+it's okay I started my path going
+
+44
+00:02:11,680 --> 00:02:13,120
+through the history of JavaScript
+
+45
+00:02:13,120 --> 00:02:15,190
+engines and he found an inflection point
+
+46
+00:02:15,190 --> 00:02:20,040
+around 2006 2007 before that time
+
+47
+00:02:20,040 --> 00:02:23,890
+engines were pretty straightforward they
+
+48
+00:02:23,890 --> 00:02:25,810
+the engine would to the source code and
+
+49
+00:02:25,810 --> 00:02:30,600
+parse it to an abstract syntax tree or
+
+50
+00:02:30,600 --> 00:02:34,210
+ASD for sure and I ast will meet
+
+51
+00:02:34,210 --> 00:02:37,120
+comments parentheses commas semicolons
+
+52
+00:02:37,120 --> 00:02:39,340
+all the things that are part of the
+
+53
+00:02:39,340 --> 00:02:42,850
+syntax and will represent block blocks
+
+54
+00:02:42,850 --> 00:02:45,790
+and statements as nodes in a tree
+
+55
+00:02:45,790 --> 00:02:49,709
+structure the next step would be to
+
+56
+00:02:49,709 --> 00:02:53,320
+transform the ast to byte code which is
+
+57
+00:02:53,320 --> 00:02:56,980
+an internal representation by code can
+
+58
+00:02:56,980 --> 00:02:59,350
+be described as a well-defined set of
+
+59
+00:02:59,350 --> 00:03:02,290
+instructions and can be also considered
+
+60
+00:03:02,290 --> 00:03:04,060
+as a portable representation
+
+61
+00:03:04,060 --> 00:03:06,250
+since divide code instructions will not
+
+62
+00:03:06,250 --> 00:03:08,020
+change through the different CPU
+
+63
+00:03:08,020 --> 00:03:11,170
+architectures machine code on the other
+
+64
+00:03:11,170 --> 00:03:14,620
+hand will change its architecture
+
+65
+00:03:14,620 --> 00:03:17,110
+specific meaning that for the same lines
+
+66
+00:03:17,110 --> 00:03:19,209
+of JavaScript it's machine code will
+
+67
+00:03:19,209 --> 00:03:21,910
+vary from a model CPU to desktop or
+
+68
+00:03:21,910 --> 00:03:29,410
+laptop CPUs the final step needed for
+
+69
+00:03:29,410 --> 00:03:31,810
+the running for running your program is
+
+70
+00:03:31,810 --> 00:03:34,510
+what I call an execution phase which is
+
+71
+00:03:34,510 --> 00:03:36,280
+often described as really big switch
+
+72
+00:03:36,280 --> 00:03:38,799
+statement that for each byte
+
+73
+00:03:38,799 --> 00:03:41,769
+construction will graph and will jump to
+
+74
+00:03:41,769 --> 00:03:44,830
+the appropriate code like in most
+
+75
+00:03:44,830 --> 00:03:47,680
+high-level languages JavaScript will not
+
+76
+00:03:47,680 --> 00:03:50,019
+deal with memory locations explicitly
+
+77
+00:03:50,019 --> 00:03:52,209
+you can create objects on all those
+
+78
+00:03:52,209 --> 00:03:55,360
+objects will be allocated internally by
+
+79
+00:03:55,360 --> 00:03:58,239
+the engine those objects can also be in
+
+80
+00:03:58,239 --> 00:04:00,610
+reference and in order to reuse those
+
+81
+00:04:00,610 --> 00:04:03,459
+precious bits of memory the system will
+
+82
+00:04:03,459 --> 00:04:05,860
+need a garbage collector there are
+
+83
+00:04:05,860 --> 00:04:07,120
+different strategies to implement
+
+84
+00:04:07,120 --> 00:04:09,519
+garbage collectors but we will leave
+
+85
+00:04:09,519 --> 00:04:14,019
+those details for later turns out this
+
+86
+00:04:14,019 --> 00:04:17,680
+set up this architecture is considerably
+
+87
+00:04:17,680 --> 00:04:20,019
+is conservatively slow were slow means
+
+88
+00:04:20,019 --> 00:04:22,390
+implicitly comparing to the performance
+
+89
+00:04:22,390 --> 00:04:25,510
+of C or C++ program after all the
+
+90
+00:04:25,510 --> 00:04:29,110
+optimizations are applied so a good a
+
+91
+00:04:29,110 --> 00:04:30,880
+group of brilliant people worked on
+
+92
+00:04:30,880 --> 00:04:33,340
+improvements over this architecture in
+
+93
+00:04:33,340 --> 00:04:36,910
+the 70s for Fortran in the 80s for us
+
+94
+00:04:36,910 --> 00:04:40,990
+and solve runtimes and they came up with
+
+95
+00:04:40,990 --> 00:04:45,800
+this concept of adaptive optimization
+
+96
+00:04:45,810 --> 00:04:48,970
+with the idea the idea is to identify
+
+97
+00:04:48,970 --> 00:04:51,550
+the pieces of your program that are
+
+98
+00:04:51,550 --> 00:04:55,240
+executing too often are also called hot
+
+99
+00:04:55,240 --> 00:04:57,370
+functions and to compile them on run
+
+100
+00:04:57,370 --> 00:05:01,000
+time hence the name just-in-time
+
+101
+00:05:01,000 --> 00:05:03,630
+compiler or compiler for short
+
+102
+00:05:03,630 --> 00:05:06,370
+after compilation the ancient wouldn't
+
+103
+00:05:06,370 --> 00:05:08,850
+have any other head for running the code
+
+104
+00:05:08,850 --> 00:05:11,950
+well with just the interpreter that will
+
+105
+00:05:11,950 --> 00:05:13,960
+have to go through the the really big
+
+106
+00:05:13,960 --> 00:05:17,950
+switch from bytecode instructions to the
+
+107
+00:05:17,950 --> 00:05:22,460
+code each time you are executing that
+
+108
+00:05:22,470 --> 00:05:24,730
+this approach it's also a great
+
+109
+00:05:24,730 --> 00:05:26,340
+opportunity to apply the optimistic
+
+110
+00:05:26,340 --> 00:05:28,810
+optimizations in diagramming languages
+
+111
+00:05:28,810 --> 00:05:31,210
+like JavaScript for example collecting
+
+112
+00:05:31,210 --> 00:05:34,210
+type information about the context of a
+
+113
+00:05:34,210 --> 00:05:35,500
+function called could open the
+
+114
+00:05:35,500 --> 00:05:37,870
+possibilities for type specializing
+
+115
+00:05:37,870 --> 00:05:41,560
+optimizations in order to optimize
+
+116
+00:05:41,560 --> 00:05:43,810
+property access in the enemy languages
+
+117
+00:05:43,810 --> 00:05:46,660
+during caches or ICS for short were
+
+118
+00:05:46,660 --> 00:05:49,570
+invented in caches our way to save a
+
+119
+00:05:49,570 --> 00:05:52,990
+fast path the first time in access the
+
+120
+00:05:52,990 --> 00:05:55,840
+property it will use a slow path but
+
+121
+00:05:55,840 --> 00:05:58,870
+will recall all the steps needed to get
+
+122
+00:05:58,870 --> 00:06:02,170
+it global variables variables from
+
+123
+00:06:02,170 --> 00:06:05,020
+closures and even prototype chains can
+
+124
+00:06:05,020 --> 00:06:08,590
+be optimized by ICS imagine that after
+
+125
+00:06:08,590 --> 00:06:10,840
+optimization a hundred objects length
+
+126
+00:06:10,840 --> 00:06:13,810
+prototype chain could he'll have almost
+
+127
+00:06:13,810 --> 00:06:15,910
+the same performance that accessing a
+
+128
+00:06:15,910 --> 00:06:18,760
+property of an object with no prototype
+
+129
+00:06:18,760 --> 00:06:22,480
+at all and that's amazing that's the
+
+130
+00:06:22,480 --> 00:06:24,670
+performance improvement you could get by
+
+131
+00:06:24,670 --> 00:06:30,940
+just using inline caches the basis for
+
+132
+00:06:30,940 --> 00:06:33,420
+most ancient implementations consists of
+
+133
+00:06:33,420 --> 00:06:36,370
+interpreter and to optimizing compilers
+
+134
+00:06:36,370 --> 00:06:39,160
+on your left the one that optimized
+
+135
+00:06:39,160 --> 00:06:41,410
+compilation time and on your right the
+
+136
+00:06:41,410 --> 00:06:45,250
+one that optimized execution time the
+
+137
+00:06:45,250 --> 00:06:47,500
+one optimizing execution time also
+
+138
+00:06:47,500 --> 00:06:49,719
+called optimizing compiler
+
+139
+00:06:49,719 --> 00:06:53,110
+will highly depend on the type
+
+140
+00:06:53,110 --> 00:06:55,269
+information collected from the system
+
+141
+00:06:55,269 --> 00:06:58,049
+the on obtain an optimizing compiler
+
+142
+00:06:58,049 --> 00:07:00,879
+would generally create England caches
+
+143
+00:07:00,879 --> 00:07:05,169
+and help Colette type information type
+
+144
+00:07:05,169 --> 00:07:07,539
+changes in the code could trigger type
+
+145
+00:07:07,539 --> 00:07:10,179
+the type specializing compiler to
+
+146
+00:07:10,179 --> 00:07:14,110
+recompile and in some cases after an
+
+147
+00:07:14,110 --> 00:07:17,619
+excessive amount of time changes the the
+
+148
+00:07:17,619 --> 00:07:20,199
+compiler could desist and penalize the
+
+149
+00:07:20,199 --> 00:07:23,849
+code marking it as non optimizable
+
+150
+00:07:23,849 --> 00:07:27,209
+switching to a real-world architecture
+
+151
+00:07:27,209 --> 00:07:29,199
+SpiderMonkey is not too far from the
+
+152
+00:07:29,199 --> 00:07:31,539
+previous example it will receive the
+
+153
+00:07:31,539 --> 00:07:33,939
+source code I will transfer me to a
+
+154
+00:07:33,939 --> 00:07:37,809
+bytecode after the number of times a
+
+155
+00:07:37,809 --> 00:07:39,669
+function is executed goes over a certain
+
+156
+00:07:39,669 --> 00:07:42,689
+threshold it will then be marked as
+
+157
+00:07:42,689 --> 00:07:46,419
+optimisation by the first compiler which
+
+158
+00:07:46,419 --> 00:07:49,779
+is baseline after the number of times a
+
+159
+00:07:49,779 --> 00:07:52,299
+function is executed goes goes over a
+
+160
+00:07:52,299 --> 00:07:54,759
+second threshold it will then be marked
+
+161
+00:07:54,759 --> 00:07:57,819
+as candidate for really really good
+
+162
+00:07:57,819 --> 00:08:00,610
+optimization that's when IO monkey kicks
+
+163
+00:08:00,610 --> 00:08:02,979
+in and with the byte code plus the type
+
+164
+00:08:02,979 --> 00:08:06,039
+information collected it will compile
+
+165
+00:08:06,039 --> 00:08:08,619
+the function with all the optimizations
+
+166
+00:08:08,619 --> 00:08:12,579
+that kind of like the previous example
+
+167
+00:08:12,579 --> 00:08:15,789
+where both compilers would bail out to
+
+168
+00:08:15,789 --> 00:08:18,489
+the interpreter in this case the code
+
+169
+00:08:18,489 --> 00:08:24,699
+will bail out to the baseline sheet in
+
+170
+00:08:24,699 --> 00:08:26,919
+the case of track record it shows a
+
+171
+00:08:26,919 --> 00:08:28,869
+similar architecture to spider monkey
+
+172
+00:08:28,869 --> 00:08:32,620
+and it has an interpreter and optimizing
+
+173
+00:08:32,620 --> 00:08:35,409
+an optimizing compiler which is a simple
+
+174
+00:08:35,409 --> 00:08:37,889
+cheat and an optimizing compiler
+
+175
+00:08:37,889 --> 00:08:39,689
+photoshoot
+
+176
+00:08:39,689 --> 00:08:42,459
+the interesting part about chat rocker
+
+177
+00:08:42,459 --> 00:08:43,870
+is that he can fire
+
+178
+00:08:43,870 --> 00:08:47,319
+additional threats to compile or to run
+
+179
+00:08:47,319 --> 00:08:49,259
+the garbage collection
+
+180
+00:08:49,259 --> 00:08:51,819
+imagine that you're running the engine
+
+181
+00:08:51,819 --> 00:08:54,939
+on a fork or CPU in theory you could
+
+182
+00:08:54,939 --> 00:08:58,709
+take advantage of that and compile
+
+183
+00:08:58,709 --> 00:09:01,660
+paralyze the ship compilation in three
+
+184
+00:09:01,660 --> 00:09:04,889
+of those core
+
+185
+00:09:04,899 --> 00:09:08,240
+in the case of BA it has recently
+
+186
+00:09:08,240 --> 00:09:11,410
+switched to afford to the architecture
+
+187
+00:09:11,410 --> 00:09:15,170
+it has an interpreter it has an an
+
+188
+00:09:15,170 --> 00:09:17,240
+optimizing compiler also called full
+
+189
+00:09:17,240 --> 00:09:20,629
+culture and to optimizing compilers hang
+
+190
+00:09:20,629 --> 00:09:24,589
+shot on turbofan the full cogent
+
+191
+00:09:24,589 --> 00:09:27,139
+compiler resembles to the baseline sheet
+
+192
+00:09:27,139 --> 00:09:31,279
+of SpiderMonkey both will create inline
+
+193
+00:09:31,279 --> 00:09:36,740
+caches if b8 profilers in the identifies
+
+194
+00:09:36,740 --> 00:09:38,540
+that a function is taking a good
+
+195
+00:09:38,540 --> 00:09:41,660
+proportion of the execution time it will
+
+196
+00:09:41,660 --> 00:09:45,019
+then notify the the system to optimize
+
+197
+00:09:45,019 --> 00:09:49,670
+it both crankshaft and turbofan applies
+
+198
+00:09:49,670 --> 00:09:53,300
+optimistic optimizations and type
+
+199
+00:09:53,300 --> 00:09:57,199
+specializing optimizations there are dia
+
+200
+00:09:57,199 --> 00:10:00,139
+is to deprecated eventually crankshaft
+
+201
+00:10:00,139 --> 00:10:02,990
+and full Cochin and just leave munition
+
+202
+00:10:02,990 --> 00:10:09,059
+and the the turbofan compiler
+
+203
+00:10:09,069 --> 00:10:11,509
+javascriptcore has also a four tiered
+
+204
+00:10:11,509 --> 00:10:15,199
+architecture has an interpreter and an
+
+205
+00:10:15,199 --> 00:10:17,480
+optimizing compiler and to optimizing
+
+206
+00:10:17,480 --> 00:10:22,660
+compilers the FG compiler and FTO
+
+207
+00:10:22,660 --> 00:10:26,000
+if finest the statement is executed more
+
+208
+00:10:26,000 --> 00:10:28,130
+than a hundred times or the function is
+
+209
+00:10:28,130 --> 00:10:29,870
+called more than six times the engine
+
+210
+00:10:29,870 --> 00:10:32,540
+will then optimize with the baseline
+
+211
+00:10:32,540 --> 00:10:36,889
+compiler once the statement goes over a
+
+212
+00:10:36,889 --> 00:10:39,230
+thousand times or the function is calmer
+
+213
+00:10:39,230 --> 00:10:42,500
+than 66 times the function will be
+
+214
+00:10:42,500 --> 00:10:46,730
+compiled using DFG once that numbers
+
+215
+00:10:46,730 --> 00:10:51,170
+goes over 10,000 the FGL compiler kicks
+
+216
+00:10:51,170 --> 00:10:54,139
+in as you can see there's a component
+
+217
+00:10:54,139 --> 00:10:57,769
+inside dfdl which is a little be M L o
+
+218
+00:10:57,769 --> 00:11:00,259
+BM is a compiler that applies all sorts
+
+219
+00:11:00,259 --> 00:11:02,480
+of optimizations and search as a
+
+220
+00:11:02,480 --> 00:11:05,300
+back-end for f GL that means the engine
+
+221
+00:11:05,300 --> 00:11:07,610
+would gather the time in front
+
+222
+00:11:07,610 --> 00:11:09,860
+information they bytecode and transform
+
+223
+00:11:09,860 --> 00:11:13,550
+that into lower-level representation to
+
+224
+00:11:13,550 --> 00:11:15,740
+fit that into a low VM
+
+225
+00:11:15,740 --> 00:11:18,959
+they also recently switched to to
+
+226
+00:11:18,959 --> 00:11:21,449
+another back in for the FTL compiler
+
+227
+00:11:21,449 --> 00:11:25,019
+called v3 but that's only on OSX
+
+228
+00:11:25,019 --> 00:11:29,910
+machines and they were looking to keep
+
+229
+00:11:29,910 --> 00:11:32,009
+all the optimizations they wanted but
+
+230
+00:11:32,009 --> 00:11:36,480
+reduce the compilation time which is
+
+231
+00:11:36,480 --> 00:11:38,430
+briefly talked about the different
+
+232
+00:11:38,430 --> 00:11:41,089
+architectures for most advances
+
+233
+00:11:41,089 --> 00:11:44,339
+JavaScript engines notes let's talk
+
+234
+00:11:44,339 --> 00:11:47,069
+about the specific optimizations they
+
+235
+00:11:47,069 --> 00:11:50,449
+are all applying let's say you have a
+
+236
+00:11:50,449 --> 00:11:51,769
+look
+
+237
+00:11:51,769 --> 00:11:55,079
+executed many times and its side its
+
+238
+00:11:55,079 --> 00:11:57,930
+body a single expression of finding the
+
+239
+00:11:57,930 --> 00:11:59,880
+variable were incremented multiplied by
+
+240
+00:11:59,880 --> 00:12:04,370
+some arbitrary number the reasonable
+
+241
+00:12:04,370 --> 00:12:06,959
+performance improvement would be to make
+
+242
+00:12:06,959 --> 00:12:09,180
+the calculation once I'm reference it
+
+243
+00:12:09,180 --> 00:12:11,399
+through a temporary variable in all the
+
+244
+00:12:11,399 --> 00:12:14,970
+iterations all the ancients mentioned
+
+245
+00:12:14,970 --> 00:12:17,069
+here applies this optimization
+
+246
+00:12:17,069 --> 00:12:19,350
+internally and it's called loop
+
+247
+00:12:19,350 --> 00:12:23,040
+invariant code motion one of the
+
+248
+00:12:23,040 --> 00:12:25,290
+simplest optimizations at JIT compiler
+
+249
+00:12:25,290 --> 00:12:27,750
+could apply is called functioning
+
+250
+00:12:27,750 --> 00:12:30,079
+language let's come back to your
+
+251
+00:12:30,079 --> 00:12:33,329
+canonical and inside its body we execute
+
+252
+00:12:33,329 --> 00:12:35,310
+a function if the loop iterates a
+
+253
+00:12:35,310 --> 00:12:37,500
+certain amount of times the profiler
+
+254
+00:12:37,500 --> 00:12:40,350
+will identify the function as hot and if
+
+255
+00:12:40,350 --> 00:12:42,209
+some conditions apply
+
+256
+00:12:42,209 --> 00:12:44,370
+we'll grab the functions body and paste
+
+257
+00:12:44,370 --> 00:12:48,360
+it directly inside the loop now you may
+
+258
+00:12:48,360 --> 00:12:50,430
+be wondering why it should be faster
+
+259
+00:12:50,430 --> 00:12:53,399
+since it's the same code in low-level
+
+260
+00:12:53,399 --> 00:12:55,579
+programming languages like assembly
+
+261
+00:12:55,579 --> 00:12:58,079
+calling a function would end up in a
+
+262
+00:12:58,079 --> 00:13:01,410
+context which recently after the
+
+263
+00:13:01,410 --> 00:13:03,480
+function call you will have to save the
+
+264
+00:13:03,480 --> 00:13:06,029
+previous context and right after you
+
+265
+00:13:06,029 --> 00:13:08,850
+return from the function you'll have to
+
+266
+00:13:08,850 --> 00:13:14,639
+resume that saved context let's continue
+
+267
+00:13:14,639 --> 00:13:17,910
+with the the next optimization imagine a
+
+268
+00:13:17,910 --> 00:13:20,730
+loop with just an expression it could be
+
+269
+00:13:20,730 --> 00:13:22,980
+an expression you want but if it doesn't
+
+270
+00:13:22,980 --> 00:13:25,649
+have side effects like assigning the
+
+271
+00:13:25,649 --> 00:13:30,370
+result to a variable
+
+272
+00:13:30,380 --> 00:13:33,089
+that's one yeah like assigning the
+
+273
+00:13:33,089 --> 00:13:36,540
+result variable or returning the result
+
+274
+00:13:36,540 --> 00:13:39,120
+it could be optimized by just about in
+
+275
+00:13:39,120 --> 00:13:42,269
+doing anything at all and that's what
+
+276
+00:13:42,269 --> 00:13:44,940
+the compiler will do internally just
+
+277
+00:13:44,940 --> 00:13:49,740
+remove the expression this accepting
+
+278
+00:13:49,740 --> 00:13:51,029
+station is called death called
+
+279
+00:13:51,029 --> 00:13:53,850
+elimination and some compilers like the
+
+280
+00:13:53,850 --> 00:13:56,880
+JVM good would go further and lick the
+
+281
+00:13:56,880 --> 00:14:01,440
+whole loop just be aware that some of
+
+282
+00:14:01,440 --> 00:14:03,959
+the features of JavaScript will inhibit
+
+283
+00:14:03,959 --> 00:14:07,410
+type specializing optimizations like the
+
+284
+00:14:07,410 --> 00:14:10,320
+eval function the width operator and
+
+285
+00:14:10,320 --> 00:14:15,120
+try-catch blocks we mentioned before
+
+286
+00:14:15,120 --> 00:14:17,160
+that there's different strategies to
+
+287
+00:14:17,160 --> 00:14:19,370
+implement garbage collecting systems
+
+288
+00:14:19,370 --> 00:14:23,279
+here you can see a brief comparison of
+
+289
+00:14:23,279 --> 00:14:25,820
+all the different implementations
+
+290
+00:14:25,820 --> 00:14:28,079
+generational garbage collectors will
+
+291
+00:14:28,079 --> 00:14:30,779
+group objects by their life span and
+
+292
+00:14:30,779 --> 00:14:33,029
+we'll assume that young objects are more
+
+293
+00:14:33,029 --> 00:14:37,350
+likely to leave to die sorry that old
+
+294
+00:14:37,350 --> 00:14:41,399
+objects under these strategy the new
+
+295
+00:14:41,399 --> 00:14:43,440
+objects are created in a nursery space
+
+296
+00:14:43,440 --> 00:14:45,930
+and long-lived objects are moved to
+
+297
+00:14:45,930 --> 00:14:50,820
+channel space incremental G sees inter
+
+298
+00:14:50,820 --> 00:14:52,740
+leave their work with the activity from
+
+299
+00:14:52,740 --> 00:14:56,570
+the main program well on the other hand
+
+300
+00:14:56,570 --> 00:15:01,110
+stop the world strategy will halt the
+
+301
+00:15:01,110 --> 00:15:03,270
+execution of the main program until a
+
+302
+00:15:03,270 --> 00:15:07,620
+full collection is done disease can also
+
+303
+00:15:07,620 --> 00:15:10,260
+be described as precise or conservative
+
+304
+00:15:10,260 --> 00:15:13,890
+ones precise ones can identify all the
+
+305
+00:15:13,890 --> 00:15:16,529
+references while conservative ones will
+
+306
+00:15:16,529 --> 00:15:19,740
+find will look for memory patterns to
+
+307
+00:15:19,740 --> 00:15:23,550
+find references the slack the last
+
+308
+00:15:23,550 --> 00:15:26,100
+approach could lead to false positives
+
+309
+00:15:26,100 --> 00:15:29,130
+but that's not always a problem in
+
+310
+00:15:29,130 --> 00:15:34,180
+practice
+
+311
+00:15:34,190 --> 00:15:37,649
+in this following link you can find all
+
+312
+00:15:37,649 --> 00:15:39,750
+the resources that I use while working
+
+313
+00:15:39,750 --> 00:15:41,760
+on this presentation if you want to read
+
+314
+00:15:41,760 --> 00:15:43,680
+more about cheat compilers or garbage
+
+315
+00:15:43,680 --> 00:15:45,839
+collection and you're interested in to
+
+316
+00:15:45,839 --> 00:15:47,970
+the details there's a lot of material in
+
+317
+00:15:47,970 --> 00:15:51,870
+there there's also some questions that I
+
+318
+00:15:51,870 --> 00:15:54,930
+keep uploading to that to myself and
+
+319
+00:15:54,930 --> 00:16:00,269
+there's some conversation about it you
+
+320
+00:16:00,269 --> 00:16:01,950
+can always find me after the talk and
+
+321
+00:16:01,950 --> 00:16:07,010
+ask me anything you want just to wrap up
+
+322
+00:16:07,010 --> 00:16:12,120
+a good question about this topic that I
+
+323
+00:16:12,120 --> 00:16:16,410
+came it was how do you measure the
+
+324
+00:16:16,410 --> 00:16:18,870
+overall performance of any of those
+
+325
+00:16:18,870 --> 00:16:22,380
+JavaScript engines and there's not a
+
+326
+00:16:22,380 --> 00:16:25,680
+really good answer to that there's a lot
+
+327
+00:16:25,680 --> 00:16:29,070
+of benchmarks out there to test all the
+
+328
+00:16:29,070 --> 00:16:32,490
+edge case but certainly micro benchmarks
+
+329
+00:16:32,490 --> 00:16:35,570
+will not show show you the whole picture
+
+330
+00:16:35,570 --> 00:16:39,600
+that being said I think we all should
+
+331
+00:16:39,600 --> 00:16:42,380
+strive for maintainable and clean code
+
+332
+00:16:42,380 --> 00:16:45,480
+all the optimizations techniques that I
+
+333
+00:16:45,480 --> 00:16:48,209
+came across have reasonable requirements
+
+334
+00:16:48,209 --> 00:16:50,190
+to apply like functions to be
+
+335
+00:16:50,190 --> 00:16:52,800
+monomorphic things more related to
+
+336
+00:16:52,800 --> 00:16:55,560
+dynamic typing and have nothing to do
+
+337
+00:16:55,560 --> 00:16:59,480
+with using obscure features of language
+

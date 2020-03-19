@@ -1,0 +1,3001 @@
+1
+00:00:00,110 --> 00:00:38,520
+
+[Music]
+
+2
+00:00:38,530 --> 00:00:41,060
+I'm sorry this conferences loves video
+
+3
+00:00:41,060 --> 00:00:44,420
+effects I've gotta got to do it alright
+
+4
+00:00:44,420 --> 00:00:47,739
+so today we're going to talk about
+
+5
+00:00:47,739 --> 00:00:53,570
+loading on the web loading is a user
+
+6
+00:00:53,570 --> 00:00:57,290
+journey with very disparate expectations
+
+7
+00:00:57,290 --> 00:00:59,660
+you're basically sending thousands and
+
+8
+00:00:59,660 --> 00:01:01,070
+thousands of bytes down the wire and
+
+9
+00:01:01,070 --> 00:01:03,320
+hoping that whatever comes out from the
+
+10
+00:01:03,320 --> 00:01:05,150
+very end of that is something that's
+
+11
+00:01:05,150 --> 00:01:07,250
+actually useful to your users and helps
+
+12
+00:01:07,250 --> 00:01:08,659
+them interact with your applications
+
+13
+00:01:08,659 --> 00:01:10,880
+relatively quickly so I thought that
+
+14
+00:01:10,880 --> 00:01:12,409
+today we'd have a conversation about
+
+15
+00:01:12,409 --> 00:01:15,920
+loading now we can really have a
+
+16
+00:01:15,920 --> 00:01:17,240
+conversation about loading without
+
+17
+00:01:17,240 --> 00:01:18,770
+talking about where we're at right now
+
+18
+00:01:18,770 --> 00:01:21,500
+so this is what the average web page on
+
+19
+00:01:21,500 --> 00:01:23,990
+mobile looks like in 2017
+
+20
+00:01:23,990 --> 00:01:25,700
+whether it's built with sort of a
+
+21
+00:01:25,700 --> 00:01:27,920
+JavaScript framework or just a static
+
+22
+00:01:27,920 --> 00:01:31,040
+site in many cases it takes 16 seconds
+
+23
+00:01:31,040 --> 00:01:33,560
+to get interactive on a real mobile
+
+24
+00:01:33,560 --> 00:01:37,009
+device on 3G usually takes 19 seconds to
+
+25
+00:01:37,009 --> 00:01:39,740
+be fully loaded and people mostly send
+
+26
+00:01:39,740 --> 00:01:41,479
+you know somewhere in the region of 420
+
+27
+00:01:41,479 --> 00:01:43,430
+450 kilobytes of JavaScript down the
+
+28
+00:01:43,430 --> 00:01:46,100
+wire and why does any of this actually
+
+29
+00:01:46,100 --> 00:01:48,500
+matter well if we take a look at a high
+
+30
+00:01:48,500 --> 00:01:50,270
+level and how the browser actually
+
+31
+00:01:50,270 --> 00:01:52,909
+manages to get anything render to the
+
+32
+00:01:52,909 --> 00:01:54,500
+screen from the network it's a
+
+33
+00:01:54,500 --> 00:01:56,630
+relatively simple process we send a
+
+34
+00:01:56,630 --> 00:01:59,630
+request out server returns an HTML we go
+
+35
+00:01:59,630 --> 00:02:01,909
+and we parse the CSS and JavaScript and
+
+36
+00:02:01,909 --> 00:02:03,109
+images and anything else that comes back
+
+37
+00:02:03,109 --> 00:02:04,729
+and then we actually have to parse
+
+38
+00:02:04,729 --> 00:02:06,829
+compile and render that code in order to
+
+39
+00:02:06,829 --> 00:02:08,720
+render and turn onto pixels on the
+
+40
+00:02:08,720 --> 00:02:11,900
+screen right but it's never quite that
+
+41
+00:02:11,900 --> 00:02:16,220
+simple we're usually developing on
+
+42
+00:02:16,220 --> 00:02:18,890
+relatively powerful high-end desktop
+
+43
+00:02:18,890 --> 00:02:21,530
+machines and the expectations that we
+
+44
+00:02:21,530 --> 00:02:23,210
+have when we're profiling there are
+
+45
+00:02:23,210 --> 00:02:25,400
+quite different to mobile particularly
+
+46
+00:02:25,400 --> 00:02:26,330
+when it comes to things like JavaScript
+
+47
+00:02:26,330 --> 00:02:28,550
+startup performance where on a real
+
+48
+00:02:28,550 --> 00:02:29,840
+world mobile device you can end up
+
+49
+00:02:29,840 --> 00:02:31,730
+seeing anywhere between 4 and 5 times
+
+50
+00:02:31,730 --> 00:02:35,240
+with a slowdown so the first thing I
+
+51
+00:02:35,240 --> 00:02:37,280
+think that we as a community need to
+
+52
+00:02:37,280 --> 00:02:39,740
+shift worth doing is actually testing on
+
+53
+00:02:39,740 --> 00:02:42,450
+real phones and real networks
+
+54
+00:02:42,450 --> 00:02:43,680
+I know there are a bunch of people so
+
+55
+00:02:43,680 --> 00:02:44,970
+how many people here actually used like
+
+56
+00:02:44,970 --> 00:02:47,790
+the dev tools network emulation or CPU
+
+57
+00:02:47,790 --> 00:02:49,860
+throttling or device node so a lot of
+
+58
+00:02:49,860 --> 00:02:51,390
+people here that's great that's a great
+
+59
+00:02:51,390 --> 00:02:53,190
+first step we need to do better than
+
+60
+00:02:53,190 --> 00:02:55,319
+that though because mobile devices have
+
+61
+00:02:55,319 --> 00:02:57,240
+got different GPUs different CPUs
+
+62
+00:02:57,240 --> 00:02:58,770
+different memory different battery
+
+63
+00:02:58,770 --> 00:03:00,720
+characteristics so there's a lot that we
+
+64
+00:03:00,720 --> 00:03:02,819
+can do there for people that want to
+
+65
+00:03:02,819 --> 00:03:04,440
+start doing that today we recently
+
+66
+00:03:04,440 --> 00:03:06,800
+shipped the new part of webpagetest.org
+
+67
+00:03:06,800 --> 00:03:09,870
+called slash easy so webpagetest.org
+
+68
+00:03:09,870 --> 00:03:12,330
+slash easy has got a whole farm of
+
+69
+00:03:12,330 --> 00:03:13,770
+average mobile devices on there right
+
+70
+00:03:13,770 --> 00:03:15,870
+now with easy profiles for going and
+
+71
+00:03:15,870 --> 00:03:18,450
+checking out your performance now a lot
+
+72
+00:03:18,450 --> 00:03:20,130
+of the time we talk about mobile
+
+73
+00:03:20,130 --> 00:03:21,630
+performance these days we reference this
+
+74
+00:03:21,630 --> 00:03:24,269
+idea of time to interactive and the idea
+
+75
+00:03:24,269 --> 00:03:26,280
+there is that you're just able to make
+
+76
+00:03:26,280 --> 00:03:27,660
+sure that the user can actually tap
+
+77
+00:03:27,660 --> 00:03:29,069
+around your interface and how something
+
+78
+00:03:29,069 --> 00:03:32,160
+useful actually happen in this case I
+
+79
+00:03:32,160 --> 00:03:33,569
+think that someone is going through like
+
+80
+00:03:33,569 --> 00:03:34,980
+a withdrawal symptom because there isn't
+
+81
+00:03:34,980 --> 00:03:36,690
+actually anything on their phone looks a
+
+82
+00:03:36,690 --> 00:03:40,800
+little bit dead so there are a few rules
+
+83
+00:03:40,800 --> 00:03:42,239
+that I like to follow and I'm building
+
+84
+00:03:42,239 --> 00:03:43,890
+modern web apps that try to load
+
+85
+00:03:43,890 --> 00:03:46,019
+efficiently the first is only load what
+
+86
+00:03:46,019 --> 00:03:48,299
+you need so trying to make sure that if
+
+87
+00:03:48,299 --> 00:03:49,860
+you're shipping script and CSS and
+
+88
+00:03:49,860 --> 00:03:51,239
+everything else down the wire that it's
+
+89
+00:03:51,239 --> 00:03:52,290
+only the things that are going to
+
+90
+00:03:52,290 --> 00:03:54,360
+actually be useful to the users initial
+
+91
+00:03:54,360 --> 00:03:56,880
+experience that you're using idle time
+
+92
+00:03:56,880 --> 00:03:59,700
+to load in anything else so your comment
+
+93
+00:03:59,700 --> 00:04:01,410
+threads any additional pages that might
+
+94
+00:04:01,410 --> 00:04:02,549
+be needed for the rest of the user
+
+95
+00:04:02,549 --> 00:04:04,320
+experience now there are a lot of things
+
+96
+00:04:04,320 --> 00:04:06,360
+that we can do to actually help load
+
+97
+00:04:06,360 --> 00:04:09,180
+less code one of the first things is
+
+98
+00:04:09,180 --> 00:04:10,829
+code splitting so code splitting
+
+99
+00:04:10,829 --> 00:04:12,180
+something that a lot of you probably are
+
+100
+00:04:12,180 --> 00:04:14,459
+familiar with as a concept relatively
+
+101
+00:04:14,459 --> 00:04:16,440
+straightforward get set up using webpack
+
+102
+00:04:16,440 --> 00:04:18,359
+were split able or closure compiler or
+
+103
+00:04:18,359 --> 00:04:20,310
+browserify the basic idea is that
+
+104
+00:04:20,310 --> 00:04:22,950
+instead of like making your user eat an
+
+105
+00:04:22,950 --> 00:04:24,660
+entire pizza and get really bloated you
+
+106
+00:04:24,660 --> 00:04:26,190
+just give them a single piece at a time
+
+107
+00:04:26,190 --> 00:04:28,470
+and that way hopefully they feel you
+
+108
+00:04:28,470 --> 00:04:29,760
+know a little bit better about the
+
+109
+00:04:29,760 --> 00:04:31,250
+experience that you're shipping down
+
+110
+00:04:31,250 --> 00:04:33,780
+tree-shaking so removing unused exports
+
+111
+00:04:33,780 --> 00:04:35,669
+using things like roll-up also worth
+
+112
+00:04:35,669 --> 00:04:38,400
+spending time on something we don't talk
+
+113
+00:04:38,400 --> 00:04:41,160
+about enough is the fact that the
+
+114
+00:04:41,160 --> 00:04:42,810
+baselines we're using when we're trying
+
+115
+00:04:42,810 --> 00:04:45,080
+to ship powerful experiences on mobile
+
+116
+00:04:45,080 --> 00:04:47,640
+don't always set us up for success today
+
+117
+00:04:47,640 --> 00:04:50,460
+so if a framework for example and I love
+
+118
+00:04:50,460 --> 00:04:52,680
+I love frameworks I created two MVC ela
+
+119
+00:04:52,680 --> 00:04:54,419
+frameworks I use like reactant view and
+
+120
+00:04:54,419 --> 00:04:54,620
+free
+
+121
+00:04:54,620 --> 00:04:56,660
+all the time but the frameworks that we
+
+122
+00:04:56,660 --> 00:04:59,540
+use today are often built with desktop
+
+123
+00:04:59,540 --> 00:05:01,790
+machines in mind and when it comes to
+
+124
+00:05:01,790 --> 00:05:03,410
+actually trying them out on mobile if
+
+125
+00:05:03,410 --> 00:05:04,580
+we're saying you've got to be
+
+126
+00:05:04,580 --> 00:05:06,380
+interactive in like five seconds and
+
+127
+00:05:06,380 --> 00:05:08,330
+your framework is beating up like four
+
+128
+00:05:08,330 --> 00:05:09,919
+seconds of that and it's do it at time
+
+129
+00:05:09,919 --> 00:05:11,600
+that's not setting you up for success so
+
+130
+00:05:11,600 --> 00:05:13,370
+there's probably room that we've got to
+
+131
+00:05:13,370 --> 00:05:15,020
+improve there there are lots of
+
+132
+00:05:15,020 --> 00:05:17,090
+lightweight options today pre-act view
+
+133
+00:05:17,090 --> 00:05:19,340
+svelte polymer there are lots of others
+
+134
+00:05:19,340 --> 00:05:20,690
+they generally have a relatively though
+
+135
+00:05:20,690 --> 00:05:23,930
+parsing startup time over on the dev
+
+136
+00:05:23,930 --> 00:05:25,190
+tools side one of the things that we
+
+137
+00:05:25,190 --> 00:05:27,320
+recently shipped to help you with this
+
+138
+00:05:27,320 --> 00:05:29,210
+idea of shipping less code is a feature
+
+139
+00:05:29,210 --> 00:05:31,789
+called code coverage the idea here is
+
+140
+00:05:31,789 --> 00:05:34,580
+that you just load up you're out you hit
+
+141
+00:05:34,580 --> 00:05:36,440
+record in this new item in the drawer
+
+142
+00:05:36,440 --> 00:05:38,630
+and then we tell you what blocks of code
+
+143
+00:05:38,630 --> 00:05:40,220
+actually got executed and which ones
+
+144
+00:05:40,220 --> 00:05:42,560
+didn't so here we've got sort of an
+
+145
+00:05:42,560 --> 00:05:44,300
+indication that maybe you know I'm not
+
+146
+00:05:44,300 --> 00:05:46,400
+really using 50% of the code in the
+
+147
+00:05:46,400 --> 00:05:48,139
+bundle that I'm shipping down and as we
+
+148
+00:05:48,139 --> 00:05:49,550
+click on that and scroll through the
+
+149
+00:05:49,550 --> 00:05:51,410
+sources panel you can see that we
+
+150
+00:05:51,410 --> 00:05:53,000
+highlight in green code that got
+
+151
+00:05:53,000 --> 00:05:55,370
+executed and red code that didn't in
+
+152
+00:05:55,370 --> 00:05:56,840
+this case because this is a camera app
+
+153
+00:05:56,840 --> 00:05:58,669
+I've got a lot of code for actually
+
+154
+00:05:58,669 --> 00:06:00,950
+doing cross browser saving a file to an
+
+155
+00:06:00,950 --> 00:06:02,900
+export so I can probably be lazily
+
+156
+00:06:02,900 --> 00:06:05,570
+loading in other things we can do like
+
+157
+00:06:05,570 --> 00:06:07,099
+most of us here probably using a
+
+158
+00:06:07,099 --> 00:06:09,440
+transpiler of some sort to use all the
+
+159
+00:06:09,440 --> 00:06:11,000
+juicy new features javascript has got
+
+160
+00:06:11,000 --> 00:06:13,070
+but the reality is that you know cross
+
+161
+00:06:13,070 --> 00:06:15,380
+browser es2015 support is in a
+
+162
+00:06:15,380 --> 00:06:17,000
+relatively good place right now we don't
+
+163
+00:06:17,000 --> 00:06:18,620
+always need to be you know sending
+
+164
+00:06:18,620 --> 00:06:21,229
+people down es5 so if you're shipping an
+
+165
+00:06:21,229 --> 00:06:23,270
+experience using babel today i strongly
+
+166
+00:06:23,270 --> 00:06:25,610
+encourage you to try out babel preset
+
+167
+00:06:25,610 --> 00:06:27,740
+ends this will basically only transpile
+
+168
+00:06:27,740 --> 00:06:30,169
+code for the browsers that need it and
+
+169
+00:06:30,169 --> 00:06:31,880
+just keep everything else in es2015
+
+170
+00:06:31,880 --> 00:06:34,639
+let's check that out if you happen to be
+
+171
+00:06:34,639 --> 00:06:37,310
+using low - check out babel plugin low -
+
+172
+00:06:37,310 --> 00:06:39,470
+this is sort of a neat transform that
+
+173
+00:06:39,470 --> 00:06:41,360
+will rewrite your low - code so it only
+
+174
+00:06:41,360 --> 00:06:42,770
+uses the modules that you're actually
+
+175
+00:06:42,770 --> 00:06:44,300
+using in your source rather than the
+
+176
+00:06:44,300 --> 00:06:48,229
+entire package so check that out - this
+
+177
+00:06:48,229 --> 00:06:50,180
+week we also announced after a very long
+
+178
+00:06:50,180 --> 00:06:50,750
+wait
+
+179
+00:06:50,750 --> 00:06:54,580
+support for es2015 modules in chrome
+
+180
+00:06:54,580 --> 00:06:57,620
+thank you this is something that will
+
+181
+00:06:57,620 --> 00:06:59,539
+hopefully encourage again a little bit
+
+182
+00:06:59,539 --> 00:07:01,610
+less transformation and is something
+
+183
+00:07:01,610 --> 00:07:02,570
+that will open up a few more
+
+184
+00:07:02,570 --> 00:07:03,919
+opportunities for interesting loading
+
+185
+00:07:03,919 --> 00:07:06,200
+experiences across the board the next
+
+186
+00:07:06,200 --> 00:07:07,190
+thing I like to do
+
+187
+00:07:07,190 --> 00:07:10,460
+is order loading thoughtfully you know
+
+188
+00:07:10,460 --> 00:07:12,230
+more than anybody else in the stack you
+
+189
+00:07:12,230 --> 00:07:13,430
+know what is important to your user
+
+190
+00:07:13,430 --> 00:07:15,650
+journey and what needs to be sent down
+
+191
+00:07:15,650 --> 00:07:17,960
+earlier on than anything else something
+
+192
+00:07:17,960 --> 00:07:19,970
+that we recently also shipped in dev
+
+193
+00:07:19,970 --> 00:07:21,530
+tools to help with this is a feature
+
+194
+00:07:21,530 --> 00:07:24,050
+called network request blocking that's
+
+195
+00:07:24,050 --> 00:07:26,240
+in canary right now the idea here is
+
+196
+00:07:26,240 --> 00:07:28,520
+that in the network waterfall for any
+
+197
+00:07:28,520 --> 00:07:30,890
+site you can right-click on a network
+
+198
+00:07:30,890 --> 00:07:32,900
+request and you can block it or you can
+
+199
+00:07:32,900 --> 00:07:34,670
+block the domain and take a look at what
+
+200
+00:07:34,670 --> 00:07:36,890
+impact that has on the overall critical
+
+201
+00:07:36,890 --> 00:07:38,630
+path of your site I'm particularly
+
+202
+00:07:38,630 --> 00:07:39,800
+useful if you've got a lot of
+
+203
+00:07:39,800 --> 00:07:42,310
+third-party code that's slowing you down
+
+204
+00:07:42,310 --> 00:07:44,660
+and finally cache aggressively and
+
+205
+00:07:44,660 --> 00:07:47,150
+granularly cache as much as you can
+
+206
+00:07:47,150 --> 00:07:49,430
+locally that's both with HTTP cache but
+
+207
+00:07:49,430 --> 00:07:51,650
+also using serviceworker caching at
+
+208
+00:07:51,650 --> 00:07:54,260
+Google we've been trying to ramp up our
+
+209
+00:07:54,260 --> 00:07:55,790
+investment in serviceworker for a lot of
+
+210
+00:07:55,790 --> 00:07:58,640
+our flagship apps inbox has been using
+
+211
+00:07:58,640 --> 00:08:01,190
+serviceworker quite a lot and recently
+
+212
+00:08:01,190 --> 00:08:03,680
+saw a 10% improvement in time to
+
+213
+00:08:03,680 --> 00:08:05,120
+interactive just by making sure that
+
+214
+00:08:05,120 --> 00:08:06,830
+they're using it for things like static
+
+215
+00:08:06,830 --> 00:08:11,450
+resource caching now about three years
+
+216
+00:08:11,450 --> 00:08:15,260
+ago I was speaking at CSS comp and we
+
+217
+00:08:15,260 --> 00:08:16,760
+spent the whole talk sort of optimizing
+
+218
+00:08:16,760 --> 00:08:19,130
+jazz comp that you and I thought you
+
+219
+00:08:19,130 --> 00:08:20,570
+know given that I'm back here it'd be
+
+220
+00:08:20,570 --> 00:08:22,720
+kind of fun to do that again at a much
+
+221
+00:08:22,720 --> 00:08:27,140
+shorter rate but also a little bit may
+
+222
+00:08:27,140 --> 00:08:30,020
+be unorthodox plea so what we're going
+
+223
+00:08:30,020 --> 00:08:33,110
+to do is we're going to hack chrome to
+
+224
+00:08:33,110 --> 00:08:35,000
+make j/s confi you load a little bit
+
+225
+00:08:35,000 --> 00:08:35,570
+faster
+
+226
+00:08:35,570 --> 00:08:37,430
+this guy's not in fact a hacker he's
+
+227
+00:08:37,430 --> 00:08:39,680
+just like scrolling through his web pack
+
+228
+00:08:39,680 --> 00:08:43,000
+on fake or something
+
+229
+00:08:43,000 --> 00:08:47,750
+so you dive into C++ in chrome and you
+
+230
+00:08:47,750 --> 00:08:49,400
+find this file called resource fetcher
+
+231
+00:08:49,400 --> 00:08:50,750
+and resource fetcher is one of these
+
+232
+00:08:50,750 --> 00:08:52,250
+files I know nobody can see this so
+
+233
+00:08:52,250 --> 00:08:54,080
+let's just zoom in here this is one of
+
+234
+00:08:54,080 --> 00:08:56,420
+these files that define how chrome
+
+235
+00:08:56,420 --> 00:08:58,100
+actually handles the prioritization for
+
+236
+00:08:58,100 --> 00:09:00,650
+different types of resources so your CSS
+
+237
+00:09:00,650 --> 00:09:03,470
+your JavaScript your images I don't
+
+238
+00:09:03,470 --> 00:09:05,030
+expect anybody to read this so here's
+
+239
+00:09:05,030 --> 00:09:06,850
+the table of how we actually handle this
+
+240
+00:09:06,850 --> 00:09:10,190
+layout blocking resources like CSS and
+
+241
+00:09:10,190 --> 00:09:12,650
+fonts get the highest priority load in
+
+242
+00:09:12,650 --> 00:09:14,600
+layout blocking phase resources like
+
+243
+00:09:14,600 --> 00:09:17,510
+scripts or images that happens being the
+
+244
+00:09:17,510 --> 00:09:20,330
+viewport get a medium priority and then
+
+245
+00:09:20,330 --> 00:09:21,080
+everything from your
+
+246
+00:09:21,080 --> 00:09:23,330
+basing scripts to images that are
+
+247
+00:09:23,330 --> 00:09:25,520
+outside of the viewport mismatch CSS
+
+248
+00:09:25,520 --> 00:09:27,410
+they get a much much lower priority
+
+249
+00:09:27,410 --> 00:09:29,300
+what's interesting about this table
+
+250
+00:09:29,300 --> 00:09:31,790
+actually is that images in your viewport
+
+251
+00:09:31,790 --> 00:09:33,890
+get a medium priority and stuff that's
+
+252
+00:09:33,890 --> 00:09:35,210
+outside of they get a lower one so we
+
+253
+00:09:35,210 --> 00:09:37,010
+kind of do automatic lazy loading of
+
+254
+00:09:37,010 --> 00:09:40,880
+images to some extent by default that's
+
+255
+00:09:40,880 --> 00:09:42,530
+great but as a developer you probably
+
+256
+00:09:42,530 --> 00:09:44,060
+care more about where this is exposed
+
+257
+00:09:44,060 --> 00:09:46,100
+for you so in the network panel there's
+
+258
+00:09:46,100 --> 00:09:47,750
+a column called priority that will tell
+
+259
+00:09:47,750 --> 00:09:49,340
+you exactly what we're already was used
+
+260
+00:09:49,340 --> 00:09:51,440
+for any of the resources that you wanted
+
+261
+00:09:51,440 --> 00:09:54,920
+to load so we're back here and the part
+
+262
+00:09:54,920 --> 00:09:55,880
+of chrome that we're going to hack is
+
+263
+00:09:55,880 --> 00:09:56,600
+we're actually going to change
+
+264
+00:09:56,600 --> 00:09:59,060
+absolutely every single type of resource
+
+265
+00:09:59,060 --> 00:10:01,430
+to load with an extremely high priority
+
+266
+00:10:01,430 --> 00:10:03,800
+it sounds like a great idea right so
+
+267
+00:10:03,800 --> 00:10:07,130
+let's let's do that and that's going to
+
+268
+00:10:07,130 --> 00:10:10,340
+fix all of our problems and I can just
+
+269
+00:10:10,340 --> 00:10:13,310
+end the talk there right we could ship a
+
+270
+00:10:13,310 --> 00:10:15,860
+new browser we could call it so I
+
+271
+00:10:15,860 --> 00:10:17,390
+discovered Germany it's got this
+
+272
+00:10:17,390 --> 00:10:19,730
+wonderful world called vers lemon
+
+273
+00:10:19,730 --> 00:10:23,750
+discern which that's a terrible
+
+274
+00:10:23,750 --> 00:10:26,180
+pronunciation but it means when you try
+
+275
+00:10:26,180 --> 00:10:27,890
+to fix something but you actually made
+
+276
+00:10:27,890 --> 00:10:32,900
+it a whole lot worse and I did so this
+
+277
+00:10:32,900 --> 00:10:34,790
+is the original filmstrip for a jazz
+
+278
+00:10:34,790 --> 00:10:36,080
+talk to you and this is what it looks
+
+279
+00:10:36,080 --> 00:10:37,700
+like when everything is considered high
+
+280
+00:10:37,700 --> 00:10:39,170
+priority we've actually completely
+
+281
+00:10:39,170 --> 00:10:41,270
+shifted first meaningful paint way back
+
+282
+00:10:41,270 --> 00:10:45,020
+performance is worse lesson there when
+
+283
+00:10:45,020 --> 00:10:46,280
+everything is high priority
+
+284
+00:10:46,280 --> 00:10:50,270
+nothing is and I ended up fixing this by
+
+285
+00:10:50,270 --> 00:10:51,470
+going through the different types of
+
+286
+00:10:51,470 --> 00:10:52,730
+resources that are used in this
+
+287
+00:10:52,730 --> 00:10:54,050
+particular page and trying to figure out
+
+288
+00:10:54,050 --> 00:10:56,090
+okay well are the image of the most
+
+289
+00:10:56,090 --> 00:10:58,130
+important things the CSS and as it turns
+
+290
+00:10:58,130 --> 00:11:01,190
+out it was the CSS and fonts so let's do
+
+291
+00:11:01,190 --> 00:11:03,500
+this right by the browser we talked
+
+292
+00:11:03,500 --> 00:11:05,150
+already about sort of at the high level
+
+293
+00:11:05,150 --> 00:11:07,760
+how never for process work but there's a
+
+294
+00:11:07,760 --> 00:11:09,560
+piece of this puzzle that I didn't quite
+
+295
+00:11:09,560 --> 00:11:11,720
+dive into and that's the browser preload
+
+296
+00:11:11,720 --> 00:11:14,630
+scanner now browsers like Chrome have
+
+297
+00:11:14,630 --> 00:11:17,060
+got a document parser and as we go
+
+298
+00:11:17,060 --> 00:11:18,470
+through the tokenization phase of
+
+299
+00:11:18,470 --> 00:11:19,700
+actually reading through all the
+
+300
+00:11:19,700 --> 00:11:21,520
+different tokens that compose your HTML
+
+301
+00:11:21,520 --> 00:11:24,290
+we will go and try to fetch those
+
+302
+00:11:24,290 --> 00:11:26,060
+resources and start processing them if
+
+303
+00:11:26,060 --> 00:11:28,310
+we run into like a blocking script
+
+304
+00:11:28,310 --> 00:11:30,590
+that's going to stop the document parser
+
+305
+00:11:30,590 --> 00:11:32,630
+in its tracks which is why we have the
+
+306
+00:11:32,630 --> 00:11:34,300
+sort of fallback thing that
+
+307
+00:11:34,300 --> 00:11:36,280
+load scanner which is able to look ahead
+
+308
+00:11:36,280 --> 00:11:39,250
+even when the you know dr. MacArthur is
+
+309
+00:11:39,250 --> 00:11:42,010
+blocked and find other resources that we
+
+310
+00:11:42,010 --> 00:11:44,980
+can continue to fetch and process when
+
+311
+00:11:44,980 --> 00:11:46,240
+this change was first introduced in
+
+312
+00:11:46,240 --> 00:11:47,440
+chrome I believe it introduced like a
+
+313
+00:11:47,440 --> 00:11:49,660
+20% improvement over all the time so the
+
+314
+00:11:49,660 --> 00:11:51,850
+preload scanner is pretty cool but we
+
+315
+00:11:51,850 --> 00:11:53,440
+run into this other interesting
+
+316
+00:11:53,440 --> 00:11:58,690
+challenge which is discovery no browser
+
+317
+00:11:58,690 --> 00:12:01,510
+knows exactly what sequence of things to
+
+318
+00:12:01,510 --> 00:12:02,800
+load to make sure that your page is
+
+319
+00:12:02,800 --> 00:12:04,900
+going to be fast you more than anybody
+
+320
+00:12:04,900 --> 00:12:06,790
+else again know what's important in your
+
+321
+00:12:06,790 --> 00:12:09,040
+page whether it's your web pack bundles
+
+322
+00:12:09,040 --> 00:12:10,510
+that need to be loaded early on or
+
+323
+00:12:10,510 --> 00:12:14,700
+something else and so to address
+
+324
+00:12:14,700 --> 00:12:17,170
+discoverability and the ability for you
+
+325
+00:12:17,170 --> 00:12:18,550
+as an author to be able to say what you
+
+326
+00:12:18,550 --> 00:12:20,650
+consider to be high priority you can use
+
+327
+00:12:20,650 --> 00:12:22,540
+things like link rel preload which works
+
+328
+00:12:22,540 --> 00:12:24,040
+with scripts and stylesheets and other
+
+329
+00:12:24,040 --> 00:12:26,080
+types of resources and it's basically a
+
+330
+00:12:26,080 --> 00:12:27,790
+declarative fetch that tells the browser
+
+331
+00:12:27,790 --> 00:12:29,800
+that you consider something to be high
+
+332
+00:12:29,800 --> 00:12:33,280
+priority now this is what the impact of
+
+333
+00:12:33,280 --> 00:12:35,500
+using it on you know a site that happens
+
+334
+00:12:35,500 --> 00:12:37,510
+to be using webpack looked like you
+
+335
+00:12:37,510 --> 00:12:39,220
+you kind of shift all of the yellow
+
+336
+00:12:39,220 --> 00:12:42,130
+that's on the right right all the way to
+
+337
+00:12:42,130 --> 00:12:44,740
+the left at parse time I seeing this
+
+338
+00:12:44,740 --> 00:12:46,780
+pattern being used increasingly in
+
+339
+00:12:46,780 --> 00:12:48,520
+progressive web apps where it's having a
+
+340
+00:12:48,520 --> 00:12:50,350
+positive impact on time to interactive
+
+341
+00:12:50,350 --> 00:12:52,720
+for a lot of folks so I check that out
+
+342
+00:12:52,720 --> 00:12:54,700
+if you're interested in actually hooking
+
+343
+00:12:54,700 --> 00:12:56,230
+this up to your build process today I
+
+344
+00:12:56,230 --> 00:12:58,570
+wrote a web pack plug-in called preload
+
+345
+00:12:58,570 --> 00:13:01,420
+web pack plug-in they can do this for a
+
+346
+00:13:01,420 --> 00:13:02,770
+synchronous chunks as well as like
+
+347
+00:13:02,770 --> 00:13:04,450
+normal chunks so check it out if you
+
+348
+00:13:04,450 --> 00:13:08,980
+find it interesting over on chrome the
+
+349
+00:13:08,980 --> 00:13:11,350
+polymer team worked on an app a while
+
+350
+00:13:11,350 --> 00:13:13,960
+ago called shop and the idea behind shop
+
+351
+00:13:13,960 --> 00:13:15,700
+was trying to see you know if we if we
+
+352
+00:13:15,700 --> 00:13:17,200
+use the web platform and the web
+
+353
+00:13:17,200 --> 00:13:18,640
+platform features that are available to
+
+354
+00:13:18,640 --> 00:13:21,040
+us today just how fast we make a modern
+
+355
+00:13:21,040 --> 00:13:22,600
+web experience that was sort of
+
+356
+00:13:22,600 --> 00:13:25,360
+non-trivial and shop kind of checked
+
+357
+00:13:25,360 --> 00:13:28,240
+that off it was able to reach sort of
+
+358
+00:13:28,240 --> 00:13:30,340
+granular loading you're able to tap on
+
+359
+00:13:30,340 --> 00:13:31,900
+things and everything is just really
+
+360
+00:13:31,900 --> 00:13:34,000
+nice and buttery smooth on mobile but
+
+361
+00:13:34,000 --> 00:13:36,160
+how did they accomplish this so they
+
+362
+00:13:36,160 --> 00:13:37,660
+used a pattern we came up with about
+
+363
+00:13:37,660 --> 00:13:40,390
+last year called purple and the idea
+
+364
+00:13:40,390 --> 00:13:42,970
+with purple is that you try to make sure
+
+365
+00:13:42,970 --> 00:13:45,070
+that you're sending down the most
+
+366
+00:13:45,070 --> 00:13:46,990
+important things for the user as early
+
+367
+00:13:46,990 --> 00:13:48,579
+on as possible
+
+368
+00:13:48,579 --> 00:13:50,499
+you push the minimal code needed for a
+
+369
+00:13:50,499 --> 00:13:53,619
+route you render that route for next
+
+370
+00:13:53,619 --> 00:13:56,800
+routes you're able to precache anything
+
+371
+00:13:56,800 --> 00:13:58,809
+using service workers so that not only
+
+372
+00:13:58,809 --> 00:14:00,550
+is that stuff already available locally
+
+373
+00:14:00,550 --> 00:14:01,689
+in the disk cache when they try
+
+374
+00:14:01,689 --> 00:14:03,550
+navigating to it but it's constantly
+
+375
+00:14:03,550 --> 00:14:06,160
+available on repeat visits in addition
+
+376
+00:14:06,160 --> 00:14:08,889
+for JavaScript using serviceworker we'll
+
+377
+00:14:08,889 --> 00:14:12,759
+actually early on opt you into v8 code
+
+378
+00:14:12,759 --> 00:14:14,949
+cache which will save you a little bit
+
+379
+00:14:14,949 --> 00:14:16,089
+of time on things like parsing
+
+380
+00:14:16,089 --> 00:14:18,040
+compilation and then the pattern
+
+381
+00:14:18,040 --> 00:14:20,410
+suggests lazy loading code that you need
+
+382
+00:14:20,410 --> 00:14:22,499
+for other parts of your user experience
+
+383
+00:14:22,499 --> 00:14:24,189
+so let's take a look at what that
+
+384
+00:14:24,189 --> 00:14:26,079
+actually looks like so this is um this
+
+385
+00:14:26,079 --> 00:14:28,269
+is shop before any optimizations were
+
+386
+00:14:28,269 --> 00:14:32,139
+applied you see sort of this this step
+
+387
+00:14:32,139 --> 00:14:36,220
+pattern in the timeline this is a CB 2
+
+388
+00:14:36,220 --> 00:14:39,549
+with 3G and remember that little block
+
+389
+00:14:39,549 --> 00:14:40,929
+at the very start we're not actually
+
+390
+00:14:40,929 --> 00:14:43,119
+seeing any any activity we're going to
+
+391
+00:14:43,119 --> 00:14:46,059
+go back to that limit later with preload
+
+392
+00:14:46,059 --> 00:14:47,649
+we actually changed the shape of that
+
+393
+00:14:47,649 --> 00:14:48,970
+completely so we've gone from this to
+
+394
+00:14:48,970 --> 00:14:50,860
+something looks like this basically
+
+395
+00:14:50,860 --> 00:14:52,839
+we've shifted our time a little bit
+
+396
+00:14:52,839 --> 00:14:55,209
+everything is now going to be attempting
+
+397
+00:14:55,209 --> 00:14:57,999
+to load in parallel to some extent and
+
+398
+00:14:57,999 --> 00:14:59,529
+that's start that starts shaving off
+
+399
+00:14:59,529 --> 00:15:00,819
+some time over the overall user
+
+400
+00:15:00,819 --> 00:15:03,579
+experience but it still comes with the
+
+401
+00:15:03,579 --> 00:15:06,970
+cost of multiple round trips and this is
+
+402
+00:15:06,970 --> 00:15:09,309
+where things like hb2 server push can
+
+403
+00:15:09,309 --> 00:15:10,480
+actually come in useful
+
+404
+00:15:10,480 --> 00:15:13,360
+now what push allows us to do is as an
+
+405
+00:15:13,360 --> 00:15:15,610
+author specify using a manifest the
+
+406
+00:15:15,610 --> 00:15:16,869
+files that we know are going to be
+
+407
+00:15:16,869 --> 00:15:20,350
+critical to the user journey instead of
+
+408
+00:15:20,350 --> 00:15:22,119
+just you know pushing down the request
+
+409
+00:15:22,119 --> 00:15:24,519
+you know sending the browser some HTML
+
+410
+00:15:24,519 --> 00:15:26,499
+with spending to be parsed when we send
+
+411
+00:15:26,499 --> 00:15:28,480
+back that an is real HTML we can also
+
+412
+00:15:28,480 --> 00:15:30,459
+start sending down a list of files that
+
+413
+00:15:30,459 --> 00:15:32,410
+are super important to start fetching
+
+414
+00:15:32,410 --> 00:15:34,660
+for the experience effectively we're
+
+415
+00:15:34,660 --> 00:15:37,389
+filling up server think time we're today
+
+416
+00:15:37,389 --> 00:15:38,889
+in a lot of cases we're not actually
+
+417
+00:15:38,889 --> 00:15:42,339
+doing that so hey speed to server push
+
+418
+00:15:42,339 --> 00:15:44,139
+is great for that and the impact that it
+
+419
+00:15:44,139 --> 00:15:46,179
+had on this particular app was quite
+
+420
+00:15:46,179 --> 00:15:47,860
+stark again we've shaved thousands of
+
+421
+00:15:47,860 --> 00:15:50,679
+milliseconds off of the overall time for
+
+422
+00:15:50,679 --> 00:15:52,600
+this app to get interactive and to load
+
+423
+00:15:52,600 --> 00:15:55,980
+in general using this technique
+
+424
+00:15:55,980 --> 00:15:58,689
+unfortunately hb2 server pushes not a
+
+425
+00:15:58,689 --> 00:16:01,079
+silver bullet by any means
+
+426
+00:16:01,079 --> 00:16:03,959
+it's not particularly Kasia we're in a
+
+427
+00:16:03,959 --> 00:16:05,490
+perfect world we have the ability to
+
+428
+00:16:05,490 --> 00:16:07,680
+have a cache digest or something that
+
+429
+00:16:07,680 --> 00:16:09,959
+lets you know what exactly is in your
+
+430
+00:16:09,959 --> 00:16:12,660
+user cache and so it's very easy to run
+
+431
+00:16:12,660 --> 00:16:14,519
+into cases where you know every single
+
+432
+00:16:14,519 --> 00:16:16,440
+time someone comes to your site you're
+
+433
+00:16:16,440 --> 00:16:18,300
+just force pushing them you know the
+
+434
+00:16:18,300 --> 00:16:20,160
+same set of files even if it's inside
+
+435
+00:16:20,160 --> 00:16:24,110
+their cache which is not exactly ideal
+
+436
+00:16:24,110 --> 00:16:28,230
+so push versus preload you know push can
+
+437
+00:16:28,230 --> 00:16:30,959
+cut out a whole RCT it's not cache weird
+
+438
+00:16:30,959 --> 00:16:32,579
+there's no real prioritization in place
+
+439
+00:16:32,579 --> 00:16:34,320
+preload is particularly useful because
+
+440
+00:16:34,320 --> 00:16:36,540
+in addition to what push can do it also
+
+441
+00:16:36,540 --> 00:16:38,459
+you know sports cross-origin requests
+
+442
+00:16:38,459 --> 00:16:40,320
+got load narrower events got content
+
+443
+00:16:40,320 --> 00:16:43,529
+negotiation but how do we address this
+
+444
+00:16:43,529 --> 00:16:45,390
+issue of h2 push not particularly
+
+445
+00:16:45,390 --> 00:16:47,370
+knowing what's in the cache what we can
+
+446
+00:16:47,370 --> 00:16:49,079
+use serviceworker if we have a
+
+447
+00:16:49,079 --> 00:16:51,089
+serviceworker registered in such a way
+
+448
+00:16:51,089 --> 00:16:52,860
+that instead of going to the network
+
+449
+00:16:52,860 --> 00:16:54,870
+every single time that we need you know
+
+450
+00:16:54,870 --> 00:16:56,940
+more resources to be fetched we're just
+
+451
+00:16:56,940 --> 00:16:58,769
+trying to get them locally based on what
+
+452
+00:16:58,769 --> 00:17:01,200
+is already cached we avoid this issue of
+
+453
+00:17:01,200 --> 00:17:03,720
+needing cache digests and it makes this
+
+454
+00:17:03,720 --> 00:17:09,270
+entire setup relatively sane for shop in
+
+455
+00:17:09,270 --> 00:17:10,559
+particular this meant that on repeat
+
+456
+00:17:10,559 --> 00:17:12,480
+visits once you tie absolutely
+
+457
+00:17:12,480 --> 00:17:14,130
+everything in purple together you're
+
+458
+00:17:14,130 --> 00:17:15,780
+actually able to boot up and get
+
+459
+00:17:15,780 --> 00:17:17,370
+interactive in just a few hundred
+
+460
+00:17:17,370 --> 00:17:18,959
+milliseconds it's quite a powerful
+
+461
+00:17:18,959 --> 00:17:21,900
+pattern so preload is good for moving
+
+462
+00:17:21,900 --> 00:17:23,280
+the start download time of an asset
+
+463
+00:17:23,280 --> 00:17:24,990
+closer to the initial request and push
+
+464
+00:17:24,990 --> 00:17:26,850
+is good for cutting out a full RTT if
+
+465
+00:17:26,850 --> 00:17:28,230
+you have a serviceworker
+
+466
+00:17:28,230 --> 00:17:29,880
+thanks to Sam Saucony for a bunch of the
+
+467
+00:17:29,880 --> 00:17:32,520
+research that he did in this area the
+
+468
+00:17:32,520 --> 00:17:34,260
+next thing I want to talk about is how a
+
+469
+00:17:34,260 --> 00:17:36,000
+lot of this stuff can apply to the apps
+
+470
+00:17:36,000 --> 00:17:38,190
+that you're probably building today out
+
+471
+00:17:38,190 --> 00:17:39,270
+of interest how many people here are
+
+472
+00:17:39,270 --> 00:17:41,490
+using react as a part of their default
+
+473
+00:17:41,490 --> 00:17:45,360
+stack almost everybody or good good size
+
+474
+00:17:45,360 --> 00:17:47,940
+the audience so I had the privilege of
+
+475
+00:17:47,940 --> 00:17:49,890
+being able to work with Twitter on their
+
+476
+00:17:49,890 --> 00:17:51,450
+new progressive web app Twitter light I
+
+477
+00:17:51,450 --> 00:17:53,370
+wanted to talk a little bit about the
+
+478
+00:17:53,370 --> 00:17:55,740
+learnings that we had there so Twitter
+
+479
+00:17:55,740 --> 00:17:57,630
+started off with this which was their
+
+480
+00:17:57,630 --> 00:17:59,520
+old mobile web experience and sort of
+
+481
+00:17:59,520 --> 00:18:00,990
+the server-side render thing it was
+
+482
+00:18:00,990 --> 00:18:03,630
+really really slow and it wasn't
+
+483
+00:18:03,630 --> 00:18:06,600
+particularly happy didn't particularly
+
+484
+00:18:06,600 --> 00:18:09,059
+encourage users to get engaging with the
+
+485
+00:18:09,059 --> 00:18:10,950
+app this is the new progressive web app
+
+486
+00:18:10,950 --> 00:18:14,160
+the Twitter shipped very very recently
+
+487
+00:18:14,160 --> 00:18:17,070
+Twitter light and one of the
+
+488
+00:18:17,070 --> 00:18:18,990
+accomplishments that they had by taking
+
+489
+00:18:18,990 --> 00:18:20,250
+advantage of some of the primitives that
+
+490
+00:18:20,250 --> 00:18:21,720
+we just talked about is that they're
+
+491
+00:18:21,720 --> 00:18:23,280
+able to get interactive in under five
+
+492
+00:18:23,280 --> 00:18:26,280
+seconds on 3G which is quite a nice feet
+
+493
+00:18:26,280 --> 00:18:28,530
+now this didn't come without an amount
+
+494
+00:18:28,530 --> 00:18:30,780
+of pain you know so you can use you know
+
+495
+00:18:30,780 --> 00:18:32,820
+modern frameworks like react to shift
+
+496
+00:18:32,820 --> 00:18:34,260
+aggressive web apps but you're going to
+
+497
+00:18:34,260 --> 00:18:36,300
+have to put the work in to cut down on
+
+498
+00:18:36,300 --> 00:18:37,800
+how much you know application code
+
+499
+00:18:37,800 --> 00:18:39,840
+you've got going on there you're going
+
+500
+00:18:39,840 --> 00:18:40,950
+to have to take advantage of code
+
+501
+00:18:40,950 --> 00:18:42,090
+splitting you're going to have to make
+
+502
+00:18:42,090 --> 00:18:44,160
+sure that you're just granularly loading
+
+503
+00:18:44,160 --> 00:18:47,420
+and serving things in as well as you can
+
+504
+00:18:47,420 --> 00:18:50,280
+so when Twitter first started working on
+
+505
+00:18:50,280 --> 00:18:52,710
+this app early on they they had a
+
+506
+00:18:52,710 --> 00:18:54,150
+relatively poor time to interactive
+
+507
+00:18:54,150 --> 00:18:56,160
+score so they were looking at about 15
+
+508
+00:18:56,160 --> 00:18:58,140
+16 milliseconds before anyone could
+
+509
+00:18:58,140 --> 00:18:59,400
+actually start tapping around the
+
+510
+00:18:59,400 --> 00:19:01,830
+interface so not too far away from where
+
+511
+00:19:01,830 --> 00:19:05,610
+a lot of us probably are today most of
+
+512
+00:19:05,610 --> 00:19:08,040
+their critical path was dominated by
+
+513
+00:19:08,040 --> 00:19:10,560
+time spent in script just booting up and
+
+514
+00:19:10,560 --> 00:19:12,360
+so they started taking a look at
+
+515
+00:19:12,360 --> 00:19:14,400
+patterns like purple and and how they
+
+516
+00:19:14,400 --> 00:19:16,200
+could take advantage of them the first
+
+517
+00:19:16,200 --> 00:19:17,760
+thing they introduced was support for
+
+518
+00:19:17,760 --> 00:19:20,010
+DNS prefetch so the ability to you know
+
+519
+00:19:20,010 --> 00:19:22,440
+just specify declaratively what servers
+
+520
+00:19:22,440 --> 00:19:23,580
+you want to start warming your DNS
+
+521
+00:19:23,580 --> 00:19:26,340
+connections up to that led to an 18%
+
+522
+00:19:26,340 --> 00:19:28,230
+perform performance improvement on what
+
+523
+00:19:28,230 --> 00:19:30,000
+they initially had just for at least
+
+524
+00:19:30,000 --> 00:19:33,000
+hitting things like FMP next they
+
+525
+00:19:33,000 --> 00:19:35,040
+investigated using preload for their
+
+526
+00:19:35,040 --> 00:19:38,040
+critical scripts I can't tell you how
+
+527
+00:19:38,040 --> 00:19:39,660
+easy this stuff is to set up like this
+
+528
+00:19:39,660 --> 00:19:41,520
+will take you you know if you're using a
+
+529
+00:19:41,520 --> 00:19:42,990
+static site it's probably less than ten
+
+530
+00:19:42,990 --> 00:19:44,730
+minutes if you're using something full
+
+531
+00:19:44,730 --> 00:19:46,620
+stack it will probably take you an hour
+
+532
+00:19:46,620 --> 00:19:48,660
+but it's we're trying out just to see if
+
+533
+00:19:48,660 --> 00:19:49,980
+it actually has a perceivable
+
+534
+00:19:49,980 --> 00:19:52,260
+improvement on your site so they ended
+
+535
+00:19:52,260 --> 00:19:53,820
+up reloading their critical script so
+
+536
+00:19:53,820 --> 00:19:55,290
+this is like their vendor bundle their
+
+537
+00:19:55,290 --> 00:19:57,510
+synchronous chip scripts as well as
+
+538
+00:19:57,510 --> 00:19:59,550
+their their main scripts that lets with
+
+539
+00:19:59,550 --> 00:20:03,750
+36% improvement on their overall time to
+
+540
+00:20:03,750 --> 00:20:06,680
+interactive next they put work into
+
+541
+00:20:06,680 --> 00:20:08,580
+actually putting pixels on the screen
+
+542
+00:20:08,580 --> 00:20:11,880
+much faster now Twitter is one of those
+
+543
+00:20:11,880 --> 00:20:13,980
+experiences that are very you know
+
+544
+00:20:13,980 --> 00:20:16,200
+meteor rich there's a lot of images in
+
+545
+00:20:16,200 --> 00:20:19,170
+there and so it's unsurprising the media
+
+546
+00:20:19,170 --> 00:20:20,670
+and images one of the things that were
+
+547
+00:20:20,670 --> 00:20:24,570
+slowing them down render wise now one of
+
+548
+00:20:24,570 --> 00:20:25,980
+the things they did was they used
+
+549
+00:20:25,980 --> 00:20:27,750
+request I'll call back
+
+550
+00:20:27,750 --> 00:20:30,210
+we defer loading of some of the images
+
+551
+00:20:30,210 --> 00:20:32,190
+in their timeline and that led to a four
+
+552
+00:20:32,190 --> 00:20:33,900
+times improvement on the render
+
+553
+00:20:33,900 --> 00:20:36,210
+performance ric is kind of awesome
+
+554
+00:20:36,210 --> 00:20:39,810
+definitely worth exploring another thing
+
+555
+00:20:39,810 --> 00:20:41,700
+that they noticed was and this was kind
+
+556
+00:20:41,700 --> 00:20:43,830
+of it's it's so silly but images are
+
+557
+00:20:43,830 --> 00:20:46,050
+still such a big part of what slows us
+
+558
+00:20:46,050 --> 00:20:48,600
+down these days they noticed that they
+
+559
+00:20:48,600 --> 00:20:50,040
+were still sending down relatively large
+
+560
+00:20:50,040 --> 00:20:52,230
+images that were not the right height or
+
+561
+00:20:52,230 --> 00:20:54,690
+width that were still encoded you know
+
+562
+00:20:54,690 --> 00:20:56,670
+sub-optimally and we're taking a long
+
+563
+00:20:56,670 --> 00:20:58,350
+time to decode as soon as they hit
+
+564
+00:20:58,350 --> 00:21:02,430
+chrome they went through the process of
+
+565
+00:21:02,430 --> 00:21:04,260
+actually optimizing that and that shaved
+
+566
+00:21:04,260 --> 00:21:06,300
+off a whole lot of time on their image
+
+567
+00:21:06,300 --> 00:21:08,220
+decodes helped them to make sure that as
+
+568
+00:21:08,220 --> 00:21:10,200
+you scroll through the timeline images
+
+569
+00:21:10,200 --> 00:21:11,430
+are at least not one of those things
+
+570
+00:21:11,430 --> 00:21:12,660
+that are causing you a bottleneck
+
+571
+00:21:12,660 --> 00:21:14,970
+another thing that they introduced was
+
+572
+00:21:14,970 --> 00:21:17,580
+data saver mode this is this idea that
+
+573
+00:21:17,580 --> 00:21:19,920
+you as a user can say well I've got a
+
+574
+00:21:19,920 --> 00:21:22,800
+limited data plan I just want you to not
+
+575
+00:21:22,800 --> 00:21:24,990
+show any images or videos unless I
+
+576
+00:21:24,990 --> 00:21:27,210
+actually tap on them and this led to a
+
+577
+00:21:27,210 --> 00:21:30,030
+70 percent improvement in many cases on
+
+578
+00:21:30,030 --> 00:21:31,410
+the amount of data consumed by the
+
+579
+00:21:31,410 --> 00:21:33,450
+application if you're looking at a web
+
+580
+00:21:33,450 --> 00:21:35,130
+platform level at what we're doing to
+
+581
+00:21:35,130 --> 00:21:38,280
+try these types of experiences we've got
+
+582
+00:21:38,280 --> 00:21:40,470
+the save data client int that you can
+
+583
+00:21:40,470 --> 00:21:42,150
+use and Twitter going to investigate
+
+584
+00:21:42,150 --> 00:21:44,580
+using that next then you've got free
+
+585
+00:21:44,580 --> 00:21:45,090
+cash
+
+586
+00:21:45,090 --> 00:21:46,980
+so initially Twitter Lite didn't have
+
+587
+00:21:46,980 --> 00:21:49,020
+support for anything offline or
+
+588
+00:21:49,020 --> 00:21:52,410
+serviceworker caching and what they did
+
+589
+00:21:52,410 --> 00:21:54,240
+was they incremental II took an approach
+
+590
+00:21:54,240 --> 00:21:57,090
+to adopting serviceworker they started
+
+591
+00:21:57,090 --> 00:21:59,880
+off by first of all statically sort of
+
+592
+00:21:59,880 --> 00:22:02,670
+caching their scripts the emoji they're
+
+593
+00:22:02,670 --> 00:22:04,440
+used whenever you try DMing someone or
+
+594
+00:22:04,440 --> 00:22:07,800
+applying to tweets as well as CSS and
+
+595
+00:22:07,800 --> 00:22:09,720
+then they ramp that up over time to
+
+596
+00:22:09,720 --> 00:22:11,400
+include things like application shell
+
+597
+00:22:11,400 --> 00:22:15,390
+caching so UI caching now what that did
+
+598
+00:22:15,390 --> 00:22:17,790
+on repeat visits was it took load time
+
+599
+00:22:17,790 --> 00:22:22,560
+down from six point ten seconds down to
+
+600
+00:22:22,560 --> 00:22:24,810
+one point four nine seconds so when you
+
+601
+00:22:24,810 --> 00:22:26,550
+after the first time that you visit
+
+602
+00:22:26,550 --> 00:22:28,830
+Twitter light it feels instant coming
+
+603
+00:22:28,830 --> 00:22:30,270
+back and trying to navigate across
+
+604
+00:22:30,270 --> 00:22:35,820
+different views it's pretty powerful now
+
+605
+00:22:35,820 --> 00:22:40,200
+I was cheeky and asked twitter to like
+
+606
+00:22:40,200 --> 00:22:41,610
+host 20 different versions
+
+607
+00:22:41,610 --> 00:22:43,170
+their site so I could go and profile
+
+608
+00:22:43,170 --> 00:22:44,429
+them and they were kind enough to do
+
+609
+00:22:44,429 --> 00:22:47,160
+that now on second load without a
+
+610
+00:22:47,160 --> 00:22:48,299
+serviceworker after some of these
+
+611
+00:22:48,299 --> 00:22:50,250
+changes they saw that they were 47%
+
+612
+00:22:50,250 --> 00:22:52,740
+faster on second load so repeat visits
+
+613
+00:22:52,740 --> 00:22:54,720
+with a surface worker they're 65 percent
+
+614
+00:22:54,720 --> 00:22:59,520
+faster and you've got lazy load so
+
+615
+00:22:59,520 --> 00:23:01,170
+remember when we were looking so this is
+
+616
+00:23:01,170 --> 00:23:02,549
+a lighthouse report if I didn't mention
+
+617
+00:23:02,549 --> 00:23:03,390
+it before
+
+618
+00:23:03,390 --> 00:23:04,890
+remember when we were saying earlier
+
+619
+00:23:04,890 --> 00:23:06,390
+that their time to interactive scores
+
+620
+00:23:06,390 --> 00:23:08,700
+kind of sucked and needed a little bit
+
+621
+00:23:08,700 --> 00:23:11,100
+of work well breaking that work up was
+
+622
+00:23:11,100 --> 00:23:12,540
+one of the first things they needed to
+
+623
+00:23:12,540 --> 00:23:15,299
+do so they have to do these large blocks
+
+624
+00:23:15,299 --> 00:23:17,640
+of like monolithic JavaScript bundles
+
+625
+00:23:17,640 --> 00:23:19,350
+that I know people are like you know
+
+626
+00:23:19,350 --> 00:23:21,090
+some people just don't look at me I'm
+
+627
+00:23:21,090 --> 00:23:23,010
+not doing that but a lot of people
+
+628
+00:23:23,010 --> 00:23:24,990
+actually still do this and that's
+
+629
+00:23:24,990 --> 00:23:27,299
+relatively slow to load on mobile if you
+
+630
+00:23:27,299 --> 00:23:29,309
+have a relatively large bundle even if
+
+631
+00:23:29,309 --> 00:23:30,570
+you think that like you know a few
+
+632
+00:23:30,570 --> 00:23:32,309
+hundred kilobytes isn't a lot that's
+
+633
+00:23:32,309 --> 00:23:33,929
+still extra work the browser has to do
+
+634
+00:23:33,929 --> 00:23:36,090
+to parse and compile that code before it
+
+635
+00:23:36,090 --> 00:23:38,370
+can even you know start to boot it up so
+
+636
+00:23:38,370 --> 00:23:40,860
+initially their bundles were taking five
+
+637
+00:23:40,860 --> 00:23:42,210
+and a half seconds five and a half
+
+638
+00:23:42,210 --> 00:23:45,990
+second dish to get ready before code
+
+639
+00:23:45,990 --> 00:23:48,510
+splitting and then they had this great
+
+640
+00:23:48,510 --> 00:23:49,770
+moment where they're trying to figure
+
+641
+00:23:49,770 --> 00:23:51,270
+out how you're supposed to configure web
+
+642
+00:23:51,270 --> 00:23:53,910
+pack and are still having the best of
+
+643
+00:23:53,910 --> 00:23:54,929
+times with it
+
+644
+00:23:54,929 --> 00:23:57,830
+I hear it's gone better with web pack -
+
+645
+00:23:57,830 --> 00:24:01,380
+we'll see and one of the things that
+
+646
+00:24:01,380 --> 00:24:03,210
+they ended up doing was this is this is
+
+647
+00:24:03,210 --> 00:24:04,799
+a lot of what their code splitting
+
+648
+00:24:04,799 --> 00:24:06,360
+looks like beyond just just using
+
+649
+00:24:06,360 --> 00:24:08,340
+require done ensure they're just making
+
+650
+00:24:08,340 --> 00:24:09,600
+sure that they're correctly using sort
+
+651
+00:24:09,600 --> 00:24:11,370
+of vendor splitting for all of their
+
+652
+00:24:11,370 --> 00:24:13,500
+bundles across different views Twitter
+
+653
+00:24:13,500 --> 00:24:15,809
+ended up creating something like 40
+
+654
+00:24:15,809 --> 00:24:18,390
+different a synchronous chunks that are
+
+655
+00:24:18,390 --> 00:24:20,820
+granularly loaded as you navigate from
+
+656
+00:24:20,820 --> 00:24:25,500
+one view to the other and the impact
+
+657
+00:24:25,500 --> 00:24:26,850
+that that had on their experience was
+
+658
+00:24:26,850 --> 00:24:28,320
+that that actual bundle ended up only
+
+659
+00:24:28,320 --> 00:24:30,780
+taking about three seconds to fully
+
+660
+00:24:30,780 --> 00:24:33,000
+process and it improved their overall
+
+661
+00:24:33,000 --> 00:24:35,730
+times interactive by the end of it
+
+662
+00:24:35,730 --> 00:24:37,080
+they're actually doing much better than
+
+663
+00:24:37,080 --> 00:24:39,299
+this now but by the end of it they were
+
+664
+00:24:39,299 --> 00:24:41,610
+getting interactive in about 5.7 seconds
+
+665
+00:24:41,610 --> 00:24:43,590
+which is still impressive as an
+
+666
+00:24:43,590 --> 00:24:45,660
+investment in just code splitting and
+
+667
+00:24:45,660 --> 00:24:48,330
+some relatively low friction ideas
+
+668
+00:24:48,330 --> 00:24:52,960
+around efficient loading so
+
+669
+00:24:52,960 --> 00:24:55,100
+one other thing that they ended up
+
+670
+00:24:55,100 --> 00:24:57,860
+finding was incredibly invaluable and
+
+671
+00:24:57,860 --> 00:24:59,540
+have been coming back to it pretty
+
+672
+00:24:59,540 --> 00:25:01,340
+regularly is just making sure that
+
+673
+00:25:01,340 --> 00:25:02,960
+they're using bundle analyzers like
+
+674
+00:25:02,960 --> 00:25:05,240
+webpack bundle analyzer to find out what
+
+675
+00:25:05,240 --> 00:25:07,010
+low-hanging fruit they have in their
+
+676
+00:25:07,010 --> 00:25:09,770
+bundles I keep running into people they
+
+677
+00:25:09,770 --> 00:25:11,810
+don't realize that moment J s or other
+
+678
+00:25:11,810 --> 00:25:13,700
+libraries are actually a big part of
+
+679
+00:25:13,700 --> 00:25:14,990
+their bundles and can probably be
+
+680
+00:25:14,990 --> 00:25:17,240
+trimmed down so if you're not using
+
+681
+00:25:17,240 --> 00:25:19,010
+things like web pack bundle analyzer or
+
+682
+00:25:19,010 --> 00:25:21,560
+source map Explorer do check them out
+
+683
+00:25:21,560 --> 00:25:23,960
+they do generally lead to at least
+
+684
+00:25:23,960 --> 00:25:25,520
+understanding a little bit more about
+
+685
+00:25:25,520 --> 00:25:28,210
+what it is you're sending down the wire
+
+686
+00:25:28,210 --> 00:25:31,430
+and in Twitter's case they were making
+
+687
+00:25:31,430 --> 00:25:32,930
+sure that they were using the bundle
+
+688
+00:25:32,930 --> 00:25:35,000
+analyzer plugin so that every single
+
+689
+00:25:35,000 --> 00:25:36,080
+time someone was actually working
+
+690
+00:25:36,080 --> 00:25:37,610
+directly on the application they could
+
+691
+00:25:37,610 --> 00:25:39,980
+see what impact that ended up having on
+
+692
+00:25:39,980 --> 00:25:42,560
+their bundle site on their actual bundle
+
+693
+00:25:42,560 --> 00:25:47,390
+shape so performance is sort of this
+
+694
+00:25:47,390 --> 00:25:50,210
+continuous game of measuring for areas
+
+695
+00:25:50,210 --> 00:25:52,520
+to improve there isn't a single thing
+
+696
+00:25:52,520 --> 00:25:54,620
+that you can do and then just leave it
+
+697
+00:25:54,620 --> 00:25:56,390
+where your site is going to you know
+
+698
+00:25:56,390 --> 00:25:58,850
+always be fast regardless of the devices
+
+699
+00:25:58,850 --> 00:26:00,700
+that your users end up trying it out on
+
+700
+00:26:00,700 --> 00:26:03,620
+for anyone that is interested in sort of
+
+701
+00:26:03,620 --> 00:26:06,800
+getting involved with more continuous
+
+702
+00:26:06,800 --> 00:26:08,450
+performance profiling you know where
+
+703
+00:26:08,450 --> 00:26:09,950
+your team are staying on top of it and
+
+704
+00:26:09,950 --> 00:26:11,680
+you're building up a performance culture
+
+705
+00:26:11,680 --> 00:26:14,180
+I'm happy to encourage you trying out
+
+706
+00:26:14,180 --> 00:26:16,280
+lighthouse it's one of the projects that
+
+707
+00:26:16,280 --> 00:26:19,910
+we work on lighthouse sort of is a is an
+
+708
+00:26:19,910 --> 00:26:21,680
+auditing tool for both performance
+
+709
+00:26:21,680 --> 00:26:23,390
+metrics but also progressive web app
+
+710
+00:26:23,390 --> 00:26:25,300
+features and general web performance of
+
+711
+00:26:25,300 --> 00:26:28,970
+web platform best practices and I'm also
+
+712
+00:26:28,970 --> 00:26:32,450
+happy to suggest trying out calibre by
+
+713
+00:26:32,450 --> 00:26:35,210
+Ben Schwartz calibre is sort of great in
+
+714
+00:26:35,210 --> 00:26:37,430
+that it allows you over time to track
+
+715
+00:26:37,430 --> 00:26:39,530
+everything from your bundle size through
+
+716
+00:26:39,530 --> 00:26:41,210
+to different performance metrics and see
+
+717
+00:26:41,210 --> 00:26:42,620
+you know what impact your different
+
+718
+00:26:42,620 --> 00:26:45,320
+employees had over time so check that
+
+719
+00:26:45,320 --> 00:26:47,990
+out and I'd also encourage people to
+
+720
+00:26:47,990 --> 00:26:50,990
+check out web page test integration with
+
+721
+00:26:50,990 --> 00:26:53,780
+your git hooks housing comm is a
+
+722
+00:26:53,780 --> 00:26:55,250
+progressive web app that did this and
+
+723
+00:26:55,250 --> 00:26:56,690
+basically they have this really awesome
+
+724
+00:26:56,690 --> 00:26:59,360
+setup where any time someone tries to
+
+725
+00:26:59,360 --> 00:27:02,240
+submit a new PR for a feature it runs it
+
+726
+00:27:02,240 --> 00:27:04,070
+through web page test and will include a
+
+727
+00:27:04,070 --> 00:27:04,610
+filmstrip
+
+728
+00:27:04,610 --> 00:27:06,070
+at the very bottom of your Pia
+
+729
+00:27:06,070 --> 00:27:07,960
+are to show exactly what impact that had
+
+730
+00:27:07,960 --> 00:27:13,990
+on user experience so with that I hope
+
+731
+00:27:13,990 --> 00:27:16,000
+you found this little journey into
+
+732
+00:27:16,000 --> 00:27:17,800
+loading useful I hope you found the
+
+733
+00:27:17,800 --> 00:27:19,720
+story about some of the experiences we
+
+734
+00:27:19,720 --> 00:27:25,480
+had with Twitter useful I know that you
+
+735
+00:27:25,480 --> 00:27:27,430
+know Twitter of Twitter is great it also
+
+736
+00:27:27,430 --> 00:27:29,680
+sometimes feels like group therapy where
+
+737
+00:27:29,680 --> 00:27:32,410
+no one ever it gets any better that it's
+
+738
+00:27:32,410 --> 00:27:36,010
+it's great so yeah if if you're
+
+739
+00:27:36,010 --> 00:27:36,940
+interested in learning a little bit more
+
+740
+00:27:36,940 --> 00:27:40,330
+about loading we started a new blog over
+
+741
+00:27:40,330 --> 00:27:42,610
+on a crime scene called reloading on
+
+742
+00:27:42,610 --> 00:27:44,710
+medium so medium.com slash reloading and
+
+743
+00:27:44,710 --> 00:27:46,960
+we intend on publishing more material
+
+744
+00:27:46,960 --> 00:27:48,190
+there over the next coming months about
+
+745
+00:27:48,190 --> 00:27:50,950
+everything from h to server push through
+
+746
+00:27:50,950 --> 00:27:53,350
+to broadly Gretz lee and a lot of the
+
+747
+00:27:53,350 --> 00:27:54,310
+other work that we're doing in the
+
+748
+00:27:54,310 --> 00:27:56,950
+loading space and that's it for me thank
+
+749
+00:27:56,950 --> 00:27:57,690
+you
+
+750
+00:27:57,690 --> 00:28:04,240
+[Applause]
+

@@ -1,0 +1,2361 @@
+1
+00:00:18,170 --> 00:00:21,750
+
+good afternoon are we talking about
+
+2
+00:00:21,750 --> 00:00:24,980
+emulating gaming consoles of JavaScript
+
+3
+00:00:24,980 --> 00:00:28,230
+so Who am I on this guy named Alexander
+
+4
+00:00:28,230 --> 00:00:30,660
+Dixon I've got a Twitter like some
+
+5
+00:00:30,660 --> 00:00:33,920
+people do I'm not an emulation expert so
+
+6
+00:00:33,920 --> 00:00:35,880
+there's that one here written an
+
+7
+00:00:35,880 --> 00:00:40,559
+emulator for yep should probably come up
+
+8
+00:00:40,559 --> 00:00:44,040
+here and finish this for me so I'm a
+
+9
+00:00:44,040 --> 00:00:46,079
+developer atlassian which you may know
+
+10
+00:00:46,079 --> 00:00:50,090
+that make bitbucket 0 you might use them
+
+11
+00:00:50,090 --> 00:00:53,850
+so so let's do our JavaScript today it's
+
+12
+00:00:53,850 --> 00:00:55,739
+pretty fast which is always good when
+
+13
+00:00:55,739 --> 00:00:56,700
+you want to write something like an
+
+14
+00:00:56,700 --> 00:00:58,829
+emulator it's got really awesome browser
+
+15
+00:00:58,829 --> 00:01:02,520
+api's the inputs and outputs you can get
+
+16
+00:01:02,520 --> 00:01:05,280
+are pretty awesome so let's talk about
+
+17
+00:01:05,280 --> 00:01:07,530
+them we have the canvas element Web
+
+18
+00:01:07,530 --> 00:01:10,710
+Audio API gamepad API type to raise
+
+19
+00:01:10,710 --> 00:01:13,890
+quite performant things for animation
+
+20
+00:01:13,890 --> 00:01:16,409
+like requestanimationframe but things we
+
+21
+00:01:16,409 --> 00:01:18,270
+don't have our sane implementations to
+
+22
+00:01:18,270 --> 00:01:21,810
+some of these for example that yeah what
+
+23
+00:01:21,810 --> 00:01:24,120
+I'm what Miguel mentioned earlier is the
+
+24
+00:01:24,120 --> 00:01:27,120
+Firefox gamepad API users events but the
+
+25
+00:01:27,120 --> 00:01:29,310
+WebKit one you have to pull which
+
+26
+00:01:29,310 --> 00:01:32,549
+doesn't isn't always so great so what
+
+27
+00:01:32,549 --> 00:01:35,610
+can we build with all this gear we could
+
+28
+00:01:35,610 --> 00:01:37,710
+build some awesome practical stuff like
+
+29
+00:01:37,710 --> 00:01:39,030
+we've seen earlier you could do
+
+30
+00:01:39,030 --> 00:01:40,770
+something almost complete useless and
+
+31
+00:01:40,770 --> 00:01:44,220
+write an emulator so why would you what
+
+32
+00:01:44,220 --> 00:01:45,510
+would you want to do this when there's
+
+33
+00:01:45,510 --> 00:01:47,880
+problems you could be solving practical
+
+34
+00:01:47,880 --> 00:01:51,500
+problems well because we can of course
+
+35
+00:01:51,500 --> 00:01:53,729
+so you might be wondering what an
+
+36
+00:01:53,729 --> 00:01:59,340
+emulator is so wikipedia tells us so
+
+37
+00:01:59,340 --> 00:02:00,869
+when you won't refer to emulate like
+
+38
+00:02:00,869 --> 00:02:04,020
+this we talk about taking a existing
+
+39
+00:02:04,020 --> 00:02:06,570
+system and implementing in software so
+
+40
+00:02:06,570 --> 00:02:08,849
+the original program so that hardware
+
+41
+00:02:08,849 --> 00:02:12,810
+just work normally and what kind of
+
+42
+00:02:12,810 --> 00:02:14,909
+system can be emulated but the church
+
+43
+00:02:14,909 --> 00:02:17,250
+cheering thesis says that on anything
+
+44
+00:02:17,250 --> 00:02:20,730
+that can be okay anything can be
+
+45
+00:02:20,730 --> 00:02:24,840
+programmed such as a hardware Kimmy can
+
+46
+00:02:24,840 --> 00:02:26,670
+be redone with another language or
+
+47
+00:02:26,670 --> 00:02:29,220
+system basically it says any
+
+48
+00:02:29,220 --> 00:02:31,050
+can be emulated given enough time and
+
+49
+00:02:31,050 --> 00:02:35,570
+memory so there's three major types of
+
+50
+00:02:35,570 --> 00:02:38,490
+highway emulators there's interpreter
+
+51
+00:02:38,490 --> 00:02:41,430
+which runs the system as as the system
+
+52
+00:02:41,430 --> 00:02:44,250
+runs via software there's dynamic
+
+53
+00:02:44,250 --> 00:02:46,440
+recompilation which will take a list of
+
+54
+00:02:46,440 --> 00:02:48,690
+instruction and translate them directly
+
+55
+00:02:48,690 --> 00:02:50,940
+to the top the target machine code and
+
+56
+00:02:50,940 --> 00:02:53,520
+there's static recompilation which is
+
+57
+00:02:53,520 --> 00:02:55,860
+pretty much impossible due to things
+
+58
+00:02:55,860 --> 00:02:59,460
+like self-modifying code and fertile bit
+
+59
+00:02:59,460 --> 00:03:02,130
+emulators they're kind of a bit dodgy
+
+60
+00:03:02,130 --> 00:03:03,720
+from a legal perspective because
+
+61
+00:03:03,720 --> 00:03:05,550
+Nintendo don't really want you to go and
+
+62
+00:03:05,550 --> 00:03:09,870
+make emulators so you can always do at
+
+63
+00:03:09,870 --> 00:03:12,720
+your own risk and use free programs be
+
+64
+00:03:12,720 --> 00:03:16,890
+careful like a mega man so how would you
+
+65
+00:03:16,890 --> 00:03:19,020
+start this journey well you'd have to
+
+66
+00:03:19,020 --> 00:03:22,590
+pick a system of course so you might
+
+67
+00:03:22,590 --> 00:03:25,650
+pick the a Game Boy you have to discover
+
+68
+00:03:25,650 --> 00:03:27,390
+what components that uses such as what
+
+69
+00:03:27,390 --> 00:03:30,740
+chips it uses how its display was driven
+
+70
+00:03:30,740 --> 00:03:34,230
+what inputs it had so then you go find
+
+71
+00:03:34,230 --> 00:03:35,370
+technical information and all those
+
+72
+00:03:35,370 --> 00:03:37,739
+sorts of things and this this is
+
+73
+00:03:37,739 --> 00:03:41,700
+required for formulating it so there's a
+
+74
+00:03:41,700 --> 00:03:43,500
+really basic system called chip 8 and
+
+75
+00:03:43,500 --> 00:03:47,250
+this was a actually a vm and those two
+
+76
+00:03:47,250 --> 00:03:48,989
+back programs most which are games and
+
+77
+00:03:48,989 --> 00:03:50,730
+the great thing that you paid is it's
+
+78
+00:03:50,730 --> 00:03:52,290
+super easy to emulate so it's a great
+
+79
+00:03:52,290 --> 00:03:57,420
+starting point so the cpu limits of
+
+80
+00:03:57,420 --> 00:03:59,310
+instructions the graphics are either on
+
+81
+00:03:59,310 --> 00:04:02,730
+or off there's only one audio sample and
+
+82
+00:04:02,730 --> 00:04:06,330
+it's undefined so you can you can make
+
+83
+00:04:06,330 --> 00:04:10,930
+it up and we'll give you a look at that
+
+84
+00:04:10,940 --> 00:04:15,030
+so this is a chip a system let's load in
+
+85
+00:04:15,030 --> 00:04:20,699
+a program tank looks good
+
+86
+00:04:20,709 --> 00:04:23,560
+I'll attempt to play uses 16 different
+
+87
+00:04:23,560 --> 00:04:26,590
+inputs so it's kind of hard to figure
+
+88
+00:04:26,590 --> 00:04:30,220
+out something bloomies meant to be an
+
+89
+00:04:30,220 --> 00:04:36,970
+enemy but it's not doing much mmm let's
+
+90
+00:04:36,970 --> 00:04:49,650
+try that again yeah we remember Tetris
+
+91
+00:04:49,660 --> 00:04:51,520
+so this is this is all powered by
+
+92
+00:04:51,520 --> 00:04:54,940
+JavaScript and it's just implementing
+
+93
+00:04:54,940 --> 00:04:57,850
+the original operation codes that these
+
+94
+00:04:57,850 --> 00:05:07,930
+are programs contained
+
+95
+00:05:07,940 --> 00:05:10,889
+so a more complicated and more exciting
+
+96
+00:05:10,889 --> 00:05:12,210
+system is a nintendo entertainment
+
+97
+00:05:12,210 --> 00:05:14,570
+system which you pull your recognized or
+
+98
+00:05:14,570 --> 00:05:16,889
+you may have seen it looking like this
+
+99
+00:05:16,889 --> 00:05:21,300
+which is the famicom so whose play this
+
+100
+00:05:21,300 --> 00:05:26,460
+before oh good to see so here's an
+
+101
+00:05:26,460 --> 00:05:32,850
+investment for it you haven't played it
+
+102
+00:05:32,850 --> 00:05:34,440
+yet we can plan on my Nintendo
+
+103
+00:05:34,440 --> 00:05:36,810
+Entertainment System it's the legend of
+
+104
+00:05:36,810 --> 00:05:38,910
+zelda and its really rad those creatures
+
+105
+00:05:38,910 --> 00:05:41,850
+from gas are pretty bad akhter Oxitec
+
+106
+00:05:41,850 --> 00:05:44,700
+tags leavers too with your help I hear
+
+107
+00:05:44,700 --> 00:05:47,729
+upholstery yeah Michael like yeah it's
+
+108
+00:05:47,729 --> 00:05:51,479
+okay wiki wait awesome thanks a Nintendo
+
+109
+00:05:51,479 --> 00:05:53,550
+Entertainment System your parents help
+
+110
+00:05:53,550 --> 00:05:55,500
+you hook it up The Legend of Zelda sold
+
+111
+00:05:55,500 --> 00:05:58,440
+separate so so as you can see it's
+
+112
+00:05:58,440 --> 00:05:59,700
+pretty awesome you'll just bust out
+
+113
+00:05:59,700 --> 00:06:03,479
+rapping as you're playing so let's talk
+
+114
+00:06:03,479 --> 00:06:07,110
+about the system it's got a custom CPU
+
+115
+00:06:07,110 --> 00:06:10,380
+based off the 6502 it's got two
+
+116
+00:06:10,380 --> 00:06:12,390
+kilobytes on board room to kilobytes
+
+117
+00:06:12,390 --> 00:06:15,510
+video ram 256 bytes of object attribute
+
+118
+00:06:15,510 --> 00:06:17,039
+memory ram and twenty eight bytes of
+
+119
+00:06:17,039 --> 00:06:18,690
+pallet ram and that will make sense as
+
+120
+00:06:18,690 --> 00:06:21,840
+you listen on it's got a custom-made ppu
+
+121
+00:06:21,840 --> 00:06:23,580
+which is responsible for rendering the
+
+122
+00:06:23,580 --> 00:06:26,250
+graphics from memory and as we have five
+
+123
+00:06:26,250 --> 00:06:27,750
+sound channels and the best part
+
+124
+00:06:27,750 --> 00:06:29,520
+possibly the awesome rectangular
+
+125
+00:06:29,520 --> 00:06:32,250
+controllers before ergonomics come in
+
+126
+00:06:32,250 --> 00:06:35,400
+and play obviously so the how this all
+
+127
+00:06:35,400 --> 00:06:36,630
+fits together is the von Neumann
+
+128
+00:06:36,630 --> 00:06:39,240
+architecture where we have a common bus
+
+129
+00:06:39,240 --> 00:06:41,700
+that lets us communicate between the CPU
+
+130
+00:06:41,700 --> 00:06:45,240
+memory and peripherals so what we want
+
+131
+00:06:45,240 --> 00:06:46,919
+to do is emulate each of these little
+
+132
+00:06:46,919 --> 00:06:49,500
+yellow things and just have some way for
+
+133
+00:06:49,500 --> 00:06:50,850
+the code to communicate with them which
+
+134
+00:06:50,850 --> 00:06:53,729
+will act as a bus so let's go more in
+
+135
+00:06:53,729 --> 00:06:57,720
+depth with the CPU so CPU when you're
+
+136
+00:06:57,720 --> 00:06:59,639
+Emily it's basically a loop it just sits
+
+137
+00:06:59,639 --> 00:07:02,000
+it just runs grabbing instructions
+
+138
+00:07:02,000 --> 00:07:06,240
+decoding them and X unum so are these
+
+139
+00:07:06,240 --> 00:07:08,789
+instruct the instructions we call op
+
+140
+00:07:08,789 --> 00:07:13,500
+codes so the inexact codes perform tasks
+
+141
+00:07:13,500 --> 00:07:16,110
+to update the system state and there's
+
+142
+00:07:16,110 --> 00:07:18,599
+many that that do many different things
+
+143
+00:07:18,599 --> 00:07:21,180
+so this is the
+
+144
+00:07:21,180 --> 00:07:23,720
+the nessus if you it's the recoil
+
+145
+00:07:23,720 --> 00:07:26,190
+there's two different flavors depending
+
+146
+00:07:26,190 --> 00:07:32,190
+on the location and it's like it's a
+
+147
+00:07:32,190 --> 00:07:34,530
+custom 6502 because it has audio support
+
+148
+00:07:34,530 --> 00:07:38,009
+but no binary coded decimal support I'm
+
+149
+00:07:38,009 --> 00:07:39,840
+it's a bit processor with a 16-bit
+
+150
+00:07:39,840 --> 00:07:42,870
+address bus and runs at 12 megahertz
+
+151
+00:07:42,870 --> 00:07:44,759
+clock speed so something like the
+
+152
+00:07:44,759 --> 00:07:47,729
+fastest by today's standards there's
+
+153
+00:07:47,729 --> 00:07:49,410
+plenty formation about it because a lot
+
+154
+00:07:49,410 --> 00:07:52,560
+of hackers have emulated this so it is a
+
+155
+00:07:52,560 --> 00:07:54,270
+great thing about doing this one is it's
+
+156
+00:07:54,270 --> 00:07:57,780
+plain information so finally the system
+
+157
+00:07:57,780 --> 00:08:01,110
+JavaScript here's how you may implement
+
+158
+00:08:01,110 --> 00:08:04,380
+the CPU and JavaScript so we have a
+
+159
+00:08:04,380 --> 00:08:06,870
+constructor function here and we've just
+
+160
+00:08:06,870 --> 00:08:08,669
+listed out all the registers initialize
+
+161
+00:08:08,669 --> 00:08:11,580
+them as null and then we call a method
+
+162
+00:08:11,580 --> 00:08:13,020
+called reset which which will basically
+
+163
+00:08:13,020 --> 00:08:14,669
+just go and set these to the initial
+
+164
+00:08:14,669 --> 00:08:18,030
+values so that that's kind of how simple
+
+165
+00:08:18,030 --> 00:08:20,430
+it is to start off an emulator start
+
+166
+00:08:20,430 --> 00:08:28,199
+start emulating a system so CPU needs
+
+167
+00:08:28,199 --> 00:08:31,530
+memory so let's talk about that so it's
+
+168
+00:08:31,530 --> 00:08:33,240
+basically can't in contiguous block of
+
+169
+00:08:33,240 --> 00:08:35,250
+data that can be addressed and written
+
+170
+00:08:35,250 --> 00:08:39,150
+to depending on the type the nest memory
+
+171
+00:08:39,150 --> 00:08:43,380
+had two kilobytes on board and these are
+
+172
+00:08:43,380 --> 00:08:44,940
+divided into things such as zero page
+
+173
+00:08:44,940 --> 00:08:47,279
+the stack and just more general purpose
+
+174
+00:08:47,279 --> 00:08:49,170
+memory and there's also memory that can
+
+175
+00:08:49,170 --> 00:08:52,620
+be accessed on the carts so to address
+
+176
+00:08:52,620 --> 00:08:56,370
+about the 10,000 and the program Rome
+
+177
+00:08:56,370 --> 00:08:59,910
+that you plug in one of these guys holds
+
+178
+00:08:59,910 --> 00:09:02,790
+the program instructions sound and
+
+179
+00:09:02,790 --> 00:09:07,020
+graphics title so when you're dealing
+
+180
+00:09:07,020 --> 00:09:09,360
+with big blocks of memory with
+
+181
+00:09:09,360 --> 00:09:12,089
+JavaScript they can be if you you're
+
+182
+00:09:12,089 --> 00:09:14,220
+represented this as an array it can be
+
+183
+00:09:14,220 --> 00:09:15,510
+quite slow and where the emulator
+
+184
+00:09:15,510 --> 00:09:18,420
+performances is pretty critical so you
+
+185
+00:09:18,420 --> 00:09:20,010
+can use typed arrays which are
+
+186
+00:09:20,010 --> 00:09:24,329
+relatively new thing so you represent
+
+187
+00:09:24,329 --> 00:09:26,399
+the memory as one big typed array you'll
+
+188
+00:09:26,399 --> 00:09:29,570
+get perform performance increases
+
+189
+00:09:29,570 --> 00:09:31,589
+because it makes it makes it easier to
+
+190
+00:09:31,589 --> 00:09:33,280
+reach any offset
+
+191
+00:09:33,280 --> 00:09:36,550
+there's information on them at this URL
+
+192
+00:09:36,550 --> 00:09:40,160
+so i recommend having a look so here's
+
+193
+00:09:40,160 --> 00:09:41,810
+an example of a typed array working it
+
+194
+00:09:41,810 --> 00:09:43,940
+as our memory so if allocated enough
+
+195
+00:09:43,940 --> 00:09:48,080
+memory for the cpu here and then we take
+
+196
+00:09:48,080 --> 00:09:50,230
+a view onto that memory which is a um
+
+197
+00:09:50,230 --> 00:09:54,410
+unsigned integer which is what the the
+
+198
+00:09:54,410 --> 00:09:58,130
+nurse works in so with an NES there's
+
+199
+00:09:58,130 --> 00:09:59,540
+the memories mapped every where for
+
+200
+00:09:59,540 --> 00:10:02,000
+example to communicate with the PPU you
+
+201
+00:10:02,000 --> 00:10:04,310
+write you read from a rail I wrote to a
+
+202
+00:10:04,310 --> 00:10:06,230
+specific memory dress and a highway
+
+203
+00:10:06,230 --> 00:10:08,120
+would take that over to the picture
+
+204
+00:10:08,120 --> 00:10:10,210
+processing unit so instead of writing
+
+205
+00:10:10,210 --> 00:10:13,100
+just modifying the array directly you
+
+206
+00:10:13,100 --> 00:10:14,540
+need to write some helper functions
+
+207
+00:10:14,540 --> 00:10:15,560
+which would go through and do all the
+
+208
+00:10:15,560 --> 00:10:17,540
+magic for you and it's especially
+
+209
+00:10:17,540 --> 00:10:19,760
+important when you have a complicated
+
+210
+00:10:19,760 --> 00:10:21,950
+game cards which which extend the memory
+
+211
+00:10:21,950 --> 00:10:25,940
+via bank switching so now go memory
+
+212
+00:10:25,940 --> 00:10:28,010
+other way let's talk about decoding the
+
+213
+00:10:28,010 --> 00:10:30,860
+instructions in the CPU so the first
+
+214
+00:10:30,860 --> 00:10:31,970
+thing we need to do is check for
+
+215
+00:10:31,970 --> 00:10:34,850
+interrupts and these are little things
+
+216
+00:10:34,850 --> 00:10:37,070
+that get set which which makes the
+
+217
+00:10:37,070 --> 00:10:39,200
+processor go and handle them immediately
+
+218
+00:10:39,200 --> 00:10:43,910
+so for example with NES before a screen
+
+219
+00:10:43,910 --> 00:10:45,980
+is drawn there's an interrupt that you
+
+220
+00:10:45,980 --> 00:10:48,200
+can you can that's defy it and you can
+
+221
+00:10:48,200 --> 00:10:51,320
+listen to that and go ahead and paint
+
+222
+00:10:51,320 --> 00:10:54,500
+your screen so when this happens you are
+
+223
+00:10:54,500 --> 00:10:56,840
+you read the memory of the program
+
+224
+00:10:56,840 --> 00:11:01,190
+counter you go stall that somewhere yeah
+
+225
+00:11:01,190 --> 00:11:04,490
+so so is more general fetch decode loop
+
+226
+00:11:04,490 --> 00:11:06,080
+so you read the memory at the program
+
+227
+00:11:06,080 --> 00:11:07,640
+counter which is a little pointer to
+
+228
+00:11:07,640 --> 00:11:08,600
+where you are currently in the
+
+229
+00:11:08,600 --> 00:11:10,970
+instructions you decode the addressing
+
+230
+00:11:10,970 --> 00:11:15,140
+mode which is how how the the argument
+
+231
+00:11:15,140 --> 00:11:18,170
+is is encoded and then you process that
+
+232
+00:11:18,170 --> 00:11:21,590
+opcode so to go further into interrupts
+
+233
+00:11:21,590 --> 00:11:23,420
+as I said earlier there a little special
+
+234
+00:11:23,420 --> 00:11:25,100
+signal that that interrupts the normal
+
+235
+00:11:25,100 --> 00:11:28,810
+execution flow so when this happens you
+
+236
+00:11:28,810 --> 00:11:32,600
+you put the original PC in the processor
+
+237
+00:11:32,600 --> 00:11:34,850
+status on the stack and you go and
+
+238
+00:11:34,850 --> 00:11:37,700
+attend to this interrupt so the way you
+
+239
+00:11:37,700 --> 00:11:39,590
+can handle this again it's it's pretty
+
+240
+00:11:39,590 --> 00:11:43,370
+simple you just list them out before you
+
+241
+00:11:43,370 --> 00:11:45,290
+emulate a cycle you just simply go ahead
+
+242
+00:11:45,290 --> 00:11:46,040
+and check
+
+243
+00:11:46,040 --> 00:11:48,410
+if any interrupts been set if it has you
+
+244
+00:11:48,410 --> 00:11:49,699
+can just call out to a new method that
+
+245
+00:11:49,699 --> 00:11:52,279
+handles them and you might think this
+
+246
+00:11:52,279 --> 00:11:55,220
+code is not that JavaScript II you can
+
+247
+00:11:55,220 --> 00:11:56,990
+make it right it better so I thought
+
+248
+00:11:56,990 --> 00:11:58,670
+maybe I'll try to write this with some
+
+249
+00:11:58,670 --> 00:12:01,250
+more new jersey of stuff but
+
+250
+00:12:01,250 --> 00:12:06,680
+unfortunately it's far too slow and
+
+251
+00:12:06,680 --> 00:12:08,180
+that's how you basically have to write
+
+252
+00:12:08,180 --> 00:12:09,680
+your JavaScript like your writing C or
+
+253
+00:12:09,680 --> 00:12:11,990
+something because then is new stuff it's
+
+254
+00:12:11,990 --> 00:12:15,079
+just unfortunately too slow so when you
+
+255
+00:12:15,079 --> 00:12:18,380
+got these op codes so you you read the
+
+256
+00:12:18,380 --> 00:12:20,329
+location of the program counter from
+
+257
+00:12:20,329 --> 00:12:23,120
+memory you then look up the up code in a
+
+258
+00:12:23,120 --> 00:12:24,740
+big table that you've implemented to
+
+259
+00:12:24,740 --> 00:12:27,560
+find out what the instruction does now
+
+260
+00:12:27,560 --> 00:12:28,940
+you find the addressing mode which
+
+261
+00:12:28,940 --> 00:12:31,759
+describes how its arguments encoded and
+
+262
+00:12:31,759 --> 00:12:33,920
+then you process that of code and then
+
+263
+00:12:33,920 --> 00:12:35,930
+you mostly then increment the program
+
+264
+00:12:35,930 --> 00:12:39,079
+counter to the next one so again all
+
+265
+00:12:39,079 --> 00:12:41,300
+these parts are pretty simple there's
+
+266
+00:12:41,300 --> 00:12:45,050
+just a lot to write down so we have this
+
+267
+00:12:45,050 --> 00:12:47,630
+method courgette opcode where we put the
+
+268
+00:12:47,630 --> 00:12:49,639
+piece of memory at a program counter
+
+269
+00:12:49,639 --> 00:12:52,579
+pass it to that then we find the
+
+270
+00:12:52,579 --> 00:12:54,440
+addressing mode and we just basically
+
+271
+00:12:54,440 --> 00:12:57,190
+list them out and describe how that work
+
+272
+00:12:57,190 --> 00:13:00,170
+so then emulate writing emulate is
+
+273
+00:13:00,170 --> 00:13:01,519
+basically just reading the technical
+
+274
+00:13:01,519 --> 00:13:03,050
+specification of the system and
+
+275
+00:13:03,050 --> 00:13:07,069
+implementing it in code so these
+
+276
+00:13:07,069 --> 00:13:10,220
+avocados I've been mentioning see you've
+
+277
+00:13:10,220 --> 00:13:11,569
+got to become pretty familiar with them
+
+278
+00:13:11,569 --> 00:13:13,550
+so i recommend reading the paper a bunch
+
+279
+00:13:13,550 --> 00:13:16,160
+of times taking it with you really in
+
+280
+00:13:16,160 --> 00:13:19,579
+the shell and when things aren't working
+
+281
+00:13:19,579 --> 00:13:22,699
+debugging is can be quite hard so you
+
+282
+00:13:22,699 --> 00:13:25,430
+really want to get quite familiar with
+
+283
+00:13:25,430 --> 00:13:27,279
+it so you know making simple mistakes
+
+284
+00:13:27,279 --> 00:13:29,569
+and of course when you're not going to
+
+285
+00:13:29,569 --> 00:13:31,699
+write just keep trying persistence is
+
+286
+00:13:31,699 --> 00:13:35,779
+key so implementers opcodes is again
+
+287
+00:13:35,779 --> 00:13:38,209
+it's pretty simple where you just look
+
+288
+00:13:38,209 --> 00:13:39,769
+at what the type is in this case it's a
+
+289
+00:13:39,769 --> 00:13:44,329
+jump and all the jump is it set see the
+
+290
+00:13:44,329 --> 00:13:46,519
+program counter to a new address that's
+
+291
+00:13:46,519 --> 00:13:48,380
+a really simple one the problem is
+
+292
+00:13:48,380 --> 00:13:51,980
+there's about 150 instructions or with
+
+293
+00:13:51,980 --> 00:13:54,500
+potentially about six or seven dressing
+
+294
+00:13:54,500 --> 00:13:56,570
+modes so you need to
+
+295
+00:13:56,570 --> 00:14:00,140
+implement quite a bit of stuff there so
+
+296
+00:14:00,140 --> 00:14:02,300
+now you've got your cpu running smoothly
+
+297
+00:14:02,300 --> 00:14:03,860
+you want to move on to the next part
+
+298
+00:14:03,860 --> 00:14:06,140
+which is the PPU which is a picture
+
+299
+00:14:06,140 --> 00:14:08,840
+processing unit and so this generates
+
+300
+00:14:08,840 --> 00:14:11,600
+video signals from memory on the handle
+
+301
+00:14:11,600 --> 00:14:13,270
+sprite scrolling and the colors
+
+302
+00:14:13,270 --> 00:14:15,230
+basically anything you want to rent to
+
+303
+00:14:15,230 --> 00:14:18,200
+screen it uses it has two different
+
+304
+00:14:18,200 --> 00:14:19,670
+chips depending on the area for
+
+305
+00:14:19,670 --> 00:14:21,890
+different refresh rates this is it down
+
+306
+00:14:21,890 --> 00:14:23,660
+the bottom it's quite a nice looking
+
+307
+00:14:23,660 --> 00:14:28,330
+chip so it's got two kilobytes of RAM to
+
+308
+00:14:28,330 --> 00:14:30,920
+it can support eight by eight or 8 by 16
+
+309
+00:14:30,920 --> 00:14:33,470
+tiles though in practice stay by 16
+
+310
+00:14:33,470 --> 00:14:35,690
+almost never used and you can render
+
+311
+00:14:35,690 --> 00:14:38,420
+resolution of 256 x 240 which can be
+
+312
+00:14:38,420 --> 00:14:40,400
+clipped depending on the the screen res
+
+313
+00:14:40,400 --> 00:14:44,420
+on the target screen resolution so I'm
+
+314
+00:14:44,420 --> 00:14:47,120
+communicating with this ppu is performed
+
+315
+00:14:47,120 --> 00:14:49,670
+by memory maps from the CPUs addressable
+
+316
+00:14:49,670 --> 00:14:51,650
+memory so when you write or read to
+
+317
+00:14:51,650 --> 00:14:53,390
+these that the hard way actually goes
+
+318
+00:14:53,390 --> 00:14:56,450
+out and and affects the pp user
+
+319
+00:14:56,450 --> 00:15:01,250
+registers and that the pixel tiles which
+
+320
+00:15:01,250 --> 00:15:04,490
+you use to compose a picture of their
+
+321
+00:15:04,490 --> 00:15:08,300
+store on the character Ramallah cart so
+
+322
+00:15:08,300 --> 00:15:10,960
+with a palette of colors yeah 52 colors
+
+323
+00:15:10,960 --> 00:15:13,520
+which is two pallets of background and
+
+324
+00:15:13,520 --> 00:15:17,600
+and sprite 16 bytes each but do some
+
+325
+00:15:17,600 --> 00:15:18,920
+limitations you can only use about 25
+
+326
+00:15:18,920 --> 00:15:22,700
+colors on screen at once so when you're
+
+327
+00:15:22,700 --> 00:15:24,620
+rendering a picture it's composed of
+
+328
+00:15:24,620 --> 00:15:28,580
+tiles each one opposes 16 bytes do the
+
+329
+00:15:28,580 --> 00:15:31,460
+way it's encoded in memory a bit turned
+
+330
+00:15:31,460 --> 00:15:37,610
+on in the tile represents a a color in
+
+331
+00:15:37,610 --> 00:15:40,970
+the palette index so in the way
+
+332
+00:15:40,970 --> 00:15:42,770
+determine this is you get the first 8
+
+333
+00:15:42,770 --> 00:15:45,530
+bits and then 8 bytes later there's a
+
+334
+00:15:45,530 --> 00:15:47,960
+second 8 bits that you merge and then a
+
+335
+00:15:47,960 --> 00:15:49,670
+lot further down there's there's the
+
+336
+00:15:49,670 --> 00:15:54,080
+higher parlor number so if you look at
+
+337
+00:15:54,080 --> 00:15:55,730
+this number here and you imagine the
+
+338
+00:15:55,730 --> 00:15:58,130
+letter what the number one sorry is a
+
+339
+00:15:58,130 --> 00:16:01,430
+strange yellow color and it's a bit
+
+340
+00:16:01,430 --> 00:16:04,640
+simplified you could render this which
+
+341
+00:16:04,640 --> 00:16:08,550
+is a na bhaye at all
+
+342
+00:16:08,550 --> 00:16:11,080
+so these tiles are great we need to
+
+343
+00:16:11,080 --> 00:16:14,710
+compose them into a pig you know a
+
+344
+00:16:14,710 --> 00:16:16,270
+picture in order to get getting on
+
+345
+00:16:16,270 --> 00:16:19,780
+screen so you have bites which index
+
+346
+00:16:19,780 --> 00:16:23,500
+this these tiles I'm you have a 32
+
+347
+00:16:23,500 --> 00:16:25,390
+horizontal and 30 vertical which matches
+
+348
+00:16:25,390 --> 00:16:28,780
+the resolution discussed earlier and the
+
+349
+00:16:28,780 --> 00:16:32,260
+difference between after is nice if your
+
+350
+00:16:32,260 --> 00:16:33,610
+tiles is some extra color information
+
+351
+00:16:33,610 --> 00:16:35,890
+which thing is combined with the
+
+352
+00:16:35,890 --> 00:16:38,080
+previous tile information to generate
+
+353
+00:16:38,080 --> 00:16:40,930
+new color so nothing is really is really
+
+354
+00:16:40,930 --> 00:16:45,700
+wasted here so this would become clear
+
+355
+00:16:45,700 --> 00:16:49,990
+when I show you an example so if you
+
+356
+00:16:49,990 --> 00:16:52,060
+look here at the zero offset we have a
+
+357
+00:16:52,060 --> 00:16:55,810
+bite eight bytes later we have another
+
+358
+00:16:55,810 --> 00:16:59,650
+bite and the first part of the object
+
+359
+00:16:59,650 --> 00:17:02,140
+rebuke memory holds a a second number
+
+360
+00:17:02,140 --> 00:17:05,530
+and these are you grab this one put it
+
+361
+00:17:05,530 --> 00:17:08,500
+here grab this one put it here and you
+
+362
+00:17:08,500 --> 00:17:09,940
+can probably guess you throw them over
+
+363
+00:17:09,940 --> 00:17:12,340
+there and that gives you a final color
+
+364
+00:17:12,340 --> 00:17:15,250
+index into the palette and of course
+
+365
+00:17:15,250 --> 00:17:17,650
+doing bit stuff in JavaScript relative
+
+366
+00:17:17,650 --> 00:17:21,360
+straightforward you just end it with
+
+367
+00:17:21,360 --> 00:17:24,160
+with this number in order to get the
+
+368
+00:17:24,160 --> 00:17:25,660
+part you want shift it where you want
+
+369
+00:17:25,660 --> 00:17:28,000
+and then just or it with the other bits
+
+370
+00:17:28,000 --> 00:17:30,010
+and that gives you the final number of
+
+371
+00:17:30,010 --> 00:17:32,260
+course the pp use pretty complicated so
+
+372
+00:17:32,260 --> 00:17:35,530
+this is a pretty high level overview so
+
+373
+00:17:35,530 --> 00:17:37,180
+if you want to know more of course the
+
+374
+00:17:37,180 --> 00:17:38,350
+Internet's there it's got plenty
+
+375
+00:17:38,350 --> 00:17:40,270
+formation and when this all comes
+
+376
+00:17:40,270 --> 00:17:41,350
+together you end up with an
+
+377
+00:17:41,350 --> 00:17:47,650
+action-packed picture like this so let's
+
+378
+00:17:47,650 --> 00:17:52,110
+say you how you put it together a arm
+
+379
+00:17:52,110 --> 00:17:54,280
+put together an emulator but I want to
+
+380
+00:17:54,280 --> 00:17:55,690
+talk a bit more about the browser API as
+
+381
+00:17:55,690 --> 00:17:58,300
+a show up you this so playing playing an
+
+382
+00:17:58,300 --> 00:17:59,500
+emulator in a little window is not
+
+383
+00:17:59,500 --> 00:18:01,150
+always so great so you often want it if
+
+384
+00:18:01,150 --> 00:18:07,080
+you can use a full screen API you can
+
+385
+00:18:07,090 --> 00:18:10,480
+you can get a much better experience so
+
+386
+00:18:10,480 --> 00:18:12,640
+the the full screen API of course has
+
+387
+00:18:12,640 --> 00:18:16,540
+the prefixes everywhere so you want to
+
+388
+00:18:16,540 --> 00:18:18,850
+make a polyfill which goes and tries all
+
+389
+00:18:18,850 --> 00:18:21,130
+the different prefix versions here's a
+
+390
+00:18:21,130 --> 00:18:23,950
+simple example and I'll show example of
+
+391
+00:18:23,950 --> 00:18:34,120
+chip 8 so let's load up invaders go full
+
+392
+00:18:34,120 --> 00:18:40,409
+screen
+
+393
+00:18:40,419 --> 00:18:41,859
+there's a button here that does
+
+394
+00:18:41,859 --> 00:19:01,289
+something
+
+395
+00:19:01,299 --> 00:19:03,879
+yeah the 16 different input so it can be
+
+396
+00:19:03,879 --> 00:19:05,590
+quite hard to figure out which ones do
+
+397
+00:19:05,590 --> 00:19:22,770
+what so I pongs can't board on your own
+
+398
+00:19:22,780 --> 00:19:25,270
+so once you've got your your graphics
+
+399
+00:19:25,270 --> 00:19:27,430
+done you put one look at sound and san
+
+400
+00:19:27,430 --> 00:19:28,750
+information is a lot harder to come
+
+401
+00:19:28,750 --> 00:19:31,480
+across online I love emulator authors or
+
+402
+00:19:31,480 --> 00:19:35,320
+ones that are that aren't too interested
+
+403
+00:19:35,320 --> 00:19:37,390
+in producing a Polish won't just leave
+
+404
+00:19:37,390 --> 00:19:40,930
+stand out altogether so Sanders does the
+
+405
+00:19:40,930 --> 00:19:43,030
+vibration of their riches
+
+406
+00:19:43,030 --> 00:19:44,800
+representatives waves with a frequency
+
+407
+00:19:44,800 --> 00:19:47,050
+and amplitude and the frequency is
+
+408
+00:19:47,050 --> 00:19:48,610
+simply a number of phase changes per
+
+409
+00:19:48,610 --> 00:19:51,130
+second and the amplitude is the volume
+
+410
+00:19:51,130 --> 00:19:53,530
+of the wave measure in decibel so the
+
+411
+00:19:53,530 --> 00:19:57,070
+nes has sound onboard the the cpu it's
+
+412
+00:19:57,070 --> 00:20:01,270
+got five sound channels to pulse wave 16
+
+413
+00:20:01,270 --> 00:20:03,730
+volume levels and I supports pitch
+
+414
+00:20:03,730 --> 00:20:06,670
+bending so can anyone recognize this
+
+415
+00:20:06,670 --> 00:20:20,710
+song
+
+416
+00:20:20,720 --> 00:20:22,309
+well you couldn't hear it by yours
+
+417
+00:20:22,309 --> 00:20:25,370
+battletoads which is an awesome game
+
+418
+00:20:25,370 --> 00:20:27,320
+once you finish the emulators first
+
+419
+00:20:27,320 --> 00:20:30,740
+Roman should play of course look don't
+
+420
+00:20:30,740 --> 00:20:34,970
+let trade West know and so the audio
+
+421
+00:20:34,970 --> 00:20:37,789
+processing unit again like the PPS got
+
+422
+00:20:37,789 --> 00:20:40,750
+registers maps in the addressable space
+
+423
+00:20:40,750 --> 00:20:43,010
+it's got a couple of different channels
+
+424
+00:20:43,010 --> 00:20:46,250
+for for bass sounds treble sounds random
+
+425
+00:20:46,250 --> 00:20:48,470
+noise and a digital channel so you can
+
+426
+00:20:48,470 --> 00:20:50,990
+actually encode samples with the Nets
+
+427
+00:20:50,990 --> 00:20:53,450
+but I was really done Judah the rumor
+
+428
+00:20:53,450 --> 00:20:58,280
+took in the the low encoding had used so
+
+429
+00:20:58,280 --> 00:21:01,340
+here's how a pulse wave worked here's
+
+430
+00:21:01,340 --> 00:21:04,659
+your volume here's a low order bits
+
+431
+00:21:04,659 --> 00:21:08,690
+here's a high or bisque and and here's
+
+432
+00:21:08,690 --> 00:21:12,530
+some math you do to get something so
+
+433
+00:21:12,530 --> 00:21:18,630
+let's have a listen
+
+434
+00:21:18,640 --> 00:21:21,170
+so I didn't have time to compose an
+
+435
+00:21:21,170 --> 00:21:22,610
+actual song so I'll just run through a
+
+436
+00:21:22,610 --> 00:21:25,400
+sine wave but here are those parts put
+
+437
+00:21:25,400 --> 00:21:32,690
+together you can hear the noise channel
+
+438
+00:21:32,690 --> 00:21:36,140
+being used for symbols there and the
+
+439
+00:21:36,140 --> 00:21:37,970
+kind in here there's a square wave there
+
+440
+00:21:37,970 --> 00:21:45,110
+for the drums for the kick drum slow and
+
+441
+00:21:45,110 --> 00:21:47,060
+this is all possible based on the Web
+
+442
+00:21:47,060 --> 00:21:50,000
+Audio API which is based on audio routes
+
+443
+00:21:50,000 --> 00:21:52,280
+in connecting these different nodes
+
+444
+00:21:52,280 --> 00:21:53,960
+together it's pretty awesome for
+
+445
+00:21:53,960 --> 00:21:57,830
+emulator sound so the way you use the
+
+446
+00:21:57,830 --> 00:22:01,210
+Web Audio API is you have a context
+
+447
+00:22:01,210 --> 00:22:04,270
+here's a gain node an oscillator
+
+448
+00:22:04,270 --> 00:22:06,710
+connected together specify type
+
+449
+00:22:06,710 --> 00:22:09,380
+frequency and we turn note on and then
+
+450
+00:22:09,380 --> 00:22:11,090
+after a duration we can turn it note off
+
+451
+00:22:11,090 --> 00:22:13,460
+and that gets us a little noise as
+
+452
+00:22:13,460 --> 00:22:21,800
+boring as this let's basically you build
+
+453
+00:22:21,800 --> 00:22:23,630
+up from there in order to put more
+
+454
+00:22:23,630 --> 00:22:25,010
+things together I actually showed you
+
+455
+00:22:25,010 --> 00:22:27,320
+those demos back to front so no demo
+
+456
+00:22:27,320 --> 00:22:32,330
+there it sounds like a start again we're
+
+457
+00:22:32,330 --> 00:22:34,390
+only scratching the surface to your time
+
+458
+00:22:34,390 --> 00:22:36,230
+it's a lot harder to find this
+
+459
+00:22:36,230 --> 00:22:38,150
+affirmation online wait it's there
+
+460
+00:22:38,150 --> 00:22:41,690
+here's a link so does they don't
+
+461
+00:22:41,690 --> 00:22:47,950
+remember these controllers yea though
+
+462
+00:22:47,950 --> 00:22:53,120
+they're pretty awesome so that these are
+
+463
+00:22:53,120 --> 00:22:54,710
+how these controllers work there's two
+
+464
+00:22:54,710 --> 00:22:57,520
+locations in memory that you can that
+
+465
+00:22:57,520 --> 00:23:00,650
+the nazcans strobe and it will go
+
+466
+00:23:00,650 --> 00:23:04,760
+through and store the store its status
+
+467
+00:23:04,760 --> 00:23:08,030
+as a low water bite in sequentially over
+
+468
+00:23:08,030 --> 00:23:11,240
+eight bytes so you can read the status
+
+469
+00:23:11,240 --> 00:23:13,460
+of the d-pad select start and the BNA
+
+470
+00:23:13,460 --> 00:23:16,790
+buns and this is what this is awesome
+
+471
+00:23:16,790 --> 00:23:18,110
+because we can hook up to the gamepad
+
+472
+00:23:18,110 --> 00:23:21,020
+API so the set of Firefox has it has a
+
+473
+00:23:21,020 --> 00:23:22,940
+pretty good system WebKit requires
+
+474
+00:23:22,940 --> 00:23:26,170
+polling so you're not writing some
+
+475
+00:23:26,170 --> 00:23:29,030
+potentially awful code like this where
+
+476
+00:23:29,030 --> 00:23:30,640
+we use request animation
+
+477
+00:23:30,640 --> 00:23:33,910
+to continually pull and get the gamepad
+
+478
+00:23:33,910 --> 00:23:41,260
+status so let's have a look at that so
+
+479
+00:23:41,260 --> 00:23:43,690
+this is a emulator written by bent
+
+480
+00:23:43,690 --> 00:23:47,980
+fisherman and I've just added gamepad
+
+481
+00:23:47,980 --> 00:23:52,930
+support to it but i'll just put the game
+
+482
+00:23:52,930 --> 00:24:04,730
+in
+
+483
+00:24:04,740 --> 00:24:14,980
+let's get work here
+
+484
+00:24:14,990 --> 00:24:19,940
+so I'm also not very good at games but
+
+485
+00:24:19,940 --> 00:24:22,970
+as you can see using gamepads a bit more
+
+486
+00:24:22,970 --> 00:24:29,980
+authentic experience
+
+487
+00:24:29,990 --> 00:24:32,960
+yeah my remembers this level in fact I
+
+488
+00:24:32,960 --> 00:24:35,800
+haven't died yet it's a bit of a oh
+
+489
+00:24:35,800 --> 00:24:45,430
+there you go
+
+490
+00:24:45,440 --> 00:24:48,840
+um so with all these pieces of hardware
+
+491
+00:24:48,840 --> 00:24:52,680
+in the console obviously then they're
+
+492
+00:24:52,680 --> 00:24:54,690
+not synchronous oh alright they're
+
+493
+00:24:54,690 --> 00:24:57,120
+running independently but your
+
+494
+00:24:57,120 --> 00:24:59,280
+javascript isn't so what you need to do
+
+495
+00:24:59,280 --> 00:25:02,100
+is need to count the cycles Vietnam that
+
+496
+00:25:02,100 --> 00:25:04,800
+passed once every piece is you then you
+
+497
+00:25:04,800 --> 00:25:06,180
+need to use this count in order sync
+
+498
+00:25:06,180 --> 00:25:10,500
+them together so i wrote try using web
+
+499
+00:25:10,500 --> 00:25:12,480
+workers here but i tried and that didn't
+
+500
+00:25:12,480 --> 00:25:14,010
+work out well for me so don't try using
+
+501
+00:25:14,010 --> 00:25:17,970
+web workers so now you know a bit you
+
+502
+00:25:17,970 --> 00:25:19,110
+probably want to write your very first
+
+503
+00:25:19,110 --> 00:25:21,780
+emulator so i can't stress how much you
+
+504
+00:25:21,780 --> 00:25:22,830
+need to spend a lot of time researching
+
+505
+00:25:22,830 --> 00:25:30,390
+before you jump in you're a good idea is
+
+506
+00:25:30,390 --> 00:25:32,010
+to start programming your own programs
+
+507
+00:25:32,010 --> 00:25:34,170
+that way you can become quite familiar
+
+508
+00:25:34,170 --> 00:25:35,760
+with the instruction set as well as
+
+509
+00:25:35,760 --> 00:25:38,550
+other media can sing granese about the
+
+510
+00:25:38,550 --> 00:25:41,760
+year about the hardware here's a good
+
+511
+00:25:41,760 --> 00:25:43,050
+link in order it's kind of like an
+
+512
+00:25:43,050 --> 00:25:46,160
+interactive tutorial for learning 6502
+
+513
+00:25:46,160 --> 00:25:50,160
+there's books available so let's get
+
+514
+00:25:50,160 --> 00:25:53,970
+started so chip a is your friend that's
+
+515
+00:25:53,970 --> 00:25:55,170
+the first one you should use because
+
+516
+00:25:55,170 --> 00:25:57,780
+it's pretty simple and I'm if I can do
+
+517
+00:25:57,780 --> 00:25:59,510
+it then I'm pretty confident on Ken
+
+518
+00:25:59,510 --> 00:26:03,270
+here's some tips so you're probably
+
+519
+00:26:03,270 --> 00:26:04,440
+you're probably looking at this problem
+
+520
+00:26:04,440 --> 00:26:05,670
+thinking ohhh that's kind of like a
+
+521
+00:26:05,670 --> 00:26:07,980
+MapReduce into a some underscore
+
+522
+00:26:07,980 --> 00:26:10,800
+function and pop that there but it's
+
+523
+00:26:10,800 --> 00:26:12,720
+just far too slow you have to kind of
+
+524
+00:26:12,720 --> 00:26:15,510
+you kind of write like the sea subset of
+
+525
+00:26:15,510 --> 00:26:18,300
+JavaScript so you switch cases are your
+
+526
+00:26:18,300 --> 00:26:21,840
+friends for loops just just basically
+
+527
+00:26:21,840 --> 00:26:23,790
+all the simple stuff because it if you
+
+528
+00:26:23,790 --> 00:26:25,200
+can get to work with other stuff that's
+
+529
+00:26:25,200 --> 00:26:27,150
+great but um when it comes to nest
+
+530
+00:26:27,150 --> 00:26:28,890
+simular a lot of stuffs just far too
+
+531
+00:26:28,890 --> 00:26:32,550
+slow some other things I've seen is
+
+532
+00:26:32,550 --> 00:26:35,190
+optimizing around passing of data so I'm
+
+533
+00:26:35,190 --> 00:26:37,200
+still passing around object which holds
+
+534
+00:26:37,200 --> 00:26:39,180
+different values you pack them all into
+
+535
+00:26:39,180 --> 00:26:40,740
+one bite and then extract them on
+
+536
+00:26:40,740 --> 00:26:43,410
+destination it's also good to know about
+
+537
+00:26:43,410 --> 00:26:48,300
+v8 optimizations know how it what are
+
+538
+00:26:48,300 --> 00:26:49,950
+optimized for what things can break
+
+539
+00:26:49,950 --> 00:26:53,100
+optimization so it's quite great if
+
+540
+00:26:53,100 --> 00:26:54,450
+you're wondering why emulators run
+
+541
+00:26:54,450 --> 00:26:57,180
+pretty slow and again write your own pro
+
+542
+00:26:57,180 --> 00:26:58,050
+games for the cyst
+
+543
+00:26:58,050 --> 00:26:59,970
+in it because you become quite familiar
+
+544
+00:26:59,970 --> 00:27:03,210
+with it so a lot more possibilities and
+
+545
+00:27:03,210 --> 00:27:06,540
+what I've discussed here I was going to
+
+546
+00:27:06,540 --> 00:27:07,560
+implement but ran out of time a
+
+547
+00:27:07,560 --> 00:27:09,240
+WebSocket phone controller I thought
+
+548
+00:27:09,240 --> 00:27:13,290
+that'd be pretty cool there's you could
+
+549
+00:27:13,290 --> 00:27:14,940
+also implement multiplayer for to play
+
+550
+00:27:14,940 --> 00:27:16,620
+game have a second player come in via
+
+551
+00:27:16,620 --> 00:27:19,020
+web sockets you could use a vibration
+
+552
+00:27:19,020 --> 00:27:22,020
+API for force feedback life in 10 or 64
+
+553
+00:27:22,020 --> 00:27:25,290
+had you could use a file API application
+
+554
+00:27:25,290 --> 00:27:27,270
+cache and then you have a portable
+
+555
+00:27:27,270 --> 00:27:29,790
+emulator which users can download and
+
+556
+00:27:29,790 --> 00:27:32,310
+carry around with them a lot of games
+
+557
+00:27:32,310 --> 00:27:34,440
+had batt battery back safe state so you
+
+558
+00:27:34,440 --> 00:27:35,970
+could use local storage to serialize
+
+559
+00:27:35,970 --> 00:27:39,660
+that and for example the the fam econ
+
+560
+00:27:39,660 --> 00:27:42,030
+javits controller here it had a
+
+561
+00:27:42,030 --> 00:27:43,800
+microphone input in the controller and
+
+562
+00:27:43,800 --> 00:27:46,740
+whilst not many programs use this I
+
+563
+00:27:46,740 --> 00:27:48,810
+thought about using getusermedia with a
+
+564
+00:27:48,810 --> 00:27:50,730
+microphone in order to emulate that so
+
+565
+00:27:50,730 --> 00:27:51,780
+i'm pretty sure that hasn't been done in
+
+566
+00:27:51,780 --> 00:27:56,010
+javascript yet here thank you you've
+
+567
+00:27:56,010 --> 00:28:03,280
+reached princess was there any questions
+
+568
+00:28:03,290 --> 00:28:05,610
+if anyone has any questions as usual
+
+569
+00:28:05,610 --> 00:28:07,080
+just please raise your hands and we'll
+
+570
+00:28:07,080 --> 00:28:15,190
+be right over at your seat anyone
+
+571
+00:28:15,200 --> 00:28:19,940
+anybody
+
+572
+00:28:19,950 --> 00:28:26,300
+alright so oh hey
+
+573
+00:28:26,310 --> 00:28:28,450
+to do the full screen stuff have you
+
+574
+00:28:28,450 --> 00:28:30,520
+looked at like scaling it up I mean
+
+575
+00:28:30,520 --> 00:28:32,710
+using one of those pixels pixel art
+
+576
+00:28:32,710 --> 00:28:36,340
+scaling algorithms I mean yeah with the
+
+577
+00:28:36,340 --> 00:28:38,650
+chip aid emulator when it when it the
+
+578
+00:28:38,650 --> 00:28:40,720
+graphics are rounded there's a set size
+
+579
+00:28:40,720 --> 00:28:42,910
+for the pixel and when I use the full
+
+580
+00:28:42,910 --> 00:28:46,150
+screen API I actually up that so i
+
+581
+00:28:46,150 --> 00:28:48,040
+render it big as opposed to letting the
+
+582
+00:28:48,040 --> 00:28:49,690
+browser just scale it I'm not sure
+
+583
+00:28:49,690 --> 00:28:52,020
+that's the best option but that's just
+
+584
+00:28:52,020 --> 00:28:56,110
+one thing I tried okay any more
+
+585
+00:28:56,110 --> 00:29:00,820
+questions
+
+586
+00:29:00,830 --> 00:29:02,179
+well alright if there are no more
+
+587
+00:29:02,179 --> 00:29:04,640
+questions can find Alex around the venue
+
+588
+00:29:04,640 --> 00:29:08,240
+and possibly later at the after party be
+
+589
+00:29:08,240 --> 00:29:11,510
+sure to go there after the event and of
+
+590
+00:29:11,510 --> 00:29:13,100
+course you could ask him there and that
+

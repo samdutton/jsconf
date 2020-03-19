@@ -1,0 +1,2133 @@
+1
+00:00:37,809 --> 00:00:41,329
+
+everybody I'm Jordan from Microsoft I
+
+2
+00:00:41,329 --> 00:00:42,739
+work on our visual studio development
+
+3
+00:00:42,739 --> 00:00:44,930
+environment there as specifically i'm a
+
+4
+00:00:44,930 --> 00:00:46,309
+product donor for the javascript and
+
+5
+00:00:46,309 --> 00:00:47,989
+typescript editors in visual studio as
+
+6
+00:00:47,989 --> 00:00:49,879
+well as tooling we provide to build apps
+
+7
+00:00:49,879 --> 00:00:51,620
+for Android iOS Windows and Windows
+
+8
+00:00:51,620 --> 00:00:53,570
+Phone using javascript which I'm going
+
+9
+00:00:53,570 --> 00:00:55,789
+to talk about today a little bit about
+
+10
+00:00:55,789 --> 00:00:57,530
+me real quick so I've been a Microsoft
+
+11
+00:00:57,530 --> 00:00:58,760
+for a couple years before that I've been
+
+12
+00:00:58,760 --> 00:01:00,440
+working in the industry outside of
+
+13
+00:01:00,440 --> 00:01:02,839
+Microsoft for about 14 years as a web
+
+14
+00:01:02,839 --> 00:01:04,070
+developer at all layers of the stack
+
+15
+00:01:04,070 --> 00:01:06,890
+we're really focusing on JavaScript on
+
+16
+00:01:06,890 --> 00:01:08,270
+the client side so that brought me
+
+17
+00:01:08,270 --> 00:01:09,860
+around to doing a developer tooling for
+
+18
+00:01:09,860 --> 00:01:11,960
+client application development so I'm
+
+19
+00:01:11,960 --> 00:01:13,299
+going to talk to you about today is this
+
+20
+00:01:13,299 --> 00:01:15,259
+new tooling we just put out a preview
+
+21
+00:01:15,259 --> 00:01:17,180
+release for to build for multiple
+
+22
+00:01:17,180 --> 00:01:19,159
+devices using javascript like I said
+
+23
+00:01:19,159 --> 00:01:21,170
+that we do this using tools out in the
+
+24
+00:01:21,170 --> 00:01:22,280
+open source community that we're also
+
+25
+00:01:22,280 --> 00:01:24,799
+working to give back to and my real go
+
+26
+00:01:24,799 --> 00:01:27,229
+all out of this is to disturb the
+
+27
+00:01:27,229 --> 00:01:28,460
+conversation with all of you around
+
+28
+00:01:28,460 --> 00:01:29,990
+building a modern mobile app tool chain
+
+29
+00:01:29,990 --> 00:01:32,360
+by showing you what we put together but
+
+30
+00:01:32,360 --> 00:01:33,680
+really focusing on how we built it on
+
+31
+00:01:33,680 --> 00:01:35,329
+top of these tools talk about the
+
+32
+00:01:35,329 --> 00:01:37,219
+challenges that we faced when we're
+
+33
+00:01:37,219 --> 00:01:38,960
+dealing with and kind of our next steps
+
+34
+00:01:38,960 --> 00:01:40,759
+around that I'm hoping that for
+
+35
+00:01:40,759 --> 00:01:42,020
+takeaways you might get some kind of a
+
+36
+00:01:42,020 --> 00:01:43,189
+tool you'll want to put in your own tool
+
+37
+00:01:43,189 --> 00:01:44,210
+belt you have to do some mobile
+
+38
+00:01:44,210 --> 00:01:45,680
+development it might be a visual studio
+
+39
+00:01:45,680 --> 00:01:48,079
+it might not it may be one of the tools
+
+40
+00:01:48,079 --> 00:01:50,090
+I'll talk about here and I also at least
+
+41
+00:01:50,090 --> 00:01:51,170
+to just give you some food for thought
+
+42
+00:01:51,170 --> 00:01:52,729
+about this space introduce you to it a
+
+43
+00:01:52,729 --> 00:01:54,320
+little bit if you're not familiar with
+
+44
+00:01:54,320 --> 00:01:58,609
+it so first up you may not know this
+
+45
+00:01:58,609 --> 00:02:00,740
+today but with visual studio we've got a
+
+46
+00:02:00,740 --> 00:02:03,170
+JavaScript developer for writing apps
+
+47
+00:02:03,170 --> 00:02:05,509
+for windows and the web and we know from
+
+48
+00:02:05,509 --> 00:02:06,619
+talking with a number of developers that
+
+49
+00:02:06,619 --> 00:02:07,880
+you need to do other devices as well
+
+50
+00:02:07,880 --> 00:02:09,979
+android/ios you want to be able to build
+
+51
+00:02:09,979 --> 00:02:12,140
+for those with a largely a shared code
+
+52
+00:02:12,140 --> 00:02:13,069
+base
+
+53
+00:02:13,069 --> 00:02:15,109
+and we've got our tooling today for
+
+54
+00:02:15,109 --> 00:02:16,519
+Windows we get great feedback from users
+
+55
+00:02:16,519 --> 00:02:19,159
+about it that they like the productivity
+
+56
+00:02:19,159 --> 00:02:20,959
+it provides we wanted to bring that same
+
+57
+00:02:20,959 --> 00:02:22,519
+functionality to Android and iOS
+
+58
+00:02:22,519 --> 00:02:24,920
+development this model but looking at
+
+59
+00:02:24,920 --> 00:02:26,900
+that we didn't want to reinvent the
+
+60
+00:02:26,900 --> 00:02:28,069
+wheel and make a whole new thing for
+
+61
+00:02:28,069 --> 00:02:30,469
+this we wanted to really take advantage
+
+62
+00:02:30,469 --> 00:02:32,989
+of what's out there in the community see
+
+63
+00:02:32,989 --> 00:02:34,340
+what's out there that works really well
+
+64
+00:02:34,340 --> 00:02:36,019
+for this style of hybrid application
+
+65
+00:02:36,019 --> 00:02:37,909
+development already and see what we
+
+66
+00:02:37,909 --> 00:02:39,079
+could use their how we could give back
+
+67
+00:02:39,079 --> 00:02:42,709
+to that helped grow that space so is it
+
+68
+00:02:42,709 --> 00:02:44,780
+on the road here we eventually landed
+
+69
+00:02:44,780 --> 00:02:46,609
+after looking at a number of options on
+
+70
+00:02:46,609 --> 00:02:49,849
+the Apache Cordova project so if you're
+
+71
+00:02:49,849 --> 00:02:51,709
+not familiar with this Apache Cordova is
+
+72
+00:02:51,709 --> 00:02:54,319
+the open source project on which Adobe's
+
+73
+00:02:54,319 --> 00:02:56,989
+phonegap is built and the way these are
+
+74
+00:02:56,989 --> 00:02:59,419
+tools both work is that they let you
+
+75
+00:02:59,419 --> 00:03:01,459
+write native applications for these
+
+76
+00:03:01,459 --> 00:03:03,939
+devices plus many others in pure HTML
+
+77
+00:03:03,939 --> 00:03:06,829
+Javascript and CSS and their set of
+
+78
+00:03:06,829 --> 00:03:08,540
+tools that will package up those apps
+
+79
+00:03:08,540 --> 00:03:12,079
+wrap it into a web viewer web browser
+
+80
+00:03:12,079 --> 00:03:14,780
+type of control in that application and
+
+81
+00:03:14,780 --> 00:03:15,799
+then let you get a native device
+
+82
+00:03:15,799 --> 00:03:17,329
+capabilities through a set of uses
+
+83
+00:03:17,329 --> 00:03:20,030
+plugins JavaScript plugins and you can
+
+84
+00:03:20,030 --> 00:03:21,949
+also use the plugins to normalize api's
+
+85
+00:03:21,949 --> 00:03:23,569
+across the devices because not every
+
+86
+00:03:23,569 --> 00:03:25,159
+device is the same Dom that every device
+
+87
+00:03:25,159 --> 00:03:27,829
+exposes the same sets of things so you
+
+88
+00:03:27,829 --> 00:03:29,209
+can use this plug-in model to work with
+
+89
+00:03:29,209 --> 00:03:34,250
+that so this is a preview be released
+
+90
+00:03:34,250 --> 00:03:36,049
+back at the start of the month and
+
+91
+00:03:36,049 --> 00:03:37,129
+actually a little bit later today we're
+
+92
+00:03:37,129 --> 00:03:38,359
+putting out an update of it to address
+
+93
+00:03:38,359 --> 00:03:39,560
+some top issues that we've heard about
+
+94
+00:03:39,560 --> 00:03:41,919
+from customers it's an early look at
+
+95
+00:03:41,919 --> 00:03:44,060
+where we're going with this it's not our
+
+96
+00:03:44,060 --> 00:03:45,859
+final release quality it's more of a
+
+97
+00:03:45,859 --> 00:03:47,599
+thing just to get people looking at it
+
+98
+00:03:47,599 --> 00:03:48,979
+giving us feedback see if they find it
+
+99
+00:03:48,979 --> 00:03:50,720
+useful it's kind of started a rating on
+
+100
+00:03:50,720 --> 00:03:54,709
+it like I mentioned built on Cordova
+
+101
+00:03:54,709 --> 00:03:56,209
+we're both a number of other open source
+
+102
+00:03:56,209 --> 00:03:58,400
+tools here as well so there's also the
+
+103
+00:03:58,400 --> 00:04:00,319
+Cordova CLI which is a node-based
+
+104
+00:04:00,319 --> 00:04:03,169
+command-line interface to Cordova that
+
+105
+00:04:03,169 --> 00:04:05,750
+you can go on NPM install the crew of
+
+106
+00:04:05,750 --> 00:04:07,819
+the CLI and get get it locally you can
+
+107
+00:04:07,819 --> 00:04:11,750
+do create build run emulate your
+
+108
+00:04:11,750 --> 00:04:14,479
+applications through that interface we
+
+109
+00:04:14,479 --> 00:04:17,239
+also have node in the mix since Cordova
+
+110
+00:04:17,239 --> 00:04:18,919
+CLI uses node we're also doing the core
+
+111
+00:04:18,919 --> 00:04:20,359
+of our build functionality as a node
+
+112
+00:04:20,359 --> 00:04:21,500
+script and I'll show you a little bit of
+
+113
+00:04:21,500 --> 00:04:22,469
+that
+
+114
+00:04:22,469 --> 00:04:25,210
+on top of that NPM we use for dynamic
+
+115
+00:04:25,210 --> 00:04:27,639
+acquisition of the tool chain when users
+
+116
+00:04:27,639 --> 00:04:29,349
+first bill to bring down Cordova help
+
+117
+00:04:29,349 --> 00:04:31,270
+bring plugins in from the repo that they
+
+118
+00:04:31,270 --> 00:04:33,639
+have for Cordova plugins there's also
+
+119
+00:04:33,639 --> 00:04:35,620
+this thing called Apache ripple that i'm
+
+120
+00:04:35,620 --> 00:04:36,999
+going to show you this is an extension
+
+121
+00:04:36,999 --> 00:04:40,389
+to google chrome but lets you do local
+
+122
+00:04:40,389 --> 00:04:41,590
+development in the browser kind of get
+
+123
+00:04:41,590 --> 00:04:42,669
+you maybe eighty percent of the way
+
+124
+00:04:42,669 --> 00:04:43,629
+there in your development when you're
+
+125
+00:04:43,629 --> 00:04:44,919
+first getting up and going to lay out
+
+126
+00:04:44,919 --> 00:04:47,319
+you you i get looking nice before you
+
+127
+00:04:47,319 --> 00:04:48,490
+have to jump over to an emulator a
+
+128
+00:04:48,490 --> 00:04:51,370
+device so we use that as well and take a
+
+129
+00:04:51,370 --> 00:04:53,800
+hard dependency on having a chrome to
+
+130
+00:04:53,800 --> 00:04:59,529
+support that so along with using open
+
+131
+00:04:59,529 --> 00:05:00,550
+source we also make sure being good
+
+132
+00:05:00,550 --> 00:05:01,870
+citizen here so we're helping to
+
+133
+00:05:01,870 --> 00:05:03,430
+contribute back to these projects so so
+
+134
+00:05:03,430 --> 00:05:04,870
+far we've already been contributing some
+
+135
+00:05:04,870 --> 00:05:07,120
+to the core of cordova and the curved of
+
+136
+00:05:07,120 --> 00:05:10,599
+the CLI now worked on a new contacts
+
+137
+00:05:10,599 --> 00:05:12,639
+player additive existing contacts
+
+138
+00:05:12,639 --> 00:05:14,020
+plugins a new functionality for like a
+
+139
+00:05:14,020 --> 00:05:15,550
+native contact picker across all the
+
+140
+00:05:15,550 --> 00:05:17,919
+devices and helped build out web sequel
+
+141
+00:05:17,919 --> 00:05:19,569
+and index DB plugins so that you can
+
+142
+00:05:19,569 --> 00:05:21,069
+work with the API of your choice for
+
+143
+00:05:21,069 --> 00:05:23,199
+data access without having to worry
+
+144
+00:05:23,199 --> 00:05:24,909
+about necessarily which device has that
+
+145
+00:05:24,909 --> 00:05:27,610
+which device is this and then made a
+
+146
+00:05:27,610 --> 00:05:30,099
+number of other plug-in fixes across the
+
+147
+00:05:30,099 --> 00:05:31,360
+board and we did all this with the help
+
+148
+00:05:31,360 --> 00:05:33,339
+of a team we have called microsoft open
+
+149
+00:05:33,339 --> 00:05:37,419
+tech so that i'm going to go ahead and
+
+150
+00:05:37,419 --> 00:05:41,199
+jump over and show you some of this our
+
+151
+00:05:41,199 --> 00:05:43,210
+first example here we'll start at
+
+152
+00:05:43,210 --> 00:05:44,740
+running over in ripple this first
+
+153
+00:05:44,740 --> 00:05:46,479
+example isn't quintessential to do
+
+154
+00:05:46,479 --> 00:05:49,719
+example it's built using angular if you
+
+155
+00:05:49,719 --> 00:05:51,310
+look at the project structure it's going
+
+156
+00:05:51,310 --> 00:05:52,659
+to be very similar to other client
+
+157
+00:05:52,659 --> 00:05:55,689
+application projects you might build the
+
+158
+00:05:55,689 --> 00:05:57,250
+only thing unique with cordova's there's
+
+159
+00:05:57,250 --> 00:05:58,870
+this res folder and in there you've got
+
+160
+00:05:58,870 --> 00:06:00,279
+things for managing your icons like
+
+161
+00:06:00,279 --> 00:06:01,449
+splash screens for your mobile
+
+162
+00:06:01,449 --> 00:06:03,490
+application there's also a config dot
+
+163
+00:06:03,490 --> 00:06:07,750
+XML file there that is a place for
+
+164
+00:06:07,750 --> 00:06:09,430
+central config settings that can affect
+
+165
+00:06:09,430 --> 00:06:10,779
+the way the apps get built out on all
+
+166
+00:06:10,779 --> 00:06:13,060
+the other platforms so here's our
+
+167
+00:06:13,060 --> 00:06:17,830
+application running I can add it to do I
+
+168
+00:06:17,830 --> 00:06:20,259
+can clear to do I've also extended this
+
+169
+00:06:20,259 --> 00:06:22,599
+demo here to attach into native Native
+
+170
+00:06:22,599 --> 00:06:24,550
+device capabilities with a video button
+
+171
+00:06:24,550 --> 00:06:25,839
+there I can't use in a ripple because it
+
+172
+00:06:25,839 --> 00:06:27,310
+doesn't emulate the video but I'll jump
+
+173
+00:06:27,310 --> 00:06:28,719
+over to an emulator in a moment we can
+
+174
+00:06:28,719 --> 00:06:31,629
+talk about that but real quick this is
+
+175
+00:06:31,629 --> 00:06:33,580
+ripple extension lets you do some things
+
+176
+00:06:33,580 --> 00:06:35,620
+to simulate capabilities you may not
+
+177
+00:06:35,620 --> 00:06:36,249
+have on your
+
+178
+00:06:36,249 --> 00:06:38,949
+local device you could similarly
+
+179
+00:06:38,949 --> 00:06:41,259
+geolocation type of stuff here change
+
+180
+00:06:41,259 --> 00:06:43,569
+your device and orientation so again
+
+181
+00:06:43,569 --> 00:06:44,679
+this can be good for getting you up and
+
+182
+00:06:44,679 --> 00:06:46,509
+running initially get the app to certain
+
+183
+00:06:46,509 --> 00:06:47,799
+point that before you then want to go on
+
+184
+00:06:47,799 --> 00:06:50,259
+to an emulator a device to really tailor
+
+185
+00:06:50,259 --> 00:06:56,259
+it so now we're go to the android
+
+186
+00:06:56,259 --> 00:06:59,709
+emulator and while this is running i'll
+
+187
+00:06:59,709 --> 00:07:02,409
+talk about how this is going right now
+
+188
+00:07:02,409 --> 00:07:04,599
+what's going on so you look at our
+
+189
+00:07:04,599 --> 00:07:05,889
+output window and you'll see some things
+
+190
+00:07:05,889 --> 00:07:09,149
+going by as this build script is running
+
+191
+00:07:09,149 --> 00:07:14,249
+again this is a node-based build prod
+
+192
+00:07:14,249 --> 00:07:17,289
+experience we've got we're using cordova
+
+193
+00:07:17,289 --> 00:07:19,179
+from the cordova CLI and running through
+
+194
+00:07:19,179 --> 00:07:22,119
+a number of steps in here to manage the
+
+195
+00:07:22,119 --> 00:07:24,699
+main part of the build so we take the
+
+196
+00:07:24,699 --> 00:07:25,809
+files away you've got instruction in
+
+197
+00:07:25,809 --> 00:07:28,299
+visual studio package them up put the
+
+198
+00:07:28,299 --> 00:07:30,039
+layout on disk the way that the cordova
+
+199
+00:07:30,039 --> 00:07:32,979
+CLI expects them pull down the right
+
+200
+00:07:32,979 --> 00:07:35,529
+platform support plugins and then pass
+
+201
+00:07:35,529 --> 00:07:37,509
+it on to the cordova CLI to do the build
+
+202
+00:07:37,509 --> 00:07:39,729
+package the app and then it's going to
+
+203
+00:07:39,729 --> 00:07:42,249
+make like the APK in this case get it
+
+204
+00:07:42,249 --> 00:07:44,949
+back to us and then i use cordova SE li
+
+205
+00:07:44,949 --> 00:07:47,349
+again to deploy out to the device so you
+
+206
+00:07:47,349 --> 00:07:48,519
+can see a message here about the deploy
+
+207
+00:07:48,519 --> 00:07:52,719
+starting i'll switch over to the android
+
+208
+00:07:52,719 --> 00:07:54,360
+emulator and we can watch that firing up
+
+209
+00:07:54,360 --> 00:07:56,199
+so another thing that's happening right
+
+210
+00:07:56,199 --> 00:08:01,239
+now see how the windows will lay out for
+
+211
+00:08:01,239 --> 00:08:04,659
+us here is that we also want to hook up
+
+212
+00:08:04,659 --> 00:08:06,699
+our Diagnostics tools we have for Dom
+
+213
+00:08:06,699 --> 00:08:09,489
+exploring the jas console debug
+
+214
+00:08:09,489 --> 00:08:11,379
+experience in visual studio over to the
+
+215
+00:08:11,379 --> 00:08:13,360
+emulator this would also happen if I
+
+216
+00:08:13,360 --> 00:08:15,549
+were working on a tethered USB device I
+
+217
+00:08:15,549 --> 00:08:17,829
+could deploy to the device get these
+
+218
+00:08:17,829 --> 00:08:19,360
+diagnostic tools hooked up to the device
+
+219
+00:08:19,360 --> 00:08:20,679
+it's maybe something you've seen done
+
+220
+00:08:20,679 --> 00:08:22,899
+with chrome where you can hook up to
+
+221
+00:08:22,899 --> 00:08:25,059
+like an Android device we're using the
+
+222
+00:08:25,059 --> 00:08:27,929
+same mechanism that chrome uses here so
+
+223
+00:08:27,929 --> 00:08:29,949
+for example this is going through the
+
+224
+00:08:29,949 --> 00:08:31,949
+chrome remote debugging protocol to
+
+225
+00:08:31,949 --> 00:08:34,149
+establish the communication back and
+
+226
+00:08:34,149 --> 00:08:36,370
+forth to get the Dom Explorer working so
+
+227
+00:08:36,370 --> 00:08:40,479
+I can go through and peck out items on
+
+228
+00:08:40,479 --> 00:08:42,969
+our page and it's looking over the live
+
+229
+00:08:42,969 --> 00:08:46,790
+Dom of the app can inspect an element
+
+230
+00:08:46,790 --> 00:08:49,310
+and if I were running on a device right
+
+231
+00:08:49,310 --> 00:08:51,350
+now and I was in this inspect element
+
+232
+00:08:51,350 --> 00:08:52,970
+mode I'd actually be able to hold that
+
+233
+00:08:52,970 --> 00:08:54,890
+up push out a limit on my screen and
+
+234
+00:08:54,890 --> 00:08:57,740
+it'll select it back in the Dom explore
+
+235
+00:08:57,740 --> 00:09:01,130
+in visual studio we've also got the
+
+236
+00:09:01,130 --> 00:09:04,580
+console so I could look at how this is
+
+237
+00:09:04,580 --> 00:09:06,320
+writing out to local storage and explore
+
+238
+00:09:06,320 --> 00:09:11,750
+that in this case the video button I've
+
+239
+00:09:11,750 --> 00:09:16,760
+cleverly hidden a bug where you can see
+
+240
+00:09:16,760 --> 00:09:17,990
+here there's something wrong with our
+
+241
+00:09:17,990 --> 00:09:20,420
+capture video function I can find my
+
+242
+00:09:20,420 --> 00:09:27,440
+line number and go there and so makes
+
+243
+00:09:27,440 --> 00:09:28,430
+sense it's somewhere in this line
+
+244
+00:09:28,430 --> 00:09:31,850
+because things capture video so i can
+
+245
+00:09:31,850 --> 00:09:34,190
+set a breakpoint come and try that
+
+246
+00:09:34,190 --> 00:09:35,900
+action again and then the breakpoint
+
+247
+00:09:35,900 --> 00:09:36,920
+that will get hit back in visual studio
+
+248
+00:09:36,920 --> 00:09:38,180
+and you can work through and
+
+249
+00:09:38,180 --> 00:09:40,310
+troubleshoot that takes a little bit of
+
+250
+00:09:40,310 --> 00:09:46,070
+a moment for the connection now if we
+
+251
+00:09:46,070 --> 00:09:47,390
+look through here we can explore and see
+
+252
+00:09:47,390 --> 00:09:51,220
+that the navigator object is 0 is okay
+
+253
+00:09:51,220 --> 00:09:53,450
+device looks like it's okay but
+
+254
+00:09:53,450 --> 00:09:54,860
+obviously there's something wrong with
+
+255
+00:09:54,860 --> 00:09:56,180
+capture video so you could explore
+
+256
+00:09:56,180 --> 00:09:58,220
+through and either use this window to
+
+257
+00:09:58,220 --> 00:10:00,440
+browse down and figure out how I get to
+
+258
+00:10:00,440 --> 00:10:02,090
+that and realize I might be using the
+
+259
+00:10:02,090 --> 00:10:05,390
+API the wrong way or at coding time I
+
+260
+00:10:05,390 --> 00:10:07,160
+could have used our intellisense feature
+
+261
+00:10:07,160 --> 00:10:09,730
+to work through and get to capture and
+
+262
+00:10:09,730 --> 00:10:14,990
+help remind me of how the API works so
+
+263
+00:10:14,990 --> 00:10:19,640
+again those capture video it run with
+
+264
+00:10:19,640 --> 00:10:23,930
+that so we'll reload that change back
+
+265
+00:10:23,930 --> 00:10:27,260
+into the the emulator so i'm showing you
+
+266
+00:10:27,260 --> 00:10:29,410
+javascript right now but we also have
+
+267
+00:10:29,410 --> 00:10:31,460
+support for typescript is another thing
+
+268
+00:10:31,460 --> 00:10:32,390
+you could use if you know the language
+
+269
+00:10:32,390 --> 00:10:34,100
+and you like to work with it we've got
+
+270
+00:10:34,100 --> 00:10:35,510
+templates for both javascript and
+
+271
+00:10:35,510 --> 00:10:36,590
+typescript a book that we provide
+
+272
+00:10:36,590 --> 00:10:38,960
+that'll give you a default intellisense
+
+273
+00:10:38,960 --> 00:10:41,000
+auto complete story for these standard
+
+274
+00:10:41,000 --> 00:10:42,560
+libraries and plugins you might want to
+
+275
+00:10:42,560 --> 00:10:47,780
+use
+
+276
+00:10:47,790 --> 00:10:49,750
+so the thing that's going on here for
+
+277
+00:10:49,750 --> 00:10:50,319
+how we're going to set up the
+
+278
+00:10:50,319 --> 00:10:51,970
+Diagnostics tools that I can talk to is
+
+279
+00:10:51,970 --> 00:10:54,790
+that through chrome you can actually
+
+280
+00:10:54,790 --> 00:10:56,769
+attach to a remote debugging port to set
+
+281
+00:10:56,769 --> 00:10:59,170
+up those diagnostic tools with Android
+
+282
+00:10:59,170 --> 00:11:00,519
+you need to take an extra step and use
+
+283
+00:11:00,519 --> 00:11:01,899
+this tool called the Android debug
+
+284
+00:11:01,899 --> 00:11:03,250
+bridge that we're using behind the
+
+285
+00:11:03,250 --> 00:11:05,439
+scenes that lets us get at the app
+
+286
+00:11:05,439 --> 00:11:07,350
+running on the device attached to a
+
+287
+00:11:07,350 --> 00:11:09,819
+remote debugging port open by that app
+
+288
+00:11:09,819 --> 00:11:11,769
+then establish the connection and that's
+
+289
+00:11:11,769 --> 00:11:13,180
+how we do the back and forth with the
+
+290
+00:11:13,180 --> 00:11:20,980
+debugging protocol Sarah app is loading
+
+291
+00:11:20,980 --> 00:11:23,110
+and I should be able to click the video
+
+292
+00:11:23,110 --> 00:11:27,759
+button and this is just a mock video
+
+293
+00:11:27,759 --> 00:11:29,259
+capture that they do in the android
+
+294
+00:11:29,259 --> 00:11:31,180
+emulator I'll come up here and you'll
+
+295
+00:11:31,180 --> 00:11:32,439
+see the balancing box and you can take a
+
+296
+00:11:32,439 --> 00:11:34,959
+video of it and use that to test out
+
+297
+00:11:34,959 --> 00:11:42,220
+video functionality the last part the
+
+298
+00:11:42,220 --> 00:11:43,899
+demo I'll show you how we handle the iOS
+
+299
+00:11:43,899 --> 00:11:45,879
+build I'm going to go over to a iphone
+
+300
+00:11:45,879 --> 00:11:48,189
+simulator some of you if you've done
+
+301
+00:11:48,189 --> 00:11:50,350
+some development like with cordova
+
+302
+00:11:50,350 --> 00:11:53,199
+before or phonegap you're probably
+
+303
+00:11:53,199 --> 00:11:55,720
+thinking about you need to have a mac to
+
+304
+00:11:55,720 --> 00:11:56,949
+do that bill you can see i'm running on
+
+305
+00:11:56,949 --> 00:12:00,579
+a macbook here we have to oh no don't
+
+306
+00:12:00,579 --> 00:12:07,870
+break on me let me just don't do in case
+
+307
+00:12:07,870 --> 00:12:12,860
+I did something surprising
+
+308
+00:12:12,870 --> 00:12:16,320
+so the way we handle this is that over
+
+309
+00:12:16,320 --> 00:12:17,550
+on a Mac they might have in the office
+
+310
+00:12:17,550 --> 00:12:18,990
+or in this case I'm running in parallels
+
+311
+00:12:18,990 --> 00:12:21,180
+I've got the side by side with my Mac
+
+312
+00:12:21,180 --> 00:12:22,950
+open up in the terminal and I've
+
+313
+00:12:22,950 --> 00:12:24,570
+downloaded from NPM we've got a package
+
+314
+00:12:24,570 --> 00:12:27,150
+for a remote build agent so this runs on
+
+315
+00:12:27,150 --> 00:12:29,910
+here watching for requests to perform a
+
+316
+00:12:29,910 --> 00:12:31,980
+build so visual studio unless I've got
+
+317
+00:12:31,980 --> 00:12:33,180
+an error back there again and
+
+318
+00:12:33,180 --> 00:12:34,940
+unfortunate i guess i won't be able to
+
+319
+00:12:34,940 --> 00:12:37,589
+demonstrate that one digital studio
+
+320
+00:12:37,589 --> 00:12:39,660
+would make a request here send the files
+
+321
+00:12:39,660 --> 00:12:41,610
+over and then that same form of that
+
+322
+00:12:41,610 --> 00:12:43,920
+same node build script will run do the
+
+323
+00:12:43,920 --> 00:12:47,130
+build on the Mac using Cordova there
+
+324
+00:12:47,130 --> 00:12:50,670
+create the application package from for
+
+325
+00:12:50,670 --> 00:12:51,930
+an iOS app and and run it in the
+
+326
+00:12:51,930 --> 00:12:54,870
+simulator or if we were deploying to a
+
+327
+00:12:54,870 --> 00:12:56,370
+local device it would also send that
+
+328
+00:12:56,370 --> 00:12:58,080
+back over and then from visual studio I
+
+329
+00:12:58,080 --> 00:13:00,150
+can work through itunes to install that
+
+330
+00:13:00,150 --> 00:13:07,770
+package onto an iPad or an iPhone that
+
+331
+00:13:07,770 --> 00:13:08,880
+showed you a quick demo there of how
+
+332
+00:13:08,880 --> 00:13:11,060
+we've got android and iOS support to
+
+333
+00:13:11,060 --> 00:13:14,460
+simulators with a ripple their emulators
+
+334
+00:13:14,460 --> 00:13:15,990
+that they provide and how we make that
+
+335
+00:13:15,990 --> 00:13:18,000
+work we've also got support for Windows
+
+336
+00:13:18,000 --> 00:13:19,440
+and Windows Phone devices I don't have
+
+337
+00:13:19,440 --> 00:13:20,760
+time today to show you those but that's
+
+338
+00:13:20,760 --> 00:13:25,380
+in there as well so now you've seen a
+
+339
+00:13:25,380 --> 00:13:26,310
+little bit of all right let me talk a
+
+340
+00:13:26,310 --> 00:13:27,510
+bit about where we're going and some of
+
+341
+00:13:27,510 --> 00:13:29,610
+the challenges that we have to deal with
+
+342
+00:13:29,610 --> 00:13:31,920
+some of these are of our own creation so
+
+343
+00:13:31,920 --> 00:13:34,140
+first for example the building windows
+
+344
+00:13:34,140 --> 00:13:36,660
+HTML apps the security model is such
+
+345
+00:13:36,660 --> 00:13:38,040
+that a number of popular JavaScript
+
+346
+00:13:38,040 --> 00:13:39,750
+libraries don't just work when you pull
+
+347
+00:13:39,750 --> 00:13:41,550
+them in if I tried to run this app just
+
+348
+00:13:41,550 --> 00:13:43,380
+now against windows I'd actually get a
+
+349
+00:13:43,380 --> 00:13:45,300
+security error right away and we don't
+
+350
+00:13:45,300 --> 00:13:46,950
+really provide great we don't provide
+
+351
+00:13:46,950 --> 00:13:48,390
+official guidance or samples to
+
+352
+00:13:48,390 --> 00:13:49,890
+developers on how to work around that
+
+353
+00:13:49,890 --> 00:13:51,570
+how to deal with that so we're working
+
+354
+00:13:51,570 --> 00:13:52,920
+to see what we can put together there
+
+355
+00:13:52,920 --> 00:13:55,080
+that at the same time won't compromise
+
+356
+00:13:55,080 --> 00:13:56,610
+the security model but we'll make that
+
+357
+00:13:56,610 --> 00:13:57,750
+easier so you can work with the
+
+358
+00:13:57,750 --> 00:14:00,690
+frameworks you know and want to use the
+
+359
+00:14:00,690 --> 00:14:03,420
+Cordova platform support we have for
+
+360
+00:14:03,420 --> 00:14:05,700
+Windows and Windows Phone isn't as good
+
+361
+00:14:05,700 --> 00:14:07,500
+as we'd like it to be a chunk of our
+
+362
+00:14:07,500 --> 00:14:08,760
+contributions that waited were to help
+
+363
+00:14:08,760 --> 00:14:10,440
+bring that up to snuff but they're still
+
+364
+00:14:10,440 --> 00:14:12,150
+more we need to do in that space to make
+
+365
+00:14:12,150 --> 00:14:13,920
+those really good targets from the
+
+366
+00:14:13,920 --> 00:14:16,650
+Cordova tooling and then we've also got
+
+367
+00:14:16,650 --> 00:14:18,330
+the debugging experience against windows
+
+368
+00:14:18,330 --> 00:14:19,890
+phone is rough right now we don't hook
+
+369
+00:14:19,890 --> 00:14:22,530
+those diagnostic tools up at all we want
+
+370
+00:14:22,530 --> 00:14:24,870
+to see if there's something to make make
+
+371
+00:14:24,870 --> 00:14:27,290
+that better somehow
+
+372
+00:14:27,290 --> 00:14:29,430
+talking about a little of where we go
+
+373
+00:14:29,430 --> 00:14:33,209
+next with the tooling along with Windows
+
+374
+00:14:33,209 --> 00:14:34,320
+Phone we want to be able to hook up the
+
+375
+00:14:34,320 --> 00:14:36,300
+iOS diagnostics tools we want to find a
+
+376
+00:14:36,300 --> 00:14:37,860
+way we don't have that same tool chain
+
+377
+00:14:37,860 --> 00:14:39,300
+where I can use something like a DB to
+
+378
+00:14:39,300 --> 00:14:41,790
+connect to this and communicate with the
+
+379
+00:14:41,790 --> 00:14:43,500
+app running in iOS so I want to figure
+
+380
+00:14:43,500 --> 00:14:44,910
+out how can we get that going seeing it
+
+381
+00:14:44,910 --> 00:14:46,500
+the same set of tools in vs for the Dom
+
+382
+00:14:46,500 --> 00:14:48,630
+explore debugging against all these
+
+383
+00:14:48,630 --> 00:14:52,709
+devices the emulator workflow you might
+
+384
+00:14:52,709 --> 00:14:53,940
+have seen how it's a little slow there
+
+385
+00:14:53,940 --> 00:14:56,069
+going on the android emulator and you
+
+386
+00:14:56,069 --> 00:14:57,029
+have to bounce between different
+
+387
+00:14:57,029 --> 00:14:59,310
+emulators like phone and iOS we want to
+
+388
+00:14:59,310 --> 00:15:01,170
+see if there's a way we can streamline
+
+389
+00:15:01,170 --> 00:15:02,670
+that workflow and make it a little more
+
+390
+00:15:02,670 --> 00:15:06,630
+comfortable so the right now can just be
+
+391
+00:15:06,630 --> 00:15:13,009
+a bit of a slow clunky process the
+
+392
+00:15:13,009 --> 00:15:15,029
+another challenge of God is around
+
+393
+00:15:15,029 --> 00:15:17,040
+keeping up with the really rapid release
+
+394
+00:15:17,040 --> 00:15:19,019
+cadence of open source software each of
+
+395
+00:15:19,019 --> 00:15:20,220
+these projects is versioning
+
+396
+00:15:20,220 --> 00:15:22,319
+independently and we want to make sure
+
+397
+00:15:22,319 --> 00:15:23,699
+that we can when we have to ship a
+
+398
+00:15:23,699 --> 00:15:25,170
+release of the product it's around a set
+
+399
+00:15:25,170 --> 00:15:27,959
+of these things it's really a robust set
+
+400
+00:15:27,959 --> 00:15:29,130
+of all these pieces working well
+
+401
+00:15:29,130 --> 00:15:30,870
+together and we've had some challenges
+
+402
+00:15:30,870 --> 00:15:32,250
+when we first were putting this together
+
+403
+00:15:32,250 --> 00:15:35,760
+for example working with an ant the new
+
+404
+00:15:35,760 --> 00:15:37,199
+version of it bumped and it's used as
+
+405
+00:15:37,199 --> 00:15:39,060
+part of the Android SDK to build we
+
+406
+00:15:39,060 --> 00:15:40,260
+weren't prepared for that and took us
+
+407
+00:15:40,260 --> 00:15:41,550
+out for a few days in our testing
+
+408
+00:15:41,550 --> 00:15:43,889
+efforts because the system just wasn't
+
+409
+00:15:43,889 --> 00:15:45,420
+ready for this change some change in ant
+
+410
+00:15:45,420 --> 00:15:46,860
+that took us out and now we're faced
+
+411
+00:15:46,860 --> 00:15:49,740
+with the Apache Cordova project has just
+
+412
+00:15:49,740 --> 00:15:50,970
+bumped a version and we need to see how
+
+413
+00:15:50,970 --> 00:15:52,380
+do when do we roll that out to users
+
+414
+00:15:52,380 --> 00:15:53,760
+what are the new bugs we have to deal
+
+415
+00:15:53,760 --> 00:15:55,110
+with around it and prepare for those
+
+416
+00:15:55,110 --> 00:15:56,430
+that's a space we need to keep working
+
+417
+00:15:56,430 --> 00:16:00,810
+on finally one other couple other
+
+418
+00:16:00,810 --> 00:16:02,579
+challenges that against these ones here
+
+419
+00:16:02,579 --> 00:16:04,110
+are a little lesson in our control a
+
+420
+00:16:04,110 --> 00:16:06,209
+little more external factors but you
+
+421
+00:16:06,209 --> 00:16:08,069
+need to use a mac right now to build for
+
+422
+00:16:08,069 --> 00:16:10,410
+iOS devices we have some users that
+
+423
+00:16:10,410 --> 00:16:11,939
+either can't or don't want to use a mac
+
+424
+00:16:11,939 --> 00:16:13,350
+for this so we need to have an answer to
+
+425
+00:16:13,350 --> 00:16:16,290
+them how we could support that and then
+
+426
+00:16:16,290 --> 00:16:18,510
+in the end the enterprise chunk of
+
+427
+00:16:18,510 --> 00:16:19,920
+enterprise customers some of them are
+
+428
+00:16:19,920 --> 00:16:21,360
+very comfortable with open source to
+
+429
+00:16:21,360 --> 00:16:23,970
+have concerns around security or really
+
+430
+00:16:23,970 --> 00:16:25,500
+support getting support of this
+
+431
+00:16:25,500 --> 00:16:27,389
+combination of things so we need to work
+
+432
+00:16:27,389 --> 00:16:29,759
+and find out how we can alleviate some
+
+433
+00:16:29,759 --> 00:16:30,870
+of those concerns help them out with
+
+434
+00:16:30,870 --> 00:16:34,730
+that
+
+435
+00:16:34,740 --> 00:16:36,660
+I'm going to now talk through a few
+
+436
+00:16:36,660 --> 00:16:38,010
+ideas I had as I've been working through
+
+437
+00:16:38,010 --> 00:16:39,660
+these on ways that maybe we all could
+
+438
+00:16:39,660 --> 00:16:41,670
+help out the general cross-platform dev
+
+439
+00:16:41,670 --> 00:16:43,320
+community through some different open
+
+440
+00:16:43,320 --> 00:16:46,230
+source projects so first one that might
+
+441
+00:16:46,230 --> 00:16:47,279
+be kind of obvious is contributing to
+
+442
+00:16:47,279 --> 00:16:48,690
+one of the projects I mentioned here the
+
+443
+00:16:48,690 --> 00:16:51,270
+Cordova and Cordova CLI are some places
+
+444
+00:16:51,270 --> 00:16:52,980
+for great opportunities to help out in
+
+445
+00:16:52,980 --> 00:16:56,220
+productivity and and helping developers
+
+446
+00:16:56,220 --> 00:16:57,779
+get through some repetitive common tasks
+
+447
+00:16:57,779 --> 00:16:58,980
+like dealing with splash screens and
+
+448
+00:16:58,980 --> 00:17:00,209
+icons right now is a bit of a pain
+
+449
+00:17:00,209 --> 00:17:01,620
+because you've got different formats for
+
+450
+00:17:01,620 --> 00:17:03,990
+each device and you can't just create
+
+451
+00:17:03,990 --> 00:17:05,610
+one set of icons and then splash screens
+
+452
+00:17:05,610 --> 00:17:06,959
+that just go across everything it's a
+
+453
+00:17:06,959 --> 00:17:09,270
+bit of a pain I also wonder if there's
+
+454
+00:17:09,270 --> 00:17:10,530
+something somebody might be able to do
+
+455
+00:17:10,530 --> 00:17:12,839
+around making it quicker to refresh or
+
+456
+00:17:12,839 --> 00:17:14,459
+changes back into the app you'll notice
+
+457
+00:17:14,459 --> 00:17:16,380
+i did a free a full rebuild when i made
+
+458
+00:17:16,380 --> 00:17:18,870
+changes what if we could somehow have
+
+459
+00:17:18,870 --> 00:17:20,160
+your change get just pushed into the
+
+460
+00:17:20,160 --> 00:17:21,600
+running application and you see it
+
+461
+00:17:21,600 --> 00:17:24,420
+fairly alive you get that rapid kind of
+
+462
+00:17:24,420 --> 00:17:26,189
+iteration process we're used to with
+
+463
+00:17:26,189 --> 00:17:27,449
+tools on the web and just opening our
+
+464
+00:17:27,449 --> 00:17:31,690
+web browser and making quick changes
+
+465
+00:17:31,700 --> 00:17:34,170
+building our best practice examples for
+
+466
+00:17:34,170 --> 00:17:36,360
+mobile frameworks or app patterns I
+
+467
+00:17:36,360 --> 00:17:37,650
+think it'd be kind of cool to see
+
+468
+00:17:37,650 --> 00:17:39,660
+something like the to do MVC project
+
+469
+00:17:39,660 --> 00:17:42,210
+that might be around best practices for
+
+470
+00:17:42,210 --> 00:17:45,179
+building out mobile apps there's some
+
+471
+00:17:45,179 --> 00:17:46,920
+things you got to deal with around the
+
+472
+00:17:46,920 --> 00:17:49,170
+the changes in performance on the
+
+473
+00:17:49,170 --> 00:17:51,090
+devices sort of battery life there on
+
+474
+00:17:51,090 --> 00:17:55,470
+and off connectivity and I think some
+
+475
+00:17:55,470 --> 00:17:56,429
+best practices might be really
+
+476
+00:17:56,429 --> 00:17:57,510
+interesting to put out there to help
+
+477
+00:17:57,510 --> 00:17:59,010
+developers have a place to go to look at
+
+478
+00:17:59,010 --> 00:18:00,120
+working with a variety these frameworks
+
+479
+00:18:00,120 --> 00:18:01,650
+or would what are good ways to match
+
+480
+00:18:01,650 --> 00:18:05,190
+them up I talked about typescript
+
+481
+00:18:05,190 --> 00:18:07,140
+briefly as something we support if you
+
+482
+00:18:07,140 --> 00:18:08,490
+like you working with typescript you
+
+483
+00:18:08,490 --> 00:18:09,750
+might have seen typescript definition
+
+484
+00:18:09,750 --> 00:18:11,520
+files these are sort of like header
+
+485
+00:18:11,520 --> 00:18:13,320
+files and see they define the shapes of
+
+486
+00:18:13,320 --> 00:18:15,900
+api's you can work with we provide some
+
+487
+00:18:15,900 --> 00:18:18,750
+to help developers kind of get a nice
+
+488
+00:18:18,750 --> 00:18:20,160
+tooling experience around Cordova
+
+489
+00:18:20,160 --> 00:18:22,740
+plugins but for and there's a huge
+
+490
+00:18:22,740 --> 00:18:23,730
+community out on the site called
+
+491
+00:18:23,730 --> 00:18:25,320
+definitely typed on github that you
+
+492
+00:18:25,320 --> 00:18:27,090
+could check out and if you don't see a
+
+493
+00:18:27,090 --> 00:18:28,590
+library you like up there you might
+
+494
+00:18:28,590 --> 00:18:30,990
+contribute back create some typing's
+
+495
+00:18:30,990 --> 00:18:32,340
+build something that can help that
+
+496
+00:18:32,340 --> 00:18:33,690
+tooling experience it's a space that
+
+497
+00:18:33,690 --> 00:18:35,040
+over time we're also looking at how can
+
+498
+00:18:35,040 --> 00:18:36,630
+we help the JavaScript editing and
+
+499
+00:18:36,630 --> 00:18:38,490
+visual studio and elsewhere through
+
+500
+00:18:38,490 --> 00:18:42,690
+typescript files and then I mentioned
+
+501
+00:18:42,690 --> 00:18:44,190
+plugins a little bit throughout but
+
+502
+00:18:44,190 --> 00:18:46,650
+there's a place on Cordova that's a
+
+503
+00:18:46,650 --> 00:18:48,390
+plug-in repository
+
+504
+00:18:48,390 --> 00:18:49,230
+and they've got things like a barcode
+
+505
+00:18:49,230 --> 00:18:51,320
+scanner plug-in that's where the camera
+
+506
+00:18:51,320 --> 00:18:55,380
+media capture API at plugins or AB this
+
+507
+00:18:55,380 --> 00:18:56,490
+is a good place to check out that you
+
+508
+00:18:56,490 --> 00:18:57,870
+might find some things were there api's
+
+509
+00:18:57,870 --> 00:19:01,050
+you'd want to like polyfill across these
+
+510
+00:19:01,050 --> 00:19:02,490
+platforms as well maybe contribute back
+
+511
+00:19:02,490 --> 00:19:05,430
+to those plugins and finally share your
+
+512
+00:19:05,430 --> 00:19:06,960
+likes dislikes wishes feedback with
+
+513
+00:19:06,960 --> 00:19:08,790
+those projects some of the ones I
+
+514
+00:19:08,790 --> 00:19:10,980
+mentioned work with these tools you know
+
+515
+00:19:10,980 --> 00:19:12,870
+let people know what you think and let
+
+516
+00:19:12,870 --> 00:19:14,910
+us know I'd love to hear if there are
+
+517
+00:19:14,910 --> 00:19:16,950
+scenarios you faced and doing mobile
+
+518
+00:19:16,950 --> 00:19:18,300
+development if you tried it out yet if
+
+519
+00:19:18,300 --> 00:19:19,620
+you try out our tools and you got some
+
+520
+00:19:19,620 --> 00:19:20,760
+ideas I'd love to hear from you about
+
+521
+00:19:20,760 --> 00:19:23,070
+what you think could be done differently
+
+522
+00:19:23,070 --> 00:19:24,960
+what you wish some kind of tooling would
+
+523
+00:19:24,960 --> 00:19:26,310
+help you deal with problems you're
+
+524
+00:19:26,310 --> 00:19:29,310
+facing so on that i'll leave you was
+
+525
+00:19:29,310 --> 00:19:30,810
+just a set of links to the stuff i
+
+526
+00:19:30,810 --> 00:19:31,830
+talked about so you can get some more
+
+527
+00:19:31,830 --> 00:19:34,080
+information my contact info is down
+
+528
+00:19:34,080 --> 00:19:35,370
+there as well I'll be here the rest of
+
+529
+00:19:35,370 --> 00:19:36,960
+the day flying out way too early
+
+530
+00:19:36,960 --> 00:19:38,310
+tomorrow but I'd love to hear from you
+
+531
+00:19:38,310 --> 00:19:42,000
+guys in person or online and yeah thanks
+
+532
+00:19:42,000 --> 00:19:43,260
+for your time i'm hoping i can come back
+
+533
+00:19:43,260 --> 00:19:44,820
+maybe next year or so and give you an
+

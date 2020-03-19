@@ -1,0 +1,3945 @@
+1
+00:00:00,750 --> 00:00:09,879
+
+[Music]
+
+2
+00:00:09,889 --> 00:00:18,270
+hello so thank you very much for having
+
+3
+00:00:18,270 --> 00:00:20,220
+me it's a pleasure to be back here in
+
+4
+00:00:20,220 --> 00:00:21,900
+Berlin as Tim just said this is actually
+
+5
+00:00:21,900 --> 00:00:24,330
+my second time on this stage and it's a
+
+6
+00:00:24,330 --> 00:00:25,920
+conference that as everyone's already
+
+7
+00:00:25,920 --> 00:00:28,080
+mentioned this morning has a community
+
+8
+00:00:28,080 --> 00:00:30,660
+that is dear to my heart and so it's
+
+9
+00:00:30,660 --> 00:00:32,430
+actually an honor to be able to be back
+
+10
+00:00:32,430 --> 00:00:33,780
+here speaking against it Thank You
+
+11
+00:00:33,780 --> 00:00:35,910
+Chrissy calling you Kevin and the rest
+
+12
+00:00:35,910 --> 00:00:37,320
+of the team and this awesome work that
+
+13
+00:00:37,320 --> 00:00:38,969
+they've done and especially for it even
+
+14
+00:00:38,969 --> 00:00:41,460
+allowing me to bring my child here I've
+
+15
+00:00:41,460 --> 00:00:43,200
+got a one-year-old baby here with me
+
+16
+00:00:43,200 --> 00:00:44,969
+Freddie come and say hello to him
+
+17
+00:00:44,969 --> 00:00:47,460
+afterwards I'm trying to get them on the
+
+18
+00:00:47,460 --> 00:00:50,399
+CSS party pack later on to do some
+
+19
+00:00:50,399 --> 00:00:52,829
+obnoxious CSS animations as well so
+
+20
+00:00:52,829 --> 00:00:54,690
+we'll be kind of live coding over there
+
+21
+00:00:54,690 --> 00:00:58,050
+with Freddie if you want to join in so
+
+22
+00:00:58,050 --> 00:00:59,460
+my name is Pat you come in you can catch
+
+23
+00:00:59,460 --> 00:01:02,430
+me on Twitter there and I work at fastly
+
+24
+00:01:02,430 --> 00:01:05,280
+we're an edge cloud provider that
+
+25
+00:01:05,280 --> 00:01:06,840
+specializes in real-time content
+
+26
+00:01:06,840 --> 00:01:09,510
+delivery and my role there is a web
+
+27
+00:01:09,510 --> 00:01:11,369
+performance engineer where I spend a lot
+
+28
+00:01:11,369 --> 00:01:13,320
+of time thinking about how we can
+
+29
+00:01:13,320 --> 00:01:15,780
+improve the speed of one our network but
+
+30
+00:01:15,780 --> 00:01:18,270
+most importantly delivering content for
+
+31
+00:01:18,270 --> 00:01:20,939
+our customers and their users as fast as
+
+32
+00:01:20,939 --> 00:01:22,799
+possible and so some of which of that
+
+33
+00:01:22,799 --> 00:01:24,090
+I'm going to talk about today and show
+
+34
+00:01:24,090 --> 00:01:25,229
+you some of the research that I've been
+
+35
+00:01:25,229 --> 00:01:29,159
+doing so why am I here and you're
+
+36
+00:01:29,159 --> 00:01:31,470
+probably wondering what the title CSS
+
+37
+00:01:31,470 --> 00:01:33,630
+and the first meaningful paint even
+
+38
+00:01:33,630 --> 00:01:36,030
+means and so hopefully all will come
+
+39
+00:01:36,030 --> 00:01:38,790
+true shortly so I want to ask you a
+
+40
+00:01:38,790 --> 00:01:41,610
+question of how do you measure the
+
+41
+00:01:41,610 --> 00:01:44,490
+performance of your website what does
+
+42
+00:01:44,490 --> 00:01:48,090
+being fast even mean is it how long it
+
+43
+00:01:48,090 --> 00:01:50,280
+takes to get to a load event is it how
+
+44
+00:01:50,280 --> 00:01:52,140
+many bytes you send down the wire or how
+
+45
+00:01:52,140 --> 00:01:55,200
+many requests but I would say I would
+
+46
+00:01:55,200 --> 00:01:56,700
+argue that it shouldn't be any of these
+
+47
+00:01:56,700 --> 00:01:58,500
+things ultimately we are building web
+
+48
+00:01:58,500 --> 00:02:00,899
+sites for our users or our customers
+
+49
+00:02:00,899 --> 00:02:03,149
+users and it should be about how they
+
+50
+00:02:03,149 --> 00:02:06,409
+perceive the speed of your website
+
+51
+00:02:06,409 --> 00:02:09,119
+should we even have a golden performance
+
+52
+00:02:09,119 --> 00:02:13,350
+metric does it even exist I would
+
+53
+00:02:13,350 --> 00:02:16,400
+that shouldn't and for years we've been
+
+54
+00:02:16,400 --> 00:02:19,260
+optimizing our pages to be built for
+
+55
+00:02:19,260 --> 00:02:22,410
+these metrics that don't directly
+
+56
+00:02:22,410 --> 00:02:24,390
+correlate to how our websites are built
+
+57
+00:02:24,390 --> 00:02:26,370
+but not the user experience and how
+
+58
+00:02:26,370 --> 00:02:28,020
+users are perceiving these things so
+
+59
+00:02:28,020 --> 00:02:30,540
+time to first byte or document complete
+
+60
+00:02:30,540 --> 00:02:32,910
+load event how many requests I sent none
+
+61
+00:02:32,910 --> 00:02:35,220
+of these correlates to a good user
+
+62
+00:02:35,220 --> 00:02:38,100
+experience and that as I can't stress
+
+63
+00:02:38,100 --> 00:02:39,600
+enough at the end of the day we are
+
+64
+00:02:39,600 --> 00:02:42,000
+building our websites for real users and
+
+65
+00:02:42,000 --> 00:02:44,010
+they are coming here to do something and
+
+66
+00:02:44,010 --> 00:02:45,840
+so fortunately we're seeing rise of a
+
+67
+00:02:45,840 --> 00:02:48,240
+whole new collection of metrics focused
+
+68
+00:02:48,240 --> 00:02:50,400
+around user experience such as the speed
+
+69
+00:02:50,400 --> 00:02:52,200
+index and the first meaningful paint
+
+70
+00:02:52,200 --> 00:02:53,400
+which we're going to talk about today
+
+71
+00:02:53,400 --> 00:02:58,020
+and time to interactivity and we're also
+
+72
+00:02:58,020 --> 00:02:58,830
+seeing writer
+
+73
+00:02:58,830 --> 00:03:00,780
+being thinking about custom metrics
+
+74
+00:03:00,780 --> 00:03:02,820
+specific to our needs maybe for a search
+
+75
+00:03:02,820 --> 00:03:05,730
+results on a search pages how long it
+
+76
+00:03:05,730 --> 00:03:07,350
+took the user to be able to find what
+
+77
+00:03:07,350 --> 00:03:08,910
+they were looking for or a news
+
+78
+00:03:08,910 --> 00:03:10,830
+organization is how long it took the
+
+79
+00:03:10,830 --> 00:03:12,570
+user to find an article and read it we
+
+80
+00:03:12,570 --> 00:03:14,370
+should be thinking more about metrics
+
+81
+00:03:14,370 --> 00:03:16,950
+specific to our users needs and not
+
+82
+00:03:16,950 --> 00:03:20,610
+focusing on how we delivered that and
+
+83
+00:03:20,610 --> 00:03:23,370
+built our technology and so we're going
+
+84
+00:03:23,370 --> 00:03:25,740
+to focus a bit on time to first
+
+85
+00:03:25,740 --> 00:03:27,510
+meaningful paint today so what does that
+
+86
+00:03:27,510 --> 00:03:31,380
+even mean if it simply the first
+
+87
+00:03:31,380 --> 00:03:33,210
+meaningful paint is the time when it
+
+88
+00:03:33,210 --> 00:03:35,700
+pages primary content appeared on the
+
+89
+00:03:35,700 --> 00:03:36,630
+screen ie
+
+90
+00:03:36,630 --> 00:03:38,910
+put simply the time when the thing that
+
+91
+00:03:38,910 --> 00:03:41,090
+the user actually came to that website
+
+92
+00:03:41,090 --> 00:03:43,620
+appeared on the screen more detailed
+
+93
+00:03:43,620 --> 00:03:45,540
+it's the first paint after which the
+
+94
+00:03:45,540 --> 00:03:47,880
+biggest above the fold so we only care
+
+95
+00:03:47,880 --> 00:03:50,400
+about the viewport if you can imagine on
+
+96
+00:03:50,400 --> 00:03:51,690
+a mobile screen that's only what
+
+97
+00:03:51,690 --> 00:03:53,970
+appeared in the first viewport has
+
+98
+00:03:53,970 --> 00:03:57,240
+happened and so layout is when the
+
+99
+00:03:57,240 --> 00:03:59,040
+browser converts all of your elements
+
+100
+00:03:59,040 --> 00:04:01,830
+and your CSS queries into an X and y
+
+101
+00:04:01,830 --> 00:04:03,570
+coordinate are you where that element is
+
+102
+00:04:03,570 --> 00:04:04,770
+going to be painted on the screen and
+
+103
+00:04:04,770 --> 00:04:07,050
+its width and its height so we have the
+
+104
+00:04:07,050 --> 00:04:08,730
+browser has to perform layout of all of
+
+105
+00:04:08,730 --> 00:04:10,140
+the elements in that above the world
+
+106
+00:04:10,140 --> 00:04:12,660
+view and paint them to the screen and
+
+107
+00:04:12,660 --> 00:04:15,540
+most importantly TTS MP also takes into
+
+108
+00:04:15,540 --> 00:04:18,450
+consideration when custom web fonts have
+
+109
+00:04:18,450 --> 00:04:20,070
+loaded because I've heard that we all
+
+110
+00:04:20,070 --> 00:04:22,049
+like to add custom web fonts to our
+
+111
+00:04:22,049 --> 00:04:23,669
+websites these days much to my
+
+112
+00:04:23,669 --> 00:04:26,020
+discomfort and disagreement but
+
+113
+00:04:26,020 --> 00:04:28,569
+maybe this is better represented rigidly
+
+114
+00:04:28,569 --> 00:04:31,090
+how does what does TT SMP actually mean
+
+115
+00:04:31,090 --> 00:04:33,550
+so T definite be exactly a very new
+
+116
+00:04:33,550 --> 00:04:35,470
+metric we've only started using it since
+
+117
+00:04:35,470 --> 00:04:37,120
+last year some folks at Google wrote an
+
+118
+00:04:37,120 --> 00:04:39,520
+amazing white paper I'll release the
+
+119
+00:04:39,520 --> 00:04:41,410
+slides later where they detailed how we
+
+120
+00:04:41,410 --> 00:04:43,810
+can go about ascertaining the time to
+
+121
+00:04:43,810 --> 00:04:45,610
+first meaningful paint and unfortunately
+
+122
+00:04:45,610 --> 00:04:47,860
+it's not exposed via JavaScript API yet
+
+123
+00:04:47,860 --> 00:04:49,630
+though we are talking about it and you
+
+124
+00:04:49,630 --> 00:04:52,270
+have to be able to use for instance
+
+125
+00:04:52,270 --> 00:04:54,430
+clones internal tracing to be able to do
+
+126
+00:04:54,430 --> 00:04:56,139
+this but on the top here we have a graph
+
+127
+00:04:56,139 --> 00:04:58,900
+that represents how many layout objects
+
+128
+00:04:58,900 --> 00:05:00,699
+are actually painted to the screen so
+
+129
+00:05:00,699 --> 00:05:03,250
+that's time on the x-axis and the amount
+
+130
+00:05:03,250 --> 00:05:05,409
+of objects on the y-axis and how that
+
+131
+00:05:05,409 --> 00:05:07,330
+correlates to the user experience below
+
+132
+00:05:07,330 --> 00:05:09,130
+and as you can see here Google do
+
+133
+00:05:09,130 --> 00:05:10,750
+something very clever that they flush
+
+134
+00:05:10,750 --> 00:05:13,479
+the head of their document way before
+
+135
+00:05:13,479 --> 00:05:15,849
+they even send the search queries back
+
+136
+00:05:15,849 --> 00:05:18,370
+to the database and so it paints very
+
+137
+00:05:18,370 --> 00:05:20,530
+quickly on a 3G and emerging marketing
+
+138
+00:05:20,530 --> 00:05:22,419
+network you've got a paint at 1.5
+
+139
+00:05:22,419 --> 00:05:24,909
+seconds but actually the meaningful
+
+140
+00:05:24,909 --> 00:05:26,530
+paints the thing that the user actually
+
+141
+00:05:26,530 --> 00:05:29,919
+came here for is at 1.9 and we can see
+
+142
+00:05:29,919 --> 00:05:31,479
+how that directly correlates to the
+
+143
+00:05:31,479 --> 00:05:32,710
+amount of objects that painted the
+
+144
+00:05:32,710 --> 00:05:35,139
+screen and hopefully you've now got a
+
+145
+00:05:35,139 --> 00:05:36,729
+much better indication of this ISM a
+
+146
+00:05:36,729 --> 00:05:38,650
+metric that's much more useful than
+
+147
+00:05:38,650 --> 00:05:41,650
+start render or your time to person time
+
+148
+00:05:41,650 --> 00:05:43,870
+to first byte because we've given the
+
+149
+00:05:43,870 --> 00:05:45,490
+user what they came here for and this is
+
+150
+00:05:45,490 --> 00:05:47,020
+the type of metric that we should be
+
+151
+00:05:47,020 --> 00:05:48,550
+focusing on and talking about and
+
+152
+00:05:48,550 --> 00:05:51,300
+building and trying to optimize for and
+
+153
+00:05:51,300 --> 00:05:54,159
+maybe this is a better representative
+
+154
+00:05:54,159 --> 00:05:55,780
+like this so this is the SD comm
+
+155
+00:05:55,780 --> 00:05:58,960
+homepage and who here thinks the time to
+
+156
+00:05:58,960 --> 00:06:00,909
+first meaningful paint is three point
+
+157
+00:06:00,909 --> 00:06:08,020
+five four five four point five five so
+
+158
+00:06:08,020 --> 00:06:09,870
+yeah the TTS MP here is actually five
+
+159
+00:06:09,870 --> 00:06:13,330
+seconds on a 3G connection so you're
+
+160
+00:06:13,330 --> 00:06:14,530
+probably wondering how you can measure
+
+161
+00:06:14,530 --> 00:06:16,840
+your TT FMP yourselves fortunately
+
+162
+00:06:16,840 --> 00:06:18,819
+Google have open sourced and built you
+
+163
+00:06:18,819 --> 00:06:20,590
+can contribute to this lighthouse which
+
+164
+00:06:20,590 --> 00:06:21,789
+is they actually built this tool is
+
+165
+00:06:21,789 --> 00:06:24,310
+there an auditing tool to audit how your
+
+166
+00:06:24,310 --> 00:06:26,289
+new progressive shiny web app was
+
+167
+00:06:26,289 --> 00:06:27,490
+performing against some of the best
+
+168
+00:06:27,490 --> 00:06:29,590
+practices but it turns out that some of
+
+169
+00:06:29,590 --> 00:06:31,690
+the audits in it are actually very good
+
+170
+00:06:31,690 --> 00:06:33,789
+just for any web site you don't have to
+
+171
+00:06:33,789 --> 00:06:35,260
+use service workers or progressive web
+
+172
+00:06:35,260 --> 00:06:36,699
+apps to use lighthouse to audit your
+
+173
+00:06:36,699 --> 00:06:38,560
+tool and using a lot of hosts you can
+
+174
+00:06:38,560 --> 00:06:39,520
+install it via
+
+175
+00:06:39,520 --> 00:06:41,740
+a browser plug-in or CLI and have it
+
+176
+00:06:41,740 --> 00:06:43,660
+part of your build process you can
+
+177
+00:06:43,660 --> 00:06:47,350
+expose the TT FNP of your own websites I
+
+178
+00:06:47,350 --> 00:06:49,120
+urge you to go home in and check this
+
+179
+00:06:49,120 --> 00:06:51,520
+out and try it out on your own so let's
+
+180
+00:06:51,520 --> 00:06:53,410
+dive straight in of how we can optimize
+
+181
+00:06:53,410 --> 00:06:57,220
+our own websites for that TT FMP metric
+
+182
+00:06:57,220 --> 00:07:00,099
+and how this relates and it's extremely
+
+183
+00:07:00,099 --> 00:07:02,349
+tightly coupled to CSS and obviously
+
+184
+00:07:02,349 --> 00:07:05,979
+this is CSS comps but it's unsurprising
+
+185
+00:07:05,979 --> 00:07:08,380
+hopefully to most of you that CSS is so
+
+186
+00:07:08,380 --> 00:07:11,259
+critical to how we deliver a good user
+
+187
+00:07:11,259 --> 00:07:13,389
+experience to our users and so we're
+
+188
+00:07:13,389 --> 00:07:14,919
+going to look at past present and future
+
+189
+00:07:14,919 --> 00:07:17,919
+best practices for how we deliver CSS
+
+190
+00:07:17,919 --> 00:07:19,930
+and the assets that are related to it in
+
+191
+00:07:19,930 --> 00:07:20,380
+the browser
+
+192
+00:07:20,380 --> 00:07:21,940
+and hopefully you'll be able to apply
+
+193
+00:07:21,940 --> 00:07:24,639
+some of these methodologies at home now
+
+194
+00:07:24,639 --> 00:07:27,250
+to do this it's very easy to create a
+
+195
+00:07:27,250 --> 00:07:31,060
+test case study using a to do MVC app
+
+196
+00:07:31,060 --> 00:07:32,020
+sorry
+
+197
+00:07:32,020 --> 00:07:34,659
+addy if you're in the room but it's much
+
+198
+00:07:34,659 --> 00:07:39,550
+better I find to show we'll use real
+
+199
+00:07:39,550 --> 00:07:41,229
+websites to optimize for because
+
+200
+00:07:41,229 --> 00:07:43,389
+ultimately we are again all building
+
+201
+00:07:43,389 --> 00:07:46,060
+real websites and not just to do MVC app
+
+202
+00:07:46,060 --> 00:07:47,949
+they're delivered in two files and we
+
+203
+00:07:47,949 --> 00:07:51,460
+decide to throw a metric crap kind of
+
+204
+00:07:51,460 --> 00:07:53,380
+JavaScript down the pipe at the same
+
+205
+00:07:53,380 --> 00:07:55,780
+time and this is using real-world
+
+206
+00:07:55,780 --> 00:07:57,909
+conditions is when we can really see how
+
+207
+00:07:57,909 --> 00:07:59,620
+the optimizations have effects so
+
+208
+00:07:59,620 --> 00:08:00,820
+therefore for the purpose of the talk
+
+209
+00:08:00,820 --> 00:08:02,949
+and the research I'm going to use the FT
+
+210
+00:08:02,949 --> 00:08:04,690
+com home page and we're going to apply
+
+211
+00:08:04,690 --> 00:08:07,090
+some optimizations together to it to see
+
+212
+00:08:07,090 --> 00:08:08,469
+how we can improve the times first
+
+213
+00:08:08,469 --> 00:08:10,180
+meaningful paint so just a disclaimer
+
+214
+00:08:10,180 --> 00:08:12,219
+here I used to work for the Financial
+
+215
+00:08:12,219 --> 00:08:13,900
+Times so I chose it that because I know
+
+216
+00:08:13,900 --> 00:08:16,539
+how the page is built and they've given
+
+217
+00:08:16,539 --> 00:08:18,460
+me permission to do this and in fact I
+
+218
+00:08:18,460 --> 00:08:20,050
+think some of these developers are still
+
+219
+00:08:20,050 --> 00:08:24,340
+who still wet they're in the rim and but
+
+220
+00:08:24,340 --> 00:08:26,259
+you know it is actually a very good fast
+
+221
+00:08:26,259 --> 00:08:28,539
+website but it we can probably improve
+
+222
+00:08:28,539 --> 00:08:29,740
+it and that's what going to try and do
+
+223
+00:08:29,740 --> 00:08:31,719
+and so for each optimization we're going
+
+224
+00:08:31,719 --> 00:08:33,700
+to be testing on a real device and I
+
+225
+00:08:33,700 --> 00:08:35,289
+can't stress this enough and to do this
+
+226
+00:08:35,289 --> 00:08:37,779
+we're going to use web page test if you
+
+227
+00:08:37,779 --> 00:08:39,250
+haven't used web page test before I urge
+
+228
+00:08:39,250 --> 00:08:41,020
+you to go and do it is the number one
+
+229
+00:08:41,020 --> 00:08:44,079
+tool box in my arsenal of tools because
+
+230
+00:08:44,079 --> 00:08:45,579
+it allows me one to test on real devices
+
+231
+00:08:45,579 --> 00:08:47,949
+there is a real moto G sitting at the
+
+232
+00:08:47,949 --> 00:08:50,350
+end of this form and allows me to shape
+
+233
+00:08:50,350 --> 00:08:52,870
+to a real network condition that
+
+234
+00:08:52,870 --> 00:08:54,610
+again we are building websites for real
+
+235
+00:08:54,610 --> 00:08:58,029
+users okay it contrary to popular belief
+
+236
+00:08:58,029 --> 00:09:00,310
+the shiny iPhone that you have in your
+
+237
+00:09:00,310 --> 00:09:03,400
+pocket is not a real-world device and
+
+238
+00:09:03,400 --> 00:09:05,589
+actually the average device globally is
+
+239
+00:09:05,589 --> 00:09:08,200
+a low to mid n speck Android that has a
+
+240
+00:09:08,200 --> 00:09:10,690
+very terrible CPU performance and very
+
+241
+00:09:10,690 --> 00:09:13,420
+low memory so webpagetest allows us to
+
+242
+00:09:13,420 --> 00:09:14,950
+actually test on these physical devices
+
+243
+00:09:14,950 --> 00:09:16,930
+for each test we're going to run nine
+
+244
+00:09:16,930 --> 00:09:19,210
+tests and choose the median result of
+
+245
+00:09:19,210 --> 00:09:20,860
+them and we're going to use three
+
+246
+00:09:20,860 --> 00:09:22,600
+Network conditions which I'll chat about
+
+247
+00:09:22,600 --> 00:09:25,270
+later my friend Ben is actually going to
+
+248
+00:09:25,270 --> 00:09:27,700
+be talking about this kind of data of
+
+249
+00:09:27,700 --> 00:09:30,190
+real-world devices and what is the real
+
+250
+00:09:30,190 --> 00:09:32,380
+network at J's comp this weekend so I
+
+251
+00:09:32,380 --> 00:09:35,410
+urge you to go and look at his talk so
+
+252
+00:09:35,410 --> 00:09:36,880
+we need to ask ourselves these questions
+
+253
+00:09:36,880 --> 00:09:39,160
+first of to be working out what our
+
+254
+00:09:39,160 --> 00:09:41,620
+average user profile is where are your
+
+255
+00:09:41,620 --> 00:09:44,350
+users based what is their device
+
+256
+00:09:44,350 --> 00:09:47,350
+landscape in what context are they using
+
+257
+00:09:47,350 --> 00:09:49,630
+your website and I would be very
+
+258
+00:09:49,630 --> 00:09:51,760
+surprised if you can one of you can tell
+
+259
+00:09:51,760 --> 00:09:53,650
+me that you have a single context for
+
+260
+00:09:53,650 --> 00:09:55,240
+your users because that that just
+
+261
+00:09:55,240 --> 00:09:57,339
+doesn't exist the same person might be
+
+262
+00:09:57,339 --> 00:10:00,430
+accessing your website on a flaky mobile
+
+263
+00:10:00,430 --> 00:10:02,890
+connection in the morning and then goes
+
+264
+00:10:02,890 --> 00:10:04,959
+at lunch time to use that same website
+
+265
+00:10:04,959 --> 00:10:07,690
+on their fast a iMac with their fast
+
+266
+00:10:07,690 --> 00:10:09,670
+cable connection there is not this
+
+267
+00:10:09,670 --> 00:10:12,130
+single context what is their network
+
+268
+00:10:12,130 --> 00:10:14,950
+profile and what did specifically did
+
+269
+00:10:14,950 --> 00:10:16,510
+they come here for and that's what you
+
+270
+00:10:16,510 --> 00:10:18,430
+should be optimizing for so for the
+
+271
+00:10:18,430 --> 00:10:20,230
+purpose of the test we're going to be
+
+272
+00:10:20,230 --> 00:10:22,029
+trying to deliver a first meaningful
+
+273
+00:10:22,029 --> 00:10:24,430
+paint in three seconds on a emerging
+
+274
+00:10:24,430 --> 00:10:26,440
+market network which has a 400
+
+275
+00:10:26,440 --> 00:10:28,360
+millisecond round-trip time so that's
+
+276
+00:10:28,360 --> 00:10:29,680
+the time a textual request to go from
+
+277
+00:10:29,680 --> 00:10:31,540
+the client to the server and back again
+
+278
+00:10:31,540 --> 00:10:34,720
+400 milliseconds just on an emerging
+
+279
+00:10:34,720 --> 00:10:35,800
+marketing connection and we're going to
+
+280
+00:10:35,800 --> 00:10:37,029
+try and optimize for a thousand
+
+281
+00:10:37,029 --> 00:10:39,370
+milliseconds on cable but I can't stress
+
+282
+00:10:39,370 --> 00:10:41,080
+this enough that you shouldn't be taking
+
+283
+00:10:41,080 --> 00:10:43,540
+my base lines as well at home on what
+
+284
+00:10:43,540 --> 00:10:44,440
+you should be using you should be
+
+285
+00:10:44,440 --> 00:10:47,200
+thinking about what your user profile is
+
+286
+00:10:47,200 --> 00:10:54,520
+and setting budgets for those and so
+
+287
+00:10:54,520 --> 00:10:57,279
+that we can measure the impact of our
+
+288
+00:10:57,279 --> 00:10:59,800
+tests and optimizations we can set a
+
+289
+00:10:59,800 --> 00:11:02,680
+baseline and so this hopefully will look
+
+290
+00:11:02,680 --> 00:11:04,240
+very familiar to all of you this is a
+
+291
+00:11:04,240 --> 00:11:06,010
+hex ml document that
+
+292
+00:11:06,010 --> 00:11:07,270
+right near the top we have a link
+
+293
+00:11:07,270 --> 00:11:10,240
+element referencing our compiled main
+
+294
+00:11:10,240 --> 00:11:12,940
+CSS file I don't care how that was
+
+295
+00:11:12,940 --> 00:11:14,770
+compiled or if it was offered in DES
+
+296
+00:11:14,770 --> 00:11:17,440
+or whatever as long as you're delivering
+
+297
+00:11:17,440 --> 00:11:19,270
+your CSS like this this is probably how
+
+298
+00:11:19,270 --> 00:11:21,130
+we have been delivering CSS since the
+
+299
+00:11:21,130 --> 00:11:24,790
+birth of cascading style sheets is
+
+300
+00:11:24,790 --> 00:11:26,230
+probably how most of you in the room are
+
+301
+00:11:26,230 --> 00:11:28,300
+still delivering your CSS so if we were
+
+302
+00:11:28,300 --> 00:11:30,100
+to run that in web page test this is the
+
+303
+00:11:30,100 --> 00:11:33,160
+waterfall result we've got so hands up
+
+304
+00:11:33,160 --> 00:11:34,870
+if you use have seen Network waterfalls
+
+305
+00:11:34,870 --> 00:11:37,420
+before use them on daily basis awesome
+
+306
+00:11:37,420 --> 00:11:39,190
+so it doesn't matter if you haven't so
+
+307
+00:11:39,190 --> 00:11:42,400
+say the wire the x axis here is time and
+
+308
+00:11:42,400 --> 00:11:45,700
+the y axis axis is the network request
+
+309
+00:11:45,700 --> 00:11:47,380
+that the browser is making and the
+
+310
+00:11:47,380 --> 00:11:48,700
+priority and the order in which that
+
+311
+00:11:48,700 --> 00:11:51,220
+happened web page test fortunately gives
+
+312
+00:11:51,220 --> 00:11:53,260
+us mine types here so we've got pixels
+
+313
+00:11:53,260 --> 00:11:56,110
+blue CSS is green images of purple
+
+314
+00:11:56,110 --> 00:11:58,870
+javascript is orange and fonts are red
+
+315
+00:11:58,870 --> 00:12:00,400
+and for each one of these segments
+
+316
+00:12:00,400 --> 00:12:02,890
+there's two shades of color that when
+
+317
+00:12:02,890 --> 00:12:05,470
+that we have resent the request and then
+
+318
+00:12:05,470 --> 00:12:06,970
+the waiting period and then the download
+
+319
+00:12:06,970 --> 00:12:10,120
+process and how long it took so here we
+
+320
+00:12:10,120 --> 00:12:12,460
+can see that we requested our HTML file
+
+321
+00:12:12,460 --> 00:12:14,470
+it found the link element because it
+
+322
+00:12:14,470 --> 00:12:16,810
+paused the document incrementally that's
+
+323
+00:12:16,810 --> 00:12:18,550
+great thing about HTML spec is it can be
+
+324
+00:12:18,550 --> 00:12:20,560
+pausing clementa ly it found the link
+
+325
+00:12:20,560 --> 00:12:23,320
+element quite soon during their download
+
+326
+00:12:23,320 --> 00:12:25,480
+of the HTML and triggered request and
+
+327
+00:12:25,480 --> 00:12:27,820
+then the green line here is our start
+
+328
+00:12:27,820 --> 00:12:29,380
+render so that's not our x first
+
+329
+00:12:29,380 --> 00:12:31,150
+meaningful paint but that's when we
+
+330
+00:12:31,150 --> 00:12:32,620
+started painting on a free G
+
+331
+00:12:32,620 --> 00:12:35,050
+emerging-market so that gives us a
+
+332
+00:12:35,050 --> 00:12:38,260
+baseline around 8,000 milliseconds
+
+333
+00:12:38,260 --> 00:12:42,420
+TTFN p on 3g in emerging market and
+
+334
+00:12:42,420 --> 00:12:45,850
+around 2000 fur cable - way out of our
+
+335
+00:12:45,850 --> 00:12:48,610
+budget so now we've set a baseline so
+
+336
+00:12:48,610 --> 00:12:49,930
+the first experiment we want to do is we
+
+337
+00:12:49,930 --> 00:12:53,170
+want to inline our critical CSS and
+
+338
+00:12:53,170 --> 00:12:54,370
+hopefully many of you heard this
+
+339
+00:12:54,370 --> 00:12:56,230
+technique this is what I you came to
+
+340
+00:12:56,230 --> 00:12:58,510
+this very stage to talk about in 2014
+
+341
+00:12:58,510 --> 00:13:00,610
+and in since then it's become quite a
+
+342
+00:13:00,610 --> 00:13:02,980
+common practice and so let's have a
+
+343
+00:13:02,980 --> 00:13:05,530
+quick recap of that the first thing we
+
+344
+00:13:05,530 --> 00:13:06,880
+need to do is we have to look at our
+
+345
+00:13:06,880 --> 00:13:10,090
+critical rendering path of our page this
+
+346
+00:13:10,090 --> 00:13:12,400
+is the single path that a browser must
+
+347
+00:13:12,400 --> 00:13:14,830
+do to be all the steps it has to do
+
+348
+00:13:14,830 --> 00:13:17,800
+before it can paint to a screen so first
+
+349
+00:13:17,800 --> 00:13:19,000
+we have to
+
+350
+00:13:19,000 --> 00:13:21,340
+I'm make the get HTTP request of our
+
+351
+00:13:21,340 --> 00:13:23,710
+index file we get the response to that
+
+352
+00:13:23,710 --> 00:13:25,270
+we can start building the document
+
+353
+00:13:25,270 --> 00:13:26,950
+object model this is the Dom that we
+
+354
+00:13:26,950 --> 00:13:28,600
+will interact with in JavaScript which
+
+355
+00:13:28,600 --> 00:13:30,970
+is a tree like structure representing
+
+356
+00:13:30,970 --> 00:13:33,010
+the parent-child relationship so I have
+
+357
+00:13:33,010 --> 00:13:35,050
+a body tag inside that has a div which
+
+358
+00:13:35,050 --> 00:13:38,260
+has a key which has a span and we pass
+
+359
+00:13:38,260 --> 00:13:40,810
+we can construct the Dom as we parse the
+
+360
+00:13:40,810 --> 00:13:43,330
+HTML incrementally so we don't need to
+
+361
+00:13:43,330 --> 00:13:45,610
+wait for all of the bytes of our HTML
+
+362
+00:13:45,610 --> 00:13:47,320
+file to be downloaded before we can
+
+363
+00:13:47,320 --> 00:13:50,020
+construct the Dom which is an often
+
+364
+00:13:50,020 --> 00:13:52,420
+overlooked but amazing feature of the
+
+365
+00:13:52,420 --> 00:13:54,760
+HTML specification we find the link
+
+366
+00:13:54,760 --> 00:13:56,770
+elements we then have to go and stop
+
+367
+00:13:56,770 --> 00:13:59,590
+constructing our Dom because CSS is
+
+368
+00:13:59,590 --> 00:14:01,590
+known as a render blocking resource and
+
+369
+00:14:01,590 --> 00:14:03,820
+we have to go and perform the networking
+
+370
+00:14:03,820 --> 00:14:06,430
+for that get that and then we can
+
+371
+00:14:06,430 --> 00:14:08,170
+construct our CSS object model which is
+
+372
+00:14:08,170 --> 00:14:11,140
+exactly the same as the Dom and but note
+
+373
+00:14:11,140 --> 00:14:13,870
+the idle time here we've wasted a lot of
+
+374
+00:14:13,870 --> 00:14:16,330
+time on our network connection waiting
+
+375
+00:14:16,330 --> 00:14:19,690
+for that CSS file and also note the fact
+
+376
+00:14:19,690 --> 00:14:22,180
+that imagine if I was on a train I was
+
+377
+00:14:22,180 --> 00:14:23,950
+looking at Twitter I clicked on the link
+
+378
+00:14:23,950 --> 00:14:26,920
+to the FT I downloaded the HTML and then
+
+379
+00:14:26,920 --> 00:14:29,800
+I go into a tunnel and so I have no
+
+380
+00:14:29,800 --> 00:14:31,839
+network and now I don't have enough
+
+381
+00:14:31,839 --> 00:14:33,400
+network to perform that CSS but actually
+
+382
+00:14:33,400 --> 00:14:35,589
+I've got all of the content I could just
+
+383
+00:14:35,589 --> 00:14:37,120
+paint to the screen so what we've
+
+384
+00:14:37,120 --> 00:14:38,620
+actually done here is we've created a
+
+385
+00:14:38,620 --> 00:14:40,720
+single point of failure by delivering
+
+386
+00:14:40,720 --> 00:14:43,870
+our CSS as a separate object whereas we
+
+387
+00:14:43,870 --> 00:14:45,730
+do have all of the information so that
+
+388
+00:14:45,730 --> 00:14:48,550
+the theory here is what if we were to
+
+389
+00:14:48,550 --> 00:14:52,270
+inline the critical CSS just required to
+
+390
+00:14:52,270 --> 00:14:54,370
+render that first viewport the one that
+
+391
+00:14:54,370 --> 00:14:56,170
+we care about for our first meaningful
+
+392
+00:14:56,170 --> 00:14:59,850
+paint into the head of our document then
+
+393
+00:14:59,850 --> 00:15:02,200
+declare the rest of it as I synchronous
+
+394
+00:15:02,200 --> 00:15:03,850
+telling rather I don't care about this
+
+395
+00:15:03,850 --> 00:15:05,980
+for the first paint and so now we have
+
+396
+00:15:05,980 --> 00:15:08,260
+all of the information we need probably
+
+397
+00:15:08,260 --> 00:15:10,390
+within the first round trip of a network
+
+398
+00:15:10,390 --> 00:15:12,190
+connection so then we can construct the
+
+399
+00:15:12,190 --> 00:15:15,150
+render tree and render to the page so
+
+400
+00:15:15,150 --> 00:15:17,500
+going back to our experiment this is now
+
+401
+00:15:17,500 --> 00:15:19,570
+what it looks like we now have a Spile
+
+402
+00:15:19,570 --> 00:15:21,250
+element in the head of our document this
+
+403
+00:15:21,250 --> 00:15:22,360
+moves against everything we've been
+
+404
+00:15:22,360 --> 00:15:24,520
+taught about separation of concerns of
+
+405
+00:15:24,520 --> 00:15:27,580
+styles in our scholar sheets behavior in
+
+406
+00:15:27,580 --> 00:15:29,740
+our java scripts and then we're using a
+
+407
+00:15:29,740 --> 00:15:31,480
+new friend the link preload
+
+408
+00:15:31,480 --> 00:15:32,650
+element which we can talk about later
+
+409
+00:15:32,650 --> 00:15:34,810
+and here I'm using the filament groups
+
+410
+00:15:34,810 --> 00:15:36,400
+load CSS function to do this I think
+
+411
+00:15:36,400 --> 00:15:38,590
+this is for me that the best way about
+
+412
+00:15:38,590 --> 00:15:40,390
+doing this at the moment and it's got a
+
+413
+00:15:40,390 --> 00:15:42,430
+little polyfill for browsers that don't
+
+414
+00:15:42,430 --> 00:15:45,820
+support this so what if we were to run
+
+415
+00:15:45,820 --> 00:15:47,530
+this in web page there so let's recap
+
+416
+00:15:47,530 --> 00:15:49,360
+this as our baseline remember we're the
+
+417
+00:15:49,360 --> 00:15:53,740
+start render line is there and now with
+
+418
+00:15:53,740 --> 00:15:56,890
+in line look we've instantly got
+
+419
+00:15:56,890 --> 00:15:59,020
+painting as soon as we've started to
+
+420
+00:15:59,020 --> 00:16:00,820
+parse the HTML document we no longer
+
+421
+00:16:00,820 --> 00:16:02,980
+have to wait for our CSS because we've
+
+422
+00:16:02,980 --> 00:16:05,620
+declared that as asynchronous and so you
+
+423
+00:16:05,620 --> 00:16:07,090
+can imagine this is going to have a very
+
+424
+00:16:07,090 --> 00:16:09,610
+dramatic effect on our times first
+
+425
+00:16:09,610 --> 00:16:14,440
+meaningful paint metric and so here you
+
+426
+00:16:14,440 --> 00:16:17,080
+can see we now have a 63% improvement on
+
+427
+00:16:17,080 --> 00:16:19,990
+our baseline we've got 1300 millisecond
+
+428
+00:16:19,990 --> 00:16:21,430
+times first meaningful paint on cable
+
+429
+00:16:21,430 --> 00:16:24,430
+and 3200 so we basically have dit which
+
+430
+00:16:24,430 --> 00:16:26,080
+is extremely impressive just using one
+
+431
+00:16:26,080 --> 00:16:29,800
+technique but this comes with some pros
+
+432
+00:16:29,800 --> 00:16:31,780
+and cons we now no longer have that
+
+433
+00:16:31,780 --> 00:16:33,790
+single point of failure we've eliminated
+
+434
+00:16:33,790 --> 00:16:37,540
+all of the blocking resources but the
+
+435
+00:16:37,540 --> 00:16:38,680
+eagle-eyed in the room would notice that
+
+436
+00:16:38,680 --> 00:16:40,300
+probably because we've declared our
+
+437
+00:16:40,300 --> 00:16:42,760
+other CSS as asynchronous that still has
+
+438
+00:16:42,760 --> 00:16:44,590
+to be loaded and we still have to apply
+
+439
+00:16:44,590 --> 00:16:47,110
+it to to be able to paint to the dom so
+
+440
+00:16:47,110 --> 00:16:49,420
+it causes a reflow and that's why it's
+
+441
+00:16:49,420 --> 00:16:51,090
+really really important that you
+
+442
+00:16:51,090 --> 00:16:54,100
+separate your truly critical everything
+
+443
+00:16:54,100 --> 00:16:55,570
+in that first viewport from the non
+
+444
+00:16:55,570 --> 00:16:57,850
+because if you were to have stuff that
+
+445
+00:16:57,850 --> 00:16:59,410
+within the top of the viewport inside
+
+446
+00:16:59,410 --> 00:17:00,610
+your known asynchronous stuff you're
+
+447
+00:17:00,610 --> 00:17:02,650
+going to cause reflow and actually have
+
+448
+00:17:02,650 --> 00:17:05,110
+a jarring user experience the most
+
+449
+00:17:05,110 --> 00:17:06,340
+important point to note here though is
+
+450
+00:17:06,340 --> 00:17:08,500
+we've made it not too cacheable by
+
+451
+00:17:08,500 --> 00:17:10,960
+aligning our CSS into the document every
+
+452
+00:17:10,960 --> 00:17:13,360
+time we change that CSS we're
+
+453
+00:17:13,360 --> 00:17:14,920
+essentially invalidating the cache for
+
+454
+00:17:14,920 --> 00:17:16,930
+all of our HTML files so if you can
+
+455
+00:17:16,930 --> 00:17:19,150
+imagine something like the FT com
+
+456
+00:17:19,150 --> 00:17:20,770
+that's a very large cache that we're
+
+457
+00:17:20,770 --> 00:17:22,270
+going to be in validating every time we
+
+458
+00:17:22,270 --> 00:17:24,760
+change some CSS and we don't benefit
+
+459
+00:17:24,760 --> 00:17:27,460
+from the browser caching that object and
+
+460
+00:17:27,460 --> 00:17:28,690
+then we're actually going to be sending
+
+461
+00:17:28,690 --> 00:17:30,970
+more bytes down the wire every time
+
+462
+00:17:30,970 --> 00:17:32,980
+which is completely unnecessary
+
+463
+00:17:32,980 --> 00:17:35,320
+it's also very hard to maintain a very
+
+464
+00:17:35,320 --> 00:17:38,590
+hard to automate inline CSS and I've
+
+465
+00:17:38,590 --> 00:17:40,930
+worked on some very large scale websites
+
+466
+00:17:40,930 --> 00:17:43,810
+and it's become a pain that we there's
+
+467
+00:17:43,810 --> 00:17:44,750
+no optimal
+
+468
+00:17:44,750 --> 00:17:48,920
+way of doing this so we've been able to
+
+469
+00:17:48,920 --> 00:17:51,740
+get our CSS down as soon as possible but
+
+470
+00:17:51,740 --> 00:17:54,320
+how can we then prioritize the delivery
+
+471
+00:17:54,320 --> 00:17:56,150
+of the other sub resources that our CSS
+
+472
+00:17:56,150 --> 00:17:58,850
+requires to achieve that time - first
+
+473
+00:17:58,850 --> 00:18:01,270
+meaningful paint I use the critical
+
+474
+00:18:01,270 --> 00:18:03,620
+resources for our page so I want to ask
+
+475
+00:18:03,620 --> 00:18:05,780
+you a question of can you think about
+
+476
+00:18:05,780 --> 00:18:08,480
+what are the critical resources that you
+
+477
+00:18:08,480 --> 00:18:09,770
+have on the website that you were
+
+478
+00:18:09,770 --> 00:18:11,540
+building yesterday or today even for
+
+479
+00:18:11,540 --> 00:18:14,270
+your customer or your company can you
+
+480
+00:18:14,270 --> 00:18:15,740
+think about those right now top of your
+
+481
+00:18:15,740 --> 00:18:17,780
+head the resources that if the networks
+
+482
+00:18:17,780 --> 00:18:20,810
+failed I only need these one two or
+
+483
+00:18:20,810 --> 00:18:22,670
+three resources to be able to deliver a
+
+484
+00:18:22,670 --> 00:18:24,410
+good user experience the rest of them
+
+485
+00:18:24,410 --> 00:18:26,660
+that adds code for the JavaScript that
+
+486
+00:18:26,660 --> 00:18:28,700
+can all be left behind have a think
+
+487
+00:18:28,700 --> 00:18:31,010
+about that so let's identify the
+
+488
+00:18:31,010 --> 00:18:32,780
+resources together for the ft.com page
+
+489
+00:18:32,780 --> 00:18:37,670
+is it a logo is it the custom web fonts
+
+490
+00:18:37,670 --> 00:18:40,010
+and we know that TTS MP has to use the
+
+491
+00:18:40,010 --> 00:18:41,270
+custom web fonts and actually we're
+
+492
+00:18:41,270 --> 00:18:43,520
+delivering the news the user needs to be
+
+493
+00:18:43,520 --> 00:18:45,650
+able to read it or is it the hero image
+
+494
+00:18:45,650 --> 00:18:48,500
+to give some context and a very sorry
+
+495
+00:18:48,500 --> 00:18:51,710
+here for the Theresa May photo bomb I'm
+
+496
+00:18:51,710 --> 00:18:53,210
+actually really annoyed with myself but
+
+497
+00:18:53,210 --> 00:18:55,490
+I've included her in this ditch doesn't
+
+498
+00:18:55,490 --> 00:18:57,490
+deserve it
+
+499
+00:18:57,490 --> 00:19:00,560
+so what how can we go about automating
+
+500
+00:19:00,560 --> 00:19:02,300
+the process of choosing these critical
+
+501
+00:19:02,300 --> 00:19:04,850
+resources fortunately again lighthouse
+
+502
+00:19:04,850 --> 00:19:07,250
+has got our back and they do this with
+
+503
+00:19:07,250 --> 00:19:08,510
+an audit that they call the critical
+
+504
+00:19:08,510 --> 00:19:11,600
+request change so here running ft.com
+
+505
+00:19:11,600 --> 00:19:12,590
+for lighthouse
+
+506
+00:19:12,590 --> 00:19:15,470
+we've identified a critical question of
+
+507
+00:19:15,470 --> 00:19:17,570
+five resources so you can do this even
+
+508
+00:19:17,570 --> 00:19:18,920
+though I just asked you to do that in
+
+509
+00:19:18,920 --> 00:19:20,720
+your head work out what your critical
+
+510
+00:19:20,720 --> 00:19:22,220
+resources are you can automate this
+
+511
+00:19:22,220 --> 00:19:25,130
+process and if I was to you were to take
+
+512
+00:19:25,130 --> 00:19:26,960
+away one thing from this talk today
+
+513
+00:19:26,960 --> 00:19:31,730
+please let it be this that you need to
+
+514
+00:19:31,730 --> 00:19:33,650
+be able to be optimizing this critical
+
+515
+00:19:33,650 --> 00:19:36,530
+request path eliminate every asset that
+
+516
+00:19:36,530 --> 00:19:38,810
+is in it that is not critical to the
+
+517
+00:19:38,810 --> 00:19:40,640
+core user experience of your website and
+
+518
+00:19:40,640 --> 00:19:43,400
+then optimize the remaining ones make
+
+519
+00:19:43,400 --> 00:19:45,740
+them as small as possible and prioritize
+
+520
+00:19:45,740 --> 00:19:48,380
+the delivery of those assets over the
+
+521
+00:19:48,380 --> 00:19:50,660
+network and that is how you will achieve
+
+522
+00:19:50,660 --> 00:19:52,580
+a very fast time to first meaningful
+
+523
+00:19:52,580 --> 00:19:56,450
+paint with your CSS so if we remember
+
+524
+00:19:56,450 --> 00:19:58,530
+the methodology for
+
+525
+00:19:58,530 --> 00:20:00,090
+meaning the times first meaningful paint
+
+526
+00:20:00,090 --> 00:20:03,450
+we also block on our metric waiting for
+
+527
+00:20:03,450 --> 00:20:06,480
+web fonts because they are delivering
+
+528
+00:20:06,480 --> 00:20:08,850
+the user experience after all and so
+
+529
+00:20:08,850 --> 00:20:11,610
+look how low down in our waterfall our
+
+530
+00:20:11,610 --> 00:20:15,090
+web font delivery is much much lower
+
+531
+00:20:15,090 --> 00:20:16,860
+than the CSS it's around the 20th
+
+532
+00:20:16,860 --> 00:20:20,610
+request now why is this if there's such
+
+533
+00:20:20,610 --> 00:20:23,010
+an important critical resource why is
+
+534
+00:20:23,010 --> 00:20:25,410
+the breyer browser prioritizing that
+
+535
+00:20:25,410 --> 00:20:27,690
+network request so low compared to some
+
+536
+00:20:27,690 --> 00:20:30,660
+of our imagery answer to do this we need
+
+537
+00:20:30,660 --> 00:20:33,240
+to take a look back at how browsers know
+
+538
+00:20:33,240 --> 00:20:34,410
+about painting again
+
+539
+00:20:34,410 --> 00:20:37,110
+first the browser discovers the H then
+
+540
+00:20:37,110 --> 00:20:39,990
+makes a network request for the HTML
+
+541
+00:20:39,990 --> 00:20:42,930
+document it begins pausing that document
+
+542
+00:20:42,930 --> 00:20:47,160
+it finds there discovers the CSS maybe
+
+543
+00:20:47,160 --> 00:20:48,600
+some JavaScript if you haven't declared
+
+544
+00:20:48,600 --> 00:20:52,380
+it as asynchronous then we have to CSS
+
+545
+00:20:52,380 --> 00:20:54,360
+can't unlike HTML can't be paused
+
+546
+00:20:54,360 --> 00:20:56,670
+incrementally ie we have to wait for all
+
+547
+00:20:56,670 --> 00:20:59,790
+of the bytes of CSS to come in before we
+
+548
+00:20:59,790 --> 00:21:01,560
+can construct the CSS object model and
+
+549
+00:21:01,560 --> 00:21:02,610
+there's a very good reason for this
+
+550
+00:21:02,610 --> 00:21:04,710
+because of the nature of the Cascade in
+
+551
+00:21:04,710 --> 00:21:06,510
+cascading style sheets that you might
+
+552
+00:21:06,510 --> 00:21:08,670
+have a style declaration down the bottom
+
+553
+00:21:08,670 --> 00:21:09,870
+of your file that is overwritten
+
+554
+00:21:09,870 --> 00:21:11,760
+something at the top and if we were to
+
+555
+00:21:11,760 --> 00:21:13,020
+part it incrementally and pink
+
+556
+00:21:13,020 --> 00:21:15,210
+incorrectly you might probably have some
+
+557
+00:21:15,210 --> 00:21:17,190
+stuff moving around so it's a very good
+
+558
+00:21:17,190 --> 00:21:19,470
+reason that CSS can't be parsley
+
+559
+00:21:19,470 --> 00:21:21,240
+incrementally you have to wait we can
+
+560
+00:21:21,240 --> 00:21:22,830
+get the CSS object model and these two
+
+561
+00:21:22,830 --> 00:21:25,830
+trees are joined together to form the
+
+562
+00:21:25,830 --> 00:21:28,140
+render tree and so it's exactly like the
+
+563
+00:21:28,140 --> 00:21:30,780
+Dom but it only contains the elements
+
+564
+00:21:30,780 --> 00:21:32,520
+that are going to be displayed on the
+
+565
+00:21:32,520 --> 00:21:34,140
+screen because you might have other
+
+566
+00:21:34,140 --> 00:21:35,970
+elements in your Dom that you've done
+
+567
+00:21:35,970 --> 00:21:37,980
+display:none on you've hidden them so
+
+568
+00:21:37,980 --> 00:21:39,750
+why does the browser need to try and
+
+569
+00:21:39,750 --> 00:21:41,970
+compute the layouts objects for those
+
+570
+00:21:41,970 --> 00:21:44,820
+when it's not going to paint them so the
+
+571
+00:21:44,820 --> 00:21:46,680
+render tree is actually what is used to
+
+572
+00:21:46,680 --> 00:21:48,540
+rasterize the page and send it and it's
+
+573
+00:21:48,540 --> 00:21:50,580
+only at this point why have I even gone
+
+574
+00:21:50,580 --> 00:21:52,680
+them on this own digression to tell you
+
+575
+00:21:52,680 --> 00:21:55,050
+this because it's only at this point
+
+576
+00:21:55,050 --> 00:21:58,200
+that the font files are found and the
+
+577
+00:21:58,200 --> 00:22:00,720
+networking for them is sense and that's
+
+578
+00:22:00,720 --> 00:22:03,270
+because you may have a whole block a
+
+579
+00:22:03,270 --> 00:22:05,580
+whole paragraph of text that have a font
+
+580
+00:22:05,580 --> 00:22:07,470
+that you've declared but you've
+
+581
+00:22:07,470 --> 00:22:09,240
+displayed none on that why should we go
+
+582
+00:22:09,240 --> 00:22:10,710
+and perform the networking for that
+
+583
+00:22:10,710 --> 00:22:12,540
+variant files by their pure nature
+
+584
+00:22:12,540 --> 00:22:15,030
+very expensive they sometimes megabytes
+
+585
+00:22:15,030 --> 00:22:17,190
+in size why should the browser perform
+
+586
+00:22:17,190 --> 00:22:18,810
+the networking for them if we're not
+
+587
+00:22:18,810 --> 00:22:20,460
+going to display them and so it's this
+
+588
+00:22:20,460 --> 00:22:22,650
+reason that the browser doesn't perform
+
+589
+00:22:22,650 --> 00:22:25,500
+networking for front until the render
+
+590
+00:22:25,500 --> 00:22:27,210
+tree is constructed but you'll notice
+
+591
+00:22:27,210 --> 00:22:29,400
+here though we've wasted an extremely
+
+592
+00:22:29,400 --> 00:22:31,980
+large amount of time waiting for that
+
+593
+00:22:31,980 --> 00:22:35,760
+period so what if we were able to hint
+
+594
+00:22:35,760 --> 00:22:38,340
+to the browser these are my critical
+
+595
+00:22:38,340 --> 00:22:40,110
+resources you're not going to find them
+
+596
+00:22:40,110 --> 00:22:41,820
+for ages because they are hidden sub
+
+597
+00:22:41,820 --> 00:22:44,160
+resource with inside the render tree but
+
+598
+00:22:44,160 --> 00:22:46,920
+I know as the author they are extremely
+
+599
+00:22:46,920 --> 00:22:49,310
+important so if you imagine the five
+
+600
+00:22:49,310 --> 00:22:51,900
+resources that lighthouse identified for
+
+601
+00:22:51,900 --> 00:22:53,850
+ft.com they're the things that we should
+
+602
+00:22:53,850 --> 00:22:54,930
+be hinting to the browser and so
+
+603
+00:22:54,930 --> 00:22:56,970
+fortunately the web performance working
+
+604
+00:22:56,970 --> 00:22:58,950
+group have defined a new API called
+
+605
+00:22:58,950 --> 00:23:02,010
+preload which allows us as the authors
+
+606
+00:23:02,010 --> 00:23:03,690
+of the page to indicate to the browser
+
+607
+00:23:03,690 --> 00:23:06,960
+the critical or safe hidden resources so
+
+608
+00:23:06,960 --> 00:23:08,820
+it can then prioritize a networking for
+
+609
+00:23:08,820 --> 00:23:11,250
+them so to put simply it provides a
+
+610
+00:23:11,250 --> 00:23:14,190
+derrick declarative fetch primitive that
+
+611
+00:23:14,190 --> 00:23:16,560
+initiates an early fetch this is the
+
+612
+00:23:16,560 --> 00:23:19,170
+most important bit separating fetch from
+
+613
+00:23:19,170 --> 00:23:21,810
+resource execution so I can now say go
+
+614
+00:23:21,810 --> 00:23:24,150
+and download this javascript file but
+
+615
+00:23:24,150 --> 00:23:25,350
+don't execute it because that would
+
+616
+00:23:25,350 --> 00:23:26,760
+probably be bad but perform the
+
+617
+00:23:26,760 --> 00:23:28,800
+networking for it because it's extremely
+
+618
+00:23:28,800 --> 00:23:31,170
+important delivery of my good user
+
+619
+00:23:31,170 --> 00:23:33,690
+experience so this is what it looks like
+
+620
+00:23:33,690 --> 00:23:36,900
+we now have three new primitives in HTML
+
+621
+00:23:36,900 --> 00:23:38,910
+at the top via the link element with a
+
+622
+00:23:38,910 --> 00:23:41,880
+rel preload attribute I think this is
+
+623
+00:23:41,880 --> 00:23:43,320
+extremely powerful we can do it
+
+624
+00:23:43,320 --> 00:23:44,790
+dynamically with JavaScript so you can
+
+625
+00:23:44,790 --> 00:23:46,980
+imagine if a user is hovering over a
+
+626
+00:23:46,980 --> 00:23:49,590
+button to open up a carousel with images
+
+627
+00:23:49,590 --> 00:23:52,080
+at that point as they hover you can
+
+628
+00:23:52,080 --> 00:23:54,360
+inject link preload elements to preload
+
+629
+00:23:54,360 --> 00:23:56,460
+all of the images so when they do click
+
+630
+00:23:56,460 --> 00:23:57,420
+on it you're going to have a
+
+631
+00:23:57,420 --> 00:23:59,700
+lightning-fast experience and finally my
+
+632
+00:23:59,700 --> 00:24:02,220
+favorite which is the preload link
+
+633
+00:24:02,220 --> 00:24:04,710
+header that often forgotten HTTP header
+
+634
+00:24:04,710 --> 00:24:08,910
+we can declare link elements essentially
+
+635
+00:24:08,910 --> 00:24:11,400
+but as headers so here with a HTTP
+
+636
+00:24:11,400 --> 00:24:13,980
+header on the response of our HTML file
+
+637
+00:24:13,980 --> 00:24:16,800
+we're telling the browser that go and
+
+638
+00:24:16,800 --> 00:24:18,780
+preload this CSS file is extremely
+
+639
+00:24:18,780 --> 00:24:21,930
+important and so going back to our
+
+640
+00:24:21,930 --> 00:24:24,240
+experiment on ftom we identified those
+
+641
+00:24:24,240 --> 00:24:26,530
+five resources so we're now going to set
+
+642
+00:24:26,530 --> 00:24:28,720
+the link preload header on the response
+
+643
+00:24:28,720 --> 00:24:31,180
+of the HTML and hit note here there's
+
+644
+00:24:31,180 --> 00:24:32,580
+two interesting points to note here that
+
+645
+00:24:32,580 --> 00:24:34,990
+fonts have to be declared as cross
+
+646
+00:24:34,990 --> 00:24:37,170
+origin even if they're on the same
+
+647
+00:24:37,170 --> 00:24:40,420
+origin or hosts because some genius
+
+648
+00:24:40,420 --> 00:24:43,120
+person many years ago deemed that all
+
+649
+00:24:43,120 --> 00:24:44,950
+fonts should be treated as crossed
+
+650
+00:24:44,950 --> 00:24:46,720
+origin for security purposes and the
+
+651
+00:24:46,720 --> 00:24:48,970
+important thing is the no push attribute
+
+652
+00:24:48,970 --> 00:24:50,440
+here I just want you to remember that
+
+653
+00:24:50,440 --> 00:24:53,020
+for later on so okay so we've applied
+
+654
+00:24:53,020 --> 00:24:54,580
+these linked headers what impact does
+
+655
+00:24:54,580 --> 00:24:55,900
+this have on our times first meaningful
+
+656
+00:24:55,900 --> 00:24:59,890
+paint so this is our waterfall before we
+
+657
+00:24:59,890 --> 00:25:02,080
+apply them remember the how the fonts
+
+658
+00:25:02,080 --> 00:25:03,640
+are so lowdown because they're not
+
+659
+00:25:03,640 --> 00:25:04,900
+discovered until the render tree
+
+660
+00:25:04,900 --> 00:25:08,050
+construction and by applying the link
+
+661
+00:25:08,050 --> 00:25:09,730
+headers we've been able to tell the
+
+662
+00:25:09,730 --> 00:25:12,190
+browser these are my critical resources
+
+663
+00:25:12,190 --> 00:25:14,680
+and we've instantly shifted them up so
+
+664
+00:25:14,680 --> 00:25:16,270
+hopefully you're now beginning to
+
+665
+00:25:16,270 --> 00:25:17,740
+understand what impact is going to have
+
+666
+00:25:17,740 --> 00:25:19,050
+on our time too first meaningful paint
+
+667
+00:25:19,050 --> 00:25:22,030
+that's given us a 64 percent improvement
+
+668
+00:25:22,030 --> 00:25:24,430
+on our baseline now we've hit our budget
+
+669
+00:25:24,430 --> 00:25:26,830
+for cable over thousand milliseconds and
+
+670
+00:25:26,830 --> 00:25:29,410
+we're very very close now on 3G on an
+
+671
+00:25:29,410 --> 00:25:33,700
+emerging market connection so again this
+
+672
+00:25:33,700 --> 00:25:37,660
+comes of some pros and cons it gives us
+
+673
+00:25:37,660 --> 00:25:39,280
+a way of indicating the hidden resources
+
+674
+00:25:39,280 --> 00:25:42,460
+we can now dictate the priority by order
+
+675
+00:25:42,460 --> 00:25:43,630
+sorry that's a very important thing to
+
+676
+00:25:43,630 --> 00:25:46,540
+note is that the order of these headers
+
+677
+00:25:46,540 --> 00:25:50,650
+also dictates their priority in which
+
+678
+00:25:50,650 --> 00:25:52,420
+the browser will perform the networking
+
+679
+00:25:52,420 --> 00:25:55,570
+for them so does their relation of style
+
+680
+00:25:55,570 --> 00:26:01,840
+and font and the con here though is very
+
+681
+00:26:01,840 --> 00:26:03,400
+easy to create contention on the network
+
+682
+00:26:03,400 --> 00:26:05,200
+with great power comes great
+
+683
+00:26:05,200 --> 00:26:08,320
+responsibility if you were just to set a
+
+684
+00:26:08,320 --> 00:26:10,600
+preload header for every single asset on
+
+685
+00:26:10,600 --> 00:26:12,850
+your page you're actually not allowing
+
+686
+00:26:12,850 --> 00:26:14,590
+the browser to do what it's very good at
+
+687
+00:26:14,590 --> 00:26:16,810
+doing using its preload scanner or
+
+688
+00:26:16,810 --> 00:26:18,700
+speculative posture to go and find and
+
+689
+00:26:18,700 --> 00:26:21,730
+prioritize assets so only use this
+
+690
+00:26:21,730 --> 00:26:23,740
+technique for your critical resources
+
+691
+00:26:23,740 --> 00:26:26,770
+that you've identified so we could just
+
+692
+00:26:26,770 --> 00:26:29,830
+stop there right we've improved our TTS
+
+693
+00:26:29,830 --> 00:26:33,250
+MP by 64 percent but surely we can do
+
+694
+00:26:33,250 --> 00:26:36,190
+more and this is where HTTP 2 new
+
+695
+00:26:36,190 --> 00:26:38,160
+feature could serve a push come
+
+696
+00:26:38,160 --> 00:26:41,910
+to play but it is now over 20 years it's
+
+697
+00:26:41,910 --> 00:26:43,950
+the first time in over 20 years that we
+
+698
+00:26:43,950 --> 00:26:45,600
+have a new version of the underlying
+
+699
+00:26:45,600 --> 00:26:47,550
+transfer protocol of the internet called
+
+700
+00:26:47,550 --> 00:26:50,070
+HSB 2 and I could literally do a whole
+
+701
+00:26:50,070 --> 00:26:52,860
+talk just on H 2 and push in itself and
+
+702
+00:26:52,860 --> 00:26:54,960
+but I don't have the time to the up for
+
+703
+00:26:54,960 --> 00:26:56,700
+one but I urge you to go and check it
+
+704
+00:26:56,700 --> 00:26:58,050
+out and the question on rely class who
+
+705
+00:26:58,050 --> 00:27:02,820
+is using HP 2 in production ok so it's
+
+706
+00:27:02,820 --> 00:27:04,740
+about 30% of the room from looks things
+
+707
+00:27:04,740 --> 00:27:07,590
+which is bit lower than I was hoping but
+
+708
+00:27:07,590 --> 00:27:11,130
+that's still very good so to understand
+
+709
+00:27:11,130 --> 00:27:15,300
+well that was a bit weird I've broken an
+
+710
+00:27:15,300 --> 00:27:17,730
+animation so and to understand what push
+
+711
+00:27:17,730 --> 00:27:19,380
+does let's look at again how your
+
+712
+00:27:19,380 --> 00:27:21,360
+average web page is constructed first we
+
+713
+00:27:21,360 --> 00:27:23,700
+make the get request to the index file
+
+714
+00:27:23,700 --> 00:27:26,100
+the server responds with the response
+
+715
+00:27:26,100 --> 00:27:27,660
+for that index file we pause the
+
+716
+00:27:27,660 --> 00:27:29,640
+document we find the link element we go
+
+717
+00:27:29,640 --> 00:27:31,080
+and make the request for the CSS file
+
+718
+00:27:31,080 --> 00:27:37,350
+and the server response of that but what
+
+719
+00:27:37,350 --> 00:27:40,590
+if we the server knows as the authors of
+
+720
+00:27:40,590 --> 00:27:43,110
+the website we know that the next item
+
+721
+00:27:43,110 --> 00:27:45,750
+or sorry resource that the client is
+
+722
+00:27:45,750 --> 00:27:47,550
+going to request is that CSS file
+
+723
+00:27:47,550 --> 00:27:48,810
+because we know it has the highest
+
+724
+00:27:48,810 --> 00:27:51,150
+priorities so what as an author we could
+
+725
+00:27:51,150 --> 00:27:54,570
+dictate to the client I am going to push
+
+726
+00:27:54,570 --> 00:27:56,910
+you these with the CSS file you don't
+
+727
+00:27:56,910 --> 00:27:58,860
+need to request it and this is where the
+
+728
+00:27:58,860 --> 00:28:00,630
+push promise frame comes in so it's a
+
+729
+00:28:00,630 --> 00:28:03,210
+data payload on a HTTP 2 connection that
+
+730
+00:28:03,210 --> 00:28:05,340
+the server says I am going to send you
+
+731
+00:28:05,340 --> 00:28:06,810
+the bytes for the CSS file you don't
+
+732
+00:28:06,810 --> 00:28:09,270
+need to request this then we can push
+
+733
+00:28:09,270 --> 00:28:11,430
+the index file and push the CSS down so
+
+734
+00:28:11,430 --> 00:28:13,320
+we're eliminating the round-trip
+
+735
+00:28:13,320 --> 00:28:16,680
+completely to request that CSS file so
+
+736
+00:28:16,680 --> 00:28:18,090
+now we can do this with h2
+
+737
+00:28:18,090 --> 00:28:22,350
+programmatically using our friend the
+
+738
+00:28:22,350 --> 00:28:24,440
+link preload header here this is the
+
+739
+00:28:24,440 --> 00:28:26,910
+semantics that we've decided upon as an
+
+740
+00:28:26,910 --> 00:28:29,520
+industry so now if going back to our SD
+
+741
+00:28:29,520 --> 00:28:32,280
+comm example we can remove our inline
+
+742
+00:28:32,280 --> 00:28:34,590
+CSS now and we can declare it just as a
+
+743
+00:28:34,590 --> 00:28:36,420
+normal style sheet that declared the
+
+744
+00:28:36,420 --> 00:28:38,460
+secondary the non-critical CSS is
+
+745
+00:28:38,460 --> 00:28:41,160
+asynchronous using preload and then tell
+
+746
+00:28:41,160 --> 00:28:43,560
+our hb2 server you have to have a h2
+
+747
+00:28:43,560 --> 00:28:45,630
+server enabled for this behavior to work
+
+748
+00:28:45,630 --> 00:28:48,210
+that I want you to push the critical CSS
+
+749
+00:28:48,210 --> 00:28:49,830
+and how we're doing that it's just we've
+
+750
+00:28:49,830 --> 00:28:50,950
+removed that no
+
+751
+00:28:50,950 --> 00:28:52,299
+push directive that I told you to
+
+752
+00:28:52,299 --> 00:28:54,789
+remember about earlier on so hex to
+
+753
+00:28:54,789 --> 00:28:56,889
+server will see this response it would
+
+754
+00:28:56,889 --> 00:28:58,630
+say right that author wants me to push
+
+755
+00:28:58,630 --> 00:29:00,669
+all of these resources and it will push
+
+756
+00:29:00,669 --> 00:29:04,149
+the critical CSS bytes down so let's
+
+757
+00:29:04,149 --> 00:29:05,769
+take a closer look at what's actually
+
+758
+00:29:05,769 --> 00:29:08,320
+happening on the network before we apply
+
+759
+00:29:08,320 --> 00:29:10,929
+this optimization and note that we have
+
+760
+00:29:10,929 --> 00:29:14,260
+idle time before we get our HTML bytes
+
+761
+00:29:14,260 --> 00:29:15,820
+that's when the browser has made the
+
+762
+00:29:15,820 --> 00:29:17,559
+request but we're waiting for the server
+
+763
+00:29:17,559 --> 00:29:19,899
+to respond of it at the beginning then
+
+764
+00:29:19,899 --> 00:29:21,730
+we have a very fast start render because
+
+765
+00:29:21,730 --> 00:29:24,789
+we've in lined our critical CSS then the
+
+766
+00:29:24,789 --> 00:29:26,590
+browser has some think time again it
+
+767
+00:29:26,590 --> 00:29:28,480
+then requests the main CSS file and
+
+768
+00:29:28,480 --> 00:29:31,230
+there's our x first meaningful paint now
+
+769
+00:29:31,230 --> 00:29:33,070
+then what you're going to think is going
+
+770
+00:29:33,070 --> 00:29:34,299
+to happen here but you may be a little
+
+771
+00:29:34,299 --> 00:29:36,700
+bit surprised as the impact of pushing
+
+772
+00:29:36,700 --> 00:29:38,710
+our critical CSS says removing it from
+
+773
+00:29:38,710 --> 00:29:43,090
+inline and pushing it we've actually had
+
+774
+00:29:43,090 --> 00:29:45,070
+a negative impact on the x first
+
+775
+00:29:45,070 --> 00:29:50,679
+meaningful paint and why is this we're
+
+776
+00:29:50,679 --> 00:29:52,210
+not using the idle time at the beginning
+
+777
+00:29:52,210 --> 00:29:53,950
+of the connection and to understand why
+
+778
+00:29:53,950 --> 00:29:55,450
+this is we have to have a bit of better
+
+779
+00:29:55,450 --> 00:29:56,980
+understanding what's actually happening
+
+780
+00:29:56,980 --> 00:29:59,710
+on the HTTP 2 server here HT servers use
+
+781
+00:29:59,710 --> 00:30:02,799
+a prioritization tree to determine which
+
+782
+00:30:02,799 --> 00:30:04,960
+the order of which the packets is going
+
+783
+00:30:04,960 --> 00:30:07,029
+to send down the connection and even
+
+784
+00:30:07,029 --> 00:30:09,580
+though we told our Haiti to server to
+
+785
+00:30:09,580 --> 00:30:12,970
+push the CSS via our link header because
+
+786
+00:30:12,970 --> 00:30:15,130
+we actually did it on the response of
+
+787
+00:30:15,130 --> 00:30:18,220
+the HTML document the server had all of
+
+788
+00:30:18,220 --> 00:30:20,320
+the HTML and HTML has a much higher
+
+789
+00:30:20,320 --> 00:30:23,559
+priority than CSS does so of course it's
+
+790
+00:30:23,559 --> 00:30:25,480
+going to flush all of the HTML bytes
+
+791
+00:30:25,480 --> 00:30:27,309
+down the connection before it did our
+
+792
+00:30:27,309 --> 00:30:29,559
+critical CSS even though actually what
+
+793
+00:30:29,559 --> 00:30:32,019
+we wanted it to do is flush the CSS in
+
+794
+00:30:32,019 --> 00:30:33,970
+our idle time whilst we were waiting for
+
+795
+00:30:33,970 --> 00:30:36,279
+our HTML connection and I must stress
+
+796
+00:30:36,279 --> 00:30:37,510
+here that this behavior is slightly
+
+797
+00:30:37,510 --> 00:30:40,120
+different depending on your HDTV server
+
+798
+00:30:40,120 --> 00:30:42,279
+implementation but all of the major h2
+
+799
+00:30:42,279 --> 00:30:44,799
+service at the moment prioritize and
+
+800
+00:30:44,799 --> 00:30:47,769
+quite rightly prioritized HTML over CSS
+
+801
+00:30:47,769 --> 00:30:50,440
+on the connection and so this is the
+
+802
+00:30:50,440 --> 00:30:52,450
+impact it has on our waterfall now it's
+
+803
+00:30:52,450 --> 00:30:53,740
+really interesting thing here to note is
+
+804
+00:30:53,740 --> 00:30:56,350
+the critical CSS doesn't have a light
+
+805
+00:30:56,350 --> 00:30:58,840
+green segment beforehand because it
+
+806
+00:30:58,840 --> 00:31:00,490
+didn't need to send the request and
+
+807
+00:31:00,490 --> 00:31:02,320
+therefore was there was no waiting for
+
+808
+00:31:02,320 --> 00:31:04,270
+it so this is the benefit that we get
+
+809
+00:31:04,270 --> 00:31:06,160
+from push is that we're reducing the
+
+810
+00:31:06,160 --> 00:31:07,630
+idler time from the request to the
+
+811
+00:31:07,630 --> 00:31:10,210
+response but it's we're not getting our
+
+812
+00:31:10,210 --> 00:31:12,280
+CSS delivered at the point that we want
+
+813
+00:31:12,280 --> 00:31:14,590
+it to in the light blue area of our HTML
+
+814
+00:31:14,590 --> 00:31:18,790
+and it's also important to note if you
+
+815
+00:31:18,790 --> 00:31:22,059
+weren't in lining your CSS and many of
+
+816
+00:31:22,059 --> 00:31:23,290
+you probably aren't this is still quite
+
+817
+00:31:23,290 --> 00:31:24,820
+a very good technique because you are
+
+818
+00:31:24,820 --> 00:31:30,040
+saving that that request time so we've
+
+819
+00:31:30,040 --> 00:31:31,929
+had a negative impact on our time to
+
+820
+00:31:31,929 --> 00:31:33,850
+first meaningful paint here only 43
+
+821
+00:31:33,850 --> 00:31:35,290
+percent improvement on our baseline
+
+822
+00:31:35,290 --> 00:31:40,929
+we've gone back to 5,000 milliseconds so
+
+823
+00:31:40,929 --> 00:31:43,540
+the question I'm asking is should we be
+
+824
+00:31:43,540 --> 00:31:45,730
+using server push at all actually we're
+
+825
+00:31:45,730 --> 00:31:48,100
+having a negative impact and most
+
+826
+00:31:48,100 --> 00:31:51,220
+importantly is using the link header
+
+827
+00:31:51,220 --> 00:31:53,920
+with a rel preload actually much too
+
+828
+00:31:53,920 --> 00:31:56,650
+late in the connection state for us to
+
+829
+00:31:56,650 --> 00:31:58,990
+indicate the CSS that we want you to
+
+830
+00:31:58,990 --> 00:32:02,620
+push and so how can we actually achieve
+
+831
+00:32:02,620 --> 00:32:04,960
+that holy grail of pushing our critical
+
+832
+00:32:04,960 --> 00:32:07,360
+CSS only in the server idle time and
+
+833
+00:32:07,360 --> 00:32:09,520
+this is what firstly at fastly sorry
+
+834
+00:32:09,520 --> 00:32:12,309
+we're calling async push so let's look
+
+835
+00:32:12,309 --> 00:32:14,200
+at that network utilization again from
+
+836
+00:32:14,200 --> 00:32:16,150
+my experiment and note at the beginning
+
+837
+00:32:16,150 --> 00:32:18,490
+we have that idle time waiting for the
+
+838
+00:32:18,490 --> 00:32:19,960
+server to respond it's probably
+
+839
+00:32:19,960 --> 00:32:22,150
+performing the templating going and
+
+840
+00:32:22,150 --> 00:32:23,620
+requesting your user data from your
+
+841
+00:32:23,620 --> 00:32:26,110
+database is that this server think time
+
+842
+00:32:26,110 --> 00:32:28,510
+that we want to be using to be pushing
+
+843
+00:32:28,510 --> 00:32:31,000
+our static assets and so a much more
+
+844
+00:32:31,000 --> 00:32:32,559
+common architecture that probably many
+
+845
+00:32:32,559 --> 00:32:34,720
+in the you in the room are using is that
+
+846
+00:32:34,720 --> 00:32:36,309
+you have your application server is
+
+847
+00:32:36,309 --> 00:32:39,130
+actually separate from your HTTP server
+
+848
+00:32:39,130 --> 00:32:41,320
+think you probably use nginx or Apache
+
+849
+00:32:41,320 --> 00:32:43,870
+you might use a CDN for instance and so
+
+850
+00:32:43,870 --> 00:32:46,150
+this is the request flow that the index
+
+851
+00:32:46,150 --> 00:32:47,830
+file goes through and then we get
+
+852
+00:32:47,830 --> 00:32:51,280
+response and what if that server was
+
+853
+00:32:51,280 --> 00:32:53,200
+able during an application think time
+
+854
+00:32:53,200 --> 00:32:56,320
+was able to push the critical resource
+
+855
+00:32:56,320 --> 00:32:58,330
+at that time this is the think time that
+
+856
+00:32:58,330 --> 00:33:00,100
+we want to be using so here's an example
+
+857
+00:33:00,100 --> 00:33:02,500
+of doing that using an Express style
+
+858
+00:33:02,500 --> 00:33:05,530
+request handler using HC and knows HTTP
+
+859
+00:33:05,530 --> 00:33:07,690
+- implementation the important point to
+
+860
+00:33:07,690 --> 00:33:09,160
+note here is not the implementation of
+
+861
+00:33:09,160 --> 00:33:11,050
+but what we're doing at the beginning of
+
+862
+00:33:11,050 --> 00:33:12,910
+the request the first thing we're doing
+
+863
+00:33:12,910 --> 00:33:16,240
+is flushing our critical CSS via push
+
+864
+00:33:16,240 --> 00:33:18,130
+down the network connection
+
+865
+00:33:18,130 --> 00:33:20,590
+then we go and do our templating and
+
+866
+00:33:20,590 --> 00:33:23,200
+fetching from our rendering and then we
+
+867
+00:33:23,200 --> 00:33:25,330
+respond with our link headers and this
+
+868
+00:33:25,330 --> 00:33:27,580
+is how we can utilize that idle
+
+869
+00:33:27,580 --> 00:33:30,100
+connection time and so what happens to
+
+870
+00:33:30,100 --> 00:33:32,559
+our connection state here now is we've
+
+871
+00:33:32,559 --> 00:33:35,320
+we've reached the holy grail we've been
+
+872
+00:33:35,320 --> 00:33:37,570
+able to push our critical CSS in the
+
+873
+00:33:37,570 --> 00:33:40,030
+light blue area whilst the server is
+
+874
+00:33:40,030 --> 00:33:41,950
+still thinking we've given the browser
+
+875
+00:33:41,950 --> 00:33:45,070
+everything it needs way before it even
+
+876
+00:33:45,070 --> 00:33:48,250
+gets any HTML to style and paint your
+
+877
+00:33:48,250 --> 00:33:51,809
+entire document so now we have a 65%
+
+878
+00:33:51,809 --> 00:33:54,370
+improvement on our baseline we've
+
+879
+00:33:54,370 --> 00:33:56,650
+reached that holy grail so this comes of
+
+880
+00:33:56,650 --> 00:33:58,600
+some pros and some cons obviously that
+
+881
+00:33:58,600 --> 00:34:00,429
+we're using that idle time but it's very
+
+882
+00:34:00,429 --> 00:34:02,350
+easy to create contention with push and
+
+883
+00:34:02,350 --> 00:34:04,030
+there's limited availability of this
+
+884
+00:34:04,030 --> 00:34:05,950
+because you have to have access to the
+
+885
+00:34:05,950 --> 00:34:07,330
+network connection within your server to
+
+886
+00:34:07,330 --> 00:34:11,560
+be able to do this and hopefully many of
+
+887
+00:34:11,560 --> 00:34:13,179
+the room thinking but what about the
+
+888
+00:34:13,179 --> 00:34:15,340
+repeat view every one of our tests has
+
+889
+00:34:15,340 --> 00:34:18,609
+been the first view the uncashed the
+
+890
+00:34:18,609 --> 00:34:20,169
+browser doesn't have anything cached and
+
+891
+00:34:20,169 --> 00:34:21,820
+that's what we should be optimizing for
+
+892
+00:34:21,820 --> 00:34:23,260
+for our time first meaningful paint but
+
+893
+00:34:23,260 --> 00:34:26,230
+with push if I was the user was then to
+
+894
+00:34:26,230 --> 00:34:28,030
+visit the next page on my website and I
+
+895
+00:34:28,030 --> 00:34:29,679
+was going to push those bytes we've
+
+896
+00:34:29,679 --> 00:34:31,690
+actually the browser's probably got that
+
+897
+00:34:31,690 --> 00:34:33,609
+asset cached already but we've got no
+
+898
+00:34:33,609 --> 00:34:36,280
+way of indicating to the server that we
+
+899
+00:34:36,280 --> 00:34:38,619
+have that CSS so please don't push it to
+
+900
+00:34:38,619 --> 00:34:41,409
+me and I did want to show you how to do
+
+901
+00:34:41,409 --> 00:34:42,760
+this using new technology such as
+
+902
+00:34:42,760 --> 00:34:45,010
+serviceworkers and the purple pattern
+
+903
+00:34:45,010 --> 00:34:47,409
+but unfortunately I've ran out of time
+
+904
+00:34:47,409 --> 00:34:49,840
+today but the good news is adios money
+
+905
+00:34:49,840 --> 00:34:52,030
+is from Google is going to be talking
+
+906
+00:34:52,030 --> 00:34:53,679
+exactly about these types of patterns
+
+907
+00:34:53,679 --> 00:34:55,659
+and how you can optimize for time to add
+
+908
+00:34:55,659 --> 00:34:57,880
+interactivity on your repeats view at
+
+909
+00:34:57,880 --> 00:35:00,700
+jazzpunk for this weekend so let's look
+
+910
+00:35:00,700 --> 00:35:02,800
+at the final results and I think it's
+
+911
+00:35:02,800 --> 00:35:05,320
+better to show you to them as how the
+
+912
+00:35:05,320 --> 00:35:06,940
+user is perceiving this now with our
+
+913
+00:35:06,940 --> 00:35:09,040
+async push example down the bottom all
+
+914
+00:35:09,040 --> 00:35:10,840
+the way up to the baseline we've been
+
+915
+00:35:10,840 --> 00:35:13,210
+able to improve the delivery on a 3G
+
+916
+00:35:13,210 --> 00:35:16,240
+emerging-market connection by over 3,000
+
+917
+00:35:16,240 --> 00:35:17,590
+milliseconds which is staggering
+
+918
+00:35:17,590 --> 00:35:26,940
+improvement for our performance
+
+919
+00:35:26,950 --> 00:35:29,240
+okay so finally I just wanted to leave
+
+920
+00:35:29,240 --> 00:35:30,500
+you with some glimpse of what the future
+
+921
+00:35:30,500 --> 00:35:32,030
+is happening we've now got strong
+
+922
+00:35:32,030 --> 00:35:35,540
+toolbox of AP is preload HTTP push and
+
+923
+00:35:35,540 --> 00:35:37,730
+inlining but there's still some issues
+
+924
+00:35:37,730 --> 00:35:39,470
+of each of those that I outlined the
+
+925
+00:35:39,470 --> 00:35:42,410
+biggest weakness of server push as we
+
+926
+00:35:42,410 --> 00:35:44,330
+mentioned is that by indicating that
+
+927
+00:35:44,330 --> 00:35:46,550
+push via link preload header is that
+
+928
+00:35:46,550 --> 00:35:48,440
+that initiation of the push is much too
+
+929
+00:35:48,440 --> 00:35:49,880
+late in the network connection and we
+
+930
+00:35:49,880 --> 00:35:51,710
+end up in just in the network and this
+
+931
+00:35:51,710 --> 00:35:54,500
+is where my colleague Kazuo firstly we
+
+932
+00:35:54,500 --> 00:35:56,450
+now have a working draft in the ITF of
+
+933
+00:35:56,450 --> 00:36:00,470
+the 103 early hint status code the 100
+
+934
+00:36:00,470 --> 00:36:02,060
+range a lot of people didn't even know
+
+935
+00:36:02,060 --> 00:36:04,160
+existed it's the information status code
+
+936
+00:36:04,160 --> 00:36:05,720
+range and we can now have this pattern
+
+937
+00:36:05,720 --> 00:36:07,400
+where the client requested something
+
+938
+00:36:07,400 --> 00:36:09,410
+from the server and whilst the server is
+
+939
+00:36:09,410 --> 00:36:11,450
+generating the response it can flush an
+
+940
+00:36:11,450 --> 00:36:14,810
+early hint response containing link
+
+941
+00:36:14,810 --> 00:36:16,490
+headers to all of your critical sub
+
+942
+00:36:16,490 --> 00:36:18,380
+resources and then the browser can go
+
+943
+00:36:18,380 --> 00:36:20,180
+and prioritize the networking for them
+
+944
+00:36:20,180 --> 00:36:22,910
+and finally the cache digest
+
+945
+00:36:22,910 --> 00:36:24,680
+specification remember I mentioned that
+
+946
+00:36:24,680 --> 00:36:27,200
+the repeat view of push we have no way
+
+947
+00:36:27,200 --> 00:36:29,060
+of indicating to the browser what we
+
+948
+00:36:29,060 --> 00:36:31,670
+have in a cache for our CSS for that
+
+949
+00:36:31,670 --> 00:36:35,060
+domain and so now on a h2 connection the
+
+950
+00:36:35,060 --> 00:36:37,040
+client is going to be able to send via
+
+951
+00:36:37,040 --> 00:36:40,010
+cache digest frame or a header all of
+
+952
+00:36:40,010 --> 00:36:41,750
+the files that it has for that host name
+
+953
+00:36:41,750 --> 00:36:43,940
+and then the server can decide ok I'm
+
+954
+00:36:43,940 --> 00:36:45,650
+not going to send you that CSS file
+
+955
+00:36:45,650 --> 00:36:47,360
+because I know you already have it in
+
+956
+00:36:47,360 --> 00:36:49,550
+its cache and I think this in itself is
+
+957
+00:36:49,550 --> 00:36:50,780
+going to be one of the most powerful
+
+958
+00:36:50,780 --> 00:36:52,850
+performance optimizations in the future
+
+959
+00:36:52,850 --> 00:36:54,170
+of the next five years as it gets
+
+960
+00:36:54,170 --> 00:36:57,230
+implemented in browsers so that's been a
+
+961
+00:36:57,230 --> 00:36:58,790
+whirlwind tour I've gone five minutes
+
+962
+00:36:58,790 --> 00:37:00,140
+over my slots
+
+963
+00:37:00,140 --> 00:37:02,420
+I'm very sorry my lovely CSS conference
+
+964
+00:37:02,420 --> 00:37:04,670
+organizers so I just wanted to leave you
+
+965
+00:37:04,670 --> 00:37:06,800
+for the last points and takeaways and
+
+966
+00:37:06,800 --> 00:37:08,810
+that is that hopefully you found that
+
+967
+00:37:08,810 --> 00:37:11,210
+resource loading in the browser is hard
+
+968
+00:37:11,210 --> 00:37:13,610
+it's much harder than you probably
+
+969
+00:37:13,610 --> 00:37:15,800
+thought it was bandwidth is often
+
+970
+00:37:15,800 --> 00:37:18,440
+underutilized but we have technologies
+
+971
+00:37:18,440 --> 00:37:20,990
+now emerging to enable us to give that
+
+972
+00:37:20,990 --> 00:37:23,570
+utilization to the browser identify your
+
+973
+00:37:23,570 --> 00:37:25,190
+critical resources and your request
+
+974
+00:37:25,190 --> 00:37:28,040
+chains use preload to indicate those
+
+975
+00:37:28,040 --> 00:37:29,360
+critical resources to the browser
+
+976
+00:37:29,360 --> 00:37:31,670
+especially your fonts if you're using
+
+977
+00:37:31,670 --> 00:37:34,160
+custom web fonts and push your critical
+
+978
+00:37:34,160 --> 00:37:36,740
+CSS but only in first view and please
+
+979
+00:37:36,740 --> 00:37:39,020
+try and only used within that idle
+
+980
+00:37:39,020 --> 00:37:41,270
+connection time but most importantly
+
+981
+00:37:41,270 --> 00:37:44,210
+always be testing it's the most
+
+982
+00:37:44,210 --> 00:37:46,610
+important thing to leave you with thank
+
+983
+00:37:46,610 --> 00:37:47,940
+you very much
+
+984
+00:37:47,940 --> 00:37:50,040
+[Applause]
+
+985
+00:37:50,040 --> 00:37:51,140
+[Music]
+
+986
+00:37:51,140 --> 00:37:53,980
+[Applause]
+

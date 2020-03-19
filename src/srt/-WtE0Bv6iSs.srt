@@ -1,0 +1,2573 @@
+1
+00:00:10,340 --> 00:00:13,950
+
+hello everyone my name is Johan I'd like
+
+2
+00:00:13,950 --> 00:00:15,299
+to talk about webassembly today and
+
+3
+00:00:15,299 --> 00:00:17,609
+specifically how you can put webassembly
+
+4
+00:00:17,609 --> 00:00:21,510
+in your web app in and I mean kind of
+
+5
+00:00:21,510 --> 00:00:23,189
+real world web assembly in your real
+
+6
+00:00:23,189 --> 00:00:25,740
+world web app although my webs gonna be
+
+7
+00:00:25,740 --> 00:00:29,369
+a demo one but anyway so I'm part Fox
+
+8
+00:00:29,369 --> 00:00:31,590
+developer at Mozilla I work in the
+
+9
+00:00:31,590 --> 00:00:33,600
+security engineering team I don't really
+
+10
+00:00:33,600 --> 00:00:36,300
+work on web assembly but I am a big
+
+11
+00:00:36,300 --> 00:00:39,450
+enthusiast and I follow it closely
+
+12
+00:00:39,450 --> 00:00:42,690
+last year I was here and talked about
+
+13
+00:00:42,690 --> 00:00:44,640
+web assembly - and I talked about the
+
+14
+00:00:44,640 --> 00:00:46,079
+web assembly text format and the web
+
+15
+00:00:46,079 --> 00:00:47,610
+simply binary format and how the two
+
+16
+00:00:47,610 --> 00:00:49,530
+like are related to each other and what
+
+17
+00:00:49,530 --> 00:00:50,969
+we did this is so this is a lot of code
+
+18
+00:00:50,969 --> 00:00:52,110
+you don't have to take it all in but
+
+19
+00:00:52,110 --> 00:00:55,559
+what we did was we looked at the like we
+
+20
+00:00:55,559 --> 00:00:58,079
+hand wrote some Cup some custom wasm
+
+21
+00:00:58,079 --> 00:01:00,750
+code that added two numbers and you can
+
+22
+00:01:00,750 --> 00:01:02,879
+see on the left hand side and then we
+
+23
+00:01:02,879 --> 00:01:05,790
+included it in our JavaScript app with
+
+24
+00:01:05,790 --> 00:01:07,740
+this very boilerplate code here and it
+
+25
+00:01:07,740 --> 00:01:09,150
+also has some logging in there so I just
+
+26
+00:01:09,150 --> 00:01:11,369
+find a copy pasted exactly the code that
+
+27
+00:01:11,369 --> 00:01:13,979
+we used back then and I totally
+
+28
+00:01:13,979 --> 00:01:15,540
+understood when a lot of you came to me
+
+29
+00:01:15,540 --> 00:01:18,689
+and also during the talk asked so this
+
+30
+00:01:18,689 --> 00:01:20,970
+is not really ready for production usage
+
+31
+00:01:20,970 --> 00:01:24,630
+right and it's true it wasn't there was
+
+32
+00:01:24,630 --> 00:01:27,330
+so back then you could I think it was a
+
+33
+00:01:27,330 --> 00:01:28,829
+point where you could already compile it
+
+34
+00:01:28,829 --> 00:01:30,329
+with a rust compiler for example if you
+
+35
+00:01:30,329 --> 00:01:35,000
+were if you wanted to use rust which
+
+36
+00:01:35,000 --> 00:01:37,799
+which also worked kind of okay so you
+
+37
+00:01:37,799 --> 00:01:39,500
+had to do the same kind of fetch e
+
+38
+00:01:39,500 --> 00:01:42,600
+webassembly api boilerplate and
+
+39
+00:01:42,600 --> 00:01:45,270
+satiation and then you have the same
+
+40
+00:01:45,270 --> 00:01:46,799
+limitations that you had with a web
+
+41
+00:01:46,799 --> 00:01:48,899
+assembly text code - so these
+
+42
+00:01:48,899 --> 00:01:50,070
+limitations are pretty gray if you can
+
+43
+00:01:50,070 --> 00:01:53,729
+only pass in numbers to like pass back
+
+44
+00:01:53,729 --> 00:01:55,409
+and forth numbers between web assembly
+
+45
+00:01:55,409 --> 00:01:58,079
+MJS and all other communication needs to
+
+46
+00:01:58,079 --> 00:02:00,750
+go through like shared memory buffers
+
+47
+00:02:00,750 --> 00:02:03,810
+like a big heap that has just I'd erase
+
+48
+00:02:03,810 --> 00:02:05,969
+in it well that you can allocate by the
+
+49
+00:02:05,969 --> 00:02:09,539
+radar but byte arrays on it and that is
+
+50
+00:02:09,539 --> 00:02:12,510
+very inconvenient and a lot of you said
+
+51
+00:02:12,510 --> 00:02:13,450
+that last time and I said
+
+52
+00:02:13,450 --> 00:02:15,520
+last time too so a year later we're here
+
+53
+00:02:15,520 --> 00:02:18,129
+and we have a new cool tool which is
+
+54
+00:02:18,129 --> 00:02:20,739
+called wasn't vine gem it's by my
+
+55
+00:02:20,739 --> 00:02:25,239
+amazing colleagues colleague Alex and he
+
+56
+00:02:25,239 --> 00:02:27,400
+wrote this tool to enable this sort of
+
+57
+00:02:27,400 --> 00:02:29,950
+higher level interactions between wazzle
+
+58
+00:02:29,950 --> 00:02:32,430
+and Jas that we didn't have previously
+
+59
+00:02:32,430 --> 00:02:34,569
+and what it does it automatically
+
+60
+00:02:34,569 --> 00:02:37,090
+generates the sort of Jas glue and it
+
+61
+00:02:37,090 --> 00:02:38,860
+only works in rust for now which is why
+
+62
+00:02:38,860 --> 00:02:40,030
+I'm going to do the demo that I'm going
+
+63
+00:02:40,030 --> 00:02:42,190
+to do soon and rust and this talk is
+
+64
+00:02:42,190 --> 00:02:44,950
+literally going to be 90% me demoing how
+
+65
+00:02:44,950 --> 00:02:46,780
+this Tool Works inviting setup for it so
+
+66
+00:02:46,780 --> 00:02:51,040
+I hope you are hearing for that yeah a
+
+67
+00:02:51,040 --> 00:02:52,480
+couple things you will need or we will
+
+68
+00:02:52,480 --> 00:02:54,819
+need for this and what I mean when I you
+
+69
+00:02:54,819 --> 00:02:56,500
+know in the first slide wrote from
+
+70
+00:02:56,500 --> 00:02:58,269
+scratch I mean you know from scratch we
+
+71
+00:02:58,269 --> 00:03:00,370
+don't I don't expect you to have well
+
+72
+00:03:00,370 --> 00:03:01,239
+although the rust knowledge would be
+
+73
+00:03:01,239 --> 00:03:04,239
+good but like no you should have a UNIX
+
+74
+00:03:04,239 --> 00:03:06,790
+computer that's kind of all and these
+
+75
+00:03:06,790 --> 00:03:08,140
+are the things you need to install them
+
+76
+00:03:08,140 --> 00:03:10,690
+and these should work out of the box and
+
+77
+00:03:10,690 --> 00:03:12,700
+then you're set right you can do it on
+
+78
+00:03:12,700 --> 00:03:14,650
+your developer machine you can integrate
+
+79
+00:03:14,650 --> 00:03:16,660
+the stuff into your existing project
+
+80
+00:03:16,660 --> 00:03:18,400
+like this and there is no extra magic
+
+81
+00:03:18,400 --> 00:03:21,130
+required if you don't have a UNIX
+
+82
+00:03:21,130 --> 00:03:23,440
+machine if you if you don't have the
+
+83
+00:03:23,440 --> 00:03:25,299
+time to download all the stuff from from
+
+84
+00:03:25,299 --> 00:03:27,609
+the conference Wi-Fi there's a really
+
+85
+00:03:27,609 --> 00:03:30,940
+cool web app which just launched it's
+
+86
+00:03:30,940 --> 00:03:32,500
+written by my awesome buddy colleagues
+
+87
+00:03:32,500 --> 00:03:35,230
+Michael and Yuri and it's it's amazing
+
+88
+00:03:35,230 --> 00:03:36,430
+it's called webassembly
+
+89
+00:03:36,430 --> 00:03:39,310
+studio and it allows you to run all this
+
+90
+00:03:39,310 --> 00:03:42,340
+code like the Jas part and the HTML and
+
+91
+00:03:42,340 --> 00:03:46,889
+the rust or C++ or C or just plain wasum
+
+92
+00:03:46,889 --> 00:03:50,079
+inside a web IDE and I absolutely
+
+93
+00:03:50,079 --> 00:03:51,910
+recommend you to check it out it's it's
+
+94
+00:03:51,910 --> 00:03:53,380
+really amazing and it gets you started
+
+95
+00:03:53,380 --> 00:03:55,090
+with wow them quite quickly it's an
+
+96
+00:03:55,090 --> 00:03:56,829
+online IDE so I wouldn't I guess you
+
+97
+00:03:56,829 --> 00:03:58,599
+can't use it for for a real word use
+
+98
+00:03:58,599 --> 00:04:01,209
+like production usage but it's really
+
+99
+00:04:01,209 --> 00:04:03,880
+cool to play around with so now I'm
+
+100
+00:04:03,880 --> 00:04:07,030
+gonna switch to my mic like terminal to
+
+101
+00:04:07,030 --> 00:04:09,700
+do a live demo here the requirements for
+
+102
+00:04:09,700 --> 00:04:11,230
+us we're gonna do a small web app that
+
+103
+00:04:11,230 --> 00:04:12,459
+computes a cryptographic hash of a
+
+104
+00:04:12,459 --> 00:04:14,889
+string like shop secure hash algorithm
+
+105
+00:04:14,889 --> 00:04:17,440
+and I already did the front end in j/s
+
+106
+00:04:17,440 --> 00:04:20,079
+and it has an index HTML file and an app
+
+107
+00:04:20,079 --> 00:04:21,760
+J's file it's not is not using any
+
+108
+00:04:21,760 --> 00:04:23,110
+complex Spangler's or frameworks or
+
+109
+00:04:23,110 --> 00:04:24,520
+whatever but that's not the point you
+
+110
+00:04:24,520 --> 00:04:26,200
+could as you will see you could still
+
+111
+00:04:26,200 --> 00:04:27,040
+integrate it if you
+
+112
+00:04:27,040 --> 00:04:30,250
+using complex stuff the point is that we
+
+113
+00:04:30,250 --> 00:04:33,460
+do the hash computation in wasm and in
+
+114
+00:04:33,460 --> 00:04:35,860
+rust in this case because rust has nice
+
+115
+00:04:35,860 --> 00:04:38,320
+compile-time checkers and because russ
+
+116
+00:04:38,320 --> 00:04:40,480
+orgasm tends to be faster than it is so
+
+117
+00:04:40,480 --> 00:04:41,830
+we just want to do it for the sake of it
+
+118
+00:04:41,830 --> 00:04:46,360
+let's switch to can everyone see this
+
+119
+00:04:46,360 --> 00:04:48,790
+I'm gonna enlarge people in the back if
+
+120
+00:04:48,790 --> 00:04:50,470
+you cannot see the code on the left hand
+
+121
+00:04:50,470 --> 00:04:56,270
+side please scream larger or something
+
+122
+00:04:56,280 --> 00:05:01,420
+fine cool perfect thank you so this is
+
+123
+00:05:01,420 --> 00:05:05,860
+our setup we have my address on the left
+
+124
+00:05:05,860 --> 00:05:07,570
+hand side my terminal is on the right
+
+125
+00:05:07,570 --> 00:05:10,900
+hand side and here we have two files in
+
+126
+00:05:10,900 --> 00:05:13,090
+my folder once called app dot J's and
+
+127
+00:05:13,090 --> 00:05:15,340
+once called index dot HTML index dot
+
+128
+00:05:15,340 --> 00:05:17,080
+HTML is you see I didn't really spend a
+
+129
+00:05:17,080 --> 00:05:19,180
+lot of time on the front end in the
+
+130
+00:05:19,180 --> 00:05:20,890
+exception is very simple it has an input
+
+131
+00:05:20,890 --> 00:05:23,410
+field it has a button and it has a
+
+132
+00:05:23,410 --> 00:05:25,650
+script tag and when you go to the script
+
+133
+00:05:25,650 --> 00:05:29,820
+we have we're getting the input we have
+
+134
+00:05:29,820 --> 00:05:32,800
+the button which we're getting and then
+
+135
+00:05:32,800 --> 00:05:36,070
+one click on the button we alert the
+
+136
+00:05:36,070 --> 00:05:37,920
+value of the input but there's a to-do
+
+137
+00:05:37,920 --> 00:05:41,230
+can we please hatch this which is what
+
+138
+00:05:41,230 --> 00:05:44,860
+we're going to do now using rust so how
+
+139
+00:05:44,860 --> 00:05:47,680
+do we start off if you want to start off
+
+140
+00:05:47,680 --> 00:05:49,210
+creating any Russ project and we will
+
+141
+00:05:49,210 --> 00:05:50,650
+have to create a small rust library for
+
+142
+00:05:50,650 --> 00:05:53,350
+this you use cargo cargo is the build
+
+143
+00:05:53,350 --> 00:05:57,400
+tool for rust and this is pretty cool
+
+144
+00:05:57,400 --> 00:05:58,990
+you can basically use cargo to create a
+
+145
+00:05:58,990 --> 00:06:01,270
+new rust project but if you want to use
+
+146
+00:06:01,270 --> 00:06:03,250
+the you know the rust code in your
+
+147
+00:06:03,250 --> 00:06:05,680
+project and your own big app or whatever
+
+148
+00:06:05,680 --> 00:06:08,860
+you could create the library basically
+
+149
+00:06:08,860 --> 00:06:09,790
+wherever you like and whichever
+
+150
+00:06:09,790 --> 00:06:12,630
+directory like because in the end
+
+151
+00:06:12,630 --> 00:06:15,130
+obviously it generates some has an
+
+152
+00:06:15,130 --> 00:06:18,330
+output and then you could just use your
+
+153
+00:06:18,330 --> 00:06:20,770
+whatever setup you have your gulp file
+
+154
+00:06:20,770 --> 00:06:23,980
+you make files your web pack or whatever
+
+155
+00:06:23,980 --> 00:06:26,410
+to move it to the right position so I'm
+
+156
+00:06:26,410 --> 00:06:29,310
+just gonna create a new folder called
+
+157
+00:06:29,310 --> 00:06:34,360
+hasher which is a library in the just
+
+158
+00:06:34,360 --> 00:06:39,580
+base directory of my app so right then I
+
+159
+00:06:39,580 --> 00:06:40,639
+go into it
+
+160
+00:06:40,639 --> 00:06:43,610
+sure and you can see on my editor on the
+
+161
+00:06:43,610 --> 00:06:44,659
+right hand side here we have a new
+
+162
+00:06:44,659 --> 00:06:48,919
+directory which is called Hatcher and
+
+163
+00:06:48,919 --> 00:06:51,560
+which has two files one is called lip
+
+164
+00:06:51,560 --> 00:06:53,800
+dollar s and one is called cargo Tommo
+
+165
+00:06:53,800 --> 00:06:56,719
+now this is a pretty standard setup for
+
+166
+00:06:56,719 --> 00:07:00,080
+a rust project this is some boilerplate
+
+167
+00:07:00,080 --> 00:07:01,520
+that the rest code always adds we can
+
+168
+00:07:01,520 --> 00:07:03,110
+delete this in this case so we start
+
+169
+00:07:03,110 --> 00:07:06,050
+from a fresh empty rust library and this
+
+170
+00:07:06,050 --> 00:07:10,039
+is a boiler clay the cargo file cargo
+
+171
+00:07:10,039 --> 00:07:12,289
+files are like package.json for rust
+
+172
+00:07:12,289 --> 00:07:16,490
+just that it's donal it's not JSON and
+
+173
+00:07:16,490 --> 00:07:18,349
+here's where we're gonna have to add a
+
+174
+00:07:18,349 --> 00:07:20,330
+bit of oiler plate because rust was not
+
+175
+00:07:20,330 --> 00:07:22,159
+initially made to work with wisdoms so
+
+176
+00:07:22,159 --> 00:07:25,159
+we have to do a very few things to tell
+
+177
+00:07:25,159 --> 00:07:26,659
+the compiler hey you know we're actually
+
+178
+00:07:26,659 --> 00:07:30,560
+working with Waze I'm here and I'm gonna
+
+179
+00:07:30,560 --> 00:07:32,900
+I'm just gonna yeah this is what you
+
+180
+00:07:32,900 --> 00:07:36,319
+should do to just copy paste it in so
+
+181
+00:07:36,319 --> 00:07:38,569
+first thing is we tell the compiler hey
+
+182
+00:07:38,569 --> 00:07:40,339
+this is a special type of lip it's not
+
+183
+00:07:40,339 --> 00:07:41,900
+really important what that is at this
+
+184
+00:07:41,900 --> 00:07:44,960
+point and the second one is that we
+
+185
+00:07:44,960 --> 00:07:47,389
+define a dependency on the wasn't
+
+186
+00:07:47,389 --> 00:07:50,000
+binding project which we yeah which I
+
+187
+00:07:50,000 --> 00:07:53,120
+introduced earlier so I'm sorry for
+
+188
+00:07:53,120 --> 00:07:54,620
+doing all the rest will will soon stop
+
+189
+00:07:54,620 --> 00:07:58,250
+doing rest and then the second thing a
+
+190
+00:07:58,250 --> 00:08:00,560
+second kind of boilerplate I need to put
+
+191
+00:08:00,560 --> 00:08:02,719
+in my rust file is this allowing
+
+192
+00:08:02,719 --> 00:08:04,279
+experimental features for the rest
+
+193
+00:08:04,279 --> 00:08:07,189
+compiler which is also it's also it's
+
+194
+00:08:07,189 --> 00:08:08,539
+gonna go away at some point and it's
+
+195
+00:08:08,539 --> 00:08:09,979
+also not super important to know why
+
+196
+00:08:09,979 --> 00:08:12,229
+we're doing this but just yeah this is
+
+197
+00:08:12,229 --> 00:08:14,509
+allowing your scrote to features okay
+
+198
+00:08:14,509 --> 00:08:15,830
+let's start off the first thing we have
+
+199
+00:08:15,830 --> 00:08:17,539
+to do in our rust code is we have to
+
+200
+00:08:17,539 --> 00:08:20,509
+define an extern crate which is called
+
+201
+00:08:20,509 --> 00:08:23,089
+waz bind gen that means hey you know we
+
+202
+00:08:23,089 --> 00:08:24,439
+have this dependency please link it
+
+203
+00:08:24,439 --> 00:08:28,219
+against our source and then yeah right
+
+204
+00:08:28,219 --> 00:08:33,079
+we have to include some of the imports
+
+205
+00:08:33,079 --> 00:08:39,260
+some of the sources in reload this
+
+206
+00:08:39,260 --> 00:08:40,579
+basically imports a bunch of stuff from
+
+207
+00:08:40,579 --> 00:08:42,919
+wasn't bind Jim and now we can get
+
+208
+00:08:42,919 --> 00:08:44,269
+started just writing a rust function
+
+209
+00:08:44,269 --> 00:08:47,329
+like this is gonna be a very simple Russ
+
+210
+00:08:47,329 --> 00:08:48,890
+function I hope you can understand it so
+
+211
+00:08:48,890 --> 00:08:53,570
+it's basically saying hey we want this
+
+212
+00:08:53,570 --> 00:08:56,170
+I'm bound basically imported to
+
+213
+00:08:56,170 --> 00:08:59,810
+JavaScript and then we make a public
+
+214
+00:08:59,810 --> 00:09:03,670
+function hash and hash takes an input
+
+215
+00:09:03,670 --> 00:09:06,080
+which is a string this thing is
+
+216
+00:09:06,080 --> 00:09:08,510
+statically typed input I think like this
+
+217
+00:09:08,510 --> 00:09:12,400
+it's a string and it puts a string out
+
+218
+00:09:12,400 --> 00:09:14,990
+yes these two strings look different
+
+219
+00:09:14,990 --> 00:09:18,950
+once and the other string that is a very
+
+220
+00:09:18,950 --> 00:09:21,140
+long topic in short one is a pointer to
+
+221
+00:09:21,140 --> 00:09:22,790
+a string or a reference to a string the
+
+222
+00:09:22,790 --> 00:09:25,070
+other is an owned piece of memory if you
+
+223
+00:09:25,070 --> 00:09:26,330
+want to learn more about this please
+
+224
+00:09:26,330 --> 00:09:29,270
+talk to me afterwards it's not really
+
+225
+00:09:29,270 --> 00:09:30,530
+important for forgetting the core
+
+226
+00:09:30,530 --> 00:09:32,900
+concept and then what we're going to do
+
+227
+00:09:32,900 --> 00:09:34,040
+is we're not going to hash it right now
+
+228
+00:09:34,040 --> 00:09:37,160
+we're just going to return a four minute
+
+229
+00:09:37,160 --> 00:09:41,080
+thing when we do hashed and then our
+
+230
+00:09:41,080 --> 00:09:45,620
+input okay this is annoying here so
+
+231
+00:09:45,620 --> 00:09:47,540
+we're just gonna say hey I have this
+
+232
+00:09:47,540 --> 00:09:49,760
+template string please format it for me
+
+233
+00:09:49,760 --> 00:09:52,930
+to include input we're currently these
+
+234
+00:09:52,930 --> 00:09:55,930
+curly brackets are I hope that's
+
+235
+00:09:55,930 --> 00:09:57,110
+understandable
+
+236
+00:09:57,110 --> 00:09:59,240
+right so we define the function hash
+
+237
+00:09:59,240 --> 00:10:00,890
+returns the string takes the string
+
+238
+00:10:00,890 --> 00:10:04,220
+returns a string take formats the input
+
+239
+00:10:04,220 --> 00:10:07,460
+to include hashed and parentheses around
+
+240
+00:10:07,460 --> 00:10:11,840
+it that's a pretty simple function we're
+
+241
+00:10:11,840 --> 00:10:12,920
+going to do the action hashing later
+
+242
+00:10:12,920 --> 00:10:14,270
+because I I don't know how to how to
+
+243
+00:10:14,270 --> 00:10:17,390
+write a shot to algorithm so I'm just
+
+244
+00:10:17,390 --> 00:10:20,690
+gonna pull a library how do we build
+
+245
+00:10:20,690 --> 00:10:22,790
+this now so we use cargo again you can
+
+246
+00:10:22,790 --> 00:10:24,920
+use cargo built and then you have to
+
+247
+00:10:24,920 --> 00:10:27,230
+specify it from target which is horizon
+
+248
+00:10:27,230 --> 00:10:31,250
+32 known no I know it's it's so
+
+249
+00:10:31,250 --> 00:10:35,240
+confusing unknown unknown means these
+
+250
+00:10:35,240 --> 00:10:37,070
+fields are normally populated for
+
+251
+00:10:37,070 --> 00:10:39,050
+information for the rest compiler but
+
+252
+00:10:39,050 --> 00:10:40,760
+for class and Wiseman's just as amino
+
+253
+00:10:40,760 --> 00:10:42,620
+Lystra platforms or whatever so we just
+
+254
+00:10:42,620 --> 00:10:45,950
+don't fill them in now it's gonna build
+
+255
+00:10:45,950 --> 00:10:47,840
+oh and I'm relying on the confidence
+
+256
+00:10:47,840 --> 00:10:53,840
+Network to world create lists oh I made
+
+257
+00:10:53,840 --> 00:10:59,450
+a typo here unknown : nice no it works
+
+258
+00:10:59,450 --> 00:11:01,010
+now it's compiling all the appendices it
+
+259
+00:11:01,010 --> 00:11:02,540
+wasn't bind gen and shouldn't take too
+
+260
+00:11:02,540 --> 00:11:04,460
+long so I'm just gonna block on it here
+
+261
+00:11:04,460 --> 00:11:04,740
+right
+
+262
+00:11:04,740 --> 00:11:08,760
+now and give us all the time to breathe
+
+263
+00:11:08,760 --> 00:11:14,390
+breathe and taking all the new stuff and
+
+264
+00:11:14,390 --> 00:11:16,680
+this is generally gonna generate some
+
+265
+00:11:16,680 --> 00:11:20,670
+files now then I'm going to show you in
+
+266
+00:11:20,670 --> 00:11:21,300
+a second
+
+267
+00:11:21,300 --> 00:11:24,330
+cool it's done this is gonna not always
+
+268
+00:11:24,330 --> 00:11:26,220
+take that long because it caches the
+
+269
+00:11:26,220 --> 00:11:28,200
+intermediate population results of
+
+270
+00:11:28,200 --> 00:11:29,610
+course and so you can just do it again
+
+271
+00:11:29,610 --> 00:11:30,890
+and then it finishes really quickly
+
+272
+00:11:30,890 --> 00:11:33,089
+let's take a look at what was generated
+
+273
+00:11:33,089 --> 00:11:34,980
+so we refresh our tree again and there
+
+274
+00:11:34,980 --> 00:11:37,350
+we can see here it's Hargett folder was
+
+275
+00:11:37,350 --> 00:11:39,450
+generated and in there we have another
+
+276
+00:11:39,450 --> 00:11:41,940
+folder or a couple of photos and this
+
+277
+00:11:41,940 --> 00:11:43,380
+one's the most important one we have 32
+
+278
+00:11:43,380 --> 00:11:44,550
+unknown unknown and then there is
+
+279
+00:11:44,550 --> 00:11:46,260
+another one called debug in there and
+
+280
+00:11:46,260 --> 00:11:48,240
+here we have the file that we're
+
+281
+00:11:48,240 --> 00:11:49,350
+actually interested in that's kind of
+
+282
+00:11:49,350 --> 00:11:50,880
+like the only thing in here that we're
+
+283
+00:11:50,880 --> 00:11:52,920
+really interested in that's the raw wasm
+
+284
+00:11:52,920 --> 00:11:56,910
+file we can use wasm dump which is not a
+
+285
+00:11:56,910 --> 00:11:58,649
+cool utility to like take a look at the
+
+286
+00:11:58,649 --> 00:12:08,160
+file them up right and so what we could
+
+287
+00:12:08,160 --> 00:12:09,630
+do for examples we could disassemble it
+
+288
+00:12:09,630 --> 00:12:12,300
+and then we see all the instructions in
+
+289
+00:12:12,300 --> 00:12:13,920
+webassembly text format that's of course
+
+290
+00:12:13,920 --> 00:12:19,890
+a lot of stuff and then we can also look
+
+291
+00:12:19,890 --> 00:12:22,050
+at headers I mean if anyone of you
+
+292
+00:12:22,050 --> 00:12:23,399
+remember it's the webassembly text
+
+293
+00:12:23,399 --> 00:12:24,720
+format you know you have certain headers
+
+294
+00:12:24,720 --> 00:12:26,970
+for certain sections and so there's a
+
+295
+00:12:26,970 --> 00:12:29,810
+bit of memory and a lot of functions and
+
+296
+00:12:29,810 --> 00:12:34,709
+a lot code too so what we could do now
+
+297
+00:12:34,709 --> 00:12:36,089
+is we could assume the same thing that I
+
+298
+00:12:36,089 --> 00:12:38,750
+already mentioned in my other talk is
+
+299
+00:12:38,750 --> 00:12:43,709
+here it is so we could just fetch it and
+
+300
+00:12:43,709 --> 00:12:45,570
+include it here yeah this one we could
+
+301
+00:12:45,570 --> 00:12:46,980
+just fetch it and include it and use
+
+302
+00:12:46,980 --> 00:12:48,870
+bebés IMI's instantiate and then kind of
+
+303
+00:12:48,870 --> 00:12:51,540
+provide our own runtime for it which is
+
+304
+00:12:51,540 --> 00:12:52,920
+kind of boilerplate E and it's kind of
+
+305
+00:12:52,920 --> 00:12:55,950
+boring so how does wasn't bind and help
+
+306
+00:12:55,950 --> 00:12:59,520
+here well what wasn't bind Jen does is
+
+307
+00:12:59,520 --> 00:13:02,850
+we run it again on our wasn't file and
+
+308
+00:13:02,850 --> 00:13:06,690
+what it will do now it will generate two
+
+309
+00:13:06,690 --> 00:13:09,390
+additional files target wasn't so you -
+
+310
+00:13:09,390 --> 00:13:12,990
+unknown debug hash sure was an
+
+311
+00:13:12,990 --> 00:13:15,029
+and we can specify an out directory
+
+312
+00:13:15,029 --> 00:13:16,680
+which is it of course convenient I'm
+
+313
+00:13:16,680 --> 00:13:17,760
+gonna put it in the top-level directory
+
+314
+00:13:17,760 --> 00:13:19,589
+of the of the actual web app because
+
+315
+00:13:19,589 --> 00:13:20,610
+that's the sources that we're gonna use
+
+316
+00:13:20,610 --> 00:13:23,820
+to run web assembly and let's do that
+
+317
+00:13:23,820 --> 00:13:25,830
+cool it's done let's see what it
+
+318
+00:13:25,830 --> 00:13:28,110
+generated so now we have two new files
+
+319
+00:13:28,110 --> 00:13:30,690
+once called it's very you know at the
+
+320
+00:13:30,690 --> 00:13:33,209
+bottom ones called hash RJ as deal is
+
+321
+00:13:33,209 --> 00:13:37,050
+called hash sure BG Dogg Wazza and I
+
+322
+00:13:37,050 --> 00:13:39,120
+think hasha J's is really interesting
+
+323
+00:13:39,120 --> 00:13:40,290
+file so I want to take a look at it with
+
+324
+00:13:40,290 --> 00:13:45,600
+you what it does is it imports this kind
+
+325
+00:13:45,600 --> 00:13:49,410
+of wasn't file which is defined at the
+
+326
+00:13:49,410 --> 00:13:51,360
+bottom and then it defines a lot of
+
+327
+00:13:51,360 --> 00:13:54,480
+funky utility functions and one really
+
+328
+00:13:54,480 --> 00:13:55,920
+interesting utility function is for
+
+329
+00:13:55,920 --> 00:13:57,750
+example pastoralism and there it shows
+
+330
+00:13:57,750 --> 00:14:01,010
+that like it takes all this annoying
+
+331
+00:14:01,010 --> 00:14:04,440
+boilerplate stuff away from us by doing
+
+332
+00:14:04,440 --> 00:14:05,520
+some of the work that we would otherwise
+
+333
+00:14:05,520 --> 00:14:07,200
+have to do manually for example here you
+
+334
+00:14:07,200 --> 00:14:08,820
+pass it a string Arg is a string in this
+
+335
+00:14:08,820 --> 00:14:11,730
+case it encodes that string into a into
+
+336
+00:14:11,730 --> 00:14:13,830
+a byte array into the buffer and then
+
+337
+00:14:13,830 --> 00:14:17,190
+what it does is it allocates memory on
+
+338
+00:14:17,190 --> 00:14:20,310
+this kind of shirt heap that the web
+
+339
+00:14:20,310 --> 00:14:23,790
+assembly module uses and fills that
+
+340
+00:14:23,790 --> 00:14:27,750
+memory with this with these you know
+
+341
+00:14:27,750 --> 00:14:30,750
+unsigned integer with 8 bits so bytes
+
+342
+00:14:30,750 --> 00:14:35,010
+and what it returns is a pointer which
+
+343
+00:14:35,010 --> 00:14:37,170
+is just an index basically like just an
+
+344
+00:14:37,170 --> 00:14:40,230
+array index of the location of this new
+
+345
+00:14:40,230 --> 00:14:44,270
+string and the length of the string so
+
+346
+00:14:44,270 --> 00:14:46,470
+that's just a convenience function that
+
+347
+00:14:46,470 --> 00:14:48,480
+the mole to internally uses but it's
+
+348
+00:14:48,480 --> 00:14:50,250
+super nice because this is the thing
+
+349
+00:14:50,250 --> 00:14:51,810
+that you would have otherwise have had
+
+350
+00:14:51,810 --> 00:14:54,990
+to do if you were using welcome yourself
+
+351
+00:14:54,990 --> 00:14:58,050
+without using wasn't by general in order
+
+352
+00:14:58,050 --> 00:15:00,630
+to pass strings so there's a bunch of
+
+353
+00:15:00,630 --> 00:15:03,630
+more stuff here which is also just
+
+354
+00:15:03,630 --> 00:15:05,459
+utility functions in order to use get
+
+355
+00:15:05,459 --> 00:15:08,250
+what let what's called pass ring to
+
+356
+00:15:08,250 --> 00:15:10,529
+blossom and then there is getstring from
+
+357
+00:15:10,529 --> 00:15:13,260
+vaasam which is the same thing in
+
+358
+00:15:13,260 --> 00:15:16,680
+Reverse and then there's a function
+
+359
+00:15:16,680 --> 00:15:19,140
+called hash which as you would have
+
+360
+00:15:19,140 --> 00:15:22,560
+guessed it's not a coincidence hash is
+
+361
+00:15:22,560 --> 00:15:23,940
+there because we wrote a function hash
+
+362
+00:15:23,940 --> 00:15:25,880
+if we were a function hash to
+
+363
+00:15:25,880 --> 00:15:27,950
+we'll also be in there and there are a
+
+364
+00:15:27,950 --> 00:15:29,180
+couple of interesting things here let's
+
+365
+00:15:29,180 --> 00:15:31,460
+first take a look inside we do the whole
+
+366
+00:15:31,460 --> 00:15:33,980
+pointer thing where we pass a strength
+
+367
+00:15:33,980 --> 00:15:35,540
+was M and then get a pointer in length
+
+368
+00:15:35,540 --> 00:15:38,720
+back and then we set an argument and
+
+369
+00:15:38,720 --> 00:15:40,910
+then we call the hash function here and
+
+370
+00:15:40,910 --> 00:15:44,600
+then we get the return value like the
+
+371
+00:15:44,600 --> 00:15:46,220
+real return value which is the string
+
+372
+00:15:46,220 --> 00:15:47,750
+which is then again read out of the
+
+373
+00:15:47,750 --> 00:15:52,370
+JavaScript byte array and then we you
+
+374
+00:15:52,370 --> 00:15:54,320
+know yeah free and return the real
+
+375
+00:15:54,320 --> 00:15:58,370
+return value to our JavaScript code so
+
+376
+00:15:58,370 --> 00:15:59,450
+this is the function that your
+
+377
+00:15:59,450 --> 00:16:01,430
+javascript code if you were using is as
+
+378
+00:16:01,430 --> 00:16:03,040
+i'm gonna show in a couple of minutes
+
+379
+00:16:03,040 --> 00:16:05,480
+your javascript code will they call this
+
+380
+00:16:05,480 --> 00:16:07,400
+you can also see that it's exported
+
+381
+00:16:07,400 --> 00:16:11,240
+using an x-acto script six module export
+
+382
+00:16:11,240 --> 00:16:13,820
+definition and now i can see you you
+
+383
+00:16:13,820 --> 00:16:17,420
+know over drawing a browser simple
+
+384
+00:16:17,420 --> 00:16:20,510
+browser compatibility stuff it's not
+
+385
+00:16:20,510 --> 00:16:22,670
+it's not really simple with whoever
+
+386
+00:16:22,670 --> 00:16:25,480
+sembly es6 modules aren't really
+
+387
+00:16:25,480 --> 00:16:28,190
+implemented for web assembly yet so this
+
+388
+00:16:28,190 --> 00:16:31,580
+doesn't actually work it does work if
+
+389
+00:16:31,580 --> 00:16:33,320
+you use webpack though because web pack
+
+390
+00:16:33,320 --> 00:16:35,720
+has like their own custom shim so if
+
+391
+00:16:35,720 --> 00:16:38,330
+you're a web pack user good for you how
+
+392
+00:16:38,330 --> 00:16:41,390
+many of you are wiping you lose good for
+
+393
+00:16:41,390 --> 00:16:44,090
+you that's really good nice so a lot of
+
+394
+00:16:44,090 --> 00:16:45,350
+people have web pack users so this is
+
+395
+00:16:45,350 --> 00:16:47,410
+all you have to do and then just yeah
+
+396
+00:16:47,410 --> 00:16:49,700
+i'm not going to go into too much web
+
+397
+00:16:49,700 --> 00:16:51,290
+pack specific it's really easy from
+
+398
+00:16:51,290 --> 00:16:52,760
+there on the like if you go to the
+
+399
+00:16:52,760 --> 00:16:54,200
+wesson by engine page it has a set up
+
+400
+00:16:54,200 --> 00:16:56,210
+instructions specifically for web pack
+
+401
+00:16:56,210 --> 00:16:58,370
+what i'm gonna show you is how you can
+
+402
+00:16:58,370 --> 00:17:00,020
+use like the rest of you how can you use
+
+403
+00:17:00,020 --> 00:17:02,090
+this in your app without having to go to
+
+404
+00:17:02,090 --> 00:17:04,490
+web pack and then there's this option
+
+405
+00:17:04,490 --> 00:17:06,410
+here for wasn't binding on the left hand
+
+406
+00:17:06,410 --> 00:17:09,050
+side here it's called no modules which
+
+407
+00:17:09,050 --> 00:17:11,900
+means we're in a browser environment so
+
+408
+00:17:11,900 --> 00:17:14,959
+please don't do yes six modules but you
+
+409
+00:17:14,959 --> 00:17:19,250
+find the hash function in this case for
+
+410
+00:17:19,250 --> 00:17:23,120
+example on the on a on a on an object
+
+411
+00:17:23,120 --> 00:17:26,300
+that lives on the window global which is
+
+412
+00:17:26,300 --> 00:17:29,450
+how libraries used to work in the back
+
+413
+00:17:29,450 --> 00:17:32,810
+in the days so let's do this instead and
+
+414
+00:17:32,810 --> 00:17:35,060
+i think i'll have to visit a different
+
+415
+00:17:35,060 --> 00:17:37,340
+file and reload this one yeah so now you
+
+416
+00:17:37,340 --> 00:17:39,320
+can see it has an exports if you
+
+417
+00:17:39,320 --> 00:17:41,269
+in here and further down it then puts
+
+418
+00:17:41,269 --> 00:17:43,519
+that exports on the window and and so
+
+419
+00:17:43,519 --> 00:17:45,190
+you can basically use it like this and
+
+420
+00:17:45,190 --> 00:17:47,149
+there's another really cool thing and
+
+421
+00:17:47,149 --> 00:17:49,820
+it's brand-new and it's called another
+
+422
+00:17:49,820 --> 00:17:51,169
+cool flex called nodejs
+
+423
+00:17:51,169 --> 00:17:54,710
+the nodejs flag turns this whole thing
+
+424
+00:17:54,710 --> 00:18:03,440
+into a a nodejs definition so that you
+
+425
+00:18:03,440 --> 00:18:05,870
+can just just use modular exports so you
+
+426
+00:18:05,870 --> 00:18:09,500
+can require the thing pretty cool it
+
+427
+00:18:09,500 --> 00:18:12,230
+runs a node I think I my example is
+
+428
+00:18:12,230 --> 00:18:14,389
+gonna be doesn't that I my examples
+
+429
+00:18:14,389 --> 00:18:17,120
+gonna be in in in the browser though we
+
+430
+00:18:17,120 --> 00:18:18,860
+can try out runs in node afterwards I'm
+
+431
+00:18:18,860 --> 00:18:21,190
+pretty sure it I don't know does it
+
+432
+00:18:21,190 --> 00:18:24,889
+anyway once no it gets were missing this
+
+433
+00:18:24,889 --> 00:18:29,000
+port it might I'm a browser person I
+
+434
+00:18:29,000 --> 00:18:30,200
+don't really know about it but this is
+
+435
+00:18:30,200 --> 00:18:33,919
+really nice I thought let's do no
+
+436
+00:18:33,919 --> 00:18:41,179
+modules then cool so now we we have hash
+
+437
+00:18:41,179 --> 00:18:43,009
+it out yes and we have defined in our
+
+438
+00:18:43,009 --> 00:18:44,299
+root directory and I showed you what it
+
+439
+00:18:44,299 --> 00:18:45,649
+contains and now we want to get the
+
+440
+00:18:45,649 --> 00:18:47,539
+stuff that's in there right so we want
+
+441
+00:18:47,539 --> 00:18:50,450
+to go into our app yes and now we have
+
+442
+00:18:50,450 --> 00:18:52,700
+to do a little bit of extra magic again
+
+443
+00:18:52,700 --> 00:18:56,840
+so we do an important this global I show
+
+444
+00:18:56,840 --> 00:18:58,970
+you how we have a global window object
+
+445
+00:18:58,970 --> 00:19:00,830
+now that contains hash so we're just
+
+446
+00:19:00,830 --> 00:19:08,120
+going to do it was a equals was fine Jen
+
+447
+00:19:08,120 --> 00:19:10,789
+which is how we import our hash function
+
+448
+00:19:10,789 --> 00:19:15,470
+and then this is a bit annoying still
+
+449
+00:19:15,470 --> 00:19:17,629
+but people are working on it we call as
+
+450
+00:19:17,629 --> 00:19:20,210
+and bind Jen on the wisemen file that we
+
+451
+00:19:20,210 --> 00:19:24,559
+have in this case hash or bheegi bheegi
+
+452
+00:19:24,559 --> 00:19:28,840
+azam and that will asynchronously
+
+453
+00:19:28,840 --> 00:19:31,970
+initiate the whole last thing and fetch
+
+454
+00:19:31,970 --> 00:19:34,700
+it and load it in whatever so this thing
+
+455
+00:19:34,700 --> 00:19:37,039
+returns a promise in this case it works
+
+456
+00:19:37,039 --> 00:19:38,960
+because my button is also a
+
+457
+00:19:38,960 --> 00:19:40,789
+synchronously listening for user input
+
+458
+00:19:40,789 --> 00:19:42,049
+so this thing's got definitely gonna
+
+459
+00:19:42,049 --> 00:19:43,309
+finish before my user clicks on
+
+460
+00:19:43,309 --> 00:19:47,149
+calculate when you have an app that does
+
+461
+00:19:47,149 --> 00:19:49,309
+stuff that is supposed to run wasm
+
+462
+00:19:49,309 --> 00:19:52,100
+before like it like instantly
+
+463
+00:19:52,100 --> 00:19:53,090
+synchronously
+
+464
+00:19:53,090 --> 00:19:55,940
+you need to you know await this or do
+
+465
+00:19:55,940 --> 00:20:00,650
+promise and do then run my or something
+
+466
+00:20:00,650 --> 00:20:02,330
+like this in this case I'm just gonna
+
+467
+00:20:02,330 --> 00:20:03,470
+it's gonna be fine
+
+468
+00:20:03,470 --> 00:20:07,370
+I hope let's do a yeah it's finally do
+
+469
+00:20:07,370 --> 00:20:14,090
+some demo hash input value and now we
+
+470
+00:20:14,090 --> 00:20:19,100
+can see I hope that we have Oh hasn't
+
+471
+00:20:19,100 --> 00:20:20,360
+been Jen's not defined can anyone guess
+
+472
+00:20:20,360 --> 00:20:23,990
+why so the sorry that was pretty quick
+
+473
+00:20:23,990 --> 00:20:27,560
+the errors here there is wasn't binding
+
+474
+00:20:27,560 --> 00:20:28,460
+is not defined
+
+475
+00:20:28,460 --> 00:20:32,450
+do you have time also the problem is
+
+476
+00:20:32,450 --> 00:20:37,090
+that we did not put it in our HTML file
+
+477
+00:20:37,090 --> 00:20:41,600
+so half of Dolce s is a script that you
+
+478
+00:20:41,600 --> 00:20:45,200
+need to put in your in your includes or
+
+479
+00:20:45,200 --> 00:20:47,270
+just bundle it somehow and get it on
+
+480
+00:20:47,270 --> 00:20:50,540
+your window global now to run
+
+481
+00:20:50,540 --> 00:20:55,510
+I hope nice so we do have rust to
+
+482
+00:20:55,510 --> 00:20:59,960
+JavaScript communication now which is
+
+483
+00:20:59,960 --> 00:21:03,950
+cool but it's not a hash yet so now I
+
+484
+00:21:03,950 --> 00:21:05,780
+hope the even cooler stuff starts where
+
+485
+00:21:05,780 --> 00:21:08,150
+we just include a Russ module just like
+
+486
+00:21:08,150 --> 00:21:08,930
+that and compiler
+
+487
+00:21:08,930 --> 00:21:12,440
+2002 and run so what are we gonna use
+
+488
+00:21:12,440 --> 00:21:14,750
+we're gonna use a I just you know look
+
+489
+00:21:14,750 --> 00:21:16,070
+this up in advance of course we can use
+
+490
+00:21:16,070 --> 00:21:20,030
+a crate arrest module called chat to I I
+
+491
+00:21:20,030 --> 00:21:21,560
+think it's good I haven't used it before
+
+492
+00:21:21,560 --> 00:21:24,700
+but it should be sufficient for purposes
+
+493
+00:21:24,700 --> 00:21:26,720
+and I also looked it up it has a
+
+494
+00:21:26,720 --> 00:21:29,600
+convenience method called sha to digest
+
+495
+00:21:29,600 --> 00:21:31,670
+and we can actually use digest string
+
+496
+00:21:31,670 --> 00:21:33,830
+which takes a string and just pull out
+
+497
+00:21:33,830 --> 00:21:37,330
+the hash digests off off that string and
+
+498
+00:21:37,330 --> 00:21:39,800
+yeah that's just let's just copy paste
+
+499
+00:21:39,800 --> 00:21:51,090
+up
+
+500
+00:21:51,100 --> 00:21:52,580
+all right
+
+501
+00:21:52,580 --> 00:21:55,190
+so the problem here is we still need to
+
+502
+00:21:55,190 --> 00:21:58,280
+import shot too so I'm gonna do this the
+
+503
+00:21:58,280 --> 00:21:59,960
+right way I'm gonna first edit
+
+504
+00:21:59,960 --> 00:22:03,110
+dependency - a shot - this is how you do
+
+505
+00:22:03,110 --> 00:22:04,400
+dependency management in Ross it
+
+506
+00:22:04,400 --> 00:22:05,780
+shouldn't be very surprising to you if
+
+507
+00:22:05,780 --> 00:22:08,500
+you know package.json it is a very nice
+
+508
+00:22:08,500 --> 00:22:11,840
+change if you have ever done c++
+
+509
+00:22:11,840 --> 00:22:16,340
+dependency management and I think the
+
+510
+00:22:16,340 --> 00:22:24,530
+version is 0.7 so and in our library we
+
+511
+00:22:24,530 --> 00:22:27,169
+need to do the same thing as with Exim
+
+512
+00:22:27,169 --> 00:22:28,549
+crate wasn't binding we also need to
+
+513
+00:22:28,549 --> 00:22:31,790
+import chat - and I think that's it I
+
+514
+00:22:31,790 --> 00:22:33,679
+think we should be set we should be set
+
+515
+00:22:33,679 --> 00:22:35,140
+to use it
+
+516
+00:22:35,140 --> 00:22:40,030
+let's do cargo bill and see what happens
+
+517
+00:22:40,030 --> 00:22:43,480
+[Music]
+
+518
+00:22:43,480 --> 00:22:47,840
+compiling oh we get an error function
+
+519
+00:22:47,840 --> 00:22:50,090
+okay this is a I mean the era is pretty
+
+520
+00:22:50,090 --> 00:22:54,470
+good but it's just how to read it says
+
+521
+00:22:54,470 --> 00:22:56,870
+function or associated item not found in
+
+522
+00:22:56,870 --> 00:23:00,740
+chat - and it helpfully suggests this an
+
+523
+00:23:00,740 --> 00:23:03,080
+imported use so let's just use that
+
+524
+00:23:03,080 --> 00:23:09,970
+apart let's compile it
+
+525
+00:23:09,970 --> 00:23:12,799
+see that's how you use rust like you
+
+526
+00:23:12,799 --> 00:23:17,730
+just get compiler errors until it works
+
+527
+00:23:17,740 --> 00:23:20,150
+right so the thing is that you can't
+
+528
+00:23:20,150 --> 00:23:23,390
+like these curly like these curly
+
+529
+00:23:23,390 --> 00:23:26,630
+parenthesis mean that just output this
+
+530
+00:23:26,630 --> 00:23:28,580
+thing for it for like it would be a
+
+531
+00:23:28,580 --> 00:23:30,169
+string like and there's like certain
+
+532
+00:23:30,169 --> 00:23:32,240
+things can like implement this kind of
+
+533
+00:23:32,240 --> 00:23:35,330
+interface that string uses and we
+
+534
+00:23:35,330 --> 00:23:37,760
+actually want to output it as let's say
+
+535
+00:23:37,760 --> 00:23:43,250
+hex that's how you defined it yeah it
+
+536
+00:23:43,250 --> 00:23:45,890
+works nice it's always the best moment
+
+537
+00:23:45,890 --> 00:23:49,940
+in rustic Filippis life and now we have
+
+538
+00:23:49,940 --> 00:23:52,070
+the file on target again and we're going
+
+539
+00:23:52,070 --> 00:23:54,590
+to do a binding again and
+
+540
+00:23:54,590 --> 00:24:01,080
+run it on file and I think like
+
+541
+00:24:01,080 --> 00:24:02,850
+basically this should work without any
+
+542
+00:24:02,850 --> 00:24:04,559
+further modifications our Jaya site
+
+543
+00:24:04,559 --> 00:24:06,260
+because you know we just included it
+
+544
+00:24:06,260 --> 00:24:09,600
+nice and then we have the hash cool
+
+545
+00:24:09,600 --> 00:24:13,200
+amazing so that was it for the demo I
+
+546
+00:24:13,200 --> 00:24:16,470
+think we have written some rust and we
+
+547
+00:24:16,470 --> 00:24:18,270
+have included in rjs it was pretty easy
+
+548
+00:24:18,270 --> 00:24:21,030
+to use I hope it was a lot of setup but
+
+549
+00:24:21,030 --> 00:24:23,640
+I try to go through like the very like
+
+550
+00:24:23,640 --> 00:24:26,460
+each step individually I have a couple
+
+551
+00:24:26,460 --> 00:24:29,520
+more slice I think I have a bit more
+
+552
+00:24:29,520 --> 00:24:32,669
+time so a couple more features of wasn't
+
+553
+00:24:32,669 --> 00:24:34,080
+binding so we really just scratch the
+
+554
+00:24:34,080 --> 00:24:35,309
+surface in order to get you going with
+
+555
+00:24:35,309 --> 00:24:36,120
+it
+
+556
+00:24:36,120 --> 00:24:38,340
+it supports like structs like stateful
+
+557
+00:24:38,340 --> 00:24:40,049
+structures that you can use likes j/s
+
+558
+00:24:40,049 --> 00:24:42,030
+instances of like objects and you can
+
+559
+00:24:42,030 --> 00:24:43,590
+put stuff on it and it retains their
+
+560
+00:24:43,590 --> 00:24:45,960
+state through like even when it's rust
+
+561
+00:24:45,960 --> 00:24:49,110
+you can pass closures back and forth it
+
+562
+00:24:49,110 --> 00:24:50,340
+doesn't work in all cases but in most
+
+563
+00:24:50,340 --> 00:24:51,660
+cases it should work
+
+564
+00:24:51,660 --> 00:24:54,390
+you can import jsn like consulate lock
+
+565
+00:24:54,390 --> 00:24:56,880
+or whatever into your rust and then run
+
+566
+00:24:56,880 --> 00:24:59,669
+those and rust it has these opaque JS
+
+567
+00:24:59,669 --> 00:25:02,160
+value types which is the type that hides
+
+568
+00:25:02,160 --> 00:25:04,350
+the fact like the underlying whatever
+
+569
+00:25:04,350 --> 00:25:06,120
+this is from for us so that it's easier
+
+570
+00:25:06,120 --> 00:25:08,910
+to deal with and yeah as I mentioned it
+
+571
+00:25:08,910 --> 00:25:10,290
+supports required for nodejs although
+
+572
+00:25:10,290 --> 00:25:14,460
+people have not really I don't think
+
+573
+00:25:14,460 --> 00:25:15,870
+people believe me that it's working in
+
+574
+00:25:15,870 --> 00:25:19,630
+node so I might be wrong about this
+
+575
+00:25:19,640 --> 00:25:21,690
+there are a couple things that are still
+
+576
+00:25:21,690 --> 00:25:24,270
+very much working progress it is you
+
+577
+00:25:24,270 --> 00:25:26,370
+know passing around arrays and and
+
+578
+00:25:26,370 --> 00:25:28,830
+vectors is is a bit shaky I think it's
+
+579
+00:25:28,830 --> 00:25:30,780
+being worked on CC personal support is
+
+580
+00:25:30,780 --> 00:25:32,970
+in the progress source map debugging is
+
+581
+00:25:32,970 --> 00:25:35,429
+currently it works for some things like
+
+582
+00:25:35,429 --> 00:25:37,020
+I'm scripting which I'm not gonna go
+
+583
+00:25:37,020 --> 00:25:39,120
+into here but it doesn't work for wasn't
+
+584
+00:25:39,120 --> 00:25:41,700
+finding that we have here and as I
+
+585
+00:25:41,700 --> 00:25:43,760
+mentioned first class es6 module support
+
+586
+00:25:43,760 --> 00:25:45,900
+another thing that I really was quickly
+
+587
+00:25:45,900 --> 00:25:48,270
+want to mention is so will be really
+
+588
+00:25:48,270 --> 00:25:49,230
+cool if we could just use the diagram
+
+589
+00:25:49,230 --> 00:25:52,549
+uploaded to MPN instead of just you know
+
+590
+00:25:52,549 --> 00:25:56,130
+making a rust library in our JS project
+
+591
+00:25:56,130 --> 00:25:59,790
+and then funding that that right we've
+
+592
+00:25:59,790 --> 00:26:01,860
+let that rust library inside our own
+
+593
+00:26:01,860 --> 00:26:03,419
+small library and then exposing it to
+
+594
+00:26:03,419 --> 00:26:06,150
+J's we could just upload it to NPM and
+
+595
+00:26:06,150 --> 00:26:07,710
+then somebody could downloaded the
+
+596
+00:26:07,710 --> 00:26:09,809
+Darla's just as him as an NPN module and
+
+597
+00:26:09,809 --> 00:26:11,429
+that's exactly the idea behind wasn't
+
+598
+00:26:11,429 --> 00:26:12,600
+packed which was written by Ashley
+
+599
+00:26:12,600 --> 00:26:15,029
+Williams or which is still being written
+
+600
+00:26:15,029 --> 00:26:16,470
+by actually Williams because this is all
+
+601
+00:26:16,470 --> 00:26:18,990
+very work-in-progress you can install it
+
+602
+00:26:18,990 --> 00:26:21,960
+and you can use this to basically do the
+
+603
+00:26:21,960 --> 00:26:23,909
+same thing that I did with was a wood
+
+604
+00:26:23,909 --> 00:26:25,320
+carver built and was abandoned and one
+
+605
+00:26:25,320 --> 00:26:29,039
+set so you if you're in your rust source
+
+606
+00:26:29,039 --> 00:26:33,169
+file you can just use Waze and pack yeah
+
+607
+00:26:33,169 --> 00:26:35,640
+whereas in pack in it in this case and
+
+608
+00:26:35,640 --> 00:26:39,390
+it will you can see it below here it
+
+609
+00:26:39,390 --> 00:26:43,529
+will compile to wasm which might take a
+
+610
+00:26:43,529 --> 00:26:47,039
+while some i might not show it fully I
+
+611
+00:26:47,039 --> 00:26:48,899
+think it's doing some additional
+
+612
+00:26:48,899 --> 00:26:50,909
+optimizations which is why it takes a
+
+613
+00:26:50,909 --> 00:26:53,340
+bit more time so and then it will
+
+614
+00:26:53,340 --> 00:26:54,720
+basically generate the same files that I
+
+615
+00:26:54,720 --> 00:26:57,000
+already had in a package folder which
+
+616
+00:26:57,000 --> 00:26:59,429
+also has a package dot JSON and so if
+
+617
+00:26:59,429 --> 00:27:00,510
+you just go into that package folder
+
+618
+00:27:00,510 --> 00:27:04,500
+into NPM publish it's an NPM boom and
+
+619
+00:27:04,500 --> 00:27:07,020
+you have uploaded web sembly to NPM and
+
+620
+00:27:07,020 --> 00:27:10,260
+then somebody can use your library your
+
+621
+00:27:10,260 --> 00:27:12,890
+rust or C++ or whatever library from
+
+622
+00:27:12,890 --> 00:27:18,210
+JavaScript that's nice but still if you
+
+623
+00:27:18,210 --> 00:27:20,640
+want to use any random rust or whatever
+
+624
+00:27:20,640 --> 00:27:22,110
+library that doesn't have this publish
+
+625
+00:27:22,110 --> 00:27:23,520
+and yeah and PM you need to do this
+
+626
+00:27:23,520 --> 00:27:25,140
+thing that I just did where you wrap it
+
+627
+00:27:25,140 --> 00:27:29,669
+with your own kind of library right more
+
+628
+00:27:29,669 --> 00:27:32,399
+wasm on hack stuff Mozilla or all these
+
+629
+00:27:32,399 --> 00:27:34,380
+things are read out of like written out
+
+630
+00:27:34,380 --> 00:27:36,779
+much more purpose than ia just put it on
+
+631
+00:27:36,779 --> 00:27:38,970
+hex that mr. Orrick it's an amazing
+
+632
+00:27:38,970 --> 00:27:40,440
+series of blog post by like the people
+
+633
+00:27:40,440 --> 00:27:42,960
+who work on this web simulator org which
+
+634
+00:27:42,960 --> 00:27:44,520
+is an HTTP link which I just noticed
+
+635
+00:27:44,520 --> 00:27:47,480
+which is not nice I'm gonna correct that
+
+636
+00:27:47,480 --> 00:27:50,490
+rust wasn't get up that IO also has like
+
+637
+00:27:50,490 --> 00:27:53,330
+publishes these newsletters this week in
+
+638
+00:27:53,330 --> 00:27:57,330
+web simle I think and that's also a
+
+639
+00:27:57,330 --> 00:27:59,250
+really nice read to keep up to date with
+
+640
+00:27:59,250 --> 00:28:02,909
+a rapidly developing world of web
+
+641
+00:28:02,909 --> 00:28:05,730
+assembly and with that I say thank you
+
+642
+00:28:05,730 --> 00:28:08,270
+for listening
+
+643
+00:28:08,270 --> 00:28:17,370
+[Applause]
+

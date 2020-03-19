@@ -1,0 +1,2917 @@
+1
+00:00:05,610 --> 00:00:08,340
+
+thank you for that great introduction I
+
+2
+00:00:08,340 --> 00:00:11,879
+am Lynn Clark and I make code cartoons
+
+3
+00:00:11,879 --> 00:00:15,000
+and I also work at Mozilla on things
+
+4
+00:00:15,000 --> 00:00:16,139
+like web assembly which as well I'll be
+
+5
+00:00:16,139 --> 00:00:18,119
+talking about today and I'm joined by
+
+6
+00:00:18,119 --> 00:00:19,800
+till Schneider right who leads our web
+
+7
+00:00:19,800 --> 00:00:21,390
+assembly tooling efforts and he'll be
+
+8
+00:00:21,390 --> 00:00:24,060
+filling us in on some of their work so
+
+9
+00:00:24,060 --> 00:00:27,720
+first off what is web assembly what
+
+10
+00:00:27,720 --> 00:00:29,640
+assembly is a way of running programming
+
+11
+00:00:29,640 --> 00:00:31,439
+languages other than JavaScript on the
+
+12
+00:00:31,439 --> 00:00:32,010
+web
+
+13
+00:00:32,010 --> 00:00:34,730
+up until now to run code on a web page
+
+14
+00:00:34,730 --> 00:00:36,900
+the only language you could use was
+
+15
+00:00:36,900 --> 00:00:38,970
+JavaScript but now that there's web
+
+16
+00:00:38,970 --> 00:00:40,440
+assembly you can use other languages
+
+17
+00:00:40,440 --> 00:00:44,580
+like C or C++ or rust I've noticed that
+
+18
+00:00:44,580 --> 00:00:46,379
+some people have a misconception about
+
+19
+00:00:46,379 --> 00:00:48,629
+web assembly though people think that
+
+20
+00:00:48,629 --> 00:00:51,839
+the MVP that landed in browsers and 2017
+
+21
+00:00:51,839 --> 00:00:54,269
+is the final version of web assembly and
+
+22
+00:00:54,269 --> 00:00:55,290
+I can understand where that
+
+23
+00:00:55,290 --> 00:00:57,570
+misconception comes from because the web
+
+24
+00:00:57,570 --> 00:00:59,430
+assembly CG is really committed to
+
+25
+00:00:59,430 --> 00:01:01,110
+backwards compatibility so the web
+
+26
+00:01:01,110 --> 00:01:02,790
+assembly that you write today will
+
+27
+00:01:02,790 --> 00:01:05,640
+continue to work far into the future but
+
+28
+00:01:05,640 --> 00:01:06,990
+that doesn't mean that its feature
+
+29
+00:01:06,990 --> 00:01:08,970
+complete and that's far from the case in
+
+30
+00:01:08,970 --> 00:01:11,520
+fact features are coming to web assembly
+
+31
+00:01:11,520 --> 00:01:13,200
+which will fundamentally alter what you
+
+32
+00:01:13,200 --> 00:01:16,860
+can do with web assembly I think of
+
+33
+00:01:16,860 --> 00:01:18,630
+these future features kind of like the
+
+34
+00:01:18,630 --> 00:01:21,330
+skill tree in a video game we've fully
+
+35
+00:01:21,330 --> 00:01:23,490
+filled in the top few of these skills
+
+36
+00:01:23,490 --> 00:01:25,260
+but there's still this whole skill tree
+
+37
+00:01:25,260 --> 00:01:27,780
+underneath to unlock so that we can
+
+38
+00:01:27,780 --> 00:01:28,950
+unlock all of these different
+
+39
+00:01:28,950 --> 00:01:31,710
+applications so let's look at what's
+
+40
+00:01:31,710 --> 00:01:33,120
+been filled in already and then we can
+
+41
+00:01:33,120 --> 00:01:36,820
+see what's yet to come
+
+42
+00:01:36,830 --> 00:01:39,360
+webassembly story starts with unscripted
+
+43
+00:01:39,360 --> 00:01:41,730
+which made it possible to bring large C
+
+44
+00:01:41,730 --> 00:01:43,770
+and C++ code bases to the web for things
+
+45
+00:01:43,770 --> 00:01:45,870
+like desktop applications and games and
+
+46
+00:01:45,870 --> 00:01:48,090
+it did this by transpiling that code to
+
+47
+00:01:48,090 --> 00:01:51,300
+JavaScript and at first that JavaScript
+
+48
+00:01:51,300 --> 00:01:53,370
+would run pretty slow but then the
+
+49
+00:01:53,370 --> 00:01:55,170
+Firefox engineer saw how you could add
+
+50
+00:01:55,170 --> 00:01:57,690
+optimizations to the j/s engine to make
+
+51
+00:01:57,690 --> 00:02:00,390
+it run fast and that gave us has enjoy
+
+52
+00:02:00,390 --> 00:02:03,390
+us once the other browser vendors saw
+
+53
+00:02:03,390 --> 00:02:05,310
+how fast as andreas was they started
+
+54
+00:02:05,310 --> 00:02:06,930
+adding the same optimizations to their
+
+55
+00:02:06,930 --> 00:02:09,810
+at engines as well but that wasn't the
+
+56
+00:02:09,810 --> 00:02:10,979
+end of the story it was just the
+
+57
+00:02:10,979 --> 00:02:11,750
+beginning
+
+58
+00:02:11,750 --> 00:02:14,060
+engines could still make this go faster
+
+59
+00:02:14,060 --> 00:02:16,050
+but they couldn't do it in JavaScript
+
+60
+00:02:16,050 --> 00:02:18,510
+itself instead they needed a new
+
+61
+00:02:18,510 --> 00:02:19,180
+language
+
+62
+00:02:19,180 --> 00:02:20,739
+one that was designed specifically to be
+
+63
+00:02:20,739 --> 00:02:24,030
+compiled - and that was webassembly
+
+64
+00:02:24,030 --> 00:02:26,590
+so what word the skills needed for this
+
+65
+00:02:26,590 --> 00:02:28,719
+MVP this Minimum Viable Product running
+
+66
+00:02:28,719 --> 00:02:31,930
+c and c++ on the web web assemblies
+
+67
+00:02:31,930 --> 00:02:33,280
+designers knew that eventually they
+
+68
+00:02:33,280 --> 00:02:34,569
+would want to support languages other
+
+69
+00:02:34,569 --> 00:02:36,819
+than just C and C++ so they needed a
+
+70
+00:02:36,819 --> 00:02:38,760
+language agnostic compile target
+
+71
+00:02:38,760 --> 00:02:40,870
+something like the assembly language
+
+72
+00:02:40,870 --> 00:02:42,549
+that things like desktop applications
+
+73
+00:02:42,549 --> 00:02:45,549
+are compiled to like x86 but this
+
+74
+00:02:45,549 --> 00:02:47,379
+assembly language wouldn't be for an
+
+75
+00:02:47,379 --> 00:02:49,239
+actual physical machine it would be for
+
+76
+00:02:49,239 --> 00:02:52,269
+a conceptual machine that compiler
+
+77
+00:02:52,269 --> 00:02:54,129
+target had to run very fast to meet
+
+78
+00:02:54,129 --> 00:02:55,659
+users expectations for smooth
+
+79
+00:02:55,659 --> 00:02:57,819
+interactions and gameplay and it also
+
+80
+00:02:57,819 --> 00:02:59,620
+needed to load fast because the web's
+
+81
+00:02:59,620 --> 00:03:02,040
+users are used to pretty fast load times
+
+82
+00:03:02,040 --> 00:03:04,209
+but these kinds of applications are very
+
+83
+00:03:04,209 --> 00:03:06,519
+large code bases which means that
+
+84
+00:03:06,519 --> 00:03:07,870
+there's a lot to download when you first
+
+85
+00:03:07,870 --> 00:03:10,810
+visit the URL so we needed our compiler
+
+86
+00:03:10,810 --> 00:03:12,400
+target to be compact so it could go over
+
+87
+00:03:12,400 --> 00:03:15,129
+the internet quickly these languages
+
+88
+00:03:15,129 --> 00:03:17,169
+also needed to manage memory differently
+
+89
+00:03:17,169 --> 00:03:19,180
+from JavaScript they need to be able to
+
+90
+00:03:19,180 --> 00:03:21,310
+directly manage their memory and this is
+
+91
+00:03:21,310 --> 00:03:23,319
+because languages like C and C++ have a
+
+92
+00:03:23,319 --> 00:03:24,849
+low-level language feature called
+
+93
+00:03:24,849 --> 00:03:27,129
+pointers the in pointers need to be able
+
+94
+00:03:27,129 --> 00:03:29,560
+to take a memory address and read and
+
+95
+00:03:29,560 --> 00:03:31,319
+write directly from that memory address
+
+96
+00:03:31,319 --> 00:03:33,639
+but you can't have a program that you
+
+97
+00:03:33,639 --> 00:03:35,799
+downloaded from the web just accessing
+
+98
+00:03:35,799 --> 00:03:38,260
+your memory willy-nilly in order to
+
+99
+00:03:38,260 --> 00:03:39,849
+provide a way to access memory like a
+
+100
+00:03:39,849 --> 00:03:41,530
+native program is used to but to keep
+
+101
+00:03:41,530 --> 00:03:43,720
+the browser secure we had to create
+
+102
+00:03:43,720 --> 00:03:45,159
+something that could give access to a
+
+103
+00:03:45,159 --> 00:03:47,349
+very specific part of memory and nothing
+
+104
+00:03:47,349 --> 00:03:50,379
+else to do this web assembly uses a
+
+105
+00:03:50,379 --> 00:03:52,930
+linear memory model and that's
+
+106
+00:03:52,930 --> 00:03:55,120
+implemented using typed arrays which are
+
+107
+00:03:55,120 --> 00:03:57,040
+basically just JavaScript arrays except
+
+108
+00:03:57,040 --> 00:03:59,379
+the the items that are in this array are
+
+109
+00:03:59,379 --> 00:04:01,840
+bytes bytes of memory so when you're
+
+110
+00:04:01,840 --> 00:04:03,579
+accessing it you're just using array
+
+111
+00:04:03,579 --> 00:04:05,709
+indexes which you can treat as though
+
+112
+00:04:05,709 --> 00:04:07,239
+they were memory addresses and this
+
+113
+00:04:07,239 --> 00:04:08,409
+means that you can pretend that this
+
+114
+00:04:08,409 --> 00:04:12,639
+array is C++ memory so with all of those
+
+115
+00:04:12,639 --> 00:04:14,379
+things in place you could run desktop
+
+116
+00:04:14,379 --> 00:04:16,030
+applications and games in your browser
+
+117
+00:04:16,030 --> 00:04:18,009
+as if they were running natively on your
+
+118
+00:04:18,009 --> 00:04:20,799
+computer and that was pretty much the
+
+119
+00:04:20,799 --> 00:04:22,659
+skill set the web assembly had one was
+
+120
+00:04:22,659 --> 00:04:26,110
+released as an MVP it truly was an MVP a
+
+121
+00:04:26,110 --> 00:04:27,690
+Minimum Viable Product
+
+122
+00:04:27,690 --> 00:04:29,710
+this allowed certain kinds of
+
+123
+00:04:29,710 --> 00:04:31,180
+applications to work but there was still
+
+124
+00:04:31,180 --> 00:04:31,660
+a whole
+
+125
+00:04:31,660 --> 00:04:33,310
+host of other applications that needed
+
+126
+00:04:33,310 --> 00:04:36,640
+to be unlocked so the next achievement
+
+127
+00:04:36,640 --> 00:04:38,440
+to unlock is heavier-weight desktop
+
+128
+00:04:38,440 --> 00:04:41,650
+applications can you imagine if
+
+129
+00:04:41,650 --> 00:04:43,240
+something like Photoshop was running in
+
+130
+00:04:43,240 --> 00:04:44,830
+your browser if you could load it on any
+
+131
+00:04:44,830 --> 00:04:46,420
+of your devices and start working with
+
+132
+00:04:46,420 --> 00:04:49,060
+your files like you can with Gmail we've
+
+133
+00:04:49,060 --> 00:04:50,850
+already started seeing things like this
+
+134
+00:04:50,850 --> 00:04:53,590
+for example the AutoCAD team has made
+
+135
+00:04:53,590 --> 00:04:55,060
+their CAD software available through the
+
+136
+00:04:55,060 --> 00:04:56,950
+browser and adobe has made Lightroom
+
+137
+00:04:56,950 --> 00:04:58,360
+available through the browser using web
+
+138
+00:04:58,360 --> 00:05:00,910
+assembly but there are still a few
+
+139
+00:05:00,910 --> 00:05:02,680
+features that we need to make sure all
+
+140
+00:05:02,680 --> 00:05:04,120
+of these applications even the heaviest
+
+141
+00:05:04,120 --> 00:05:06,670
+of heavy weight applications work well
+
+142
+00:05:06,670 --> 00:05:09,430
+in the browser first as support for
+
+143
+00:05:09,430 --> 00:05:12,340
+multi-threading modern-day computers
+
+144
+00:05:12,340 --> 00:05:14,050
+have multiple cores that can process
+
+145
+00:05:14,050 --> 00:05:16,420
+things in parallel but to make use of
+
+146
+00:05:16,420 --> 00:05:18,010
+these cores you need support for
+
+147
+00:05:18,010 --> 00:05:20,980
+threading there's another bit of modern
+
+148
+00:05:20,980 --> 00:05:22,480
+hardware that processes things in
+
+149
+00:05:22,480 --> 00:05:24,910
+parallel and that sim date single
+
+150
+00:05:24,910 --> 00:05:27,970
+instruction multiple data what cindy is
+
+151
+00:05:27,970 --> 00:05:29,560
+possible to take a chunk of memory and
+
+152
+00:05:29,560 --> 00:05:31,600
+split it up across different execution
+
+153
+00:05:31,600 --> 00:05:33,700
+units which are basically like cores and
+
+154
+00:05:33,700 --> 00:05:35,080
+then you have the same bit of code the
+
+155
+00:05:35,080 --> 00:05:37,090
+same instruction run across all of those
+
+156
+00:05:37,090 --> 00:05:39,100
+execution units but on different parts
+
+157
+00:05:39,100 --> 00:05:40,500
+of the data
+
+158
+00:05:40,500 --> 00:05:43,210
+another hardware capability is 64-bit
+
+159
+00:05:43,210 --> 00:05:45,760
+addressing memory addresses are just
+
+160
+00:05:45,760 --> 00:05:47,770
+numbers so if your memory addresses are
+
+161
+00:05:47,770 --> 00:05:49,540
+only 32 bits long you only have so many
+
+162
+00:05:49,540 --> 00:05:51,370
+memory of Justis enough for gigabytes
+
+163
+00:05:51,370 --> 00:05:54,880
+but most modern hardware supports 64-bit
+
+164
+00:05:54,880 --> 00:05:57,250
+addressing which offers 16 exabytes of
+
+165
+00:05:57,250 --> 00:06:00,690
+memory addresses that's a big difference
+
+166
+00:06:00,690 --> 00:06:03,040
+adding 64-bit support will take the
+
+167
+00:06:03,040 --> 00:06:04,960
+artificial limitation on memory address
+
+168
+00:06:04,960 --> 00:06:07,200
+space out of webassembly
+
+169
+00:06:07,200 --> 00:06:09,460
+but these applications don't just need
+
+170
+00:06:09,460 --> 00:06:12,100
+to run fast load times need to be fast
+
+171
+00:06:12,100 --> 00:06:15,190
+too one mix-up here is to do something
+
+172
+00:06:15,190 --> 00:06:16,780
+called streaming compilation where you
+
+173
+00:06:16,780 --> 00:06:18,130
+compile the file as it's being
+
+174
+00:06:18,130 --> 00:06:20,710
+downloaded and web assembly was designed
+
+175
+00:06:20,710 --> 00:06:26,110
+to enable this tiered compiler also
+
+176
+00:06:26,110 --> 00:06:27,940
+helps so in Firefox we have two
+
+177
+00:06:27,940 --> 00:06:29,740
+compilers the first one the baseline
+
+178
+00:06:29,740 --> 00:06:32,080
+compiler starts when the download starts
+
+179
+00:06:32,080 --> 00:06:35,470
+for the first time then another compiler
+
+180
+00:06:35,470 --> 00:06:37,330
+the optimizing compiler runs on several
+
+181
+00:06:37,330 --> 00:06:39,280
+threads in the background and that one
+
+182
+00:06:39,280 --> 00:06:41,440
+takes longer to compile but the code
+
+183
+00:06:41,440 --> 00:06:43,690
+that it generates is extremely fast
+
+184
+00:06:43,690 --> 00:06:46,210
+we're also working on a new optimizing
+
+185
+00:06:46,210 --> 00:06:47,800
+compiler called crane lift and crane
+
+186
+00:06:47,800 --> 00:06:49,330
+lift is designed to actually speed up
+
+187
+00:06:49,330 --> 00:06:51,670
+that initial compile time so it can
+
+188
+00:06:51,670 --> 00:06:53,410
+compile a code in parallel at a function
+
+189
+00:06:53,410 --> 00:06:55,540
+by function level but the code it
+
+190
+00:06:55,540 --> 00:06:57,160
+generates is still fast and we're
+
+191
+00:06:57,160 --> 00:06:58,900
+currently working to see if we can make
+
+192
+00:06:58,900 --> 00:07:01,270
+it generate code that's even faster and
+
+193
+00:07:01,270 --> 00:07:02,650
+when it's executing then our current
+
+194
+00:07:02,650 --> 00:07:05,800
+optimizing compiler but there's an even
+
+195
+00:07:05,800 --> 00:07:07,150
+better trick we can use to skip
+
+196
+00:07:07,150 --> 00:07:09,970
+compiling most of the time unlike with
+
+197
+00:07:09,970 --> 00:07:12,100
+JavaScript if you load the same web
+
+198
+00:07:12,100 --> 00:07:13,930
+assembly file twice it compiles to the
+
+199
+00:07:13,930 --> 00:07:16,420
+same machine code so we can store that
+
+200
+00:07:16,420 --> 00:07:19,420
+compiled code in the HTTP cache and then
+
+201
+00:07:19,420 --> 00:07:20,710
+when the page is loading and it goes to
+
+202
+00:07:20,710 --> 00:07:22,540
+check the cache instead of pulling out
+
+203
+00:07:22,540 --> 00:07:24,310
+that source code it pulls out the
+
+204
+00:07:24,310 --> 00:07:26,710
+compiled code so this skips compiling
+
+205
+00:07:26,710 --> 00:07:29,710
+completely and there are ways to skip
+
+206
+00:07:29,710 --> 00:07:31,510
+even more work so stay tuned to see what
+
+207
+00:07:31,510 --> 00:07:34,930
+else happens to improve load times where
+
+208
+00:07:34,930 --> 00:07:36,490
+are we with supporting these heavyweight
+
+209
+00:07:36,490 --> 00:07:39,640
+applications right now for the threading
+
+210
+00:07:39,640 --> 00:07:41,080
+we have a proposal that's pretty much
+
+211
+00:07:41,080 --> 00:07:42,820
+done but a key piece of that shared RAID
+
+212
+00:07:42,820 --> 00:07:44,530
+buffers had to be turned off in browsers
+
+213
+00:07:44,530 --> 00:07:47,050
+earlier this season last year they will
+
+214
+00:07:47,050 --> 00:07:48,880
+be turned again turned on again soon
+
+215
+00:07:48,880 --> 00:07:52,210
+though cindy is under active development
+
+216
+00:07:52,210 --> 00:07:55,150
+at the moment for 164 we have a good
+
+217
+00:07:55,150 --> 00:07:56,680
+picture of how this is going to work and
+
+218
+00:07:56,680 --> 00:07:58,720
+that's pretty similar to how x86 or arm
+
+219
+00:07:58,720 --> 00:08:01,680
+got support for 64-bit addressing and
+
+220
+00:08:01,680 --> 00:08:04,180
+Firefox added streaming compilation last
+
+221
+00:08:04,180 --> 00:08:06,490
+year in Firefox we actually compile the
+
+222
+00:08:06,490 --> 00:08:07,900
+code so fast that's basically done
+
+223
+00:08:07,900 --> 00:08:09,190
+compiling by the time you've downloaded
+
+224
+00:08:09,190 --> 00:08:12,250
+the file and other browsers are adding
+
+225
+00:08:12,250 --> 00:08:14,830
+streaming too and we also added our
+
+226
+00:08:14,830 --> 00:08:16,240
+baseline compiler last year and other
+
+227
+00:08:16,240 --> 00:08:17,710
+browsers have been adding the same kind
+
+228
+00:08:17,710 --> 00:08:21,130
+of architecture in Firefox HTTP caching
+
+229
+00:08:21,130 --> 00:08:23,200
+is close and it is in closing Chrome as
+
+230
+00:08:23,200 --> 00:08:25,810
+well and other improvements are in
+
+231
+00:08:25,810 --> 00:08:28,840
+discussion even though this is all still
+
+232
+00:08:28,840 --> 00:08:31,030
+in progress heavyweight applications are
+
+233
+00:08:31,030 --> 00:08:33,760
+still coming out today because
+
+234
+00:08:33,760 --> 00:08:34,990
+webassembly already gives these
+
+235
+00:08:34,990 --> 00:08:36,370
+applications the performance that they
+
+236
+00:08:36,370 --> 00:08:39,520
+need but once these features are all in
+
+237
+00:08:39,520 --> 00:08:41,260
+place there's going to be another
+
+238
+00:08:41,260 --> 00:08:43,479
+achievement unlocked and more of these
+
+239
+00:08:43,479 --> 00:08:45,010
+heavyweight applications are going to be
+
+240
+00:08:45,010 --> 00:08:47,830
+able to come to the browser but web
+
+241
+00:08:47,830 --> 00:08:49,180
+assembly isn't just for desktop
+
+242
+00:08:49,180 --> 00:08:51,190
+applications it's also meant for regular
+
+243
+00:08:51,190 --> 00:08:53,170
+small modules developed web development
+
+244
+00:08:53,170 --> 00:08:54,490
+the kind of web development that you're
+
+245
+00:08:54,490 --> 00:08:56,570
+used to
+
+246
+00:08:56,570 --> 00:08:58,070
+if you have a module that does a lot of
+
+247
+00:08:58,070 --> 00:09:00,080
+heavy computation or processing that's a
+
+248
+00:09:00,080 --> 00:09:02,240
+good use case for web assembly and again
+
+249
+00:09:02,240 --> 00:09:03,770
+we're already seeing some of this
+
+250
+00:09:03,770 --> 00:09:06,650
+so the parser in the source Maps library
+
+251
+00:09:06,650 --> 00:09:08,390
+that's used in web pack and Firefox dev
+
+252
+00:09:08,390 --> 00:09:10,460
+tools that was rewritten in Russ
+
+253
+00:09:10,460 --> 00:09:11,840
+compiled to web assembling there's now
+
+254
+00:09:11,840 --> 00:09:14,510
+11 times faster and the Gutenberg parser
+
+255
+00:09:14,510 --> 00:09:16,550
+and WordPress is now an average of 86
+
+256
+00:09:16,550 --> 00:09:19,370
+times faster with its rewrite and rust
+
+257
+00:09:19,370 --> 00:09:22,280
+compiled to web assembly but for this to
+
+258
+00:09:22,280 --> 00:09:24,620
+go mainstream we need to have a few more
+
+259
+00:09:24,620 --> 00:09:28,190
+things in place first calls between
+
+260
+00:09:28,190 --> 00:09:29,750
+javascript and web assembly need to be
+
+261
+00:09:29,750 --> 00:09:32,300
+fast when web assembly first came out
+
+262
+00:09:32,300 --> 00:09:34,520
+these calls weren't fast because engines
+
+263
+00:09:34,520 --> 00:09:37,490
+needed to optimize them we finished our
+
+264
+00:09:37,490 --> 00:09:39,530
+working on this in Firefox last summer
+
+265
+00:09:39,530 --> 00:09:41,570
+and now some of these calls are actually
+
+266
+00:09:41,570 --> 00:09:43,700
+faster than non inline JavaScript to
+
+267
+00:09:43,700 --> 00:09:46,730
+JavaScript calls that brings us to
+
+268
+00:09:46,730 --> 00:09:48,560
+another thing though you often need to
+
+269
+00:09:48,560 --> 00:09:50,450
+pass data between your JavaScript and
+
+270
+00:09:50,450 --> 00:09:52,490
+web assembly functions you need to pass
+
+271
+00:09:52,490 --> 00:09:54,530
+arguments into your web simulator or
+
+272
+00:09:54,530 --> 00:09:57,410
+return values from it at the moment web
+
+273
+00:09:57,410 --> 00:09:59,090
+assembly only web assembly only
+
+274
+00:09:59,090 --> 00:10:01,640
+understands numbers so this means that
+
+275
+00:10:01,640 --> 00:10:03,320
+you can't pass more complex things than
+
+276
+00:10:03,320 --> 00:10:05,570
+like objects you need to convert your
+
+277
+00:10:05,570 --> 00:10:07,430
+object into numbers put it in a linear
+
+278
+00:10:07,430 --> 00:10:08,960
+memory and then pull it back out on the
+
+279
+00:10:08,960 --> 00:10:10,760
+web assembly side and figure out what it
+
+280
+00:10:10,760 --> 00:10:14,030
+is that's kind of complicated and it
+
+281
+00:10:14,030 --> 00:10:15,890
+takes some time to convert the data into
+
+282
+00:10:15,890 --> 00:10:18,350
+linear memory so we need this to be
+
+283
+00:10:18,350 --> 00:10:21,770
+easier and faster we also need to
+
+284
+00:10:21,770 --> 00:10:24,080
+integrate with es modules right now you
+
+285
+00:10:24,080 --> 00:10:26,450
+can't use import and export with Wazza
+
+286
+00:10:26,450 --> 00:10:28,670
+modules but that means that the web
+
+287
+00:10:28,670 --> 00:10:30,650
+assembly module isn't really part of the
+
+288
+00:10:30,650 --> 00:10:33,800
+J's module graph just being able to
+
+289
+00:10:33,800 --> 00:10:35,360
+import and export doesn't get us all the
+
+290
+00:10:35,360 --> 00:10:37,700
+way there though we also needed ways to
+
+291
+00:10:37,700 --> 00:10:39,410
+distribute and bundle web assembly
+
+292
+00:10:39,410 --> 00:10:42,530
+modules what's the MPM for web assembly
+
+293
+00:10:42,530 --> 00:10:46,700
+well what about NPM what's the web pack
+
+294
+00:10:46,700 --> 00:10:49,670
+or parcel for web assembly well what
+
+295
+00:10:49,670 --> 00:10:52,340
+about web pack and parcel these modules
+
+296
+00:10:52,340 --> 00:10:53,720
+shouldn't look any different to the
+
+297
+00:10:53,720 --> 00:10:55,190
+people that are using them so why should
+
+298
+00:10:55,190 --> 00:10:57,760
+we create a whole other ecosystem and
+
+299
+00:10:57,760 --> 00:11:00,740
+there's one more thing support for older
+
+300
+00:11:00,740 --> 00:11:02,690
+versions of browsers even those that
+
+301
+00:11:02,690 --> 00:11:04,370
+don't know what web assembly is like ie
+
+302
+00:11:04,370 --> 00:11:07,490
+11 so where are we on all of these
+
+303
+00:11:07,490 --> 00:11:08,140
+things
+
+304
+00:11:08,140 --> 00:11:10,550
+well calls between JavaScript and web
+
+305
+00:11:10,550 --> 00:11:12,019
+we're fast and Firefox now and other
+
+306
+00:11:12,019 --> 00:11:15,170
+browsers are also prioritizing this for
+
+307
+00:11:15,170 --> 00:11:16,790
+easy and fast data exchange there are a
+
+308
+00:11:16,790 --> 00:11:18,080
+few proposals that will help with this
+
+309
+00:11:18,080 --> 00:11:20,089
+such as any rough post bindings and weak
+
+310
+00:11:20,089 --> 00:11:22,130
+refs and I unfortunately don't have time
+
+311
+00:11:22,130 --> 00:11:24,470
+to go into the detail on that but in the
+
+312
+00:11:24,470 --> 00:11:26,089
+meantime the rust ecosystem has created
+
+313
+00:11:26,089 --> 00:11:28,010
+tools that automate the handling of this
+
+314
+00:11:28,010 --> 00:11:31,339
+stuff for you for es module integration
+
+315
+00:11:31,339 --> 00:11:32,950
+the proposal is pretty far along for
+
+316
+00:11:32,950 --> 00:11:35,149
+tool chain support tools in the rust
+
+317
+00:11:35,149 --> 00:11:37,130
+ecosystem can package your code for NPM
+
+318
+00:11:37,130 --> 00:11:39,140
+and the bundlers are also actively
+
+319
+00:11:39,140 --> 00:11:41,600
+working on support and finally for
+
+320
+00:11:41,600 --> 00:11:43,519
+backwards compatibility there's the wasm
+
+321
+00:11:43,519 --> 00:11:46,130
+2j s tool that takes a wizened file and
+
+322
+00:11:46,130 --> 00:11:48,260
+spits out the equivalent java script now
+
+323
+00:11:48,260 --> 00:11:49,550
+that javascript isn't going to be fast
+
+324
+00:11:49,550 --> 00:11:51,440
+but at least it will work in older
+
+325
+00:11:51,440 --> 00:11:52,850
+versions of browsers that don't know
+
+326
+00:11:52,850 --> 00:11:56,180
+what web assembly is once we unlock this
+
+327
+00:11:56,180 --> 00:11:57,829
+achievement we open the path to another
+
+328
+00:11:57,829 --> 00:12:00,529
+to rewriting large parts of JavaScript
+
+329
+00:12:00,529 --> 00:12:02,839
+frameworks and web assembly and making
+
+330
+00:12:02,839 --> 00:12:04,550
+it possible for statically typed compile
+
+331
+00:12:04,550 --> 00:12:06,440
+to JavaScript languages to compile to
+
+332
+00:12:06,440 --> 00:12:08,540
+web assembly instead languages like
+
+333
+00:12:08,540 --> 00:12:12,170
+Scala jeaious or reason or elm for both
+
+334
+00:12:12,170 --> 00:12:14,029
+of these use cases weba simply needs to
+
+335
+00:12:14,029 --> 00:12:16,760
+support high-level language features so
+
+336
+00:12:16,760 --> 00:12:18,500
+first let's look at rewriting parts of
+
+337
+00:12:18,500 --> 00:12:22,190
+j/s frameworks for a framework like
+
+338
+00:12:22,190 --> 00:12:24,470
+react you could paralyze the virtual Dom
+
+339
+00:12:24,470 --> 00:12:26,660
+dipping algorithm with a language that
+
+340
+00:12:26,660 --> 00:12:28,490
+has really economic support for
+
+341
+00:12:28,490 --> 00:12:31,459
+parallelization like rust and you can
+
+342
+00:12:31,459 --> 00:12:33,230
+also speed things up by reducing memory
+
+343
+00:12:33,230 --> 00:12:35,140
+usage and allocating memory differently
+
+344
+00:12:35,140 --> 00:12:37,820
+but you still need to interact with
+
+345
+00:12:37,820 --> 00:12:39,140
+JavaScript objects things like
+
+346
+00:12:39,140 --> 00:12:40,850
+components from that code
+
+347
+00:12:40,850 --> 00:12:42,950
+you can't just rewrite everything in
+
+348
+00:12:42,950 --> 00:12:44,930
+linear memory because that would be
+
+349
+00:12:44,930 --> 00:12:47,930
+difficult and inefficient so you need to
+
+350
+00:12:47,930 --> 00:12:49,310
+be able to integrate with the browsers
+
+351
+00:12:49,310 --> 00:12:52,459
+built-in garbage collector and that will
+
+352
+00:12:52,459 --> 00:12:54,350
+also help languages that compile to
+
+353
+00:12:54,350 --> 00:12:56,209
+JavaScript like Scala GS reason and elm
+
+354
+00:12:56,209 --> 00:12:59,149
+because these languages they already use
+
+355
+00:12:59,149 --> 00:13:00,709
+Java scripts garbage collector when they
+
+356
+00:13:00,709 --> 00:13:02,959
+compile to j s and that's the same GC
+
+357
+00:13:02,959 --> 00:13:04,699
+that web assembly will be Rutt using
+
+358
+00:13:04,699 --> 00:13:07,010
+when it's running in the browser so they
+
+359
+00:13:07,010 --> 00:13:10,190
+won't need to change their GC we also
+
+360
+00:13:10,190 --> 00:13:11,390
+need better support for handling
+
+361
+00:13:11,390 --> 00:13:13,490
+exceptions and we need good debugging
+
+362
+00:13:13,490 --> 00:13:16,310
+support browsers today make it easy to
+
+363
+00:13:16,310 --> 00:13:18,709
+bug your your JavaScript using dev tools
+
+364
+00:13:18,709 --> 00:13:20,329
+we need that same kind of support for
+
+365
+00:13:20,329 --> 00:13:23,089
+web assembly and finally for many
+
+366
+00:13:23,089 --> 00:13:23,850
+functional link
+
+367
+00:13:23,850 --> 00:13:27,170
+justyou need a feature called tail calls
+
+368
+00:13:27,170 --> 00:13:31,740
+so where are we on all of this for
+
+369
+00:13:31,740 --> 00:13:33,930
+garbage collection our team already has
+
+370
+00:13:33,930 --> 00:13:35,940
+a prototype of this working but it will
+
+371
+00:13:35,940 --> 00:13:37,199
+still take some time for these proposals
+
+372
+00:13:37,199 --> 00:13:39,060
+to go through standardization so we're
+
+373
+00:13:39,060 --> 00:13:41,240
+probably looking at sometime next year
+
+374
+00:13:41,240 --> 00:13:43,019
+exception handling is still in the
+
+375
+00:13:43,019 --> 00:13:45,269
+research and development phase for
+
+376
+00:13:45,269 --> 00:13:46,949
+debugging there's currently some support
+
+377
+00:13:46,949 --> 00:13:48,959
+and browser dev tools but it's still not
+
+378
+00:13:48,959 --> 00:13:51,420
+ideal so there's a subgroup of the web
+
+379
+00:13:51,420 --> 00:13:52,860
+assembly CG that is working on
+
+380
+00:13:52,860 --> 00:13:55,680
+specifying that and the tail calls
+
+381
+00:13:55,680 --> 00:13:59,190
+proposal is also underway once those are
+
+382
+00:13:59,190 --> 00:14:00,930
+all in place we'll have unlocked J's
+
+383
+00:14:00,930 --> 00:14:02,759
+frameworks and many compiled to j/s
+
+384
+00:14:02,759 --> 00:14:05,819
+languages so those are all achievements
+
+385
+00:14:05,819 --> 00:14:07,920
+that we can can unlock inside of the
+
+386
+00:14:07,920 --> 00:14:10,139
+browser but what about outside the
+
+387
+00:14:10,139 --> 00:14:13,230
+browser now you may be confused when I
+
+388
+00:14:13,230 --> 00:14:16,050
+talk about outside the browser because
+
+389
+00:14:16,050 --> 00:14:17,790
+this is the browser what you use to view
+
+390
+00:14:17,790 --> 00:14:20,069
+the web and isn't that right in the name
+
+391
+00:14:20,069 --> 00:14:22,860
+web assembly but the truth is
+
+392
+00:14:22,860 --> 00:14:25,079
+technologies like HTML and CSS and
+
+393
+00:14:25,079 --> 00:14:26,790
+JavaScript are only part of what makes
+
+394
+00:14:26,790 --> 00:14:28,470
+the web they're the visible part they're
+
+395
+00:14:28,470 --> 00:14:30,329
+what she used to make user interfaces so
+
+396
+00:14:30,329 --> 00:14:32,310
+they are the most obvious part but
+
+397
+00:14:32,310 --> 00:14:33,870
+there's another really important part of
+
+398
+00:14:33,870 --> 00:14:35,160
+the web which has properties which
+
+399
+00:14:35,160 --> 00:14:39,529
+aren't as visible and this is the link
+
+400
+00:14:39,529 --> 00:14:42,509
+the links innovation is that I can link
+
+401
+00:14:42,509 --> 00:14:44,160
+to your page without having to put it in
+
+402
+00:14:44,160 --> 00:14:46,110
+a central registry or ask you or even
+
+403
+00:14:46,110 --> 00:14:48,660
+know who you are it's this ease of
+
+404
+00:14:48,660 --> 00:14:50,430
+linking that enabled us to create these
+
+405
+00:14:50,430 --> 00:14:51,990
+global communities with people that we
+
+406
+00:14:51,990 --> 00:14:54,870
+don't know but there are two problems we
+
+407
+00:14:54,870 --> 00:14:56,279
+haven't addressed if we just have this
+
+408
+00:14:56,279 --> 00:14:58,829
+link the first one is you go to visit
+
+409
+00:14:58,829 --> 00:15:00,300
+the site and it delivers some code to
+
+410
+00:15:00,300 --> 00:15:02,790
+you how does it know what kind of code
+
+411
+00:15:02,790 --> 00:15:05,009
+it should deliver to you because if
+
+412
+00:15:05,009 --> 00:15:06,569
+you're running on a Mac then you need to
+
+413
+00:15:06,569 --> 00:15:07,709
+have a different kind of machine code
+
+414
+00:15:07,709 --> 00:15:10,319
+than if you're running on Windows does
+
+415
+00:15:10,319 --> 00:15:11,759
+the website need to have a different
+
+416
+00:15:11,759 --> 00:15:13,470
+version of the code for every possible
+
+417
+00:15:13,470 --> 00:15:17,130
+device no instead the site has one
+
+418
+00:15:17,130 --> 00:15:19,050
+version of code the source code and
+
+419
+00:15:19,050 --> 00:15:21,120
+that's what's delivered to the user and
+
+420
+00:15:21,120 --> 00:15:23,399
+that is translated to machine code on
+
+421
+00:15:23,399 --> 00:15:26,459
+the user's device the name for this
+
+422
+00:15:26,459 --> 00:15:29,730
+concept is portability with it websites
+
+423
+00:15:29,730 --> 00:15:31,019
+don't need to know what kind of device
+
+424
+00:15:31,019 --> 00:15:33,300
+you're running but that brings us to a
+
+425
+00:15:33,300 --> 00:15:35,639
+second problem if you don't know these
+
+426
+00:15:35,639 --> 00:15:37,680
+people whose webpages you're visiting
+
+427
+00:15:37,680 --> 00:15:39,300
+how do you know what kind of code
+
+428
+00:15:39,300 --> 00:15:41,459
+they're going to give to you it could be
+
+429
+00:15:41,459 --> 00:15:44,069
+trying to take over your system doesn't
+
+430
+00:15:44,069 --> 00:15:46,170
+this vision of the web running code from
+
+431
+00:15:46,170 --> 00:15:48,059
+anybody who's a link you follow mean
+
+432
+00:15:48,059 --> 00:15:49,949
+that you have to blindly trust anyone
+
+433
+00:15:49,949 --> 00:15:52,529
+who's on the web this is where the other
+
+434
+00:15:52,529 --> 00:15:54,720
+key concept from the web comes in and
+
+435
+00:15:54,720 --> 00:15:58,709
+that's the security model basically the
+
+436
+00:15:58,709 --> 00:16:00,300
+browser takes the code and puts it in a
+
+437
+00:16:00,300 --> 00:16:02,189
+sandbox and it puts a couple of toys in
+
+438
+00:16:02,189 --> 00:16:04,889
+that sandbox that make it possible for
+
+439
+00:16:04,889 --> 00:16:06,360
+the code to do some interesting things
+
+440
+00:16:06,360 --> 00:16:08,850
+but it leaves the dangerous toys outside
+
+441
+00:16:08,850 --> 00:16:10,550
+of the sandbox
+
+442
+00:16:10,550 --> 00:16:12,990
+so the utility of the link is based on
+
+443
+00:16:12,990 --> 00:16:14,610
+these two things the portability being
+
+444
+00:16:14,610 --> 00:16:16,379
+able to deliver the same code to all
+
+445
+00:16:16,379 --> 00:16:17,759
+these different devices and have it run
+
+446
+00:16:17,759 --> 00:16:20,730
+and the sandbox the security model that
+
+447
+00:16:20,730 --> 00:16:22,139
+lets you run the code without putting
+
+448
+00:16:22,139 --> 00:16:25,649
+your machine at risk so what difference
+
+449
+00:16:25,649 --> 00:16:27,449
+does it make if you think of the web
+
+450
+00:16:27,449 --> 00:16:30,629
+this way it changes how you think of web
+
+451
+00:16:30,629 --> 00:16:33,179
+assembly you can think about web
+
+452
+00:16:33,179 --> 00:16:34,829
+assembly is just another tool in the
+
+453
+00:16:34,829 --> 00:16:37,559
+browser's toolbox which it is but it's
+
+454
+00:16:37,559 --> 00:16:40,290
+not just that what assembly also gives
+
+455
+00:16:40,290 --> 00:16:41,699
+us a way to take these other two
+
+456
+00:16:41,699 --> 00:16:44,040
+capabilities of the web the portability
+
+457
+00:16:44,040 --> 00:16:45,569
+and the security model and bring them to
+
+458
+00:16:45,569 --> 00:16:47,519
+use cases that need them to outside of
+
+459
+00:16:47,519 --> 00:16:50,220
+the web we can expand the web past the
+
+460
+00:16:50,220 --> 00:16:53,249
+boundaries of the browser now you may be
+
+461
+00:16:53,249 --> 00:16:54,959
+thinking that already happened with
+
+462
+00:16:54,959 --> 00:16:55,610
+nodejs
+
+463
+00:16:55,610 --> 00:16:58,170
+but as it is today note doesn't quite
+
+464
+00:16:58,170 --> 00:16:59,910
+get us there it doesn't give us full
+
+465
+00:16:59,910 --> 00:17:01,679
+portability and it doesn't give us the
+
+466
+00:17:01,679 --> 00:17:03,360
+same security the same ability to run
+
+467
+00:17:03,360 --> 00:17:06,230
+untrusted code either
+
+468
+00:17:06,230 --> 00:17:09,750
+so James modules is using with node it's
+
+469
+00:17:09,750 --> 00:17:11,610
+possible to run JavaScript on servers
+
+470
+00:17:11,610 --> 00:17:13,620
+and other devices that don't have a
+
+471
+00:17:13,620 --> 00:17:15,689
+browser so that does give us some
+
+472
+00:17:15,689 --> 00:17:18,390
+portability but you still need native
+
+473
+00:17:18,390 --> 00:17:21,120
+modules in a lot of cases either because
+
+474
+00:17:21,120 --> 00:17:23,370
+you need the code to run really fast or
+
+475
+00:17:23,370 --> 00:17:25,110
+you already have code written in a
+
+476
+00:17:25,110 --> 00:17:26,880
+language like C that you want to then
+
+477
+00:17:26,880 --> 00:17:29,850
+use in your app but native modules
+
+478
+00:17:29,850 --> 00:17:32,039
+aren't portable they have to be compiled
+
+479
+00:17:32,039 --> 00:17:33,870
+ahead of time specifically for the kind
+
+480
+00:17:33,870 --> 00:17:37,110
+of device the users using we're also
+
+481
+00:17:37,110 --> 00:17:40,200
+still missing security node could have
+
+482
+00:17:40,200 --> 00:17:42,090
+taken the sandbox from the browser but
+
+483
+00:17:42,090 --> 00:17:43,890
+node made the define decision early on
+
+484
+00:17:43,890 --> 00:17:46,380
+that J's modules would have full access
+
+485
+00:17:46,380 --> 00:17:49,740
+to certain system api's so J's modules
+
+486
+00:17:49,740 --> 00:17:51,390
+can do things like write and read file
+
+487
+00:17:51,390 --> 00:17:54,000
+on your machine these capabilities
+
+488
+00:17:54,000 --> 00:17:56,730
+things like direct file access to your
+
+489
+00:17:56,730 --> 00:17:58,560
+system are the dangerous toys that
+
+490
+00:17:58,560 --> 00:18:01,520
+aren't available in the browser sandbox
+
+491
+00:18:01,520 --> 00:18:04,410
+even though they're dangerous though for
+
+492
+00:18:04,410 --> 00:18:06,060
+the kinds of use cases that node was
+
+493
+00:18:06,060 --> 00:18:08,370
+built for these these api's do make a
+
+494
+00:18:08,370 --> 00:18:09,420
+certain kind of sense this kind of
+
+495
+00:18:09,420 --> 00:18:12,020
+access makes a certain kind of sense the
+
+496
+00:18:12,020 --> 00:18:15,030
+thing I want to make clear here is that
+
+497
+00:18:15,030 --> 00:18:18,090
+node made a choice really is that node
+
+498
+00:18:18,090 --> 00:18:20,150
+had a choice to make
+
+499
+00:18:20,150 --> 00:18:22,680
+4j s modules it could have gone with a
+
+500
+00:18:22,680 --> 00:18:25,380
+sandbox style approach but for native
+
+501
+00:18:25,380 --> 00:18:27,230
+modules node had less of a choice
+
+502
+00:18:27,230 --> 00:18:29,730
+because it's really hard to sandbox
+
+503
+00:18:29,730 --> 00:18:33,800
+native code so notice made this choice
+
+504
+00:18:33,800 --> 00:18:35,790
+basically if you're running a node
+
+505
+00:18:35,790 --> 00:18:37,470
+application today on your computer
+
+506
+00:18:37,470 --> 00:18:39,090
+you've basically said I trust this code
+
+507
+00:18:39,090 --> 00:18:41,370
+although the node developers are
+
+508
+00:18:41,370 --> 00:18:42,720
+actually looking at a way that they can
+
+509
+00:18:42,720 --> 00:18:46,320
+change this in the future but despite
+
+510
+00:18:46,320 --> 00:18:50,280
+this webassembly can still help node it
+
+511
+00:18:50,280 --> 00:18:51,900
+could eliminate most of the need for
+
+512
+00:18:51,900 --> 00:18:53,670
+native modules ones that are compiled
+
+513
+00:18:53,670 --> 00:18:56,210
+ahead of time for the user's device
+
+514
+00:18:56,210 --> 00:18:58,170
+these could be written in webassembly
+
+515
+00:18:58,170 --> 00:19:01,560
+instead and just compiled once and these
+
+516
+00:19:01,560 --> 00:19:02,730
+modules could then run across all
+
+517
+00:19:02,730 --> 00:19:05,960
+devices just like JavaScript modules do
+
+518
+00:19:05,960 --> 00:19:08,340
+the only problem here is that web
+
+519
+00:19:08,340 --> 00:19:10,290
+assembly doesn't have direct access to
+
+520
+00:19:10,290 --> 00:19:13,020
+the system's resources we would need to
+
+521
+00:19:13,020 --> 00:19:15,330
+pass in functions to the web assembly
+
+522
+00:19:15,330 --> 00:19:16,500
+module so they can work with the
+
+523
+00:19:16,500 --> 00:19:19,830
+operating system now for note this will
+
+524
+00:19:19,830 --> 00:19:20,880
+probably include a lot of the
+
+525
+00:19:20,880 --> 00:19:22,560
+functionality of things like the c
+
+526
+00:19:22,560 --> 00:19:24,180
+standard library and things that are
+
+527
+00:19:24,180 --> 00:19:26,940
+part of POSIX the portable operating
+
+528
+00:19:26,940 --> 00:19:28,770
+system interface which is an older
+
+529
+00:19:28,770 --> 00:19:30,300
+standard and helps with compatibility
+
+530
+00:19:30,300 --> 00:19:31,860
+across different kinds of operating
+
+531
+00:19:31,860 --> 00:19:35,760
+systems unix-like operating systems to
+
+532
+00:19:35,760 --> 00:19:38,100
+make that happen the node core folks
+
+533
+00:19:38,100 --> 00:19:39,510
+would need to figure out what API they
+
+534
+00:19:39,510 --> 00:19:42,420
+want to use for these functions but
+
+535
+00:19:42,420 --> 00:19:43,530
+wouldn't it be nice if that were
+
+536
+00:19:43,530 --> 00:19:45,990
+actually something standard not
+
+537
+00:19:45,990 --> 00:19:48,060
+something that was constrained just to
+
+538
+00:19:48,060 --> 00:19:49,530
+node but could be used across other
+
+539
+00:19:49,530 --> 00:19:53,010
+runtimes and use cases to a POSIX for
+
+540
+00:19:53,010 --> 00:19:55,140
+web assembly if you will a POSIX a
+
+541
+00:19:55,140 --> 00:19:58,470
+portable web assembly system interface
+
+542
+00:19:58,470 --> 00:20:00,210
+and if this were done in the right way
+
+543
+00:20:00,210 --> 00:20:02,700
+you could even implement the same API
+
+544
+00:20:02,700 --> 00:20:05,730
+but in a different way for the web now
+
+545
+00:20:05,730 --> 00:20:07,139
+these functions wouldn't be part of the
+
+546
+00:20:07,139 --> 00:20:09,240
+core web assembly spec and there would
+
+547
+00:20:09,240 --> 00:20:10,799
+be web assembly hosts that didn't
+
+548
+00:20:10,799 --> 00:20:12,960
+include them but for platforms that
+
+549
+00:20:12,960 --> 00:20:14,129
+could make use of them
+
+550
+00:20:14,129 --> 00:20:16,590
+there would be a unified API for calling
+
+551
+00:20:16,590 --> 00:20:18,090
+these functions no matter which platform
+
+552
+00:20:18,090 --> 00:20:21,299
+your code was running on and this would
+
+553
+00:20:21,299 --> 00:20:22,889
+make universal modules ones that run
+
+554
+00:20:22,889 --> 00:20:24,960
+across both the web and node so much
+
+555
+00:20:24,960 --> 00:20:27,389
+easier so is this something that could
+
+556
+00:20:27,389 --> 00:20:29,240
+actually happen
+
+557
+00:20:29,240 --> 00:20:33,149
+well we and others are working on it and
+
+558
+00:20:33,149 --> 00:20:37,320
+I think we have a pretty good chance and
+
+559
+00:20:37,320 --> 00:20:39,870
+we are also seeing a lot of demand for
+
+560
+00:20:39,870 --> 00:20:42,600
+this from a wide range of that with
+
+561
+00:20:42,600 --> 00:20:45,779
+different domains one of these domains
+
+562
+00:20:45,779 --> 00:20:49,799
+is the domain of CD ends of service and
+
+563
+00:20:49,799 --> 00:20:53,370
+off top computing the fastly CDN for
+
+564
+00:20:53,370 --> 00:20:56,460
+example serves a significant fraction of
+
+565
+00:20:56,460 --> 00:20:59,580
+the entire Internet traffic and they are
+
+566
+00:20:59,580 --> 00:21:03,029
+moving from serving just static files as
+
+567
+00:21:03,029 --> 00:21:05,720
+Citians have historically done to
+
+568
+00:21:05,720 --> 00:21:08,399
+running their customers code on every
+
+569
+00:21:08,399 --> 00:21:11,220
+incoming request and they are doing this
+
+570
+00:21:11,220 --> 00:21:13,379
+without adding ten times as many
+
+571
+00:21:13,379 --> 00:21:16,080
+machines to their network which is
+
+572
+00:21:16,080 --> 00:21:18,360
+really what they would have to do if
+
+573
+00:21:18,360 --> 00:21:21,360
+they were to use more traditional server
+
+574
+00:21:21,360 --> 00:21:24,330
+architectures where you'd use something
+
+575
+00:21:24,330 --> 00:21:26,929
+like containers or other heavy wage
+
+576
+00:21:26,929 --> 00:21:31,159
+mechanisms to one untrusted code instead
+
+577
+00:21:31,159 --> 00:21:33,960
+webassembly gives them the sandboxing
+
+578
+00:21:33,960 --> 00:21:36,899
+they need at the speed and at the scale
+
+579
+00:21:36,899 --> 00:21:40,500
+that they need people are also working
+
+580
+00:21:40,500 --> 00:21:43,289
+on building blockchain platforms with
+
+581
+00:21:43,289 --> 00:21:46,259
+web assembly this interest in the IOT
+
+582
+00:21:46,259 --> 00:21:49,500
+space and in a world of reading portable
+
+583
+00:21:49,500 --> 00:21:54,629
+CLI tools with web simply we've also
+
+584
+00:21:54,629 --> 00:21:56,820
+seen interest from companies building
+
+585
+00:21:56,820 --> 00:21:59,519
+game engines where web simply can be
+
+586
+00:21:59,519 --> 00:22:05,269
+used to run game logic in sandboxes and
+
+587
+00:22:05,269 --> 00:22:08,580
+with projects like wasn't written a
+
+588
+00:22:08,580 --> 00:22:11,039
+beulah some folks try to make it one
+
+589
+00:22:11,039 --> 00:22:12,400
+inside of weddings
+
+590
+00:22:12,400 --> 00:22:15,370
+and criminals I don't have time to
+
+591
+00:22:15,370 --> 00:22:17,410
+explain all these difficult use cases
+
+592
+00:22:17,410 --> 00:22:20,050
+and what exactly makes assembly good for
+
+593
+00:22:20,050 --> 00:22:24,520
+them but there are some important
+
+594
+00:22:24,520 --> 00:22:27,190
+considerations but for example they all
+
+595
+00:22:27,190 --> 00:22:30,040
+have in common that sandboxing and
+
+596
+00:22:30,040 --> 00:22:32,070
+portability are important for them and
+
+597
+00:22:32,070 --> 00:22:34,450
+there are some other important
+
+598
+00:22:34,450 --> 00:22:36,280
+commonalities which I want to talk a bit
+
+599
+00:22:36,280 --> 00:22:40,960
+more about for example how do things
+
+600
+00:22:40,960 --> 00:22:43,860
+like network access work of file access
+
+601
+00:22:43,860 --> 00:22:48,010
+the way these things work should ideally
+
+602
+00:22:48,010 --> 00:22:51,460
+be roughly identical across all of these
+
+603
+00:22:51,460 --> 00:22:55,540
+use cases or exactly identical if you
+
+604
+00:22:55,540 --> 00:22:57,790
+use webassembly together with javascript
+
+605
+00:22:57,790 --> 00:23:01,450
+in the browser or a node then javascript
+
+606
+00:23:01,450 --> 00:23:03,940
+is used to let webassembly talk to the
+
+607
+00:23:03,940 --> 00:23:07,690
+outside world you use fetch to load a
+
+608
+00:23:07,690 --> 00:23:11,230
+file from a server in the browser all of
+
+609
+00:23:11,230 --> 00:23:13,180
+this is standardized so you can rely on
+
+610
+00:23:13,180 --> 00:23:17,500
+it and you use nodes FS thought we'd
+
+611
+00:23:17,500 --> 00:23:20,320
+file to read a file and you can also
+
+612
+00:23:20,320 --> 00:23:22,920
+rely on this but for a different reason
+
+613
+00:23:22,920 --> 00:23:25,570
+there's really only one runtime you
+
+614
+00:23:25,570 --> 00:23:29,110
+would use note because node is the de
+
+615
+00:23:29,110 --> 00:23:30,250
+facto standard
+
+616
+00:23:30,250 --> 00:23:33,460
+you know the api's you can use and can
+
+617
+00:23:33,460 --> 00:23:37,300
+rely on ideally we all have a similar
+
+618
+00:23:37,300 --> 00:23:39,520
+situation with web assembly where you
+
+619
+00:23:39,520 --> 00:23:42,520
+know what api's you can work with but
+
+620
+00:23:42,520 --> 00:23:45,280
+not with one runtime being completely
+
+621
+00:23:45,280 --> 00:23:49,120
+dominant instead we are working towards
+
+622
+00:23:49,120 --> 00:23:50,710
+the standardized runtime environment
+
+623
+00:23:50,710 --> 00:23:52,870
+which means there'll be a set of
+
+624
+00:23:52,870 --> 00:23:55,270
+functions that you can rely on for
+
+625
+00:23:55,270 --> 00:23:57,700
+things like file access or network
+
+626
+00:23:57,700 --> 00:24:00,880
+access that means you can compile code
+
+627
+00:24:00,880 --> 00:24:02,590
+once and run it in all of these
+
+628
+00:24:02,590 --> 00:24:05,380
+different environments and in any one
+
+629
+00:24:05,380 --> 00:24:07,510
+time that provides these functions or on
+
+630
+00:24:07,510 --> 00:24:09,190
+the browser where these functions can be
+
+631
+00:24:09,190 --> 00:24:12,610
+implemented in using javascript using
+
+632
+00:24:12,610 --> 00:24:17,880
+existing Dom API and then you can have
+
+633
+00:24:17,880 --> 00:24:20,920
+at one time so that really tailored
+
+634
+00:24:20,920 --> 00:24:24,040
+towards their exact use case instead of
+
+635
+00:24:24,040 --> 00:24:26,390
+having to rely on
+
+636
+00:24:26,390 --> 00:24:31,850
+size fits all so for this standard lab
+
+637
+00:24:31,850 --> 00:24:35,150
+we we could have said let's just use
+
+638
+00:24:35,150 --> 00:24:38,340
+POSIX and be done with it
+
+639
+00:24:38,350 --> 00:24:40,550
+unfortunately that eliminates one of
+
+640
+00:24:40,550 --> 00:24:44,690
+webassembly big advantages security
+
+641
+00:24:44,690 --> 00:24:46,880
+model it's security model and in
+
+642
+00:24:46,880 --> 00:24:48,650
+particular the sandbox england talked
+
+643
+00:24:48,650 --> 00:24:51,530
+about lin also talked about how node had
+
+644
+00:24:51,530 --> 00:24:53,570
+a choice to make at least four
+
+645
+00:24:53,570 --> 00:24:58,150
+javascript modules its choice between
+
+646
+00:24:58,150 --> 00:25:01,280
+keeping the sandbox that j s runs in in
+
+647
+00:25:01,280 --> 00:25:03,230
+the browser or giving it an easy way to
+
+648
+00:25:03,230 --> 00:25:05,780
+talk to the outside world and we now
+
+649
+00:25:05,780 --> 00:25:08,420
+have the same choice to make do we go
+
+650
+00:25:08,420 --> 00:25:11,180
+with this easiest route but give up on
+
+651
+00:25:11,180 --> 00:25:13,160
+sandboxing or do we do something
+
+652
+00:25:13,160 --> 00:25:15,410
+different something that allows better
+
+653
+00:25:15,410 --> 00:25:17,750
+control and leads to better security and
+
+654
+00:25:17,750 --> 00:25:20,090
+auditability and that last point is
+
+655
+00:25:20,090 --> 00:25:23,600
+really important if you run an
+
+656
+00:25:23,600 --> 00:25:24,950
+application or before you run an
+
+657
+00:25:24,950 --> 00:25:26,780
+application ideally you should be able
+
+658
+00:25:26,780 --> 00:25:29,090
+to tell what it can do to your machine
+
+659
+00:25:29,090 --> 00:25:31,610
+sort of in the worst case can it access
+
+660
+00:25:31,610 --> 00:25:33,680
+your entire file file system and then
+
+661
+00:25:33,680 --> 00:25:36,590
+just send off things to the internet say
+
+662
+00:25:36,590 --> 00:25:40,280
+your Bitcoin wallet maybe not run that
+
+663
+00:25:40,280 --> 00:25:42,470
+machine maybe that that application but
+
+664
+00:25:42,470 --> 00:25:45,800
+if it can only access files in a single
+
+665
+00:25:45,800 --> 00:25:47,870
+directory and right back to that effect
+
+666
+00:25:47,870 --> 00:25:53,870
+we seems fine now with POSIX that isn't
+
+667
+00:25:53,870 --> 00:25:58,490
+quite a be hard and it really only works
+
+668
+00:25:58,490 --> 00:26:00,830
+with support from the operating system
+
+669
+00:26:00,830 --> 00:26:03,950
+and how this works is different between
+
+670
+00:26:03,950 --> 00:26:06,530
+different operating systems so there
+
+671
+00:26:06,530 --> 00:26:10,190
+goes a lot of your portability solid
+
+672
+00:26:10,190 --> 00:26:14,900
+portable sandboxing is hard equi note
+
+673
+00:26:14,900 --> 00:26:17,630
+was created nobody had really figured
+
+674
+00:26:17,630 --> 00:26:20,230
+out how to apply it to the real world
+
+675
+00:26:20,230 --> 00:26:23,870
+but with things such as Google's fuschia
+
+676
+00:26:23,870 --> 00:26:26,750
+operating system this has changed better
+
+677
+00:26:26,750 --> 00:26:31,220
+designs exist and for well some time we
+
+678
+00:26:31,220 --> 00:26:32,900
+are working on a standard lab between
+
+679
+00:26:32,900 --> 00:26:35,420
+that will make it easy to build secure
+
+680
+00:26:35,420 --> 00:26:38,060
+auditable and portable modules and
+
+681
+00:26:38,060 --> 00:26:38,960
+application
+
+682
+00:26:38,960 --> 00:26:40,520
+that'll work for all of these different
+
+683
+00:26:40,520 --> 00:26:45,550
+use cases so with the standardized API
+
+684
+00:26:45,550 --> 00:26:49,070
+you could get the same flexibility that
+
+685
+00:26:49,070 --> 00:26:50,930
+you have with note but still have
+
+686
+00:26:50,930 --> 00:26:53,660
+security audit ability and the ability
+
+687
+00:26:53,660 --> 00:26:55,970
+to run your code in very different
+
+688
+00:26:55,970 --> 00:27:00,020
+runtimes and we are making sure that you
+
+689
+00:27:00,020 --> 00:27:02,330
+can use the tools you are used to as
+
+690
+00:27:02,330 --> 00:27:05,360
+well the compilers for languages such as
+
+691
+00:27:05,360 --> 00:27:09,290
+C C++ and others and the debugger
+
+692
+00:27:09,290 --> 00:27:13,610
+such as ll DB and gdb and IDE such as
+
+693
+00:27:13,610 --> 00:27:17,570
+Xcode and Visual Studio code so as you
+
+694
+00:27:17,570 --> 00:27:19,550
+can see there's a lot of active
+
+695
+00:27:19,550 --> 00:27:21,950
+development in this space we are all
+
+696
+00:27:21,950 --> 00:27:24,920
+working hard to make it easy for you to
+
+697
+00:27:24,920 --> 00:27:27,320
+target these different use cases without
+
+698
+00:27:27,320 --> 00:27:29,720
+making you jump through hoops to develop
+
+699
+00:27:29,720 --> 00:27:32,660
+and debug your code and with this we
+
+700
+00:27:32,660 --> 00:27:34,670
+bring these capabilities of the web that
+
+701
+00:27:34,670 --> 00:27:36,290
+Lynn mentioned the Portability and
+
+702
+00:27:36,290 --> 00:27:38,960
+security and the audit ability that I
+
+703
+00:27:38,960 --> 00:27:44,060
+mentioned to all of these use cases now
+
+704
+00:27:44,060 --> 00:27:46,400
+let's zoom back out and look at the
+
+705
+00:27:46,400 --> 00:27:51,170
+skill tree I said at the beginning of
+
+706
+00:27:51,170 --> 00:27:52,160
+this talk that people have a
+
+707
+00:27:52,160 --> 00:27:54,890
+misconception about web assembly this
+
+708
+00:27:54,890 --> 00:27:56,930
+idea that the web assembly that landed
+
+709
+00:27:56,930 --> 00:27:59,060
+in the MVP was the final version of web
+
+710
+00:27:59,060 --> 00:28:00,950
+assembly and I think you can see now why
+
+711
+00:28:00,950 --> 00:28:04,400
+this is a misconception yes the MVP
+
+712
+00:28:04,400 --> 00:28:06,260
+opened up a lot of opportunities and
+
+713
+00:28:06,260 --> 00:28:07,970
+made it possible to bring a lot of
+
+714
+00:28:07,970 --> 00:28:10,970
+desktop applications to the web but we
+
+715
+00:28:10,970 --> 00:28:13,820
+still have many use cases to unlock from
+
+716
+00:28:13,820 --> 00:28:15,590
+heavyweight desktop applications to
+
+717
+00:28:15,590 --> 00:28:17,450
+small modules to JavaScript frameworks
+
+718
+00:28:17,450 --> 00:28:18,830
+to all of those things outside of the
+
+719
+00:28:18,830 --> 00:28:21,290
+browser node and serverless in the
+
+720
+00:28:21,290 --> 00:28:23,180
+blockchain and portable CLI tools in the
+
+721
+00:28:23,180 --> 00:28:26,120
+internet of things so the web assembly
+
+722
+00:28:26,120 --> 00:28:27,650
+that we have today is not the end of the
+
+723
+00:28:27,650 --> 00:28:29,720
+story because what assembly still has
+
+724
+00:28:29,720 --> 00:28:31,880
+promised to keep and many places to go
+
+725
+00:28:31,880 --> 00:28:34,640
+before it sleeps I want to thank my
+
+726
+00:28:34,640 --> 00:28:36,230
+collaborators on developing this talk
+
+727
+00:28:36,230 --> 00:28:38,230
+luke Wagner until Schneider right and
+
+728
+00:28:38,230 --> 00:28:41,830
+thank you all for listening
+
+729
+00:28:41,830 --> 00:28:43,750
+you
+

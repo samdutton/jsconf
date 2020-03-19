@@ -1,0 +1,3197 @@
+1
+00:00:10,650 --> 00:00:21,500
+
+you
+
+2
+00:00:21,510 --> 00:00:24,550
+
+
+3
+00:00:24,560 --> 00:00:27,529
+Thanks so yeah I'm Peter this is Kevin
+
+4
+00:00:27,529 --> 00:00:29,449
+we work at Adobe on this thing called
+
+5
+00:00:29,449 --> 00:00:31,039
+brackets how many people have heard of
+
+6
+00:00:31,039 --> 00:00:32,540
+brackets before to set it curiosity
+
+7
+00:00:32,540 --> 00:00:34,309
+awesome how many people have actually
+
+8
+00:00:34,309 --> 00:00:37,160
+used it ever yes that's what we like to
+
+9
+00:00:37,160 --> 00:00:38,809
+hear so for everyone else
+
+10
+00:00:38,809 --> 00:00:40,730
+brackets is an open-source code editor
+
+11
+00:00:40,730 --> 00:00:42,620
+that we're building it's MIT licensed
+
+12
+00:00:42,620 --> 00:00:45,140
+it runs the desktop back app but it's
+
+13
+00:00:45,140 --> 00:00:46,879
+actually written in JavaScript and HTML
+
+14
+00:00:46,879 --> 00:00:49,610
+and CSS and for that reason we think of
+
+15
+00:00:49,610 --> 00:00:51,949
+it as not just a code editor we think of
+
+16
+00:00:51,949 --> 00:00:53,659
+it as almost sort of a platform or a
+
+17
+00:00:53,659 --> 00:00:56,080
+sandbox for building to enable
+
+18
+00:00:56,080 --> 00:00:59,600
+experimentation in sort of code editor
+
+19
+00:00:59,600 --> 00:01:01,790
+ideas sort of new functionality new
+
+20
+00:01:01,790 --> 00:01:04,210
+experimental exotic you know features
+
+21
+00:01:04,210 --> 00:01:06,920
+for writing code tools for development
+
+22
+00:01:06,920 --> 00:01:09,229
+code we've done a whole bunch of
+
+23
+00:01:09,229 --> 00:01:10,549
+different experiments ourselves some of
+
+24
+00:01:10,549 --> 00:01:12,530
+them are built into brackets we've
+
+25
+00:01:12,530 --> 00:01:14,450
+shipped some of these ideas as brackets
+
+26
+00:01:14,450 --> 00:01:15,770
+extension some of them are kind of still
+
+27
+00:01:15,770 --> 00:01:18,049
+experimental and ongoing and we're gonna
+
+28
+00:01:18,049 --> 00:01:19,850
+focus on two of them today HTML live
+
+29
+00:01:19,850 --> 00:01:21,439
+development and something called Theseus
+
+30
+00:01:21,439 --> 00:01:22,549
+and we're gonna sort of go pretty deep
+
+31
+00:01:22,549 --> 00:01:24,530
+under the hood and explain how these
+
+32
+00:01:24,530 --> 00:01:26,600
+crazy new editing ideas actually work
+
+33
+00:01:26,600 --> 00:01:28,729
+and for the first one of those Kevin's
+
+34
+00:01:28,729 --> 00:01:30,039
+going to talk about live development
+
+35
+00:01:30,039 --> 00:01:34,009
+yeah so brackets for some time has had
+
+36
+00:01:34,009 --> 00:01:36,320
+live CSS development so basically if
+
+37
+00:01:36,320 --> 00:01:38,270
+you're editing a CSS stylesheet as you
+
+38
+00:01:38,270 --> 00:01:39,950
+make changes to the style sheet that
+
+39
+00:01:39,950 --> 00:01:41,090
+changes automatically show up in your
+
+40
+00:01:41,090 --> 00:01:43,310
+browser which is really cool
+
+41
+00:01:43,310 --> 00:01:45,950
+but see it with CSS is fairly
+
+42
+00:01:45,950 --> 00:01:46,939
+straightforward because you could just
+
+43
+00:01:46,939 --> 00:01:47,899
+replace a little stylesheet and the
+
+44
+00:01:47,899 --> 00:01:49,670
+browser will get it right with HTML
+
+45
+00:01:49,670 --> 00:01:50,899
+that's a bit harder and that's why it
+
+46
+00:01:50,899 --> 00:01:52,490
+gets to be interesting and hopefully
+
+47
+00:01:52,490 --> 00:01:54,619
+you'll enjoy hearing how that works but
+
+48
+00:01:54,619 --> 00:01:57,530
+let me show off what it looks like let's
+
+49
+00:01:57,530 --> 00:02:00,710
+see so here I am in the browser window
+
+50
+00:02:00,710 --> 00:02:03,770
+I've got a reveal.js presentation that
+
+51
+00:02:03,770 --> 00:02:05,630
+we're sweet looking at on the left side
+
+52
+00:02:05,630 --> 00:02:08,060
+we've got the live development stuff so
+
+53
+00:02:08,060 --> 00:02:11,480
+I should we do a demo sure why not yeah
+
+54
+00:02:11,480 --> 00:02:13,220
+so you can see that it's actually really
+
+55
+00:02:13,220 --> 00:02:14,750
+fun writing a real presentation where
+
+56
+00:02:14,750 --> 00:02:16,340
+you can do live changes to it like that
+
+57
+00:02:16,340 --> 00:02:18,260
+and see the changes as you as you make
+
+58
+00:02:18,260 --> 00:02:22,480
+them so let's talk about how that
+
+59
+00:02:22,480 --> 00:02:26,569
+actually works and what we had to do so
+
+60
+00:02:26,569 --> 00:02:28,310
+basically the idea here is that we want
+
+61
+00:02:28,310 --> 00:02:30,080
+to update the use update the page as the
+
+62
+00:02:30,080 --> 00:02:31,970
+user types we want to do it quickly for
+
+63
+00:02:31,970 --> 00:02:33,739
+two reasons one so that the changes show
+
+64
+00:02:33,739 --> 00:02:35,599
+up in the browser quickly and also so
+
+65
+00:02:35,599 --> 00:02:38,000
+that the typing speed is still fast
+
+66
+00:02:38,000 --> 00:02:39,590
+so that that's important to keep those
+
+67
+00:02:39,590 --> 00:02:42,920
+both going swiftly and so we also want
+
+68
+00:02:42,920 --> 00:02:45,950
+to make a reasonably minimal change to
+
+69
+00:02:45,950 --> 00:02:47,510
+the page so that if they have JavaScript
+
+70
+00:02:47,510 --> 00:02:48,950
+running or something else running on
+
+71
+00:02:48,950 --> 00:02:52,100
+that page that's not static content then
+
+72
+00:02:52,100 --> 00:02:53,120
+we want to make it so that just the
+
+73
+00:02:53,120 --> 00:02:54,380
+static content has changed as they're
+
+74
+00:02:54,380 --> 00:02:56,930
+typing so that is what we wanted to do
+
+75
+00:02:56,930 --> 00:02:58,070
+how hard can that be
+
+76
+00:02:58,070 --> 00:03:01,610
+let's see if we look at the HTML or XML
+
+77
+00:03:01,610 --> 00:03:02,750
+differece search that's been done
+
+78
+00:03:02,750 --> 00:03:03,860
+because basically what we're doing is
+
+79
+00:03:03,860 --> 00:03:06,980
+we're finding the differences daniel
+
+80
+00:03:06,980 --> 00:03:08,480
+Arenberg brothers paper is surveying the
+
+81
+00:03:08,480 --> 00:03:10,250
+research and he said but the algorithms
+
+82
+00:03:10,250 --> 00:03:11,660
+are all kind of difficult to understand
+
+83
+00:03:11,660 --> 00:03:16,040
+and yeah they they were this particular
+
+84
+00:03:16,040 --> 00:03:17,690
+paper proved to be a nice starting point
+
+85
+00:03:17,690 --> 00:03:20,090
+for us detecting changes in XML
+
+86
+00:03:20,090 --> 00:03:22,580
+documents it's efficient for a speed and
+
+87
+00:03:22,580 --> 00:03:24,440
+memory there's some loss of quality
+
+88
+00:03:24,440 --> 00:03:25,580
+which means your dips might be a bit
+
+89
+00:03:25,580 --> 00:03:27,470
+larger but that wasn't quite the
+
+90
+00:03:27,470 --> 00:03:30,110
+important thing to us and an important
+
+91
+00:03:30,110 --> 00:03:31,820
+thing too is it has a move operation and
+
+92
+00:03:31,820 --> 00:03:36,620
+we'll see why you want moves later on so
+
+93
+00:03:36,620 --> 00:03:38,450
+as we started implementing it we found a
+
+94
+00:03:38,450 --> 00:03:40,340
+number of differences between what that
+
+95
+00:03:40,340 --> 00:03:42,019
+paper was talking about and what we need
+
+96
+00:03:42,019 --> 00:03:44,239
+to do the biggest difference is that in
+
+97
+00:03:44,239 --> 00:03:46,670
+our environment we we're not just
+
+98
+00:03:46,670 --> 00:03:48,470
+dipping to static files on disk we
+
+99
+00:03:48,470 --> 00:03:50,180
+actually have this code editor that we
+
+100
+00:03:50,180 --> 00:03:51,890
+can store information about the document
+
+101
+00:03:51,890 --> 00:03:53,450
+as you're as you're writing your
+
+102
+00:03:53,450 --> 00:03:55,550
+document so what we do is we use this
+
+103
+00:03:55,550 --> 00:03:57,200
+feature we use an editor called code
+
+104
+00:03:57,200 --> 00:03:59,300
+mirror as the main editing surface in
+
+105
+00:03:59,300 --> 00:04:01,190
+brackets and it has a feature called
+
+106
+00:04:01,190 --> 00:04:02,930
+marks which basically lets you mark a
+
+107
+00:04:02,930 --> 00:04:04,489
+range of text and code mirror will keep
+
+108
+00:04:04,489 --> 00:04:05,840
+that mark up to date as the users
+
+109
+00:04:05,840 --> 00:04:07,760
+editing so if they insert some more text
+
+110
+00:04:07,760 --> 00:04:11,870
+that mark kind of stretches out so what
+
+111
+00:04:11,870 --> 00:04:13,730
+we do behind the scenes is we basically
+
+112
+00:04:13,730 --> 00:04:15,799
+create marks for each tag that go from
+
+113
+00:04:15,799 --> 00:04:16,970
+the beginning of the start tag to the
+
+114
+00:04:16,970 --> 00:04:19,580
+end of the end tag and we give it an ID
+
+115
+00:04:19,580 --> 00:04:21,109
+so each tag is going to get its own
+
+116
+00:04:21,109 --> 00:04:23,000
+unique ID and we propagate that all the
+
+117
+00:04:23,000 --> 00:04:24,680
+way through to the browser so that we
+
+118
+00:04:24,680 --> 00:04:26,270
+want to when we want to send dips across
+
+119
+00:04:26,270 --> 00:04:27,590
+to the browser we can edit based on
+
+120
+00:04:27,590 --> 00:04:29,780
+these IDs that were assigning so the
+
+121
+00:04:29,780 --> 00:04:33,470
+user never even has to see those so the
+
+122
+00:04:33,470 --> 00:04:35,090
+basic process that we go through is we
+
+123
+00:04:35,090 --> 00:04:36,800
+try to find the affected part of the
+
+124
+00:04:36,800 --> 00:04:39,310
+tree see if we can do maybe a partial
+
+125
+00:04:39,310 --> 00:04:42,410
+work on the tree we tokenize and parse
+
+126
+00:04:42,410 --> 00:04:44,300
+the document generate a bunch of edits
+
+127
+00:04:44,300 --> 00:04:46,520
+sudden those across the browser and then
+
+128
+00:04:46,520 --> 00:04:48,110
+apply them the browser
+
+129
+00:04:48,110 --> 00:04:49,550
+I'm not going to talk about the last two
+
+130
+00:04:49,550 --> 00:04:51,409
+they're they're not quite as interesting
+
+131
+00:04:51,409 --> 00:04:53,449
+for this purpose but I'll focus on those
+
+132
+00:04:53,449 --> 00:04:56,869
+first three so the first step in this
+
+133
+00:04:56,869 --> 00:04:58,669
+bunch of code here is basically just
+
+134
+00:04:58,669 --> 00:05:00,110
+figuring out is it a fairly simple
+
+135
+00:05:00,110 --> 00:05:02,419
+change and on that second line is it a
+
+136
+00:05:02,419 --> 00:05:04,580
+dangerous edit and basically idea where
+
+137
+00:05:04,580 --> 00:05:05,959
+there is that is it something that could
+
+138
+00:05:05,959 --> 00:05:08,719
+structurally change the document because
+
+139
+00:05:08,719 --> 00:05:10,129
+we found that there's a lot of edge
+
+140
+00:05:10,129 --> 00:05:12,889
+cases there to try and figure out can we
+
+141
+00:05:12,889 --> 00:05:15,080
+safely do just part of the tree if we
+
+142
+00:05:15,080 --> 00:05:16,429
+see a less than sign we just give up we
+
+143
+00:05:16,429 --> 00:05:18,110
+say no and we're gonna we're going to
+
+144
+00:05:18,110 --> 00:05:20,509
+just go ahead and do a full diff but a
+
+145
+00:05:20,509 --> 00:05:22,909
+lot of times as user typing you can
+
+146
+00:05:22,909 --> 00:05:25,249
+actually just focus on part of the tree
+
+147
+00:05:25,249 --> 00:05:27,740
+and work from there so for example in
+
+148
+00:05:27,740 --> 00:05:32,029
+that mark example I showed the h2 tag
+
+149
+00:05:32,029 --> 00:05:33,349
+there if you're just editing text in
+
+150
+00:05:33,349 --> 00:05:35,149
+there we can and you don't put a less
+
+151
+00:05:35,149 --> 00:05:36,830
+than sign or something we can say oh
+
+152
+00:05:36,830 --> 00:05:38,599
+yeah we just need to look at that h2 tag
+
+153
+00:05:38,599 --> 00:05:40,909
+and run a diff and see what see if
+
+154
+00:05:40,909 --> 00:05:42,110
+there's been a change of the text for
+
+155
+00:05:42,110 --> 00:05:44,360
+example and send that across so it's
+
+156
+00:05:44,360 --> 00:05:45,679
+much much faster especially in a big
+
+157
+00:05:45,679 --> 00:05:49,909
+document so the tokenizing parsing step
+
+158
+00:05:49,909 --> 00:05:52,309
+we started with this particular parsers
+
+159
+00:05:52,309 --> 00:05:55,369
+tokenizer because it had the right kind
+
+160
+00:05:55,369 --> 00:05:56,689
+of api for us and we've made a lot of
+
+161
+00:05:56,689 --> 00:05:58,759
+changes to it since then that are
+
+162
+00:05:58,759 --> 00:06:00,019
+specific to our need but but basically
+
+163
+00:06:00,019 --> 00:06:01,969
+we read the tokens as soon as the
+
+164
+00:06:01,969 --> 00:06:03,439
+document becomes invalid we actually
+
+165
+00:06:03,439 --> 00:06:04,819
+just stop updating we wait until it gets
+
+166
+00:06:04,819 --> 00:06:06,409
+valid again and then we make then we
+
+167
+00:06:06,409 --> 00:06:08,599
+start running dips again and then we
+
+168
+00:06:08,599 --> 00:06:10,459
+match up the the stuff that we're
+
+169
+00:06:10,459 --> 00:06:11,719
+reading from the document from the
+
+170
+00:06:11,719 --> 00:06:13,369
+document text we match that up with the
+
+171
+00:06:13,369 --> 00:06:16,009
+tokens sorry from the IDs that code
+
+172
+00:06:16,009 --> 00:06:17,809
+mirror is keeping for us and then we
+
+173
+00:06:17,809 --> 00:06:20,180
+build what we call a simple Dom it's not
+
+174
+00:06:20,180 --> 00:06:22,430
+actually it's our own little simple
+
+175
+00:06:22,430 --> 00:06:25,519
+JavaScript objects it's not native Dom
+
+176
+00:06:25,519 --> 00:06:27,589
+objects so we just have these simple Dom
+
+177
+00:06:27,589 --> 00:06:30,319
+objects and we calculate these hashes so
+
+178
+00:06:30,319 --> 00:06:31,610
+we'll take a look at what the simple Dom
+
+179
+00:06:31,610 --> 00:06:33,229
+looks like and I'll and you can see the
+
+180
+00:06:33,229 --> 00:06:36,680
+hashes here so basically if we have this
+
+181
+00:06:36,680 --> 00:06:39,349
+sort of example paragraph it's got you
+
+182
+00:06:39,349 --> 00:06:40,550
+know an attribute on it there are some
+
+183
+00:06:40,550 --> 00:06:43,129
+text nodes underneath it there's a an M
+
+184
+00:06:43,129 --> 00:06:44,839
+tag underneath it it's got its own text
+
+185
+00:06:44,839 --> 00:06:47,269
+node and so you know you have your
+
+186
+00:06:47,269 --> 00:06:50,269
+typical tree structure we had IDs to all
+
+187
+00:06:50,269 --> 00:06:52,159
+the elements that we talked about
+
+188
+00:06:52,159 --> 00:06:53,809
+already there those pass all the way
+
+189
+00:06:53,809 --> 00:06:55,610
+through and we have these signatures and
+
+190
+00:06:55,610 --> 00:06:56,979
+the signatures are really handy because
+
+191
+00:06:56,979 --> 00:06:59,240
+especially the subtree signature because
+
+192
+00:06:59,240 --> 00:07:00,800
+what it lets us do is
+
+193
+00:07:00,800 --> 00:07:02,660
+say you have you make a change to the
+
+194
+00:07:02,660 --> 00:07:05,449
+body of your of your page and in your
+
+195
+00:07:05,449 --> 00:07:07,190
+HTML page has you know you've got your
+
+196
+00:07:07,190 --> 00:07:09,379
+HTML element at the root and then you've
+
+197
+00:07:09,379 --> 00:07:11,840
+got a head and a body and basically we
+
+198
+00:07:11,840 --> 00:07:13,879
+look at the head of the new tree and
+
+199
+00:07:13,879 --> 00:07:15,349
+with the head of the old tree and hey
+
+200
+00:07:15,349 --> 00:07:16,759
+they've got the same subtree signature
+
+201
+00:07:16,759 --> 00:07:18,710
+that means we don't need to look at the
+
+202
+00:07:18,710 --> 00:07:20,629
+head at all so we just stop processing
+
+203
+00:07:20,629 --> 00:07:22,490
+on that part of the tree so we couldn't
+
+204
+00:07:22,490 --> 00:07:24,050
+quickly zero in on the part of the tree
+
+205
+00:07:24,050 --> 00:07:25,190
+that has changed by using these
+
+206
+00:07:25,190 --> 00:07:27,919
+signatures without having to compare
+
+207
+00:07:27,919 --> 00:07:29,449
+everything in the tree which makes a big
+
+208
+00:07:29,449 --> 00:07:32,720
+difference so to do that we use
+
+209
+00:07:32,720 --> 00:07:34,430
+something called murmur hash 3 which is
+
+210
+00:07:34,430 --> 00:07:39,199
+a fairly efficient hashing function and
+
+211
+00:07:39,199 --> 00:07:41,030
+we basically just take the information
+
+212
+00:07:41,030 --> 00:07:43,190
+that we need to look for the changes so
+
+213
+00:07:43,190 --> 00:07:44,659
+for like attributes we can just add up
+
+214
+00:07:44,659 --> 00:07:47,509
+the attribute pairs put them in a string
+
+215
+00:07:47,509 --> 00:07:48,800
+and then basically use that string and
+
+216
+00:07:48,800 --> 00:07:51,229
+hash it this is all fairly quick and
+
+217
+00:07:51,229 --> 00:07:54,860
+works pretty well so to show how this
+
+218
+00:07:54,860 --> 00:07:56,719
+what kind of edits were actually going
+
+219
+00:07:56,719 --> 00:07:58,430
+to produce here I'll use this simple
+
+220
+00:07:58,430 --> 00:08:00,620
+edit example where it's basically gonna
+
+221
+00:08:00,620 --> 00:08:03,080
+take the high J's conf paragraph and the
+
+222
+00:08:03,080 --> 00:08:04,940
+we're merging paragraphs paragraph and
+
+223
+00:08:04,940 --> 00:08:07,069
+we're gonna remove the paragraph tag
+
+224
+00:08:07,069 --> 00:08:11,030
+between them so so what we do is we
+
+225
+00:08:11,030 --> 00:08:12,650
+start off with a Dom that looks like a
+
+226
+00:08:12,650 --> 00:08:15,500
+simple Dom it looks like this so section
+
+227
+00:08:15,500 --> 00:08:17,150
+these IDs of course are gonna be
+
+228
+00:08:17,150 --> 00:08:18,229
+different than what we see in the actual
+
+229
+00:08:18,229 --> 00:08:20,389
+browser but section is the ID number one
+
+230
+00:08:20,389 --> 00:08:22,580
+and then we've got an h2 tag is number
+
+231
+00:08:22,580 --> 00:08:25,789
+two the change that we're gonna end up
+
+232
+00:08:25,789 --> 00:08:28,940
+making is that that paragraph ID number
+
+233
+00:08:28,940 --> 00:08:30,889
+four that's gonna get deleted because
+
+234
+00:08:30,889 --> 00:08:33,140
+we're going to delete the closing tag in
+
+235
+00:08:33,140 --> 00:08:34,370
+the start tag of the new paragraph and
+
+236
+00:08:34,370 --> 00:08:36,560
+that M tag that's number five needs to
+
+237
+00:08:36,560 --> 00:08:38,959
+move under paragraph three so we end up
+
+238
+00:08:38,959 --> 00:08:40,339
+with something that looks like this in
+
+239
+00:08:40,339 --> 00:08:41,979
+the end
+
+240
+00:08:41,979 --> 00:08:46,130
+so let's actually do the edit and see
+
+241
+00:08:46,130 --> 00:08:52,010
+what we get so let me find my example
+
+242
+00:08:52,010 --> 00:08:55,490
+okay so here's my example and I'm gonna
+
+243
+00:08:55,490 --> 00:08:58,399
+go ahead and do that so now we have
+
+244
+00:08:58,399 --> 00:09:00,410
+merged those two paragraphs together and
+
+245
+00:09:00,410 --> 00:09:02,300
+I have developer tools running against
+
+246
+00:09:02,300 --> 00:09:05,390
+brackets right here so we can see the
+
+247
+00:09:05,390 --> 00:09:07,670
+list of edits which communally actually
+
+248
+00:09:07,670 --> 00:09:10,490
+fits up on the screen perfectly
+
+249
+00:09:10,490 --> 00:09:12,590
+so the list of edits that we have we got
+
+250
+00:09:12,590 --> 00:09:14,240
+a few different edit types there are no
+
+251
+00:09:14,240 --> 00:09:15,470
+attribute edits going on here those are
+
+252
+00:09:15,470 --> 00:09:17,420
+very simple but we've got this this
+
+253
+00:09:17,420 --> 00:09:19,220
+first one is kind of mysterious it's
+
+254
+00:09:19,220 --> 00:09:21,260
+remember nodes and basically this is a
+
+255
+00:09:21,260 --> 00:09:21,890
+trick
+
+256
+00:09:21,890 --> 00:09:24,380
+because the way they browser implements
+
+257
+00:09:24,380 --> 00:09:27,710
+the the changes on its side is it just
+
+258
+00:09:27,710 --> 00:09:28,970
+looks at these edits as a set of
+
+259
+00:09:28,970 --> 00:09:30,650
+instructions it does one by one
+
+260
+00:09:30,650 --> 00:09:32,840
+so when we have a node that we know is
+
+261
+00:09:32,840 --> 00:09:35,120
+moving for example we will tell the
+
+262
+00:09:35,120 --> 00:09:36,980
+browser side hey hang on to this node
+
+263
+00:09:36,980 --> 00:09:38,840
+because you're gonna need it later
+
+264
+00:09:38,840 --> 00:09:44,360
+so that tag ID one to two to seven that
+
+265
+00:09:44,360 --> 00:09:45,680
+particular one is going to be that M
+
+266
+00:09:45,680 --> 00:09:46,790
+node because that's the one that's
+
+267
+00:09:46,790 --> 00:09:48,770
+that's moving so it's going so the
+
+268
+00:09:48,770 --> 00:09:50,690
+browser's gonna hang on to that then you
+
+269
+00:09:50,690 --> 00:09:52,970
+see we got a text replace these are
+
+270
+00:09:52,970 --> 00:09:54,740
+pretty common because when you're when
+
+271
+00:09:54,740 --> 00:09:55,970
+you're writing your HTML and it's nicely
+
+272
+00:09:55,970 --> 00:09:58,160
+structured and indented and all that you
+
+273
+00:09:58,160 --> 00:09:59,330
+have a lot of white space in there and
+
+274
+00:09:59,330 --> 00:10:01,520
+so that the text nodes we actually don't
+
+275
+00:10:01,520 --> 00:10:03,710
+really have a way to refer to them like
+
+276
+00:10:03,710 --> 00:10:05,390
+we do with elements you know with
+
+277
+00:10:05,390 --> 00:10:08,030
+elements you can easily just pick them
+
+278
+00:10:08,030 --> 00:10:09,500
+up by ID but with text node you've got
+
+279
+00:10:09,500 --> 00:10:11,720
+to actually refer to them sort of to the
+
+280
+00:10:11,720 --> 00:10:13,100
+relative to the elements that they're
+
+281
+00:10:13,100 --> 00:10:15,650
+around so that with this text replace
+
+282
+00:10:15,650 --> 00:10:17,450
+we've got happening here you can see it
+
+283
+00:10:17,450 --> 00:10:19,160
+has a parent ID so this text node lives
+
+284
+00:10:19,160 --> 00:10:21,320
+under that particular element and it's
+
+285
+00:10:21,320 --> 00:10:23,300
+after the element with this other ID and
+
+286
+00:10:23,300 --> 00:10:26,420
+before the element with this final ID 1
+
+287
+00:10:26,420 --> 00:10:29,930
+to 2 to 6 so that's really the only way
+
+288
+00:10:29,930 --> 00:10:33,280
+we could refer to text nodes so we
+
+289
+00:10:33,280 --> 00:10:35,180
+handle it that way we basically send
+
+290
+00:10:35,180 --> 00:10:37,880
+across a text replace saying here's your
+
+291
+00:10:37,880 --> 00:10:40,400
+new content just paste it all in the
+
+292
+00:10:40,400 --> 00:10:42,110
+next one is the element delete that we
+
+293
+00:10:42,110 --> 00:10:43,790
+expect for the paragraph that's going
+
+294
+00:10:43,790 --> 00:10:45,920
+away and then we do have another
+
+295
+00:10:45,920 --> 00:10:48,410
+whitespace replacement followed by the
+
+296
+00:10:48,410 --> 00:10:51,200
+element move so that's the so it's tag
+
+297
+00:10:51,200 --> 00:10:53,840
+ID 1 2 2 2 7 just like we said up at the
+
+298
+00:10:53,840 --> 00:10:55,820
+remember nodes 1 so basically this is
+
+299
+00:10:55,820 --> 00:10:58,490
+this is basically the the instruction
+
+300
+00:10:58,490 --> 00:10:59,780
+that is putting that element in the
+
+301
+00:10:59,780 --> 00:11:01,820
+place that it needs to be and you can
+
+302
+00:11:01,820 --> 00:11:04,130
+see it says last child is true and
+
+303
+00:11:04,130 --> 00:11:05,000
+that's basically telling the browser
+
+304
+00:11:05,000 --> 00:11:07,120
+just go ahead and do an append child
+
+305
+00:11:07,120 --> 00:11:11,300
+because this is the last one and then
+
+306
+00:11:11,300 --> 00:11:13,250
+finally s1 one more bit of white space
+
+307
+00:11:13,250 --> 00:11:14,270
+because you can never have too much
+
+308
+00:11:14,270 --> 00:11:17,960
+white space yeah so that's that's
+
+309
+00:11:17,960 --> 00:11:22,160
+basically what the edits look like so
+
+310
+00:11:22,160 --> 00:11:23,640
+how do we actually get those at
+
+311
+00:11:23,640 --> 00:11:26,070
+how do we get that edit list so we
+
+312
+00:11:26,070 --> 00:11:29,340
+basically have to go from the the old
+
+313
+00:11:29,340 --> 00:11:30,630
+treat of the new we needed to set up a
+
+314
+00:11:30,630 --> 00:11:34,440
+set of steps to do that so we start by
+
+315
+00:11:34,440 --> 00:11:36,570
+looking at the new tree so we take the
+
+316
+00:11:36,570 --> 00:11:39,780
+root of the new tree and we basically
+
+317
+00:11:39,780 --> 00:11:41,970
+step through it and compare its
+
+318
+00:11:41,970 --> 00:11:43,860
+attribute hashes you know those are very
+
+319
+00:11:43,860 --> 00:11:46,430
+simple changes compare child signatures
+
+320
+00:11:46,430 --> 00:11:49,170
+so there's a child signature and if the
+
+321
+00:11:49,170 --> 00:11:51,180
+new trees child signature is different
+
+322
+00:11:51,180 --> 00:11:52,860
+than the old trees child signature child
+
+323
+00:11:52,860 --> 00:11:54,720
+signature that means one of its direct
+
+324
+00:11:54,720 --> 00:11:57,390
+children has has changed and so we've
+
+325
+00:11:57,390 --> 00:11:58,770
+got another function that's the most
+
+326
+00:11:58,770 --> 00:12:00,900
+complicated part that generates those
+
+327
+00:12:00,900 --> 00:12:03,840
+element those edits and then we compare
+
+328
+00:12:03,840 --> 00:12:05,040
+subtree signatures so if those have
+
+329
+00:12:05,040 --> 00:12:06,480
+changed then we know we've got more
+
+330
+00:12:06,480 --> 00:12:08,670
+processing to do in this loop where
+
+331
+00:12:08,670 --> 00:12:10,380
+we're going to have to compare sub trees
+
+332
+00:12:10,380 --> 00:12:12,780
+further if there's a change there and
+
+333
+00:12:12,780 --> 00:12:15,060
+then there's a final extra case where
+
+334
+00:12:15,060 --> 00:12:17,190
+you might need to add a new element that
+
+335
+00:12:17,190 --> 00:12:20,880
+didn't exist in the old tree but so the
+
+336
+00:12:20,880 --> 00:12:22,920
+generating child edits is the
+
+337
+00:12:22,920 --> 00:12:24,990
+complicated part stuff like text nodes
+
+338
+00:12:24,990 --> 00:12:26,220
+makes it complicated because you know we
+
+339
+00:12:26,220 --> 00:12:28,500
+had that whole after ID before ID thing
+
+340
+00:12:28,500 --> 00:12:30,540
+that we've got to figure out moves are
+
+341
+00:12:30,540 --> 00:12:32,310
+kind of complicated because you have to
+
+342
+00:12:32,310 --> 00:12:33,840
+look to see okay this thing was deleted
+
+343
+00:12:33,840 --> 00:12:36,000
+so on one side where it was deleted in
+
+344
+00:12:36,000 --> 00:12:37,410
+one place but it's added another place
+
+345
+00:12:37,410 --> 00:12:39,450
+so we didn't need to kind of keep track
+
+346
+00:12:39,450 --> 00:12:42,740
+of that and then large structure changes
+
+347
+00:12:42,740 --> 00:12:45,870
+get complicated so walking through this
+
+348
+00:12:45,870 --> 00:12:47,820
+a little bit here are the old and new
+
+349
+00:12:47,820 --> 00:12:51,530
+trees so what happens is that the
+
+350
+00:12:51,530 --> 00:12:53,970
+section with the idea of one that's
+
+351
+00:12:53,970 --> 00:12:55,230
+going to get as child signatures
+
+352
+00:12:55,230 --> 00:12:56,700
+compared it's going to say well okay
+
+353
+00:12:56,700 --> 00:12:57,840
+there's so there's some difference among
+
+354
+00:12:57,840 --> 00:12:59,910
+these children here so that's then it's
+
+355
+00:12:59,910 --> 00:13:03,030
+gonna step through the children of that
+
+356
+00:13:03,030 --> 00:13:05,130
+element from the new tree and then the
+
+357
+00:13:05,130 --> 00:13:07,530
+old and compare them item by item and
+
+358
+00:13:07,530 --> 00:13:09,120
+you can see there's no change the text
+
+359
+00:13:09,120 --> 00:13:11,670
+node there's no change to the H to no
+
+360
+00:13:11,670 --> 00:13:13,320
+change paragraph 3 is still the same
+
+361
+00:13:13,320 --> 00:13:14,760
+element that it was before so that's
+
+362
+00:13:14,760 --> 00:13:16,050
+that's okay it doesn't actually think
+
+363
+00:13:16,050 --> 00:13:18,270
+there's a problem there and then that
+
+364
+00:13:18,270 --> 00:13:21,690
+text node is is the same and then that
+
+365
+00:13:21,690 --> 00:13:22,800
+we're done actually at that point
+
+366
+00:13:22,800 --> 00:13:25,020
+looking at the elements in the new in
+
+367
+00:13:25,020 --> 00:13:27,210
+the new tree so we know if we're done
+
+368
+00:13:27,210 --> 00:13:28,260
+looking at stuff in the new tree but
+
+369
+00:13:28,260 --> 00:13:29,520
+there's still stuff in the old tree that
+
+370
+00:13:29,520 --> 00:13:31,560
+stuff's been deleted so it's going to go
+
+371
+00:13:31,560 --> 00:13:33,570
+ahead and make a delete for that
+
+372
+00:13:33,570 --> 00:13:37,110
+paragraph at that point but then it
+
+373
+00:13:37,110 --> 00:13:37,410
+knows
+
+374
+00:13:37,410 --> 00:13:40,379
+that as it as it goes back to that main
+
+375
+00:13:40,379 --> 00:13:42,120
+loop it says okay well so paragraph
+
+376
+00:13:42,120 --> 00:13:44,490
+three has a change to its children so
+
+377
+00:13:44,490 --> 00:13:45,870
+it's going to go and cycle through
+
+378
+00:13:45,870 --> 00:13:48,629
+paragraph threes children so you see
+
+379
+00:13:48,629 --> 00:13:52,470
+there that the text node hi J s conf is
+
+380
+00:13:52,470 --> 00:13:56,189
+still the same but the M node is new so
+
+381
+00:13:56,189 --> 00:13:58,230
+and actually in this case the old tree
+
+382
+00:13:58,230 --> 00:13:59,759
+has run out of has run out of nodes to
+
+383
+00:13:59,759 --> 00:14:01,319
+compare but the new tree still has some
+
+384
+00:14:01,319 --> 00:14:02,610
+so you know those those are additions
+
+385
+00:14:02,610 --> 00:14:05,339
+that have happened but in the case of
+
+386
+00:14:05,339 --> 00:14:07,050
+this M node it knows that this M no it
+
+387
+00:14:07,050 --> 00:14:09,269
+existed in the old tree but it just
+
+388
+00:14:09,269 --> 00:14:10,829
+exists here now so it knows that's a
+
+389
+00:14:10,829 --> 00:14:12,870
+move and that's how it ends up making a
+
+390
+00:14:12,870 --> 00:14:16,439
+move edit for it and that's the basic
+
+391
+00:14:16,439 --> 00:14:18,990
+process it goes through you know each of
+
+392
+00:14:18,990 --> 00:14:21,629
+those differences that it spots it has a
+
+393
+00:14:21,629 --> 00:14:23,129
+different function that it's going to
+
+394
+00:14:23,129 --> 00:14:25,439
+call that generates the edits and it you
+
+395
+00:14:25,439 --> 00:14:27,839
+know will run some extra checks to see
+
+396
+00:14:27,839 --> 00:14:29,639
+when there's moves and things like that
+
+397
+00:14:29,639 --> 00:14:33,870
+it adds it basically has to do the
+
+398
+00:14:33,870 --> 00:14:35,160
+bookkeeping like when it spots an
+
+399
+00:14:35,160 --> 00:14:37,649
+element that it's that is appropriate
+
+400
+00:14:37,649 --> 00:14:40,709
+for using as a text after ID for example
+
+401
+00:14:40,709 --> 00:14:43,920
+it then sets it and hangs onto that data
+
+402
+00:14:43,920 --> 00:14:45,990
+that elements ID so that it can refer to
+
+403
+00:14:45,990 --> 00:14:47,610
+that in future text note edits and
+
+404
+00:14:47,610 --> 00:14:50,519
+things like that so it goes through this
+
+405
+00:14:50,519 --> 00:14:52,680
+this general process and there's a lot
+
+406
+00:14:52,680 --> 00:14:54,269
+of code to make that work can we have a
+
+407
+00:14:54,269 --> 00:14:56,339
+lot of test cases to make it work right
+
+408
+00:14:56,339 --> 00:14:59,339
+so performance why is that was what
+
+409
+00:14:59,339 --> 00:15:00,269
+we've been working on this print I
+
+410
+00:15:00,269 --> 00:15:01,800
+should mention this feature is actually
+
+411
+00:15:01,800 --> 00:15:03,990
+new in brackets sprint 31 which is the
+
+412
+00:15:03,990 --> 00:15:06,569
+sprint we're in right now so in a few
+
+413
+00:15:06,569 --> 00:15:08,279
+days we're gonna have a build out that
+
+414
+00:15:08,279 --> 00:15:09,630
+actually includes this feature right now
+
+415
+00:15:09,630 --> 00:15:11,939
+it's it's not a shipping feature but it
+
+416
+00:15:11,939 --> 00:15:13,800
+but it will be in a few days
+
+417
+00:15:13,800 --> 00:15:15,240
+so this sprint we've actually been
+
+418
+00:15:15,240 --> 00:15:17,040
+working on performance so you so it
+
+419
+00:15:17,040 --> 00:15:18,630
+seems like tokenizing and parsing and
+
+420
+00:15:18,630 --> 00:15:20,220
+hash computation in diff generation
+
+421
+00:15:20,220 --> 00:15:22,079
+sounds like that can actually actually
+
+422
+00:15:22,079 --> 00:15:24,089
+get kind of expensive but it turns out
+
+423
+00:15:24,089 --> 00:15:27,089
+that that's not the expensive part so it
+
+424
+00:15:27,089 --> 00:15:28,290
+always pays to measure before you
+
+425
+00:15:28,290 --> 00:15:31,199
+optimize it turned out that the code
+
+426
+00:15:31,199 --> 00:15:33,899
+mirror mark stuff was where we really
+
+427
+00:15:33,899 --> 00:15:36,209
+saw our bottlenecks and in fact a
+
+428
+00:15:36,209 --> 00:15:38,040
+specific area of it was was when you're
+
+429
+00:15:38,040 --> 00:15:40,620
+trying to find where the mark range is
+
+430
+00:15:40,620 --> 00:15:42,689
+in the text code mirror has to do a lot
+
+431
+00:15:42,689 --> 00:15:43,680
+of work to do that because basically
+
+432
+00:15:43,680 --> 00:15:45,990
+when you say get me the positions of
+
+433
+00:15:45,990 --> 00:15:48,660
+this mark it then goes has to basically
+
+434
+00:15:48,660 --> 00:15:50,370
+linearly scan through the document to
+
+435
+00:15:50,370 --> 00:15:50,730
+find
+
+436
+00:15:50,730 --> 00:15:52,709
+where the end of that mark is from the
+
+437
+00:15:52,709 --> 00:15:54,000
+beginning and figure out those positions
+
+438
+00:15:54,000 --> 00:15:57,389
+again recompute them so that's that gets
+
+439
+00:15:57,389 --> 00:15:58,649
+kind of expensive and that overwhelmed
+
+440
+00:15:58,649 --> 00:16:01,620
+everything else we had going on so all
+
+441
+00:16:01,620 --> 00:16:03,870
+we had to do is basically cache that and
+
+442
+00:16:03,870 --> 00:16:05,010
+that made that made all the difference
+
+443
+00:16:05,010 --> 00:16:06,449
+in the world as far as performance was
+
+444
+00:16:06,449 --> 00:16:10,500
+concerned so you can read more about
+
+445
+00:16:10,500 --> 00:16:13,589
+this research on our wiki if you go look
+
+446
+00:16:13,589 --> 00:16:16,199
+at the pages list you'll find the HTML
+
+447
+00:16:16,199 --> 00:16:18,329
+Dom data structure research if you're
+
+448
+00:16:18,329 --> 00:16:19,949
+interested in further detail on this and
+
+449
+00:16:19,949 --> 00:16:21,240
+of course it's open source so you can
+
+450
+00:16:21,240 --> 00:16:25,440
+also see the code Peter you want to take
+
+451
+00:16:25,440 --> 00:16:26,790
+it away all right so we're gonna switch
+
+452
+00:16:26,790 --> 00:16:29,310
+gears a little bit and talk a little bit
+
+453
+00:16:29,310 --> 00:16:32,100
+about the JavaScript at it inside of the
+
+454
+00:16:32,100 --> 00:16:33,240
+world actually more specifically
+
+455
+00:16:33,240 --> 00:16:35,130
+JavaScript debugging mr. project we're
+
+456
+00:16:35,130 --> 00:16:36,930
+working on called Theseus it's actually
+
+457
+00:16:36,930 --> 00:16:38,040
+a research project we're doing in
+
+458
+00:16:38,040 --> 00:16:39,839
+collaboration with this guy Tom Lieber
+
+459
+00:16:39,839 --> 00:16:42,360
+from MIT so I'm very excited to be
+
+460
+00:16:42,360 --> 00:16:43,290
+talking about this because I think
+
+461
+00:16:43,290 --> 00:16:44,490
+between the two of us we have a monopoly
+
+462
+00:16:44,490 --> 00:16:46,620
+on the big hair for code editor
+
+463
+00:16:46,620 --> 00:16:51,149
+developers it's a good combo so Theseus
+
+464
+00:16:51,149 --> 00:16:53,760
+is a type of omniscience debugger anyone
+
+465
+00:16:53,760 --> 00:16:55,050
+heard that term before omniscient
+
+466
+00:16:55,050 --> 00:16:57,720
+debugging right so sometimes these are
+
+467
+00:16:57,720 --> 00:16:59,120
+called historical debuggers and
+
+468
+00:16:59,120 --> 00:17:01,079
+basically means that it's a it's a
+
+469
+00:17:01,079 --> 00:17:03,240
+debugger that has captured a deep
+
+470
+00:17:03,240 --> 00:17:05,040
+information about the entire history of
+
+471
+00:17:05,040 --> 00:17:06,630
+execution so rather than just knowing
+
+472
+00:17:06,630 --> 00:17:07,919
+the state when you're positive
+
+473
+00:17:07,919 --> 00:17:09,689
+breakpoint it knows everything that's
+
+474
+00:17:09,689 --> 00:17:11,309
+happened up until leading up to that
+
+475
+00:17:11,309 --> 00:17:13,290
+moment in time so some omniscient
+
+476
+00:17:13,290 --> 00:17:14,880
+debuggers use that to provide a step
+
+477
+00:17:14,880 --> 00:17:16,350
+backwards command so in addition to
+
+478
+00:17:16,350 --> 00:17:18,089
+being able to step line by line forwards
+
+479
+00:17:18,089 --> 00:17:19,770
+in the code you can also reverse time
+
+480
+00:17:19,770 --> 00:17:22,919
+and rewind line by line yeah and that's
+
+481
+00:17:22,919 --> 00:17:24,900
+a pretty cool feature there's some some
+
+482
+00:17:24,900 --> 00:17:25,919
+newer omniscient debuggers that are
+
+483
+00:17:25,919 --> 00:17:27,240
+experimenting with the idea of trying to
+
+484
+00:17:27,240 --> 00:17:28,830
+visualize the entire flow of execution
+
+485
+00:17:28,830 --> 00:17:30,660
+rather than just showing you a sliver of
+
+486
+00:17:30,660 --> 00:17:32,490
+time that you can step forward and
+
+487
+00:17:32,490 --> 00:17:33,780
+backward they try to show you everything
+
+488
+00:17:33,780 --> 00:17:36,120
+all together so if anyone's seen this
+
+489
+00:17:36,120 --> 00:17:38,130
+demo from Brett Victor that's in that
+
+490
+00:17:38,130 --> 00:17:40,140
+vein we also have a research project
+
+491
+00:17:40,140 --> 00:17:41,880
+going on with brackets called insta bug
+
+492
+00:17:41,880 --> 00:17:45,419
+that's along the same lines and then
+
+493
+00:17:45,419 --> 00:17:48,210
+some admission debuggers rather than try
+
+494
+00:17:48,210 --> 00:17:49,410
+to show you all the information at once
+
+495
+00:17:49,410 --> 00:17:51,120
+they sort of try to create a query ball
+
+496
+00:17:51,120 --> 00:17:53,250
+set of data so you can sort of filter it
+
+497
+00:17:53,250 --> 00:17:54,720
+down and you can ask questions about why
+
+498
+00:17:54,720 --> 00:17:56,940
+things happen that's the category that
+
+499
+00:17:56,940 --> 00:18:00,450
+Theseus sort of falls into so let me
+
+500
+00:18:00,450 --> 00:18:01,740
+actually go ahead and show you a demo of
+
+501
+00:18:01,740 --> 00:18:07,030
+it
+
+502
+00:18:07,040 --> 00:18:10,050
+what was the shortcut again command
+
+503
+00:18:10,050 --> 00:18:18,150
+option okay so yeah so I have TCS up and
+
+504
+00:18:18,150 --> 00:18:19,380
+running here it's a brackets extension
+
+505
+00:18:19,380 --> 00:18:21,270
+and I have this really simple fake web
+
+506
+00:18:21,270 --> 00:18:22,890
+page it has a fake network call because
+
+507
+00:18:22,890 --> 00:18:25,350
+you don't want to rely on the Wi-Fi and
+
+508
+00:18:25,350 --> 00:18:26,910
+when I click that button here if you
+
+509
+00:18:26,910 --> 00:18:28,500
+watch the numbers in the in the
+
+510
+00:18:28,500 --> 00:18:30,570
+left-hand column there you'll see the
+
+511
+00:18:30,570 --> 00:18:32,460
+numbers actually update every time I
+
+512
+00:18:32,460 --> 00:18:33,690
+click the button and you can see there's
+
+513
+00:18:33,690 --> 00:18:35,160
+this asynchronous sort of fake network
+
+514
+00:18:35,160 --> 00:18:36,420
+delay so you'll actually see that the
+
+515
+00:18:36,420 --> 00:18:38,240
+the thing making the network request
+
+516
+00:18:38,240 --> 00:18:41,430
+takes happens first and then you'll see
+
+517
+00:18:41,430 --> 00:18:42,720
+the second number for the callback
+
+518
+00:18:42,720 --> 00:18:45,240
+increment a second later you see that
+
+519
+00:18:45,240 --> 00:18:48,270
+kind of pause if I click this Clear
+
+520
+00:18:48,270 --> 00:18:49,350
+button you'll see the number down here
+
+521
+00:18:49,350 --> 00:18:51,570
+jumping around and you can see as I
+
+522
+00:18:51,570 --> 00:18:52,620
+click it it's updating pretty much
+
+523
+00:18:52,620 --> 00:18:54,330
+instantaneously so it's it's very fast
+
+524
+00:18:54,330 --> 00:18:56,010
+it's basically real time gathering this
+
+525
+00:18:56,010 --> 00:19:00,870
+information so it can do much more than
+
+526
+00:19:00,870 --> 00:19:02,100
+that though so for example if I click
+
+527
+00:19:02,100 --> 00:19:02,850
+one of these calls
+
+528
+00:19:02,850 --> 00:19:04,590
+I can see down here essentially sort of
+
+529
+00:19:04,590 --> 00:19:06,750
+a timeline of all the times this method
+
+530
+00:19:06,750 --> 00:19:07,710
+has been called and it's actually
+
+531
+00:19:07,710 --> 00:19:10,200
+captured the argument values here for
+
+532
+00:19:10,200 --> 00:19:12,180
+every invocation of that function so it
+
+533
+00:19:12,180 --> 00:19:13,260
+knows the timestamp and those the
+
+534
+00:19:13,260 --> 00:19:14,670
+argument values I can actually go look
+
+535
+00:19:14,670 --> 00:19:16,140
+at the stack trace that led to that call
+
+536
+00:19:16,140 --> 00:19:17,810
+it remembers everything that happened
+
+537
+00:19:17,810 --> 00:19:19,800
+more than that I can actually begin
+
+538
+00:19:19,800 --> 00:19:22,500
+selecting other functions and I can see
+
+539
+00:19:22,500 --> 00:19:24,960
+it essentially a threaded view of the
+
+540
+00:19:24,960 --> 00:19:27,000
+chain of causation that led to these
+
+541
+00:19:27,000 --> 00:19:29,850
+functions being called and if you stop
+
+542
+00:19:29,850 --> 00:19:30,930
+and think this is actually a pretty
+
+543
+00:19:30,930 --> 00:19:32,730
+impressive case if you look at this pair
+
+544
+00:19:32,730 --> 00:19:35,070
+because the callback is not being
+
+545
+00:19:35,070 --> 00:19:36,630
+literally directly called by this get
+
+546
+00:19:36,630 --> 00:19:37,770
+info function it's being called
+
+547
+00:19:37,770 --> 00:19:40,080
+asynchronously later kind of as a side
+
+548
+00:19:40,080 --> 00:19:41,970
+effect so it's sort of indirectly being
+
+549
+00:19:41,970 --> 00:19:44,730
+called and yet theseus is actually
+
+550
+00:19:44,730 --> 00:19:46,050
+stitching this together in sort of a
+
+551
+00:19:46,050 --> 00:19:47,190
+threaded view so it knows that this
+
+552
+00:19:47,190 --> 00:19:49,230
+specific call to get info at this time
+
+553
+00:19:49,230 --> 00:19:51,330
+led to this specific call to the call
+
+554
+00:19:51,330 --> 00:19:54,570
+back later and you can basically add as
+
+555
+00:19:54,570 --> 00:19:56,100
+many functions as you want to this query
+
+556
+00:19:56,100 --> 00:19:58,350
+and they'll all get threaded together so
+
+557
+00:19:58,350 --> 00:20:00,570
+it knows the arguments of the the
+
+558
+00:20:00,570 --> 00:20:02,070
+network call that led to the arguments
+
+559
+00:20:02,070 --> 00:20:03,270
+of the call back later even though
+
+560
+00:20:03,270 --> 00:20:04,740
+there's this kind of asynchronous delay
+
+561
+00:20:04,740 --> 00:20:10,810
+separating them
+
+562
+00:20:10,820 --> 00:20:15,780
+0/3 there you go okay so one thing that
+
+563
+00:20:15,780 --> 00:20:17,580
+I don't have time to show in detail it's
+
+564
+00:20:17,580 --> 00:20:18,780
+pretty cool about these days is that I
+
+565
+00:20:18,780 --> 00:20:19,980
+can actually do this for server-side
+
+566
+00:20:19,980 --> 00:20:21,690
+JavaScript code if it's running a node
+
+567
+00:20:21,690 --> 00:20:23,850
+as well as code running in the browser
+
+568
+00:20:23,850 --> 00:20:25,140
+on the client-side it can actually
+
+569
+00:20:25,140 --> 00:20:27,720
+gather data about both simultaneously so
+
+570
+00:20:27,720 --> 00:20:28,830
+if you have your client-side code
+
+571
+00:20:28,830 --> 00:20:30,630
+invoking a network call that causes code
+
+572
+00:20:30,630 --> 00:20:32,700
+to run a node then asynchronously later
+
+573
+00:20:32,700 --> 00:20:34,440
+causes more callbacks to run on the
+
+574
+00:20:34,440 --> 00:20:36,720
+client-side in the browser that threaded
+
+575
+00:20:36,720 --> 00:20:38,010
+view can actually show you the whole
+
+576
+00:20:38,010 --> 00:20:39,390
+timeline of all that stuff happening
+
+577
+00:20:39,390 --> 00:20:40,680
+interleaved both server-side and
+
+578
+00:20:40,680 --> 00:20:43,710
+client-side together it's pretty awesome
+
+579
+00:20:43,710 --> 00:20:45,090
+I think another milestone that we
+
+580
+00:20:45,090 --> 00:20:46,470
+reached recently with Theseus is you can
+
+581
+00:20:46,470 --> 00:20:48,260
+actually use it to debug brackets itself
+
+582
+00:20:48,260 --> 00:20:50,340
+which is pretty exciting cuz bracket
+
+583
+00:20:50,340 --> 00:20:51,900
+this is a huge code base it's megabytes
+
+584
+00:20:51,900 --> 00:20:53,850
+and megabytes of JavaScript code so sort
+
+585
+00:20:53,850 --> 00:20:55,050
+of shows that this really scales up
+
+586
+00:20:55,050 --> 00:20:55,610
+pretty well
+
+587
+00:20:55,610 --> 00:20:57,870
+so let's actually talk about how it
+
+588
+00:20:57,870 --> 00:21:00,060
+works now fundamentally the way it works
+
+589
+00:21:00,060 --> 00:21:01,830
+is by injecting instrumentation into the
+
+590
+00:21:01,830 --> 00:21:04,500
+JavaScript code it uses the Suprema
+
+591
+00:21:04,500 --> 00:21:07,110
+JavaScript parser uses an open source
+
+592
+00:21:07,110 --> 00:21:08,400
+project called falafels which is
+
+593
+00:21:08,400 --> 00:21:10,920
+essentially a parse tree walker and it
+
+594
+00:21:10,920 --> 00:21:12,600
+uses a modified version of J's hint to
+
+595
+00:21:12,600 --> 00:21:14,370
+get information about variable scoping
+
+596
+00:21:14,370 --> 00:21:16,620
+that whole stack of stuff is driven by
+
+597
+00:21:16,620 --> 00:21:18,720
+fondue which is basically a spin-off
+
+598
+00:21:18,720 --> 00:21:20,940
+project from Theseus that's just the
+
+599
+00:21:20,940 --> 00:21:22,350
+instrumentation part so it's sort of a
+
+600
+00:21:22,350 --> 00:21:24,600
+headless piece of JavaScript code that
+
+601
+00:21:24,600 --> 00:21:26,820
+takes JavaScript is input injects the
+
+602
+00:21:26,820 --> 00:21:27,990
+instrumentation and gives you the output
+
+603
+00:21:27,990 --> 00:21:31,140
+modified JavaScript so Theseus basically
+
+604
+00:21:31,140 --> 00:21:33,150
+asks fondue to generate an instrumented
+
+605
+00:21:33,150 --> 00:21:34,590
+copy of all your JavaScript code and
+
+606
+00:21:34,590 --> 00:21:36,630
+then it serves that up from a local node
+
+607
+00:21:36,630 --> 00:21:37,890
+server so similar to how the
+
+608
+00:21:37,890 --> 00:21:39,900
+instrumented HTML is served up for the
+
+609
+00:21:39,900 --> 00:21:41,400
+live HTML that Kevin talked about this
+
+610
+00:21:41,400 --> 00:21:43,350
+is serving up instrumented JavaScript
+
+611
+00:21:43,350 --> 00:21:45,510
+code so that's running in the browser
+
+612
+00:21:45,510 --> 00:21:47,940
+then brackets or Theseus inside of
+
+613
+00:21:47,940 --> 00:21:49,620
+brackets actually connects over to the
+
+614
+00:21:49,620 --> 00:21:51,870
+browser on a WebSocket to retrieve the
+
+615
+00:21:51,870 --> 00:21:53,010
+data that was gathered by that
+
+616
+00:21:53,010 --> 00:21:54,960
+instrumentation and then it's visualized
+
+617
+00:21:54,960 --> 00:21:56,550
+in the brackets UI and those the inline
+
+618
+00:21:56,550 --> 00:21:58,230
+annotations and the bottom panel that
+
+619
+00:21:58,230 --> 00:21:59,450
+you saw before
+
+620
+00:21:59,450 --> 00:22:02,970
+so let's actually look at what that
+
+621
+00:22:02,970 --> 00:22:05,520
+instrumentation looks like the simplest
+
+622
+00:22:05,520 --> 00:22:06,840
+and first thing that we want to do is
+
+623
+00:22:06,840 --> 00:22:08,130
+instrument every time a function is
+
+624
+00:22:08,130 --> 00:22:09,390
+called so we know when it was called
+
+625
+00:22:09,390 --> 00:22:11,730
+what the call stack was and what the
+
+626
+00:22:11,730 --> 00:22:15,630
+arguments were so every function the
+
+627
+00:22:15,630 --> 00:22:16,830
+beginning of the body in the end of the
+
+628
+00:22:16,830 --> 00:22:18,720
+function body gets these annotations
+
+629
+00:22:18,720 --> 00:22:20,880
+added that essentially just record what
+
+630
+00:22:20,880 --> 00:22:22,620
+function was called
+
+631
+00:22:22,620 --> 00:22:24,540
+there's argument values captures the
+
+632
+00:22:24,540 --> 00:22:26,490
+this value if there was one and captures
+
+633
+00:22:26,490 --> 00:22:29,490
+a timestamp so this is sort of a
+
+634
+00:22:29,490 --> 00:22:30,870
+simplified form of it there's actually a
+
+635
+00:22:30,870 --> 00:22:32,190
+little more boilerplate that it adds in
+
+636
+00:22:32,190 --> 00:22:33,510
+practice to do things like catching
+
+637
+00:22:33,510 --> 00:22:35,250
+exceptions and all that but this is
+
+638
+00:22:35,250 --> 00:22:37,470
+basically what it does but that's not
+
+639
+00:22:37,470 --> 00:22:38,700
+enough to do that sort of threaded view
+
+640
+00:22:38,700 --> 00:22:40,350
+where you see exactly which function
+
+641
+00:22:40,350 --> 00:22:41,730
+call led to which other function call
+
+642
+00:22:41,730 --> 00:22:44,610
+for that we need to do something more
+
+643
+00:22:44,610 --> 00:22:45,630
+complicated because if you think of
+
+644
+00:22:45,630 --> 00:22:46,530
+something like this so you could have
+
+645
+00:22:46,530 --> 00:22:48,870
+more than one call to a function in
+
+646
+00:22:48,870 --> 00:22:50,400
+different parts of the code base and the
+
+647
+00:22:50,400 --> 00:22:52,800
+the trace enter call inside the body of
+
+648
+00:22:52,800 --> 00:22:54,840
+bar doesn't know anything about which
+
+649
+00:22:54,840 --> 00:22:56,550
+particular place in the code it was
+
+650
+00:22:56,550 --> 00:22:58,980
+called from and it also doesn't know
+
+651
+00:22:58,980 --> 00:22:59,880
+which you would like to know which
+
+652
+00:22:59,880 --> 00:23:02,880
+invocation of the calling function led
+
+653
+00:23:02,880 --> 00:23:04,230
+to it so we can actually chain them all
+
+654
+00:23:04,230 --> 00:23:06,059
+together showing the argument values of
+
+655
+00:23:06,059 --> 00:23:08,790
+the caller and the callee all threaded
+
+656
+00:23:08,790 --> 00:23:11,940
+together so to do that we actually wrap
+
+657
+00:23:11,940 --> 00:23:14,100
+every single function invocation in the
+
+658
+00:23:14,100 --> 00:23:16,140
+whole code base and pass it through this
+
+659
+00:23:16,140 --> 00:23:18,960
+sort of function invoke our helper and
+
+660
+00:23:18,960 --> 00:23:19,920
+what that basically does is it's just
+
+661
+00:23:19,920 --> 00:23:23,190
+going to call bar apply with the
+
+662
+00:23:23,190 --> 00:23:25,590
+argument values but it's going to pass
+
+663
+00:23:25,590 --> 00:23:26,910
+along this identifier so we can remember
+
+664
+00:23:26,910 --> 00:23:28,530
+which place in the code base it's a
+
+665
+00:23:28,530 --> 00:23:30,410
+unique identifier for each call to bar
+
+666
+00:23:30,410 --> 00:23:32,370
+so it basically tells you the line
+
+667
+00:23:32,370 --> 00:23:34,470
+number it was called from and on top of
+
+668
+00:23:34,470 --> 00:23:35,550
+that it's going to capture the
+
+669
+00:23:35,550 --> 00:23:36,570
+information about the particular
+
+670
+00:23:36,570 --> 00:23:39,570
+invocation of the outer method foo so
+
+671
+00:23:39,570 --> 00:23:40,860
+basically what was it whatever was on
+
+672
+00:23:40,860 --> 00:23:42,240
+the stack frame there so that we know
+
+673
+00:23:42,240 --> 00:23:44,250
+the timestamp from the caller the
+
+674
+00:23:44,250 --> 00:23:45,660
+argument values captured from the caller
+
+675
+00:23:45,660 --> 00:23:48,090
+ID said arow it puts that information
+
+676
+00:23:48,090 --> 00:23:50,040
+kind of in some global state so that
+
+677
+00:23:50,040 --> 00:23:51,510
+when you get to the trace enter at the
+
+678
+00:23:51,510 --> 00:23:53,040
+beginning of the body of bar when it's
+
+679
+00:23:53,040 --> 00:23:53,460
+called
+
+680
+00:23:53,460 --> 00:23:55,470
+it can go grab that global State and
+
+681
+00:23:55,470 --> 00:23:57,450
+basically chain itself on to that sort
+
+682
+00:23:57,450 --> 00:23:59,330
+of threaded set of function calls
+
+683
+00:23:59,330 --> 00:24:01,740
+but even this is actually not everything
+
+684
+00:24:01,740 --> 00:24:03,390
+that we need because we've got this
+
+685
+00:24:03,390 --> 00:24:04,800
+asynchronous case we want to be able to
+
+686
+00:24:04,800 --> 00:24:06,750
+understand causation across asynchronous
+
+687
+00:24:06,750 --> 00:24:08,010
+gaps which is something that's really
+
+688
+00:24:08,010 --> 00:24:09,870
+hard to debug in traditional debugger so
+
+689
+00:24:09,870 --> 00:24:11,190
+this is kind of a really a really
+
+690
+00:24:11,190 --> 00:24:13,230
+important core part of the Theseus
+
+691
+00:24:13,230 --> 00:24:16,380
+project so we look at something like
+
+692
+00:24:16,380 --> 00:24:17,880
+this again this outer function foo it's
+
+693
+00:24:17,880 --> 00:24:19,590
+not calling this inner callback directly
+
+694
+00:24:19,590 --> 00:24:21,690
+the actual call stack of the inner
+
+695
+00:24:21,690 --> 00:24:23,040
+callback it's coming out of you know
+
+696
+00:24:23,040 --> 00:24:24,720
+like an xhr handler that goes through
+
+697
+00:24:24,720 --> 00:24:26,070
+some jQuery code and then this thing
+
+698
+00:24:26,070 --> 00:24:27,780
+gets called and the call stack doesn't
+
+699
+00:24:27,780 --> 00:24:29,510
+capture this relationship to fool at all
+
+700
+00:24:29,510 --> 00:24:32,280
+so what we do in Theseus is we actually
+
+701
+00:24:32,280 --> 00:24:34,770
+every place that a callback is created
+
+702
+00:24:34,770 --> 00:24:35,470
+we wrap
+
+703
+00:24:35,470 --> 00:24:38,440
+in a wrapper function and that wrapper
+
+704
+00:24:38,440 --> 00:24:40,330
+function stores on the function object
+
+705
+00:24:40,330 --> 00:24:42,429
+some state that lets us link it back to
+
+706
+00:24:42,429 --> 00:24:44,889
+foo and again it's not just the fact
+
+707
+00:24:44,889 --> 00:24:46,149
+that it's a function named foo with
+
+708
+00:24:46,149 --> 00:24:47,500
+such-and-such a line number that we want
+
+709
+00:24:47,500 --> 00:24:49,000
+to link to it's actually the specific
+
+710
+00:24:49,000 --> 00:24:51,279
+invocation of foo with all the argument
+
+711
+00:24:51,279 --> 00:24:52,899
+values that happened at that time in a
+
+712
+00:24:52,899 --> 00:24:54,970
+time sniff it was called in all that so
+
+713
+00:24:54,970 --> 00:24:57,220
+that information is captured at the time
+
+714
+00:24:57,220 --> 00:24:58,720
+that the wrapper is generated the
+
+715
+00:24:58,720 --> 00:25:00,639
+wrapper stores that off as a property on
+
+716
+00:25:00,639 --> 00:25:03,039
+the function object and then later on
+
+717
+00:25:03,039 --> 00:25:04,480
+when the wrapper is actually invoked it
+
+718
+00:25:04,480 --> 00:25:06,789
+can chain itself back to the particular
+
+719
+00:25:06,789 --> 00:25:09,250
+call to foo that eventually later on led
+
+720
+00:25:09,250 --> 00:25:12,190
+to the callback being run so this seems
+
+721
+00:25:12,190 --> 00:25:13,629
+like a crazy amount of instrumentation
+
+722
+00:25:13,629 --> 00:25:14,889
+being added I mean it's wrapping like
+
+723
+00:25:14,889 --> 00:25:16,809
+everything and anything right but
+
+724
+00:25:16,809 --> 00:25:18,639
+actually it's surprisingly it's it
+
+725
+00:25:18,639 --> 00:25:19,779
+doesn't really impact performance all
+
+726
+00:25:19,779 --> 00:25:21,340
+that much you know modern JavaScript VMs
+
+727
+00:25:21,340 --> 00:25:24,190
+are blazingly fast so this actually
+
+728
+00:25:24,190 --> 00:25:25,899
+works pretty effectively for even fairly
+
+729
+00:25:25,899 --> 00:25:30,309
+fairly large JavaScript code bases so if
+
+730
+00:25:30,309 --> 00:25:31,090
+you're interested in reading more about
+
+731
+00:25:31,090 --> 00:25:33,220
+that there's a great write up there on
+
+732
+00:25:33,220 --> 00:25:34,450
+the instrumentation in more detail or
+
+733
+00:25:34,450 --> 00:25:35,950
+you can actually just again go fork the
+
+734
+00:25:35,950 --> 00:25:39,700
+code and github I feel like it and I
+
+735
+00:25:39,700 --> 00:25:40,840
+just want to circle back really quick on
+
+736
+00:25:40,840 --> 00:25:43,389
+this sort of idea of brackets as a
+
+737
+00:25:43,389 --> 00:25:45,190
+sandbox you know we've been doing all
+
+738
+00:25:45,190 --> 00:25:46,450
+these kind of experiments you know with
+
+739
+00:25:46,450 --> 00:25:49,539
+different tooling UI ideas but we didn't
+
+740
+00:25:49,539 --> 00:25:50,830
+build it's just for us to do experiments
+
+741
+00:25:50,830 --> 00:25:52,120
+we built this for everyone to be able to
+
+742
+00:25:52,120 --> 00:25:54,279
+do to experiment with whatever ideas you
+
+743
+00:25:54,279 --> 00:25:56,169
+have about code editors and JavaScript
+
+744
+00:25:56,169 --> 00:25:57,399
+tooling and all that sort of stuff
+
+745
+00:25:57,399 --> 00:25:59,139
+and we think that brackets is a really
+
+746
+00:25:59,139 --> 00:26:00,490
+great platform to do that kind of stuff
+
+747
+00:26:00,490 --> 00:26:02,169
+on because it is written in JavaScript
+
+748
+00:26:02,169 --> 00:26:03,879
+and CSS and HTML so it's all the
+
+749
+00:26:03,879 --> 00:26:05,590
+standard web tech stack that everybody
+
+750
+00:26:05,590 --> 00:26:07,870
+already knows and we think that makes it
+
+751
+00:26:07,870 --> 00:26:09,610
+a really approachable code base to jump
+
+752
+00:26:09,610 --> 00:26:11,139
+in and begin hacking on begin writing
+
+753
+00:26:11,139 --> 00:26:15,730
+extensions for etc I'll just show you a
+
+754
+00:26:15,730 --> 00:26:17,289
+quick example here I won't actually walk
+
+755
+00:26:17,289 --> 00:26:23,379
+through this code in detail but in in
+
+756
+00:26:23,379 --> 00:26:26,590
+brackets here this is an extension I
+
+757
+00:26:26,590 --> 00:26:30,639
+sort of just wrote on the side I just
+
+758
+00:26:30,639 --> 00:26:32,139
+open an SVG file it basically just
+
+759
+00:26:32,139 --> 00:26:34,269
+provides an inline preview of the SVG so
+
+760
+00:26:34,269 --> 00:26:36,250
+it's a much simpler version of the live
+
+761
+00:26:36,250 --> 00:26:37,690
+preview and if I make edits here like
+
+762
+00:26:37,690 --> 00:26:38,980
+I'll bring up a color picker and it you
+
+763
+00:26:38,980 --> 00:26:41,139
+can see the the SVG is actually updating
+
+764
+00:26:41,139 --> 00:26:43,779
+in real time as I'm changing stuff in
+
+765
+00:26:43,779 --> 00:26:46,000
+the code so that's kind of something I
+
+766
+00:26:46,000 --> 00:26:47,529
+think would actually be pretty tricky to
+
+767
+00:26:47,529 --> 00:26:49,299
+do in a lot of other code editors but be
+
+768
+00:26:49,299 --> 00:26:51,039
+we have the full power of the Dom and a
+
+769
+00:26:51,039 --> 00:26:53,080
+real you know WebKit instance at our
+
+770
+00:26:53,080 --> 00:26:54,940
+disposal for rendering the UI it's
+
+771
+00:26:54,940 --> 00:26:56,440
+pretty simple to do in brackets if you
+
+772
+00:26:56,440 --> 00:26:59,860
+look at this you know it's really only
+
+773
+00:26:59,860 --> 00:27:02,019
+about two screen folds of code just to
+
+774
+00:27:02,019 --> 00:27:03,970
+get that up and running so you can
+
+775
+00:27:03,970 --> 00:27:05,200
+really kind of jump in and very quickly
+
+776
+00:27:05,200 --> 00:27:07,179
+experiment with ideas with in terms of
+
+777
+00:27:07,179 --> 00:27:08,769
+rich UI that would be hard to do in a
+
+778
+00:27:08,769 --> 00:27:10,149
+lot of other editors and that's exactly
+
+779
+00:27:10,149 --> 00:27:11,649
+the kind of experimentation that we want
+
+780
+00:27:11,649 --> 00:27:14,619
+to empower anyone to be able to play
+
+781
+00:27:14,619 --> 00:27:17,769
+with and build in brackets so yeah we've
+
+782
+00:27:17,769 --> 00:27:19,659
+built this sandbox and we want people to
+
+783
+00:27:19,659 --> 00:27:21,129
+come play in it so please come join our
+
+784
+00:27:21,129 --> 00:27:29,520
+sandbox
+
+785
+00:27:29,530 --> 00:27:32,470
+so we have time for maybe one question
+
+786
+00:27:32,470 --> 00:27:34,870
+is anybody enthusiastic and the audience
+
+787
+00:27:34,870 --> 00:27:38,320
+got a question okay there's one right
+
+788
+00:27:38,320 --> 00:27:44,990
+there
+
+789
+00:27:45,000 --> 00:27:47,740
+thanks for a great talk
+
+790
+00:27:47,740 --> 00:27:51,159
+if you can't calculate the number of
+
+791
+00:27:51,159 --> 00:27:55,780
+calls of each parcels I think I could
+
+792
+00:27:55,780 --> 00:28:00,730
+use this for a search did cotton my
+
+793
+00:28:00,730 --> 00:28:08,890
+project yeah did what I mean to test on
+
+794
+00:28:08,890 --> 00:28:16,039
+patents or methods of that never calls
+
+795
+00:28:16,049 --> 00:28:23,049
+did you say west okay it's the it's hard
+
+796
+00:28:23,049 --> 00:28:24,990
+with APA we might have to talk afterward
+
+797
+00:28:24,990 --> 00:28:29,710
+I ask you later okay okay yeah thanks
+
+798
+00:28:29,710 --> 00:28:30,159
+guys
+
+799
+00:28:30,159 --> 00:28:45,230
+okay thanks thank you
+

@@ -1,0 +1,2133 @@
+1
+00:00:10,640 --> 00:00:21,520
+
+you
+
+2
+00:00:21,530 --> 00:00:24,540
+
+
+3
+00:00:24,550 --> 00:00:27,689
+alright for those who have seen hackers
+
+4
+00:00:27,689 --> 00:00:32,610
+uh see if this goes it's not gonna go oh
+
+5
+00:00:32,610 --> 00:00:35,110
+now use your best buyers is to buy us
+
+6
+00:00:35,110 --> 00:00:36,430
+some time we have to get into plagues
+
+7
+00:00:36,430 --> 00:00:40,540
+file and copy the worm all right there's
+
+8
+00:00:40,540 --> 00:00:41,890
+a little tension breaker they had to be
+
+9
+00:00:41,890 --> 00:00:44,350
+done all right okay so tension breaker
+
+10
+00:00:44,350 --> 00:00:47,890
+right I think only a few you got that so
+
+11
+00:00:47,890 --> 00:00:50,500
+before we go any further I want to give
+
+12
+00:00:50,500 --> 00:00:56,409
+a very thank you to the organizers of
+
+13
+00:00:56,409 --> 00:01:01,510
+jas comfy you who believed that security
+
+14
+00:01:01,510 --> 00:01:04,780
+had a place at a developer event there
+
+15
+00:01:04,780 --> 00:01:07,690
+is there was three talks about security
+
+16
+00:01:07,690 --> 00:01:09,360
+at a developer event and that is
+
+17
+00:01:09,360 --> 00:01:13,360
+absolutely unheard of and I am very very
+
+18
+00:01:13,360 --> 00:01:15,429
+grateful for this opportunity please
+
+19
+00:01:15,429 --> 00:01:19,479
+everyone give a giant thank you too jaan
+
+20
+00:01:19,479 --> 00:01:24,990
+Holger Tiffany and ma thay yes thank you
+
+21
+00:01:24,990 --> 00:01:28,300
+so hey everyone I'm Adam as was said I
+
+22
+00:01:28,300 --> 00:01:30,700
+am NOT a Baldwin brother you can find me
+
+23
+00:01:30,700 --> 00:01:32,770
+on Twitter at Adam underscore Baldwin
+
+24
+00:01:32,770 --> 00:01:35,110
+and a whole bunch of other places I'm
+
+25
+00:01:35,110 --> 00:01:37,869
+evil packet on github and I'm the chief
+
+26
+00:01:37,869 --> 00:01:39,789
+security officer at and yet we're a lot
+
+27
+00:01:39,789 --> 00:01:41,890
+of these things that I'm going to talk
+
+28
+00:01:41,890 --> 00:01:45,130
+about have transpired I get to work on
+
+29
+00:01:45,130 --> 00:01:48,859
+some really cool things like an bang
+
+30
+00:01:48,869 --> 00:01:52,720
+talkie I oh and I'm also the team lead
+
+31
+00:01:52,720 --> 00:01:56,080
+at lift security where I get to
+
+32
+00:01:56,080 --> 00:01:58,090
+basically help developers secure
+
+33
+00:01:58,090 --> 00:02:00,940
+software and build security into the
+
+34
+00:02:00,940 --> 00:02:04,450
+culture of their dev teams and also the
+
+35
+00:02:04,450 --> 00:02:06,429
+founder and organizer of the note
+
+36
+00:02:06,429 --> 00:02:10,000
+security project a rather and exciting
+
+37
+00:02:10,000 --> 00:02:12,670
+and insane experiment to audit all of
+
+38
+00:02:12,670 --> 00:02:14,800
+the things on NPM which there's like
+
+39
+00:02:14,800 --> 00:02:17,080
+40,000 modules now and bridge the
+
+40
+00:02:17,080 --> 00:02:22,239
+security and devel try to make them play
+
+41
+00:02:22,239 --> 00:02:23,830
+nicely together and we'll talk about
+
+42
+00:02:23,830 --> 00:02:28,989
+that more later so as it turns out when
+
+43
+00:02:28,989 --> 00:02:33,349
+it comes to security we're
+
+44
+00:02:33,349 --> 00:02:39,690
+right that's basically it nothing is a
+
+45
+00:02:39,690 --> 00:02:42,569
+hundred percent secure this is this is a
+
+46
+00:02:42,569 --> 00:02:45,209
+realization that we have to come to in
+
+47
+00:02:45,209 --> 00:02:47,459
+building software there's going to be
+
+48
+00:02:47,459 --> 00:02:49,739
+bugs we're going to inject security
+
+49
+00:02:49,739 --> 00:02:53,040
+flaws we are going to be eventually at
+
+50
+00:02:53,040 --> 00:02:58,849
+some point so let's talk about risk
+
+51
+00:02:58,849 --> 00:03:00,959
+risks a board game about world
+
+52
+00:03:00,959 --> 00:03:05,640
+domination you spread out armies around
+
+53
+00:03:05,640 --> 00:03:07,560
+the board in pursuit of conquering the
+
+54
+00:03:07,560 --> 00:03:09,750
+entire Earth it's a it's very slow to
+
+55
+00:03:09,750 --> 00:03:12,420
+move around armies so typical strategy
+
+56
+00:03:12,420 --> 00:03:15,090
+is to focus on deploying new armies at
+
+57
+00:03:15,090 --> 00:03:17,370
+entry point or entry points for defense
+
+58
+00:03:17,370 --> 00:03:19,860
+and building up armies when you're going
+
+59
+00:03:19,860 --> 00:03:23,519
+to attack right in a risk battle you
+
+60
+00:03:23,519 --> 00:03:25,079
+match dice one-to-one highest to lowest
+
+61
+00:03:25,079 --> 00:03:27,660
+and the attacker gets three dice the
+
+62
+00:03:27,660 --> 00:03:29,400
+defender gets two dice right there you
+
+63
+00:03:29,400 --> 00:03:30,690
+notice that the attacker has the
+
+64
+00:03:30,690 --> 00:03:32,940
+advantage but the defender can only roll
+
+65
+00:03:32,940 --> 00:03:35,579
+with as many dices they have armies so
+
+66
+00:03:35,579 --> 00:03:37,590
+when you only have one died left you're
+
+67
+00:03:37,590 --> 00:03:40,230
+rolling one against three so the
+
+68
+00:03:40,230 --> 00:03:41,519
+attacker has broken through the outer
+
+69
+00:03:41,519 --> 00:03:43,109
+boundary and it's pretty easy to sweep
+
+70
+00:03:43,109 --> 00:03:47,280
+through and if Iceland attacks Greenland
+
+71
+00:03:47,280 --> 00:03:49,500
+in this scenario which is totally prone
+
+72
+00:03:49,500 --> 00:03:52,680
+to happen Greenland is going to get a
+
+73
+00:03:52,680 --> 00:03:54,959
+roll with two dice and it's going to be
+
+74
+00:03:54,959 --> 00:03:57,030
+a pretty big battle but if green land
+
+75
+00:03:57,030 --> 00:04:00,120
+only has is the only need offends with
+
+76
+00:04:00,120 --> 00:04:03,120
+one army in this scenario let's be
+
+77
+00:04:03,120 --> 00:04:05,130
+honest Iceland's going to pone all of
+
+78
+00:04:05,130 --> 00:04:07,680
+North America yes including Alberta
+
+79
+00:04:07,680 --> 00:04:10,290
+sorry Alberta and attackers have the
+
+80
+00:04:10,290 --> 00:04:12,359
+advantage attackers basically have the
+
+81
+00:04:12,359 --> 00:04:14,549
+advantage and that's it's it it's akin
+
+82
+00:04:14,549 --> 00:04:16,109
+to the way it works in software two
+
+83
+00:04:16,109 --> 00:04:18,810
+attackers have to find one flaw to get
+
+84
+00:04:18,810 --> 00:04:21,810
+it gain a foothold and as defenders as
+
+85
+00:04:21,810 --> 00:04:23,729
+developers we have to find and address
+
+86
+00:04:23,729 --> 00:04:26,310
+them all it's a rather daunting an
+
+87
+00:04:26,310 --> 00:04:30,630
+impossible task software is hard I don't
+
+88
+00:04:30,630 --> 00:04:31,740
+think that anybody's going to disagree
+
+89
+00:04:31,740 --> 00:04:33,750
+with me that billing software is hard
+
+90
+00:04:33,750 --> 00:04:34,770
+enough without adding additional
+
+91
+00:04:34,770 --> 00:04:37,590
+complexities software is also full of
+
+92
+00:04:37,590 --> 00:04:40,349
+opinions we've got things like mobile
+
+93
+00:04:40,349 --> 00:04:42,960
+first right lots of first content first
+
+94
+00:04:42,960 --> 00:04:45,400
+off line first
+
+95
+00:04:45,400 --> 00:04:49,690
+whoo but a lot of what you build doesn't
+
+96
+00:04:49,690 --> 00:04:51,759
+mean crap if it's not built on a
+
+97
+00:04:51,759 --> 00:04:54,850
+foundation of security and privacy which
+
+98
+00:04:54,850 --> 00:04:57,310
+can take all of the fun out of what
+
+99
+00:04:57,310 --> 00:05:00,580
+you're building in software is full of
+
+100
+00:05:00,580 --> 00:05:02,919
+constraints right we've we've we've got
+
+101
+00:05:02,919 --> 00:05:06,340
+constraints like time and money a boss
+
+102
+00:05:06,340 --> 00:05:08,020
+you know pointing her boss that's
+
+103
+00:05:08,020 --> 00:05:09,160
+breathing down our neck to get a
+
+104
+00:05:09,160 --> 00:05:12,160
+features ground out right I but security
+
+105
+00:05:12,160 --> 00:05:15,580
+is one of those constraints that that
+
+106
+00:05:15,580 --> 00:05:17,350
+has to be filtered into that sort of
+
+107
+00:05:17,350 --> 00:05:21,130
+equation so who is responsible for
+
+108
+00:05:21,130 --> 00:05:26,169
+security anyone want to take a guess you
+
+109
+00:05:26,169 --> 00:05:33,760
+are sorry but you need to be up to the
+
+110
+00:05:33,760 --> 00:05:35,860
+challenge right like it it whether you
+
+111
+00:05:35,860 --> 00:05:37,690
+like it or not you're the first line of
+
+112
+00:05:37,690 --> 00:05:39,610
+defense in addressing and fixing
+
+113
+00:05:39,610 --> 00:05:42,130
+security flaws in the software you build
+
+114
+00:05:42,130 --> 00:05:44,410
+your the ones building it it's time to
+
+115
+00:05:44,410 --> 00:05:48,820
+take some responsibility for this I was
+
+116
+00:05:48,820 --> 00:05:50,650
+talking to the martine before the talk
+
+117
+00:05:50,650 --> 00:05:52,870
+and as a developer if you if you don't
+
+118
+00:05:52,870 --> 00:05:55,000
+care about security but others care
+
+119
+00:05:55,000 --> 00:05:56,440
+about security in your organization or
+
+120
+00:05:56,440 --> 00:05:58,169
+that deal with that software your
+
+121
+00:05:58,169 --> 00:06:02,710
+negating their effort a bit security is
+
+122
+00:06:02,710 --> 00:06:04,449
+not something that you can just it's not
+
+123
+00:06:04,449 --> 00:06:06,639
+a department that that or a third party
+
+124
+00:06:06,639 --> 00:06:10,360
+that takes care of it for you and if
+
+125
+00:06:10,360 --> 00:06:11,440
+it's that if that's the way you're doing
+
+126
+00:06:11,440 --> 00:06:13,419
+it you're doing it wrong it's just not
+
+127
+00:06:13,419 --> 00:06:16,680
+bolt on so why is your responsibility
+
+128
+00:06:16,680 --> 00:06:19,389
+well people like my wonderful family
+
+129
+00:06:19,389 --> 00:06:23,050
+there use your software they use it for
+
+130
+00:06:23,050 --> 00:06:24,940
+banking transactions and social networks
+
+131
+00:06:24,940 --> 00:06:27,400
+and you know all those private messages
+
+132
+00:06:27,400 --> 00:06:30,880
+that we you know send back and forth you
+
+133
+00:06:30,880 --> 00:06:33,669
+have a responsibility to handle people's
+
+134
+00:06:33,669 --> 00:06:38,680
+data with respect and help me as the
+
+135
+00:06:38,680 --> 00:06:40,780
+consumer of your library or your final
+
+136
+00:06:40,780 --> 00:06:45,580
+product that it's being done on how that
+
+137
+00:06:45,580 --> 00:06:47,650
+security how you're treating that data
+
+138
+00:06:47,650 --> 00:06:51,250
+with respect many people that user
+
+139
+00:06:51,250 --> 00:06:53,770
+software would would likely be outraged
+
+140
+00:06:53,770 --> 00:06:56,380
+by how Cavalier we handle some of some
+
+141
+00:06:56,380 --> 00:06:58,660
+of their data we owe them the respect
+
+142
+00:06:58,660 --> 00:07:03,340
+to handle that appropriately last year
+
+143
+00:07:03,340 --> 00:07:06,310
+excuse me 2013 I think that's right at
+
+144
+00:07:06,310 --> 00:07:08,050
+the NSA spent 25 million dollars on
+
+145
+00:07:08,050 --> 00:07:11,800
+software vulnerabilities they purchased
+
+146
+00:07:11,800 --> 00:07:14,890
+Oh days and vulnerabilities to you know
+
+147
+00:07:14,890 --> 00:07:18,220
+do their bidding we have a
+
+148
+00:07:18,220 --> 00:07:20,860
+responsibility as developers to stay off
+
+149
+00:07:20,860 --> 00:07:28,630
+of that menu right we we should just not
+
+150
+00:07:28,630 --> 00:07:33,960
+be part of that procurement process also
+
+151
+00:07:33,960 --> 00:07:38,620
+litigation is coming we have the FTC
+
+152
+00:07:38,620 --> 00:07:39,940
+which is forcing a company called
+
+153
+00:07:39,940 --> 00:07:42,130
+trendnet who had a vulnerability in some
+
+154
+00:07:42,130 --> 00:07:46,000
+camera software to suffer 20 years of
+
+155
+00:07:46,000 --> 00:07:50,020
+auditing we would love if somebody from
+
+156
+00:07:50,020 --> 00:07:52,540
+the government forced us to have to
+
+157
+00:07:52,540 --> 00:07:54,220
+audit our software right as developers
+
+158
+00:07:54,220 --> 00:07:55,540
+you would love that right that'd be
+
+159
+00:07:55,540 --> 00:07:59,410
+that'd be great so if we don't police
+
+160
+00:07:59,410 --> 00:08:04,270
+and handle our in our own community in
+
+161
+00:08:04,270 --> 00:08:06,550
+our own software that external force is
+
+162
+00:08:06,550 --> 00:08:07,720
+going to come it's going to come
+
+163
+00:08:07,720 --> 00:08:09,100
+eventually it's happened in other
+
+164
+00:08:09,100 --> 00:08:11,350
+industries so it's just something to
+
+165
+00:08:11,350 --> 00:08:14,169
+remember okay so enough doom and gloom
+
+166
+00:08:14,169 --> 00:08:18,460
+already should we give up hell no we
+
+167
+00:08:18,460 --> 00:08:21,430
+fight back we don't make this easy we
+
+168
+00:08:21,430 --> 00:08:23,140
+don't give in not every geek with a
+
+169
+00:08:23,140 --> 00:08:26,350
+Commodore 64 can hack into NASA so
+
+170
+00:08:26,350 --> 00:08:29,680
+something has to change right we have to
+
+171
+00:08:29,680 --> 00:08:31,690
+build a security first culture we have
+
+172
+00:08:31,690 --> 00:08:35,800
+to we just have to we just have to do
+
+173
+00:08:35,800 --> 00:08:38,260
+better and the thing is is that that
+
+174
+00:08:38,260 --> 00:08:39,849
+sorry I mentioned earlier we're
+
+175
+00:08:39,849 --> 00:08:42,039
+right well it's just it's a constantly
+
+176
+00:08:42,039 --> 00:08:44,890
+evolving process we just need to take
+
+177
+00:08:44,890 --> 00:08:50,890
+one step do better iterate so I'm going
+
+178
+00:08:50,890 --> 00:08:52,330
+to tell you about the story of and yet
+
+179
+00:08:52,330 --> 00:08:56,860
+and how I came to be at and yet and how
+
+180
+00:08:56,860 --> 00:09:01,810
+we handle security at and yet basically
+
+181
+00:09:01,810 --> 00:09:04,390
+how I was a seed crystal in and yet and
+
+182
+00:09:04,390 --> 00:09:06,010
+most people know that a seed crystal
+
+183
+00:09:06,010 --> 00:09:09,160
+will produce beautiful results given the
+
+184
+00:09:09,160 --> 00:09:12,780
+right environment and the right
+
+185
+00:09:12,780 --> 00:09:15,220
+sort of the right right growing
+
+186
+00:09:15,220 --> 00:09:16,450
+environment but it can't do its job
+
+187
+00:09:16,450 --> 00:09:19,450
+without that right environment given you
+
+188
+00:09:19,450 --> 00:09:25,360
+know even best efforts so I met Adam
+
+189
+00:09:25,360 --> 00:09:27,340
+brault at and yet about five years ago
+
+190
+00:09:27,340 --> 00:09:29,290
+and I was running a consultancy called
+
+191
+00:09:29,290 --> 00:09:31,690
+ingenuity and basically a single person
+
+192
+00:09:31,690 --> 00:09:33,910
+consultancy to two of us and he was
+
+193
+00:09:33,910 --> 00:09:35,500
+running a web development shop and we
+
+194
+00:09:35,500 --> 00:09:37,960
+realized very early on that it was a
+
+195
+00:09:37,960 --> 00:09:41,170
+very symbiotic relationship I could help
+
+196
+00:09:41,170 --> 00:09:44,410
+him grow and build his business and it
+
+197
+00:09:44,410 --> 00:09:46,770
+meant a business from for me as well
+
+198
+00:09:46,770 --> 00:09:49,990
+it's old contracts for him to have a
+
+199
+00:09:49,990 --> 00:09:53,050
+partnership with with security showing
+
+200
+00:09:53,050 --> 00:09:55,120
+that the level of care that they took in
+
+201
+00:09:55,120 --> 00:09:57,280
+security for their software was the
+
+202
+00:09:57,280 --> 00:09:59,470
+difference between many other very
+
+203
+00:09:59,470 --> 00:10:05,380
+larger and named vendors and so it
+
+204
+00:10:05,380 --> 00:10:07,690
+started there and so I would tell him
+
+205
+00:10:07,690 --> 00:10:09,430
+about you know hey you wrote this and
+
+206
+00:10:09,430 --> 00:10:11,200
+you did this you did this wrong right
+
+207
+00:10:11,200 --> 00:10:13,540
+all intensive purposes and so I taught
+
+208
+00:10:13,540 --> 00:10:15,460
+him so early on when I was him but as we
+
+209
+00:10:15,460 --> 00:10:17,770
+started to add people I was still this
+
+210
+00:10:17,770 --> 00:10:20,590
+external entity right and so as he added
+
+211
+00:10:20,590 --> 00:10:22,270
+people they write code and I'd review it
+
+212
+00:10:22,270 --> 00:10:26,440
+and as we moved along their people
+
+213
+00:10:26,440 --> 00:10:30,130
+eventually started learning hey we don't
+
+214
+00:10:30,130 --> 00:10:31,260
+have cross-site scripting
+
+215
+00:10:31,260 --> 00:10:34,690
+vulnerabilities as much as we review
+
+216
+00:10:34,690 --> 00:10:37,120
+code we've those have just sort of gone
+
+217
+00:10:37,120 --> 00:10:39,010
+away because we've we've learned about
+
+218
+00:10:39,010 --> 00:10:45,790
+that and and as he grew from you know
+
+219
+00:10:45,790 --> 00:10:48,930
+one to two to ten to now say 23 people
+
+220
+00:10:48,930 --> 00:10:52,300
+at some point I sold ingenuity and
+
+221
+00:10:52,300 --> 00:10:54,250
+actually went to work for and yet we
+
+222
+00:10:54,250 --> 00:10:57,490
+actually emerged the security practice
+
+223
+00:10:57,490 --> 00:10:59,740
+in right into the company and that's
+
+224
+00:10:59,740 --> 00:11:02,520
+where I had a really interesting
+
+225
+00:11:02,520 --> 00:11:05,020
+revelation I i I'm part of the company
+
+226
+00:11:05,020 --> 00:11:08,250
+now I can do more impact because I'm
+
+227
+00:11:08,250 --> 00:11:11,680
+internal right so secure all the things
+
+228
+00:11:11,680 --> 00:11:15,280
+I thought and yeah it doesn't work like
+
+229
+00:11:15,280 --> 00:11:16,690
+that you can't just come in and say
+
+230
+00:11:16,690 --> 00:11:17,830
+we're going to do this this this this
+
+231
+00:11:17,830 --> 00:11:22,180
+this this it just doesn't it doesn't
+
+232
+00:11:22,180 --> 00:11:24,370
+work like that I really learned that
+
+233
+00:11:24,370 --> 00:11:27,910
+you have to take steps one at a time and
+
+234
+00:11:27,910 --> 00:11:30,790
+just iterate and do better and increment
+
+235
+00:11:30,790 --> 00:11:34,029
+or for a short period of time you're
+
+236
+00:11:34,029 --> 00:11:35,020
+going to see it you're going to see an
+
+237
+00:11:35,020 --> 00:11:36,190
+improvement but then it's going to it's
+
+238
+00:11:36,190 --> 00:11:38,380
+going to die your people are going to go
+
+239
+00:11:38,380 --> 00:11:40,570
+back to their old habits and there's
+
+240
+00:11:40,570 --> 00:11:42,490
+huge push back to all the things that I
+
+241
+00:11:42,490 --> 00:11:44,740
+wanted to do and we're still a couple
+
+242
+00:11:44,740 --> 00:11:46,960
+years later starting two imps continuing
+
+243
+00:11:46,960 --> 00:11:48,790
+to implement on that initial vision
+
+244
+00:11:48,790 --> 00:11:50,500
+we've had and so it's been it's been a
+
+245
+00:11:50,500 --> 00:11:53,290
+slow iterating process so the one
+
+246
+00:11:53,290 --> 00:11:56,500
+interesting about education which I'm
+
+247
+00:11:56,500 --> 00:11:59,520
+going to go to this a little bit later
+
+248
+00:11:59,520 --> 00:12:05,130
+so why do we avoid during during dirt
+
+249
+00:12:05,130 --> 00:12:08,410
+avoid security why do we avoid doing it
+
+250
+00:12:08,410 --> 00:12:11,440
+one why was I getting a you know push
+
+251
+00:12:11,440 --> 00:12:12,820
+back on securing all the things and
+
+252
+00:12:12,820 --> 00:12:14,920
+things like that one of the big things
+
+253
+00:12:14,920 --> 00:12:17,100
+is ignorance we don't know we don't know
+
+254
+00:12:17,100 --> 00:12:20,380
+we also don't like to have things
+
+255
+00:12:20,380 --> 00:12:23,350
+pointed out when we do them wrong it's
+
+256
+00:12:23,350 --> 00:12:25,420
+it's it's the sonic it's not a good
+
+257
+00:12:25,420 --> 00:12:28,330
+feeling in any way we also procrastinate
+
+258
+00:12:28,330 --> 00:12:31,330
+it's it's way easier to procrastinate
+
+259
+00:12:31,330 --> 00:12:33,910
+and put off this adding those features
+
+260
+00:12:33,910 --> 00:12:35,620
+because it's really cool building the
+
+261
+00:12:35,620 --> 00:12:38,020
+new hotness right rather than figuring
+
+262
+00:12:38,020 --> 00:12:39,640
+out how to actually secure the new
+
+263
+00:12:39,640 --> 00:12:42,640
+hotness it's not you know it's not
+
+264
+00:12:42,640 --> 00:12:44,650
+particularly exciting work and it's not
+
+265
+00:12:44,650 --> 00:12:47,200
+rewarded it's sort of the inverse we get
+
+266
+00:12:47,200 --> 00:12:50,350
+we get shamed when something goes bad
+
+267
+00:12:50,350 --> 00:12:54,240
+but if it's working right and fine
+
+268
+00:12:54,240 --> 00:12:56,890
+things just move along it's not a
+
+269
+00:12:56,890 --> 00:12:57,970
+problem until it's a problem it's
+
+270
+00:12:57,970 --> 00:12:59,529
+there's a there's a good analogy Adam
+
+271
+00:12:59,529 --> 00:13:02,560
+was telling me about you know the people
+
+272
+00:13:02,560 --> 00:13:03,940
+who produced the sound for events like
+
+273
+00:13:03,940 --> 00:13:08,350
+this if my audio was just to cut out and
+
+274
+00:13:08,350 --> 00:13:11,350
+not work right or feedback or whatever
+
+275
+00:13:11,350 --> 00:13:14,709
+there's quick blame to go to the sound
+
+276
+00:13:14,709 --> 00:13:18,700
+to the sound person but if it works
+
+277
+00:13:18,700 --> 00:13:22,240
+flawlessly it just works no one's going
+
+278
+00:13:22,240 --> 00:13:24,040
+to go give that guy a high-five that it
+
+279
+00:13:24,040 --> 00:13:27,130
+worked great it doesn't so when it when
+
+280
+00:13:27,130 --> 00:13:32,170
+it goes wrong it just it goes wrong it's
+
+281
+00:13:32,170 --> 00:13:34,650
+just not glamorous so one way to combat
+
+282
+00:13:34,650 --> 00:13:37,190
+ignorance is through education
+
+283
+00:13:37,190 --> 00:13:39,260
+right we need you know which need to
+
+284
+00:13:39,260 --> 00:13:41,780
+sort of understand vulnerabilities and
+
+285
+00:13:41,780 --> 00:13:44,480
+this is where I welcome you to the
+
+286
+00:13:44,480 --> 00:13:51,030
+security community please wipe your feet
+
+287
+00:13:51,040 --> 00:13:55,040
+so as we learn about the things that we
+
+288
+00:13:55,040 --> 00:13:58,280
+learn we pass them on and just like that
+
+289
+00:13:58,280 --> 00:14:02,560
+seed crystal our community grows and
+
+290
+00:14:02,560 --> 00:14:05,630
+when I talk to developers I often get
+
+291
+00:14:05,630 --> 00:14:08,330
+asked about you know what is the new
+
+292
+00:14:08,330 --> 00:14:10,580
+scary what's what's what does the
+
+293
+00:14:10,580 --> 00:14:12,800
+security community know that that I
+
+294
+00:14:12,800 --> 00:14:14,660
+don't know and that I should fix in my
+
+295
+00:14:14,660 --> 00:14:20,330
+app and and I'm going to tell you the
+
+296
+00:14:20,330 --> 00:14:24,050
+simple stuff still works it still works
+
+297
+00:14:24,050 --> 00:14:25,970
+from years and years and years and years
+
+298
+00:14:25,970 --> 00:14:27,860
+ago when we found these vulnerabilities
+
+299
+00:14:27,860 --> 00:14:30,670
+and the information has been out there
+
+300
+00:14:30,670 --> 00:14:34,100
+we continue to go along this mobius
+
+301
+00:14:34,100 --> 00:14:37,100
+strip of development moving ahead and we
+
+302
+00:14:37,100 --> 00:14:40,570
+were not learning from our past mistakes
+
+303
+00:14:40,570 --> 00:14:44,000
+we're just not doing it there's some
+
+304
+00:14:44,000 --> 00:14:49,250
+other things there too while I have you
+
+305
+00:14:49,250 --> 00:14:51,230
+captive we're going to sort of talk
+
+306
+00:14:51,230 --> 00:14:52,760
+about a few things that devs fine fine
+
+307
+00:14:52,760 --> 00:14:54,410
+scary well let's talk about a few sort
+
+308
+00:14:54,410 --> 00:14:57,470
+of tangible things i pulled my twitter
+
+309
+00:14:57,470 --> 00:15:00,680
+feed and asked developers what they
+
+310
+00:15:00,680 --> 00:15:02,180
+cared about security wise and what they
+
+311
+00:15:02,180 --> 00:15:05,950
+found scary and difficult to implement
+
+312
+00:15:05,950 --> 00:15:08,060
+things that they thought that they were
+
+313
+00:15:08,060 --> 00:15:11,690
+going to screw up implementing and those
+
+314
+00:15:11,690 --> 00:15:13,610
+two things fell on the top validation
+
+315
+00:15:13,610 --> 00:15:16,610
+sanitization and crypto right my quest
+
+316
+00:15:16,610 --> 00:15:17,660
+already talked to you about content
+
+317
+00:15:17,660 --> 00:15:19,310
+injections so I'm not going to do that
+
+318
+00:15:19,310 --> 00:15:22,190
+and you know about the ways to validate
+
+319
+00:15:22,190 --> 00:15:24,350
+and sanitize your data you know properly
+
+320
+00:15:24,350 --> 00:15:26,210
+in content security policy in those
+
+321
+00:15:26,210 --> 00:15:29,600
+things and Martine talked about crypto a
+
+322
+00:15:29,600 --> 00:15:32,630
+bit if you want to learn more I think
+
+323
+00:15:32,630 --> 00:15:34,820
+you mentioned this the motto sano has a
+
+324
+00:15:34,820 --> 00:15:36,589
+crypto challenge where you can learn
+
+325
+00:15:36,589 --> 00:15:37,880
+about building crypto systems and
+
+326
+00:15:37,880 --> 00:15:40,010
+breaking them I really recommend going
+
+327
+00:15:40,010 --> 00:15:42,500
+through those as a developer will level
+
+328
+00:15:42,500 --> 00:15:44,600
+up your game quite a bit when it comes
+
+329
+00:15:44,600 --> 00:15:47,810
+to crypto martine also suggested before
+
+330
+00:15:47,810 --> 00:15:50,329
+the talk that i mentioned the core
+
+331
+00:15:50,329 --> 00:15:58,189
+is on by Dan Bona Bona Bona on Krypto
+
+332
+00:15:58,189 --> 00:16:00,139
+there's a there's a crypt of course it
+
+333
+00:16:00,139 --> 00:16:03,499
+will blow your mind but it's a short
+
+334
+00:16:03,499 --> 00:16:06,170
+course and it's worth it so I'm not
+
+335
+00:16:06,170 --> 00:16:07,730
+going to talk about those things I'm
+
+336
+00:16:07,730 --> 00:16:09,709
+going to talk about something that I'm a
+
+337
+00:16:09,709 --> 00:16:11,110
+bit more familiar with it that is
+
+338
+00:16:11,110 --> 00:16:14,540
+JavaScript related it is not note conf I
+
+339
+00:16:14,540 --> 00:16:17,149
+realized but it is jas related all the
+
+340
+00:16:17,149 --> 00:16:21,529
+same and it is npm we're using NPM to
+
+341
+00:16:21,529 --> 00:16:24,819
+install a lot of things client-side code
+
+342
+00:16:24,819 --> 00:16:28,100
+server-side code all the modules right
+
+343
+00:16:28,100 --> 00:16:29,720
+there's 40,000 plus modules out there
+
+344
+00:16:29,720 --> 00:16:31,549
+and the node security project is working
+
+345
+00:16:31,549 --> 00:16:34,429
+on auditing those things and that came
+
+346
+00:16:34,429 --> 00:16:35,959
+we started the project because we're
+
+347
+00:16:35,959 --> 00:16:39,170
+trying to secure a product our product
+
+348
+00:16:39,170 --> 00:16:42,139
+and bang it's built on node and we were
+
+349
+00:16:42,139 --> 00:16:45,019
+finding ways to compromise the product
+
+350
+00:16:45,019 --> 00:16:46,730
+we felt we had the car codebase really
+
+351
+00:16:46,730 --> 00:16:48,889
+solid but we had one interesting thing
+
+352
+00:16:48,889 --> 00:16:53,269
+we had we had code injection a bunch of
+
+353
+00:16:53,269 --> 00:16:55,220
+people in this room were writing code
+
+354
+00:16:55,220 --> 00:16:58,339
+for our product right and they were
+
+355
+00:16:58,339 --> 00:17:00,559
+injecting it into our app and I was you
+
+356
+00:17:00,559 --> 00:17:03,649
+know basically trusting that that code
+
+357
+00:17:03,649 --> 00:17:05,539
+was was good so it's looking for ways on
+
+358
+00:17:05,539 --> 00:17:07,039
+how I could inject code into other
+
+359
+00:17:07,039 --> 00:17:10,459
+developers projects right how what what
+
+360
+00:17:10,459 --> 00:17:12,799
+exists for vulnerabilities are so come
+
+361
+00:17:12,799 --> 00:17:15,889
+along NPM install CoffeeScript is this
+
+362
+00:17:15,889 --> 00:17:19,730
+right no this is not right it's NPM
+
+363
+00:17:19,730 --> 00:17:23,269
+install coffee dash script and there's a
+
+364
+00:17:23,269 --> 00:17:24,679
+number of developers out there that hate
+
+365
+00:17:24,679 --> 00:17:28,789
+me for publishing the module so I
+
+366
+00:17:28,789 --> 00:17:30,590
+actually took it down please don't put
+
+367
+00:17:30,590 --> 00:17:33,649
+it up please do not put it back up I
+
+368
+00:17:33,649 --> 00:17:36,529
+mentioning this here and now because
+
+369
+00:17:36,529 --> 00:17:39,289
+this is a problem we are a smart
+
+370
+00:17:39,289 --> 00:17:42,980
+community everyone here is much smarter
+
+371
+00:17:42,980 --> 00:17:44,389
+than I am in terms of solving some of
+
+372
+00:17:44,389 --> 00:17:47,899
+these problems we need to address this
+
+373
+00:17:47,899 --> 00:17:50,899
+so what I did was I took the top 100
+
+374
+00:17:50,899 --> 00:17:53,899
+modules and I did a typo analysis of
+
+375
+00:17:53,899 --> 00:17:56,240
+those and then I did a passive analysis
+
+376
+00:17:56,240 --> 00:17:58,220
+on all the NPM blogs which the project
+
+377
+00:17:58,220 --> 00:18:00,529
+was gracious enough to give me so I
+
+378
+00:18:00,529 --> 00:18:01,639
+didn't have to publish all of these
+
+379
+00:18:01,639 --> 00:18:02,830
+modules and see what happened
+
+380
+00:18:02,830 --> 00:18:06,220
+and a lot of things bubble to the
+
+381
+00:18:06,220 --> 00:18:12,580
+surface package names with punctuation
+
+382
+00:18:12,580 --> 00:18:15,039
+dashes periods things like that get
+
+383
+00:18:15,039 --> 00:18:16,570
+misspelled way more often than other
+
+384
+00:18:16,570 --> 00:18:19,510
+things but it's an interest it's a
+
+385
+00:18:19,510 --> 00:18:20,860
+really interesting attack surface is a
+
+386
+00:18:20,860 --> 00:18:24,070
+really big problem so when I publish
+
+387
+00:18:24,070 --> 00:18:27,970
+CoffeeScript it got 200 installs roughly
+
+388
+00:18:27,970 --> 00:18:30,460
+in about a week and it took that long to
+
+389
+00:18:30,460 --> 00:18:32,710
+be discovered it did nothing it was
+
+390
+00:18:32,710 --> 00:18:35,409
+blank it had to read me if I hadn't
+
+391
+00:18:35,409 --> 00:18:36,700
+mimic the behavior of coffeescript
+
+392
+00:18:36,700 --> 00:18:38,500
+chances are it would have taken a lot
+
+393
+00:18:38,500 --> 00:18:41,919
+longer to to be identified so there
+
+394
+00:18:41,919 --> 00:18:45,789
+there's my random scary for the for
+
+395
+00:18:45,789 --> 00:18:53,679
+the talk so what else process right so
+
+396
+00:18:53,679 --> 00:18:57,549
+we go back to the the hey we can't make
+
+397
+00:18:57,549 --> 00:19:00,100
+one hundred percent secure software it's
+
+398
+00:19:00,100 --> 00:19:01,210
+going to be processed it's going to
+
+399
+00:19:01,210 --> 00:19:03,120
+exist and we're going to do it forever
+
+400
+00:19:03,120 --> 00:19:05,710
+what you can't do though is you can't
+
+401
+00:19:05,710 --> 00:19:07,899
+just shove process down in the face of
+
+402
+00:19:07,899 --> 00:19:09,940
+developers and expect them to abide by
+
+403
+00:19:09,940 --> 00:19:12,490
+your your law of security in your
+
+404
+00:19:12,490 --> 00:19:14,919
+organization it doesn't work I tried to
+
+405
+00:19:14,919 --> 00:19:17,340
+do that and yet and they basically said
+
+406
+00:19:17,340 --> 00:19:21,909
+right we don't we don't love strict
+
+407
+00:19:21,909 --> 00:19:24,070
+processes we work in in much different
+
+408
+00:19:24,070 --> 00:19:27,370
+ways and I'm sort of being vague 'insahn
+
+409
+00:19:27,370 --> 00:19:29,049
+this because you need to find out what
+
+410
+00:19:29,049 --> 00:19:31,059
+your processes for your team it's going
+
+411
+00:19:31,059 --> 00:19:37,929
+to differ a lot for each team so let's
+
+412
+00:19:37,929 --> 00:19:41,980
+see one other thing is that we can take
+
+413
+00:19:41,980 --> 00:19:44,080
+it we can taken a lesson from attackers
+
+414
+00:19:44,080 --> 00:19:46,659
+here and that we have a really
+
+415
+00:19:46,659 --> 00:19:47,679
+interesting position inside of our
+
+416
+00:19:47,679 --> 00:19:48,970
+organization inside of our communities
+
+417
+00:19:48,970 --> 00:19:51,130
+and that's that's a position that
+
+418
+00:19:51,130 --> 00:19:53,080
+attackers would love to be in insider
+
+419
+00:19:53,080 --> 00:19:54,639
+threat we can sort of turn that on its
+
+420
+00:19:54,639 --> 00:19:56,980
+head right we're in a position where we
+
+421
+00:19:56,980 --> 00:19:59,320
+can effect change we can actually
+
+422
+00:19:59,320 --> 00:20:02,950
+influence and we can just change the
+
+423
+00:20:02,950 --> 00:20:05,110
+process it's it's not immutable it's
+
+424
+00:20:05,110 --> 00:20:07,210
+like code your habits your education
+
+425
+00:20:07,210 --> 00:20:10,299
+there they're not mutable we can change
+
+426
+00:20:10,299 --> 00:20:13,250
+them so
+
+427
+00:20:13,250 --> 00:20:18,800
+we need to wean do that we need to take
+
+428
+00:20:18,800 --> 00:20:20,450
+and change what your which how you're
+
+429
+00:20:20,450 --> 00:20:23,480
+approaching things and integrate
+
+430
+00:20:23,480 --> 00:20:24,680
+security and every basically every
+
+431
+00:20:24,680 --> 00:20:26,390
+aspect of the organization and do so
+
+432
+00:20:26,390 --> 00:20:28,760
+from you know if management doesn't care
+
+433
+00:20:28,760 --> 00:20:32,330
+well there's there's ways to help
+
+434
+00:20:32,330 --> 00:20:35,840
+influence that just doing it and and
+
+435
+00:20:35,840 --> 00:20:42,560
+just sort of take over community bridge
+
+436
+00:20:42,560 --> 00:20:46,130
+all the world's so I want you to read a
+
+437
+00:20:46,130 --> 00:20:49,190
+blog post by Adam brawl has published a
+
+438
+00:20:49,190 --> 00:20:52,510
+few days ago from some discussions in
+
+439
+00:20:52,510 --> 00:20:56,570
+topics at that happen at node conf and
+
+440
+00:20:56,570 --> 00:20:58,070
+it talks about how to be a good
+
+441
+00:20:58,070 --> 00:21:01,160
+community member in terms of other
+
+442
+00:21:01,160 --> 00:21:02,570
+development communities pointing and
+
+443
+00:21:02,570 --> 00:21:06,320
+laughing and shaming we're we're really
+
+444
+00:21:06,320 --> 00:21:08,690
+good at that in the security community
+
+445
+00:21:08,690 --> 00:21:10,190
+we're really good at pointing and
+
+446
+00:21:10,190 --> 00:21:12,920
+laughing at all the code you write the
+
+447
+00:21:12,920 --> 00:21:16,880
+things that you do and we you know we
+
+448
+00:21:16,880 --> 00:21:17,990
+don't pull any punches right we
+
+449
+00:21:17,990 --> 00:21:20,060
+basically that that's what we're good at
+
+450
+00:21:20,060 --> 00:21:22,550
+and I used to think of myself not as a
+
+451
+00:21:22,550 --> 00:21:25,280
+not as a dev and earlier this year so I
+
+452
+00:21:25,280 --> 00:21:27,320
+used to think of myself just as a
+
+453
+00:21:27,320 --> 00:21:29,930
+security person trying to help
+
+454
+00:21:29,930 --> 00:21:32,330
+developers and I dropped out on the
+
+455
+00:21:32,330 --> 00:21:33,620
+floor earlier I dropped that trope
+
+456
+00:21:33,620 --> 00:21:36,380
+earlier and said ok I'm going to accept
+
+457
+00:21:36,380 --> 00:21:38,480
+that I'm a developer and I'm that I
+
+458
+00:21:38,480 --> 00:21:40,130
+belong in both communities I dropped
+
+459
+00:21:40,130 --> 00:21:42,680
+that rope and now I'm just a bad dev I'm
+
+460
+00:21:42,680 --> 00:21:45,260
+just not like the code I right of
+
+461
+00:21:45,260 --> 00:21:47,690
+but I'm embracing that role which as
+
+462
+00:21:47,690 --> 00:21:51,380
+soon as I embrace that role I can get
+
+463
+00:21:51,380 --> 00:21:53,210
+better I realize that this is my
+
+464
+00:21:53,210 --> 00:21:55,340
+responsibility to learn how to do these
+
+465
+00:21:55,340 --> 00:21:57,560
+things better and I'm wondering if it's
+
+466
+00:21:57,560 --> 00:22:00,290
+not time for developers to drop the
+
+467
+00:22:00,290 --> 00:22:02,150
+trope that they aren't a little bit of
+
+468
+00:22:02,150 --> 00:22:04,400
+security people or any other fringe
+
+469
+00:22:04,400 --> 00:22:06,080
+community that might be related to
+
+470
+00:22:06,080 --> 00:22:08,150
+development that maybe you should be
+
+471
+00:22:08,150 --> 00:22:10,850
+involved a little bit more in that and
+
+472
+00:22:10,850 --> 00:22:13,610
+say well well i'm a bad security person
+
+473
+00:22:13,610 --> 00:22:18,350
+i can get better one thin I realized why
+
+474
+00:22:18,350 --> 00:22:19,670
+devs don't join the security community
+
+475
+00:22:19,670 --> 00:22:21,920
+is because we can be very abrasive in
+
+476
+00:22:21,920 --> 00:22:23,990
+crass and it's an unappealing place
+
+477
+00:22:23,990 --> 00:22:24,790
+right we're not
+
+478
+00:22:24,790 --> 00:22:27,760
+necessary that kind but we can combat
+
+479
+00:22:27,760 --> 00:22:31,810
+that come in numbers you know it'll be
+
+480
+00:22:31,810 --> 00:22:35,170
+good the last thing that I want to plug
+
+481
+00:22:35,170 --> 00:22:38,490
+sort of out of the blue something random
+
+482
+00:22:38,490 --> 00:22:40,780
+and what I think that we all should do
+
+483
+00:22:40,780 --> 00:22:43,840
+is we should put security down md files
+
+484
+00:22:43,840 --> 00:22:48,820
+in our projects it helps explain how you
+
+485
+00:22:48,820 --> 00:22:50,380
+want vulnerabilities disclosed in your
+
+486
+00:22:50,380 --> 00:22:53,800
+projects it helps communicate the
+
+487
+00:22:53,800 --> 00:22:55,510
+security constraints around your
+
+488
+00:22:55,510 --> 00:22:58,270
+projects it tells how the constraints on
+
+489
+00:22:58,270 --> 00:22:59,290
+which your project was designed
+
+490
+00:22:59,290 --> 00:23:01,300
+communicate the things about security in
+
+491
+00:23:01,300 --> 00:23:04,150
+this file maybe it's just an email
+
+492
+00:23:04,150 --> 00:23:05,830
+address i want vulnerabilities disclosed
+
+493
+00:23:05,830 --> 00:23:08,170
+here i want you to tell me here and give
+
+494
+00:23:08,170 --> 00:23:10,330
+people a process if you want a good
+
+495
+00:23:10,330 --> 00:23:13,960
+example JSE's they've got a fantastic
+
+496
+00:23:13,960 --> 00:23:16,390
+disclosure process it is a model for how
+
+497
+00:23:16,390 --> 00:23:18,210
+we think how we should be doing things
+
+498
+00:23:18,210 --> 00:23:21,280
+with with other JavaScript related
+
+499
+00:23:21,280 --> 00:23:26,830
+projects so I've got homework if you've
+
+500
+00:23:26,830 --> 00:23:31,120
+got nothing I want out of this at all do
+
+501
+00:23:31,120 --> 00:23:35,340
+this go to 0 asp look at the top 10
+
+502
+00:23:35,340 --> 00:23:39,150
+learn about one type of vulnerability I
+
+503
+00:23:39,150 --> 00:23:42,280
+don't care what it is hopefully it's
+
+504
+00:23:42,280 --> 00:23:43,810
+something related to something that
+
+505
+00:23:43,810 --> 00:23:45,970
+you're working on audit some of your
+
+506
+00:23:45,970 --> 00:23:49,570
+code dig in if you don't understand it
+
+507
+00:23:49,570 --> 00:23:52,360
+jump into some security communities IRC
+
+508
+00:23:52,360 --> 00:23:55,450
+channels try to interact and learn about
+
+509
+00:23:55,450 --> 00:23:58,450
+that figure out how you can fix that
+
+510
+00:23:58,450 --> 00:24:00,460
+vulnerability and then teach somebody on
+
+511
+00:24:00,460 --> 00:24:02,440
+your team about what you did just show
+
+512
+00:24:02,440 --> 00:24:05,610
+them over lunch that's going to take
+
+513
+00:24:05,610 --> 00:24:07,720
+you're going to be that seed crystal
+
+514
+00:24:07,720 --> 00:24:09,970
+that's going to start forming and start
+
+515
+00:24:09,970 --> 00:24:14,140
+changing this community and I've got
+
+516
+00:24:14,140 --> 00:24:15,370
+some homework for you now so I'm going
+
+517
+00:24:15,370 --> 00:24:16,870
+to finish up about five minutes early
+
+518
+00:24:16,870 --> 00:24:19,660
+you've got some comfort to do I want you
+
+519
+00:24:19,660 --> 00:24:22,540
+to take lunch as an opportunity to talk
+
+520
+00:24:22,540 --> 00:24:25,150
+to each other about what you do in terms
+
+521
+00:24:25,150 --> 00:24:27,430
+of security some good questions are how
+
+522
+00:24:27,430 --> 00:24:28,990
+do you handle security on your projects
+
+523
+00:24:28,990 --> 00:24:33,130
+and if the answer is I don't come talk
+
+524
+00:24:33,130 --> 00:24:34,270
+to me or find somebody else bring
+
+525
+00:24:34,270 --> 00:24:35,500
+somebody else in and talk about it
+
+526
+00:24:35,500 --> 00:24:37,540
+what's a vulnerability that you've had
+
+527
+00:24:37,540 --> 00:24:37,900
+in your
+
+528
+00:24:37,900 --> 00:24:39,610
+what's a bug that's affected security
+
+529
+00:24:39,610 --> 00:24:41,440
+and how have you addressed it tell those
+
+530
+00:24:41,440 --> 00:24:45,880
+stories talk to each other and that will
+
+531
+00:24:45,880 --> 00:24:49,390
+have an immediate and it will have a
+
+532
+00:24:49,390 --> 00:24:52,900
+lasting impact on our community thank
+
+533
+00:24:52,900 --> 00:25:07,480
+you
+

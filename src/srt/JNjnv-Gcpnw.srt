@@ -1,0 +1,2670 @@
+1
+00:00:15,260 --> 00:00:17,690
+
+this talk is called inspector web and
+
+2
+00:00:17,690 --> 00:00:19,220
+the mystery of the shadow Dom we're
+
+3
+00:00:19,220 --> 00:00:21,530
+gonna talk about web components and the
+
+4
+00:00:21,530 --> 00:00:23,180
+underlying shadow Dom that makes them
+
+5
+00:00:23,180 --> 00:00:26,270
+work so hello everyone I'm Angelina you
+
+6
+00:00:26,270 --> 00:00:28,279
+can follow me on twitter at angelina
+
+7
+00:00:28,279 --> 00:00:30,590
+magnum and i work at a company in
+
+8
+00:00:30,590 --> 00:00:32,570
+vancouver called steam clock software
+
+9
+00:00:32,570 --> 00:00:34,480
+has anybody else here from vancouver
+
+10
+00:00:34,480 --> 00:00:37,879
+whoa yeah okay so like two people and we
+
+11
+00:00:37,879 --> 00:00:39,379
+do mobile apps written in both java
+
+12
+00:00:39,379 --> 00:00:41,540
+scripts and objective-c and very often
+
+13
+00:00:41,540 --> 00:00:44,239
+both and before that I worked on web
+
+14
+00:00:44,239 --> 00:00:47,150
+development for years and I started on
+
+15
+00:00:47,150 --> 00:00:49,220
+Angel Fire when I was like 12 my first
+
+16
+00:00:49,220 --> 00:00:50,930
+website had gratuitous use of the blink
+
+17
+00:00:50,930 --> 00:00:53,360
+tag and animated dolphins everywhere and
+
+18
+00:00:53,360 --> 00:00:54,440
+I thought it was pretty much the coolest
+
+19
+00:00:54,440 --> 00:00:56,600
+thing ever and I still think this stuff
+
+20
+00:00:56,600 --> 00:00:59,330
+is the coolest stuff ever so let's talk
+
+21
+00:00:59,330 --> 00:01:01,850
+a little bit about how we currently do
+
+22
+00:01:01,850 --> 00:01:03,080
+things how do we currently build
+
+23
+00:01:03,080 --> 00:01:06,140
+websites and web applications well
+
+24
+00:01:06,140 --> 00:01:08,000
+probably either you know you the
+
+25
+00:01:08,000 --> 00:01:09,560
+developer or someone you're working for
+
+26
+00:01:09,560 --> 00:01:11,540
+has an idea for some features and you
+
+27
+00:01:11,540 --> 00:01:13,040
+have a spec and then you start thinking
+
+28
+00:01:13,040 --> 00:01:15,260
+about okay well what am I going to do to
+
+29
+00:01:15,260 --> 00:01:16,760
+code these features and make things that
+
+30
+00:01:16,760 --> 00:01:18,770
+people can interact with and a really
+
+31
+00:01:18,770 --> 00:01:20,780
+common pattern is that people will say
+
+32
+00:01:20,780 --> 00:01:22,610
+okay I need a date picker and they'll go
+
+33
+00:01:22,610 --> 00:01:25,670
+find a UI component library like jQuery
+
+34
+00:01:25,670 --> 00:01:27,590
+and you'll probably do something like
+
+35
+00:01:27,590 --> 00:01:30,650
+this so you have some script tag where
+
+36
+00:01:30,650 --> 00:01:32,450
+you insert jQuery and then you insert
+
+37
+00:01:32,450 --> 00:01:34,280
+maybe plug-in that's some more
+
+38
+00:01:34,280 --> 00:01:35,540
+third-party code written by somebody
+
+39
+00:01:35,540 --> 00:01:38,410
+else and then still yet you need to
+
+40
+00:01:38,410 --> 00:01:41,150
+select an element and probably tell it
+
+41
+00:01:41,150 --> 00:01:46,670
+to behave how you want it to hold on a
+
+42
+00:01:46,670 --> 00:01:49,550
+sec here let me see if I can there we go
+
+43
+00:01:49,550 --> 00:01:52,900
+that's better and then after you do that
+
+44
+00:01:52,900 --> 00:01:55,100
+maybe you have more than one widget in
+
+45
+00:01:55,100 --> 00:01:57,620
+your page and you have some base styles
+
+46
+00:01:57,620 --> 00:01:59,870
+for your widget for all your widgets on
+
+47
+00:01:59,870 --> 00:02:03,290
+your page and then maybe you want the
+
+48
+00:02:03,290 --> 00:02:05,240
+container or maybe you want the contents
+
+49
+00:02:05,240 --> 00:02:06,500
+of each of those widgets to behave
+
+50
+00:02:06,500 --> 00:02:08,179
+slightly differently to those base
+
+51
+00:02:08,179 --> 00:02:09,619
+styles so you end up writing a lot of
+
+52
+00:02:09,619 --> 00:02:11,659
+really specific CSS I mean who's seen
+
+53
+00:02:11,659 --> 00:02:13,340
+this before right you write some widget
+
+54
+00:02:13,340 --> 00:02:14,900
+Styles and then as your application
+
+55
+00:02:14,900 --> 00:02:16,400
+grows and you need more and more
+
+56
+00:02:16,400 --> 00:02:17,930
+specific selectors you end up writing a
+
+57
+00:02:17,930 --> 00:02:19,970
+lot more CSS to really get in there and
+
+58
+00:02:19,970 --> 00:02:24,230
+be specific and I mean the way we're
+
+59
+00:02:24,230 --> 00:02:26,749
+doing things now is kind of okay I mean
+
+60
+00:02:26,749 --> 00:02:28,040
+it does a job right we're still building
+
+61
+00:02:28,040 --> 00:02:29,150
+web applications
+
+62
+00:02:29,150 --> 00:02:30,260
+successfully and we're all still
+
+63
+00:02:30,260 --> 00:02:33,019
+employed as developers and that's okay
+
+64
+00:02:33,019 --> 00:02:34,760
+but we end up with things like namespace
+
+65
+00:02:34,760 --> 00:02:36,319
+and selector collisions the more
+
+66
+00:02:36,319 --> 00:02:37,579
+complexity we introduce in our
+
+67
+00:02:37,579 --> 00:02:40,670
+applications and sometimes you know by
+
+68
+00:02:40,670 --> 00:02:42,739
+doing all of this code injection and
+
+69
+00:02:42,739 --> 00:02:44,299
+manipulation there are elements you
+
+70
+00:02:44,299 --> 00:02:45,799
+might not expect when iterating over
+
+71
+00:02:45,799 --> 00:02:47,659
+your Dom I mean when you have a small
+
+72
+00:02:47,659 --> 00:02:49,099
+application that's really easy to say
+
+73
+00:02:49,099 --> 00:02:51,049
+okay I know all the things that are
+
+74
+00:02:51,049 --> 00:02:53,299
+going into this page and I can sort of
+
+75
+00:02:53,299 --> 00:02:55,310
+have a mental model so that I don't
+
+76
+00:02:55,310 --> 00:02:57,500
+ up but when you have more than one
+
+77
+00:02:57,500 --> 00:02:59,180
+up but when you have more than one
+developer working on this on these sorts
+
+78
+00:02:59,180 --> 00:03:01,159
+of things and the complexity of your
+
+79
+00:03:01,159 --> 00:03:02,569
+project grows that becomes harder and
+
+80
+00:03:02,569 --> 00:03:05,209
+harder to do so yeah those widgets can
+
+81
+00:03:05,209 --> 00:03:06,829
+sometimes interfere with one another
+
+82
+00:03:06,829 --> 00:03:10,400
+which is kind of kind of frustrating so
+
+83
+00:03:10,400 --> 00:03:13,190
+we can do better but we need something
+
+84
+00:03:13,190 --> 00:03:16,220
+and what we need is encapsulation and
+
+85
+00:03:16,220 --> 00:03:18,170
+what I'm talking about today with shadow
+
+86
+00:03:18,170 --> 00:03:20,510
+Dom a web components provides some
+
+87
+00:03:20,510 --> 00:03:21,680
+really much to meet much needed
+
+88
+00:03:21,680 --> 00:03:23,870
+encapsulation for front-end development
+
+89
+00:03:23,870 --> 00:03:25,280
+which I've been kind of wanting for a
+
+90
+00:03:25,280 --> 00:03:29,420
+long time so I discovered shadow Dom
+
+91
+00:03:29,420 --> 00:03:31,790
+because I'd read some article and
+
+92
+00:03:31,790 --> 00:03:33,250
+someone mentioned it and I thought
+
+93
+00:03:33,250 --> 00:03:36,049
+shadow Dom well that sounds pretty cool
+
+94
+00:03:36,049 --> 00:03:38,060
+I had no idea what it was and then it
+
+95
+00:03:38,060 --> 00:03:39,139
+turned out that it happened to solve
+
+96
+00:03:39,139 --> 00:03:40,280
+this encapsulation thing and I got
+
+97
+00:03:40,280 --> 00:03:41,569
+really excited because that's really
+
+98
+00:03:41,569 --> 00:03:43,970
+cool and so the idea here is how do we
+
+99
+00:03:43,970 --> 00:03:45,560
+create a boundary between the code
+
+100
+00:03:45,560 --> 00:03:48,280
+recreate and the code that consumes it
+
+101
+00:03:48,280 --> 00:03:51,199
+iframes were up until now really the
+
+102
+00:03:51,199 --> 00:03:52,639
+only way to do this and if you're at
+
+103
+00:03:52,639 --> 00:03:54,019
+Remy's talked earlier you kind of
+
+104
+00:03:54,019 --> 00:03:56,090
+learned that iframes are you can do a
+
+105
+00:03:56,090 --> 00:03:57,109
+lot of cool stuff with them but they're
+
+106
+00:03:57,109 --> 00:04:00,919
+kind of evil and inserting more frames
+
+107
+00:04:00,919 --> 00:04:02,560
+into your page can really slow it down
+
+108
+00:04:02,560 --> 00:04:04,909
+so we need another way to do this so
+
+109
+00:04:04,909 --> 00:04:07,220
+let's let's do a little bit of
+
+110
+00:04:07,220 --> 00:04:09,590
+investigating since we're all inspectors
+
+111
+00:04:09,590 --> 00:04:13,549
+let's open up the web inspector here can
+
+112
+00:04:13,549 --> 00:04:14,479
+everybody see that should I make a
+
+113
+00:04:14,479 --> 00:04:18,799
+bigger I can make a bigger a few so what
+
+114
+00:04:18,799 --> 00:04:21,019
+I have here is just a Creative Commons
+
+115
+00:04:21,019 --> 00:04:26,210
+videos an early animated film and if we
+
+116
+00:04:26,210 --> 00:04:33,650
+inspect this go into the DOM
+
+117
+00:04:33,660 --> 00:04:36,310
+there we are we can see that this video
+
+118
+00:04:36,310 --> 00:04:38,200
+element is largely just a black box
+
+119
+00:04:38,200 --> 00:04:39,790
+right I mean like we have some
+
+120
+00:04:39,790 --> 00:04:41,170
+attributes on here like the source
+
+121
+00:04:41,170 --> 00:04:44,500
+attribute and we can't see the inside of
+
+122
+00:04:44,500 --> 00:04:48,100
+it but if I go over to the COG here and
+
+123
+00:04:48,100 --> 00:04:50,860
+I go into my experimental section here
+
+124
+00:04:50,860 --> 00:04:52,390
+by the way in order for these these
+
+125
+00:04:52,390 --> 00:04:53,710
+demos to work you need to be running
+
+126
+00:04:53,710 --> 00:04:55,240
+Chrome Canary and I'll talk a little bit
+
+127
+00:04:55,240 --> 00:04:56,590
+about the state of implementation at the
+
+128
+00:04:56,590 --> 00:04:58,240
+end of the talk but we're gonna go in
+
+129
+00:04:58,240 --> 00:05:02,500
+there and click show Sado dom and then
+
+130
+00:05:02,500 --> 00:05:08,530
+we're gonna refresh the page and then we
+
+131
+00:05:08,530 --> 00:05:09,970
+go look at our video element again hey
+
+132
+00:05:09,970 --> 00:05:12,070
+what's this who's this guy I've got this
+
+133
+00:05:12,070 --> 00:05:13,480
+shadow root in here and if we expand
+
+134
+00:05:13,480 --> 00:05:17,290
+that there was a bunch of markup in
+
+135
+00:05:17,290 --> 00:05:19,720
+there that we couldn't see before so
+
+136
+00:05:19,720 --> 00:05:21,460
+you've actually encountered Shadow Dom
+
+137
+00:05:21,460 --> 00:05:23,110
+elements before and you didn't even know
+
+138
+00:05:23,110 --> 00:05:24,550
+it these are present in a lot of
+
+139
+00:05:24,550 --> 00:05:26,830
+existing elements like the input range
+
+140
+00:05:26,830 --> 00:05:29,440
+video element and the audio element and
+
+141
+00:05:29,440 --> 00:05:32,710
+you can actually see in here that a
+
+142
+00:05:32,710 --> 00:05:35,020
+spoiler for later is that you can have
+
+143
+00:05:35,020 --> 00:05:36,520
+nested shadow Dom's too so it's actually
+
+144
+00:05:36,520 --> 00:05:39,250
+a range element in there for the slider
+
+145
+00:05:39,250 --> 00:05:46,750
+inside of the video element so the gist
+
+146
+00:05:46,750 --> 00:05:48,070
+of shadow Dom like what's what's
+
+147
+00:05:48,070 --> 00:05:50,920
+actually going on here right the best
+
+148
+00:05:50,920 --> 00:05:53,320
+way to think about this is that shadow
+
+149
+00:05:53,320 --> 00:05:56,650
+Dom is basically a tiny document that
+
+150
+00:05:56,650 --> 00:05:59,440
+lives inside of a host element and when
+
+151
+00:05:59,440 --> 00:06:01,060
+that tiny document lives inside of a
+
+152
+00:06:01,060 --> 00:06:02,500
+host element maybe it's a div in this
+
+153
+00:06:02,500 --> 00:06:04,210
+case in our example it's the video
+
+154
+00:06:04,210 --> 00:06:07,540
+element that Dom is encapsulated and
+
+155
+00:06:07,540 --> 00:06:10,060
+invisible to the parent Dom unless you
+
+156
+00:06:10,060 --> 00:06:12,300
+otherwise somehow break that boundary
+
+157
+00:06:12,300 --> 00:06:14,710
+and so yeah browsers already used them
+
+158
+00:06:14,710 --> 00:06:20,170
+and now developers can too so let's
+
+159
+00:06:20,170 --> 00:06:23,200
+create minimal shadow I have this div
+
+160
+00:06:23,200 --> 00:06:25,270
+here I've just put a border on it so you
+
+161
+00:06:25,270 --> 00:06:27,130
+guys can see it but if we go into my
+
+162
+00:06:27,130 --> 00:06:29,770
+markup here we can see that it's just a
+
+163
+00:06:29,770 --> 00:06:31,570
+div with the idea of spooky right now it
+
+164
+00:06:31,570 --> 00:06:32,860
+doesn't have any children or anything
+
+165
+00:06:32,860 --> 00:06:40,169
+and it's just an empty div let's go into
+
+166
+00:06:40,169 --> 00:06:54,040
+console and let's select spooky
+
+167
+00:06:54,050 --> 00:06:57,630
+okay so we've got spooky and then let's
+
+168
+00:06:57,630 --> 00:06:59,430
+do some voodoo with spooky let's give it
+
+169
+00:06:59,430 --> 00:07:09,030
+a its own shadow root and we passed the
+
+170
+00:07:09,030 --> 00:07:10,199
+argument of spooky because that's the
+
+171
+00:07:10,199 --> 00:07:11,100
+element that we're giving the shadow
+
+172
+00:07:11,100 --> 00:07:15,780
+root 2 and then we insert a shadow root
+
+173
+00:07:15,780 --> 00:07:18,360
+into spooky but that's not very exciting
+
+174
+00:07:18,360 --> 00:07:19,949
+because we don't have anything inside
+
+175
+00:07:19,949 --> 00:07:23,419
+that shadow Dom yet so let's give that
+
+176
+00:07:23,419 --> 00:07:27,240
+some innerhtml let's say we do the
+
+177
+00:07:27,240 --> 00:07:33,110
+classic hello world well let's say hello
+
+178
+00:07:33,110 --> 00:07:37,840
+yes come for you
+
+179
+00:07:37,850 --> 00:07:40,410
+huzzah it appears ok that's not for
+
+180
+00:07:40,410 --> 00:07:41,850
+exciting right great that's just it
+
+181
+00:07:41,850 --> 00:07:43,289
+seems really similar to how we're
+
+182
+00:07:43,289 --> 00:07:45,120
+already doing things just injecting code
+
+183
+00:07:45,120 --> 00:07:47,280
+into the Dom but what's really cool
+
+184
+00:07:47,280 --> 00:07:49,380
+about this is you guys can see that it
+
+185
+00:07:49,380 --> 00:07:51,450
+says hello Jay has come for you if we go
+
+186
+00:07:51,450 --> 00:07:54,030
+into the source and we look for our dev
+
+187
+00:07:54,030 --> 00:07:58,710
+spooky and let me zoom this in here you
+
+188
+00:07:58,710 --> 00:08:02,030
+can see that spooky is still empty and
+
+189
+00:08:02,030 --> 00:08:04,440
+but that's really strange right because
+
+190
+00:08:04,440 --> 00:08:05,940
+we're seeing this text there and I you
+
+191
+00:08:05,940 --> 00:08:07,650
+just saw me insert this shadow Dom so
+
+192
+00:08:07,650 --> 00:08:11,550
+why doesn't it exist in spooky and I'm
+
+193
+00:08:11,550 --> 00:08:17,300
+going to tell you so how this works oh
+
+194
+00:08:17,300 --> 00:08:19,710
+that's kind of cut off don't know what
+
+195
+00:08:19,710 --> 00:08:27,570
+happened there nope okay well let's just
+
+196
+00:08:27,570 --> 00:08:30,720
+keep going so how this works is the
+
+197
+00:08:30,720 --> 00:08:32,789
+shadow root is inserted into the host
+
+198
+00:08:32,789 --> 00:08:35,039
+node and when that happens the rendering
+
+199
+00:08:35,039 --> 00:08:37,289
+of the shadow Dom replaces the rendering
+
+200
+00:08:37,289 --> 00:08:41,640
+of the children of the host nodes so the
+
+201
+00:08:41,640 --> 00:08:43,529
+original nodes in the source aren't
+
+202
+00:08:43,529 --> 00:08:45,180
+altered at all you just replace the
+
+203
+00:08:45,180 --> 00:08:49,020
+rendering of them and so I mean that's
+
+204
+00:08:49,020 --> 00:08:50,279
+all well and good I mean the example we
+
+205
+00:08:50,279 --> 00:08:53,760
+used here is that you know I just
+
+206
+00:08:53,760 --> 00:08:56,400
+inserted some some h1 tag into an empty
+
+207
+00:08:56,400 --> 00:08:58,020
+element but what happens if these
+
+208
+00:08:58,020 --> 00:08:58,899
+elements already
+
+209
+00:08:58,899 --> 00:09:00,249
+have children right I mean we may not
+
+210
+00:09:00,249 --> 00:09:01,990
+necessarily want to totally wipe out the
+
+211
+00:09:01,990 --> 00:09:08,480
+content that's there and so we have a
+
+212
+00:09:08,490 --> 00:09:12,970
+zoom oh hey did I zoom out on that's
+
+213
+00:09:12,970 --> 00:09:15,339
+what happened excellent excellent thank
+
+214
+00:09:15,339 --> 00:09:15,699
+you
+
+215
+00:09:15,699 --> 00:09:18,399
+all right so we have a special tag
+
+216
+00:09:18,399 --> 00:09:20,050
+called the Content tag that will specify
+
+217
+00:09:20,050 --> 00:09:22,300
+the insertion point for the child
+
+218
+00:09:22,300 --> 00:09:24,069
+elements of the host element into our
+
+219
+00:09:24,069 --> 00:09:27,220
+shadow Dom tree so for example we've got
+
+220
+00:09:27,220 --> 00:09:29,019
+the Content tag there and I also wanted
+
+221
+00:09:29,019 --> 00:09:30,819
+to mention that there is a shadow tag
+
+222
+00:09:30,819 --> 00:09:32,679
+that will allow you to nest other shadow
+
+223
+00:09:32,679 --> 00:09:40,549
+roots so let's try it
+
+224
+00:09:40,559 --> 00:09:42,970
+okay so I've got an unordered list here
+
+225
+00:09:42,970 --> 00:09:47,379
+and the ID is you with children because
+
+226
+00:09:47,379 --> 00:09:49,809
+we have this some div with the unordered
+
+227
+00:09:49,809 --> 00:10:11,439
+list element and what would I call that
+
+228
+00:10:11,439 --> 00:10:18,429
+spooky with children okay so we've got
+
+229
+00:10:18,429 --> 00:10:21,129
+our element selected and then we create
+
+230
+00:10:21,129 --> 00:10:32,319
+another shadow root and we've inserted a
+
+231
+00:10:32,319 --> 00:10:34,110
+shadow root so that disappeared because
+
+232
+00:10:34,110 --> 00:10:36,370
+we've replaced the rendering of the
+
+233
+00:10:36,370 --> 00:10:38,139
+children of that div with our shadow
+
+234
+00:10:38,139 --> 00:10:44,769
+element which is of course now empty all
+
+235
+00:10:44,769 --> 00:10:46,449
+right so what do we want to do with this
+
+236
+00:10:46,449 --> 00:10:50,660
+one let's say
+
+237
+00:10:50,670 --> 00:10:54,070
+let's say we insert a title insert like
+
+238
+00:10:54,070 --> 00:11:01,730
+an h2 before that for that list element
+
+239
+00:11:01,740 --> 00:11:04,750
+and then we want to throw in our content
+
+240
+00:11:04,750 --> 00:11:07,150
+tag and we don't actually need to put
+
+241
+00:11:07,150 --> 00:11:08,650
+anything in here the browser knows that
+
+242
+00:11:08,650 --> 00:11:10,270
+when it encounters that content tag that
+
+243
+00:11:10,270 --> 00:11:12,370
+we just insert the child elements from
+
+244
+00:11:12,370 --> 00:11:18,580
+the host element so there we go so now
+
+245
+00:11:18,580 --> 00:11:20,980
+we have a title and we have the list
+
+246
+00:11:20,980 --> 00:11:23,640
+here and if we go back into our source
+
+247
+00:11:23,640 --> 00:11:29,230
+and we look for our let's we don't
+
+248
+00:11:29,230 --> 00:11:33,550
+search by title with children it's all
+
+249
+00:11:33,550 --> 00:11:36,160
+tiny again but you can see here that
+
+250
+00:11:36,160 --> 00:11:38,170
+that h1 is nowhere to be found the only
+
+251
+00:11:38,170 --> 00:11:40,750
+thing that is there is the host or the
+
+252
+00:11:40,750 --> 00:11:51,970
+host elements children so that's all
+
+253
+00:11:51,970 --> 00:11:53,710
+well and good now that this is inserting
+
+254
+00:11:53,710 --> 00:11:55,060
+a shadow Dom imperatively
+
+255
+00:11:55,060 --> 00:11:57,160
+using JavaScript but there's also these
+
+256
+00:11:57,160 --> 00:11:59,410
+cool new magic words that we have coming
+
+257
+00:11:59,410 --> 00:12:00,760
+for web components called
+
+258
+00:12:00,760 --> 00:12:03,220
+these tags template and elements so if
+
+259
+00:12:03,220 --> 00:12:05,350
+you're a designer and you're watching
+
+260
+00:12:05,350 --> 00:12:06,670
+this talk then you might encounter these
+
+261
+00:12:06,670 --> 00:12:08,890
+more than you know developer operating
+
+262
+00:12:08,890 --> 00:12:10,870
+on the might and the relationship
+
+263
+00:12:10,870 --> 00:12:13,630
+between template and elements and shadow
+
+264
+00:12:13,630 --> 00:12:15,250
+Dom this imperative JavaScript and why
+
+265
+00:12:15,250 --> 00:12:19,180
+you should care is anytime an element
+
+266
+00:12:19,180 --> 00:12:21,760
+this custom element includes a template
+
+267
+00:12:21,760 --> 00:12:23,140
+tag we're going to do that together in a
+
+268
+00:12:23,140 --> 00:12:26,880
+moment that in search of shadow Dom into
+
+269
+00:12:26,880 --> 00:12:29,920
+into the host element so this is a way
+
+270
+00:12:29,920 --> 00:12:34,180
+to insert shadow Dom declaratively so
+
+271
+00:12:34,180 --> 00:12:36,490
+there's this template tag and when we
+
+272
+00:12:36,490 --> 00:12:38,620
+specify a template it's basically a nert
+
+273
+00:12:38,620 --> 00:12:41,200
+markup used later by its pal element as
+
+274
+00:12:41,200 --> 00:12:43,510
+I'm going to show you and the contents
+
+275
+00:12:43,510 --> 00:12:44,860
+are parsed by the browser but not
+
+276
+00:12:44,860 --> 00:12:46,780
+rendered until they are inserted using
+
+277
+00:12:46,780 --> 00:12:49,750
+the custom element and so here's just an
+
+278
+00:12:49,750 --> 00:12:51,250
+example use case that you might want to
+
+279
+00:12:51,250 --> 00:12:57,269
+use this for creating a comment template
+
+280
+00:12:57,279 --> 00:13:01,459
+and this one I love because it's
+
+281
+00:13:01,459 --> 00:13:03,440
+affectionately called the element
+
+282
+00:13:03,440 --> 00:13:05,990
+element which is just kind of weird but
+
+283
+00:13:05,990 --> 00:13:07,339
+that's what it's called and in fact in
+
+284
+00:13:07,339 --> 00:13:08,899
+the end the polyfill I use for the demos
+
+285
+00:13:08,899 --> 00:13:10,490
+and stuff it's it's called like HTML
+
+286
+00:13:10,490 --> 00:13:11,990
+element element which is kind of verbose
+
+287
+00:13:11,990 --> 00:13:15,200
+so element element and these are custom
+
+288
+00:13:15,200 --> 00:13:18,470
+Dom elements defined by you you can
+
+289
+00:13:18,470 --> 00:13:20,510
+create modular reusable components using
+
+290
+00:13:20,510 --> 00:13:23,240
+this so it's time for a little bit of a
+
+291
+00:13:23,240 --> 00:13:27,019
+story so a common case that I see with
+
+292
+00:13:27,019 --> 00:13:28,820
+web developers maybe they work at a
+
+293
+00:13:28,820 --> 00:13:31,190
+consulting shop and some big firm hires
+
+294
+00:13:31,190 --> 00:13:33,860
+them and says okay until we know we have
+
+295
+00:13:33,860 --> 00:13:36,110
+this giant codebase that we don't
+
+296
+00:13:36,110 --> 00:13:37,940
+necessarily want to throw away but we
+
+297
+00:13:37,940 --> 00:13:40,010
+kind of want to redo our front end a
+
+298
+00:13:40,010 --> 00:13:43,100
+little bit restyle things but you know
+
+299
+00:13:43,100 --> 00:13:44,450
+you can't change what's under the hood
+
+300
+00:13:44,450 --> 00:13:46,970
+in a terrible amount and so I'm like
+
+301
+00:13:46,970 --> 00:13:49,160
+well that's kind of dumb right like
+
+302
+00:13:49,160 --> 00:13:50,720
+maybe their markup is really really
+
+303
+00:13:50,720 --> 00:13:52,670
+awful and you're forced to work with it
+
+304
+00:13:52,670 --> 00:13:53,899
+and this is something that I've seen a
+
+305
+00:13:53,899 --> 00:13:55,519
+lot actually I've been stuck in the
+
+306
+00:13:55,519 --> 00:13:57,260
+situation and other developers I know in
+
+307
+00:13:57,260 --> 00:13:58,700
+Vancouver have to deal with this they
+
+308
+00:13:58,700 --> 00:14:02,540
+complain about it all the time and so
+
+309
+00:14:02,540 --> 00:14:05,120
+maybe you have some crappy L or some
+
+310
+00:14:05,120 --> 00:14:06,649
+crappy markup like this let's inspect
+
+311
+00:14:06,649 --> 00:14:11,230
+this one so we have another ul here and
+
+312
+00:14:11,230 --> 00:14:13,970
+we have some classes on here these
+
+313
+00:14:13,970 --> 00:14:16,339
+aren't organized particularly well right
+
+314
+00:14:16,339 --> 00:14:17,540
+I mean like these are some news stories
+
+315
+00:14:17,540 --> 00:14:20,480
+and we've got a bunch of list elements
+
+316
+00:14:20,480 --> 00:14:22,160
+some of them have the class applied to
+
+317
+00:14:22,160 --> 00:14:26,149
+them of breaking and maybe what's been
+
+318
+00:14:26,149 --> 00:14:28,339
+asked of us is that okay Angelina what I
+
+319
+00:14:28,339 --> 00:14:29,990
+need you to do is I need you to go and
+
+320
+00:14:29,990 --> 00:14:31,430
+take that list and it's going to make
+
+321
+00:14:31,430 --> 00:14:33,440
+more sense for our users if we sort out
+
+322
+00:14:33,440 --> 00:14:35,029
+the breaking news stories and their own
+
+323
+00:14:35,029 --> 00:14:37,490
+list and everything else in another list
+
+324
+00:14:37,490 --> 00:14:38,779
+and so that's what we're going to do
+
+325
+00:14:38,779 --> 00:14:44,240
+with a custom HTML element so let's pop
+
+326
+00:14:44,240 --> 00:14:51,230
+over to sublime text here so a few
+
+327
+00:14:51,230 --> 00:14:52,820
+things that make this work we're gonna
+
+328
+00:14:52,820 --> 00:14:54,380
+write a custom element over in this news
+
+329
+00:14:54,380 --> 00:14:56,300
+component HTML thing here the very
+
+330
+00:14:56,300 --> 00:14:58,160
+bottom here I have some JavaScript
+
+331
+00:14:58,160 --> 00:15:00,769
+included this script here is written by
+
+332
+00:15:00,769 --> 00:15:03,769
+Dimitri glazkov who is the author of the
+
+333
+00:15:03,769 --> 00:15:07,579
+shadow Dom spec and this polyfill makes
+
+334
+00:15:07,579 --> 00:15:09,320
+it so that we can actually make custom
+
+335
+00:15:09,320 --> 00:15:10,550
+elements because this stuff is all
+
+336
+00:15:10,550 --> 00:15:11,060
+really
+
+337
+00:15:11,060 --> 00:15:12,860
+really bleeding edge so it's not quite
+
+338
+00:15:12,860 --> 00:15:14,060
+there in the browser yet very
+
+339
+00:15:14,060 --> 00:15:15,830
+experimental and then the other thing I
+
+340
+00:15:15,830 --> 00:15:17,360
+want to show you if I go all the way
+
+341
+00:15:17,360 --> 00:15:20,600
+back up to the top here and where is it
+
+342
+00:15:20,600 --> 00:15:22,910
+much like including our style sheets
+
+343
+00:15:22,910 --> 00:15:25,370
+I've done something very similar here
+
+344
+00:15:25,370 --> 00:15:28,460
+I've included this component and I've
+
+345
+00:15:28,460 --> 00:15:30,500
+given a link to this HTML document for
+
+346
+00:15:30,500 --> 00:15:32,540
+my news component and so you can see
+
+347
+00:15:32,540 --> 00:15:34,250
+that templates for your components are
+
+348
+00:15:34,250 --> 00:15:36,110
+included in a very similar way very
+
+349
+00:15:36,110 --> 00:15:38,270
+similar pattern to JavaScript and CSS
+
+350
+00:15:38,270 --> 00:15:39,800
+already so you're kind of familiar with
+
+351
+00:15:39,800 --> 00:15:42,320
+how to do that stuff so if we go over to
+
+352
+00:15:42,320 --> 00:15:44,270
+News component HTML what I've got here
+
+353
+00:15:44,270 --> 00:15:47,240
+is basically an empty HTML document no
+
+354
+00:15:47,240 --> 00:15:51,290
+surprises and we're gonna do a custom
+
+355
+00:15:51,290 --> 00:15:53,540
+element so the first thing we need of
+
+356
+00:15:53,540 --> 00:15:59,480
+course is this element tag and inside of
+
+357
+00:15:59,480 --> 00:16:01,250
+that element tag we're going to want to
+
+358
+00:16:01,250 --> 00:16:07,370
+give it a template and we need to tell
+
+359
+00:16:07,370 --> 00:16:08,810
+the browser a little bit of information
+
+360
+00:16:08,810 --> 00:16:10,790
+about our custom element so let's give
+
+361
+00:16:10,790 --> 00:16:13,130
+it a name let's call it news because
+
+362
+00:16:13,130 --> 00:16:15,890
+that's what it is and we're going to be
+
+363
+00:16:15,890 --> 00:16:19,640
+telling that that unordered list element
+
+364
+00:16:19,640 --> 00:16:23,360
+to behave like our new element but maybe
+
+365
+00:16:23,360 --> 00:16:26,030
+we want to keep some of the properties
+
+366
+00:16:26,030 --> 00:16:28,850
+and functionality and and stuff that we
+
+367
+00:16:28,850 --> 00:16:30,500
+have sort of already from our unordered
+
+368
+00:16:30,500 --> 00:16:35,030
+list and we can do that by extending so
+
+369
+00:16:35,030 --> 00:16:36,440
+we just do extends and we're extending
+
+370
+00:16:36,440 --> 00:16:43,310
+the unordered list element okay oh thank
+
+371
+00:16:43,310 --> 00:16:45,290
+you I am that would have been
+
+372
+00:16:45,290 --> 00:16:53,720
+embarrassing hey okay so and then let's
+
+373
+00:16:53,720 --> 00:16:58,430
+so let's create a div and we will give
+
+374
+00:16:58,430 --> 00:17:02,690
+this the class of exciting stories
+
+375
+00:17:02,690 --> 00:17:07,910
+perhaps and we'll make another div for
+
+376
+00:17:07,910 --> 00:17:15,890
+everything else
+
+377
+00:17:15,900 --> 00:17:24,809
+and we want an unordered list and to
+
+378
+00:17:24,809 --> 00:17:26,100
+remember earlier I was showing you that
+
+379
+00:17:26,100 --> 00:17:27,809
+content tag so we're gonna do that same
+
+380
+00:17:27,809 --> 00:17:32,880
+thing here and then for everything else
+
+381
+00:17:32,880 --> 00:17:34,650
+we're gonna put our breaking stories up
+
+382
+00:17:34,650 --> 00:17:36,210
+there I'm gonna put the rest of them
+
+383
+00:17:36,210 --> 00:17:39,600
+here too oh but wait I already use my
+
+384
+00:17:39,600 --> 00:17:41,309
+content tag right so how does the
+
+385
+00:17:41,309 --> 00:17:45,150
+browser know which elements to put in in
+
+386
+00:17:45,150 --> 00:17:47,160
+each div and each unordered list right
+
+387
+00:17:47,160 --> 00:17:48,780
+because we've got two content tags we
+
+388
+00:17:48,780 --> 00:17:50,309
+need some way to differentiate between
+
+389
+00:17:50,309 --> 00:17:52,200
+them and let me just put my unordered
+
+390
+00:17:52,200 --> 00:17:54,990
+list here sorry I'm keeping a lot of
+
+391
+00:17:54,990 --> 00:17:57,929
+stuff in my working memory so if I miss
+
+392
+00:17:57,929 --> 00:17:59,010
+something you're totally welcome to
+
+393
+00:17:59,010 --> 00:18:00,510
+correct me that's totally cool in fact I
+
+394
+00:18:00,510 --> 00:18:03,000
+would even appreciate it so oh maybe we
+
+395
+00:18:03,000 --> 00:18:04,290
+maybe we give it maybe we give it a
+
+396
+00:18:04,290 --> 00:18:06,300
+title to will like it was a title here
+
+397
+00:18:06,300 --> 00:18:10,410
+that says breaking stories it's gonna be
+
+398
+00:18:10,410 --> 00:18:12,660
+awesome so we have this special
+
+399
+00:18:12,660 --> 00:18:15,150
+attribute for the content tag called the
+
+400
+00:18:15,150 --> 00:18:17,580
+Select attribute which actually I find a
+
+401
+00:18:17,580 --> 00:18:19,020
+little bit confusing because it with
+
+402
+00:18:19,020 --> 00:18:20,970
+HTML and CSS and JavaScript we've used
+
+403
+00:18:20,970 --> 00:18:22,530
+this select keyword kind of in a lot of
+
+404
+00:18:22,530 --> 00:18:24,450
+places so I don't really know about this
+
+405
+00:18:24,450 --> 00:18:26,460
+one but so what we're gonna do is we're
+
+406
+00:18:26,460 --> 00:18:29,250
+going to select from the child nodes of
+
+407
+00:18:29,250 --> 00:18:34,200
+the host element by CSS selector which
+
+408
+00:18:34,200 --> 00:18:36,900
+of those child elements appear here so
+
+409
+00:18:36,900 --> 00:18:39,900
+we're going to put some the braking
+
+410
+00:18:39,900 --> 00:18:42,960
+elements and then we don't need to do
+
+411
+00:18:42,960 --> 00:18:44,280
+anything for this one the browser will
+
+412
+00:18:44,280 --> 00:18:46,710
+know that if these child elements do not
+
+413
+00:18:46,710 --> 00:18:48,240
+have the braking class applied we're
+
+414
+00:18:48,240 --> 00:18:49,920
+just going to dump the rest of them into
+
+415
+00:18:49,920 --> 00:18:56,040
+that content tag okay so we save that
+
+416
+00:18:56,040 --> 00:18:58,080
+and there's still one more thing that we
+
+417
+00:18:58,080 --> 00:19:02,190
+need to do in our index.html so right
+
+418
+00:19:02,190 --> 00:19:03,870
+now we've just got this normal unordered
+
+419
+00:19:03,870 --> 00:19:05,640
+list these things aren't separate at all
+
+420
+00:19:05,640 --> 00:19:08,040
+and you know maybe maybe what do we want
+
+421
+00:19:08,040 --> 00:19:10,830
+to do here maybe just to show they are
+
+422
+00:19:10,830 --> 00:19:12,120
+broken up we might want to add some
+
+423
+00:19:12,120 --> 00:19:14,340
+styles but let's just see how this looks
+
+424
+00:19:14,340 --> 00:19:19,429
+first so let's go into our markup and I
+
+425
+00:19:19,429 --> 00:19:26,270
+didn't put an ID on that okay
+
+426
+00:19:26,280 --> 00:19:29,530
+there we are breaking and so the last
+
+427
+00:19:29,530 --> 00:19:30,880
+thing we need to do in order to make
+
+428
+00:19:30,880 --> 00:19:32,140
+this all work we've included this
+
+429
+00:19:32,140 --> 00:19:34,120
+polyfill which you know ideally I mean
+
+430
+00:19:34,120 --> 00:19:35,350
+it's gonna go away and hopefully soon
+
+431
+00:19:35,350 --> 00:19:37,900
+and we've included our component in in
+
+432
+00:19:37,900 --> 00:19:40,510
+our header what we need to do is tell
+
+433
+00:19:40,510 --> 00:19:42,070
+this unordered list how to behave and
+
+434
+00:19:42,070 --> 00:19:43,750
+that so we are putting a custom element
+
+435
+00:19:43,750 --> 00:19:45,280
+in here or that it is a custom element
+
+436
+00:19:45,280 --> 00:19:47,350
+and we do that with an attribute that is
+
+437
+00:19:47,350 --> 00:19:50,230
+called he is attribute and we're gonna
+
+438
+00:19:50,230 --> 00:19:53,590
+say that this unordered list is news so
+
+439
+00:19:53,590 --> 00:20:03,130
+if we save that and we refresh blammo
+
+440
+00:20:03,130 --> 00:20:11,170
+okay so what we've done here is we've
+
+441
+00:20:11,170 --> 00:20:13,810
+remixed this content right so we took
+
+442
+00:20:13,810 --> 00:20:16,240
+this really crappy markup that we were
+
+443
+00:20:16,240 --> 00:20:17,650
+kind of probably stuck with maybe is
+
+444
+00:20:17,650 --> 00:20:19,540
+some big enterprise website and we're
+
+445
+00:20:19,540 --> 00:20:20,980
+will to remix this in a way that's more
+
+446
+00:20:20,980 --> 00:20:23,020
+hopefully more usable for our users that
+
+447
+00:20:23,020 --> 00:20:25,480
+are looking for news stories and we've
+
+448
+00:20:25,480 --> 00:20:26,890
+got this title in here and then here's
+
+449
+00:20:26,890 --> 00:20:28,960
+our breaking stories and the rest of
+
+450
+00:20:28,960 --> 00:20:32,230
+them there and of course again if we go
+
+451
+00:20:32,230 --> 00:20:35,140
+into the source and we look at where the
+
+452
+00:20:35,140 --> 00:20:37,780
+breaking unordered list is the only
+
+453
+00:20:37,780 --> 00:20:39,730
+thing that's there is this unordered
+
+454
+00:20:39,730 --> 00:20:43,240
+list with you know that is attribute
+
+455
+00:20:43,240 --> 00:20:45,400
+applied and news and so then a just
+
+456
+00:20:45,400 --> 00:20:46,750
+remix is that content I shouldn't have
+
+457
+00:20:46,750 --> 00:20:50,310
+clicked on that so so that's pretty cool
+
+458
+00:20:50,310 --> 00:20:54,880
+we can remix this existing content so
+
+459
+00:20:54,880 --> 00:20:56,500
+some interesting points about this
+
+460
+00:20:56,500 --> 00:20:58,630
+boundary is having conversations with
+
+461
+00:20:58,630 --> 00:21:00,340
+people about CSS selectors and
+
+462
+00:21:00,340 --> 00:21:04,000
+specificity any CSS that is applied from
+
+463
+00:21:04,000 --> 00:21:06,550
+the like the parent Dom and its style
+
+464
+00:21:06,550 --> 00:21:08,620
+sheets will not affect the shadow
+
+465
+00:21:08,620 --> 00:21:11,980
+elements but it will affect the elements
+
+466
+00:21:11,980 --> 00:21:13,390
+that have been inserted from the host
+
+467
+00:21:13,390 --> 00:21:14,980
+node into the content element so that's
+
+468
+00:21:14,980 --> 00:21:18,670
+an important thing to note and for those
+
+469
+00:21:18,670 --> 00:21:21,130
+shadow elements if you do want these
+
+470
+00:21:21,130 --> 00:21:22,780
+styles from your parent document to
+
+471
+00:21:22,780 --> 00:21:24,370
+apply to the shadow children
+
+472
+00:21:24,370 --> 00:21:26,140
+specifically you can do this apply
+
+473
+00:21:26,140 --> 00:21:28,750
+author Styles attribute on the template
+
+474
+00:21:28,750 --> 00:21:31,480
+element or imperative lis in JavaScript
+
+475
+00:21:31,480 --> 00:21:33,580
+you can do route apply author Styles
+
+476
+00:21:33,580 --> 00:21:35,650
+equals true and then
+
+477
+00:21:35,650 --> 00:21:37,990
+suddenly I noticed in the explainer the
+
+478
+00:21:37,990 --> 00:21:40,000
+components explainer that's out there by
+
+479
+00:21:40,000 --> 00:21:41,200
+the way if you're following along and
+
+480
+00:21:41,200 --> 00:21:42,790
+you've decided like I'm gonna find out
+
+481
+00:21:42,790 --> 00:21:43,930
+what Angelina's talking about and if
+
+482
+00:21:43,930 --> 00:21:45,880
+she's making up this and you go and
+
+483
+00:21:45,880 --> 00:21:48,040
+you look at the web components spec I
+
+484
+00:21:48,040 --> 00:21:50,320
+mean that's that's all good but kind of
+
+485
+00:21:50,320 --> 00:21:52,420
+terse go look for the web components
+
+486
+00:21:52,420 --> 00:21:54,220
+explainer it's it's it's actually a
+
+487
+00:21:54,220 --> 00:21:56,020
+really good document to take a look at
+
+488
+00:21:56,020 --> 00:21:58,900
+there's this reset style inheritance and
+
+489
+00:21:58,900 --> 00:22:00,850
+if you set that it's sort of uber
+
+490
+00:22:00,850 --> 00:22:03,250
+enforces that absolutely no user agent
+
+491
+00:22:03,250 --> 00:22:04,990
+Styles will be applied to your shadow
+
+492
+00:22:04,990 --> 00:22:06,640
+elements so perhaps you're in a
+
+493
+00:22:06,640 --> 00:22:08,260
+situation where you maybe you're a
+
+494
+00:22:08,260 --> 00:22:09,700
+designer and you're inserting some
+
+495
+00:22:09,700 --> 00:22:11,740
+markup using this shadow stuff that's
+
+496
+00:22:11,740 --> 00:22:13,540
+just purely presentational markup right
+
+497
+00:22:13,540 --> 00:22:15,150
+like that's a perfect case here because
+
+498
+00:22:15,150 --> 00:22:17,860
+this stuff isn't built invisible to the
+
+499
+00:22:17,860 --> 00:22:19,930
+parent DOM and so it's not gonna affect
+
+500
+00:22:19,930 --> 00:22:21,580
+the semantic content of your web page at
+
+501
+00:22:21,580 --> 00:22:24,190
+all and you can do this reset style
+
+502
+00:22:24,190 --> 00:22:25,690
+inheritance and this is sort of in my
+
+503
+00:22:25,690 --> 00:22:27,370
+mind this is this is like the future for
+
+504
+00:22:27,370 --> 00:22:29,890
+like the quickest CSS reset ever because
+
+505
+00:22:29,890 --> 00:22:32,020
+it will take off the user agent styles
+
+506
+00:22:32,020 --> 00:22:36,850
+and set everything hmm
+
+507
+00:22:36,850 --> 00:22:38,380
+so some ideas like what some stuff that
+
+508
+00:22:38,380 --> 00:22:39,640
+we could use this for right like I
+
+509
+00:22:39,640 --> 00:22:41,380
+talked about how we can remix existing
+
+510
+00:22:41,380 --> 00:22:43,000
+content I mean that's great but that's
+
+511
+00:22:43,000 --> 00:22:44,290
+not going to be with not really
+
+512
+00:22:44,290 --> 00:22:46,750
+pertinent to everybody's situation but
+
+513
+00:22:46,750 --> 00:22:49,300
+using the is selector and creating these
+
+514
+00:22:49,300 --> 00:22:50,830
+modular components will allow us to
+
+515
+00:22:50,830 --> 00:22:52,900
+rapidly prototype websites by telling
+
+516
+00:22:52,900 --> 00:22:55,180
+elements what they is it's not a grammar
+
+517
+00:22:55,180 --> 00:22:56,380
+mistake I do that on purpose to be
+
+518
+00:22:56,380 --> 00:23:00,130
+clever and so imagine a world where we
+
+519
+00:23:00,130 --> 00:23:02,140
+have like this library of elements and
+
+520
+00:23:02,140 --> 00:23:03,460
+you say to your designer okay I need
+
+521
+00:23:03,460 --> 00:23:05,410
+like a date picker widget in there and I
+
+522
+00:23:05,410 --> 00:23:07,060
+need you to do something like those news
+
+523
+00:23:07,060 --> 00:23:09,100
+stories you can tell various elements
+
+524
+00:23:09,100 --> 00:23:10,900
+what they are and then they'll behave in
+
+525
+00:23:10,900 --> 00:23:12,250
+a certain way and you can do it really
+
+526
+00:23:12,250 --> 00:23:13,540
+quickly because you've got all these pre
+
+527
+00:23:13,540 --> 00:23:16,360
+composed templates another idea I had I
+
+528
+00:23:16,360 --> 00:23:18,460
+originally gave this talk to a company
+
+529
+00:23:18,460 --> 00:23:20,020
+in Vancouver that does mobile websites
+
+530
+00:23:20,020 --> 00:23:22,090
+and we had the idea that we could use
+
+531
+00:23:22,090 --> 00:23:23,500
+this to serve up alter alternate
+
+532
+00:23:23,500 --> 00:23:25,240
+navigation control for a mobile website
+
+533
+00:23:25,240 --> 00:23:28,510
+so anybody that's done mobile websites
+
+534
+00:23:28,510 --> 00:23:30,130
+know know that if we've got like some
+
+535
+00:23:30,130 --> 00:23:31,930
+big horizontal navigation in our header
+
+536
+00:23:31,930 --> 00:23:34,300
+maybe as the size of the browser
+
+537
+00:23:34,300 --> 00:23:36,190
+collapses slowly we turn that horizontal
+
+538
+00:23:36,190 --> 00:23:38,950
+navigation into a drop-down drop-down
+
+539
+00:23:38,950 --> 00:23:40,870
+menu or something like that so perhaps
+
+540
+00:23:40,870 --> 00:23:42,700
+we could combine media queries and this
+
+541
+00:23:42,700 --> 00:23:45,490
+technology and then we could create you
+
+542
+00:23:45,490 --> 00:23:47,320
+know remix the content and create better
+
+543
+00:23:47,320 --> 00:23:49,450
+navigation patterns for mobile websites
+
+544
+00:23:49,450 --> 00:23:52,030
+and then overall because we're creating
+
+545
+00:23:52,030 --> 00:23:53,680
+like these encapsulated components it's
+
+546
+00:23:53,680 --> 00:23:55,390
+easier to mix and match frameworks and
+
+547
+00:23:55,390 --> 00:23:57,250
+components because they're not going to
+
+548
+00:23:57,250 --> 00:23:58,960
+interfere with one another so no longer
+
+549
+00:23:58,960 --> 00:24:00,250
+do you really need to be like okay I'm
+
+550
+00:24:00,250 --> 00:24:02,500
+gonna tie myself into this one component
+
+551
+00:24:02,500 --> 00:24:03,940
+framework and then you know everybody
+
+552
+00:24:03,940 --> 00:24:06,250
+else stay out just you know cuz you make
+
+553
+00:24:06,250 --> 00:24:09,940
+some people a little bit nervous so this
+
+554
+00:24:09,940 --> 00:24:12,790
+stuff is all really cool and all but can
+
+555
+00:24:12,790 --> 00:24:14,440
+we actually use it right you heard me
+
+556
+00:24:14,440 --> 00:24:16,240
+say earlier that I'm using Chrome Canary
+
+557
+00:24:16,240 --> 00:24:18,340
+and I have this experimental flag turned
+
+558
+00:24:18,340 --> 00:24:20,350
+on and I've got some polyfill and all
+
+559
+00:24:20,350 --> 00:24:21,730
+the people that want to bring home stuff
+
+560
+00:24:21,730 --> 00:24:23,380
+to do in production you're like okay
+
+561
+00:24:23,380 --> 00:24:25,510
+we're gonna walk out now and I mean yes
+
+562
+00:24:25,510 --> 00:24:28,390
+so can you use it for experiments yes
+
+563
+00:24:28,390 --> 00:24:31,930
+can use it in production no right now we
+
+564
+00:24:31,930 --> 00:24:33,610
+have creation of shadow roots in Chrome
+
+565
+00:24:33,610 --> 00:24:37,000
+Canary only to my knowledge and you want
+
+566
+00:24:37,000 --> 00:24:39,190
+to use Dimitri glazkov polyfill
+
+567
+00:24:39,190 --> 00:24:40,840
+available on github for a component
+
+568
+00:24:40,840 --> 00:24:44,260
+support like element and just for things
+
+569
+00:24:44,260 --> 00:24:47,190
+like the video tag and the audio tag
+
+570
+00:24:47,190 --> 00:24:49,840
+this is just a little a niceness when I
+
+571
+00:24:49,840 --> 00:24:51,640
+was making this talk I compiled all the
+
+572
+00:24:51,640 --> 00:24:54,370
+WebKit prefix tiles I could find for
+
+573
+00:24:54,370 --> 00:24:56,200
+people that want to start styling the
+
+574
+00:24:56,200 --> 00:24:59,260
+native elements like video audio input
+
+575
+00:24:59,260 --> 00:25:00,460
+range because I realized that there
+
+576
+00:25:00,460 --> 00:25:02,290
+actually wasn't a big list of them so I
+
+577
+00:25:02,290 --> 00:25:04,300
+have this gist here you guys can check
+
+578
+00:25:04,300 --> 00:25:06,100
+out and it's it's not super detail it's
+
+579
+00:25:06,100 --> 00:25:07,360
+basically just a list of all the ones I
+
+580
+00:25:07,360 --> 00:25:08,890
+could find and hopefully you guys will
+
+581
+00:25:08,890 --> 00:25:10,840
+experiment and tell me what works what
+
+582
+00:25:10,840 --> 00:25:12,460
+doesn't and hopefully by using these
+
+583
+00:25:12,460 --> 00:25:15,400
+prefix tiles and talking about it we can
+
+584
+00:25:15,400 --> 00:25:17,260
+encourage other browser vendors to you
+
+585
+00:25:17,260 --> 00:25:18,610
+know do this and then we can push it
+
+586
+00:25:18,610 --> 00:25:22,120
+forward and also Jeff Rufus from Mozilla
+
+587
+00:25:22,120 --> 00:25:24,190
+tweeted this to me today he was posting
+
+588
+00:25:24,190 --> 00:25:26,320
+in the and the queue for Mozilla saying
+
+589
+00:25:26,320 --> 00:25:28,480
+like hey shadow DOM is actually a thing
+
+590
+00:25:28,480 --> 00:25:29,950
+and trying to encourage some Mozilla
+
+591
+00:25:29,950 --> 00:25:31,720
+supports so that brings me some
+
+592
+00:25:31,720 --> 00:25:34,270
+important stuff wrapping up and I mean
+
+593
+00:25:34,270 --> 00:25:36,010
+so shadow dom and web components they
+
+594
+00:25:36,010 --> 00:25:38,080
+offer encapsulation and modularity for
+
+595
+00:25:38,080 --> 00:25:39,760
+your front-end code which is a very good
+
+596
+00:25:39,760 --> 00:25:42,280
+thing and definitely needed but use this
+
+597
+00:25:42,280 --> 00:25:44,260
+stuff and talk about it and make stuff
+
+598
+00:25:44,260 --> 00:25:46,120
+with it and play with it because browser
+
+599
+00:25:46,120 --> 00:25:48,160
+devs do notice and they do care what you
+
+600
+00:25:48,160 --> 00:25:49,690
+think because you are the people that
+
+601
+00:25:49,690 --> 00:25:51,520
+are making applications for what they've
+
+602
+00:25:51,520 --> 00:25:54,790
+made right so yeah that's pretty much
+
+603
+00:25:54,790 --> 00:25:56,290
+all I wanted to say I want to introduce
+
+604
+00:25:56,290 --> 00:25:58,000
+you to how these things work and the
+
+605
+00:25:58,000 --> 00:26:00,040
+next talk by Divya is going to be sort
+
+606
+00:26:00,040 --> 00:26:01,900
+of building on these ideas talking about
+
+607
+00:26:01,900 --> 00:26:02,920
+web components
+
+608
+00:26:02,920 --> 00:26:04,510
+CSS regions and putting those together
+
+609
+00:26:04,510 --> 00:26:06,460
+so the slides will be posted soon you
+
+610
+00:26:06,460 --> 00:26:08,800
+can follow me on twitter or email me so
+
+611
+00:26:08,800 --> 00:26:10,210
+go be brave they make wonderful things
+
+612
+00:26:10,210 --> 00:26:11,320
+and tell me what you learned about web
+
+613
+00:26:11,320 --> 00:26:21,800
+components
+
+614
+00:26:21,810 --> 00:26:29,100
+probably yes
+
+615
+00:26:29,110 --> 00:26:31,570
+is the is attribute something that I can
+
+616
+00:26:31,570 --> 00:26:34,000
+set and reset at any time and have it
+
+617
+00:26:34,000 --> 00:26:36,280
+change like can I just decide to
+
+618
+00:26:36,280 --> 00:26:37,960
+suddenly change the display of something
+
+619
+00:26:37,960 --> 00:26:40,570
+this was actually a question I had when
+
+620
+00:26:40,570 --> 00:26:42,340
+I did my my beta of this talk in
+
+621
+00:26:42,340 --> 00:26:43,930
+Vancouver and to be honest with you my
+
+622
+00:26:43,930 --> 00:26:46,030
+answer then as it is now is I actually
+
+623
+00:26:46,030 --> 00:26:47,860
+don't know we actually tried it live in
+
+624
+00:26:47,860 --> 00:26:50,770
+the browser and no that did not work but
+
+625
+00:26:50,770 --> 00:26:52,330
+actually that's something that I
+
+626
+00:26:52,330 --> 00:26:53,920
+actually might want to mention to the
+
+627
+00:26:53,920 --> 00:26:56,200
+browser devs because that's I think
+
+628
+00:26:56,200 --> 00:26:57,670
+absolutely crucial that's really
+
+629
+00:26:57,670 --> 00:27:04,810
+important I want that too shadow Dom do
+
+630
+00:27:04,810 --> 00:27:07,210
+you know is that CSS reused for each
+
+631
+00:27:07,210 --> 00:27:09,400
+shadow Dom Moore's WebKit allocating
+
+632
+00:27:09,400 --> 00:27:14,170
+some new memory each time I'm not sure
+
+633
+00:27:14,170 --> 00:27:16,210
+how the memory use works to be honest
+
+634
+00:27:16,210 --> 00:27:17,560
+with you that is not something that was
+
+635
+00:27:17,560 --> 00:27:21,460
+in the scope of this talk but um yeah so
+
+636
+00:27:21,460 --> 00:27:33,580
+I don't know about that one sorry what
+
+637
+00:27:33,580 --> 00:27:37,000
+he's talking about we were we were
+
+638
+00:27:37,000 --> 00:27:38,650
+talking about what our companies do my
+
+639
+00:27:38,650 --> 00:27:40,180
+company makes an app that's coming up
+
+640
+00:27:40,180 --> 00:27:41,620
+called party monster and it's a joke
+
+641
+00:27:41,620 --> 00:27:43,720
+because in this app that's for DJing
+
+642
+00:27:43,720 --> 00:27:46,030
+parties we have a refused to play
+
+643
+00:27:46,030 --> 00:27:47,830
+Nickelback mode which is sort of our
+
+644
+00:27:47,830 --> 00:27:49,900
+throwback from Vancouver to apologize
+
+645
+00:27:49,900 --> 00:27:50,890
+for a Nickelback
+
+646
+00:27:50,890 --> 00:27:52,810
+but but no there's maybe you could make
+
+647
+00:27:52,810 --> 00:27:54,760
+your own sort of browser remix somehow I
+
+648
+00:27:54,760 --> 00:27:57,190
+think that's probably the last question
+
+649
+00:27:57,190 --> 00:27:58,480
+or just taking another one oh one more
+
+650
+00:27:58,480 --> 00:28:02,350
+okay cool oh I have a question if you
+
+651
+00:28:02,350 --> 00:28:05,380
+generate a shadow Dom with JavaScript
+
+652
+00:28:05,380 --> 00:28:08,130
+and you lose the reference to your
+
+653
+00:28:08,130 --> 00:28:11,440
+variable where you used to create it do
+
+654
+00:28:11,440 --> 00:28:13,420
+you have actually a way to get access
+
+655
+00:28:13,420 --> 00:28:16,720
+again yes come talk to me afterwards
+
+656
+00:28:16,720 --> 00:28:18,580
+there are ways so I mean here's the
+
+657
+00:28:18,580 --> 00:28:20,020
+thing about the shadow Dom it's not a
+
+658
+00:28:20,020 --> 00:28:22,630
+totally totally black box hey spoiler
+
+659
+00:28:22,630 --> 00:28:24,910
+again you should see it as a corruptible
+
+660
+00:28:24,910 --> 00:28:26,770
+boundary but only when you the developer
+
+661
+00:28:26,770 --> 00:28:28,120
+choose to corrupt that boundary and
+
+662
+00:28:28,120 --> 00:28:30,040
+there are some JavaScript functions that
+
+663
+00:28:30,040 --> 00:28:31,990
+can traverse that boundary and access
+
+664
+00:28:31,990 --> 00:28:33,310
+elements in the shadow Dom much like
+
+665
+00:28:33,310 --> 00:28:35,020
+when you go into iframes and do stuff in
+
+666
+00:28:35,020 --> 00:28:35,500
+iframes
+
+667
+00:28:35,500 --> 00:28:38,650
+if you were in Remy sharp stock awesome
+

@@ -1,0 +1,3101 @@
+1
+00:00:34,840 --> 00:00:37,900
+
+I'm Steffen Harris from inter labs and
+
+2
+00:00:37,900 --> 00:00:39,940
+I'm here and I'm quite excited to be
+
+3
+00:00:39,940 --> 00:00:41,710
+here today to talk about River Trail
+
+4
+00:00:41,710 --> 00:00:45,390
+which is the project we do it inter let
+
+5
+00:00:45,390 --> 00:00:48,550
+me and my colleagues and it's about
+
+6
+00:00:48,550 --> 00:00:50,879
+bringing parallel computer to JavaScript
+
+7
+00:00:50,879 --> 00:00:53,379
+so we really want to bring the pro
+
+8
+00:00:53,379 --> 00:00:55,390
+compute power you have in today's
+
+9
+00:00:55,390 --> 00:00:58,030
+hardware to the web to JavaScript and
+
+10
+00:00:58,030 --> 00:01:00,309
+y'all got phones today so that's where
+
+11
+00:01:00,309 --> 00:01:01,870
+you have pearl hardware you will have
+
+12
+00:01:01,870 --> 00:01:04,000
+pearl harbor in your laptops in your
+
+13
+00:01:04,000 --> 00:01:06,400
+desktops it's everywhere but how about
+
+14
+00:01:06,400 --> 00:01:09,040
+concurrency in JavaScript what's the
+
+15
+00:01:09,040 --> 00:01:12,220
+state of the art there so when I started
+
+16
+00:01:12,220 --> 00:01:15,310
+looking into this I took a look at
+
+17
+00:01:15,310 --> 00:01:18,520
+javascript and what concurrency you have
+
+18
+00:01:18,520 --> 00:01:20,410
+and one thing I realized and I found
+
+19
+00:01:20,410 --> 00:01:21,310
+that really interesting is that
+
+20
+00:01:21,310 --> 00:01:23,140
+JavaScript developers in a way are
+
+21
+00:01:23,140 --> 00:01:25,600
+really good concurrency engineers
+
+22
+00:01:25,600 --> 00:01:27,700
+they've right concurrent programs and
+
+23
+00:01:27,700 --> 00:01:30,039
+the reason for that is that you have
+
+24
+00:01:30,039 --> 00:01:32,080
+this cooperative multitasking kind of
+
+25
+00:01:32,080 --> 00:01:34,390
+model in your browser where either your
+
+26
+00:01:34,390 --> 00:01:36,399
+browser engine is running and rendering
+
+27
+00:01:36,399 --> 00:01:38,590
+and driving the UI or your script is
+
+28
+00:01:38,590 --> 00:01:40,360
+running so you cannot have both running
+
+29
+00:01:40,360 --> 00:01:42,580
+at the same time and this forces here as
+
+30
+00:01:42,580 --> 00:01:45,039
+a programmer to write these asynchronous
+
+31
+00:01:45,039 --> 00:01:47,890
+callback style applications where you
+
+32
+00:01:47,890 --> 00:01:51,270
+decompose your program into small pieces
+
+33
+00:01:51,270 --> 00:01:54,220
+that can run quickly enough so that you
+
+34
+00:01:54,220 --> 00:01:56,080
+get this impression as a user that
+
+35
+00:01:56,080 --> 00:01:58,569
+actually the browser and the scripts run
+
+36
+00:01:58,569 --> 00:02:01,479
+at the same time so you are kind of as a
+
+37
+00:02:01,479 --> 00:02:03,459
+developer aware of how to write
+
+38
+00:02:03,459 --> 00:02:06,970
+concurrent programs however you have one
+
+39
+00:02:06,970 --> 00:02:09,009
+nice thing in JavaScript it's fully
+
+40
+00:02:09,009 --> 00:02:10,959
+deterministic and that really makes your
+
+41
+00:02:10,959 --> 00:02:14,740
+life as a developer a lot easier what
+
+42
+00:02:14,740 --> 00:02:16,750
+fully deterministic means is that whilst
+
+43
+00:02:16,750 --> 00:02:18,819
+your script is running nobody else is
+
+44
+00:02:18,819 --> 00:02:21,220
+changing the world so you as a
+
+45
+00:02:21,220 --> 00:02:23,080
+programmer can rely on the fact that
+
+46
+00:02:23,080 --> 00:02:25,420
+only your script is actually
+
+47
+00:02:25,420 --> 00:02:27,940
+manipulating your data and that gives
+
+48
+00:02:27,940 --> 00:02:29,650
+you a very comfortable programming
+
+49
+00:02:29,650 --> 00:02:31,120
+environment because you have no
+
+50
+00:02:31,120 --> 00:02:32,590
+concurrent side effects and you don't
+
+51
+00:02:32,590 --> 00:02:34,300
+get the nasty things of concurrent
+
+52
+00:02:34,300 --> 00:02:37,690
+programming you don't get debt logs you
+
+53
+00:02:37,690 --> 00:02:39,430
+don't get life logs all of these issues
+
+54
+00:02:39,430 --> 00:02:43,209
+do exist of course there's a slight
+
+55
+00:02:43,209 --> 00:02:46,840
+Cabot here because in the end there is
+
+56
+00:02:46,840 --> 00:02:47,950
+no concurrency
+
+57
+00:02:47,950 --> 00:02:50,560
+the browser because what your JavaScript
+
+58
+00:02:50,560 --> 00:02:52,900
+engine does it fully sequentialized is
+
+59
+00:02:52,900 --> 00:02:55,390
+your program there's only one script and
+
+60
+00:02:55,390 --> 00:02:57,519
+only one event running at every single
+
+61
+00:02:57,519 --> 00:03:00,519
+each time and this of course is a
+
+62
+00:03:00,519 --> 00:03:02,680
+problem moving forward because having
+
+63
+00:03:02,680 --> 00:03:04,480
+all this pearl hardware how are you
+
+64
+00:03:04,480 --> 00:03:06,310
+going to exploit it if you cannot write
+
+65
+00:03:06,310 --> 00:03:09,280
+concurrent programs and typically when I
+
+66
+00:03:09,280 --> 00:03:10,780
+put up the slide and say hey there is no
+
+67
+00:03:10,780 --> 00:03:12,130
+concurrency in JavaScript there's
+
+68
+00:03:12,130 --> 00:03:15,489
+somebody shouting say hey what about web
+
+69
+00:03:15,489 --> 00:03:18,549
+workers we have web workers they give us
+
+70
+00:03:18,549 --> 00:03:21,220
+tasks Yeah right true you have web
+
+71
+00:03:21,220 --> 00:03:22,690
+workers but they are for a very specific
+
+72
+00:03:22,690 --> 00:03:25,299
+kind of concurrency if you look at how
+
+73
+00:03:25,299 --> 00:03:26,890
+web brokers are done is they are very
+
+74
+00:03:26,890 --> 00:03:29,410
+very heavy weight so what you can do you
+
+75
+00:03:29,410 --> 00:03:31,299
+can spawn a thread which typically
+
+76
+00:03:31,299 --> 00:03:33,010
+spawns an operating system thread and
+
+77
+00:03:33,010 --> 00:03:34,810
+then it can run some operation and you
+
+78
+00:03:34,810 --> 00:03:37,599
+sync it all up again but spawning and
+
+79
+00:03:37,599 --> 00:03:39,579
+syncing is very expensive so you
+
+80
+00:03:39,579 --> 00:03:41,290
+probably will only do that if you have
+
+81
+00:03:41,290 --> 00:03:43,269
+sufficient workload to make up those
+
+82
+00:03:43,269 --> 00:03:46,870
+costs again also web workers have this
+
+83
+00:03:46,870 --> 00:03:49,450
+actress model of writing concurrent
+
+84
+00:03:49,450 --> 00:03:51,239
+programs and what that means is that
+
+85
+00:03:51,239 --> 00:03:53,950
+when sexually you have to completely
+
+86
+00:03:53,950 --> 00:03:55,900
+disjoint on script engines running and
+
+87
+00:03:55,900 --> 00:03:57,609
+the only way they communicate is via
+
+88
+00:03:57,609 --> 00:04:01,329
+messages this is all nice this is all
+
+89
+00:04:01,329 --> 00:04:03,400
+great if you have a kind of concurrency
+
+90
+00:04:03,400 --> 00:04:05,139
+in your application that does not
+
+91
+00:04:05,139 --> 00:04:08,230
+require a lot of shared State so if you
+
+92
+00:04:08,230 --> 00:04:09,880
+can decompose your program into two
+
+93
+00:04:09,880 --> 00:04:12,400
+parts while you only send tiny little
+
+94
+00:04:12,400 --> 00:04:14,620
+messages between them you can use web
+
+95
+00:04:14,620 --> 00:04:17,139
+workers but as soon as you have to share
+
+96
+00:04:17,139 --> 00:04:20,019
+big pieces big chunks of data the hell
+
+97
+00:04:20,019 --> 00:04:22,000
+breaks loose because the communication
+
+98
+00:04:22,000 --> 00:04:24,250
+costs quickly eat all the benefit you
+
+99
+00:04:24,250 --> 00:04:26,770
+get from concurrency and that's not the
+
+100
+00:04:26,770 --> 00:04:28,360
+kind of concurrency I am interested in
+
+101
+00:04:28,360 --> 00:04:30,130
+here so I'm not talking about cause
+
+102
+00:04:30,130 --> 00:04:32,889
+brain heavyweight task parallelism what
+
+103
+00:04:32,889 --> 00:04:34,810
+I want to talk about here is data
+
+104
+00:04:34,810 --> 00:04:38,950
+parallel programming so what's data
+
+105
+00:04:38,950 --> 00:04:40,389
+promo programming I will give you my
+
+106
+00:04:40,389 --> 00:04:42,700
+very personal very developer centric
+
+107
+00:04:42,700 --> 00:04:44,440
+view of what date above programming
+
+108
+00:04:44,440 --> 00:04:46,330
+means for me so if you write a data
+
+109
+00:04:46,330 --> 00:04:49,030
+program where the tip that you do is you
+
+110
+00:04:49,030 --> 00:04:50,860
+have a piece of data and then you
+
+111
+00:04:50,860 --> 00:04:52,900
+specify independent computations on
+
+112
+00:04:52,900 --> 00:04:55,539
+pieces of that data and the really
+
+113
+00:04:55,539 --> 00:04:57,250
+important part there is you never
+
+114
+00:04:57,250 --> 00:04:59,229
+actually say that it is concurrent in
+
+115
+00:04:59,229 --> 00:05:01,449
+any way you never say is bonded
+
+116
+00:05:01,449 --> 00:05:03,520
+read you never say run this concurrently
+
+117
+00:05:03,520 --> 00:05:06,129
+all you do as a programmer you express
+
+118
+00:05:06,129 --> 00:05:08,499
+that these computations are independent
+
+119
+00:05:08,499 --> 00:05:11,349
+all the concurrency is implicit and
+
+120
+00:05:11,349 --> 00:05:14,080
+that's a quite powerful approach because
+
+121
+00:05:14,080 --> 00:05:16,330
+what you can do you can massively over
+
+122
+00:05:16,330 --> 00:05:18,789
+subscribe your resources so think about
+
+123
+00:05:18,789 --> 00:05:21,039
+an example like map where you have a
+
+124
+00:05:21,039 --> 00:05:22,960
+thousand array elements and you apply a
+
+125
+00:05:22,960 --> 00:05:25,689
+function to each of those elements with
+
+126
+00:05:25,689 --> 00:05:27,339
+the right function you can execute that
+
+127
+00:05:27,339 --> 00:05:29,830
+concurrently conceptually you have a
+
+128
+00:05:29,830 --> 00:05:31,270
+thousand threads you can run
+
+129
+00:05:31,270 --> 00:05:33,460
+concurrently but nobody with the same
+
+130
+00:05:33,460 --> 00:05:35,349
+mind would create a thousand operating
+
+131
+00:05:35,349 --> 00:05:37,749
+system threads so you over subscribe
+
+132
+00:05:37,749 --> 00:05:40,569
+your resources in the end you have a
+
+133
+00:05:40,569 --> 00:05:42,339
+runtime system that will figure all this
+
+134
+00:05:42,339 --> 00:05:44,139
+out for you because your runtime system
+
+135
+00:05:44,139 --> 00:05:46,419
+knows how many cores you have whether
+
+136
+00:05:46,419 --> 00:05:48,189
+you have simdi units maybe you have a
+
+137
+00:05:48,189 --> 00:05:50,740
+GPU so the runtime system can decide how
+
+138
+00:05:50,740 --> 00:05:55,240
+to execute these threads as a programmer
+
+139
+00:05:55,240 --> 00:05:57,789
+that's a very very nice place to be
+
+140
+00:05:57,789 --> 00:05:59,620
+because you don't have to care about all
+
+141
+00:05:59,620 --> 00:06:01,509
+the heavy lifting all you do is you
+
+142
+00:06:01,509 --> 00:06:03,399
+express your program in a way so that
+
+143
+00:06:03,399 --> 00:06:05,649
+you can say here at runtime is my code
+
+144
+00:06:05,649 --> 00:06:08,080
+look at it and figure out how to run
+
+145
+00:06:08,080 --> 00:06:10,779
+concurrently so let me show you some
+
+146
+00:06:10,779 --> 00:06:14,020
+code this is or should at least be valid
+
+147
+00:06:14,020 --> 00:06:16,899
+JavaScript so what it does is you take
+
+148
+00:06:16,899 --> 00:06:18,159
+this little array here with four
+
+149
+00:06:18,159 --> 00:06:20,169
+elements and then you apply map to it
+
+150
+00:06:20,169 --> 00:06:22,749
+the function I pass the map is this
+
+151
+00:06:22,749 --> 00:06:25,629
+little increment here so if you look at
+
+152
+00:06:25,629 --> 00:06:27,909
+it as a developer you can instantly spot
+
+153
+00:06:27,909 --> 00:06:31,060
+hey this can be run concurrently because
+
+154
+00:06:31,060 --> 00:06:33,459
+this increment operation doesn't affect
+
+155
+00:06:33,459 --> 00:06:34,990
+anything else apart from computing the
+
+156
+00:06:34,990 --> 00:06:36,729
+result it's completely side-effect free
+
+157
+00:06:36,729 --> 00:06:39,879
+I could do this map in parallel you as a
+
+158
+00:06:39,879 --> 00:06:42,879
+programmer you know that the JIT doesn't
+
+159
+00:06:42,879 --> 00:06:45,580
+and that's what we want to change we
+
+160
+00:06:45,580 --> 00:06:47,379
+want to give the programmer means to
+
+161
+00:06:47,379 --> 00:06:49,629
+tell the JIT that this function actually
+
+162
+00:06:49,629 --> 00:06:52,120
+can be run in parallel and that's what
+
+163
+00:06:52,120 --> 00:06:54,879
+River Trail is about River Trail is
+
+164
+00:06:54,879 --> 00:06:57,430
+about bringing data perl programming to
+
+165
+00:06:57,430 --> 00:06:59,800
+javascript and the important thing here
+
+166
+00:06:59,800 --> 00:07:02,889
+is bringing it to javascript designing
+
+167
+00:07:02,889 --> 00:07:04,899
+it for javascript so we didn't want to
+
+168
+00:07:04,899 --> 00:07:07,330
+do yet another data parallel programming
+
+169
+00:07:07,330 --> 00:07:09,310
+model there are sufficiently many out
+
+170
+00:07:09,310 --> 00:07:11,589
+there what we really wanted wanted to
+
+171
+00:07:11,589 --> 00:07:13,590
+create a data perl programming model
+
+172
+00:07:13,590 --> 00:07:16,470
+for javascript specifically designed for
+
+173
+00:07:16,470 --> 00:07:18,870
+javascript and to give you an idea what
+
+174
+00:07:18,870 --> 00:07:20,970
+that means for us what designing for
+
+175
+00:07:20,970 --> 00:07:23,070
+javascript meant when we did this work I
+
+176
+00:07:23,070 --> 00:07:25,080
+want to share some of our design goals
+
+177
+00:07:25,080 --> 00:07:27,770
+that we used when we designed retro and
+
+178
+00:07:27,770 --> 00:07:30,870
+the first one which probably is pretty
+
+179
+00:07:30,870 --> 00:07:33,510
+obvious if you read it is that we wanted
+
+180
+00:07:33,510 --> 00:07:36,480
+rivotril to look like JavaScript and to
+
+181
+00:07:36,480 --> 00:07:39,720
+behave like JavaScript it sounds simple
+
+182
+00:07:39,720 --> 00:07:41,190
+but actually that's probably the thing
+
+183
+00:07:41,190 --> 00:07:43,710
+that most influenced the design of river
+
+184
+00:07:43,710 --> 00:07:45,720
+trail on the end because we did not
+
+185
+00:07:45,720 --> 00:07:47,880
+deviate from this goal even for
+
+186
+00:07:47,880 --> 00:07:49,740
+performance reasons we always stuck to
+
+187
+00:07:49,740 --> 00:07:51,120
+the fact that it should be like
+
+188
+00:07:51,120 --> 00:07:54,150
+JavaScript so all called you right when
+
+189
+00:07:54,150 --> 00:07:56,340
+you use rubber trail still it's just
+
+190
+00:07:56,340 --> 00:07:58,980
+JavaScript there is nothing new to the
+
+191
+00:07:58,980 --> 00:08:00,510
+point that we even have a library
+
+192
+00:08:00,510 --> 00:08:02,100
+implementation of river trail that's
+
+193
+00:08:02,100 --> 00:08:03,750
+completely written in JavaScript it
+
+194
+00:08:03,750 --> 00:08:05,940
+completely adheres to the semantics of
+
+195
+00:08:05,940 --> 00:08:08,670
+JavaScript the only problem is it's not
+
+196
+00:08:08,670 --> 00:08:12,090
+concurrent also we had this rule of no
+
+197
+00:08:12,090 --> 00:08:14,130
+surprise so we wanted the system
+
+198
+00:08:14,130 --> 00:08:16,170
+whenever we left what jobs could
+
+199
+00:08:16,170 --> 00:08:18,120
+traditionally did whenever we introduced
+
+200
+00:08:18,120 --> 00:08:20,460
+concurrency to behave in a way that
+
+201
+00:08:20,460 --> 00:08:25,470
+developers would expect our second goal
+
+202
+00:08:25,470 --> 00:08:27,030
+is we wanted to keep the deterministic
+
+203
+00:08:27,030 --> 00:08:29,070
+execution model because that really
+
+204
+00:08:29,070 --> 00:08:30,840
+makes concurrent programming so much
+
+205
+00:08:30,840 --> 00:08:33,870
+easier so we designed the system that
+
+206
+00:08:33,870 --> 00:08:35,460
+you do not have race conditions that you
+
+207
+00:08:35,460 --> 00:08:37,800
+do not have debt log however there is no
+
+208
+00:08:37,800 --> 00:08:40,770
+magic things you simply cannot change
+
+209
+00:08:40,770 --> 00:08:43,710
+our that floating point operations can
+
+210
+00:08:43,710 --> 00:08:45,510
+introduce non determinism if you do
+
+211
+00:08:45,510 --> 00:08:47,970
+reduction operations so this limits of
+
+212
+00:08:47,970 --> 00:08:50,370
+the hot where we cannot change but other
+
+213
+00:08:50,370 --> 00:08:52,170
+than that we've designed the system so
+
+214
+00:08:52,170 --> 00:08:54,090
+that it is termina stick as far as it
+
+215
+00:08:54,090 --> 00:08:58,710
+could be and lastly and this is probably
+
+216
+00:08:58,710 --> 00:09:00,510
+the most important thing if you look at
+
+217
+00:09:00,510 --> 00:09:02,820
+your betrayal as a web technology we
+
+218
+00:09:02,820 --> 00:09:05,840
+wanted it to be as safe and as secure as
+
+219
+00:09:05,840 --> 00:09:09,930
+javascript is so River Trail is no more
+
+220
+00:09:09,930 --> 00:09:12,420
+secure than JavaScript but importantly
+
+221
+00:09:12,420 --> 00:09:15,510
+it's not less secure either we still use
+
+222
+00:09:15,510 --> 00:09:17,940
+a fully managed one time we still have
+
+223
+00:09:17,940 --> 00:09:20,490
+no pointers whatsoever and we do full
+
+224
+00:09:20,490 --> 00:09:21,870
+bounds checking there are no overflows
+
+225
+00:09:21,870 --> 00:09:24,360
+sober betrayal is really suitable as an
+
+226
+00:09:24,360 --> 00:09:25,800
+open web technology
+
+227
+00:09:25,800 --> 00:09:28,780
+so this is the design this is how we
+
+228
+00:09:28,780 --> 00:09:31,330
+wanted river gel to be let me need to
+
+229
+00:09:31,330 --> 00:09:33,250
+tell you a little bit what roofie looks
+
+230
+00:09:33,250 --> 00:09:35,170
+like and it will start a very conceptual
+
+231
+00:09:35,170 --> 00:09:37,390
+level so road trail has three components
+
+232
+00:09:37,390 --> 00:09:40,270
+that it's built off we call this a three
+
+233
+00:09:40,270 --> 00:09:42,400
+pillar approach because the API really
+
+234
+00:09:42,400 --> 00:09:44,260
+rests on these three components that's
+
+235
+00:09:44,260 --> 00:09:46,660
+all you need to understand first we have
+
+236
+00:09:46,660 --> 00:09:48,400
+a new data structure that's parallel
+
+237
+00:09:48,400 --> 00:09:49,950
+array and you can think of this
+
+238
+00:09:49,950 --> 00:09:51,930
+essentially like a JavaScript array
+
+239
+00:09:51,930 --> 00:09:54,040
+there are some very important
+
+240
+00:09:54,040 --> 00:09:55,330
+differences that make concurrent
+
+241
+00:09:55,330 --> 00:09:57,970
+execution a lot easier first of all
+
+242
+00:09:57,970 --> 00:10:00,400
+parallel rays I immutable and that means
+
+243
+00:10:00,400 --> 00:10:01,960
+as soon as you've created a parallel
+
+244
+00:10:01,960 --> 00:10:04,120
+array you can know language change its
+
+245
+00:10:04,120 --> 00:10:06,520
+values they're really simplifies the
+
+246
+00:10:06,520 --> 00:10:08,800
+implementation of an optimizing but
+
+247
+00:10:08,800 --> 00:10:10,540
+it helps developers as well the reason
+
+248
+00:10:10,540 --> 00:10:12,190
+about their code to understand what it
+
+249
+00:10:12,190 --> 00:10:14,620
+means but it's run concurrently the
+
+250
+00:10:14,620 --> 00:10:16,540
+second thing we've decided is pearl rays
+
+251
+00:10:16,540 --> 00:10:19,060
+are dense so JavaScript arrays have this
+
+252
+00:10:19,060 --> 00:10:22,570
+property that they can have poles now as
+
+253
+00:10:22,570 --> 00:10:23,860
+I said we want to do data pro
+
+254
+00:10:23,860 --> 00:10:26,020
+programming and in that kind of context
+
+255
+00:10:26,020 --> 00:10:28,780
+the data really induces your computation
+
+256
+00:10:28,780 --> 00:10:31,210
+so if you have holes in your array that
+
+257
+00:10:31,210 --> 00:10:33,130
+means that for certain elements no
+
+258
+00:10:33,130 --> 00:10:35,260
+computation will happen we just think
+
+259
+00:10:35,260 --> 00:10:37,080
+that's very difficult to understand and
+
+260
+00:10:37,080 --> 00:10:39,850
+obviously as implementers it makes
+
+261
+00:10:39,850 --> 00:10:41,530
+implementing it easier as well if you
+
+262
+00:10:41,530 --> 00:10:44,560
+don't have holes and lastly parallel
+
+263
+00:10:44,560 --> 00:10:46,450
+rays are homogeneous and what this means
+
+264
+00:10:46,450 --> 00:10:48,640
+at least is that if you have a nested
+
+265
+00:10:48,640 --> 00:10:50,920
+array then all the elements of the outer
+
+266
+00:10:50,920 --> 00:10:54,580
+array have the same length so you can
+
+267
+00:10:54,580 --> 00:10:56,710
+think of a prole array like a 3 by 4
+
+268
+00:10:56,710 --> 00:10:59,800
+matrix for example you have three outer
+
+269
+00:10:59,800 --> 00:11:02,290
+elements and each of them is a 4 element
+
+270
+00:11:02,290 --> 00:11:04,330
+array again so we have this homogeneity
+
+271
+00:11:04,330 --> 00:11:06,280
+requirement and again this comes from
+
+272
+00:11:06,280 --> 00:11:08,140
+the fact that your data induces your
+
+273
+00:11:08,140 --> 00:11:10,900
+computation if you have irregular shapes
+
+274
+00:11:10,900 --> 00:11:13,060
+it's very difficult to understand and
+
+275
+00:11:13,060 --> 00:11:16,150
+think about what's actually going on so
+
+276
+00:11:16,150 --> 00:11:17,680
+once you have the data structure you can
+
+277
+00:11:17,680 --> 00:11:19,810
+actually create it that's the parallel
+
+278
+00:11:19,810 --> 00:11:21,790
+the code you write you just take an
+
+279
+00:11:21,790 --> 00:11:23,410
+array-like w anything that has a length
+
+280
+00:11:23,410 --> 00:11:26,320
+on some properties parser to the apparel
+
+281
+00:11:26,320 --> 00:11:27,820
+array constructor which creates a
+
+282
+00:11:27,820 --> 00:11:31,540
+mutable version of it and fills all
+
+283
+00:11:31,540 --> 00:11:35,240
+holes what the pro
+
+284
+00:11:35,240 --> 00:11:37,459
+raised her well is it has six methods
+
+285
+00:11:37,459 --> 00:11:40,670
+and we've chosen map combined reduce
+
+286
+00:11:40,670 --> 00:11:42,290
+can't filter and scatter as the
+
+287
+00:11:42,290 --> 00:11:44,089
+perimeters we want to support because
+
+288
+00:11:44,089 --> 00:11:45,620
+these are the basic skeletons for
+
+289
+00:11:45,620 --> 00:11:47,360
+parallel computation in a day to pearl
+
+290
+00:11:47,360 --> 00:11:49,760
+setting there are more maybe you could
+
+291
+00:11:49,760 --> 00:11:51,380
+choose a different set but we believe
+
+292
+00:11:51,380 --> 00:11:52,880
+there's a sufficient to write most kinds
+
+293
+00:11:52,880 --> 00:11:55,850
+of applications also it's important to
+
+294
+00:11:55,850 --> 00:11:58,220
+note here that we've deliberately chosen
+
+295
+00:11:58,220 --> 00:12:00,950
+these high level primitives we've
+
+296
+00:12:00,950 --> 00:12:02,209
+deliberately chosen something like
+
+297
+00:12:02,209 --> 00:12:04,279
+reduce and the reason for that is we
+
+298
+00:12:04,279 --> 00:12:06,260
+wanted to have portability across
+
+299
+00:12:06,260 --> 00:12:08,660
+hardware platforms if you think about
+
+300
+00:12:08,660 --> 00:12:10,580
+reduce for example you really implement
+
+301
+00:12:10,580 --> 00:12:12,260
+that quite differently depending on
+
+302
+00:12:12,260 --> 00:12:14,330
+whether you run on a GPU or on a
+
+303
+00:12:14,330 --> 00:12:16,040
+multi-core where they have simply
+
+304
+00:12:16,040 --> 00:12:18,620
+instructions or not having that at this
+
+305
+00:12:18,620 --> 00:12:20,899
+high level allows us to retarget the
+
+306
+00:12:20,899 --> 00:12:23,029
+code dynamically to the different kinds
+
+307
+00:12:23,029 --> 00:12:24,890
+of architectures we run on so this is
+
+308
+00:12:24,890 --> 00:12:27,500
+truly performance portable as far as we
+
+309
+00:12:27,500 --> 00:12:31,250
+can make it and lastly we have the
+
+310
+00:12:31,250 --> 00:12:33,649
+concept of nine elemental function so
+
+311
+00:12:33,649 --> 00:12:35,120
+elemental functions are typically the
+
+312
+00:12:35,120 --> 00:12:36,470
+things that actually do the compute
+
+313
+00:12:36,470 --> 00:12:38,899
+workout if you think of a map the
+
+314
+00:12:38,899 --> 00:12:40,190
+elemental function is the function that
+
+315
+00:12:40,190 --> 00:12:42,050
+takes an element from the source array
+
+316
+00:12:42,050 --> 00:12:44,000
+and computes the corresponding element
+
+317
+00:12:44,000 --> 00:12:46,550
+in the result what's very specific about
+
+318
+00:12:46,550 --> 00:12:49,010
+our elemental functions is that require
+
+319
+00:12:49,010 --> 00:12:51,230
+them to be side-effect free and that's
+
+320
+00:12:51,230 --> 00:12:53,060
+what makes concurrent execution possible
+
+321
+00:12:53,060 --> 00:12:55,700
+in the first place we even go to the
+
+322
+00:12:55,700 --> 00:12:56,899
+point that if they're not side-effect
+
+323
+00:12:56,899 --> 00:12:58,010
+free you will get an error either
+
+324
+00:12:58,010 --> 00:13:00,529
+statically or at runtime so really
+
+325
+00:13:00,529 --> 00:13:03,800
+enforce side-effect rhiness but I want
+
+326
+00:13:03,800 --> 00:13:05,209
+to reiterate here once more they are
+
+327
+00:13:05,209 --> 00:13:07,040
+still written poorly in JavaScript
+
+328
+00:13:07,040 --> 00:13:08,779
+there's nothing new there so you just
+
+329
+00:13:08,779 --> 00:13:10,870
+take your existing JavaScript functions
+
+330
+00:13:10,870 --> 00:13:14,450
+coming back to my increment here this is
+
+331
+00:13:14,450 --> 00:13:15,440
+what it would look like now you know
+
+332
+00:13:15,440 --> 00:13:17,480
+called parallel or a top map you still
+
+333
+00:13:17,480 --> 00:13:18,920
+give it the same increment function as
+
+334
+00:13:18,920 --> 00:13:21,560
+before but now the JIT knows that this
+
+335
+00:13:21,560 --> 00:13:24,050
+function is side-effect free or because
+
+336
+00:13:24,050 --> 00:13:26,870
+you promised him to be to be so victory
+
+337
+00:13:26,870 --> 00:13:28,610
+by calling a parallel radar map as
+
+338
+00:13:28,610 --> 00:13:30,649
+opposed to narrate of map and this
+
+339
+00:13:30,649 --> 00:13:34,610
+enables concurrent execution ok
+
+340
+00:13:34,610 --> 00:13:36,380
+increment isn't really a good example
+
+341
+00:13:36,380 --> 00:13:38,810
+it's kind of boring so I wanted to do
+
+342
+00:13:38,810 --> 00:13:40,640
+something more sophisticated a little
+
+343
+00:13:40,640 --> 00:13:42,950
+bit to do that I need to give you
+
+344
+00:13:42,950 --> 00:13:45,709
+slightly more insight into the API but I
+
+345
+00:13:45,709 --> 00:13:47,600
+wouldn't won't go any deeper than
+
+346
+00:13:47,600 --> 00:13:50,209
+this slide I talked already about the
+
+347
+00:13:50,209 --> 00:13:52,130
+constructor form so you create a pro
+
+348
+00:13:52,130 --> 00:13:54,139
+array by passing an array-like value to
+
+349
+00:13:54,139 --> 00:13:55,819
+a pearl or a constructor there are
+
+350
+00:13:55,819 --> 00:13:57,050
+different constructor forms for
+
+351
+00:13:57,050 --> 00:13:58,459
+different kinds of things like a canvas
+
+352
+00:13:58,459 --> 00:14:01,069
+or more generic instructors but this is
+
+353
+00:14:01,069 --> 00:14:02,620
+the only one I will use in my example
+
+354
+00:14:02,620 --> 00:14:05,959
+and then you have certain properties the
+
+355
+00:14:05,959 --> 00:14:07,639
+length property everybody will know that
+
+356
+00:14:07,639 --> 00:14:10,009
+ever used in array it just gives you the
+
+357
+00:14:10,009 --> 00:14:11,899
+length of the outermost axis of your
+
+358
+00:14:11,899 --> 00:14:14,420
+array as our apparel arrays are
+
+359
+00:14:14,420 --> 00:14:16,370
+homogeneous we can give you some more we
+
+360
+00:14:16,370 --> 00:14:18,170
+can give you a shape and the shape is
+
+361
+00:14:18,170 --> 00:14:19,910
+essentially a condensed description of
+
+362
+00:14:19,910 --> 00:14:22,060
+the whole structure of your nested array
+
+363
+00:14:22,060 --> 00:14:24,410
+think again you have a 3 by 4 matrix
+
+364
+00:14:24,410 --> 00:14:27,920
+that would have a shape three four so
+
+365
+00:14:27,920 --> 00:14:29,569
+the shape property gives you a vector
+
+366
+00:14:29,569 --> 00:14:31,220
+that describes the whole shape of the
+
+367
+00:14:31,220 --> 00:14:32,959
+Ray that comes in handy if you want to
+
+368
+00:14:32,959 --> 00:14:34,790
+write code on multi-dimensional arrays
+
+369
+00:14:34,790 --> 00:14:37,850
+as I said we have a set of methods for
+
+370
+00:14:37,850 --> 00:14:39,110
+parallel compute and the one I want to
+
+371
+00:14:39,110 --> 00:14:42,470
+highlight here is combined so combined
+
+372
+00:14:42,470 --> 00:14:45,560
+takes takes two arguments a depth and a
+
+373
+00:14:45,560 --> 00:14:47,509
+function and what it implements it is a
+
+374
+00:14:47,509 --> 00:14:49,970
+parallel map with an index so you can
+
+375
+00:14:49,970 --> 00:14:53,060
+think of it it just as map the first
+
+376
+00:14:53,060 --> 00:14:55,339
+argument this depth tells the runtime
+
+377
+00:14:55,339 --> 00:14:57,920
+how deep you want a trade so if you have
+
+378
+00:14:57,920 --> 00:14:59,600
+a matrix and you want to iterate on
+
+379
+00:14:59,600 --> 00:15:01,490
+every element you would use a depth of 2
+
+380
+00:15:01,490 --> 00:15:03,620
+if you have a matrix and you want
+
+381
+00:15:03,620 --> 00:15:06,199
+iterate in every row it use a depth of 1
+
+382
+00:15:06,199 --> 00:15:08,660
+so it's kind of the nesting of your
+
+383
+00:15:08,660 --> 00:15:12,230
+looping construct the second argument
+
+384
+00:15:12,230 --> 00:15:14,870
+here is a function and again it's an
+
+385
+00:15:14,870 --> 00:15:16,339
+elemental function and in the case of
+
+386
+00:15:16,339 --> 00:15:18,680
+combined this function is called with
+
+387
+00:15:18,680 --> 00:15:22,339
+the indices of the current element also
+
+388
+00:15:22,339 --> 00:15:24,709
+what we do is during the execution of
+
+389
+00:15:24,709 --> 00:15:27,259
+the elemental function this is bound to
+
+390
+00:15:27,259 --> 00:15:29,509
+the sauce pearl array and that really
+
+391
+00:15:29,509 --> 00:15:31,370
+allows for a very compositional style of
+
+392
+00:15:31,370 --> 00:15:34,009
+programming so this is all you need to
+
+393
+00:15:34,009 --> 00:15:36,319
+know this is all the API you need to
+
+394
+00:15:36,319 --> 00:15:39,709
+know let's do an example I've looked
+
+395
+00:15:39,709 --> 00:15:41,000
+long to find an example they actually
+
+396
+00:15:41,000 --> 00:15:43,519
+kind of fits on a slide and in the end I
+
+397
+00:15:43,519 --> 00:15:46,009
+decided for edge detection which is a
+
+398
+00:15:46,009 --> 00:15:48,139
+nice image processing filter and it has
+
+399
+00:15:48,139 --> 00:15:49,759
+the property that we've implemented demo
+
+400
+00:15:49,759 --> 00:15:51,319
+and it's it's an on our website so if
+
+401
+00:15:51,319 --> 00:15:53,300
+you look at it so you don't need to
+
+402
+00:15:53,300 --> 00:15:55,040
+understand the full code here you can
+
+403
+00:15:55,040 --> 00:15:58,069
+later look at it scrutinize it what I
+
+404
+00:15:58,069 --> 00:16:00,380
+want you to concentrate on really as the
+
+405
+00:16:00,380 --> 00:16:01,000
+computation
+
+406
+00:16:01,000 --> 00:16:03,820
+workload here so if you look at that
+
+407
+00:16:03,820 --> 00:16:07,390
+it's JavaScript there's nothing new
+
+408
+00:16:07,390 --> 00:16:09,450
+there so how do you do edge detection
+
+409
+00:16:09,450 --> 00:16:12,160
+well it's a convolution style
+
+410
+00:16:12,160 --> 00:16:14,320
+computation so to compute one element of
+
+411
+00:16:14,320 --> 00:16:16,630
+the result you have to look at all the
+
+412
+00:16:16,630 --> 00:16:19,300
+neighbors in their sorcery and then you
+
+413
+00:16:19,300 --> 00:16:21,610
+compute to wait sums of those neighbors
+
+414
+00:16:21,610 --> 00:16:23,140
+and that's essentially what this follow
+
+415
+00:16:23,140 --> 00:16:25,900
+puters it looks a bit complicated
+
+416
+00:16:25,900 --> 00:16:27,820
+because it has to do boundary conditions
+
+417
+00:16:27,820 --> 00:16:29,860
+if you if your element you looking at is
+
+418
+00:16:29,860 --> 00:16:31,900
+the boundary of your image because then
+
+419
+00:16:31,900 --> 00:16:33,250
+there are certain neighbors just don't
+
+420
+00:16:33,250 --> 00:16:35,530
+exist but in essence you just compute
+
+421
+00:16:35,530 --> 00:16:37,960
+it's running some of the current element
+
+422
+00:16:37,960 --> 00:16:40,480
+that's this this year at the two
+
+423
+00:16:40,480 --> 00:16:46,450
+positions x this so go matrix and the
+
+424
+00:16:46,450 --> 00:16:47,830
+solar matrix here is just a closure
+
+425
+00:16:47,830 --> 00:16:49,450
+bound variable again it's just
+
+426
+00:16:49,450 --> 00:16:51,220
+JavaScript you have all the features of
+
+427
+00:16:51,220 --> 00:16:52,930
+JavaScript at hands you can use closer
+
+428
+00:16:52,930 --> 00:16:55,630
+bond variables you have this will
+
+429
+00:16:55,630 --> 00:17:00,190
+function everything you want so if you
+
+430
+00:17:00,190 --> 00:17:02,590
+not trust me that this is the edge
+
+431
+00:17:02,590 --> 00:17:04,720
+detection for a single element how do
+
+432
+00:17:04,720 --> 00:17:07,870
+you lift this to an entire array well
+
+433
+00:17:07,870 --> 00:17:09,339
+you can write that obviously in
+
+434
+00:17:09,339 --> 00:17:14,140
+JavaScript today and that's one way you
+
+435
+00:17:14,140 --> 00:17:15,730
+could write it down so first you need
+
+436
+00:17:15,730 --> 00:17:17,290
+some image data right you compute your
+
+437
+00:17:17,290 --> 00:17:19,150
+gray scale image data from the canvas
+
+438
+00:17:19,150 --> 00:17:22,089
+element whatever you fancy and then you
+
+439
+00:17:22,089 --> 00:17:24,910
+have this for loop nest that essentially
+
+440
+00:17:24,910 --> 00:17:26,920
+iterates over your gray scale data and
+
+441
+00:17:26,920 --> 00:17:29,200
+looks at each and every element and then
+
+442
+00:17:29,200 --> 00:17:31,840
+calls the edge kernel function on it you
+
+443
+00:17:31,840 --> 00:17:33,310
+have to do some allocation of the result
+
+444
+00:17:33,310 --> 00:17:34,780
+and all these things but that's
+
+445
+00:17:34,780 --> 00:17:36,190
+essentially the pattern you implement
+
+446
+00:17:36,190 --> 00:17:37,840
+you have a nested for loop and get it
+
+447
+00:17:37,840 --> 00:17:40,540
+right over all the elements again as a
+
+448
+00:17:40,540 --> 00:17:42,010
+clever programmer if you look at this
+
+449
+00:17:42,010 --> 00:17:45,220
+code you will instantly see yeah that
+
+450
+00:17:45,220 --> 00:17:47,380
+can be run in parallel because I know H
+
+451
+00:17:47,380 --> 00:17:50,830
+detection has no side effects however
+
+452
+00:17:50,830 --> 00:17:53,650
+your jit won't know so how do I tell the
+
+453
+00:17:53,650 --> 00:17:57,670
+JIT I use a river trail primitive so as
+
+454
+00:17:57,670 --> 00:17:59,590
+before you'd first take your gray scale
+
+455
+00:17:59,590 --> 00:18:02,380
+data you create a parallel array out of
+
+456
+00:18:02,380 --> 00:18:04,540
+it which makes it immutable fills all
+
+457
+00:18:04,540 --> 00:18:07,050
+holes and checks its homogeneous and
+
+458
+00:18:07,050 --> 00:18:11,200
+then you call this combined method with
+
+459
+00:18:11,200 --> 00:18:13,060
+the depth of 2 because you want to look
+
+460
+00:18:13,060 --> 00:18:14,800
+at every single element of your
+
+461
+00:18:14,800 --> 00:18:18,340
+2d image data and your edge como as the
+
+462
+00:18:18,340 --> 00:18:21,550
+function in this now tells the JIT you
+
+463
+00:18:21,550 --> 00:18:24,850
+can execute this concurrently so it's
+
+464
+00:18:24,850 --> 00:18:26,560
+one thing to design a language and to
+
+465
+00:18:26,560 --> 00:18:27,910
+say okay you can write all these cool
+
+466
+00:18:27,910 --> 00:18:29,650
+things the other thing is to actually
+
+467
+00:18:29,650 --> 00:18:31,930
+make it happen so we implemented a
+
+468
+00:18:31,930 --> 00:18:34,060
+prototype for all this which comes as a
+
+469
+00:18:34,060 --> 00:18:36,970
+Firefox extension so how does this work
+
+470
+00:18:36,970 --> 00:18:41,590
+how do you compile this kind of code let
+
+471
+00:18:41,590 --> 00:18:43,750
+me quickly give you a view Nigeria so
+
+472
+00:18:43,750 --> 00:18:44,980
+here's your initial setting you have
+
+473
+00:18:44,980 --> 00:18:46,990
+your JavaScript engine which is running
+
+474
+00:18:46,990 --> 00:18:49,150
+your script and use the developer have
+
+475
+00:18:49,150 --> 00:18:51,820
+pulled a call it to combine into it so
+
+476
+00:18:51,820 --> 00:18:54,010
+what we do is at runtime we intercept
+
+477
+00:18:54,010 --> 00:18:56,710
+that call of combining and we pause your
+
+478
+00:18:56,710 --> 00:18:58,750
+script and instead start our compiler
+
+479
+00:18:58,750 --> 00:19:00,580
+which is completely written in
+
+480
+00:19:00,580 --> 00:19:03,010
+JavaScript as well so our compiler runs
+
+481
+00:19:03,010 --> 00:19:05,340
+inside of the JavaScript engine and the
+
+482
+00:19:05,340 --> 00:19:07,600
+compiler will just look at your your
+
+483
+00:19:07,600 --> 00:19:09,280
+kernel function your elemental function
+
+484
+00:19:09,280 --> 00:19:11,320
+and do a couple of analysis and
+
+485
+00:19:11,320 --> 00:19:13,300
+representation changes so first we do a
+
+486
+00:19:13,300 --> 00:19:15,310
+type inference and we've really dramatic
+
+487
+00:19:15,310 --> 00:19:17,500
+drastically specialized to argument
+
+488
+00:19:17,500 --> 00:19:19,720
+types under a sizes that's one thing
+
+489
+00:19:19,720 --> 00:19:22,510
+that gives us good performance so once
+
+490
+00:19:22,510 --> 00:19:24,100
+we know what the Rays are in the game
+
+491
+00:19:24,100 --> 00:19:26,020
+what their type are and what their sizes
+
+492
+00:19:26,020 --> 00:19:28,210
+are we do a representation analysis and
+
+493
+00:19:28,210 --> 00:19:30,580
+that's nice because as soon as you know
+
+494
+00:19:30,580 --> 00:19:32,230
+that something is an integer you can
+
+495
+00:19:32,230 --> 00:19:34,180
+vary a lot more efficiently select
+
+496
+00:19:34,180 --> 00:19:36,130
+elements using it as an index that's
+
+497
+00:19:36,130 --> 00:19:38,380
+just an artifact of how the JavaScript
+
+498
+00:19:38,380 --> 00:19:41,530
+semantics work as a next step we do
+
+499
+00:19:41,530 --> 00:19:43,090
+static memory allocation and the reason
+
+500
+00:19:43,090 --> 00:19:44,500
+we do that is because we just were too
+
+501
+00:19:44,500 --> 00:19:46,050
+lazy to implement a full-blown
+
+502
+00:19:46,050 --> 00:19:49,600
+concurrent elevator so instead we
+
+503
+00:19:49,600 --> 00:19:52,020
+allocate a looking steadily on the here
+
+504
+00:19:52,020 --> 00:19:53,620
+finally we do a bounced check
+
+505
+00:19:53,620 --> 00:19:54,790
+elimination because we're
+
+506
+00:19:54,790 --> 00:19:56,430
+representational is we already computed
+
+507
+00:19:56,430 --> 00:19:59,050
+the bounds of all local variables were
+
+508
+00:19:59,050 --> 00:20:00,490
+possible so we just used that
+
+509
+00:20:00,490 --> 00:20:02,170
+information but the last the most
+
+510
+00:20:02,170 --> 00:20:04,180
+important step is we create opencl code
+
+511
+00:20:04,180 --> 00:20:07,720
+so why opencl well this is a prototype
+
+512
+00:20:07,720 --> 00:20:10,030
+so when we did this we didn't really
+
+513
+00:20:10,030 --> 00:20:12,130
+have the time to implement a full-blown
+
+514
+00:20:12,130 --> 00:20:14,350
+compiler back end we didn't want to
+
+515
+00:20:14,350 --> 00:20:16,030
+implement a compiler that takes the code
+
+516
+00:20:16,030 --> 00:20:17,950
+to binary we didn't want to implement a
+
+517
+00:20:17,950 --> 00:20:20,170
+compiler that has a complete runtime
+
+518
+00:20:20,170 --> 00:20:22,600
+system for concurrent execution so what
+
+519
+00:20:22,600 --> 00:20:24,640
+we did instead is we reused an existing
+
+520
+00:20:24,640 --> 00:20:26,770
+opencl compiler but there's really no
+
+521
+00:20:26,770 --> 00:20:28,600
+reason why this should be
+
+522
+00:20:28,600 --> 00:20:31,150
+mended on top of opencl as a matter of
+
+523
+00:20:31,150 --> 00:20:33,520
+fact as soon as you leave the opencl of
+
+524
+00:20:33,520 --> 00:20:35,680
+sphere and implement this directly you
+
+525
+00:20:35,680 --> 00:20:37,120
+can probably do a much better job
+
+526
+00:20:37,120 --> 00:20:39,610
+because opencl is quite a straitjacket
+
+527
+00:20:39,610 --> 00:20:41,560
+that's not very well suited for
+
+528
+00:20:41,560 --> 00:20:45,570
+javascript anyhow so we end up with
+
+529
+00:20:45,570 --> 00:20:48,790
+opencl so we've taken your edge colonel
+
+530
+00:20:48,790 --> 00:20:52,330
+with compiler to open CL what's next so
+
+531
+00:20:52,330 --> 00:20:54,610
+far everything is written in JavaScript
+
+532
+00:20:54,610 --> 00:20:57,010
+and all this runs on probably every
+
+533
+00:20:57,010 --> 00:20:58,780
+browser that has a compliant JavaScript
+
+534
+00:20:58,780 --> 00:21:01,270
+engine but we need to execute it now
+
+535
+00:21:01,270 --> 00:21:03,460
+somehow and that's where our Firefox
+
+536
+00:21:03,460 --> 00:21:06,820
+extension comes into play what that does
+
+537
+00:21:06,820 --> 00:21:09,670
+it hooks up an open CL runtime to the
+
+538
+00:21:09,670 --> 00:21:12,460
+Firefox browser and it allows us to
+
+539
+00:21:12,460 --> 00:21:14,530
+actually execute that opencl colonel on
+
+540
+00:21:14,530 --> 00:21:17,650
+multi-core CPUs possibly using simply
+
+541
+00:21:17,650 --> 00:21:19,900
+extensions and in the future maybe even
+
+542
+00:21:19,900 --> 00:21:23,530
+on GPUs so once we've made that jump
+
+543
+00:21:23,530 --> 00:21:25,570
+into the opencl stag and your chrome has
+
+544
+00:21:25,570 --> 00:21:29,020
+been executed we have a result we inject
+
+545
+00:21:29,020 --> 00:21:31,870
+that back into the original script that
+
+546
+00:21:31,870 --> 00:21:33,310
+you had written as the result of
+
+547
+00:21:33,310 --> 00:21:35,890
+javascript operation cleaning up all the
+
+548
+00:21:35,890 --> 00:21:37,690
+stack we've created and resume your
+
+549
+00:21:37,690 --> 00:21:40,420
+kernel that's in its essence how we
+
+550
+00:21:40,420 --> 00:21:42,730
+execute rivotril program in our
+
+551
+00:21:42,730 --> 00:21:46,150
+prototype and you might say okay now
+
+552
+00:21:46,150 --> 00:21:47,710
+that's quite some effort you go through
+
+553
+00:21:47,710 --> 00:21:50,410
+here why do that why do i change my code
+
+554
+00:21:50,410 --> 00:21:51,970
+why do you write this complicated
+
+555
+00:21:51,970 --> 00:21:54,310
+prototype compiler it's a very simple
+
+556
+00:21:54,310 --> 00:21:58,240
+answer and let's be so we've done this
+
+557
+00:21:58,240 --> 00:22:00,330
+demo which is a particle simulation and
+
+558
+00:22:00,330 --> 00:22:03,340
+the rendering is done in WebGL but the
+
+559
+00:22:03,340 --> 00:22:05,050
+compute model behind it is completely
+
+560
+00:22:05,050 --> 00:22:08,740
+CPU pod so it's a big o n squared
+
+561
+00:22:08,740 --> 00:22:10,830
+algorithm that computes the physics and
+
+562
+00:22:10,830 --> 00:22:15,390
+we see using it for quad core Core i7 a
+
+563
+00:22:15,390 --> 00:22:18,940
+14-fold speed up I've decided not to
+
+564
+00:22:18,940 --> 00:22:20,650
+show the demo life on stage here today
+
+565
+00:22:20,650 --> 00:22:23,130
+but instead I just ask you go to the URL
+
+566
+00:22:23,130 --> 00:22:26,200
+install the extension to Firefox see for
+
+567
+00:22:26,200 --> 00:22:29,200
+yourself if you have a Mac that's all
+
+568
+00:22:29,200 --> 00:22:30,700
+you need to install because Matt comes
+
+569
+00:22:30,700 --> 00:22:33,010
+with opencl pre-installed if you have a
+
+570
+00:22:33,010 --> 00:22:35,020
+Windows machine you can download the
+
+571
+00:22:35,020 --> 00:22:37,240
+internal until opencl SDK and take a
+
+572
+00:22:37,240 --> 00:22:40,060
+look right away so go to the URL tried
+
+573
+00:22:40,060 --> 00:22:42,720
+it yourself see the speed ups
+
+574
+00:22:42,720 --> 00:22:45,100
+there is kind of a super linear speed-up
+
+575
+00:22:45,100 --> 00:22:47,170
+here because on a quad core you get a 14
+
+576
+00:22:47,170 --> 00:22:50,710
+type speed up part of that is due to us
+
+577
+00:22:50,710 --> 00:22:52,630
+having a better chip because we know a
+
+578
+00:22:52,630 --> 00:22:54,910
+lot more about the code and our compiler
+
+579
+00:22:54,910 --> 00:22:58,390
+only supports a subset of JavaScript but
+
+580
+00:22:58,390 --> 00:23:00,460
+a significant fraction really is
+
+581
+00:23:00,460 --> 00:23:02,650
+concurrency so if you try this in a dual
+
+582
+00:23:02,650 --> 00:23:07,760
+core or quad core you will see the scale
+
+583
+00:23:07,770 --> 00:23:11,230
+so here's the status quo here's where we
+
+584
+00:23:11,230 --> 00:23:14,190
+are we have this open source
+
+585
+00:23:14,190 --> 00:23:16,300
+implementation as a firefox extension
+
+586
+00:23:16,300 --> 00:23:18,310
+it's on github you can download it you
+
+587
+00:23:18,310 --> 00:23:20,470
+can play with it we have some pre-built
+
+588
+00:23:20,470 --> 00:23:23,860
+binaries for Firefox 10 we have a
+
+589
+00:23:23,860 --> 00:23:25,900
+sequential library so in case you do not
+
+590
+00:23:25,900 --> 00:23:27,700
+have Firefox you can still run the demo
+
+591
+00:23:27,700 --> 00:23:29,380
+it will just be significantly slower
+
+592
+00:23:29,380 --> 00:23:32,560
+because it's not accelerated we have
+
+593
+00:23:32,560 --> 00:23:34,450
+created a draft specification that goes
+
+594
+00:23:34,450 --> 00:23:37,150
+beyond our prototype and that
+
+595
+00:23:37,150 --> 00:23:39,010
+specification is available on github and
+
+596
+00:23:39,010 --> 00:23:41,530
+since this morning it has been promoted
+
+597
+00:23:41,530 --> 00:23:44,290
+to the actor script wiki as the data
+
+598
+00:23:44,290 --> 00:23:47,380
+parallelism strawman so we're heading to
+
+599
+00:23:47,380 --> 00:23:50,050
+acma to get the standardized to get this
+
+600
+00:23:50,050 --> 00:23:55,510
+discussed to get this adopted also we
+
+601
+00:23:55,510 --> 00:23:57,070
+have created the first implementation
+
+602
+00:23:57,070 --> 00:23:59,710
+for spider monkey which we use to play
+
+603
+00:23:59,710 --> 00:24:01,480
+with the API because that allows us to
+
+604
+00:24:01,480 --> 00:24:03,850
+do the full implementation of the actual
+
+605
+00:24:03,850 --> 00:24:05,650
+API without any limitations the
+
+606
+00:24:05,650 --> 00:24:09,370
+prototype may have however why I'm
+
+607
+00:24:09,370 --> 00:24:11,680
+really here today what's the point of
+
+608
+00:24:11,680 --> 00:24:15,400
+this talk is your engagement it's one
+
+609
+00:24:15,400 --> 00:24:16,990
+thing to design the language extension
+
+610
+00:24:16,990 --> 00:24:19,270
+it's one thing to do a prototype but the
+
+611
+00:24:19,270 --> 00:24:20,950
+important thing is is this good for
+
+612
+00:24:20,950 --> 00:24:23,260
+developers does this work does this
+
+613
+00:24:23,260 --> 00:24:26,170
+solve your problems so take a look play
+
+614
+00:24:26,170 --> 00:24:28,030
+with it come to me and we'll be running
+
+615
+00:24:28,030 --> 00:24:30,250
+around here for the next two days and
+
+616
+00:24:30,250 --> 00:24:32,950
+talk to me give me your experience we
+
+617
+00:24:32,950 --> 00:24:34,870
+really are interested in developer
+
+618
+00:24:34,870 --> 00:24:38,140
+feedback so I have a couple more minutes
+
+619
+00:24:38,140 --> 00:24:40,780
+to talk and this is really the status
+
+620
+00:24:40,780 --> 00:24:43,240
+quo this is what we've done so far but I
+
+621
+00:24:43,240 --> 00:24:45,130
+thought this is jas phone so maybe I
+
+622
+00:24:45,130 --> 00:24:46,330
+should talk about something that we're
+
+623
+00:24:46,330 --> 00:24:49,330
+cooking right now so let's go a bit
+
+624
+00:24:49,330 --> 00:24:52,000
+beyond the status quo in roseville and I
+
+625
+00:24:52,000 --> 00:24:53,650
+have to say this is really this is
+
+626
+00:24:53,650 --> 00:24:54,790
+latest news right
+
+627
+00:24:54,790 --> 00:24:56,890
+the soup we've been cooking a little but
+
+628
+00:24:56,890 --> 00:24:58,600
+there may be a raw ingredients here it's
+
+629
+00:24:58,600 --> 00:25:02,440
+not fully done yet how this work then
+
+630
+00:25:02,440 --> 00:25:04,750
+started I was reading this blog post by
+
+631
+00:25:04,750 --> 00:25:07,240
+a Yenta offered and he kind of talked
+
+632
+00:25:07,240 --> 00:25:09,610
+about how can we bring simdi to
+
+633
+00:25:09,610 --> 00:25:11,800
+JavaScript and that it's kind of the
+
+634
+00:25:11,800 --> 00:25:13,960
+next point here and at Apollo program in
+
+635
+00:25:13,960 --> 00:25:16,330
+view one and he's really interested in
+
+636
+00:25:16,330 --> 00:25:18,190
+sindhi for his audio applications
+
+637
+00:25:18,190 --> 00:25:20,560
+because he has this very fine grained
+
+638
+00:25:20,560 --> 00:25:22,390
+data parallelism that he wants to
+
+639
+00:25:22,390 --> 00:25:26,050
+express but cannot do so today and we
+
+640
+00:25:26,050 --> 00:25:27,430
+can really recommend this blog post
+
+641
+00:25:27,430 --> 00:25:29,830
+because it's great survey of the design
+
+642
+00:25:29,830 --> 00:25:31,810
+possibilities you have if you want to do
+
+643
+00:25:31,810 --> 00:25:35,530
+simdi in javascript you have raw sm
+
+644
+00:25:35,530 --> 00:25:37,780
+blade right thick inline assembly you
+
+645
+00:25:37,780 --> 00:25:39,130
+write some javascript code and then
+
+646
+00:25:39,130 --> 00:25:40,390
+there's some inline assembly in there
+
+647
+00:25:40,390 --> 00:25:43,900
+that tells how to do Cindy yeah you will
+
+648
+00:25:43,900 --> 00:25:46,030
+have pretty good performance but that
+
+649
+00:25:46,030 --> 00:25:48,220
+won't be portable and it for sure won't
+
+650
+00:25:48,220 --> 00:25:52,300
+be safe you can have standard intrinsic
+
+651
+00:25:52,300 --> 00:25:54,850
+so that gives you kind of some kind of
+
+652
+00:25:54,850 --> 00:25:56,980
+portability at least if you have the
+
+653
+00:25:56,980 --> 00:25:59,410
+same vendor of a hardware because they
+
+654
+00:25:59,410 --> 00:26:01,150
+kind of stick to the intrinsic for a
+
+655
+00:26:01,150 --> 00:26:02,950
+while but still if you have different
+
+656
+00:26:02,950 --> 00:26:05,320
+hardware vendors it's still not portable
+
+657
+00:26:05,320 --> 00:26:07,450
+and we still don't need to talk about
+
+658
+00:26:07,450 --> 00:26:10,690
+safety you could create Java specificity
+
+659
+00:26:10,690 --> 00:26:12,610
+our JavaScript specific intrinsic and
+
+660
+00:26:12,610 --> 00:26:15,670
+that would mean that you have intrinsic
+
+661
+00:26:15,670 --> 00:26:18,970
+that work across all hardware but still
+
+662
+00:26:18,970 --> 00:26:21,610
+it probably wouldn't be safe because you
+
+663
+00:26:21,610 --> 00:26:22,960
+would be still at the assembly level
+
+664
+00:26:22,960 --> 00:26:25,750
+essentially or you could create kind of
+
+665
+00:26:25,750 --> 00:26:29,230
+generic intrinsic that lifts it up to
+
+666
+00:26:29,230 --> 00:26:31,450
+the JavaScript level which would then be
+
+667
+00:26:31,450 --> 00:26:33,820
+portable it's safe but maybe you get low
+
+668
+00:26:33,820 --> 00:26:36,460
+performance and has last design choices
+
+669
+00:26:36,460 --> 00:26:39,030
+you just create a vector matrix API
+
+670
+00:26:39,030 --> 00:26:41,230
+because that's what you typically want
+
+671
+00:26:41,230 --> 00:26:43,330
+you want to do matrix vector multiply to
+
+672
+00:26:43,330 --> 00:26:45,730
+just Hotwire that into the browser but
+
+673
+00:26:45,730 --> 00:26:47,290
+that doesn't really solve the problem it
+
+674
+00:26:47,290 --> 00:26:48,670
+just solves the problem for very
+
+675
+00:26:48,670 --> 00:26:53,650
+specific set of applications so I'm most
+
+676
+00:26:53,650 --> 00:26:55,050
+interested in this generic approach
+
+677
+00:26:55,050 --> 00:26:57,100
+because I think if you do something on
+
+678
+00:26:57,100 --> 00:26:59,230
+the web it needs to be safe and needs to
+
+679
+00:26:59,230 --> 00:27:02,230
+be portable so I started thinking about
+
+680
+00:27:02,230 --> 00:27:04,840
+this and we discussed it a little and if
+
+681
+00:27:04,840 --> 00:27:06,580
+you think about simdi one thing to
+
+682
+00:27:06,580 --> 00:27:07,850
+realize this
+
+683
+00:27:07,850 --> 00:27:10,210
+it's nothing more or less than
+
+684
+00:27:10,210 --> 00:27:14,630
+small-scale beta probe ism so why then
+
+685
+00:27:14,630 --> 00:27:16,549
+can't we use River Trail which is good
+
+686
+00:27:16,549 --> 00:27:18,380
+at coarse-grained data parallelism to
+
+687
+00:27:18,380 --> 00:27:22,460
+express Cindy where's the problem so I
+
+688
+00:27:22,460 --> 00:27:24,260
+sat down I thought about you know some
+
+689
+00:27:24,260 --> 00:27:26,059
+Cindy intrinsics how do you write them
+
+690
+00:27:26,059 --> 00:27:27,890
+in River Trail and it turns out you can
+
+691
+00:27:27,890 --> 00:27:30,860
+actually quite neatly express them so
+
+692
+00:27:30,860 --> 00:27:32,179
+right here we have the standard add
+
+693
+00:27:32,179 --> 00:27:34,400
+intrinsic switch takes two vectors and
+
+694
+00:27:34,400 --> 00:27:36,260
+produces the element by some as a result
+
+695
+00:27:36,260 --> 00:27:38,299
+and you can write that as a road trail
+
+696
+00:27:38,299 --> 00:27:41,330
+one-liner so you take your vector a and
+
+697
+00:27:41,330 --> 00:27:43,250
+then you apply map to it with this
+
+698
+00:27:43,250 --> 00:27:48,950
+function I have to admit for brevity
+
+699
+00:27:48,950 --> 00:27:50,870
+I've used the arrow syntax here which is
+
+700
+00:27:50,870 --> 00:27:53,440
+not really part of JavaScript yet
+
+701
+00:27:53,440 --> 00:27:55,460
+multiplication you can write the same
+
+702
+00:27:55,460 --> 00:27:58,190
+way even shuffle which is a very common
+
+703
+00:27:58,190 --> 00:28:00,289
+vector operation you can easily express
+
+704
+00:28:00,289 --> 00:28:02,240
+in Revit well it's no longer a one liner
+
+705
+00:28:02,240 --> 00:28:05,090
+or it's a long one line but it's just a
+
+706
+00:28:05,090 --> 00:28:07,700
+comprehension constructor which takes
+
+707
+00:28:07,700 --> 00:28:10,429
+the the source array B and shuffled it
+
+708
+00:28:10,429 --> 00:28:15,950
+into the result ok so these are some
+
+709
+00:28:15,950 --> 00:28:18,080
+intrinsic but how do you write entire
+
+710
+00:28:18,080 --> 00:28:22,490
+programs so that look at matrix vector
+
+711
+00:28:22,490 --> 00:28:26,480
+multiply so how do you multiply a matrix
+
+712
+00:28:26,480 --> 00:28:30,580
+with a vector well you take each row
+
+713
+00:28:30,580 --> 00:28:33,500
+that's what this map here does it's a
+
+714
+00:28:33,500 --> 00:28:35,419
+map on the Ottomans dimension so you get
+
+715
+00:28:35,419 --> 00:28:38,539
+a row and then with that row you
+
+716
+00:28:38,539 --> 00:28:40,159
+multiply each element with the
+
+717
+00:28:40,159 --> 00:28:41,270
+corresponding element of the vector
+
+718
+00:28:41,270 --> 00:28:46,250
+that's what the internet does the
+
+719
+00:28:46,250 --> 00:28:48,890
+resulting vector you then reduce using
+
+720
+00:28:48,890 --> 00:28:53,330
+cloth at the end the outer map will
+
+721
+00:28:53,330 --> 00:28:58,250
+produce a vector which is your result so
+
+722
+00:28:58,250 --> 00:29:00,289
+if you have a clever jit it might see
+
+723
+00:29:00,289 --> 00:29:02,929
+that actually the input data it's all
+
+724
+00:29:02,929 --> 00:29:04,880
+these nicely for element thingies it's
+
+725
+00:29:04,880 --> 00:29:07,250
+all very small and the programmer told
+
+726
+00:29:07,250 --> 00:29:09,020
+me it's a pearl array there must be
+
+727
+00:29:09,020 --> 00:29:11,140
+something concurrent going on here and
+
+728
+00:29:11,140 --> 00:29:14,240
+hey this mad I can map it to assume the
+
+729
+00:29:14,240 --> 00:29:17,179
+intrinsic so if you have a clever jit
+
+730
+00:29:17,179 --> 00:29:19,190
+you can compile this kind of code to
+
+731
+00:29:19,190 --> 00:29:21,370
+Cindy code
+
+732
+00:29:21,370 --> 00:29:23,540
+well the harvesting isn't really good
+
+733
+00:29:23,540 --> 00:29:25,580
+here because of all the operations only
+
+734
+00:29:25,580 --> 00:29:27,680
+one map can be done in simdi well that's
+
+735
+00:29:27,680 --> 00:29:29,300
+a problem of simply because there is no
+
+736
+00:29:29,300 --> 00:29:32,570
+intrinsic for reduce but the season
+
+737
+00:29:32,570 --> 00:29:34,520
+cindy programmer he knows well i just
+
+738
+00:29:34,520 --> 00:29:36,620
+rewrite my coat slightly i use color
+
+739
+00:29:36,620 --> 00:29:39,770
+major psytrance post the matrix and now
+
+740
+00:29:39,770 --> 00:29:42,230
+if i do this index map on the outside I
+
+741
+00:29:42,230 --> 00:29:45,770
+get a column and I multiply that column
+
+742
+00:29:45,770 --> 00:29:47,840
+with a corresponding element of the
+
+743
+00:29:47,840 --> 00:29:51,110
+vector and then I do a vector reduction
+
+744
+00:29:51,110 --> 00:29:54,710
+on the results the result is still the
+
+745
+00:29:54,710 --> 00:29:57,200
+same but now I can do two of these maps
+
+746
+00:29:57,200 --> 00:29:59,600
+in parallel I can do Stu simdi
+
+747
+00:29:59,600 --> 00:30:02,660
+operations so why did I show you all the
+
+748
+00:30:02,660 --> 00:30:04,850
+sim decode I just want to give you a
+
+749
+00:30:04,850 --> 00:30:06,770
+feeling that with River Trail you could
+
+750
+00:30:06,770 --> 00:30:11,570
+actually write simdi codes and that's
+
+751
+00:30:11,570 --> 00:30:14,660
+that's a first it's a really a step
+
+752
+00:30:14,660 --> 00:30:16,430
+forward because right now a programmer
+
+753
+00:30:16,430 --> 00:30:19,790
+cannot bright simdi code at all however
+
+754
+00:30:19,790 --> 00:30:21,740
+there's no magic dust if I just shown
+
+755
+00:30:21,740 --> 00:30:23,720
+you it's still the programmer who has
+
+756
+00:30:23,720 --> 00:30:25,910
+two brightest in decode the programmer
+
+757
+00:30:25,910 --> 00:30:28,220
+has to choose the day layout so it's not
+
+758
+00:30:28,220 --> 00:30:30,500
+as nice and easy as coarse grained data
+
+759
+00:30:30,500 --> 00:30:32,660
+parallelism but it still it enables you
+
+760
+00:30:32,660 --> 00:30:37,850
+to write that code also this is probably
+
+761
+00:30:37,850 --> 00:30:39,980
+performance portable in theory but
+
+762
+00:30:39,980 --> 00:30:42,350
+whether it happens in reality is still
+
+763
+00:30:42,350 --> 00:30:44,930
+an open question because Cindy really is
+
+764
+00:30:44,930 --> 00:30:46,700
+different or different platforms and
+
+765
+00:30:46,700 --> 00:30:48,950
+probably the JIT implementations would
+
+766
+00:30:48,950 --> 00:30:52,010
+differ too so one jit might detect a
+
+767
+00:30:52,010 --> 00:30:53,540
+pattern where's the average it might not
+
+768
+00:30:53,540 --> 00:30:57,680
+and the final question and that's again
+
+769
+00:30:57,680 --> 00:31:00,140
+a question for you here can we encode
+
+770
+00:31:00,140 --> 00:31:02,600
+sufficiently many patterns so do you
+
+771
+00:31:02,600 --> 00:31:04,160
+have an application where you would
+
+772
+00:31:04,160 --> 00:31:05,810
+really like to have some Cindy code in
+
+773
+00:31:05,810 --> 00:31:08,210
+there but you have to use some C++ today
+
+774
+00:31:08,210 --> 00:31:10,460
+do you have these codes and can you
+
+775
+00:31:10,460 --> 00:31:22,670
+express that in River Trail
+

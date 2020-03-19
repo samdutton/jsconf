@@ -1,0 +1,1953 @@
+1
+00:00:18,920 --> 00:00:22,320
+
+12 12 okay so I'm really here today to
+
+2
+00:00:22,320 --> 00:00:23,880
+introduce the children's book that I'm
+
+3
+00:00:23,880 --> 00:00:26,519
+writing about virtual machines and help
+
+4
+00:00:26,519 --> 00:00:29,039
+you wake up with some simple JavaScript
+
+5
+00:00:29,039 --> 00:00:32,489
+code well maybe not so my name is slow
+
+6
+00:00:32,489 --> 00:00:34,200
+and I'm a compiler engineer at Google
+
+7
+00:00:34,200 --> 00:00:36,000
+and I'm usually thinking about compiling
+
+8
+00:00:36,000 --> 00:00:38,760
+various languages into the various other
+
+9
+00:00:38,760 --> 00:00:42,180
+native languages native code but today I
+
+10
+00:00:42,180 --> 00:00:43,920
+will be talking about compiling other
+
+11
+00:00:43,920 --> 00:00:45,510
+languages in two languages the backyard
+
+12
+00:00:45,510 --> 00:00:47,579
+compiled to native code a very simple
+
+13
+00:00:47,579 --> 00:00:49,980
+stuff so and i will be using the small
+
+14
+00:00:49,980 --> 00:00:53,070
+talk as a first language that gets
+
+15
+00:00:53,070 --> 00:00:54,899
+compiled to something because i like the
+
+16
+00:00:54,899 --> 00:00:56,340
+small talk it's an awesome language and
+
+17
+00:00:56,340 --> 00:00:58,109
+I heard it's very easy to compile to
+
+18
+00:00:58,109 --> 00:00:59,789
+JavaScript if you put enough regular
+
+19
+00:00:59,789 --> 00:01:03,870
+expressions into your compiler and it is
+
+20
+00:01:03,870 --> 00:01:05,909
+so amazing this power of regular
+
+21
+00:01:05,909 --> 00:01:08,220
+expressions to get a very tight output
+
+22
+00:01:08,220 --> 00:01:10,320
+from your compiler which she looks
+
+23
+00:01:10,320 --> 00:01:12,090
+almost like something that the normal
+
+24
+00:01:12,090 --> 00:01:14,189
+JavaScript programmer would write and of
+
+25
+00:01:14,189 --> 00:01:16,590
+course it has zero overhead i'm planning
+
+26
+00:01:16,590 --> 00:01:18,200
+to patent it as soon as they return home
+
+27
+00:01:18,200 --> 00:01:22,500
+so however there is a small problem here
+
+28
+00:01:22,500 --> 00:01:24,479
+if i try to run this program in
+
+29
+00:01:24,479 --> 00:01:26,189
+Smalltalk trying to compute a dot
+
+30
+00:01:26,189 --> 00:01:29,430
+product of a 10 and the vector i get an
+
+31
+00:01:29,430 --> 00:01:31,590
+error actually because the 10 does not
+
+32
+00:01:31,590 --> 00:01:34,680
+understand the message x and in
+
+33
+00:01:34,680 --> 00:01:37,380
+JavaScript I get not a number everybody
+
+34
+00:01:37,380 --> 00:01:41,579
+likes not a number in JavaScript so and
+
+35
+00:01:41,579 --> 00:01:43,439
+this problem really repeats itself again
+
+36
+00:01:43,439 --> 00:01:45,420
+and again when people release compilers
+
+37
+00:01:45,420 --> 00:01:47,189
+for different languages into JavaScript
+
+38
+00:01:47,189 --> 00:01:49,710
+because they forget about one very small
+
+39
+00:01:49,710 --> 00:01:52,259
+detail it's called semantic in German
+
+40
+00:01:52,259 --> 00:01:55,130
+and this word comes from a Greek word
+
+41
+00:01:55,130 --> 00:01:57,899
+everybody can read Greek which actually
+
+42
+00:01:57,899 --> 00:01:59,909
+means significant and how would we call
+
+43
+00:01:59,909 --> 00:02:02,009
+compiler that forgets a significant
+
+44
+00:02:02,009 --> 00:02:04,140
+thing about the source language we call
+
+45
+00:02:04,140 --> 00:02:07,829
+this compiler hm so how make a compiler
+
+46
+00:02:07,829 --> 00:02:10,619
+that is not a xem well there is one easy
+
+47
+00:02:10,619 --> 00:02:13,240
+way for example in
+
+48
+00:02:13,240 --> 00:02:15,520
+small talk everything even the binary
+
+49
+00:02:15,520 --> 00:02:17,800
+operations on numbers are messages that
+
+50
+00:02:17,800 --> 00:02:19,780
+you send to your objects so you can
+
+51
+00:02:19,780 --> 00:02:21,370
+instead for using the JavaScript
+
+52
+00:02:21,370 --> 00:02:24,910
+operators for computing like Sam and
+
+53
+00:02:24,910 --> 00:02:27,820
+multiplication you just send a message
+
+54
+00:02:27,820 --> 00:02:30,220
+using this small utility function that
+
+55
+00:02:30,220 --> 00:02:32,590
+you write called send and this of course
+
+56
+00:02:32,590 --> 00:02:34,510
+looks a little bit slow if you write it
+
+57
+00:02:34,510 --> 00:02:36,760
+like that in JavaScript so let's confirm
+
+58
+00:02:36,760 --> 00:02:38,650
+it by benchmarking and then put in
+
+59
+00:02:38,650 --> 00:02:40,270
+benchmarking in quotes because I don't
+
+60
+00:02:40,270 --> 00:02:42,370
+want anybody to call me out on bed
+
+61
+00:02:42,370 --> 00:02:44,530
+benchmarks in this talk because I'm just
+
+62
+00:02:44,530 --> 00:02:47,140
+using it to promote my ideas so I'm
+
+63
+00:02:47,140 --> 00:02:49,810
+cooking the numbers basically but I did
+
+64
+00:02:49,810 --> 00:02:53,470
+not tell you that please cut it out so I
+
+65
+00:02:53,470 --> 00:02:55,030
+wrote this small piece of JavaScript
+
+66
+00:02:55,030 --> 00:02:58,600
+code which just takes a an array of
+
+67
+00:02:58,600 --> 00:03:00,760
+vectors and then computes some of them
+
+68
+00:03:00,760 --> 00:03:03,580
+and then computes the length or length
+
+69
+00:03:03,580 --> 00:03:06,460
+squared of this the resulting vector
+
+70
+00:03:06,460 --> 00:03:09,220
+using the dot product and it makes no
+
+71
+00:03:09,220 --> 00:03:10,690
+sense but I like the benchmarks that
+
+72
+00:03:10,690 --> 00:03:13,960
+make no sense so and then I translated
+
+73
+00:03:13,960 --> 00:03:15,670
+it to my small talk ified version of
+
+74
+00:03:15,670 --> 00:03:17,170
+Java Script where everything is replaced
+
+75
+00:03:17,170 --> 00:03:20,200
+with message sense to object and and
+
+76
+00:03:20,200 --> 00:03:21,580
+when you see the code on my slides don't
+
+77
+00:03:21,580 --> 00:03:24,610
+try to read all the code just let it go
+
+78
+00:03:24,610 --> 00:03:26,350
+into your brain and when you sleep in
+
+79
+00:03:26,350 --> 00:03:28,180
+tonight you will suddenly have an
+
+80
+00:03:28,180 --> 00:03:29,650
+Enlightenment what actually went there
+
+81
+00:03:29,650 --> 00:03:34,990
+King so then I wrote this sent function
+
+82
+00:03:34,990 --> 00:03:37,450
+that just sends a message to the object
+
+83
+00:03:37,450 --> 00:03:39,910
+very simple apply slice call arguments
+
+84
+00:03:39,910 --> 00:03:42,580
+to yeah everybody writes code like that
+
+85
+00:03:42,580 --> 00:03:45,280
+because it's JavaScript and so cool and
+
+86
+00:03:45,280 --> 00:03:47,440
+then because I am also kind of evil I
+
+87
+00:03:47,440 --> 00:03:49,180
+also put some stuff on the number
+
+88
+00:03:49,180 --> 00:03:50,860
+prototype because i want to send message
+
+89
+00:03:50,860 --> 00:03:53,920
+plus to the numbers and i want to send
+
+90
+00:03:53,920 --> 00:03:55,780
+message add to array so i just modified
+
+91
+00:03:55,780 --> 00:03:58,060
+the prototypes of array and number so
+
+92
+00:03:58,060 --> 00:04:00,760
+that just works out of the box and then
+
+93
+00:04:00,760 --> 00:04:03,310
+a benchmark and lo and behold it's only
+
+94
+00:04:03,310 --> 00:04:04,840
+five thousand times slower than the
+
+95
+00:04:04,840 --> 00:04:08,740
+baseline version it's actually fine
+
+96
+00:04:08,740 --> 00:04:10,750
+because that's the speed the JavaScript
+
+97
+00:04:10,750 --> 00:04:14,220
+used to run just ten years ago so
+
+98
+00:04:14,220 --> 00:04:17,470
+however the reason for that is simple we
+
+99
+00:04:17,470 --> 00:04:18,910
+made it too complicated for VA to
+
+100
+00:04:18,910 --> 00:04:20,380
+optimize there is a single congestion
+
+101
+00:04:20,380 --> 00:04:22,570
+point in our code through which all the
+
+102
+00:04:22,570 --> 00:04:23,979
+message sends are going this sent
+
+103
+00:04:23,979 --> 00:04:26,229
+function and actually wrote it in the
+
+104
+00:04:26,229 --> 00:04:27,170
+way that cannot
+
+105
+00:04:27,170 --> 00:04:29,300
+optimized by v8 if I think that I can
+
+106
+00:04:29,300 --> 00:04:31,880
+get maybe a factor of 10 speed up but it
+
+107
+00:04:31,880 --> 00:04:34,070
+will not be enough the factor of four
+
+108
+00:04:34,070 --> 00:04:35,390
+hundred it will still be missing there
+
+109
+00:04:35,390 --> 00:04:39,170
+so yeah Jovi it cannot do anything it
+
+110
+00:04:39,170 --> 00:04:41,750
+just calls and calls sent in our hot
+
+111
+00:04:41,750 --> 00:04:45,350
+loop so does it mean that v8 or does it
+
+112
+00:04:45,350 --> 00:04:46,640
+mean that the universal vm the
+
+113
+00:04:46,640 --> 00:04:48,140
+javascript as a universal vm for other
+
+114
+00:04:48,140 --> 00:04:51,320
+languages is just a Fed live well i
+
+115
+00:04:51,320 --> 00:04:52,880
+don't believe that because actually
+
+116
+00:04:52,880 --> 00:04:54,560
+believe that is a superhero that
+
+117
+00:04:54,560 --> 00:04:56,920
+can save us all it just needs a sidekick
+
+118
+00:04:56,920 --> 00:04:59,450
+that would help it to solve to save us
+
+119
+00:04:59,450 --> 00:05:02,780
+all hmm and i was searching for this
+
+120
+00:05:02,780 --> 00:05:05,360
+sidekick and then i realized that there
+
+121
+00:05:05,360 --> 00:05:07,100
+is another language in the world which
+
+122
+00:05:07,100 --> 00:05:09,710
+claims to have a great vm and the
+
+123
+00:05:09,710 --> 00:05:12,020
+vibrant ecosystem of libraries and so on
+
+124
+00:05:12,020 --> 00:05:13,610
+and so forth and they have a lot of
+
+125
+00:05:13,610 --> 00:05:15,460
+languages that compiled to this vm and
+
+126
+00:05:15,460 --> 00:05:17,960
+people like it and of course this
+
+127
+00:05:17,960 --> 00:05:20,630
+language is java the what they used to
+
+128
+00:05:20,630 --> 00:05:22,460
+run different languages human javascript
+
+129
+00:05:22,460 --> 00:05:24,650
+on the GV m which is originally was a
+
+130
+00:05:24,650 --> 00:05:27,230
+virtual machine for static statically
+
+131
+00:05:27,230 --> 00:05:28,970
+typed programming languages like Java
+
+132
+00:05:28,970 --> 00:05:33,200
+well it was only BM for java so they
+
+133
+00:05:33,200 --> 00:05:36,170
+introduced this bytecode into the vm
+
+134
+00:05:36,170 --> 00:05:38,060
+that allows them to have a dynamic
+
+135
+00:05:38,060 --> 00:05:40,790
+behavior and we can start reading a lot
+
+136
+00:05:40,790 --> 00:05:43,040
+of text about the invoke dynamic
+
+137
+00:05:43,040 --> 00:05:45,680
+specification and sooner or later maybe
+
+138
+00:05:45,680 --> 00:05:48,050
+a week or two in this text will figure
+
+139
+00:05:48,050 --> 00:05:49,850
+out this invoke dynamic is somehow
+
+140
+00:05:49,850 --> 00:05:52,190
+related to the call site sing and then
+
+141
+00:05:52,190 --> 00:05:53,960
+oh there are even more texts describing
+
+142
+00:05:53,960 --> 00:05:56,120
+what course itís it's truly like java a
+
+143
+00:05:56,120 --> 00:05:58,070
+lot of text so let me highlight you the
+
+144
+00:05:58,070 --> 00:06:01,610
+most important part of this text
+
+145
+00:06:01,610 --> 00:06:04,909
+so we know what variable is in
+
+146
+00:06:04,909 --> 00:06:07,460
+JavaScript and if we store function into
+
+147
+00:06:07,460 --> 00:06:09,319
+a variable and then what happens the
+
+148
+00:06:09,319 --> 00:06:11,539
+behavior of the call of this through
+
+149
+00:06:11,539 --> 00:06:14,240
+this variable changes as we change the
+
+150
+00:06:14,240 --> 00:06:15,490
+value that is stored in the variable
+
+151
+00:06:15,490 --> 00:06:19,039
+basically enlightenment in JavaScript
+
+152
+00:06:19,039 --> 00:06:20,689
+every invoke is already dynamic so we
+
+153
+00:06:20,689 --> 00:06:24,199
+don't need this stuff and we can easily
+
+154
+00:06:24,199 --> 00:06:27,169
+map things from the GBM specification
+
+155
+00:06:27,169 --> 00:06:29,629
+into the javascript cause i think that
+
+156
+00:06:29,629 --> 00:06:32,180
+the heaven java is just a variable the
+
+157
+00:06:32,180 --> 00:06:33,830
+invoke dynamic instruction is just an
+
+158
+00:06:33,830 --> 00:06:35,930
+invocation through that variable method
+
+159
+00:06:35,930 --> 00:06:37,610
+Kendall thing that is actually stored in
+
+160
+00:06:37,610 --> 00:06:39,560
+the call site in Java is just a closure
+
+161
+00:06:39,560 --> 00:06:42,830
+and relinking action that happens when
+
+162
+00:06:42,830 --> 00:06:44,599
+you change the target of the call side
+
+163
+00:06:44,599 --> 00:06:49,669
+is just an operator equals done so let's
+
+164
+00:06:49,669 --> 00:06:51,529
+use it to make our code run with a speed
+
+165
+00:06:51,529 --> 00:06:53,689
+of I don't know sick elephant or
+
+166
+00:06:53,689 --> 00:06:56,569
+actually healthy elephant so we used to
+
+167
+00:06:56,569 --> 00:06:58,939
+have this edition in my micro benchmark
+
+168
+00:06:58,939 --> 00:07:00,740
+somewhere I did not sure where but
+
+169
+00:07:00,740 --> 00:07:03,710
+believe me it was there so and then I
+
+170
+00:07:03,710 --> 00:07:05,569
+rewrote it in a nice and tight way with
+
+171
+00:07:05,569 --> 00:07:09,560
+a small talk sense and now we are doing
+
+172
+00:07:09,560 --> 00:07:11,539
+the invoke dynamic thing for each sent
+
+173
+00:07:11,539 --> 00:07:14,479
+that will use to send like st. X colon
+
+174
+00:07:14,479 --> 00:07:17,150
+we just introduce a special global
+
+175
+00:07:17,150 --> 00:07:19,069
+variable which will be specialized for
+
+176
+00:07:19,069 --> 00:07:20,990
+this scent and so on so forth for each
+
+177
+00:07:20,990 --> 00:07:23,539
+sent in the program and of course we
+
+178
+00:07:23,539 --> 00:07:25,250
+could initialize them in this simple way
+
+179
+00:07:25,250 --> 00:07:26,690
+but this will not give us any
+
+180
+00:07:26,690 --> 00:07:27,919
+performance right we're just doing the
+
+181
+00:07:27,919 --> 00:07:29,240
+same stuff that we used to do and we
+
+182
+00:07:29,240 --> 00:07:33,110
+know it's a 5,000 times slower so what
+
+183
+00:07:33,110 --> 00:07:34,550
+we are going to do instead will be more
+
+184
+00:07:34,550 --> 00:07:36,319
+Java like and use object-oriented
+
+185
+00:07:36,319 --> 00:07:38,900
+programming to solve other issues we
+
+186
+00:07:38,900 --> 00:07:40,580
+introduced the thing that encapsulates
+
+187
+00:07:40,580 --> 00:07:43,370
+the management of the of this global
+
+188
+00:07:43,370 --> 00:07:45,080
+variable it knows which message we want
+
+189
+00:07:45,080 --> 00:07:46,580
+to send through this global variable and
+
+190
+00:07:46,580 --> 00:07:49,099
+then it also knows how to produce the
+
+191
+00:07:49,099 --> 00:07:51,289
+small closure and patch it into this
+
+192
+00:07:51,289 --> 00:07:53,629
+global variable so there is a lot of
+
+193
+00:07:53,629 --> 00:07:55,939
+code here it actually does that and I
+
+194
+00:07:55,939 --> 00:07:57,439
+don't want you to read all of it as I
+
+195
+00:07:57,439 --> 00:07:58,789
+said so let me highlight the most
+
+196
+00:07:58,789 --> 00:08:00,529
+important part so this bootstrapping
+
+197
+00:08:00,529 --> 00:08:02,479
+procedure for this global variable it
+
+198
+00:08:02,479 --> 00:08:04,699
+consists of the compilation of handlers
+
+199
+00:08:04,699 --> 00:08:07,610
+that will handle this send side and then
+
+200
+00:08:07,610 --> 00:08:09,800
+we just linked it into the call side so
+
+201
+00:08:09,800 --> 00:08:11,990
+a compilation is Lou to a lot of black
+
+202
+00:08:11,990 --> 00:08:14,029
+voodoo magic it has to string on the
+
+203
+00:08:14,029 --> 00:08:15,350
+function and then users
+
+204
+00:08:15,350 --> 00:08:17,540
+load a show on the score doesn't matter
+
+205
+00:08:17,540 --> 00:08:19,910
+so what it essentially does it plays a
+
+206
+00:08:19,910 --> 00:08:22,400
+little bit of PHP with your source code
+
+207
+00:08:22,400 --> 00:08:27,350
+so it takes some things and splices them
+
+208
+00:08:27,350 --> 00:08:28,790
+into the source code like for example
+
+209
+00:08:28,790 --> 00:08:30,200
+here you can splice the list of
+
+210
+00:08:30,200 --> 00:08:32,900
+arguments into the function and then you
+
+211
+00:08:32,900 --> 00:08:35,210
+can splice the operation that depends on
+
+212
+00:08:35,210 --> 00:08:36,470
+these arguments and there is also this
+
+213
+00:08:36,470 --> 00:08:38,780
+unique identifier built in this is to
+
+214
+00:08:38,780 --> 00:08:40,729
+trick create to distinguish the
+
+215
+00:08:40,729 --> 00:08:42,380
+different handles that we are manually
+
+216
+00:08:42,380 --> 00:08:44,690
+compiling because otherwise it will just
+
+217
+00:08:44,690 --> 00:08:46,880
+merge those of them that textually match
+
+218
+00:08:46,880 --> 00:08:48,200
+together because it has a compilation
+
+219
+00:08:48,200 --> 00:08:52,490
+cash so here's how example the scent
+
+220
+00:08:52,490 --> 00:08:55,160
+that sends a message X to the object and
+
+221
+00:08:55,160 --> 00:08:58,270
+this is the message + send to an object
+
+222
+00:08:58,270 --> 00:09:01,490
+so and linking as i said is just storing
+
+223
+00:09:01,490 --> 00:09:03,650
+the handler which is our closure into
+
+224
+00:09:03,650 --> 00:09:05,570
+the global variable with a given name
+
+225
+00:09:05,570 --> 00:09:08,450
+very simple and we are now only three
+
+226
+00:09:08,450 --> 00:09:11,330
+times slower so we regained like a
+
+227
+00:09:11,330 --> 00:09:13,010
+factor of thousand and performance
+
+228
+00:09:13,010 --> 00:09:17,360
+success and the reason why we are slow
+
+229
+00:09:17,360 --> 00:09:18,950
+if we look in the intermediate
+
+230
+00:09:18,950 --> 00:09:20,960
+representation of the code that we got
+
+231
+00:09:20,960 --> 00:09:25,010
+from running this benchmark is that v8
+
+232
+00:09:25,010 --> 00:09:28,510
+went completely berserk with numerics
+
+233
+00:09:28,510 --> 00:09:30,590
+basically iteration variable that was
+
+234
+00:09:30,590 --> 00:09:33,740
+integer in the quad loop became suddenly
+
+235
+00:09:33,740 --> 00:09:35,450
+a double and it's constantly baktun
+
+236
+00:09:35,450 --> 00:09:40,120
+unbox consuming all our performance so
+
+237
+00:09:40,120 --> 00:09:42,530
+it's because we have a single congestion
+
+238
+00:09:42,530 --> 00:09:44,270
+point for numeric steal it's this
+
+239
+00:09:44,270 --> 00:09:45,530
+function that we patched into the
+
+240
+00:09:45,530 --> 00:09:48,020
+prototype of the number and all the
+
+241
+00:09:48,020 --> 00:09:50,780
+operations with numbers be they integers
+
+242
+00:09:50,780 --> 00:09:52,340
+or doubles they go in through the single
+
+243
+00:09:52,340 --> 00:09:54,980
+congestion point how do we solve it well
+
+244
+00:09:54,980 --> 00:09:56,480
+we already learned how we can solve the
+
+245
+00:09:56,480 --> 00:09:58,490
+same tissue we just need to put this end
+
+246
+00:09:58,490 --> 00:10:00,590
+into the handler so we need to put this
+
+247
+00:10:00,590 --> 00:10:03,050
+arithmetic into the handler specialized
+
+248
+00:10:03,050 --> 00:10:06,260
+the handler for the arithmetic we change
+
+249
+00:10:06,260 --> 00:10:08,540
+the template in a way that it now does
+
+250
+00:10:08,540 --> 00:10:10,460
+the check before it does the operation
+
+251
+00:10:10,460 --> 00:10:12,680
+and if it the check failed it goes and
+
+252
+00:10:12,680 --> 00:10:14,750
+handles it somewhere else in a
+
+253
+00:10:14,750 --> 00:10:18,950
+site-specific way ha so for numbers the
+
+254
+00:10:18,950 --> 00:10:20,360
+check is obvious you just need to check
+
+255
+00:10:20,360 --> 00:10:21,770
+that the left side and the right hand
+
+256
+00:10:21,770 --> 00:10:26,360
+side of the operation is a number and if
+
+257
+00:10:26,360 --> 00:10:28,040
+it is we just perform the operation in
+
+258
+00:10:28,040 --> 00:10:29,180
+the fast way instead of even you
+
+259
+00:10:29,180 --> 00:10:33,560
+in the call on the message so this is
+
+260
+00:10:33,560 --> 00:10:36,590
+how the scent of operation less than now
+
+261
+00:10:36,590 --> 00:10:38,690
+looks like a whiskey check left side
+
+262
+00:10:38,690 --> 00:10:41,390
+right side if there are numbers you just
+
+263
+00:10:41,390 --> 00:10:42,470
+return the result of this operation
+
+264
+00:10:42,470 --> 00:10:46,150
+otherwise you go into the mists case and
+
+265
+00:10:46,150 --> 00:10:48,080
+now we are only twenty five percent
+
+266
+00:10:48,080 --> 00:10:50,330
+slower so we solved most of the
+
+267
+00:10:50,330 --> 00:10:53,870
+performance issues that we had and the
+
+268
+00:10:53,870 --> 00:10:55,220
+twenty-five percent thing might be
+
+269
+00:10:55,220 --> 00:10:56,960
+scaring you but actually when you look
+
+270
+00:10:56,960 --> 00:10:59,360
+in the code that we had produced you see
+
+271
+00:10:59,360 --> 00:11:01,460
+the picture is nice and actually better
+
+272
+00:11:01,460 --> 00:11:03,380
+than I expected when I was testing this
+
+273
+00:11:03,380 --> 00:11:07,340
+because these things that are gray on
+
+274
+00:11:07,340 --> 00:11:09,110
+the picture I actually the false cases
+
+275
+00:11:09,110 --> 00:11:11,900
+of type of equals equals number
+
+276
+00:11:11,900 --> 00:11:14,630
+comparisons v8 was able to figure out
+
+277
+00:11:14,630 --> 00:11:16,160
+that certain things are definitely
+
+278
+00:11:16,160 --> 00:11:18,410
+numbers so all our Miss cases are
+
+279
+00:11:18,410 --> 00:11:23,270
+unreachable and optimized away so we are
+
+280
+00:11:23,270 --> 00:11:26,270
+good the hope is back maybe we can run
+
+281
+00:11:26,270 --> 00:11:28,490
+small talk efficiently on the JavaScript
+
+282
+00:11:28,490 --> 00:11:31,730
+engine however the bad part is the
+
+283
+00:11:31,730 --> 00:11:33,710
+semantics is still broken if I try to
+
+284
+00:11:33,710 --> 00:11:35,090
+send this message that I was trying to
+
+285
+00:11:35,090 --> 00:11:36,710
+send in the beginning I discovered that
+
+286
+00:11:36,710 --> 00:11:38,330
+undefined is not a function this is
+
+287
+00:11:38,330 --> 00:11:41,930
+universal truth and mmm however this
+
+288
+00:11:41,930 --> 00:11:43,550
+universal truth doesn't apply to small
+
+289
+00:11:43,550 --> 00:11:44,990
+talk because there is no undefined there
+
+290
+00:11:44,990 --> 00:11:47,900
+something is still worked in the scheme
+
+291
+00:11:47,900 --> 00:11:52,070
+of dynamic programming languages how can
+
+292
+00:11:52,070 --> 00:11:55,400
+we solve that well we know how we can
+
+293
+00:11:55,400 --> 00:11:56,960
+solve it we can say which message
+
+294
+00:11:56,960 --> 00:11:59,120
+messages the vector understands it
+
+295
+00:11:59,120 --> 00:12:02,300
+understands x.x call an eager why why
+
+296
+00:12:02,300 --> 00:12:05,180
+call and so on and i'm using echo script
+
+297
+00:12:05,180 --> 00:12:06,500
+six features because Sigma script 6
+
+298
+00:12:06,500 --> 00:12:11,990
+which is a cool like set so however we
+
+299
+00:12:11,990 --> 00:12:13,580
+don't know how to rewrite the handler we
+
+300
+00:12:13,580 --> 00:12:15,200
+want to have a check and then we want to
+
+301
+00:12:15,200 --> 00:12:17,150
+send the message directly but you don't
+
+302
+00:12:17,150 --> 00:12:18,680
+know what we can check we can check for
+
+303
+00:12:18,680 --> 00:12:21,920
+example something like this we can ask
+
+304
+00:12:21,920 --> 00:12:24,050
+the constructor of the receiver whether
+
+305
+00:12:24,050 --> 00:12:26,780
+it has this set and it understands the x
+
+306
+00:12:26,780 --> 00:12:30,290
+and then we call X so it looks
+
+307
+00:12:30,290 --> 00:12:32,600
+reasonable however it is very hard for
+
+308
+00:12:32,600 --> 00:12:34,400
+v8 to optimize because it doesn't see
+
+309
+00:12:34,400 --> 00:12:36,140
+the connection between the constructor
+
+310
+00:12:36,140 --> 00:12:37,910
+of an object and the fact that it has
+
+311
+00:12:37,910 --> 00:12:40,070
+this set and the fact that this set is
+
+312
+00:12:40,070 --> 00:12:41,630
+actually mutable there is no way to tell
+
+313
+00:12:41,630 --> 00:12:42,769
+it that this set is a mute
+
+314
+00:12:42,769 --> 00:12:45,379
+so it can't optimize that however one
+
+315
+00:12:45,379 --> 00:12:46,970
+thing that we it can do efficiently is
+
+316
+00:12:46,970 --> 00:12:48,829
+the load constructor from an object if
+
+317
+00:12:48,829 --> 00:12:50,720
+it already knows the objects hidden
+
+318
+00:12:50,720 --> 00:12:54,769
+class so we just will compare the
+
+319
+00:12:54,769 --> 00:12:56,869
+constructor of an object with some value
+
+320
+00:12:56,869 --> 00:13:00,709
+and then do a message sent directly but
+
+321
+00:13:00,709 --> 00:13:02,600
+unlike with a number case we don't know
+
+322
+00:13:02,600 --> 00:13:04,279
+with what to compare ahead of time when
+
+323
+00:13:04,279 --> 00:13:06,199
+we bootstrap the handler for the hour
+
+324
+00:13:06,199 --> 00:13:08,600
+send side so we need to obtain this
+
+325
+00:13:08,600 --> 00:13:11,059
+value somewhere as our program runs and
+
+326
+00:13:11,059 --> 00:13:14,629
+the way we can do it is we can remember
+
+327
+00:13:14,629 --> 00:13:17,209
+that we can relink call site as a our
+
+328
+00:13:17,209 --> 00:13:21,739
+sin side as the program executes and
+
+329
+00:13:21,739 --> 00:13:24,410
+this is where the power of this system
+
+330
+00:13:24,410 --> 00:13:28,220
+with sin sites adapting to the things
+
+331
+00:13:28,220 --> 00:13:32,149
+they see comes from so the solution is
+
+332
+00:13:32,149 --> 00:13:34,369
+to put strap and initialized handler and
+
+333
+00:13:34,369 --> 00:13:37,040
+then relink it when we miss so the
+
+334
+00:13:37,040 --> 00:13:38,629
+bootstrap function is now very simple
+
+335
+00:13:38,629 --> 00:13:40,249
+it's just always misses it always goes
+
+336
+00:13:40,249 --> 00:13:43,600
+to this site that means thing and
+
+337
+00:13:43,600 --> 00:13:45,709
+because the check is specified to be
+
+338
+00:13:45,709 --> 00:13:50,240
+false then when we miss in the Miss case
+
+339
+00:13:50,240 --> 00:13:52,879
+we can check if the constructor has the
+
+340
+00:13:52,879 --> 00:13:54,619
+understanding and the understand
+
+341
+00:13:54,619 --> 00:13:58,279
+declares that this object understands
+
+342
+00:13:58,279 --> 00:14:01,519
+this message then we can compile a
+
+343
+00:14:01,519 --> 00:14:03,319
+specialized handler for this particular
+
+344
+00:14:03,319 --> 00:14:05,660
+constructor and link it into this site
+
+345
+00:14:05,660 --> 00:14:08,449
+otherwise you throw this nice message
+
+346
+00:14:08,449 --> 00:14:10,009
+that says this object does not
+
+347
+00:14:10,009 --> 00:14:15,439
+understand this message okay the
+
+348
+00:14:15,439 --> 00:14:17,029
+template now looks something like that
+
+349
+00:14:17,029 --> 00:14:19,579
+so we have the constructor captured as a
+
+350
+00:14:19,579 --> 00:14:22,429
+closure variable in the tender itself
+
+351
+00:14:22,429 --> 00:14:24,199
+and we compare the constructor against
+
+352
+00:14:24,199 --> 00:14:28,040
+it and we send the message directly nice
+
+353
+00:14:28,040 --> 00:14:32,059
+and efficient you will say however we
+
+354
+00:14:32,059 --> 00:14:33,439
+just lost all of the performance that we
+
+355
+00:14:33,439 --> 00:14:35,869
+previously gained somehow so something
+
+356
+00:14:35,869 --> 00:14:39,110
+in our calculations was wrong and the
+
+357
+00:14:39,110 --> 00:14:41,709
+thing that was wrong there was our
+
+358
+00:14:41,709 --> 00:14:44,480
+assumption that we ate will behave nice
+
+359
+00:14:44,480 --> 00:14:47,720
+and tight with us but it really decided
+
+360
+00:14:47,720 --> 00:14:48,799
+that it doesn't want to inline the
+
+361
+00:14:48,799 --> 00:14:50,689
+handlers for us anymore after we're a
+
+362
+00:14:50,689 --> 00:14:54,169
+link them that's because the v8 has
+
+363
+00:14:54,169 --> 00:14:56,060
+these guys built in the
+
+364
+00:14:56,060 --> 00:14:57,710
+run around and try to figure out what
+
+365
+00:14:57,710 --> 00:14:59,660
+your program is actually doing and how
+
+366
+00:14:59,660 --> 00:15:02,540
+to optimize it however they're not only
+
+367
+00:15:02,540 --> 00:15:05,630
+smart enough so we need to help them be
+
+368
+00:15:05,630 --> 00:15:12,230
+smarter stop how much I'm so I went into
+
+369
+00:15:12,230 --> 00:15:16,310
+the source code of the v8 and this is
+
+370
+00:15:16,310 --> 00:15:19,550
+not JavaScript the C C++ and I found
+
+371
+00:15:19,550 --> 00:15:22,340
+that there is a heuristic which checks
+
+372
+00:15:22,340 --> 00:15:23,870
+whether the function that we are trying
+
+373
+00:15:23,870 --> 00:15:27,350
+to in line is an old function so it
+
+374
+00:15:27,350 --> 00:15:28,910
+survived a lot of garbage collections
+
+375
+00:15:28,910 --> 00:15:31,010
+and if it is then it is worth it to in
+
+376
+00:15:31,010 --> 00:15:33,230
+line otherwise it is not worth it
+
+377
+00:15:33,230 --> 00:15:34,880
+because it potentially can change it was
+
+378
+00:15:34,880 --> 00:15:38,210
+just created so I just treat this
+
+379
+00:15:38,210 --> 00:15:40,880
+heuristic to be very smart and if the
+
+380
+00:15:40,880 --> 00:15:42,530
+name of the global variable starts with
+
+381
+00:15:42,530 --> 00:15:45,080
+the Greek letter Sigma Capital then we
+
+382
+00:15:45,080 --> 00:15:48,770
+in line no matter what a great solution
+
+383
+00:15:48,770 --> 00:15:50,810
+I'm not going to submit this page to v8
+
+384
+00:15:50,810 --> 00:15:53,780
+because it's unlikely that it will be
+
+385
+00:15:53,780 --> 00:15:55,370
+accepted though I think it's cool
+
+386
+00:15:55,370 --> 00:15:56,660
+because nobody also calls their
+
+387
+00:15:56,660 --> 00:15:58,580
+functions with a Greek letter Sigma in
+
+388
+00:15:58,580 --> 00:16:00,170
+the beginning so it will be a fine
+
+389
+00:16:00,170 --> 00:16:05,780
+heuristic and with this we regained then
+
+390
+00:16:05,780 --> 00:16:06,950
+excellent in terms of the performance
+
+391
+00:16:06,950 --> 00:16:08,870
+because now we in line the handlers
+
+392
+00:16:08,870 --> 00:16:11,690
+however there is still a problem with
+
+393
+00:16:11,690 --> 00:16:16,850
+our code so i can sumption that the boss
+
+394
+00:16:16,850 --> 00:16:18,740
+left hand side and the right hand side
+
+395
+00:16:18,740 --> 00:16:20,570
+of the comparison that we use in the
+
+396
+00:16:20,570 --> 00:16:26,030
+check are constants and it is true for
+
+397
+00:16:26,030 --> 00:16:28,160
+the self dot constructor expression we
+
+398
+00:16:28,160 --> 00:16:30,350
+it was able to figure out that it is a
+
+399
+00:16:30,350 --> 00:16:32,420
+constant however the constructor
+
+400
+00:16:32,420 --> 00:16:34,700
+variable that is captured in the context
+
+401
+00:16:34,700 --> 00:16:37,660
+of the handler closure is not a constant
+
+402
+00:16:37,660 --> 00:16:41,860
+it just loaded from the context and the
+
+403
+00:16:41,860 --> 00:16:44,480
+context itself is a constant so he
+
+404
+00:16:44,480 --> 00:16:46,190
+strange the tree it did not fall these
+
+405
+00:16:46,190 --> 00:16:48,470
+things together so i took my precision
+
+406
+00:16:48,470 --> 00:16:51,470
+hammer again and i went into v8 again
+
+407
+00:16:51,470 --> 00:16:53,990
+and then i edit these lines of code they
+
+408
+00:16:53,990 --> 00:16:56,540
+just say if the variable that is in the
+
+409
+00:16:56,540 --> 00:16:58,430
+context is never assigned after it was
+
+410
+00:16:58,430 --> 00:17:01,340
+initialized and the context itself is no
+
+411
+00:17:01,340 --> 00:17:03,110
+during compilation time then we can just
+
+412
+00:17:03,110 --> 00:17:04,940
+load it in the compilation time because
+
+413
+00:17:04,940 --> 00:17:07,190
+it is totally it's true that it will
+
+414
+00:17:07,190 --> 00:17:09,779
+never change and then you can use it as
+
+415
+00:17:09,779 --> 00:17:12,539
+constant constant yes otherwise you just
+
+416
+00:17:12,539 --> 00:17:16,139
+do the normal load and we are almost
+
+417
+00:17:16,139 --> 00:17:17,879
+there where we want it to be we're only
+
+418
+00:17:17,879 --> 00:17:21,209
+twenty-five percent slower again and you
+
+419
+00:17:21,209 --> 00:17:23,249
+can implement the ad thing so there's a
+
+420
+00:17:23,249 --> 00:17:24,719
+thing we set is that you want to check
+
+421
+00:17:24,719 --> 00:17:27,119
+bounced when you do the scent of add to
+
+422
+00:17:27,119 --> 00:17:29,309
+the array you also don't want to patch
+
+423
+00:17:29,309 --> 00:17:32,309
+array prototype anymore so you can use
+
+424
+00:17:32,309 --> 00:17:35,129
+it the same techniques to produce a
+
+425
+00:17:35,129 --> 00:17:36,929
+specialized handler for the ad Colin
+
+426
+00:17:36,929 --> 00:17:40,830
+send and even if after you do it you
+
+427
+00:17:40,830 --> 00:17:42,179
+still will be only twenty-five percent
+
+428
+00:17:42,179 --> 00:17:43,919
+slower so you don't lose any performance
+
+429
+00:17:43,919 --> 00:17:47,580
+so we are good we're perfect and the
+
+430
+00:17:47,580 --> 00:17:49,950
+semantics is now correct if I try to
+
+431
+00:17:49,950 --> 00:17:51,869
+send this dot colon message to the
+
+432
+00:17:51,869 --> 00:17:54,509
+vector I get the nice error that object
+
+433
+00:17:54,509 --> 00:17:56,700
+n doesn't understand x and if i try to
+
+434
+00:17:56,700 --> 00:17:59,129
+access the array out of bounds and like
+
+435
+00:17:59,129 --> 00:18:00,599
+in javascript where you get the
+
+436
+00:18:00,599 --> 00:18:02,249
+undefined and then undefined is not a
+
+437
+00:18:02,249 --> 00:18:06,749
+function you get a nice error you can
+
+438
+00:18:06,749 --> 00:18:08,219
+ask me where are those twenty five
+
+439
+00:18:08,219 --> 00:18:11,779
+percent and i could spend another talk
+
+440
+00:18:11,779 --> 00:18:13,710
+trying to explain where they're coming
+
+441
+00:18:13,710 --> 00:18:15,330
+from basically their deficiencies in the
+
+442
+00:18:15,330 --> 00:18:17,849
+compilation pipeline but the timer here
+
+443
+00:18:17,849 --> 00:18:20,419
+is very scary so i will not do that so
+
+444
+00:18:20,419 --> 00:18:24,450
+if i use the hammer long enough then
+
+445
+00:18:24,450 --> 00:18:26,249
+they can regain almost all of it by
+
+446
+00:18:26,249 --> 00:18:28,789
+hacking in various parts of the v8
+
+447
+00:18:28,789 --> 00:18:30,719
+basically it's the register allocator
+
+448
+00:18:30,719 --> 00:18:34,710
+issues and various optimizations and i'm
+
+449
+00:18:34,710 --> 00:18:36,570
+positive that you can regain even more
+
+450
+00:18:36,570 --> 00:18:40,139
+you just need to use a bigger hammer and
+
+451
+00:18:40,139 --> 00:18:41,669
+it's actually depends on the cpu because
+
+452
+00:18:41,669 --> 00:18:43,229
+they produced code i looked at it in the
+
+453
+00:18:43,229 --> 00:18:46,469
+disassembler it's almost the same but is
+
+454
+00:18:46,469 --> 00:18:48,719
+for this hot look that I cooked for this
+
+455
+00:18:48,719 --> 00:18:52,289
+before for this talk and then when I ran
+
+456
+00:18:52,289 --> 00:18:53,639
+it on different machines it behaves
+
+457
+00:18:53,639 --> 00:18:54,749
+differently for example on my
+
+458
+00:18:54,749 --> 00:18:57,960
+workstation at work it is roughly the
+
+459
+00:18:57,960 --> 00:19:00,419
+same performance with the baseline
+
+460
+00:19:00,419 --> 00:19:04,859
+version so during the course of this
+
+461
+00:19:04,859 --> 00:19:07,379
+talk you should have figured out the
+
+462
+00:19:07,379 --> 00:19:09,570
+JavaScript itself is an invoke dynamic
+
+463
+00:19:09,570 --> 00:19:13,799
+one big invoke dynamic and we have
+
+464
+00:19:13,799 --> 00:19:15,719
+enough expressivity in the language that
+
+465
+00:19:15,719 --> 00:19:19,619
+to actually solve these problems what we
+
+466
+00:19:19,619 --> 00:19:21,330
+don't have enough of these optimizations
+
+467
+00:19:21,330 --> 00:19:23,340
+so their VMS are almost there
+
+468
+00:19:23,340 --> 00:19:26,070
+not entirely there because well they're
+
+469
+00:19:26,070 --> 00:19:28,890
+not completely optimized for this use
+
+470
+00:19:28,890 --> 00:19:32,030
+case of compiling the dynamic
+
+471
+00:19:32,030 --> 00:19:33,750
+programming languages into the
+
+472
+00:19:33,750 --> 00:19:38,250
+JavaScript so we want to get rid of the
+
+473
+00:19:38,250 --> 00:19:40,410
+heuristics that govern this inlining and
+
+474
+00:19:40,410 --> 00:19:42,720
+specialization and so on and we want to
+
+475
+00:19:42,720 --> 00:19:45,450
+have a set of conventions so invoke
+
+476
+00:19:45,450 --> 00:19:46,860
+dynamic for javascript is just a set of
+
+477
+00:19:46,860 --> 00:19:48,540
+conventions that would guarantee that
+
+478
+00:19:48,540 --> 00:19:50,310
+the certain functions are always in line
+
+479
+00:19:50,310 --> 00:19:52,470
+on all virtual machines that run
+
+480
+00:19:52,470 --> 00:19:56,580
+JavaScript and so on and we will use
+
+481
+00:19:56,580 --> 00:19:59,010
+those conventions to squash all these
+
+482
+00:19:59,010 --> 00:20:01,680
+cockroaches like slipper you use when
+
+483
+00:20:01,680 --> 00:20:03,650
+you want to squash cockroaches and
+
+484
+00:20:03,650 --> 00:20:05,940
+actually the oldest presentation is
+
+485
+00:20:05,940 --> 00:20:07,350
+alive because there is a much harder
+
+486
+00:20:07,350 --> 00:20:09,480
+thing to compile in smalltalk which is
+
+487
+00:20:09,480 --> 00:20:13,710
+the non-local return but well let's for
+
+488
+00:20:13,710 --> 00:20:15,510
+the next time so thank you for your
+

@@ -1,0 +1,2641 @@
+1
+00:00:10,760 --> 00:00:21,580
+
+[Music]
+
+2
+00:00:21,590 --> 00:00:24,050
+so I am indeed Allen pike and I work at
+
+3
+00:00:24,050 --> 00:00:25,670
+steam clock software all the way in
+
+4
+00:00:25,670 --> 00:00:29,449
+Vancouver Canada and what we get excited
+
+5
+00:00:29,449 --> 00:00:32,809
+about is building delightful apps that's
+
+6
+00:00:32,809 --> 00:00:34,970
+what we do that's that's what we're
+
+7
+00:00:34,970 --> 00:00:36,530
+passionate about that's what gets us up
+
+8
+00:00:36,530 --> 00:00:39,620
+in the morning and although we often do
+
+9
+00:00:39,620 --> 00:00:41,900
+that using native technology on iOS
+
+10
+00:00:41,900 --> 00:00:44,329
+Android and generally mobile platforms
+
+11
+00:00:44,329 --> 00:00:46,820
+we also really love javascript we use it
+
+12
+00:00:46,820 --> 00:00:48,500
+on the server we want to use it as much
+
+13
+00:00:48,500 --> 00:00:51,350
+as we can in our apps and so that's why
+
+14
+00:00:51,350 --> 00:00:53,390
+today we're gonna embed a JavaScript
+
+15
+00:00:53,390 --> 00:00:55,010
+runtime it's gonna be a lot of fun
+
+16
+00:00:55,010 --> 00:00:57,890
+and we're gonna do that so that we can
+
+17
+00:00:57,890 --> 00:01:00,379
+embrace our platforms enable tinkering
+
+18
+00:01:00,379 --> 00:01:03,680
+render native OpenGL mix javascript and
+
+19
+00:01:03,680 --> 00:01:06,049
+native code and share javascript in
+
+20
+00:01:06,049 --> 00:01:08,479
+between native apps so that sounds fun
+
+21
+00:01:08,479 --> 00:01:10,640
+right let's do it
+
+22
+00:01:10,640 --> 00:01:12,590
+so the motivation behind this all of why
+
+23
+00:01:12,590 --> 00:01:13,869
+are we even looking at native technology
+
+24
+00:01:13,869 --> 00:01:17,210
+is to build delightful apps um so what
+
+25
+00:01:17,210 --> 00:01:19,400
+do I mean when I say that I I mean not
+
+26
+00:01:19,400 --> 00:01:21,290
+just apps that work that do what they
+
+27
+00:01:21,290 --> 00:01:23,960
+need to do but apps that are really cool
+
+28
+00:01:23,960 --> 00:01:25,820
+apps that are delightful that have a
+
+29
+00:01:25,820 --> 00:01:27,920
+fascinating UI that performs extremely
+
+30
+00:01:27,920 --> 00:01:30,710
+well beautiful touch interactions
+
+31
+00:01:30,710 --> 00:01:34,189
+they're fun they're quirky and that get
+
+32
+00:01:34,189 --> 00:01:35,749
+people excited and say how'd they even
+
+33
+00:01:35,749 --> 00:01:37,340
+do that or how do they even think of
+
+34
+00:01:37,340 --> 00:01:40,670
+that UI it's just so so great to use and
+
+35
+00:01:40,670 --> 00:01:42,710
+so that's what gets us really exciting
+
+36
+00:01:42,710 --> 00:01:46,579
+is is blowing people's minds and often
+
+37
+00:01:46,579 --> 00:01:47,840
+that means that we need to reach into
+
+38
+00:01:47,840 --> 00:01:49,729
+our our native UI toolkits or OpenGL or
+
+39
+00:01:49,729 --> 00:01:51,380
+some of these other technologies to do
+
+40
+00:01:51,380 --> 00:01:54,289
+that but we still want to use JavaScript
+
+41
+00:01:54,289 --> 00:01:57,649
+as much as possible so we're gonna embed
+
+42
+00:01:57,649 --> 00:01:59,630
+a JavaScript runtime it's gonna be a lot
+
+43
+00:01:59,630 --> 00:02:02,359
+of fun and it's really easy all you need
+
+44
+00:02:02,359 --> 00:02:05,240
+to do is get cloned v8 so that's pretty
+
+45
+00:02:05,240 --> 00:02:06,979
+easy and then you just check out the
+
+46
+00:02:06,979 --> 00:02:08,959
+build steps I go through that a few
+
+47
+00:02:08,959 --> 00:02:10,819
+hours later you have v8 built on your
+
+48
+00:02:10,819 --> 00:02:12,350
+machine it's really awesome
+
+49
+00:02:12,350 --> 00:02:14,360
+and then you're gonna consult the v8 and
+
+50
+00:02:14,360 --> 00:02:16,130
+betters guide which has a lot of really
+
+51
+00:02:16,130 --> 00:02:19,040
+handy information for example note the
+
+52
+00:02:19,040 --> 00:02:21,319
+handle stack is not part of the C++ call
+
+53
+00:02:21,319 --> 00:02:23,630
+stack but the handle scopes are embedded
+
+54
+00:02:23,630 --> 00:02:26,480
+in the C++ stack handle scopes can only
+
+55
+00:02:26,480 --> 00:02:28,340
+be stack allocated not allocated with
+
+56
+00:02:28,340 --> 00:02:32,949
+new
+
+57
+00:02:32,959 --> 00:02:35,010
+you know what on second thought let's
+
+58
+00:02:35,010 --> 00:02:38,160
+not do that I'm gonna tell you a story
+
+59
+00:02:38,160 --> 00:02:41,910
+instead so sometime ago maybe four or
+
+60
+00:02:41,910 --> 00:02:43,920
+five months ago steam club we were
+
+61
+00:02:43,920 --> 00:02:46,170
+browsing through the WebKit repo as you
+
+62
+00:02:46,170 --> 00:02:48,630
+do and we were looking at what would be
+
+63
+00:02:48,630 --> 00:02:51,420
+involved to embed javascriptcore into
+
+64
+00:02:51,420 --> 00:02:54,599
+our apps and Nigel Brooke he came across
+
+65
+00:02:54,599 --> 00:02:56,550
+something really interesting a series of
+
+66
+00:02:56,550 --> 00:03:00,660
+commits and these commits started on New
+
+67
+00:03:00,660 --> 00:03:02,910
+Year's Eve everyone else is out partying
+
+68
+00:03:02,910 --> 00:03:05,400
+drinking get getting crazy and some
+
+69
+00:03:05,400 --> 00:03:06,959
+Apple engineers were getting crazy as
+
+70
+00:03:06,959 --> 00:03:10,380
+well but they were getting crazy adding
+
+71
+00:03:10,380 --> 00:03:12,630
+something very interesting to
+
+72
+00:03:12,630 --> 00:03:16,380
+javascriptcore an objective-c API so
+
+73
+00:03:16,380 --> 00:03:18,150
+Daniel finds this and he soars like hey
+
+74
+00:03:18,150 --> 00:03:20,040
+cool look at this and like oh my god we
+
+75
+00:03:20,040 --> 00:03:21,299
+have to write about this we have to
+
+76
+00:03:21,299 --> 00:03:23,099
+build stuff on this we gotta like you
+
+77
+00:03:23,099 --> 00:03:25,290
+know we got to pull this out and so we
+
+78
+00:03:25,290 --> 00:03:27,450
+did we wrote about it and we shared sort
+
+79
+00:03:27,450 --> 00:03:29,970
+of a hello world project on github and a
+
+80
+00:03:29,970 --> 00:03:31,440
+lot of you thought that was really cool
+
+81
+00:03:31,440 --> 00:03:33,269
+and gave us some great feedback on it
+
+82
+00:03:33,269 --> 00:03:37,019
+and we're really excited this finding
+
+83
+00:03:37,019 --> 00:03:38,489
+this thing in the wit could repo though
+
+84
+00:03:38,489 --> 00:03:40,350
+didn't answer the questions though that
+
+85
+00:03:40,350 --> 00:03:41,760
+we had the really big question which is
+
+86
+00:03:41,760 --> 00:03:44,069
+why are they doing this what is this for
+
+87
+00:03:44,069 --> 00:03:45,389
+is this something that's going to ship
+
+88
+00:03:45,389 --> 00:03:47,250
+in one of the operating systems and if
+
+89
+00:03:47,250 --> 00:03:50,970
+it is which one well thankfully just a
+
+90
+00:03:50,970 --> 00:03:52,799
+few weeks later maybe about a month
+
+91
+00:03:52,799 --> 00:03:57,180
+later came WWDC and with WWDC came a
+
+92
+00:03:57,180 --> 00:04:00,989
+giant NDA it was great
+
+93
+00:04:00,989 --> 00:04:03,299
+of course it was this is the IO six NDA
+
+94
+00:04:03,299 --> 00:04:06,540
+the Iowa seven NDA looks like that so
+
+95
+00:04:06,540 --> 00:04:10,530
+it's a little bit different
+
+96
+00:04:10,540 --> 00:04:12,549
+the effect is the same though which is
+
+97
+00:04:12,549 --> 00:04:14,049
+the Apple doesn't want as publicizing
+
+98
+00:04:14,049 --> 00:04:16,060
+stuff about beta api's which might
+
+99
+00:04:16,060 --> 00:04:17,829
+change or might go away entirely which I
+
+100
+00:04:17,829 --> 00:04:20,199
+totally understand thankfully for all of
+
+101
+00:04:20,199 --> 00:04:23,139
+you Jay s confi you comes at the exact
+
+102
+00:04:23,139 --> 00:04:25,660
+right time because on Tuesday Apple
+
+103
+00:04:25,660 --> 00:04:28,360
+announced iOS 7 they released it its GM
+
+104
+00:04:28,360 --> 00:04:31,690
+it's done and all the api's are final um
+
+105
+00:04:31,690 --> 00:04:34,479
+so I can actually now confide in you
+
+106
+00:04:34,479 --> 00:04:38,190
+that on Iowa 7 as well as Mac OS 10.9
+
+107
+00:04:38,190 --> 00:04:40,990
+there's a new API it's a public API
+
+108
+00:04:40,990 --> 00:04:44,380
+called JavaScript core framework and
+
+109
+00:04:44,380 --> 00:04:45,550
+that's built right into the operating
+
+110
+00:04:45,550 --> 00:04:47,050
+system it's public is maintained by
+
+111
+00:04:47,050 --> 00:04:49,539
+Apple and it's an objective-c to
+
+112
+00:04:49,539 --> 00:04:53,020
+JavaScript bridge hey cool a free
+
+113
+00:04:53,020 --> 00:04:55,479
+JavaScript bridge so so what does that
+
+114
+00:04:55,479 --> 00:04:57,130
+was exactly mean like what does a
+
+115
+00:04:57,130 --> 00:04:59,350
+JavaScript bridge look like well ideally
+
+116
+00:04:59,350 --> 00:05:01,750
+a JavaScript bridge lets JavaScript be
+
+117
+00:05:01,750 --> 00:05:04,690
+JavaScript right on your JavaScript will
+
+118
+00:05:04,690 --> 00:05:06,400
+still you know if they've done their job
+
+119
+00:05:06,400 --> 00:05:08,350
+right your JavaScript will still look
+
+120
+00:05:08,350 --> 00:05:09,910
+like the JavaScript you would normally
+
+121
+00:05:09,910 --> 00:05:11,710
+write except that you can interface with
+
+122
+00:05:11,710 --> 00:05:14,949
+native code um so let's take a look at
+
+123
+00:05:14,949 --> 00:05:16,240
+some examples what does that what does
+
+124
+00:05:16,240 --> 00:05:18,970
+that look like so we've got a JavaScript
+
+125
+00:05:18,970 --> 00:05:21,250
+function here JavaScript really great at
+
+126
+00:05:21,250 --> 00:05:23,800
+math so we want to help objective-c code
+
+127
+00:05:23,800 --> 00:05:26,620
+do math with JavaScript because it's
+
+128
+00:05:26,620 --> 00:05:28,330
+just so great at it
+
+129
+00:05:28,330 --> 00:05:30,610
+so we define a multiply function and it
+
+130
+00:05:30,610 --> 00:05:32,169
+looks just like a multiply function it's
+
+131
+00:05:32,169 --> 00:05:35,470
+what you would expect it's cool so so
+
+132
+00:05:35,470 --> 00:05:37,630
+that's cool and now that we've defined
+
+133
+00:05:37,630 --> 00:05:40,750
+that an objective-c we can go evaluate
+
+134
+00:05:40,750 --> 00:05:43,120
+that script so we just think all J's
+
+135
+00:05:43,120 --> 00:05:45,070
+context I've instantiated one here I
+
+136
+00:05:45,070 --> 00:05:47,590
+evaluate the script and then I can reach
+
+137
+00:05:47,590 --> 00:05:50,530
+in to that JavaScript context and pull
+
+138
+00:05:50,530 --> 00:05:52,900
+out the multiply function once you have
+
+139
+00:05:52,900 --> 00:05:55,030
+a handle on an injective C you can call
+
+140
+00:05:55,030 --> 00:05:56,919
+it I'm using this call with arguments
+
+141
+00:05:56,919 --> 00:05:58,599
+thing if you're not familiar with
+
+142
+00:05:58,599 --> 00:06:00,419
+Objective C syntax this crazy like
+
+143
+00:06:00,419 --> 00:06:02,669
+basket of at signs and square brackets
+
+144
+00:06:02,669 --> 00:06:06,130
+in in the bottom right corner is passing
+
+145
+00:06:06,130 --> 00:06:08,560
+arguments into into this JavaScript
+
+146
+00:06:08,560 --> 00:06:10,630
+function so what I'm defining here is
+
+147
+00:06:10,630 --> 00:06:14,110
+native Objective C number types they get
+
+148
+00:06:14,110 --> 00:06:15,760
+passed over to JavaScript and JavaScript
+
+149
+00:06:15,760 --> 00:06:17,889
+can work with them as numbers just as
+
+150
+00:06:17,889 --> 00:06:19,810
+they would expect and then when returns
+
+151
+00:06:19,810 --> 00:06:21,940
+back to Objective C we can get that
+
+152
+00:06:21,940 --> 00:06:23,200
+value out if you have a script and we
+
+153
+00:06:23,200 --> 00:06:23,810
+can cast it too
+
+154
+00:06:23,810 --> 00:06:26,380
+integer or whatever so our
+
+155
+00:06:26,380 --> 00:06:29,419
+statically-typed and our JavaScript
+
+156
+00:06:29,419 --> 00:06:31,970
+world they work well together so that's
+
+157
+00:06:31,970 --> 00:06:33,050
+great I hope to have a script looks like
+
+158
+00:06:33,050 --> 00:06:35,450
+JavaScript what happens if we go the
+
+159
+00:06:35,450 --> 00:06:37,850
+other direction so let's take a look at
+
+160
+00:06:37,850 --> 00:06:39,200
+that same multiply function and
+
+161
+00:06:39,200 --> 00:06:44,570
+Objective C it's beautiful so I don't
+
+162
+00:06:44,570 --> 00:06:45,710
+know maybe that's why we're writing
+
+163
+00:06:45,710 --> 00:06:47,090
+JavaScript instead of a check to see if
+
+164
+00:06:47,090 --> 00:06:49,639
+we can this is actually the the block
+
+165
+00:06:49,639 --> 00:06:52,160
+syntax injective C for defining the
+
+166
+00:06:52,160 --> 00:06:53,360
+exact same thing that we did in
+
+167
+00:06:53,360 --> 00:06:55,669
+JavaScript and you get used to that and
+
+168
+00:06:55,669 --> 00:06:56,389
+it makes sense
+
+169
+00:06:56,389 --> 00:06:58,430
+it's just takes two integers multiplies
+
+170
+00:06:58,430 --> 00:07:01,250
+them returns it it's great so we define
+
+171
+00:07:01,250 --> 00:07:03,889
+our multiply function in objective-c and
+
+172
+00:07:03,889 --> 00:07:05,780
+then in exactly like we did in the last
+
+173
+00:07:05,780 --> 00:07:07,340
+example we can reach into the JavaScript
+
+174
+00:07:07,340 --> 00:07:10,490
+context and then we can actually we can
+
+175
+00:07:10,490 --> 00:07:12,169
+just say okay hey I have to find this
+
+176
+00:07:12,169 --> 00:07:13,970
+thing called multiply you have it and
+
+177
+00:07:13,970 --> 00:07:16,430
+now you can work with it so in
+
+178
+00:07:16,430 --> 00:07:18,830
+JavaScript it looks like as simple as it
+
+179
+00:07:18,830 --> 00:07:19,490
+could possibly be
+
+180
+00:07:19,490 --> 00:07:23,000
+we just have multiply and and when we
+
+181
+00:07:23,000 --> 00:07:24,380
+call that multiply we pass it into one
+
+182
+00:07:24,380 --> 00:07:26,270
+and two they get cast two inside the
+
+183
+00:07:26,270 --> 00:07:27,470
+directive seaside we got a
+
+184
+00:07:27,470 --> 00:07:29,600
+multiplication back and I'm in
+
+185
+00:07:29,600 --> 00:07:32,240
+JavaScript so that's pretty cool right
+
+186
+00:07:32,240 --> 00:07:34,610
+like you know we got we got JavaScript
+
+187
+00:07:34,610 --> 00:07:36,050
+check to see going back and and for a
+
+188
+00:07:36,050 --> 00:07:37,460
+one-line or multiply obviously that's
+
+189
+00:07:37,460 --> 00:07:39,320
+not gonna like you know shake the world
+
+190
+00:07:39,320 --> 00:07:41,660
+or change anything fundamentally but it
+
+191
+00:07:41,660 --> 00:07:43,789
+sort of gives you an idea of what this
+
+192
+00:07:43,789 --> 00:07:46,520
+API can do so how do we do it what's
+
+193
+00:07:46,520 --> 00:07:48,680
+what is the API well there's three main
+
+194
+00:07:48,680 --> 00:07:50,570
+classes that you care about if you care
+
+195
+00:07:50,570 --> 00:07:52,970
+about this API and the big one is j/s
+
+196
+00:07:52,970 --> 00:07:55,010
+context it's basically loads of
+
+197
+00:07:55,010 --> 00:07:56,270
+JavaScript p.m. and you can throw a
+
+198
+00:07:56,270 --> 00:07:58,400
+javascript files into it and it's what
+
+199
+00:07:58,400 --> 00:08:00,470
+we're using to reach in and take
+
+200
+00:08:00,470 --> 00:08:02,539
+objects-- out of the JavaScript runtime
+
+201
+00:08:02,539 --> 00:08:04,760
+at the JavaScript context into the
+
+202
+00:08:04,760 --> 00:08:06,139
+objective-c world and putting them back
+
+203
+00:08:06,139 --> 00:08:08,300
+so this is kind of your workhorse class
+
+204
+00:08:08,300 --> 00:08:10,870
+um but then there's two helper classes
+
+205
+00:08:10,870 --> 00:08:13,060
+that allow us to go in each direction
+
+206
+00:08:13,060 --> 00:08:16,039
+there's something called JSX port which
+
+207
+00:08:16,039 --> 00:08:18,650
+is a protocol a protocol as objective-c
+
+208
+00:08:18,650 --> 00:08:21,500
+ism that basically is an annotation so
+
+209
+00:08:21,500 --> 00:08:23,800
+you can say hey this this particular
+
+210
+00:08:23,800 --> 00:08:27,050
+this particular objective-c class I want
+
+211
+00:08:27,050 --> 00:08:28,340
+it to be bridged over the JavaScript
+
+212
+00:08:28,340 --> 00:08:29,870
+side and so it's really easy to do that
+
+213
+00:08:29,870 --> 00:08:30,950
+for your own classes it's basically
+
+214
+00:08:30,950 --> 00:08:32,419
+trivial there's a little bit of
+
+215
+00:08:32,419 --> 00:08:34,520
+boilerplate if you want to j/s export an
+
+216
+00:08:34,520 --> 00:08:36,409
+existing objective-c class that you
+
+217
+00:08:36,409 --> 00:08:37,460
+don't have
+
+218
+00:08:37,460 --> 00:08:39,410
+you don't have the source for but you
+
+219
+00:08:39,410 --> 00:08:40,910
+can write a script that will automate
+
+220
+00:08:40,910 --> 00:08:42,290
+that and that's something that we're
+
+221
+00:08:42,290 --> 00:08:45,710
+planning to do ourselves so so chase
+
+222
+00:08:45,710 --> 00:08:47,270
+export and then going in the other
+
+223
+00:08:47,270 --> 00:08:49,580
+direction we have jeaious value and so
+
+224
+00:08:49,580 --> 00:08:52,490
+J's value is a object for encapsulating
+
+225
+00:08:52,490 --> 00:08:54,620
+a JavaScript value in the objective-c
+
+226
+00:08:54,620 --> 00:08:56,360
+world because of course like we can't
+
+227
+00:08:56,360 --> 00:08:58,370
+have these like crazy type list things
+
+228
+00:08:58,370 --> 00:09:01,340
+in an objective-c we need to make sure
+
+229
+00:09:01,340 --> 00:09:02,570
+that we know exactly what's going on
+
+230
+00:09:02,570 --> 00:09:04,430
+with them so Jase value lets us hold on
+
+231
+00:09:04,430 --> 00:09:06,380
+to JavaScript types and cast them to
+
+232
+00:09:06,380 --> 00:09:09,950
+various things so so that's all very
+
+233
+00:09:09,950 --> 00:09:13,400
+cool well what is that what does that
+
+234
+00:09:13,400 --> 00:09:14,690
+bring us you know so we've got all these
+
+235
+00:09:14,690 --> 00:09:16,310
+things put together what is the equation
+
+236
+00:09:16,310 --> 00:09:18,830
+here we got javascriptcore right
+
+237
+00:09:18,830 --> 00:09:21,110
+and we've had JavaScript Cora mobile for
+
+238
+00:09:21,110 --> 00:09:22,700
+a long time it's part of mobile safari
+
+239
+00:09:22,700 --> 00:09:24,860
+but now we can instantiate it without a
+
+240
+00:09:24,860 --> 00:09:27,110
+webview I'm using public API so we don't
+
+241
+00:09:27,110 --> 00:09:28,400
+have to actually go through that build
+
+242
+00:09:28,400 --> 00:09:31,070
+your own a package your own so that's
+
+243
+00:09:31,070 --> 00:09:32,240
+cool we don't have the the memory
+
+244
+00:09:32,240 --> 00:09:35,780
+overhead or or the startup overhead of
+
+245
+00:09:35,780 --> 00:09:37,820
+starting webview and we also get this
+
+246
+00:09:37,820 --> 00:09:39,380
+nice bridging functionality which is
+
+247
+00:09:39,380 --> 00:09:42,050
+cool so that's that's what we get that
+
+248
+00:09:42,050 --> 00:09:43,640
+we like there's something that we get
+
+249
+00:09:43,640 --> 00:09:45,980
+that we don't really wouldn't have
+
+250
+00:09:45,980 --> 00:09:47,300
+really missed if we didn't have it and
+
+251
+00:09:47,300 --> 00:09:49,880
+then Society of reference cycles so
+
+252
+00:09:49,880 --> 00:09:52,850
+objective-c is not garbage collected
+
+253
+00:09:52,850 --> 00:09:55,430
+it's a reference counting language and
+
+254
+00:09:55,430 --> 00:09:57,080
+the compiler automatically counts
+
+255
+00:09:57,080 --> 00:09:58,910
+references for you and it cleans up
+
+256
+00:09:58,910 --> 00:10:00,580
+memory when nothing is pointing to it
+
+257
+00:10:00,580 --> 00:10:03,890
+but the the key is that it only cleans
+
+258
+00:10:03,890 --> 00:10:05,450
+up memory when nothing is pointing to it
+
+259
+00:10:05,450 --> 00:10:07,910
+so you could have like a two objects
+
+260
+00:10:07,910 --> 00:10:10,100
+that point to each other and if the rest
+
+261
+00:10:10,100 --> 00:10:11,330
+of the object graph doesn't point to it
+
+262
+00:10:11,330 --> 00:10:13,280
+then the the runtime is not going to
+
+263
+00:10:13,280 --> 00:10:15,380
+know that that's a reference cycle and
+
+264
+00:10:15,380 --> 00:10:17,900
+it needs to be garbage collected um so
+
+265
+00:10:17,900 --> 00:10:19,550
+that's something we don't normally have
+
+266
+00:10:19,550 --> 00:10:21,110
+to deal with in JavaScript and so if
+
+267
+00:10:21,110 --> 00:10:22,880
+you're not familiar with working with
+
+268
+00:10:22,880 --> 00:10:23,840
+Jeff to C and you're sort of
+
+269
+00:10:23,840 --> 00:10:25,610
+experimenting with this I recommend you
+
+270
+00:10:25,610 --> 00:10:28,400
+check out the WWC video from this this
+
+271
+00:10:28,400 --> 00:10:31,040
+past June on how to avoid it's generally
+
+272
+00:10:31,040 --> 00:10:33,830
+on this JavaScript stuff but the kind of
+
+273
+00:10:33,830 --> 00:10:35,120
+gold in there is avoiding reference
+
+274
+00:10:35,120 --> 00:10:37,340
+cycles so that's kind of annoying
+
+275
+00:10:37,340 --> 00:10:39,110
+but what do we get in return we get this
+
+276
+00:10:39,110 --> 00:10:41,000
+more flexibility right and we get all
+
+277
+00:10:41,000 --> 00:10:43,700
+these new new things that are easier and
+
+278
+00:10:43,700 --> 00:10:45,650
+and we can do stuff like instantiate
+
+279
+00:10:45,650 --> 00:10:47,330
+multiple JavaScript context and having
+
+280
+00:10:47,330 --> 00:10:48,560
+them having them run on different
+
+281
+00:10:48,560 --> 00:10:50,329
+threads really easily
+
+282
+00:10:50,329 --> 00:10:52,040
+and we actually suspect that it may be
+
+283
+00:10:52,040 --> 00:10:54,110
+possible to instantiate a JavaScript
+
+284
+00:10:54,110 --> 00:10:56,420
+context have the JavaScript get parsed
+
+285
+00:10:56,420 --> 00:10:58,309
+and then write that out to disk and then
+
+286
+00:10:58,309 --> 00:10:59,839
+restore it later for faster startup
+
+287
+00:10:59,839 --> 00:11:01,369
+times I'm something we want to
+
+288
+00:11:01,369 --> 00:11:02,839
+experiment with and this is the kind of
+
+289
+00:11:02,839 --> 00:11:03,799
+stuff that like you try to do that with
+
+290
+00:11:03,799 --> 00:11:06,769
+a webview like oh god helped you so I
+
+291
+00:11:06,769 --> 00:11:07,939
+mean maybe it's possible I don't know
+
+292
+00:11:07,939 --> 00:11:10,220
+but all this stuff comes together to
+
+293
+00:11:10,220 --> 00:11:12,309
+make for some delightful possibilities
+
+294
+00:11:12,309 --> 00:11:15,019
+there's stuff that that we're not
+
+295
+00:11:15,019 --> 00:11:17,029
+exactly sure I mean this thing like i io
+
+296
+00:11:17,029 --> 00:11:18,829
+seven coming out basically now right so
+
+297
+00:11:18,829 --> 00:11:20,720
+we don't exactly know all the things
+
+298
+00:11:20,720 --> 00:11:22,639
+that are gonna shake out of this but
+
+299
+00:11:22,639 --> 00:11:23,569
+there's definitely some really cool
+
+300
+00:11:23,569 --> 00:11:26,779
+possibilities so what kind of
+
+301
+00:11:26,779 --> 00:11:28,670
+possibilities one this dear to my heart
+
+302
+00:11:28,670 --> 00:11:31,850
+is embracing our platforms and when I
+
+303
+00:11:31,850 --> 00:11:33,470
+say that I mean you know the different
+
+304
+00:11:33,470 --> 00:11:34,790
+mobile platforms that our users are
+
+305
+00:11:34,790 --> 00:11:36,290
+using and they're the ones are you
+
+306
+00:11:36,290 --> 00:11:37,850
+they're using for particularly scens
+
+307
+00:11:37,850 --> 00:11:41,059
+right and as web developers especially
+
+308
+00:11:41,059 --> 00:11:42,920
+when we're building like in a webview we
+
+309
+00:11:42,920 --> 00:11:45,049
+tend not to we sort of pave over the
+
+310
+00:11:45,049 --> 00:11:46,399
+differences in between each platform
+
+311
+00:11:46,399 --> 00:11:48,230
+right partly just cuz it's a pain in the
+
+312
+00:11:48,230 --> 00:11:50,720
+butt to to make your your web app feel
+
+313
+00:11:50,720 --> 00:11:54,350
+like the the local operating system and
+
+314
+00:11:54,350 --> 00:11:55,939
+so for example like maybe we did all
+
+315
+00:11:55,939 --> 00:11:57,860
+this work to make our iOS 6 app look
+
+316
+00:11:57,860 --> 00:11:59,449
+it's like a web app but it looks like
+
+317
+00:11:59,449 --> 00:12:01,699
+iOS 6 and then iOS 7 comes out and kicks
+
+318
+00:12:01,699 --> 00:12:03,259
+us in the nuts and it's like ok
+
+319
+00:12:03,259 --> 00:12:05,029
+everything's completely different right
+
+320
+00:12:05,029 --> 00:12:06,949
+like and and sometimes it's not even
+
+321
+00:12:06,949 --> 00:12:09,769
+that that hard to do right like iOS 7 we
+
+322
+00:12:09,769 --> 00:12:11,929
+got these white backgrounds type heavy
+
+323
+00:12:11,929 --> 00:12:14,929
+layouts focus on images flat rectangles
+
+324
+00:12:14,929 --> 00:12:17,480
+blue text you can click is really high
+
+325
+00:12:17,480 --> 00:12:20,029
+tech stuff right you know or it's the
+
+326
+00:12:20,029 --> 00:12:23,239
+web from 1997 right it's it's not like
+
+327
+00:12:23,239 --> 00:12:25,220
+we can't make these things happen in
+
+328
+00:12:25,220 --> 00:12:28,790
+webview there are things that are hard
+
+329
+00:12:28,790 --> 00:12:30,919
+though right like it has these physics
+
+330
+00:12:30,919 --> 00:12:33,079
+based gestures and it's beautiful 3d
+
+331
+00:12:33,079 --> 00:12:35,749
+effects we got this 60 frames a second
+
+332
+00:12:35,749 --> 00:12:37,100
+scrolling on all these various places
+
+333
+00:12:37,100 --> 00:12:39,799
+while doing a real-time blur operation
+
+334
+00:12:39,799 --> 00:12:43,910
+on mobile on like an iPhone like for for
+
+335
+00:12:43,910 --> 00:12:46,819
+s-class hardware and highly responsive
+
+336
+00:12:46,819 --> 00:12:48,529
+touch you know all these cool things and
+
+337
+00:12:48,529 --> 00:12:51,860
+so it's it's kind of you know
+
+338
+00:12:51,860 --> 00:12:53,689
+controversial like oh yeah you can't
+
+339
+00:12:53,689 --> 00:12:55,309
+make yeah you can do some of these
+
+340
+00:12:55,309 --> 00:12:57,319
+things on mobile it's possible or you
+
+341
+00:12:57,319 --> 00:12:58,910
+can you get great performance are you
+
+342
+00:12:58,910 --> 00:13:00,709
+gonna build a delightful app probably
+
+343
+00:13:00,709 --> 00:13:02,930
+not maybe not at least not yet
+
+344
+00:13:02,930 --> 00:13:06,079
+so so so what is that
+
+345
+00:13:06,079 --> 00:13:09,769
+what does that mean that's our ios7 so
+
+346
+00:13:09,769 --> 00:13:11,569
+that means that if we build with a
+
+347
+00:13:11,569 --> 00:13:13,309
+native UI or at least as much as makes
+
+348
+00:13:13,309 --> 00:13:16,160
+sense for any given app then we can have
+
+349
+00:13:16,160 --> 00:13:18,860
+these native looking and feeling things
+
+350
+00:13:18,860 --> 00:13:20,449
+that will conform to what the users want
+
+351
+00:13:20,449 --> 00:13:22,279
+and what they expect on any given
+
+352
+00:13:22,279 --> 00:13:25,160
+platform but still potentially write a
+
+353
+00:13:25,160 --> 00:13:28,119
+lot of our code in JavaScript
+
+354
+00:13:28,119 --> 00:13:30,110
+titanium obviously has been barking up
+
+355
+00:13:30,110 --> 00:13:31,429
+this tree for a long time and
+
+356
+00:13:31,429 --> 00:13:34,790
+Appcelerator guys and I think a lot of
+
+357
+00:13:34,790 --> 00:13:36,259
+us have played with titanium I've played
+
+358
+00:13:36,259 --> 00:13:37,850
+with it before and I find it can be
+
+359
+00:13:37,850 --> 00:13:39,259
+pretty heavy
+
+360
+00:13:39,259 --> 00:13:41,319
+I've been quoted as calling titanium a
+
+361
+00:13:41,319 --> 00:13:43,670
+500-pound monolith of eclipse and
+
+362
+00:13:43,670 --> 00:13:47,480
+licensing which is kind of mean because
+
+363
+00:13:47,480 --> 00:13:49,910
+technically it is not 500 pounds it's
+
+364
+00:13:49,910 --> 00:13:54,470
+211 megabytes but these guys are really
+
+365
+00:13:54,470 --> 00:13:56,149
+smart and they understand this problem
+
+366
+00:13:56,149 --> 00:13:59,300
+and when they saw the the new stuff that
+
+367
+00:13:59,300 --> 00:14:02,420
+Apple was doing at WWDC their minds were
+
+368
+00:14:02,420 --> 00:14:04,759
+blown and they promptly actually
+
+369
+00:14:04,759 --> 00:14:06,019
+embarked on a complete rewrite of
+
+370
+00:14:06,019 --> 00:14:08,089
+titanium to take advantage of this
+
+371
+00:14:08,089 --> 00:14:09,800
+approach um they're actually going to
+
+372
+00:14:09,800 --> 00:14:11,179
+JavaScript core on every platform
+
+373
+00:14:11,179 --> 00:14:13,519
+porting it to Android and 4 to
+
+374
+00:14:13,519 --> 00:14:15,139
+JavaScript core to Windows as well and
+
+375
+00:14:15,139 --> 00:14:16,819
+they're also building something called
+
+376
+00:14:16,819 --> 00:14:19,399
+Hyperloop which is a compiler from
+
+377
+00:14:19,399 --> 00:14:21,139
+JavaScript into native code on each
+
+378
+00:14:21,139 --> 00:14:21,800
+platform
+
+379
+00:14:21,800 --> 00:14:23,569
+um so they're going totally crazy with
+
+380
+00:14:23,569 --> 00:14:25,639
+this like JavaScript bridge stuff and
+
+381
+00:14:25,639 --> 00:14:27,470
+then you know you're writing something
+
+382
+00:14:27,470 --> 00:14:29,809
+is because titanium like how long is it
+
+383
+00:14:29,809 --> 00:14:31,279
+gonna take I don't know however how many
+
+384
+00:14:31,279 --> 00:14:32,600
+months or years but it's definitely
+
+385
+00:14:32,600 --> 00:14:34,550
+worth keeping an eye on what they're up
+
+386
+00:14:34,550 --> 00:14:34,939
+to
+
+387
+00:14:34,939 --> 00:14:36,170
+if you're interested in this stuff
+
+388
+00:14:36,170 --> 00:14:38,540
+because there's a lot of cool there's a
+
+389
+00:14:38,540 --> 00:14:40,819
+lot of cool thinking and prototyping
+
+390
+00:14:40,819 --> 00:14:45,439
+going on there at the Appcelerator so we
+
+391
+00:14:45,439 --> 00:14:48,379
+general want to enable tinkering right
+
+392
+00:14:48,379 --> 00:14:51,199
+and native apps historically not that
+
+393
+00:14:51,199 --> 00:14:52,610
+easy for people who are not coders or
+
+394
+00:14:52,610 --> 00:14:55,610
+not really up on necessarily you have
+
+395
+00:14:55,610 --> 00:14:57,019
+senior level people to like tinker
+
+396
+00:14:57,019 --> 00:14:57,920
+around and just play with your
+
+397
+00:14:57,920 --> 00:15:00,350
+objective-c or your C or your your your
+
+398
+00:15:00,350 --> 00:15:03,410
+native app and this is something that
+
+399
+00:15:03,410 --> 00:15:04,670
+you know other industries have been
+
+400
+00:15:04,670 --> 00:15:06,499
+doing for a long time right like if any
+
+401
+00:15:06,499 --> 00:15:07,429
+of you are familiar with the games
+
+402
+00:15:07,429 --> 00:15:08,959
+industry you know about Lua
+
+403
+00:15:08,959 --> 00:15:10,970
+right Louis this little embeddable
+
+404
+00:15:10,970 --> 00:15:13,399
+language that most games nowadays have
+
+405
+00:15:13,399 --> 00:15:16,420
+some sort of scripting facility for a
+
+406
+00:15:16,420 --> 00:15:18,940
+or first levels or various things that
+
+407
+00:15:18,940 --> 00:15:20,529
+they are not necessarily performance
+
+408
+00:15:20,529 --> 00:15:22,899
+critical to the app but they are their
+
+409
+00:15:22,899 --> 00:15:24,070
+wrists so they're written in Lua so
+
+410
+00:15:24,070 --> 00:15:25,690
+they're easier to tie with and you know
+
+411
+00:15:25,690 --> 00:15:27,279
+level designers can edit the Lua
+
+412
+00:15:27,279 --> 00:15:29,019
+without having to build this giant C++
+
+413
+00:15:29,019 --> 00:15:31,600
+project well we can do the exactly the
+
+414
+00:15:31,600 --> 00:15:33,970
+same thing but with the JavaScript right
+
+415
+00:15:33,970 --> 00:15:35,260
+because Java scripts incredibly
+
+416
+00:15:35,260 --> 00:15:38,800
+performant dynamic language and it we
+
+417
+00:15:38,800 --> 00:15:41,350
+get this bridge for free and we can also
+
+418
+00:15:41,350 --> 00:15:43,779
+embed the JavaScript runtime in games
+
+419
+00:15:43,779 --> 00:15:46,300
+and anything else that we want to so
+
+420
+00:15:46,300 --> 00:15:47,890
+that's a really interesting way to
+
+421
+00:15:47,890 --> 00:15:51,370
+enable tinkering but when I think about
+
+422
+00:15:51,370 --> 00:15:53,260
+enabling tinkering the story that always
+
+423
+00:15:53,260 --> 00:15:56,860
+comes to mind is the story of this this
+
+424
+00:15:56,860 --> 00:15:58,930
+is the Mac calculator from the original
+
+425
+00:15:58,930 --> 00:16:00,940
+Macintosh it was up there it looked
+
+426
+00:16:00,940 --> 00:16:03,550
+exactly like this all the way until Mac
+
+427
+00:16:03,550 --> 00:16:07,450
+OS 9 so like for 15 years and the way
+
+428
+00:16:07,450 --> 00:16:08,560
+this calculator came about it didn't
+
+429
+00:16:08,560 --> 00:16:10,329
+originally look like this there's an
+
+430
+00:16:10,329 --> 00:16:12,160
+engineer at Apple whose employee number
+
+431
+00:16:12,160 --> 00:16:13,540
+eight at the time but he was still like
+
+432
+00:16:13,540 --> 00:16:14,709
+he was like a high when he was fourteen
+
+433
+00:16:14,709 --> 00:16:17,350
+or something like that and in the
+
+434
+00:16:17,350 --> 00:16:19,920
+development of the Macintosh in 1982 um
+
+435
+00:16:19,920 --> 00:16:23,350
+he wanted to do this calculator to show
+
+436
+00:16:23,350 --> 00:16:24,610
+off the new drawing code that the
+
+437
+00:16:24,610 --> 00:16:26,589
+Macintosh was going to ship with so he
+
+438
+00:16:26,589 --> 00:16:27,699
+hacked something together didn't look
+
+439
+00:16:27,699 --> 00:16:29,649
+like this and he showed it to Steve Jobs
+
+440
+00:16:29,649 --> 00:16:32,350
+it seems like this is like these
+
+441
+00:16:32,350 --> 00:16:34,149
+fonts are wrong this pattern is wrong
+
+442
+00:16:34,149 --> 00:16:35,920
+that the buttons are too big like I
+
+443
+00:16:35,920 --> 00:16:38,019
+changed everything so Chris goes and he
+
+444
+00:16:38,019 --> 00:16:40,060
+changes everything I an exit he shows it
+
+445
+00:16:40,060 --> 00:16:41,589
+to Steve and seems like oh this is
+
+446
+00:16:41,589 --> 00:16:43,149
+this is wrong the fonts wrong blah blah
+
+447
+00:16:43,149 --> 00:16:44,140
+blah you know potentially even
+
+448
+00:16:44,140 --> 00:16:45,459
+contradicting things he told them to
+
+449
+00:16:45,459 --> 00:16:47,680
+yesterday so after a couple iterations
+
+450
+00:16:47,680 --> 00:16:50,260
+of this Chris gets wise and realizes
+
+451
+00:16:50,260 --> 00:16:52,029
+that he's not he shouldn't be building
+
+452
+00:16:52,029 --> 00:16:54,010
+what Steve asked him to build he should
+
+453
+00:16:54,010 --> 00:16:55,510
+instead be building the Steve Jobs
+
+454
+00:16:55,510 --> 00:16:57,670
+calculator construction construction
+
+455
+00:16:57,670 --> 00:17:00,820
+toolkit so that's what he built um so
+
+456
+00:17:00,820 --> 00:17:02,920
+this is this beautiful application his
+
+457
+00:17:02,920 --> 00:17:05,319
+purpose was to let Steve tinker with all
+
+458
+00:17:05,319 --> 00:17:07,360
+these various values and and the shadows
+
+459
+00:17:07,360 --> 00:17:08,679
+and fonts and outlines and stuff like
+
+460
+00:17:08,679 --> 00:17:11,679
+that and and he did in ten minutes later
+
+461
+00:17:11,679 --> 00:17:13,569
+they had the calculator that we just saw
+
+462
+00:17:13,569 --> 00:17:15,370
+that shipped for like 15 years
+
+463
+00:17:15,370 --> 00:17:18,850
+um so I thought what better demo for
+
+464
+00:17:18,850 --> 00:17:20,410
+something for technology that makes it
+
+465
+00:17:20,410 --> 00:17:22,780
+easier to tinker with applications than
+
+466
+00:17:22,780 --> 00:17:25,510
+a calculator so I'm gonna show you the
+
+467
+00:17:25,510 --> 00:17:30,080
+calculator
+
+468
+00:17:30,090 --> 00:17:33,490
+so this is the iOS simulator this is
+
+469
+00:17:33,490 --> 00:17:43,260
+nothing because I'm not mirroring pardon
+
+470
+00:17:43,260 --> 00:17:46,570
+command f1 cool I'm totally gonna press
+
+471
+00:17:46,570 --> 00:17:53,350
+that it does nothing unless I suck at
+
+472
+00:17:53,350 --> 00:17:55,120
+pressing command f1 but my understanding
+
+473
+00:17:55,120 --> 00:17:58,809
+of oh it's it's command brightness down
+
+474
+00:17:58,809 --> 00:18:02,830
+not kind of fun okay cool so this is the
+
+475
+00:18:02,830 --> 00:18:04,480
+iOS simulator and I'm gonna make it a
+
+476
+00:18:04,480 --> 00:18:07,750
+little bigger for you guys and it's the
+
+477
+00:18:07,750 --> 00:18:12,100
+a so this is the iOS simulator and this
+
+478
+00:18:12,100 --> 00:18:15,540
+is Iowa 7 and ok cool a calculator right
+
+479
+00:18:15,540 --> 00:18:17,650
+you guys have never seen a calculator
+
+480
+00:18:17,650 --> 00:18:18,760
+before so I'm gonna show you kind of how
+
+481
+00:18:18,760 --> 00:18:19,919
+it works
+
+482
+00:18:19,919 --> 00:18:22,990
+58 wow that's really cool and so we can
+
+483
+00:18:22,990 --> 00:18:24,010
+do all the sort of things we can like a
+
+484
+00:18:24,010 --> 00:18:25,360
+store thinks in memory and clear them
+
+485
+00:18:25,360 --> 00:18:27,309
+and restore them so that's a cool little
+
+486
+00:18:27,309 --> 00:18:29,770
+demo app that you guys can check out on
+
+487
+00:18:29,770 --> 00:18:32,080
+github and see how we've built this but
+
+488
+00:18:32,080 --> 00:18:34,840
+this front-end is entirely native UI
+
+489
+00:18:34,840 --> 00:18:37,390
+right if we take a look this is build an
+
+490
+00:18:37,390 --> 00:18:39,820
+interface builder there's no JavaScript
+
+491
+00:18:39,820 --> 00:18:41,710
+code that's assembling the UI it's
+
+492
+00:18:41,710 --> 00:18:44,770
+entirely done in insert our native tools
+
+493
+00:18:44,770 --> 00:18:47,710
+in Xcode so all when you know Iowa's new
+
+494
+00:18:47,710 --> 00:18:49,270
+versions come out we get all this sort
+
+495
+00:18:49,270 --> 00:18:50,980
+of new functionality and stuff that we
+
+496
+00:18:50,980 --> 00:18:53,140
+get in the developer tools but we still
+
+497
+00:18:53,140 --> 00:18:56,910
+have this thing running here in in
+
+498
+00:18:56,910 --> 00:18:59,169
+JavaScript and all of the logic is
+
+499
+00:18:59,169 --> 00:18:59,980
+written in JavaScript
+
+500
+00:18:59,980 --> 00:19:02,320
+um so you may be skeptical that the
+
+501
+00:19:02,320 --> 00:19:03,880
+logic is running in JavaScript so I
+
+502
+00:19:03,880 --> 00:19:05,760
+should probably prove it to you
+
+503
+00:19:05,760 --> 00:19:07,960
+javascript is pretty good at math so
+
+504
+00:19:07,960 --> 00:19:13,720
+let's let's take a look so let's see
+
+505
+00:19:13,720 --> 00:19:20,010
+what this equals yeah yeah
+
+506
+00:19:20,010 --> 00:19:26,410
+that's that's right and javascript
+
+507
+00:19:26,410 --> 00:19:28,780
+interprets numbers starting with a zero
+
+508
+00:19:28,780 --> 00:19:32,020
+as octal because that's pretty cool so
+
+509
+00:19:32,020 --> 00:19:34,060
+let's see what this equals yeah cool
+
+510
+00:19:34,060 --> 00:19:37,240
+okay yeah so it's JavaScript um so we've
+
+511
+00:19:37,240 --> 00:19:39,730
+married the power of objective-c with
+
+512
+00:19:39,730 --> 00:19:45,340
+the math power of JavaScript and created
+
+513
+00:19:45,340 --> 00:19:46,960
+something pretty amazing I think you're
+
+514
+00:19:46,960 --> 00:19:48,540
+all going to want to check it out um
+
+515
+00:19:48,540 --> 00:19:52,290
+okay so that's fine let's undo my
+
+516
+00:19:52,290 --> 00:19:59,460
+fullscreen anything cool a calculator
+
+517
+00:19:59,460 --> 00:20:01,660
+awesome so you can check this out on
+
+518
+00:20:01,660 --> 00:20:04,870
+github we put that live now steam clock
+
+519
+00:20:04,870 --> 00:20:07,060
+/gs calc and I'll post the slides
+
+520
+00:20:07,060 --> 00:20:09,910
+obviously after the talk and that's
+
+521
+00:20:09,910 --> 00:20:11,620
+really cool really impressive you can do
+
+522
+00:20:11,620 --> 00:20:13,630
+a calculator you know it's more
+
+523
+00:20:13,630 --> 00:20:15,820
+impressive though is rendering native
+
+524
+00:20:15,820 --> 00:20:19,000
+OpenGL so it's kind of opposite ends of
+
+525
+00:20:19,000 --> 00:20:20,380
+the holy crap
+
+526
+00:20:20,380 --> 00:20:23,860
+spectrum and when people hear OpenGL
+
+527
+00:20:23,860 --> 00:20:25,720
+they tend to sink games but there's
+
+528
+00:20:25,720 --> 00:20:27,070
+actually a lot of really great uses for
+
+529
+00:20:27,070 --> 00:20:27,610
+OpenGL
+
+530
+00:20:27,610 --> 00:20:30,940
+for rendering non game applications this
+
+531
+00:20:30,940 --> 00:20:32,140
+is something we built recently steam
+
+532
+00:20:32,140 --> 00:20:33,760
+cloth called the map the Internet
+
+533
+00:20:33,760 --> 00:20:35,740
+it's 3d you can you can interact with it
+
+534
+00:20:35,740 --> 00:20:37,480
+you can zoom through time and see the
+
+535
+00:20:37,480 --> 00:20:38,980
+history of the internet you can do an
+
+536
+00:20:38,980 --> 00:20:41,050
+interactive trace route it was actually
+
+537
+00:20:41,050 --> 00:20:43,450
+Angelina that that wrote the the
+
+538
+00:20:43,450 --> 00:20:45,130
+traceroute that goes through the
+
+539
+00:20:45,130 --> 00:20:49,090
+internet in 3d and so it's this crazy 3d
+
+540
+00:20:49,090 --> 00:20:51,700
+application and we've built it with C++
+
+541
+00:20:51,700 --> 00:20:53,980
+and OpenGL on each platform but there's
+
+542
+00:20:53,980 --> 00:20:56,470
+no reason to the logic that is non
+
+543
+00:20:56,470 --> 00:20:57,760
+performance intensive needed to be
+
+544
+00:20:57,760 --> 00:21:01,240
+written in C++ and we realized that now
+
+545
+00:21:01,240 --> 00:21:02,500
+and if we were to do it today we would
+
+546
+00:21:02,500 --> 00:21:04,060
+probably try this JavaScript bridge
+
+547
+00:21:04,060 --> 00:21:06,460
+stuff we're not the first people to
+
+548
+00:21:06,460 --> 00:21:08,590
+think of embedding javascript in an
+
+549
+00:21:08,590 --> 00:21:11,110
+OpenGL app though um there's this thing
+
+550
+00:21:11,110 --> 00:21:12,880
+called ejecta that you guys may have
+
+551
+00:21:12,880 --> 00:21:14,590
+seen and it's related to the impact
+
+552
+00:21:14,590 --> 00:21:19,090
+project so dynamic Domenic Zebrowski who
+
+553
+00:21:19,090 --> 00:21:21,160
+wrote bio lab disasters like the first
+
+554
+00:21:21,160 --> 00:21:24,670
+html5 html5 games that was actually like
+
+555
+00:21:24,670 --> 00:21:26,710
+really worth playing he's built this
+
+556
+00:21:26,710 --> 00:21:28,000
+thing that's actually a native
+
+557
+00:21:28,000 --> 00:21:31,080
+implementation of canvas audio and WebGL
+
+558
+00:21:31,080 --> 00:21:32,559
+that you can
+
+559
+00:21:32,559 --> 00:21:36,159
+deploy to to iOS and run all of your
+
+560
+00:21:36,159 --> 00:21:38,200
+existing like sort of WebGL game that
+
+561
+00:21:38,200 --> 00:21:39,909
+runs in the browser you can run it run
+
+562
+00:21:39,909 --> 00:21:43,179
+it on iOS and you know this is possible
+
+563
+00:21:43,179 --> 00:21:45,220
+in like a webview well not good WebGL
+
+564
+00:21:45,220 --> 00:21:47,679
+but the performance implications of this
+
+565
+00:21:47,679 --> 00:21:49,960
+are that it runs way faster and with
+
+566
+00:21:49,960 --> 00:21:52,419
+substantially even more dramatically
+
+567
+00:21:52,419 --> 00:21:54,940
+with a lot less memory overhead and so
+
+568
+00:21:54,940 --> 00:21:56,529
+you're still using the same open
+
+569
+00:21:56,529 --> 00:22:01,120
+technologies is it using the same season
+
+570
+00:22:01,120 --> 00:22:02,769
+the same API is WebGL and all that kind
+
+571
+00:22:02,769 --> 00:22:04,749
+of stuff but with the native back-end
+
+572
+00:22:04,749 --> 00:22:06,580
+and you know obviously we don't have
+
+573
+00:22:06,580 --> 00:22:08,470
+WebGL in the webview on iOS yet anyway
+
+574
+00:22:08,470 --> 00:22:12,340
+so it's a nice sort of polyfill so so in
+
+575
+00:22:12,340 --> 00:22:14,230
+general there's all sorts of cool ways
+
+576
+00:22:14,230 --> 00:22:17,259
+we can mix javascript in native right so
+
+577
+00:22:17,259 --> 00:22:21,309
+for example you know we steam clock we
+
+578
+00:22:21,309 --> 00:22:23,080
+tend to build apps this way right we
+
+579
+00:22:23,080 --> 00:22:24,639
+have node on the server which is great
+
+580
+00:22:24,639 --> 00:22:26,019
+obviously we want to have script there
+
+581
+00:22:26,019 --> 00:22:27,429
+and then we'll end up building a native
+
+582
+00:22:27,429 --> 00:22:29,619
+sort of logic layer and a UI layer and
+
+583
+00:22:29,619 --> 00:22:31,029
+then a native logic layer and UI layer
+
+584
+00:22:31,029 --> 00:22:33,429
+in each platform ok well that works fine
+
+585
+00:22:33,429 --> 00:22:36,100
+but it's we're writing Java and then
+
+586
+00:22:36,100 --> 00:22:37,659
+you're writing Java right so let's not
+
+587
+00:22:37,659 --> 00:22:39,940
+do that let's write the logic layer in
+
+588
+00:22:39,940 --> 00:22:41,350
+JavaScript right so we got the the
+
+589
+00:22:41,350 --> 00:22:43,330
+models and controllers in JavaScript and
+
+590
+00:22:43,330 --> 00:22:46,929
+the UI layer for the views in native
+
+591
+00:22:46,929 --> 00:22:49,450
+code and that's great if your your UI is
+
+592
+00:22:49,450 --> 00:22:50,679
+the intensive part of your application
+
+593
+00:22:50,679 --> 00:22:52,990
+but what if your UI is really simple if
+
+594
+00:22:52,990 --> 00:22:54,610
+some enterprise app but you're doing
+
+595
+00:22:54,610 --> 00:22:56,320
+some you know intensive number crunching
+
+596
+00:22:56,320 --> 00:22:58,779
+or video or something like that maybe we
+
+597
+00:22:58,779 --> 00:23:00,820
+do it the other way around right we use
+
+598
+00:23:00,820 --> 00:23:02,769
+web views we use HTML on the front end
+
+599
+00:23:02,769 --> 00:23:04,629
+and then we have a native layer for our
+
+600
+00:23:04,629 --> 00:23:07,269
+models and controllers right
+
+601
+00:23:07,269 --> 00:23:09,119
+or maybe we build something like a
+
+602
+00:23:09,119 --> 00:23:11,409
+Cordova webview or we use Cordova
+
+603
+00:23:11,409 --> 00:23:13,360
+Cordova webview so most of you are
+
+604
+00:23:13,360 --> 00:23:15,429
+familiar with PhoneGap Apache Cordova
+
+605
+00:23:15,429 --> 00:23:17,110
+and well they have a component where you
+
+606
+00:23:17,110 --> 00:23:19,299
+can drop Cordova into your application
+
+607
+00:23:19,299 --> 00:23:20,980
+so it's sort of side by side you can
+
+608
+00:23:20,980 --> 00:23:22,360
+have your native UI code your native
+
+609
+00:23:22,360 --> 00:23:23,799
+models and controllers and then you can
+
+610
+00:23:23,799 --> 00:23:26,440
+also have your your web technology or
+
+611
+00:23:26,440 --> 00:23:27,070
+your webview
+
+612
+00:23:27,070 --> 00:23:29,830
+model some trellis in JavaScript and so
+
+613
+00:23:29,830 --> 00:23:32,139
+my point is that however you mix these
+
+614
+00:23:32,139 --> 00:23:33,669
+technologies if they're the right
+
+615
+00:23:33,669 --> 00:23:35,440
+solution for your app then they're the
+
+616
+00:23:35,440 --> 00:23:37,779
+right solution right like even if this
+
+617
+00:23:37,779 --> 00:23:42,050
+is the right solution for your app right
+
+618
+00:23:42,060 --> 00:23:44,230
+that's probably not the right solution
+
+619
+00:23:44,230 --> 00:23:46,780
+for your app I would not recommend that
+
+620
+00:23:46,780 --> 00:23:49,870
+particular architecture but the point is
+
+621
+00:23:49,870 --> 00:23:51,190
+that there's lots of opportunities for
+
+622
+00:23:51,190 --> 00:23:53,830
+sharing JavaScript and we want to share
+
+623
+00:23:53,830 --> 00:23:55,480
+with JavaScript in our in our native
+
+624
+00:23:55,480 --> 00:23:57,700
+apps so of course we built this demo I'm
+
+625
+00:23:57,700 --> 00:23:59,440
+showing showing the the calculator on
+
+626
+00:23:59,440 --> 00:24:01,750
+iOS but we will be totally remiss if we
+
+627
+00:24:01,750 --> 00:24:03,630
+didn't get running on Android right
+
+628
+00:24:03,630 --> 00:24:06,520
+thankfully there's something on there's
+
+629
+00:24:06,520 --> 00:24:08,830
+a JavaScript runtime called Rhino which
+
+630
+00:24:08,830 --> 00:24:10,180
+must be probably been heard of it's been
+
+631
+00:24:10,180 --> 00:24:11,620
+around for a while but it's it's written
+
+632
+00:24:11,620 --> 00:24:13,390
+in Java so it's extremely easy to embed
+
+633
+00:24:13,390 --> 00:24:15,640
+on Android so I'm just gonna quickly
+
+634
+00:24:15,640 --> 00:24:18,550
+show that to prove to you guys that I
+
+635
+00:24:18,550 --> 00:24:22,840
+need to do my little dance again so I'm
+
+636
+00:24:22,840 --> 00:24:23,950
+gonna show you guys this thing running
+
+637
+00:24:23,950 --> 00:24:32,230
+in android yeah an Android okay so this
+
+638
+00:24:32,230 --> 00:24:33,760
+is acting éclairs uses the exact same
+
+639
+00:24:33,760 --> 00:24:35,950
+JavaScript but is again built with a
+
+640
+00:24:35,950 --> 00:24:38,920
+native UI and so just in case you guys
+
+641
+00:24:38,920 --> 00:24:41,680
+are still skeptical of my claims let's
+
+642
+00:24:41,680 --> 00:24:44,650
+type 16 9s one two three four five six
+
+643
+00:24:44,650 --> 00:24:49,090
+seven eight nine 10 11 12 13 14 15 16
+
+644
+00:24:49,090 --> 00:24:52,420
+and see what that's equal to right 10 20
+
+645
+00:24:52,420 --> 00:25:00,060
+liyan yeah okay slow clap okay great so
+
+646
+00:25:00,060 --> 00:25:02,890
+this this is still an ongoing you can
+
+647
+00:25:02,890 --> 00:25:05,380
+try that out on both platforms what's
+
+648
+00:25:05,380 --> 00:25:06,700
+the point of all of this what's what's
+
+649
+00:25:06,700 --> 00:25:08,380
+the takeaway I've shown all these
+
+650
+00:25:08,380 --> 00:25:09,760
+different offices you know demos and
+
+651
+00:25:09,760 --> 00:25:11,170
+ways that we can use JavaScript we can
+
+652
+00:25:11,170 --> 00:25:12,520
+mix Drive script I just want to
+
+653
+00:25:12,520 --> 00:25:13,900
+encourage you to try embedding a
+
+654
+00:25:13,900 --> 00:25:15,490
+JavaScript runtime whether you go
+
+655
+00:25:15,490 --> 00:25:17,200
+through the VA instructions whether you
+
+656
+00:25:17,200 --> 00:25:19,150
+use the iOS 7 API is you embed Rhino you
+
+657
+00:25:19,150 --> 00:25:23,080
+and bread javascriptcore try it out so
+
+658
+00:25:23,080 --> 00:25:24,730
+with that I encourage you to go out and
+
+659
+00:25:24,730 --> 00:25:31,940
+go build the life laps
+
+660
+00:25:31,950 --> 00:25:44,040
+you
+

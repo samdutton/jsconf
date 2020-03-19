@@ -1,0 +1,1497 @@
+1
+00:00:14,110 --> 00:00:20,390
+
+hello I'm Tilda and i'm here today to
+
+2
+00:00:20,390 --> 00:00:24,489
+talk about pivoting to react at scale
+
+3
+00:00:24,489 --> 00:00:27,460
+some things i'll be covering are an
+
+4
+00:00:27,460 --> 00:00:29,840
+overview of the architecture choices we
+
+5
+00:00:29,840 --> 00:00:33,130
+made it Pinterest things that went well
+
+6
+00:00:33,130 --> 00:00:36,890
+things that did not go so well and high
+
+7
+00:00:36,890 --> 00:00:41,570
+level conclusions it is the way of the
+
+8
+00:00:41,570 --> 00:00:44,150
+world of front-end that you are going to
+
+9
+00:00:44,150 --> 00:00:46,790
+be pivoting your web framework every two
+
+10
+00:00:46,790 --> 00:00:50,570
+to five years as Amy pointed out in her
+
+11
+00:00:50,570 --> 00:00:53,150
+awesome talk yesterday the joy and the
+
+12
+00:00:53,150 --> 00:00:56,300
+pain of javascript is that there are a
+
+13
+00:00:56,300 --> 00:00:57,980
+lot of different ways to do the same
+
+14
+00:00:57,980 --> 00:01:01,720
+thing and your conventions are in flux
+
+15
+00:01:01,720 --> 00:01:04,220
+that leads us to have more paradigm
+
+16
+00:01:04,220 --> 00:01:08,360
+shifts pivot more frequently when i
+
+17
+00:01:08,360 --> 00:01:11,240
+first started at Pinterest in 2013 my
+
+18
+00:01:11,240 --> 00:01:13,310
+very first project was finishing the
+
+19
+00:01:13,310 --> 00:01:16,759
+pivot from a django app to a django app
+
+20
+00:01:16,759 --> 00:01:20,899
+with backbone on top of it it was pretty
+
+21
+00:01:20,899 --> 00:01:23,450
+painful because the last twenty percent
+
+22
+00:01:23,450 --> 00:01:25,549
+of that rewrite took eighty percent of
+
+23
+00:01:25,549 --> 00:01:28,609
+the time of the project so this time
+
+24
+00:01:28,609 --> 00:01:31,159
+around we wanted to think a little
+
+25
+00:01:31,159 --> 00:01:35,299
+better be a little smarter about it in
+
+26
+00:01:35,299 --> 00:01:37,490
+order to know where we going we have to
+
+27
+00:01:37,490 --> 00:01:40,700
+think about where we've been so I picked
+
+28
+00:01:40,700 --> 00:01:42,859
+2013 because that was the last time we
+
+29
+00:01:42,859 --> 00:01:47,299
+did a significant pivot in 2013 web
+
+30
+00:01:47,299 --> 00:01:50,840
+development was very different jquery
+
+31
+00:01:50,840 --> 00:01:52,959
+was the most common paradigm of the day
+
+32
+00:01:52,959 --> 00:01:56,749
+we had a bunch of competing platform
+
+33
+00:01:56,749 --> 00:02:00,469
+work such as amber angular react was
+
+34
+00:02:00,469 --> 00:02:03,159
+just starting to enter the scene and
+
+35
+00:02:03,159 --> 00:02:06,310
+cross-platform compatibility was
+
+36
+00:02:06,310 --> 00:02:13,340
+definitely a headache so in 2013 we had
+
+37
+00:02:13,340 --> 00:02:16,730
+an app that was built on top of backbone
+
+38
+00:02:16,730 --> 00:02:20,480
+and Django architecture kind of looked
+
+39
+00:02:20,480 --> 00:02:22,580
+like this was built on top of Jango's
+
+40
+00:02:22,580 --> 00:02:23,090
+middle
+
+41
+00:02:23,090 --> 00:02:25,610
+which is not I don't think Django strong
+
+42
+00:02:25,610 --> 00:02:29,269
+suit but would have we had a Python
+
+43
+00:02:29,269 --> 00:02:32,780
+router we had Python resources which are
+
+44
+00:02:32,780 --> 00:02:35,810
+like a wrapper around the API and we had
+
+45
+00:02:35,810 --> 00:02:38,860
+modules modules are little reusable
+
+46
+00:02:38,860 --> 00:02:41,569
+composable bits of HTML CSS and
+
+47
+00:02:41,569 --> 00:02:45,560
+JavaScript so they compose our whole
+
+48
+00:02:45,560 --> 00:02:48,049
+entire tree how many of you have worked
+
+49
+00:02:48,049 --> 00:02:50,030
+on kind of like a Frankenstein app like
+
+50
+00:02:50,030 --> 00:02:51,530
+this where do you had like different
+
+51
+00:02:51,530 --> 00:02:55,190
+pieces of things glued together yeah you
+
+52
+00:02:55,190 --> 00:02:57,019
+know what I'm talking about kind of
+
+53
+00:02:57,019 --> 00:03:01,130
+sucks huh I mean it was okay for what it
+
+54
+00:03:01,130 --> 00:03:04,549
+was but there are problems even on a
+
+55
+00:03:04,549 --> 00:03:07,610
+fast connection on a fast machine like
+
+56
+00:03:07,610 --> 00:03:10,220
+scrolling the Pinterest grid was kind of
+
+57
+00:03:10,220 --> 00:03:13,370
+janky we got called out for having some
+
+58
+00:03:13,370 --> 00:03:15,260
+of the most bloated CSS of any big
+
+59
+00:03:15,260 --> 00:03:18,650
+website and we had to maintain to
+
+60
+00:03:18,650 --> 00:03:21,379
+rendering code paths we were server-side
+
+61
+00:03:21,379 --> 00:03:23,810
+rendering in Python which you have to
+
+62
+00:03:23,810 --> 00:03:26,840
+server-side renderer SEO and we're
+
+63
+00:03:26,840 --> 00:03:29,139
+client side rendering in JavaScript
+
+64
+00:03:29,139 --> 00:03:33,850
+maintaining those two was not fun so
+
+65
+00:03:33,850 --> 00:03:37,250
+2016 rolls around and react is
+
+66
+00:03:37,250 --> 00:03:38,870
+definitely kind of the winning the
+
+67
+00:03:38,870 --> 00:03:41,000
+framework more at least for right now
+
+68
+00:03:41,000 --> 00:03:45,019
+and it's pretty easy to see why if you
+
+69
+00:03:45,019 --> 00:03:47,329
+take functional programming concepts and
+
+70
+00:03:47,329 --> 00:03:50,000
+apply them to front end it eliminates a
+
+71
+00:03:50,000 --> 00:03:52,549
+whole class of bugs that you see if
+
+72
+00:03:52,549 --> 00:03:54,769
+you're like making assumptions about the
+
+73
+00:03:54,769 --> 00:03:57,349
+state of your Dom and writing a period
+
+74
+00:03:57,349 --> 00:04:02,329
+of code plus it's extremely fast so it
+
+75
+00:04:02,329 --> 00:04:06,739
+was a pretty logical choice react isn't
+
+76
+00:04:06,739 --> 00:04:08,959
+the only thing that's changed though we
+
+77
+00:04:08,959 --> 00:04:11,750
+have es6 giving us the spread operator
+
+78
+00:04:11,750 --> 00:04:15,349
+arrow functions and classes all that
+
+79
+00:04:15,349 --> 00:04:17,840
+sweet sweet syntactic sugar to make
+
+80
+00:04:17,840 --> 00:04:20,989
+JavaScript more of a joy to write we
+
+81
+00:04:20,989 --> 00:04:23,139
+have better support and tooling for node
+
+82
+00:04:23,139 --> 00:04:26,180
+and we have Babel and web pack so we can
+
+83
+00:04:26,180 --> 00:04:29,660
+just transpile all the things and not
+
+84
+00:04:29,660 --> 00:04:31,219
+worry so hard about supporting different
+
+85
+00:04:31,219 --> 00:04:35,750
+browsers so right now this is kind of
+
+86
+00:04:35,750 --> 00:04:36,980
+what the Pinterest architecture
+
+87
+00:04:36,980 --> 00:04:40,550
+looks like we've got a node process
+
+88
+00:04:40,550 --> 00:04:43,580
+talking to the Python API and we have
+
+89
+00:04:43,580 --> 00:04:46,810
+both denzel modules and react components
+
+90
+00:04:46,810 --> 00:04:50,390
+why both well once you get to pinterest
+
+91
+00:04:50,390 --> 00:04:53,830
+scale pivoting your app takes a while
+
+92
+00:04:53,830 --> 00:04:56,870
+but what do I even mean by at scale it
+
+93
+00:04:56,870 --> 00:05:01,460
+is such an overloaded term the context
+
+94
+00:05:01,460 --> 00:05:03,740
+that I'm setting here is at scale means
+
+95
+00:05:03,740 --> 00:05:06,110
+source lines of code and numbers of
+
+96
+00:05:06,110 --> 00:05:10,040
+developers I was really surprised to
+
+97
+00:05:10,040 --> 00:05:12,500
+find out that we have almost 500 k lines
+
+98
+00:05:12,500 --> 00:05:14,660
+of code in our web app alone and that's
+
+99
+00:05:14,660 --> 00:05:17,090
+not including node modules or blank line
+
+100
+00:05:17,090 --> 00:05:22,400
+I also I discovered that we have a
+
+101
+00:05:22,400 --> 00:05:23,990
+hundred and sixty for web developers
+
+102
+00:05:23,990 --> 00:05:26,300
+based on the highly scientific method of
+
+103
+00:05:26,300 --> 00:05:28,010
+seeing how many people are hanging out
+
+104
+00:05:28,010 --> 00:05:31,880
+in the web rooms of slack so given that
+
+105
+00:05:31,880 --> 00:05:34,460
+we're even bigger now than we were last
+
+106
+00:05:34,460 --> 00:05:37,250
+time we pivoted how could we go about
+
+107
+00:05:37,250 --> 00:05:41,750
+this in a smart way what in doubt just
+
+108
+00:05:41,750 --> 00:05:44,990
+you know go back to the the basics the
+
+109
+00:05:44,990 --> 00:05:47,330
+building blocks of computer science data
+
+110
+00:05:47,330 --> 00:05:50,690
+structures and algorithms so what kind
+
+111
+00:05:50,690 --> 00:05:52,310
+of data structure is a web application
+
+112
+00:05:52,310 --> 00:05:58,190
+most like well it's a tree what kind of
+
+113
+00:05:58,190 --> 00:05:59,870
+algorithms do we have for changing
+
+114
+00:05:59,870 --> 00:06:04,280
+things in trees you could either start
+
+115
+00:06:04,280 --> 00:06:07,010
+at the root and walk down or you can
+
+116
+00:06:07,010 --> 00:06:11,080
+start at the bottom and walk up we chose
+
+117
+00:06:11,080 --> 00:06:13,580
+starting at the bottom and walking up in
+
+118
+00:06:13,580 --> 00:06:16,910
+order to have a forcing function to make
+
+119
+00:06:16,910 --> 00:06:19,820
+everyone convert things over as if we
+
+120
+00:06:19,820 --> 00:06:21,950
+allowed people to just kind of start in
+
+121
+00:06:21,950 --> 00:06:24,860
+the middle and render denzel modules
+
+122
+00:06:24,860 --> 00:06:26,690
+from inside of react if they could start
+
+123
+00:06:26,690 --> 00:06:28,430
+anywhere in the tree they would not be
+
+124
+00:06:28,430 --> 00:06:31,130
+motivated to port everything over they'd
+
+125
+00:06:31,130 --> 00:06:33,260
+rewrite the cool fun sexy things that
+
+126
+00:06:33,260 --> 00:06:35,360
+give you a boost and then ignore all the
+
+127
+00:06:35,360 --> 00:06:37,370
+other cruft and we be maintaining two
+
+128
+00:06:37,370 --> 00:06:41,990
+worlds forever we didn't want that those
+
+129
+00:06:41,990 --> 00:06:45,050
+kind of a high level what we did now I'm
+
+130
+00:06:45,050 --> 00:06:46,700
+going to dive down a little bit into the
+
+131
+00:06:46,700 --> 00:06:50,460
+Nitty Gritty of things that went well
+
+132
+00:06:50,470 --> 00:06:52,460
+so what do you get to pinterest sighs
+
+133
+00:06:52,460 --> 00:06:55,129
+you had a bunch of teams like let's say
+
+134
+00:06:55,129 --> 00:06:57,280
+we have about ten teams writing web code
+
+135
+00:06:57,280 --> 00:06:59,810
+all those teams have different metrics
+
+136
+00:06:59,810 --> 00:07:04,039
+that they care about every team we had
+
+137
+00:07:04,039 --> 00:07:05,240
+them wrapped their features and
+
+138
+00:07:05,240 --> 00:07:06,650
+individual experiments so we could
+
+139
+00:07:06,650 --> 00:07:09,139
+measure the gains we've got which is
+
+140
+00:07:09,139 --> 00:07:10,759
+really motivating both for individual
+
+141
+00:07:10,759 --> 00:07:12,770
+developers and for management to
+
+142
+00:07:12,770 --> 00:07:14,900
+continue to understand why react should
+
+143
+00:07:14,900 --> 00:07:17,659
+be a priority we got some really sweet
+
+144
+00:07:17,659 --> 00:07:20,539
+gains let's talk conversion numbers does
+
+145
+00:07:20,539 --> 00:07:22,759
+anybody want to take a guess on the
+
+146
+00:07:22,759 --> 00:07:24,620
+percentage improvement we got in
+
+147
+00:07:24,620 --> 00:07:26,330
+conversion rates from switching our pin
+
+148
+00:07:26,330 --> 00:07:31,009
+page to react oh come on i don't have
+
+149
+00:07:31,009 --> 00:07:37,250
+candy anyone have a guess thanks Ted no
+
+150
+00:07:37,250 --> 00:07:41,870
+not quite but ten percent that's pretty
+
+151
+00:07:41,870 --> 00:07:44,719
+good and five point six percent on
+
+152
+00:07:44,719 --> 00:07:51,440
+interest pages we also recently ported
+
+153
+00:07:51,440 --> 00:07:54,409
+the profile page over it dropped average
+
+154
+00:07:54,409 --> 00:07:58,520
+time to first interaction by 22% the ten
+
+155
+00:07:58,520 --> 00:08:00,979
+percent increase in pageviews was for
+
+156
+00:08:00,979 --> 00:08:03,349
+profile pages then there are also other
+
+157
+00:08:03,349 --> 00:08:05,659
+downstream effects like which makes
+
+158
+00:08:05,659 --> 00:08:10,219
+sense because people look at the profile
+
+159
+00:08:10,219 --> 00:08:11,990
+page it loads pretty fast and they're
+
+160
+00:08:11,990 --> 00:08:13,250
+like sweetie I'm going to click on some
+
+161
+00:08:13,250 --> 00:08:16,819
+other stuff we got a seven percent
+
+162
+00:08:16,819 --> 00:08:18,650
+increase in international sessions and a
+
+163
+00:08:18,650 --> 00:08:20,620
+one percent increase in overall sessions
+
+164
+00:08:20,620 --> 00:08:23,090
+the bigger increase internationally
+
+165
+00:08:23,090 --> 00:08:25,190
+makes a ton of sense because those users
+
+166
+00:08:25,190 --> 00:08:27,889
+were undoubtedly hurting the most from
+
+167
+00:08:27,889 --> 00:08:32,779
+our crappy latency before another thing
+
+168
+00:08:32,779 --> 00:08:36,199
+we did is we shimmed backbone before we
+
+169
+00:08:36,199 --> 00:08:39,979
+even started porting to react we took
+
+170
+00:08:39,979 --> 00:08:41,899
+backbone and made it so that we had
+
+171
+00:08:41,899 --> 00:08:43,969
+eighty percent of the functionality but
+
+172
+00:08:43,969 --> 00:08:47,149
+it didn't have the dependencies that it
+
+173
+00:08:47,149 --> 00:08:49,510
+had before that were quite bloated like
+
+174
+00:08:49,510 --> 00:08:52,670
+jQuery and underscore this allowed us to
+
+175
+00:08:52,670 --> 00:08:54,350
+significantly reduce the size of our
+
+176
+00:08:54,350 --> 00:08:59,040
+bundle and still be able to run Denzel
+
+177
+00:08:59,050 --> 00:09:01,579
+we also updated Denzel to use
+
+178
+00:09:01,579 --> 00:09:03,780
+declarative states
+
+179
+00:09:03,780 --> 00:09:06,100
+imperative to declarative is a pretty
+
+180
+00:09:06,100 --> 00:09:08,140
+big mental shift that we're asking
+
+181
+00:09:08,140 --> 00:09:11,560
+developers to make and react is a big
+
+182
+00:09:11,560 --> 00:09:14,650
+change too so by decoupling those
+
+183
+00:09:14,650 --> 00:09:17,020
+changes and giving people a sequence to
+
+184
+00:09:17,020 --> 00:09:19,870
+learn things in it's a little less of a
+
+185
+00:09:19,870 --> 00:09:24,610
+cognitive load so this is a mistake that
+
+186
+00:09:24,610 --> 00:09:27,100
+we made in Denzel that we did not make
+
+187
+00:09:27,100 --> 00:09:30,250
+and react your designers are going to
+
+188
+00:09:30,250 --> 00:09:31,840
+want to pivot how the website looks
+
+189
+00:09:31,840 --> 00:09:34,120
+every two years too because that's just
+
+190
+00:09:34,120 --> 00:09:36,070
+the world that they're in their trends
+
+191
+00:09:36,070 --> 00:09:39,130
+and visual design as well and it is so
+
+192
+00:09:39,130 --> 00:09:41,650
+tempting to be like well if we have to
+
+193
+00:09:41,650 --> 00:09:43,570
+rewrite everything anyway we might as
+
+194
+00:09:43,570 --> 00:09:45,370
+well just you know change how it looks
+
+195
+00:09:45,370 --> 00:09:49,630
+but don't do it the reason why is
+
+196
+00:09:49,630 --> 00:09:51,880
+because with Denzel we had all these
+
+197
+00:09:51,880 --> 00:09:54,190
+metrics drops that were super hard to
+
+198
+00:09:54,190 --> 00:09:57,640
+debug it was like our users interacting
+
+199
+00:09:57,640 --> 00:09:59,080
+with this page differently because it
+
+200
+00:09:59,080 --> 00:10:02,470
+looks different or is there actually a
+
+201
+00:10:02,470 --> 00:10:05,980
+bug in here somewhere we made the same
+
+202
+00:10:05,980 --> 00:10:08,380
+mistake with our iOS rewrite recently I
+
+203
+00:10:08,380 --> 00:10:10,150
+don't know what we were thinking but
+
+204
+00:10:10,150 --> 00:10:13,600
+with react we said no and it was much
+
+205
+00:10:13,600 --> 00:10:21,580
+smoother so when you have 164 people how
+
+206
+00:10:21,580 --> 00:10:23,140
+do you make sure that everybody stays on
+
+207
+00:10:23,140 --> 00:10:25,930
+the same page people have different
+
+208
+00:10:25,930 --> 00:10:28,630
+learning styles some people are visual
+
+209
+00:10:28,630 --> 00:10:30,490
+learners some people are verbal learners
+
+210
+00:10:30,490 --> 00:10:34,630
+so we have to cater to everybody for
+
+211
+00:10:34,630 --> 00:10:36,730
+people who prefer email there is an
+
+212
+00:10:36,730 --> 00:10:38,620
+email list web platform announced and
+
+213
+00:10:38,620 --> 00:10:40,540
+then we had a slack bot that you could
+
+214
+00:10:40,540 --> 00:10:41,950
+invite into your channel and get those
+
+215
+00:10:41,950 --> 00:10:45,700
+same updates if that's how you roll for
+
+216
+00:10:45,700 --> 00:10:47,650
+people that prefer in person there was
+
+217
+00:10:47,650 --> 00:10:49,690
+regular office hours that anyone could
+
+218
+00:10:49,690 --> 00:10:51,040
+come and ask questions sewer get
+
+219
+00:10:51,040 --> 00:10:54,280
+debugging help and we had a wiki page as
+
+220
+00:10:54,280 --> 00:10:56,200
+well which is really important
+
+221
+00:10:56,200 --> 00:10:57,880
+especially for women or other
+
+222
+00:10:57,880 --> 00:10:59,590
+underrepresented minorities or people
+
+223
+00:10:59,590 --> 00:11:01,690
+who statistically speaking are going to
+
+224
+00:11:01,690 --> 00:11:09,269
+be less comfortable asking questions so
+
+225
+00:11:09,279 --> 00:11:11,199
+it's one thing to put the information
+
+226
+00:11:11,199 --> 00:11:13,329
+out there and tell people what kind of
+
+227
+00:11:13,329 --> 00:11:16,209
+things you expect to them but how do you
+
+228
+00:11:16,209 --> 00:11:17,949
+actually make sure that they're writing
+
+229
+00:11:17,949 --> 00:11:20,920
+code that meets your conventions Lynch
+
+230
+00:11:20,920 --> 00:11:25,749
+all the things react is particularly
+
+231
+00:11:25,749 --> 00:11:29,079
+suited to linting because the output of
+
+232
+00:11:29,079 --> 00:11:31,379
+jsx is an object that you can easily
+
+233
+00:11:31,379 --> 00:11:35,470
+inspect and be like oh hey this image
+
+234
+00:11:35,470 --> 00:11:37,149
+doesn't have an alt tag and that's
+
+235
+00:11:37,149 --> 00:11:41,470
+really important for accessibility we
+
+236
+00:11:41,470 --> 00:11:47,459
+open sourced our linter configuration
+
+237
+00:11:47,459 --> 00:11:50,529
+and I would also encourage you to check
+
+238
+00:11:50,529 --> 00:11:55,420
+out this es Lin jsx accessibility plugin
+
+239
+00:11:55,420 --> 00:11:58,089
+if you care about accessibility and you
+
+240
+00:11:58,089 --> 00:12:01,300
+should okay so that was what went well
+
+241
+00:12:01,300 --> 00:12:03,910
+here things that I might do differently
+
+242
+00:12:03,910 --> 00:12:08,110
+next time around I don't know about you
+
+243
+00:12:08,110 --> 00:12:10,240
+but learning a new framework is
+
+244
+00:12:10,240 --> 00:12:16,089
+sometimes hard scary especially with
+
+245
+00:12:16,089 --> 00:12:18,399
+react there's like not just react itself
+
+246
+00:12:18,399 --> 00:12:21,750
+but all this other stuff around it I
+
+247
+00:12:21,750 --> 00:12:25,389
+dived in and I was trying to learn EO 6
+
+248
+00:12:25,389 --> 00:12:29,709
++ j sx and react and an p.m. and i was
+
+249
+00:12:29,709 --> 00:12:34,449
+like I don't know what I'm doing if I
+
+250
+00:12:34,449 --> 00:12:36,309
+had to do this again I would put a
+
+251
+00:12:36,309 --> 00:12:38,920
+suggested order of learning operations
+
+252
+00:12:38,920 --> 00:12:40,779
+on the wiki so that people who are
+
+253
+00:12:40,779 --> 00:12:43,269
+junior or more just new to web or
+
+254
+00:12:43,269 --> 00:12:45,309
+whatever have a way to sequence their
+
+255
+00:12:45,309 --> 00:12:49,120
+learning and not get overwhelmed I agree
+
+256
+00:12:49,120 --> 00:12:51,639
+with Pete hunt that this is a pretty
+
+257
+00:12:51,639 --> 00:12:54,129
+good learning order and you might not
+
+258
+00:12:54,129 --> 00:12:56,110
+even need all this stuff depending on
+
+259
+00:12:56,110 --> 00:13:02,949
+the size and complexity of your app so
+
+260
+00:13:02,949 --> 00:13:04,959
+as I mentioned before we force people to
+
+261
+00:13:04,959 --> 00:13:07,509
+convert from the leaf nodes up in order
+
+262
+00:13:07,509 --> 00:13:08,620
+to make sure that they would port
+
+263
+00:13:08,620 --> 00:13:11,589
+everything over but there is a use case
+
+264
+00:13:11,589 --> 00:13:13,749
+we missed that was kind of a duh which
+
+265
+00:13:13,749 --> 00:13:15,129
+is like people were going to want to add
+
+266
+00:13:15,129 --> 00:13:17,470
+entirely new page types that didn't
+
+267
+00:13:17,470 --> 00:13:21,730
+exist inside Denzel we were able to get
+
+268
+00:13:21,730 --> 00:13:22,780
+it working
+
+269
+00:13:22,780 --> 00:13:25,300
+it was a little bit hacky and it would
+
+270
+00:13:25,300 --> 00:13:27,550
+have been better to invest some time in
+
+271
+00:13:27,550 --> 00:13:33,430
+thinking about that up front we also
+
+272
+00:13:33,430 --> 00:13:35,680
+kept the HTML structure of the pages
+
+273
+00:13:35,680 --> 00:13:38,290
+exactly the same disallowed our
+
+274
+00:13:38,290 --> 00:13:40,000
+measurements to be a true
+
+275
+00:13:40,000 --> 00:13:43,570
+apples-to-apples comparison however it
+
+276
+00:13:43,570 --> 00:13:44,920
+also meant that we had to write more
+
+277
+00:13:44,920 --> 00:13:47,350
+code to keep up with shitty practices
+
+278
+00:13:47,350 --> 00:13:52,240
+from the old system we didn't have a
+
+279
+00:13:52,240 --> 00:13:54,400
+great plan for data flow out of the box
+
+280
+00:13:54,400 --> 00:13:58,960
+we were like just you set state but when
+
+281
+00:13:58,960 --> 00:14:00,640
+you have an appt with a deeply nested
+
+282
+00:14:00,640 --> 00:14:03,670
+component structure then you fed to data
+
+283
+00:14:03,670 --> 00:14:05,320
+and you're passing it down from child to
+
+284
+00:14:05,320 --> 00:14:09,550
+child the child these days we have we're
+
+285
+00:14:09,550 --> 00:14:11,620
+using redux and we have a higher order
+
+286
+00:14:11,620 --> 00:14:15,040
+component that fetches data so it's much
+
+287
+00:14:15,040 --> 00:14:17,170
+easier and we should have set that up
+
+288
+00:14:17,170 --> 00:14:22,510
+straight out of the box a mistake that
+
+289
+00:14:22,510 --> 00:14:26,080
+denzel made was coupling data fetching
+
+290
+00:14:26,080 --> 00:14:29,440
+and rendering in the same function the
+
+291
+00:14:29,440 --> 00:14:31,930
+reason why that's a no-no is because it
+
+292
+00:14:31,930 --> 00:14:34,120
+allows developers just kind of gloss
+
+293
+00:14:34,120 --> 00:14:36,340
+over performance problems by pretending
+
+294
+00:14:36,340 --> 00:14:39,760
+there isn't a loading state well there
+
+295
+00:14:39,760 --> 00:14:41,800
+is a loading state and you need to deal
+
+296
+00:14:41,800 --> 00:14:44,980
+with it when you're writing react
+
+297
+00:14:44,980 --> 00:14:46,330
+components you need to think about what
+
+298
+00:14:46,330 --> 00:14:47,980
+your components going to look like when
+
+299
+00:14:47,980 --> 00:14:51,430
+there's no data the reason that this
+
+300
+00:14:51,430 --> 00:14:53,500
+impacted our rewrite or made it harder
+
+301
+00:14:53,500 --> 00:14:55,210
+was because of people are porting over
+
+302
+00:14:55,210 --> 00:14:57,010
+there Denzel components they had to
+
+303
+00:14:57,010 --> 00:14:59,080
+think about things like loading state
+
+304
+00:14:59,080 --> 00:15:04,010
+that they hadn't previously considered
+
+305
+00:15:04,020 --> 00:15:06,850
+we did not set up our testing frameworks
+
+306
+00:15:06,850 --> 00:15:10,210
+soon enough and consequently our unit
+
+307
+00:15:10,210 --> 00:15:12,870
+test coverage has suffered a little bit
+
+308
+00:15:12,870 --> 00:15:15,640
+once developers of ship things and the
+
+309
+00:15:15,640 --> 00:15:17,320
+code is in the wild you are not going to
+
+310
+00:15:17,320 --> 00:15:18,910
+get people to go back and write unit
+
+311
+00:15:18,910 --> 00:15:22,120
+tests it is not going to happen if i
+
+312
+00:15:22,120 --> 00:15:24,780
+want to known how easy it is to use
+
+313
+00:15:24,780 --> 00:15:27,580
+enzyme and just this would have gotten
+
+314
+00:15:27,580 --> 00:15:31,360
+set up a lot sooner in fact i'd even go
+
+315
+00:15:31,360 --> 00:15:33,460
+so far as to say the true value of react
+
+316
+00:15:33,460 --> 00:15:37,200
+is testability not speed
+
+317
+00:15:37,200 --> 00:15:39,820
+there are tools down so that you can
+
+318
+00:15:39,820 --> 00:15:41,980
+render a string to a dom node and
+
+319
+00:15:41,980 --> 00:15:44,980
+different and it's still fast but not
+
+320
+00:15:44,980 --> 00:15:50,800
+nearly as testable finally we didn't
+
+321
+00:15:50,800 --> 00:15:54,580
+have a good CSS strategy that was semi
+
+322
+00:15:54,580 --> 00:15:56,650
+intentional because we were already
+
+323
+00:15:56,650 --> 00:15:58,690
+changing so much stuff we didn't want to
+
+324
+00:15:58,690 --> 00:16:00,400
+change everything all at once in
+
+325
+00:16:00,400 --> 00:16:03,340
+overwhelmed people but the thing about
+
+326
+00:16:03,340 --> 00:16:05,020
+writing react is that it makes it
+
+327
+00:16:05,020 --> 00:16:07,240
+immediately obvious like global CSS is a
+
+328
+00:16:07,240 --> 00:16:09,460
+bad idea in the same way the global
+
+329
+00:16:09,460 --> 00:16:13,090
+variables are a bad idea because we
+
+330
+00:16:13,090 --> 00:16:14,530
+didn't provide teams with clear
+
+331
+00:16:14,530 --> 00:16:17,170
+guidelines on what to do it was kind of
+
+332
+00:16:17,170 --> 00:16:19,900
+like the wild wild west some people were
+
+333
+00:16:19,900 --> 00:16:23,890
+using bens style some people are using
+
+334
+00:16:23,890 --> 00:16:26,980
+inline styles we're in the process of
+
+335
+00:16:26,980 --> 00:16:28,540
+cleaning that up and moving to CSS
+
+336
+00:16:28,540 --> 00:16:31,180
+modules and it's going to be great but
+
+337
+00:16:31,180 --> 00:16:35,760
+we're not there yet so at a high level
+
+338
+00:16:35,760 --> 00:16:40,150
+what did what did we learn from this the
+
+339
+00:16:40,150 --> 00:16:42,040
+more you can irritably update the
+
+340
+00:16:42,040 --> 00:16:44,890
+semantics of your old system to match
+
+341
+00:16:44,890 --> 00:16:47,560
+the new system the easier your rewrite
+
+342
+00:16:47,560 --> 00:16:49,990
+is going to be now we did a little bit
+
+343
+00:16:49,990 --> 00:16:53,110
+of this with backbone light and with
+
+344
+00:16:53,110 --> 00:16:54,820
+updating denzel to use declarative
+
+345
+00:16:54,820 --> 00:16:56,500
+states but we could have gone way
+
+346
+00:16:56,500 --> 00:16:59,710
+further with it for example we could
+
+347
+00:16:59,710 --> 00:17:01,360
+have updated backbones life cycle
+
+348
+00:17:01,360 --> 00:17:03,010
+methods to match reacts component
+
+349
+00:17:03,010 --> 00:17:08,350
+lifecycle methods so how is code like
+
+350
+00:17:08,350 --> 00:17:14,890
+DNA did you know that the kind of
+
+351
+00:17:14,890 --> 00:17:18,280
+nutrition that your grandmother got when
+
+352
+00:17:18,280 --> 00:17:20,339
+she was pregnant with your mother
+
+353
+00:17:20,339 --> 00:17:23,020
+impacts your birth weight and your
+
+354
+00:17:23,020 --> 00:17:27,040
+health throughout your life this is not
+
+355
+00:17:27,040 --> 00:17:29,500
+it's not even because of DNA it's
+
+356
+00:17:29,500 --> 00:17:33,370
+because of epigenetic markers so in the
+
+357
+00:17:33,370 --> 00:17:36,040
+same way the code you write it and then
+
+358
+00:17:36,040 --> 00:17:39,010
+you run it DNA is written we'll just
+
+359
+00:17:39,010 --> 00:17:41,860
+call it written and then it's run your
+
+360
+00:17:41,860 --> 00:17:45,030
+body runs it and turns it into you
+
+361
+00:17:45,030 --> 00:17:47,770
+epigenetic markers are like meta code
+
+362
+00:17:47,770 --> 00:17:50,200
+that tell your body
+
+363
+00:17:50,200 --> 00:17:52,269
+to run your DNA or how to how your genes
+
+364
+00:17:52,269 --> 00:17:56,889
+should be expressed like a rewrite
+
+365
+00:17:56,889 --> 00:17:59,409
+they're passed down from generation to
+
+366
+00:17:59,409 --> 00:18:01,539
+generation so it's epigenetic markers
+
+367
+00:18:01,539 --> 00:18:03,940
+that deal with the fetal nutrition stuff
+
+368
+00:18:03,940 --> 00:18:07,480
+that I just mentioned your rewrite the
+
+369
+00:18:07,480 --> 00:18:10,269
+choices you make now impact not only
+
+370
+00:18:10,269 --> 00:18:13,120
+this rewrite or not only the next
+
+371
+00:18:13,120 --> 00:18:17,029
+rewrite but the following one after that
+
+372
+00:18:17,039 --> 00:18:20,440
+fundamentally engineering is about
+
+373
+00:18:20,440 --> 00:18:22,889
+making trade-offs so when you go
+
+374
+00:18:22,889 --> 00:18:26,740
+pivoting your app choose your own
+

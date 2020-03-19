@@ -1,0 +1,1336 @@
+1
+00:00:21,050 --> 00:00:22,690
+Hello everybody.
+
+2
+00:00:22,690 --> 00:00:24,090
+Thank you for
+introduction.
+
+3
+00:00:24,090 --> 00:00:27,890
+This will be very interesting talk
+because I'm going to show you how to make
+
+4
+00:00:27,890 --> 00:00:30,590
+your
+JavaScript programmes faster.
+
+5
+00:00:30,590 --> 00:00:32,689
+But let me first
+introduce myself.
+
+6
+00:00:32,689 --> 00:00:42,680
+I am coming from academia, I'm
+a student at a university in Germany, and
+
+7
+00:00:42,680 --> 00:00:49,000
+they work in
+research group which main goal is to build
+
+8
+00:00:49,000 --> 00:00:54,570
+techniques to
+make it more secure, reliable and efficient,
+
+9
+00:00:54,570 --> 00:01:00,190
+and we're
+now focusing on JavaScript, but if you ask
+
+10
+00:01:00,190 --> 00:01:04,670
+me where do
+you use JavaScript, and why do you use JavaScript,
+
+11
+00:01:04,670 --> 00:01:11,750
+I will tell you we build JavaScript tools,
+and we found
+
+12
+00:01:11,750 --> 00:01:18,071
+JavaScript really interesting language, challenging,
+but
+
+13
+00:01:18,071 --> 00:01:20,500
+also very unusual.
+
+14
+00:01:20,500 --> 00:01:27,270
+So don't take this literally, but
+there are still many things in JavaScript
+
+15
+00:01:27,270 --> 00:01:32,430
+coded, you
+have to be improved.
+
+16
+00:01:32,430 --> 00:01:36,270
+This is my first time at the JSconf and I'm
+happy to
+
+17
+00:01:36,270 --> 00:01:42,220
+be here because I personally believe that
+whatever we do
+
+18
+00:01:42,220 --> 00:01:45,410
+on the research side should be also very beneficial
+for
+
+19
+00:01:45,410 --> 00:01:47,720
+the community.
+
+20
+00:01:47,720 --> 00:01:49,580
+And now let's start.
+
+21
+00:01:49,580 --> 00:01:54,380
+Who have
+a experienced JavaScripts programmes that
+
+22
+00:01:54,380 --> 00:01:56,710
+are like this?
+
+23
+00:01:56,710 --> 00:02:01,160
+Can you raise your hand?
+
+24
+00:02:01,160 --> 00:02:06,390
+In this talk I'm going to tell
+you how to make JavaScript programmes like
+
+25
+00:02:06,390 --> 00:02:12,850
+this, and
+believe me, it is not very difficult.
+
+26
+00:02:12,850 --> 00:02:18,310
+But let's first
+agree on importance of JavaScript performance.
+
+27
+00:02:18,310 --> 00:02:23,660
+And
+I would remind you that 90 per cent of almost
+
+28
+00:02:23,660 --> 00:02:28,450
+all
+websites nowadays are powered with some amount
+
+29
+00:02:28,450 --> 00:02:32,820
+of
+JavaScript, and having efficient and highly
+
+30
+00:02:32,820 --> 00:02:36,700
+optimised
+JavaScript is very important to keep your
+
+31
+00:02:36,700 --> 00:02:39,670
+web
+applications responsive.
+
+32
+00:02:39,670 --> 00:02:45,980
+But when we talk about mobile
+world, we also can see that many mobile applications
+
+33
+00:02:45,980 --> 00:02:48,870
+nowadays are written partially or entirely
+in
+
+34
+00:02:48,870 --> 00:02:52,980
+JavaScript, and we don't want mobile applications
+that
+
+35
+00:02:52,980 --> 00:02:55,090
+drain our battery.
+
+36
+00:02:55,090 --> 00:03:00,690
+So highly performing JavaScript is
+also crucial for energy efficiency.
+
+37
+00:03:00,690 --> 00:03:06,970
+I hope that I convince you why JavaScript
+performance is important.
+
+38
+00:03:06,970 --> 00:03:12,140
+But probably some of you
+would ask me why would we care about optimisation
+
+39
+00:03:12,140 --> 00:03:14,840
+of
+JavaScript, especially in the presence of
+
+40
+00:03:14,840 --> 00:03:18,860
+highly
+optimised JIT compilers and almost every browser
+
+41
+00:03:18,860 --> 00:03:23,450
+or
+platform that has JavaScript nowadays has
+
+42
+00:03:23,450 --> 00:03:29,060
+some sort of
+JIT compiler -- even Internet Explorer, yes.
+
+43
+00:03:29,060 --> 00:03:33,530
+For
+example, Chrome, Opera, now Js, they employ
+
+44
+00:03:33,530 --> 00:03:43,230
+V8, Firefox
+has SpiderMonkey, Internet Explorer has chakra
+
+45
+00:03:43,230 --> 00:03:46,650
+and JIT
+compilers are known to be very powerful.
+
+46
+00:03:46,650 --> 00:03:48,170
+And that's
+true.
+
+47
+00:03:48,170 --> 00:03:51,360
+But I would remind you that optimisations
+are
+
+48
+00:03:51,360 --> 00:03:52,490
+limited.
+
+49
+00:03:52,490 --> 00:03:57,590
+When I say limited, I don't mean number of
+optimisations are limited, but I mean the
+
+50
+00:03:57,590 --> 00:04:01,720
+situations in
+which certain compiler optimisation can take
+
+51
+00:04:01,720 --> 00:04:06,510
+place
+because compilers, JIT compilers, optimise
+
+52
+00:04:06,510 --> 00:04:09,930
+JavaScript
+code in runtime, and they make certain assumptions
+
+53
+00:04:09,930 --> 00:04:14,640
+of
+JavaScript code, if they're not met in the
+
+54
+00:04:14,640 --> 00:04:19,620
+runtime,
+simply compilers refuse to optimise JavaScript
+
+55
+00:04:19,620 --> 00:04:24,160
+code, or
+they optimise previously optimised JavaScript
+
+56
+00:04:24,160 --> 00:04:25,850
+code.
+
+57
+00:04:25,850 --> 00:04:30,840
+So,
+because JavaScript performance is obviously
+
+58
+00:04:30,840 --> 00:04:36,560
+very
+important, and optimisations are limited,
+
+59
+00:04:36,560 --> 00:04:41,639
+developers
+still manually optimise their code.
+
+60
+00:04:41,639 --> 00:04:46,539
+And to understand
+what type of optimisations developers apply
+
+61
+00:04:46,539 --> 00:04:53,169
+and what do
+they consider, as important optimisations,
+
+62
+00:04:53,169 --> 00:04:58,550
+we did
+analysis of performance issue reports from
+
+63
+00:04:58,550 --> 00:05:02,860
+popular
+JavaScript projects, and here I would mention
+
+64
+00:05:02,860 --> 00:05:08,229
+only three
+of them so we started backtracking system
+
+65
+00:05:08,229 --> 00:05:14,330
+of angular
+project, amber react to JQuery_ and many more.
+
+66
+00:05:14,330 --> 00:05:18,250
+Because
+for those projects we understood that performance
+
+67
+00:05:18,250 --> 00:05:20,639
+is
+significant concern.
+
+68
+00:05:20,639 --> 00:05:27,800
+And we analyse in total and
+reproduce successfully 98 performance issues.
+
+69
+00:05:27,800 --> 00:05:31,669
+Now I am going to give you some examples of
+the real
+
+70
+00:05:31,669 --> 00:05:35,629
+world JavaScript performance issues and how
+developers
+
+71
+00:05:35,629 --> 00:05:37,490
+fix them.
+
+72
+00:05:37,490 --> 00:05:48,659
+So let's first start from the most prevalent
+ones I don't know, would you guess this, but
+
+73
+00:05:48,659 --> 00:05:52,180
+please
+don't be surprised if I show you that most
+
+74
+00:05:52,180 --> 00:05:57,409
+-- the
+significant amount of performance issues we
+
+75
+00:05:57,409 --> 00:06:07,289
+analysed are
+related to this, and this not surprising because
+
+76
+00:06:07,289 --> 00:06:12,069
+compilers in many cases are not successfully
+optimise
+
+77
+00:06:12,069 --> 00:06:14,410
+this statement.
+
+78
+00:06:14,410 --> 00:06:19,420
+And this particular piece of code
+iterates over properties of some object, and
+
+79
+00:06:19,420 --> 00:06:26,440
+checks
+whether the properties are new numeriable,
+
+80
+00:06:26,440 --> 00:06:35,650
+so they
+solved this problem and traditional, and to
+
+81
+00:06:35,650 --> 00:06:41,099
+convince the
+developer to apply certain optimisations,
+
+82
+00:06:41,099 --> 00:06:45,749
+people -- what
+they usually do, they create micro-benchmarks
+
+83
+00:06:45,749 --> 00:06:50,039
+and they
+run that on JSperf.
+
+84
+00:06:50,039 --> 00:06:52,830
+I hope you're familiar with that?
+
+85
+00:06:52,830 --> 00:06:55,229
+Can you raise your hand?
+
+86
+00:06:55,229 --> 00:07:00,449
+Okay, almost all of you are
+familiar, but this online benchmark to compare
+
+87
+00:07:00,449 --> 00:07:05,610
+performance of different code snippets written
+in
+
+88
+00:07:05,610 --> 00:07:07,250
+JavaScript.
+
+89
+00:07:07,250 --> 00:07:14,099
+As you know, it represents how many
+operations per second one code can execute
+
+90
+00:07:14,099 --> 00:07:18,719
+and the
+higher value is better one.
+
+91
+00:07:18,719 --> 00:07:23,899
+So for some input you can save almost 60 per
+cent of
+
+92
+00:07:23,899 --> 00:07:33,529
+the execution time by using object keys built
+in Forlin.
+
+93
+00:07:33,529 --> 00:07:38,069
+This is another example of performance issue
+in
+
+94
+00:07:38,069 --> 00:07:43,169
+JavaScript, and yeah, it is not really performance
+wise
+
+95
+00:07:43,169 --> 00:07:46,689
+to create regular expression every time when
+split
+
+96
+00:07:46,689 --> 00:07:51,800
+method is called, and for this particular
+project the
+
+97
+00:07:51,800 --> 00:07:56,199
+split method was called many times during
+the execution.
+
+98
+00:07:56,199 --> 00:08:03,940
+So it is much more efficient to start a computation
+of
+
+99
+00:08:03,940 --> 00:08:10,719
+regular expression creation and to reuse this
+computation later in your code.
+
+100
+00:08:10,719 --> 00:08:16,819
+And by running these two codes on JS Perf,
+we
+
+101
+00:08:16,819 --> 00:08:23,119
+managed to save for some input 15 per cent
+of execution
+
+102
+00:08:23,119 --> 00:08:27,710
+time in Firefox.
+
+103
+00:08:27,710 --> 00:08:31,759
+Another example shows how you can copy elements
+from
+
+104
+00:08:31,759 --> 00:08:35,700
+binary to another, so what you can do is just
+iterate
+
+105
+00:08:35,700 --> 00:08:40,460
+over elements, and append new array with every
+original
+
+106
+00:08:40,460 --> 00:08:43,450
+element of the array, but it is much more
+efficient and
+
+107
+00:08:43,450 --> 00:08:48,520
+smarter to call built-in prototype slice method.
+
+108
+00:08:48,520 --> 00:08:54,839
+For
+this particular example, we saved almost 200
+
+109
+00:08:54,839 --> 00:09:00,940
+per cent
+execution time in both browsers, Chrome and
+
+110
+00:09:00,940 --> 00:09:01,940
+Firefox.
+
+111
+00:09:01,940 --> 00:09:09,230
+In
+the last example, it is about how JavaScript
+
+112
+00:09:09,230 --> 00:09:15,320
+developers
+use sometimes, not always, JavaScript API
+
+113
+00:09:15,320 --> 00:09:17,100
+in inefficient
+way.
+
+114
+00:09:17,100 --> 00:09:21,490
+So a couple of years ago it was really popular
+to
+
+115
+00:09:21,490 --> 00:09:25,529
+use split and join calls for doing search
+and replace in
+
+116
+00:09:25,529 --> 00:09:31,150
+JavaScript, and nowadays, since replace method
+is very
+
+117
+00:09:31,150 --> 00:09:34,100
+well optimised by many browsers, it is much
+more
+
+118
+00:09:34,100 --> 00:09:38,560
+efficient to use, the built-in method, and
+please keep
+
+119
+00:09:38,560 --> 00:09:43,310
+in mind this example I will come to this later
+on.
+
+120
+00:09:43,310 --> 00:09:49,440
+And
+on JSperf we could save 44 per cent of execution
+
+121
+00:09:49,440 --> 00:09:57,190
+time in
+Chrome for this particular optimisation.
+
+122
+00:09:57,190 --> 00:10:03,449
+So what I would like to discuss now is, well,
+it's
+
+123
+00:10:03,449 --> 00:10:09,670
+common belief that having optimised code would
+sacrifice
+
+124
+00:10:09,670 --> 00:10:15,160
+maintainability of your code, which is for
+some
+
+125
+00:10:15,160 --> 00:10:19,449
+optimisations true, but if you could remind
+yourself of
+
+126
+00:10:19,449 --> 00:10:23,910
+the previous example you could see that many
+optimisations were pretty simple and they
+
+127
+00:10:23,910 --> 00:10:28,940
+didn't change
+complexity of the source code, almost at all.
+
+128
+00:10:28,940 --> 00:10:33,879
+So, is
+this really the case for real world optimisations
+
+129
+00:10:33,879 --> 00:10:35,519
+in
+JavaScript?
+
+130
+00:10:35,519 --> 00:10:40,269
+Well, I would not say that.
+
+131
+00:10:40,269 --> 00:10:47,329
+And to prove
+this, we measured for every optimisations
+
+132
+00:10:47,329 --> 00:10:51,200
+how many
+statements the optimisation change in the
+
+133
+00:10:51,200 --> 00:10:57,350
+source code
+and what is the difference between original
+
+134
+00:10:57,350 --> 00:11:00,230
+and
+optimised version of the program?
+
+135
+00:11:00,230 --> 00:11:04,430
+And if you could see
+most of the optimisations, almost are not
+
+136
+00:11:04,430 --> 00:11:08,040
+changed
+complexity at all.
+
+137
+00:11:08,040 --> 00:11:20,000
+So, here in this, I would say that yeah,
+optimisation are relatively simple, that by
+
+138
+00:11:20,000 --> 00:11:25,870
+relatively
+simple changes you can optimise your JavaScript
+
+139
+00:11:25,870 --> 00:11:30,329
+codes
+significantly, and we also observe that many
+
+140
+00:11:30,329 --> 00:11:33,350
+optimisations are instances of recurring partners
+which
+
+141
+00:11:33,350 --> 00:11:37,709
+means that one type of optimisation we found
+in multiple
+
+142
+00:11:37,709 --> 00:11:40,160
+projects.
+
+143
+00:11:40,160 --> 00:11:42,440
+Imagine the following situations you use your
+split
+
+144
+00:11:42,440 --> 00:11:46,990
+and join pattern all over your codebase and
+you use it
+
+145
+00:11:46,990 --> 00:11:48,899
+many places.
+
+146
+00:11:48,899 --> 00:11:54,839
+Optimising this particular pattern would
+require a lot of manual effort and maybe some
+
+147
+00:11:54,839 --> 00:11:57,769
+of you
+would give up of this optimisation.
+
+148
+00:11:57,769 --> 00:12:04,970
+But we wanted to
+answer, is it possible to outmain the process
+
+149
+00:12:04,970 --> 00:12:09,970
+of
+optimising JavaScript programme?
+
+150
+00:12:09,970 --> 00:12:14,070
+I don't have general
+answer to this question, but I can say for
+
+151
+00:12:14,070 --> 00:12:20,389
+many
+optimisations we succeeded to do this in almost
+
+152
+00:12:20,389 --> 00:12:23,010
+fully
+automatic way.
+
+153
+00:12:23,010 --> 00:12:30,120
+So what we did, we built a tool for
+semi-automatic refactorings, and general idea
+
+154
+00:12:30,120 --> 00:12:34,970
+of this is
+to provide as you input something that we
+
+155
+00:12:34,970 --> 00:12:38,790
+already have,
+and this the program we want to optimise and
+
+156
+00:12:38,790 --> 00:12:42,540
+some set of
+tests, they can be functional tests on which
+
+157
+00:12:42,540 --> 00:12:44,930
+you will
+check the reference of your code.
+
+158
+00:12:44,930 --> 00:12:49,310
+To use it as input
+and output, you have optimised program.
+
+159
+00:12:49,310 --> 00:12:54,810
+It sounds
+really promising.
+
+160
+00:12:54,810 --> 00:12:59,120
+So let's take a closer look into the tools
+-- into
+
+161
+00:12:59,120 --> 00:13:02,100
+the structure of the tool and what tool actually
+does.
+
+162
+00:13:02,100 --> 00:13:06,579
+So, as I mentioned, you use your program,
+set-up test,
+
+163
+00:13:06,579 --> 00:13:11,139
+and you describe the pattern you want to optimise,
+you
+
+164
+00:13:11,139 --> 00:13:15,940
+want to refactor, and our tool is based on
+estimating
+
+165
+00:13:15,940 --> 00:13:20,240
+and rewriting, and I hope most of you are
+familiar with
+
+166
+00:13:20,240 --> 00:13:28,470
+the AST term, and simply speaking it is a
+true
+
+167
+00:13:28,470 --> 00:13:32,579
+representation of your JavaScript code, and
+in addition
+
+168
+00:13:32,579 --> 00:13:40,920
+to this, we wanted to report only those optimisations
+that actually provide some performance benefit,
+
+169
+00:13:40,920 --> 00:13:45,959
+and
+that's why we do performance measurement for
+
+170
+00:13:45,959 --> 00:13:50,440
+every
+optimisation that our tool applies, and of
+
+171
+00:13:50,440 --> 00:13:54,649
+course, as
+output you have optimised program.
+
+172
+00:13:54,649 --> 00:13:57,500
+So what is pattern specification?
+
+173
+00:13:57,500 --> 00:14:03,069
+We wanted to keep
+it simple, so we said our pattern will be
+
+174
+00:14:03,069 --> 00:14:06,980
+two fragments
+of JavaScript code, how the original will
+
+175
+00:14:06,980 --> 00:14:12,180
+look like and
+how the optimised code should look like, but
+
+176
+00:14:12,180 --> 00:14:16,500
+we also
+wanted somehow to make this pattern up struck,
+
+177
+00:14:16,500 --> 00:14:20,620
+which
+means you don't have to write pattern for
+
+178
+00:14:20,620 --> 00:14:24,990
+every project
+so you can make your pattern specification
+
+179
+00:14:24,990 --> 00:14:29,720
+once in
+a general way, and we use it for many projects
+
+180
+00:14:29,720 --> 00:14:31,490
+later on.
+
+181
+00:14:31,490 --> 00:14:35,509
+And we also wanted to make the pattern enough
+so you can
+
+182
+00:14:35,509 --> 00:14:37,690
+cover as many cases as possible.
+
+183
+00:14:37,690 --> 00:14:42,240
+So to do this, we
+introduced placeholder for some constructs
+
+184
+00:14:42,240 --> 00:14:46,379
+in
+JavaScript, I don't see this list of placeholders
+
+185
+00:14:46,379 --> 00:14:48,160
+you
+can see now is exhaustive.
+
+186
+00:14:48,160 --> 00:14:50,100
+It is not.
+
+187
+00:14:50,100 --> 00:14:56,500
+We are working
+on adding more placeholders in our tool, but
+
+188
+00:14:56,500 --> 00:15:01,930
+for now,
+our tool supports placeholders for expressions,
+
+189
+00:15:01,930 --> 00:15:05,199
+identifiers and literals.
+
+190
+00:15:05,199 --> 00:15:09,660
+And if you remember, the
+example of split and join, we can say okay,
+
+191
+00:15:09,660 --> 00:15:13,939
+the split
+can be called on any expression JavaScript,
+
+192
+00:15:13,939 --> 00:15:17,550
+which means
+not only on identifier or some stream, it
+
+193
+00:15:17,550 --> 00:15:21,199
+can also be on
+some property access can be called on that,
+
+194
+00:15:21,199 --> 00:15:24,410
+some result
+of the function call, and so on, and as I
+
+195
+00:15:24,410 --> 00:15:27,999
+input to
+the -- as the permitter of the split, we can
+
+196
+00:15:27,999 --> 00:15:32,149
+have any
+identifier later, all the same with join.
+
+197
+00:15:32,149 --> 00:15:36,040
+So you can
+see how the optimised code should look like.
+
+198
+00:15:36,040 --> 00:15:45,329
+Based on the pattern specification, our tool
+generates the ASTs for each code fragments,
+
+199
+00:15:45,329 --> 00:15:50,930
+and for
+generating ASTs we use existing parser, but
+
+200
+00:15:50,930 --> 00:15:59,029
+yeah, the
+idea about the transformation is not specific
+
+201
+00:15:59,029 --> 00:16:06,059
+to the
+outlook, and can be applied to any other parser.
+
+202
+00:16:06,059 --> 00:16:12,970
+So
+having two ASTs, our tool actually generates
+
+203
+00:16:12,970 --> 00:16:20,850
+the
+programs ASTs and tries to find a match between
+
+204
+00:16:20,850 --> 00:16:26,029
+AST of
+the first fragment of our pattern specification
+
+205
+00:16:26,029 --> 00:16:30,660
+and
+subsub in program AST and once the match is
+
+206
+00:16:30,660 --> 00:16:36,220
+found, it
+rewrites the AST of the original program as
+
+207
+00:16:36,220 --> 00:16:40,420
+our AST of
+optimised code.
+
+208
+00:16:40,420 --> 00:16:43,540
+Looks like this, sorry.
+
+209
+00:16:43,540 --> 00:16:44,860
+Okay.
+
+210
+00:16:44,860 --> 00:16:52,300
+I would
+illustrate the first step of our tool on the
+
+211
+00:16:52,300 --> 00:16:53,990
+examples.
+
+212
+00:16:53,990 --> 00:16:59,360
+So given the first fragment of our pattern
+specification
+
+213
+00:16:59,360 --> 00:17:04,079
+we generate the AST, it usually looks like
+something
+
+214
+00:17:04,079 --> 00:17:06,500
+like this.
+
+215
+00:17:06,500 --> 00:17:13,260
+And for some program we try to find match
+between the first AST and some subtree of
+
+216
+00:17:13,260 --> 00:17:19,459
+it, and we say
+the two ASTs match if the number of nodes
+
+217
+00:17:19,459 --> 00:17:24,230
+position and
+the types also match, but we have special
+
+218
+00:17:24,230 --> 00:17:28,950
+rules for the
+placeholders, for example, this expression
+
+219
+00:17:28,950 --> 00:17:35,690
+one
+placeholder can match to any tree structure,
+
+220
+00:17:35,690 --> 00:17:39,780
+that
+represents some expression, and also all in
+
+221
+00:17:39,780 --> 00:17:44,250
+this
+identifier can match to any identifier in
+
+222
+00:17:44,250 --> 00:17:48,330
+JavaScript,
+and the same with the $y.
+
+223
+00:17:48,330 --> 00:17:56,680
+So now we all have the
+subtrees or program AST that match the pattern
+
+224
+00:17:56,680 --> 00:17:58,490
+specification.
+
+225
+00:17:58,490 --> 00:18:03,540
+The next step is to rewrite all those
+subtrees.
+
+226
+00:18:03,540 --> 00:18:04,900
+What we first use?
+
+227
+00:18:04,900 --> 00:18:13,250
+We first generate the AST
+of the second fragment or optimised code of
+
+228
+00:18:13,250 --> 00:18:20,641
+our pattern
+specification, and as you can see here, there
+
+229
+00:18:20,641 --> 00:18:22,870
+are some
+nodes that should be resolved.
+
+230
+00:18:22,870 --> 00:18:27,840
+I mean, all nodes that
+represent the placeholders.
+
+231
+00:18:27,840 --> 00:18:34,930
+We just use what you found,
+replace placeholders with the real nodes,
+
+232
+00:18:34,930 --> 00:18:42,140
+insert this
+AST instead of the found AST and generate
+
+233
+00:18:42,140 --> 00:18:44,220
+a new code.
+
+234
+00:18:44,220 --> 00:18:47,620
+Yeah, that's how the optimisation takes place.
+
+235
+00:18:47,620 --> 00:18:49,220
+But is
+it worked?
+
+236
+00:18:49,220 --> 00:18:52,300
+Does it bring some performance benefit?
+
+237
+00:18:52,300 --> 00:18:58,440
+Well it depends on the tests that are given
+as input, so
+
+238
+00:18:58,440 --> 00:19:04,220
+we use those tests to run the original and
+modified
+
+239
+00:19:04,220 --> 00:19:07,370
+optimised version of the program.
+
+240
+00:19:07,370 --> 00:19:12,010
+And we show to the
+developer only optimisations that really bring
+
+241
+00:19:12,010 --> 00:19:15,130
+some
+performance benefits.
+
+242
+00:19:15,130 --> 00:19:20,870
+So we run every test, repeatedly,
+until some meaningful measurable execution
+
+243
+00:19:20,870 --> 00:19:26,760
+time is
+reached and we compare the execution times
+
+244
+00:19:26,760 --> 00:19:30,360
+of the
+original and optimised program.
+
+245
+00:19:30,360 --> 00:19:31,950
+It's nice.
+
+246
+00:19:31,950 --> 00:19:36,260
+We have
+a tool, is it useful?
+
+247
+00:19:36,260 --> 00:19:40,780
+Well, we didn't always find it
+useful, really, but we decided to run this
+
+248
+00:19:40,780 --> 00:19:47,000
+tool on some
+real world JavaScript projects and on some
+
+249
+00:19:47,000 --> 00:19:54,440
+patterns we
+found, so we made a specification for six
+
+250
+00:19:54,440 --> 00:19:59,700
+patterns that
+change at most one statement in JavaScript,
+
+251
+00:19:59,700 --> 00:20:05,930
+and we run
+this tool against 10 JS libraries, which we
+
+252
+00:20:05,930 --> 00:20:08,070
+extracted
+from NPM repository.
+
+253
+00:20:08,070 --> 00:20:16,800
+And yes, we found the
+optimisations, we found 35 potential optimisations
+
+254
+00:20:16,800 --> 00:20:20,900
+and
+24 of them actually show some speed up.
+
+255
+00:20:20,900 --> 00:20:25,900
+Now I am going
+to give you example of one optimisation we
+
+256
+00:20:25,900 --> 00:20:27,520
+perform by
+our tool.
+
+257
+00:20:27,520 --> 00:20:35,860
+So in this particular function, the type of
+the input is checked, by using class comparison,
+
+258
+00:20:35,860 --> 00:20:40,470
+class
+comparison in JavaScript is done by calling
+
+259
+00:20:40,470 --> 00:20:44,790
+to string
+method on object.
+
+260
+00:20:44,790 --> 00:20:50,000
+So the developers first use class comparison
+to
+
+261
+00:20:50,000 --> 00:20:55,950
+check the type of the input, and if it is
+not true, they
+
+262
+00:20:55,950 --> 00:20:57,970
+use instanceof operator.
+
+263
+00:20:57,970 --> 00:21:01,510
+It does the same thing.
+
+264
+00:21:01,510 --> 00:21:03,400
+But
+it seems to be more efficient.
+
+265
+00:21:03,400 --> 00:21:11,660
+So it is more efficient
+to use first instanceof than class comparison.
+
+266
+00:21:11,660 --> 00:21:16,200
+And we
+found ten potential optimisations of this
+
+267
+00:21:16,200 --> 00:21:20,520
+pattern, six
+of them showed actual speed-up.
+
+268
+00:21:20,520 --> 00:21:27,670
+And we reported this
+optimisation as a pull request to JS library,
+
+269
+00:21:27,670 --> 00:21:31,530
+and they
+accepted this pull request to merge and optimise
+
+270
+00:21:31,530 --> 00:21:35,180
+their
+code as we proposed.
+
+271
+00:21:35,180 --> 00:21:44,500
+So I would conclude this talk by saying that
+yeah,
+
+272
+00:21:44,500 --> 00:21:48,680
+you can reach really nice performance benefit
+by using
+
+273
+00:21:48,680 --> 00:21:54,800
+very simple optimisations and semi-automatic
+refactorings can help you to achieve these
+
+274
+00:21:54,800 --> 00:21:57,060
+goals, so in
+stead of a slow turtle we can have a rocket
+
+275
+00:21:57,060 --> 00:21:58,240
+turtle.
+

@@ -1,0 +1,1666 @@
+1
+00:00:12,700 --> 00:00:14,460
+Hello, Ah it works, great.
+
+2
+00:00:14,460 --> 00:00:16,460
+View is fantastic from up here
+
+3
+00:00:16,940 --> 00:00:19,520
+Oh, I'm up there
+
+4
+00:00:19,800 --> 00:00:22,220
+Before I begin, I want to give a shout out
+to my mum.
+
+5
+00:00:22,220 --> 00:00:26,640
+She is a caretaker, and even though she doesn't
+understand anything about computers, she watches
+
+6
+00:00:26,640 --> 00:00:28,550
+all my talks.
+
+7
+00:00:28,550 --> 00:00:32,870
+I think in particular she will like this one
+about hand crafting web assembly.
+
+8
+00:00:32,870 --> 00:00:34,969
+So, yes, welcome, everyone.
+
+9
+00:00:34,969 --> 00:00:40,339
+We've heard a lot about JavaScript so far,
+and now it's time talk about WebAssembly,
+
+10
+00:00:40,339 --> 00:00:44,219
+so hold on to your brains.
+
+11
+00:00:44,219 --> 00:00:45,660
+My name is Emil Bay.
+
+12
+00:00:45,660 --> 00:00:54,280
+I live in Copenhagen in Denmark, and I'm an
+independent consultant primarily working with
+
+13
+00:00:54,280 --> 00:01:00,479
+crypto- mathematics, and drifted systems,
+and, when I say "crypto-"I mean the real,
+
+14
+00:01:00,479 --> 00:01:05,089
+the cryptology, not the currencies, and all
+that.
+
+15
+00:01:05,089 --> 00:01:12,760
+Yes, I used to study math but dropped out,
+and all that, and now I work in software.
+
+16
+00:01:12,760 --> 00:01:15,460
+So, as I said, I was also here last year.
+
+17
+00:01:15,460 --> 00:01:21,270
+I looked a little bit different, got a shave
+and a hair cut.
+
+18
+00:01:21,270 --> 00:01:23,200
+So, yes.
+
+19
+00:01:23,200 --> 00:01:24,200
+Okay.
+
+20
+00:01:24,200 --> 00:01:26,109
+So, WebAssembly.
+
+21
+00:01:26,109 --> 00:01:29,520
+Just want to get everyone on the same page.
+
+22
+00:01:29,520 --> 00:01:34,020
+So, we all understand what we are talking
+about here today.
+
+23
+00:01:34,020 --> 00:01:36,869
+So WebAssembly, this is from the WebAssembly
+website.
+
+24
+00:01:36,869 --> 00:01:43,090
+WebAssembly is a binary instruction format
+for stack-based virtual machine.
+
+25
+00:01:43,090 --> 00:01:46,590
+It sounds very fancy, but we can forget about
+that for today.
+
+26
+00:01:46,590 --> 00:01:48,340
+We're not going to use those big words.
+
+27
+00:01:48,340 --> 00:01:54,569
+So, it all looked like, there is a lot of
+technical terms in here.
+
+28
+00:01:54,569 --> 00:02:01,119
+Instead, maybe we should do a bit about the
+word "WebAssembly" "web" and "assembly", and
+
+29
+00:02:01,119 --> 00:02:07,829
+you might get connotation s in that it must
+be a computer language before you can do something
+
+30
+00:02:07,829 --> 00:02:14,200
+with maybe a web browser, something, but actually,
+WebAssembly is neither very web nor very assembly.
+
+31
+00:02:14,200 --> 00:02:16,590
+I don't know where this quote came from.
+
+32
+00:02:16,590 --> 00:02:19,120
+I think I read it online somewhere.
+
+33
+00:02:19,120 --> 00:02:24,100
+But it's not very web, because in WebAssembly,
+you cannot actually do very much.
+
+34
+00:02:24,100 --> 00:02:31,750
+You don't have access to any web APIs unless
+you give access, and it's also not very assembly
+
+35
+00:02:31,750 --> 00:02:37,400
+in the sense that it's not — WebAssembly
+is not the code that's running on the machine
+
+36
+00:02:37,400 --> 00:02:44,360
+— it's very close to the machine — but
+it is still an abstraction.
+
+37
+00:02:44,360 --> 00:02:50,510
+Just to clear everything out, I have another
+couple of points about what WebAssembly isn't
+
+38
+00:02:50,510 --> 00:02:52,900
+before we get to look at some code.
+
+39
+00:02:52,900 --> 00:02:59,439
+First of all, from WebAssembly, you cannot
+do sys calls which is a fancy word for saying
+
+40
+00:02:59,439 --> 00:03:05,629
+you cannot ... with the operating system unless
+you give WebAssembly explicit access, and
+
+41
+00:03:05,629 --> 00:03:08,819
+explicit access has to go through JavaScript
+as it is today.
+
+42
+00:03:08,819 --> 00:03:13,099
+From WebAssembly, you can only do the things
+you can in JavaScript and only if you give
+
+43
+00:03:13,099 --> 00:03:15,819
+it explicit access.
+
+44
+00:03:15,819 --> 00:03:19,400
+It also does not give you any new hardware
+access.
+
+45
+00:03:19,400 --> 00:03:22,950
+The reason I have this one on here is that
+people — the whole story about WebAssembly
+
+46
+00:03:22,950 --> 00:03:26,980
+is that you can take your native programmes
+and compile them in WebAssembly and run them
+
+47
+00:03:26,980 --> 00:03:28,989
+in a web browser.
+
+48
+00:03:28,989 --> 00:03:35,489
+That gives people the impression they can
+take any native app, like a Bluetooth library,
+
+49
+00:03:35,489 --> 00:03:41,680
+put it into a exiled with M script, whatever,
+into WebAssembly, and run it in the browser.
+
+50
+00:03:41,680 --> 00:03:43,159
+That's not how it, would.
+
+51
+00:03:43,159 --> 00:03:46,820
+You also don't get no new hardware access.
+
+52
+00:03:46,820 --> 00:03:48,560
+Actually will be you — actually, there's
+no magic.
+
+53
+00:03:48,560 --> 00:03:52,159
+It's pure computational WebAssembly.
+
+54
+00:03:52,159 --> 00:03:57,260
+So that was a lot of negativity, so what is
+WebAssembly?
+
+55
+00:03:57,260 --> 00:04:03,159
+Well, one thing I'm extremely excited about
+in WebAssembly is that we have 64-bit integers,
+
+56
+00:04:03,159 --> 00:04:12,219
+and we heard about BigInt earlier today, and
+64-bit in WebAssembly means that we can pinpoint
+
+57
+00:04:12,219 --> 00:04:17,550
+precision optimisation of the things that
+have to do with computing with numbers.
+
+58
+00:04:17,550 --> 00:04:25,240
+I work with cryptography, and a lot of time,
+we are dealing with numbers that are 256-bits
+
+59
+00:04:25,240 --> 00:04:29,890
+or 512-bits long, and 4-bit integers are a
+real performance boost.
+
+60
+00:04:29,890 --> 00:04:36,420
+You get a performance boost by taking your
+code and converting it to WebAssembly but
+
+61
+00:04:36,420 --> 00:04:40,260
+not as much as people would like to think
+in my experience.
+
+62
+00:04:40,260 --> 00:04:47,230
+From most of the former benchmarks I've been
+running, I see a performance boost of about
+
+63
+00:04:47,230 --> 00:04:53,470
+20 to 30 per cent over JavaScript, and that
+is because JavaScript is very, very fast with
+
+64
+00:04:53,470 --> 00:04:59,860
+the new — the new engines like SpiderMonkey,
+and all that.
+
+65
+00:04:59,860 --> 00:05:01,280
+You get surgical precision.
+
+66
+00:05:01,280 --> 00:05:07,980
+In JavaScript, when you write code, you often
+don't know the exact performance profile of
+
+67
+00:05:07,980 --> 00:05:13,560
+what you're doing unless you have very deep
+knowledge about what the VM is doing underneath.
+
+68
+00:05:13,560 --> 00:05:19,060
+With WebAssembly, you get much closer to what
+it's going to be going on on your computer,
+
+69
+00:05:19,060 --> 00:05:22,470
+so you get a more predictable performance
+profile.
+
+70
+00:05:22,470 --> 00:05:28,550
+And, one thing I'm excited about WebAssembly,
+is that soon it may be the only language that
+
+71
+00:05:28,550 --> 00:05:30,770
+is truly run anywhere.
+
+72
+00:05:30,770 --> 00:05:36,410
+I'm seeing people do projects with writing
+WebAssembly drivers for the Linux kernel,
+
+73
+00:05:36,410 --> 00:05:47,680
+and there are also people embedding WebAssembly,
+and it's on the browser at load, and maybe
+
+74
+00:05:47,680 --> 00:05:56,180
+also come to embed it and WebAssembly is not
+a technical any woo we can use in the future,
+
+75
+00:05:56,180 --> 00:05:58,750
+we can use WebAssembly today.
+
+76
+00:05:58,750 --> 00:06:06,210
+We can see globally, it has 73 per cent support
+across the browsers, and it is also in Node
+
+77
+00:06:06,210 --> 00:06:08,410
+8.
+
+78
+00:06:08,410 --> 00:06:12,220
+So you can use this today.
+
+79
+00:06:12,220 --> 00:06:17,270
+That quote I had earlier from the WebAssembly
+website, there was something more to it, because
+
+80
+00:06:17,270 --> 00:06:23,870
+WebAssembly is the sign to be a format that
+you take your C++, or C programmes of Rust,
+
+81
+00:06:23,870 --> 00:06:28,330
+and now also Go programmes, and you can compile
+into WebAssembly.
+
+82
+00:06:28,330 --> 00:06:36,180
+The only problem is that I didn't read that,
+so, this is why today we're going talk about
+
+83
+00:06:36,180 --> 00:06:37,590
+the WebAssembly text format.
+
+84
+00:06:37,590 --> 00:06:41,900
+This is writing WebAssembly by hand, not taking
+computer programme and compiling it down as
+
+85
+00:06:41,900 --> 00:06:42,900
+WebAssembly.
+
+86
+00:06:42,900 --> 00:06:48,180
+No, we get full control, and we know what
+is going to happen inside the computer.
+
+87
+00:06:48,180 --> 00:06:51,120
+It's a very small programming language.
+
+88
+00:06:51,120 --> 00:06:57,380
+And it's one-to-one with the binary format
+with a through caveats, but you know exactly
+
+89
+00:06:57,380 --> 00:07:00,650
+the programme you wrote, what it's going to
+be compiled into.
+
+90
+00:07:00,650 --> 00:07:05,720
+There's no optimisation in between, and no
+moving things around, or anything like that.
+
+91
+00:07:05,720 --> 00:07:08,630
+You know exactly what is going to go on.
+
+92
+00:07:08,630 --> 00:07:13,080
+It has an appropriate acronym — "WHAT" — which
+is what you'll be saying most of the time
+
+93
+00:07:13,080 --> 00:07:17,360
+when you look at the WebAssembly programmes.
+
+94
+00:07:17,360 --> 00:07:25,150
+I want to make clear that the programming
+language we look at next is an official language
+
+95
+00:07:25,150 --> 00:07:26,780
+from the WebAssembly working group.
+
+96
+00:07:26,780 --> 00:07:31,150
+It is not something I invented or [unclear]
+someone else wrote.
+
+97
+00:07:31,150 --> 00:07:33,380
+It is official language.
+
+98
+00:07:33,380 --> 00:07:35,650
+So, that's enough talking.
+
+99
+00:07:35,650 --> 00:07:38,640
+Let's look at some code.
+
+100
+00:07:38,640 --> 00:07:41,370
+Here we have our first WebAssembly module.
+
+101
+00:07:41,370 --> 00:07:44,590
+This is the "hello, world" of WebAssembly.
+
+102
+00:07:44,590 --> 00:07:50,030
+If you squint a bit, you can see what this
+module does.
+
+103
+00:07:50,030 --> 00:07:59,610
+So that everyone gets it, I'm also for my
+own sake, going to walk through some highlights.
+
+104
+00:07:59,610 --> 00:08:07,930
+The function calls look beard because they
+are S expressions, and some people who may
+
+105
+00:08:07,930 --> 00:08:10,610
+have been programming in Clojure will find
+this familiar.
+
+106
+00:08:10,610 --> 00:08:17,340
+It is a little bit foreign is to to JavaScript
+developers but you get used to it very quickly.
+
+107
+00:08:17,340 --> 00:08:21,120
+It is like having a list before the function
+name or after.
+
+108
+00:08:21,120 --> 00:08:26,130
+There's not much more to it.
+
+109
+00:08:26,130 --> 00:08:30,460
+Next thing we notice is that we have to wrap
+everything in a module, and that's like an
+
+110
+00:08:30,460 --> 00:08:31,460
+ES6 module.
+
+111
+00:08:31,460 --> 00:08:35,909
+You can have one module per file as it is
+right now.
+
+112
+00:08:35,909 --> 00:08:39,399
+That's just a boilerplate.
+
+113
+00:08:39,399 --> 00:08:45,350
+Next we can see we have these dollar signs,
+and you might think that is going to be the
+
+114
+00:08:45,350 --> 00:08:46,350
+variables.
+
+115
+00:08:46,350 --> 00:08:47,350
+Not exactly.
+
+116
+00:08:47,350 --> 00:08:51,769
+It is more like a human-friendly name to be
+able to access the — you can see here, I
+
+117
+00:08:51,769 --> 00:08:57,959
+gave the function name call square with a
+dollar sign in front, but as soon as you compile
+
+118
+00:08:57,959 --> 00:09:04,569
+the programme, all of these texts are going
+to disappear and be replaced with a number
+
+119
+00:09:04,569 --> 00:09:09,700
+so the binary is going to be very small.
+
+120
+00:09:09,700 --> 00:09:12,720
+Next thing you know is that that explicit
+typing everywhere, and this is part of the
+
+121
+00:09:12,720 --> 00:09:19,709
+security module, so that the WebAssembly virtual
+machine can look at the binary and make sure
+
+122
+00:09:19,709 --> 00:09:25,380
+that it is going to be guaranteed to be well
+behaved, that it doesn't access memory it's
+
+123
+00:09:25,380 --> 00:09:33,300
+not supposed to, and the functions have matching
+types and you don't have undefined behaviour.
+
+124
+00:09:33,300 --> 00:09:34,660
+Also in the the third highlight there.
+
+125
+00:09:34,660 --> 00:09:37,750
+That's not actually a type but an operator.
+
+126
+00:09:37,750 --> 00:09:43,649
+They follow the convention that the first
+part of the name is the return type, and then,
+
+127
+00:09:43,649 --> 00:09:45,379
+after the dot, you have whatever you're doing.
+
+128
+00:09:45,379 --> 00:09:54,009
+Here, we are doing I32 ultimate multiplication,
+which is an integer that is 32 bits wide.
+
+129
+00:09:54,009 --> 00:10:00,760
+Those are the integers you can operate on
+in JavaScript, if you do — your number's
+
+130
+00:10:00,760 --> 00:10:05,050
+going to be cast to a 32-bit integer.
+
+131
+00:10:05,050 --> 00:10:13,050
+The last thing that makes it verbose is that
+you have to make all access explicit, so here
+
+132
+00:10:13,050 --> 00:10:18,100
+we get a local variable, a variable from the
+local scope where we are getting the parameter,
+
+133
+00:10:18,100 --> 00:10:24,360
+the input, and you can think of this goes
+and gets the values and replaces whatever
+
+134
+00:10:24,360 --> 00:10:29,610
+is in the text, and that's a way for you to
+evaluate what expressions in your head is
+
+135
+00:10:29,610 --> 00:10:34,360
+you can start from the — all the way from
+the inside, and then you can replace the things
+
+136
+00:10:34,360 --> 00:10:40,699
+as you go outside and try and evaluate it
+in your head.
+
+137
+00:10:40,699 --> 00:10:47,279
+So, also, the explicit access is something
+you will probably want to optimise in hard
+
+138
+00:10:47,279 --> 00:10:51,749
+code, so that is why it is also very nice
+that the accesses are very explicit, and you
+
+139
+00:10:51,749 --> 00:10:54,870
+know exactly what is happening.
+
+140
+00:10:54,870 --> 00:10:57,499
+So, we have our first module.
+
+141
+00:10:57,499 --> 00:11:02,760
+The next thing is we need to be able to run
+this, so we need a compiler.
+
+142
+00:11:02,760 --> 00:11:09,910
+The compiler that I'm using comes from the
+What project but my friend Mateus put it on
+
+143
+00:11:09,910 --> 00:11:11,480
+MPM so it is easy to install.
+
+144
+00:11:11,480 --> 00:11:17,620
+You run the web binary tool kit, it will fetch
+the latest version of the compiler and exile
+
+145
+00:11:17,620 --> 00:11:21,260
+it for you — compile it for you.
+
+146
+00:11:21,260 --> 00:11:24,740
+Let's look at the demo.
+
+147
+00:11:24,740 --> 00:11:40,529
+Because, now, we have — can I — oh, I
+have to do it like this.
+
+148
+00:11:40,529 --> 00:11:47,810
+Where's my ... . A terminal here.
+
+149
+00:11:47,810 --> 00:11:52,449
+I have a square function here, so this looks
+a little bit different because this is the
+
+150
+00:11:52,449 --> 00:11:58,060
+way that I planned it, the parentheses, messed
+up, because I have a tool in my editor to
+
+151
+00:11:58,060 --> 00:12:01,050
+help me out writing What code.
+
+152
+00:12:01,050 --> 00:12:07,610
+We will use the What-to-Wasm compiler.
+
+153
+00:12:07,610 --> 00:12:11,079
+Now we have the square dot WASM.
+
+154
+00:12:11,079 --> 00:12:22,430
+This is a binary file so I will use hex dump
+with the C option, and ... this is what the
+
+155
+00:12:22,430 --> 00:12:25,750
+binary module looks like.
+
+156
+00:12:25,750 --> 00:12:31,160
+You can see the function name because we exported
+it, so it needs to keep the string, and then,
+
+157
+00:12:31,160 --> 00:12:35,370
+if you're familiar with WebAssembly, you can
+see the up codes up there, so you can see
+
+158
+00:12:35,370 --> 00:12:38,999
+the access to the variables and the multiplications,
+and all that.
+
+159
+00:12:38,999 --> 00:12:42,370
+I'm no brain man, so I can't read this.
+
+160
+00:12:42,370 --> 00:12:46,519
+Where did my cursor go?
+
+161
+00:12:46,519 --> 00:12:49,910
+Damn it!
+
+162
+00:12:49,910 --> 00:12:54,920
+How do I escape?
+
+163
+00:12:54,920 --> 00:12:59,180
+There we go.
+
+164
+00:12:59,180 --> 00:13:00,600
+Okay.
+
+165
+00:13:00,600 --> 00:13:05,790
+Now, the next thing is we have the binary
+module, then we need to import it, and actually
+
+166
+00:13:05,790 --> 00:13:06,790
+use it.
+
+167
+00:13:06,790 --> 00:13:12,689
+So, this is the boilerplate from the JavaScript
+side that you use to read out the WebAssembly
+
+168
+00:13:12,689 --> 00:13:13,769
+module.
+
+169
+00:13:13,769 --> 00:13:17,180
+Now, this looks very complicated to me.
+
+170
+00:13:17,180 --> 00:13:21,720
+I have a very weird definition of what is
+complicated, so this is also packaged up in
+
+171
+00:13:21,720 --> 00:13:24,019
+a tool that you can use from MPM.
+
+172
+00:13:24,019 --> 00:13:30,309
+You can install What to JS which takes your
+What module, compiles it down to Wasm and
+
+173
+00:13:30,309 --> 00:13:34,879
+wraps it in a JavaScript function or module
+so you can import that directly instead of
+
+174
+00:13:34,879 --> 00:13:40,259
+having to go and fetch the WebAssembly module
+and do the instantiation, and all that.
+
+175
+00:13:40,259 --> 00:13:48,649
+So the way you do that is you would call what.js
+with your WebAssembly file and output a JavaScript
+
+176
+00:13:48,649 --> 00:13:49,649
+file.
+
+177
+00:13:49,649 --> 00:13:58,690
+Let's have a look at that.
+
+178
+00:13:58,690 --> 00:14:00,860
+I have it installed.
+
+179
+00:14:00,860 --> 00:14:02,620
+I'm going to take the squared of What.
+
+180
+00:14:02,620 --> 00:14:09,279
+Put it in square dot.
+
+181
+00:14:09,279 --> 00:14:14,890
+Then we have the — you can see I have the
+example file here.
+
+182
+00:14:14,890 --> 00:14:21,079
+It just imports the WASM module, and then
+the exporter function square with two, and
+
+183
+00:14:21,079 --> 00:14:23,680
+then we should see four will be right?
+
+184
+00:14:23,680 --> 00:14:26,610
+I'm going to run the example Node.
+
+185
+00:14:26,610 --> 00:14:30,230
+Got four.
+
+186
+00:14:30,230 --> 00:14:34,079
+Now we have a running WASM programme — very
+cool.
+
+187
+00:14:34,079 --> 00:14:35,220
+[Applause].
+
+188
+00:14:35,220 --> 00:14:37,490
+Thank you.
+
+189
+00:14:37,490 --> 00:14:38,620
+Okay.
+
+190
+00:14:38,620 --> 00:14:45,000
+Here is the code for reference.
+
+191
+00:14:45,000 --> 00:14:50,550
+Next step, now we have the basically flowdown,
+now we will look at a real What programme,
+
+192
+00:14:50,550 --> 00:14:57,329
+and also a programme structured like I write
+what What.
+
+193
+00:14:57,329 --> 00:15:01,459
+The function we look at is a function to compute
+the distance between points.
+
+194
+00:15:01,459 --> 00:15:06,879
+It might seem contrived but this could be
+a call function if you're building a physics
+
+195
+00:15:06,879 --> 00:15:13,379
+library, or maybe doing some machine-learning,
+or some other AI.
+
+196
+00:15:13,379 --> 00:15:14,810
+Distances are very important.
+
+197
+00:15:14,810 --> 00:15:21,009
+You can see we have a lot of new syntax here,
+so I'm just going to walk you through it.
+
+198
+00:15:21,009 --> 00:15:26,260
+The thing I said before about the brackets
+is that I have this plugin that is pretty
+
+199
+00:15:26,260 --> 00:15:31,850
+much all the most common editor is called
+... that helps you set the brackets, so instead
+
+200
+00:15:31,850 --> 00:15:36,029
+of me having to type out the brackets manually,
+it decides where the brackets are supposed
+
+201
+00:15:36,029 --> 00:15:39,110
+to be put, based on indentation.
+
+202
+00:15:39,110 --> 00:15:46,579
+That's what you also know from Python, indentation
+is what decides how things are scoped.
+
+203
+00:15:46,579 --> 00:15:49,269
+Here is the tour of this module.
+
+204
+00:15:49,269 --> 00:15:52,689
+You can see up in the top I give it a name.
+
+205
+00:15:52,689 --> 00:15:54,860
+F64, and that's like the Wasm convention.
+
+206
+00:15:54,860 --> 00:15:59,490
+That's how I like to name my functions so
+I know what the return type is.
+
+207
+00:15:59,490 --> 00:16:02,440
+You can see the return type is F64.
+
+208
+00:16:02,440 --> 00:16:05,779
+F64 means double floating point.
+
+209
+00:16:05,779 --> 00:16:09,990
+That is exactly what numbers on JavaScript,
+so this is exactly like a number in JavaScript
+
+210
+00:16:09,990 --> 00:16:11,379
+where you have decimal places.
+
+211
+00:16:11,379 --> 00:16:15,089
+Then you can see I defined some local variables.
+
+212
+00:16:15,089 --> 00:16:19,089
+These local variables have to be all the way
+at the top of the function.
+
+213
+00:16:19,089 --> 00:16:24,550
+That's just how Wasm is so something to do
+with how to allocate the registers that are
+
+214
+00:16:24,550 --> 00:16:26,600
+required for this.
+
+215
+00:16:26,600 --> 00:16:31,899
+You can also see at the bottom we use a new
+function, the F64 square root, and then we
+
+216
+00:16:31,899 --> 00:16:32,899
+have a call here.
+
+217
+00:16:32,899 --> 00:16:39,730
+And the call is to the call is to the square
+function because this is a formula for the
+
+218
+00:16:39,730 --> 00:16:44,139
+distance between two points.
+
+219
+00:16:44,139 --> 00:16:45,600
+The call here is important.
+
+220
+00:16:45,600 --> 00:16:50,290
+If you import a JavaScript function into a
+WebAssembly module, then you would also invoke
+
+221
+00:16:50,290 --> 00:16:53,360
+that function with the call — yes.
+
+222
+00:16:53,360 --> 00:16:55,869
+There is a problem, though.
+
+223
+00:16:55,869 --> 00:17:02,310
+If we try and compile this, we get a mismatch,
+and that's because, unlike in JavaScript,
+
+224
+00:17:02,310 --> 00:17:08,260
+you have to explicitly convert everything
+so, in this case, our I32 add goes back to
+
+225
+00:17:08,260 --> 00:17:12,820
+I32 because it says so, so we have to convert
+that.
+
+226
+00:17:12,820 --> 00:17:18,000
+So we add a new instruction, and this can
+lead to some verbosity, but I think this verbosity
+
+227
+00:17:18,000 --> 00:17:24,080
+is important because it does cost to convert
+between things so you want to keep your types
+
+228
+00:17:24,080 --> 00:17:25,460
+stable.
+
+229
+00:17:25,460 --> 00:17:34,180
+In this place here, the convert_u means that
+it doesn't have a sign, that it is a positive
+
+230
+00:17:34,180 --> 00:17:36,050
+number.
+
+231
+00:17:36,050 --> 00:17:40,510
+So, that was the distance function.
+
+232
+00:17:40,510 --> 00:17:47,291
+I'm going to show here, this is what it looks
+like when you call it, so the dot, I don't
+
+233
+00:17:47,291 --> 00:17:53,200
+want to give the wrong impression, this dot
+here we saw before, in the statement, it doesn't
+
+234
+00:17:53,200 --> 00:17:55,640
+mean that you put the distance on an object.
+
+235
+00:17:55,640 --> 00:17:58,730
+It is the name of the property.
+
+236
+00:17:58,730 --> 00:18:00,270
+So we have to invoke it like this.
+
+237
+00:18:00,270 --> 00:18:03,060
+So, are we having fun yet?
+
+238
+00:18:03,060 --> 00:18:05,380
+I said this was going to be fun.
+
+239
+00:18:05,380 --> 00:18:08,190
+So, but let's take it up a notch.
+
+240
+00:18:08,190 --> 00:18:15,120
+Now we're going to look at a more practical
+function, something you would go and use at
+
+241
+00:18:15,120 --> 00:18:16,220
+home.
+
+242
+00:18:16,220 --> 00:18:21,940
+We are going to do distance between vectors,
+and it sounds very fancy.
+
+243
+00:18:21,940 --> 00:18:25,840
+It means that we want to take the distance
+between two arrays.
+
+244
+00:18:25,840 --> 00:18:27,640
+Why would you do that?
+
+245
+00:18:27,640 --> 00:18:33,690
+For example, you can take an image from a
+canvas element, and some tracking from each
+
+246
+00:18:33,690 --> 00:18:39,120
+other, and that way, you can find a difference,
+and that's how most of the new visual tools
+
+247
+00:18:39,120 --> 00:18:42,900
+that work take two villages" subtract foreign
+minister them from each other, and you get
+
+248
+00:18:42,900 --> 00:18:44,290
+the artefacts of the difference.
+
+249
+00:18:44,290 --> 00:18:48,910
+You can see there is a lot of stuff going
+on here.
+
+250
+00:18:48,910 --> 00:18:53,980
+This is also a real-world example because
+now we're actually getting to deal with memory.
+
+251
+00:18:53,980 --> 00:18:58,040
+Memory is one of the big concepts that we
+never really talked too much about in JavaScript,
+
+252
+00:18:58,040 --> 00:19:00,340
+because it's all handled for us.
+
+253
+00:19:00,340 --> 00:19:05,010
+But, in WebAssembly, you have to be extremely
+explicit, allocate the memory itself, you
+
+254
+00:19:05,010 --> 00:19:09,160
+have to manage it yourself, and you only get
+one piece.
+
+255
+00:19:09,160 --> 00:19:11,630
+But memory is not too hard to think about.
+
+256
+00:19:11,630 --> 00:19:13,280
+It's just like a very big array.
+
+257
+00:19:13,280 --> 00:19:15,930
+Where you can put numbers into.
+
+258
+00:19:15,930 --> 00:19:21,090
+So, as you can see, we have a memory definition,
+and I export the memory, so I have access
+
+259
+00:19:21,090 --> 00:19:22,090
+to it from JavaScript.
+
+260
+00:19:22,090 --> 00:19:26,870
+You can choose not to export it if it is part
+of your security model, and you have the 1,
+
+261
+00:19:26,870 --> 00:19:35,130
+which means I want one page of memory, and
+a page of memory is 65 kilobytes.
+
+262
+00:19:35,130 --> 00:19:37,320
+When you want more memory, you increment in
+pages.
+
+263
+00:19:37,320 --> 00:19:39,750
+You can also see the parameters here.
+
+264
+00:19:39,750 --> 00:19:41,500
+I've given them funny Michelle Dewberry and
+Andy Walton.
+
+265
+00:19:41,500 --> 00:19:47,180
+If you've done anything with C, you will know
+about pointers, because now that we have one
+
+266
+00:19:47,180 --> 00:19:52,420
+big piece of memory, we need to have pointers
+into that memory, and pointer is just a fancy
+
+267
+00:19:52,420 --> 00:19:57,820
+word for index, so you know the I in the foreloop.
+
+268
+00:19:57,820 --> 00:20:02,070
+And since we're using pointers, the array
+doesn't have an inherent length, so we in
+
+269
+00:20:02,070 --> 00:20:05,810
+these to parts in the length — parse in
+the length explicitly.
+
+270
+00:20:05,810 --> 00:20:08,840
+This is how numbers look when they are put
+into memory.
+
+271
+00:20:08,840 --> 00:20:15,440
+At the topping you can see I have this i8
+for an 8-bit integer, also called a byte,
+
+272
+00:20:15,440 --> 00:20:17,890
+so a byte array.
+
+273
+00:20:17,890 --> 00:20:20,540
+Next we will take examples from the typescript
+we've seen before.
+
+274
+00:20:20,540 --> 00:20:29,360
+For example, i42 takes — that is something
+to be aware about when you need to allocate
+
+275
+00:20:29,360 --> 00:20:31,690
+memory.
+
+276
+00:20:31,690 --> 00:20:39,590
+The way we are going to parse in our arrays
+is using the pointer and the link, and this
+
+277
+00:20:39,590 --> 00:20:43,820
+is what it is going to look like in the linear
+memory.
+
+278
+00:20:43,820 --> 00:20:48,561
+We have a pointer which is an index into the
+memory, so, just a number, and then we have
+
+279
+00:20:48,561 --> 00:20:54,500
+the length for how far we have used the memory.
+
+280
+00:20:54,500 --> 00:21:02,400
+You might also notice that these pointers
+are i32s, but before I said I was excited
+
+281
+00:21:02,400 --> 00:21:08,700
+about i64s because all addressing in Wembley
+is 32-bit, and — WebAssembly is 32 bit.
+
+282
+00:21:08,700 --> 00:21:13,520
+When I got my first computer, it was one of
+the first 64-bit computers because I could
+
+283
+00:21:13,520 --> 00:21:16,300
+have eight gigabytes of memory.
+
+284
+00:21:16,300 --> 00:21:22,740
+This is only 32 bits which only means your
+module can only use four gigabytes of memory.
+
+285
+00:21:22,740 --> 00:21:30,900
+It might change in the future, but for the
+— you only have four gigabytes at your disposal.
+
+286
+00:21:30,900 --> 00:21:36,800
+To put in data into the memory, I have written
+this little script here.
+
+287
+00:21:36,800 --> 00:21:39,740
+We are going with the idea of diffing two
+images.
+
+288
+00:21:39,740 --> 00:21:43,960
+First, we need to make sure that we have enough
+memory available otherwise we're going to
+
+289
+00:21:43,960 --> 00:21:44,960
+go out of bounds.
+
+290
+00:21:44,960 --> 00:21:51,010
+At the beginning, I allocate how long the
+two images are, make sure we have that memory
+
+291
+00:21:51,010 --> 00:21:52,140
+available.
+
+292
+00:21:52,140 --> 00:21:59,090
+Then I remember a point er to where I'm going
+to put the first image like we had in this
+
+293
+00:21:59,090 --> 00:22:01,950
+graphic.
+
+294
+00:22:01,950 --> 00:22:03,230
+And then I set the image.
+
+295
+00:22:03,230 --> 00:22:09,030
+You can just set it directly if you copy,
+type it in, and I increment the offset because
+
+296
+00:22:09,030 --> 00:22:11,440
+we put the first array in the beginning.
+
+297
+00:22:11,440 --> 00:22:17,240
+After that, we put the second array, and you
+can see in the end here, I then call the function
+
+298
+00:22:17,240 --> 00:22:20,040
+with the arguments we just saw.
+
+299
+00:22:20,040 --> 00:22:24,460
+In this case, this is going to give back a
+single number, but if, if I wanted, for example,
+
+300
+00:22:24,460 --> 00:22:29,490
+return the difference between the two images,
+I could also pass back a pointer which is
+
+301
+00:22:29,490 --> 00:22:36,320
+going to be a number, so that number I could
+use to go into the WASM memory and read out
+
+302
+00:22:36,320 --> 00:22:39,130
+what the difference image is.
+
+303
+00:22:39,130 --> 00:22:42,250
+One way to get image data, for example, with
+a canvas is like this.
+
+304
+00:22:42,250 --> 00:22:44,820
+Here, we get the image data.
+
+305
+00:22:44,820 --> 00:22:50,170
+You have loaded the image in our own, and
+you can find that — and the image data has
+
+306
+00:22:50,170 --> 00:22:57,220
+a data property which is a array with RGBA
+in each of the cells.
+
+307
+00:22:57,220 --> 00:23:00,630
+So that is an easy way to get started with
+this example.
+
+308
+00:23:00,630 --> 00:23:04,460
+The next code is when you need to access the
+memory from inside WebAssembly, you need to
+
+309
+00:23:04,460 --> 00:23:09,200
+be explicit about loading out things from
+memory, because loading from memory can also
+
+310
+00:23:09,200 --> 00:23:11,070
+be very expensive.
+
+311
+00:23:11,070 --> 00:23:15,250
+You can also see here that, because the pointer
+is a number, when I want to go to the next
+
+312
+00:23:15,250 --> 00:23:21,610
+element, I need to add two numbers together.
+
+313
+00:23:21,610 --> 00:23:27,550
+So here we load two bites, and you can see
+— bytes, you can see the underscore you.
+
+314
+00:23:27,550 --> 00:23:36,820
+Unsigned is — as you see, data array, that
+is just because of the way — of the data
+
+315
+00:23:36,820 --> 00:23:41,340
+I was loading.
+
+316
+00:23:41,340 --> 00:23:46,460
+Lasting we need here is that we want to iterate
+the whole array, so, the way we do that is
+
+317
+00:23:46,460 --> 00:23:50,840
+with something called of course a loop, but
+a loop in WebAssembly is a little bit different
+
+318
+00:23:50,840 --> 00:23:55,530
+than the loops you know from JavaScript, because
+in WebAssembly, it's about branching.
+
+319
+00:23:55,530 --> 00:24:00,610
+In JavaScript, we have branching we have continue
+and break which are two ways to branch inside
+
+320
+00:24:00,610 --> 00:24:03,980
+a foreloop or a wild loop, or whatever.
+
+321
+00:24:03,980 --> 00:24:08,480
+In this case, you can look at a loop as a
+do-while.
+
+322
+00:24:08,480 --> 00:24:12,299
+We look at the loop and execute our code.
+
+323
+00:24:12,299 --> 00:24:17,240
+At the end, we have a conditional branch,
+so that means we are going to go to back,
+
+324
+00:24:17,240 --> 00:24:25,040
+we're going to go back to the label, continue
+if our condition over here is true, so in
+
+325
+00:24:25,040 --> 00:24:34,310
+this case, I'm incrementing the offset, and
+checking the offset — reading out of bounds
+
+326
+00:24:34,310 --> 00:24:39,150
+is one of those notorious errors or security
+bugs that you get all the time in C programmes,
+
+327
+00:24:39,150 --> 00:24:44,650
+and you will get that in WebAssembly if you're
+not careful.
+
+328
+00:24:44,650 --> 00:24:50,120
+That was the business function, and this is
+I think a real world example.
+
+329
+00:24:50,120 --> 00:24:56,670
+I've used this to present a machine-learning
+algorithm which you can use to find primary
+
+330
+00:24:56,670 --> 00:25:02,490
+calls and images, and that kind of stuff,
+and I want to reiterate that this is not just
+
+331
+00:25:02,490 --> 00:25:03,490
+for fun.
+
+332
+00:25:03,490 --> 00:25:04,600
+I mean, we had fun, right?
+
+333
+00:25:04,600 --> 00:25:06,010
+It's not just for fun.
+
+334
+00:25:06,010 --> 00:25:11,170
+There is serious code out there, so I'm part
+of a GitHub organisation called Sodium Friends.
+
+335
+00:25:11,170 --> 00:25:17,490
+This is where we have a project called, with
+— we have bindings to Lip Sodium which is
+
+336
+00:25:17,490 --> 00:25:25,940
+a crypto-library written in C. What if you
+want to provide cryptography to your users
+
+337
+00:25:25,940 --> 00:25:33,810
+in the browser?.then you can go and install
+Sodium Universal which has five or ten algorithms
+
+338
+00:25:33,810 --> 00:25:36,430
+now handwritten in WebAssembly.
+
+339
+00:25:36,430 --> 00:25:42,010
+It has taken about a day to hand write each
+algorithm.
+
+340
+00:25:42,010 --> 00:25:47,370
+They are about a couple of thousand lines
+of code, but this is actual in production
+
+341
+00:25:47,370 --> 00:25:54,580
+now, Sodium Universal has 2,000 downloads
+a week, and it has even more downloads from
+
+342
+00:25:54,580 --> 00:26:02,460
+official channels, built into the bigger browser,
+and those don't show up in the statistics.
+
+343
+00:26:02,460 --> 00:26:04,120
+I see I have four minutes left.
+
+344
+00:26:04,120 --> 00:26:07,130
+I have something very exciting I want to show
+you.
+
+345
+00:26:07,130 --> 00:26:10,430
+This thing about writing WebAssembly, it can
+quickly become repetitive.
+
+346
+00:26:10,430 --> 00:26:15,440
+This is real-world code from the Lip Sodium
+project.
+
+347
+00:26:15,440 --> 00:26:23,840
+This is from a function called es cha-cha,
+it is really dense code, awkward to read,
+
+348
+00:26:23,840 --> 00:26:26,120
+repetitive.
+
+349
+00:26:26,120 --> 00:26:34,400
+It would be easier if you could define a function,
+call it, and then maybe search and replace,
+
+350
+00:26:34,400 --> 00:26:35,780
+and you can do that.
+
+351
+00:26:35,780 --> 00:26:42,200
+It's called macro-s in C. It's not build into
+— it's not built into WebAssembly.
+
+352
+00:26:42,200 --> 00:26:43,970
+It's easy to parse.
+
+353
+00:26:43,970 --> 00:26:48,750
+I built my pre-parser for web assemblies.
+
+354
+00:26:48,750 --> 00:26:52,970
+You can define macros which are like search
+and replace.
+
+355
+00:26:52,970 --> 00:27:00,020
+Suddenly, the big function that is hard to
+read becomes a lot more manageable.
+
+356
+00:27:00,020 --> 00:27:02,260
+I'm not sure what I want to call this project
+yet.
+
+357
+00:27:02,260 --> 00:27:03,330
+It's not public.
+
+358
+00:27:03,330 --> 00:27:06,660
+I was thinking something like What Up, something
+to that extent.
+
+359
+00:27:06,660 --> 00:27:11,470
+If you have good ideas, let me know on Twitter.
+
+360
+00:27:11,470 --> 00:27:15,020
+This was a little sneak peek of the future.
+
+361
+00:27:15,020 --> 00:27:16,020
+That's all I have to say.
+
+362
+00:27:16,020 --> 00:27:17,020
+Thank you!
+

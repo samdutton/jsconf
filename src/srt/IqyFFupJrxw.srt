@@ -1,0 +1,5009 @@
+1
+00:00:11,050 --> 00:00:14,710
+
+good morning recently I was reading a
+
+2
+00:00:14,710 --> 00:00:16,900
+white paper which was describing for
+
+3
+00:00:16,900 --> 00:00:19,660
+comparing to application platforms one
+
+4
+00:00:19,660 --> 00:00:21,820
+developed in C++ and one developed in
+
+5
+00:00:21,820 --> 00:00:24,430
+Java and they went piece by piece
+
+6
+00:00:24,430 --> 00:00:26,980
+comparing the two and when they got to
+
+7
+00:00:26,980 --> 00:00:29,320
+garbage collection they described
+
+8
+00:00:29,320 --> 00:00:31,300
+garbage collection as a programmer
+
+9
+00:00:31,300 --> 00:00:32,739
+convenience and they counted the number
+
+10
+00:00:32,739 --> 00:00:35,230
+of lines of code and the C++ system that
+
+11
+00:00:35,230 --> 00:00:39,149
+was explicitly disposing of memory and
+
+12
+00:00:39,149 --> 00:00:41,140
+concluded that that was a very small
+
+13
+00:00:41,140 --> 00:00:44,289
+percentage of the entire code base and
+
+14
+00:00:44,289 --> 00:00:46,510
+therefore garbage collection was not a
+
+15
+00:00:46,510 --> 00:00:48,699
+significant convenience and should not
+
+16
+00:00:48,699 --> 00:00:50,350
+be considered in comparing these two
+
+17
+00:00:50,350 --> 00:00:53,109
+systems which was completely wrong
+
+18
+00:00:53,109 --> 00:00:54,670
+because that's not what garbage
+
+19
+00:00:54,670 --> 00:00:55,809
+collection is it's not a programmer
+
+20
+00:00:55,809 --> 00:01:00,039
+convenience it's a reliability mechanism
+
+21
+00:01:00,039 --> 00:01:02,829
+it's a way of guaranteeing that a large
+
+22
+00:01:02,829 --> 00:01:04,960
+important class of dangling pointer
+
+23
+00:01:04,960 --> 00:01:07,480
+errors cannot occur and it's only when
+
+24
+00:01:07,480 --> 00:01:09,010
+you have garbage collection that you can
+
+25
+00:01:09,010 --> 00:01:12,850
+consider a very rich family of
+
+26
+00:01:12,850 --> 00:01:15,130
+algorithms which are just too dangerous
+
+27
+00:01:15,130 --> 00:01:18,400
+to consider without it so basically the
+
+28
+00:01:18,400 --> 00:01:20,650
+conclusion of the paper was that it was
+
+29
+00:01:20,650 --> 00:01:23,170
+okay for C++ programmers to be
+
+30
+00:01:23,170 --> 00:01:26,730
+completely ignorant about Java and
+
+31
+00:01:26,730 --> 00:01:28,960
+that's just wrong we'll come back to
+
+32
+00:01:28,960 --> 00:01:30,580
+that later it's never good to be
+
+33
+00:01:30,580 --> 00:01:34,150
+ignorant about anything but today we're
+
+34
+00:01:34,150 --> 00:01:36,370
+going to be talking about loops this is
+
+35
+00:01:36,370 --> 00:01:39,670
+a loop statement we don't have a
+
+36
+00:01:39,670 --> 00:01:41,530
+statement quite like this in JavaScript
+
+37
+00:01:41,530 --> 00:01:43,480
+where you've got loop and you've got a
+
+38
+00:01:43,480 --> 00:01:45,280
+block and you do the things in the block
+
+39
+00:01:45,280 --> 00:01:47,980
+over and over again I kind of wish we
+
+40
+00:01:47,980 --> 00:01:51,370
+did for a couple of reasons one is most
+
+41
+00:01:51,370 --> 00:01:53,110
+of my loops seem to exit out of the
+
+42
+00:01:53,110 --> 00:01:55,420
+middle that you know the book says
+
+43
+00:01:55,420 --> 00:01:56,680
+you're supposed to always exit out of
+
+44
+00:01:56,680 --> 00:01:58,360
+the top or the bottom and JavaScript has
+
+45
+00:01:58,360 --> 00:02:00,310
+conveniences for that but I tend to
+
+46
+00:02:00,310 --> 00:02:03,670
+break out of the middle and you can
+
+47
+00:02:03,670 --> 00:02:06,070
+write that in JavaScript using while
+
+48
+00:02:06,070 --> 00:02:09,550
+true or for semicolon semicolon but they
+
+49
+00:02:09,550 --> 00:02:12,310
+both look stupid I'd rather have a
+
+50
+00:02:12,310 --> 00:02:13,840
+fundamental thing because that's
+
+51
+00:02:13,840 --> 00:02:15,580
+ultimately what I'm trying to do is I'm
+
+52
+00:02:15,580 --> 00:02:19,090
+just trying to go round and round but
+
+53
+00:02:19,090 --> 00:02:21,250
+the the more important reason is
+
+54
+00:02:21,250 --> 00:02:23,650
+it allows us to have sort of a smaller
+
+55
+00:02:23,650 --> 00:02:26,170
+core language and then Express
+
+56
+00:02:26,170 --> 00:02:27,910
+higher-level things in terms of that
+
+57
+00:02:27,910 --> 00:02:29,620
+Brendan gave us an example of that last
+
+58
+00:02:29,620 --> 00:02:32,680
+night with the meta object stuff that
+
+59
+00:02:32,680 --> 00:02:34,300
+sort of takes some of the magic out of
+
+60
+00:02:34,300 --> 00:02:35,710
+the language and allows more of the
+
+61
+00:02:35,710 --> 00:02:37,690
+language to be developed itself and
+
+62
+00:02:37,690 --> 00:02:40,450
+another approach to doing the same thing
+
+63
+00:02:40,450 --> 00:02:44,320
+is to have simple primitives which then
+
+64
+00:02:44,320 --> 00:02:46,209
+could be syntactically expanded or D
+
+65
+00:02:46,209 --> 00:02:49,030
+sugared into more expressive patterns
+
+66
+00:02:49,030 --> 00:02:52,990
+for example a while statement could be
+
+67
+00:02:52,990 --> 00:02:54,550
+transformed into the equivalent loop
+
+68
+00:02:54,550 --> 00:02:57,600
+statement and in looking at that
+
+69
+00:02:57,600 --> 00:03:00,010
+suddenly realize while doesn't actually
+
+70
+00:03:00,010 --> 00:03:03,489
+accomplish very much you I wouldn't miss
+
+71
+00:03:03,489 --> 00:03:07,120
+having it similarly we've got do while
+
+72
+00:03:07,120 --> 00:03:09,640
+which looks completely different but we
+
+73
+00:03:09,640 --> 00:03:12,010
+can see its expansion to loop it's just
+
+74
+00:03:12,010 --> 00:03:14,050
+the same thing except the if is on the
+
+75
+00:03:14,050 --> 00:03:18,700
+bottom now hello we've got the for
+
+76
+00:03:18,700 --> 00:03:21,550
+statement which confuses beginners
+
+77
+00:03:21,550 --> 00:03:23,410
+learning the language because you've got
+
+78
+00:03:23,410 --> 00:03:26,140
+these three clauses and it seems really
+
+79
+00:03:26,140 --> 00:03:29,200
+arbitrary which is which the equivalent
+
+80
+00:03:29,200 --> 00:03:31,150
+loop statement is pretty easy to
+
+81
+00:03:31,150 --> 00:03:32,799
+understand now another way that you
+
+82
+00:03:32,799 --> 00:03:35,380
+could think about loops is to turn them
+
+83
+00:03:35,380 --> 00:03:38,470
+into recursive functions so here I'm
+
+84
+00:03:38,470 --> 00:03:40,630
+turning a while into a function that
+
+85
+00:03:40,630 --> 00:03:42,580
+calls itself and continues to call
+
+86
+00:03:42,580 --> 00:03:45,700
+itself until the condition is met this
+
+87
+00:03:45,700 --> 00:03:47,860
+doesn't quite work in JavaScript right
+
+88
+00:03:47,860 --> 00:03:52,200
+now for two reasons one is the body
+
+89
+00:03:52,200 --> 00:03:54,850
+cannot be or the the body of the loop
+
+90
+00:03:54,850 --> 00:03:57,280
+which is a block can't be turned into a
+
+91
+00:03:57,280 --> 00:04:00,340
+function body if it contains this or
+
+92
+00:04:00,340 --> 00:04:04,860
+arguments or return or break or continue
+
+93
+00:04:04,860 --> 00:04:08,170
+so you sort of a special case but the
+
+94
+00:04:08,170 --> 00:04:10,470
+more important restriction is that
+
+95
+00:04:10,470 --> 00:04:12,760
+JavaScript does not currently implement
+
+96
+00:04:12,760 --> 00:04:16,120
+tail recursion optimization so you'll
+
+97
+00:04:16,120 --> 00:04:19,000
+run out of stack space in most cases
+
+98
+00:04:19,000 --> 00:04:22,510
+before this loop concludes and I'd like
+
+99
+00:04:22,510 --> 00:04:23,979
+to get that fixed some day two we'll
+
+100
+00:04:23,979 --> 00:04:27,880
+come back to that so the main loop i'm
+
+101
+00:04:27,880 --> 00:04:29,810
+here to talk about today is the
+
+102
+00:04:29,810 --> 00:04:32,490
+event loop the event loop is the most
+
+103
+00:04:32,490 --> 00:04:36,719
+important of all loops so the browser
+
+104
+00:04:36,719 --> 00:04:38,279
+has an event queue which contains
+
+105
+00:04:38,279 --> 00:04:41,669
+callback functions and those functions
+
+106
+00:04:41,669 --> 00:04:44,249
+get triggered by the timer on set
+
+107
+00:04:44,249 --> 00:04:46,710
+timeout or set interval x UI events
+
+108
+00:04:46,710 --> 00:04:49,199
+clicking and mousing and keyboarding and
+
+109
+00:04:49,199 --> 00:04:51,930
+by the network or onload and other
+
+110
+00:04:51,930 --> 00:04:55,860
+things in an event loop driven system
+
+111
+00:04:55,860 --> 00:04:58,110
+which the browser is everything happens
+
+112
+00:04:58,110 --> 00:05:00,779
+in turns so if the beginning of a turn
+
+113
+00:05:00,779 --> 00:05:03,930
+an event handler gets started it will
+
+114
+00:05:03,930 --> 00:05:06,569
+run to completion and then the next turn
+
+115
+00:05:06,569 --> 00:05:08,699
+happens and within your turn you can be
+
+116
+00:05:08,699 --> 00:05:11,310
+confident that you'll never get
+
+117
+00:05:11,310 --> 00:05:12,840
+interrupted so you don't have to worry
+
+118
+00:05:12,840 --> 00:05:14,669
+about anything else kind of spoiling the
+
+119
+00:05:14,669 --> 00:05:17,180
+environment while your turn is going on
+
+120
+00:05:17,180 --> 00:05:21,509
+now that puts a huge restriction on the
+
+121
+00:05:21,509 --> 00:05:23,759
+use of the system which is you've got a
+
+122
+00:05:23,759 --> 00:05:26,219
+prime directive in a turn you must never
+
+123
+00:05:26,219 --> 00:05:28,919
+block you must never wait and you must
+
+124
+00:05:28,919 --> 00:05:31,409
+finish fast because everything else in
+
+125
+00:05:31,409 --> 00:05:32,669
+the system is waiting for you to
+
+126
+00:05:32,669 --> 00:05:34,889
+complete nothing else can go until you
+
+127
+00:05:34,889 --> 00:05:38,039
+are done the event loop is one of the
+
+128
+00:05:38,039 --> 00:05:39,870
+best parts of the browser there are lots
+
+129
+00:05:39,870 --> 00:05:41,339
+of things that the browser got wrong
+
+130
+00:05:41,339 --> 00:05:42,930
+this is one of the parts that the
+
+131
+00:05:42,930 --> 00:05:45,629
+browser got brilliantly right with a
+
+132
+00:05:45,629 --> 00:05:49,589
+couple of exceptions there alert and
+
+133
+00:05:49,589 --> 00:05:54,060
+it's sisters block and so they're okay
+
+134
+00:05:54,060 --> 00:05:55,500
+to use for debugging but they should
+
+135
+00:05:55,500 --> 00:05:57,060
+never be used in applications because
+
+136
+00:05:57,060 --> 00:05:59,580
+they stop the main browser threads and
+
+137
+00:05:59,580 --> 00:06:01,409
+no other work can happen until the user
+
+138
+00:06:01,409 --> 00:06:05,430
+dismisses it also xhr was created with
+
+139
+00:06:05,430 --> 00:06:08,189
+asynchronous mode which blocks you while
+
+140
+00:06:08,189 --> 00:06:10,620
+you're waiting for the network to return
+
+141
+00:06:10,620 --> 00:06:12,629
+a result which is terrible so you should
+
+142
+00:06:12,629 --> 00:06:15,180
+never ever be using that either but with
+
+143
+00:06:15,180 --> 00:06:16,889
+those restrictions the browser got all
+
+144
+00:06:16,889 --> 00:06:19,649
+of the asynchronous operations for the
+
+145
+00:06:19,649 --> 00:06:22,560
+event loop correctly at being a
+
+146
+00:06:22,560 --> 00:06:23,729
+mathematician she thought should be
+
+147
+00:06:23,729 --> 00:06:26,189
+assigned a code breaking instead she was
+
+148
+00:06:26,189 --> 00:06:30,529
+sent to Harvard to work on the bark one
+
+149
+00:06:30,529 --> 00:06:32,020
+it
+
+150
+00:06:32,020 --> 00:06:36,539
+was a computer operated by the Navy
+
+151
+00:06:36,539 --> 00:06:44,800
+skins so when looks good me when she got
+
+152
+00:06:44,800 --> 00:06:46,389
+there her first assignment was to take
+
+153
+00:06:46,389 --> 00:06:47,830
+the machine apart figure out how it
+
+154
+00:06:47,830 --> 00:06:49,870
+worked figure out how to program it and
+
+155
+00:06:49,870 --> 00:06:51,159
+then write the manual so that other
+
+156
+00:06:51,159 --> 00:06:53,169
+people could program it so she was one
+
+157
+00:06:53,169 --> 00:06:56,229
+of the very first programmers and she
+
+158
+00:06:56,229 --> 00:06:58,349
+completed that task very successfully
+
+159
+00:06:58,349 --> 00:07:00,610
+after the war she went to work for the
+
+160
+00:07:00,610 --> 00:07:04,270
+first commercial computer manufacturer
+
+161
+00:07:04,270 --> 00:07:08,380
+which built the UNIVAC at that time and
+
+162
+00:07:08,380 --> 00:07:11,470
+for a long time computers were extremely
+
+163
+00:07:11,470 --> 00:07:13,440
+expensive there were millions of dollars
+
+164
+00:07:13,440 --> 00:07:16,960
+and the development of software was
+
+165
+00:07:16,960 --> 00:07:19,210
+extremely slow and difficult basically
+
+166
+00:07:19,210 --> 00:07:21,159
+programs were written as a sequence of
+
+167
+00:07:21,159 --> 00:07:24,580
+numerical codes it's just very very
+
+168
+00:07:24,580 --> 00:07:27,669
+tedious work and the thinking at the
+
+169
+00:07:27,669 --> 00:07:30,370
+time was that the hardware costs were
+
+170
+00:07:30,370 --> 00:07:32,080
+going to dwarf the software costs
+
+171
+00:07:32,080 --> 00:07:34,210
+because human life is cheap by
+
+172
+00:07:34,210 --> 00:07:37,270
+comparison to vacuum tubes so we'll just
+
+173
+00:07:37,270 --> 00:07:40,599
+throw as many people at it as we need in
+
+174
+00:07:40,599 --> 00:07:41,680
+order to make all the software that's
+
+175
+00:07:41,680 --> 00:07:43,930
+required she had the insight that that
+
+176
+00:07:43,930 --> 00:07:46,900
+wasn't going to work that programming
+
+177
+00:07:46,900 --> 00:07:48,370
+looks just too difficult and finding
+
+178
+00:07:48,370 --> 00:07:50,380
+enough amazing people like you to do
+
+179
+00:07:50,380 --> 00:07:53,919
+that level of work for the UNIVAC they
+
+180
+00:07:53,919 --> 00:07:55,090
+were not going to be able to sell enough
+
+181
+00:07:55,090 --> 00:07:57,490
+machines to make the business go so she
+
+182
+00:07:57,490 --> 00:07:59,259
+had this amazing idea we can use
+
+183
+00:07:59,259 --> 00:08:01,479
+software to make it easier to write
+
+184
+00:08:01,479 --> 00:08:04,419
+software so she developed a program
+
+185
+00:08:04,419 --> 00:08:08,020
+called a zero which was the first in the
+
+186
+00:08:08,020 --> 00:08:09,969
+a series serve an indication of how
+
+187
+00:08:09,969 --> 00:08:11,919
+smart a programmer she was she called it
+
+188
+00:08:11,919 --> 00:08:15,310
+a zero she didn't call it a one it was
+
+189
+00:08:15,310 --> 00:08:17,229
+the first compiler she called it a
+
+190
+00:08:17,229 --> 00:08:19,330
+compiler we call things compilers today
+
+191
+00:08:19,330 --> 00:08:24,789
+because of a 0 0 her idea was to have a
+
+192
+00:08:24,789 --> 00:08:27,310
+library of subroutines and that you
+
+193
+00:08:27,310 --> 00:08:29,409
+could call for those subroutines and
+
+194
+00:08:29,409 --> 00:08:32,200
+assemble them into a program and then
+
+195
+00:08:32,200 --> 00:08:33,729
+the program that you assembled could
+
+196
+00:08:33,729 --> 00:08:35,500
+also go into the subroutine library and
+
+197
+00:08:35,500 --> 00:08:38,649
+other people could build on that the
+
+198
+00:08:38,649 --> 00:08:40,959
+reason we call a collection of useful
+
+199
+00:08:40,959 --> 00:08:42,590
+software a library is
+
+200
+00:08:42,590 --> 00:08:46,520
+because of this the reason we call a
+
+201
+00:08:46,520 --> 00:08:49,430
+function you know why do you call a
+
+202
+00:08:49,430 --> 00:08:50,810
+function a function isn't anything like
+
+203
+00:08:50,810 --> 00:08:53,300
+a telephone call it's because of the
+
+204
+00:08:53,300 --> 00:08:54,770
+library metaphor that you call for a
+
+205
+00:08:54,770 --> 00:08:56,570
+book every book has a call number you
+
+206
+00:08:56,570 --> 00:08:59,110
+can call for the document and get it
+
+207
+00:08:59,110 --> 00:09:02,840
+that's the sense she had so there were
+
+208
+00:09:02,840 --> 00:09:04,660
+two kinds of subroutines in her system
+
+209
+00:09:04,660 --> 00:09:07,070
+open subroutines which today we would
+
+210
+00:09:07,070 --> 00:09:08,600
+call and include you just take the whole
+
+211
+00:09:08,600 --> 00:09:10,340
+text of the subroutine and stick it
+
+212
+00:09:10,340 --> 00:09:13,520
+right in the middle and then a new idea
+
+213
+00:09:13,520 --> 00:09:15,650
+the closed subroutine which you could
+
+214
+00:09:15,650 --> 00:09:17,690
+jump to and then jump back so you could
+
+215
+00:09:17,690 --> 00:09:19,580
+use it from multiple places in your
+
+216
+00:09:19,580 --> 00:09:21,890
+program but it only occurs once in
+
+217
+00:09:21,890 --> 00:09:25,340
+memory so in modern terms a zero was
+
+218
+00:09:25,340 --> 00:09:27,830
+more like a linker or a loader than it
+
+219
+00:09:27,830 --> 00:09:31,220
+was a compiler but this was the first
+
+220
+00:09:31,220 --> 00:09:33,290
+compiler and it went through iterations
+
+221
+00:09:33,290 --> 00:09:34,790
+which eventually led to modern
+
+222
+00:09:34,790 --> 00:09:38,710
+programming languages a later evolution
+
+223
+00:09:38,710 --> 00:09:42,140
+was a 282 was the first open source
+
+224
+00:09:42,140 --> 00:09:44,750
+project a two was given to univ ax
+
+225
+00:09:44,750 --> 00:09:48,110
+customers and they used it and some of
+
+226
+00:09:48,110 --> 00:09:50,090
+them modified it and gave back the
+
+227
+00:09:50,090 --> 00:09:52,820
+changes and suggestions for for further
+
+228
+00:09:52,820 --> 00:09:57,650
+improvement open source is almost as old
+
+229
+00:09:57,650 --> 00:10:00,380
+as computers but not quite the thing it
+
+230
+00:10:00,380 --> 00:10:02,860
+had to wait for was mass production
+
+231
+00:10:02,860 --> 00:10:05,990
+prior to univac every computer was one
+
+232
+00:10:05,990 --> 00:10:09,020
+off they build it mostly as a research
+
+233
+00:10:09,020 --> 00:10:12,560
+project and as a result of having built
+
+234
+00:10:12,560 --> 00:10:14,090
+it they figured out how to build the
+
+235
+00:10:14,090 --> 00:10:16,190
+next one better so it wasn't until
+
+236
+00:10:16,190 --> 00:10:18,950
+univac that you had lots of people using
+
+237
+00:10:18,950 --> 00:10:20,750
+similar machines and then open source
+
+238
+00:10:20,750 --> 00:10:24,560
+becomes a reasonable thing a to led to a
+
+239
+00:10:24,560 --> 00:10:27,800
+3 which led to a t3 which was later
+
+240
+00:10:27,800 --> 00:10:30,530
+renamed as mathematic it was one of the
+
+241
+00:10:30,530 --> 00:10:33,230
+first programming languages that we
+
+242
+00:10:33,230 --> 00:10:35,120
+would recognize today as a programming
+
+243
+00:10:35,120 --> 00:10:37,550
+language about the same time IBM
+
+244
+00:10:37,550 --> 00:10:39,680
+developed Fortran which turned out to be
+
+245
+00:10:39,680 --> 00:10:43,670
+the winner in this particular race now
+
+246
+00:10:43,670 --> 00:10:48,200
+turns out Fortran made programmers much
+
+247
+00:10:48,200 --> 00:10:52,400
+much more productive but some of the
+
+248
+00:10:52,400 --> 00:10:54,440
+best programmers of the day completely
+
+249
+00:10:54,440 --> 00:10:55,720
+rejected that idea
+
+250
+00:10:55,720 --> 00:10:58,010
+they said that programming took too much
+
+251
+00:10:58,010 --> 00:11:00,560
+creativity and dexterity for the human
+
+252
+00:11:00,560 --> 00:11:02,630
+being to be replaced by a very machine
+
+253
+00:11:02,630 --> 00:11:06,620
+they were manipulating they just didn't
+
+254
+00:11:06,620 --> 00:11:08,959
+understand what it was that Fortran was
+
+255
+00:11:08,959 --> 00:11:10,279
+supposed to be doing for them that it's
+
+256
+00:11:10,279 --> 00:11:12,050
+going to make them more productive make
+
+257
+00:11:12,050 --> 00:11:14,420
+their lives better and this is going to
+
+258
+00:11:14,420 --> 00:11:15,860
+be a recurring theme that very often
+
+259
+00:11:15,860 --> 00:11:18,050
+programmers are the last to understand
+
+260
+00:11:18,050 --> 00:11:20,600
+the the benefit of an improvement in
+
+261
+00:11:20,600 --> 00:11:23,870
+software technology so one of the
+
+262
+00:11:23,870 --> 00:11:26,360
+characteristics in both math magic or
+
+263
+00:11:26,360 --> 00:11:29,810
+mathematic and Fortran was blocking read
+
+264
+00:11:29,810 --> 00:11:32,149
+and blocking right so you got to a read
+
+265
+00:11:32,149 --> 00:11:35,480
+statement the program would stop it
+
+266
+00:11:35,480 --> 00:11:37,130
+would then go off to the card reader the
+
+267
+00:11:37,130 --> 00:11:38,630
+tape drive her wherever was getting the
+
+268
+00:11:38,630 --> 00:11:40,910
+data because the program had nothing to
+
+269
+00:11:40,910 --> 00:11:42,770
+do until it got the data anyway so it
+
+270
+00:11:42,770 --> 00:11:45,230
+would just block until the i/o operation
+
+271
+00:11:45,230 --> 00:11:49,250
+was completed the model for i/o and in
+
+272
+00:11:49,250 --> 00:11:51,050
+the early programming languages was sort
+
+273
+00:11:51,050 --> 00:11:53,360
+of based on the black box hardware model
+
+274
+00:11:53,360 --> 00:11:55,430
+we've got an input and an output and you
+
+275
+00:11:55,430 --> 00:12:01,490
+do some processing in between when we
+
+276
+00:12:01,490 --> 00:12:05,630
+went to time sharing the of that model
+
+277
+00:12:05,630 --> 00:12:07,610
+just came right along so you had read
+
+278
+00:12:07,610 --> 00:12:10,040
+and write statements that now talked to
+
+279
+00:12:10,040 --> 00:12:12,860
+teletypes and interactive devices so
+
+280
+00:12:12,860 --> 00:12:15,140
+programs became highly modal because
+
+281
+00:12:15,140 --> 00:12:17,600
+that each read statement the program
+
+282
+00:12:17,600 --> 00:12:19,279
+would be expecting one particular input
+
+283
+00:12:19,279 --> 00:12:21,320
+and the user couldn't type anything else
+
+284
+00:12:21,320 --> 00:12:24,079
+at that point or it'd be an error so the
+
+285
+00:12:24,079 --> 00:12:25,730
+flow of the dialogue was dictated by the
+
+286
+00:12:25,730 --> 00:12:27,980
+program not by the user and so the
+
+287
+00:12:27,980 --> 00:12:29,480
+programs were significantly harder to
+
+288
+00:12:29,480 --> 00:12:32,980
+use than today's programs time-sharing
+
+289
+00:12:32,980 --> 00:12:35,180
+economically dependent on the block and
+
+290
+00:12:35,180 --> 00:12:39,440
+read because while one task was stopped
+
+291
+00:12:39,440 --> 00:12:41,720
+on a read that time could be given to
+
+292
+00:12:41,720 --> 00:12:44,510
+other users and so that's how they they
+
+293
+00:12:44,510 --> 00:12:46,070
+had a machine that was much slower than
+
+294
+00:12:46,070 --> 00:12:48,260
+the device you've got in your pocket and
+
+295
+00:12:48,260 --> 00:12:51,079
+it'd be shared over a hundred people and
+
+296
+00:12:51,079 --> 00:12:53,320
+that was how they gave the illusion that
+
+297
+00:12:53,320 --> 00:12:55,370
+people were getting more time than they
+
+298
+00:12:55,370 --> 00:13:00,110
+actually got so since then virtually all
+
+299
+00:13:00,110 --> 00:13:02,089
+programming languages have had blocking
+
+300
+00:13:02,089 --> 00:13:05,000
+io every language has read and write
+
+301
+00:13:05,000 --> 00:13:07,049
+with only a couple of exception
+
+302
+00:13:07,049 --> 00:13:10,299
+see had no I Oh at all which was
+
+303
+00:13:10,299 --> 00:13:12,789
+actually an amazing advance because it
+
+304
+00:13:12,789 --> 00:13:14,769
+made the language much more flexible you
+
+305
+00:13:14,769 --> 00:13:16,149
+could use it in lots of different
+
+306
+00:13:16,149 --> 00:13:18,579
+environments including embedded systems
+
+307
+00:13:18,579 --> 00:13:20,139
+where you had completely different
+
+308
+00:13:20,139 --> 00:13:22,079
+notions of how I oh was supposed to work
+
+309
+00:13:22,079 --> 00:13:24,220
+unfortunately it also came with standard
+
+310
+00:13:24,220 --> 00:13:27,429
+IO and that's pretty much the only thing
+
+311
+00:13:27,429 --> 00:13:29,859
+people use so effectively it has
+
+312
+00:13:29,859 --> 00:13:33,999
+blocking io meanwhile some people were
+
+313
+00:13:33,999 --> 00:13:35,589
+starting to recognize that there are
+
+314
+00:13:35,589 --> 00:13:37,629
+other ways of managing io which which
+
+315
+00:13:37,629 --> 00:13:39,789
+were much more effective this was
+
+316
+00:13:39,789 --> 00:13:41,739
+happening particularly in research labs
+
+317
+00:13:41,739 --> 00:13:44,199
+like at Stanford Research Institute and
+
+318
+00:13:44,199 --> 00:13:47,350
+at Xerox PARC also people developing
+
+319
+00:13:47,350 --> 00:13:49,059
+text editors started coming up with a
+
+320
+00:13:49,059 --> 00:13:51,100
+notion that if you had just one read
+
+321
+00:13:51,100 --> 00:13:53,410
+statement for the entire editor that
+
+322
+00:13:53,410 --> 00:13:55,449
+gave the user a lot more flexibility in
+
+323
+00:13:55,449 --> 00:13:58,839
+how they can enter their commands also
+
+324
+00:13:58,839 --> 00:14:00,910
+people who are developing the earliest
+
+325
+00:14:00,910 --> 00:14:02,559
+computer games also made the same
+
+326
+00:14:02,559 --> 00:14:04,689
+discovery that they'd never wanted to
+
+327
+00:14:04,689 --> 00:14:08,229
+block on Io that they just want to have
+
+328
+00:14:08,229 --> 00:14:09,850
+one particular place where they could
+
+329
+00:14:09,850 --> 00:14:12,039
+get stuff and change the state of the
+
+330
+00:14:12,039 --> 00:14:16,569
+program based on what was entered that
+
+331
+00:14:16,569 --> 00:14:18,789
+didn't reach that idea didn't reach
+
+332
+00:14:18,789 --> 00:14:20,949
+mainstream programmers until nineteen
+
+333
+00:14:20,949 --> 00:14:25,569
+eighty-four in 1984 Macintosh which was
+
+334
+00:14:25,569 --> 00:14:28,089
+the first reasonably priced computer
+
+335
+00:14:28,089 --> 00:14:31,029
+based on an event model became available
+
+336
+00:14:31,029 --> 00:14:34,479
+and a lot of programmers looked at it
+
+337
+00:14:34,479 --> 00:14:37,089
+and couldn't figure out how to program
+
+338
+00:14:37,089 --> 00:14:40,089
+it they complain that you have to write
+
+339
+00:14:40,089 --> 00:14:42,459
+the programs inside out Wow it's just
+
+340
+00:14:42,459 --> 00:14:44,259
+too hard it's impossible to think about
+
+341
+00:14:44,259 --> 00:14:46,479
+it so we should go back to the command
+
+342
+00:14:46,479 --> 00:14:48,369
+line that's the way God intended us to
+
+343
+00:14:48,369 --> 00:14:51,129
+write programs that this kind of inside
+
+344
+00:14:51,129 --> 00:14:55,149
+out stuff is just wrong Apple released a
+
+345
+00:14:55,149 --> 00:14:57,399
+program called mac app which was a
+
+346
+00:14:57,399 --> 00:14:59,529
+skeleton of a Macintosh application
+
+347
+00:14:59,529 --> 00:15:01,239
+which had the event loop built into it
+
+348
+00:15:01,239 --> 00:15:03,429
+and affordances for creating menu bars
+
+349
+00:15:03,429 --> 00:15:04,659
+and all the other things you have to do
+
+350
+00:15:04,659 --> 00:15:07,559
+you just had to plug your code into that
+
+351
+00:15:07,559 --> 00:15:09,999
+they weren't buying it was still way too
+
+352
+00:15:09,999 --> 00:15:13,029
+hard to think about so event loop
+
+353
+00:15:13,029 --> 00:15:14,739
+programming might have died out at that
+
+354
+00:15:14,739 --> 00:15:18,009
+point except for hypercard Bill Atkinson
+
+355
+00:15:18,009 --> 00:15:19,630
+who developed quick
+
+356
+00:15:19,630 --> 00:15:23,380
+quickdraw and Mac Paint wrote a
+
+357
+00:15:23,380 --> 00:15:25,540
+multi-level macpaint in which he could
+
+358
+00:15:25,540 --> 00:15:28,450
+have many planes and imagery available
+
+359
+00:15:28,450 --> 00:15:30,160
+and you could switch from one to another
+
+360
+00:15:30,160 --> 00:15:31,930
+in each of those claims in addition to
+
+361
+00:15:31,930 --> 00:15:34,660
+having pixels on it could also have
+
+362
+00:15:34,660 --> 00:15:37,120
+buttons and fields and those buttons and
+
+363
+00:15:37,120 --> 00:15:39,070
+fields could have script attached to it
+
+364
+00:15:39,070 --> 00:15:41,290
+and the whole thing was avenged Riven
+
+365
+00:15:41,290 --> 00:15:45,220
+and it really took off because
+
+366
+00:15:45,220 --> 00:15:47,260
+non-programmers found that they could be
+
+367
+00:15:47,260 --> 00:15:49,870
+incredibly productive in HyperCard they
+
+368
+00:15:49,870 --> 00:15:52,270
+just draw a picture of something and add
+
+369
+00:15:52,270 --> 00:15:54,010
+a little bit of script to make it work
+
+370
+00:15:54,010 --> 00:15:56,410
+and boom they had an application and
+
+371
+00:15:56,410 --> 00:15:58,090
+people were developing all sorts of
+
+372
+00:15:58,090 --> 00:16:01,390
+things then the professional programmers
+
+373
+00:16:01,390 --> 00:16:03,760
+kind of looked at what the amateurs were
+
+374
+00:16:03,760 --> 00:16:05,590
+doing a guy in the ok yeah I guess we
+
+375
+00:16:05,590 --> 00:16:07,330
+could do that too and then suddenly
+
+376
+00:16:07,330 --> 00:16:10,510
+there was an explosion in programs for
+
+377
+00:16:10,510 --> 00:16:12,190
+the Macintosh am for windows which has a
+
+378
+00:16:12,190 --> 00:16:16,120
+similar model so HyperCard was all about
+
+379
+00:16:16,120 --> 00:16:19,360
+events it was so event oriented that you
+
+380
+00:16:19,360 --> 00:16:20,560
+didn't have to write the event loop
+
+381
+00:16:20,560 --> 00:16:22,450
+yourself it was built in so all you had
+
+382
+00:16:22,450 --> 00:16:25,270
+to write was he gun handlers so programs
+
+383
+00:16:25,270 --> 00:16:27,400
+which it called stacks were written as a
+
+384
+00:16:27,400 --> 00:16:29,290
+collection of event handlers attached to
+
+385
+00:16:29,290 --> 00:16:31,630
+visible objects cards fields and buttons
+
+386
+00:16:31,630 --> 00:16:36,430
+and events bubbled up as they do in the
+
+387
+00:16:36,430 --> 00:16:38,680
+browser and some of the event names may
+
+388
+00:16:38,680 --> 00:16:40,900
+look very familiar to you like on Mouse
+
+389
+00:16:40,900 --> 00:16:44,260
+up on key down on card enter in the
+
+390
+00:16:44,260 --> 00:16:47,290
+browser became onload you all remember
+
+391
+00:16:47,290 --> 00:16:50,500
+that on Idol was an event that it sent
+
+392
+00:16:50,500 --> 00:16:52,000
+out whenever there was nothing going on
+
+393
+00:16:52,000 --> 00:16:53,560
+when the event queue became empty it
+
+394
+00:16:53,560 --> 00:16:55,360
+would send on idle people figured out
+
+395
+00:16:55,360 --> 00:16:58,230
+that they could do animation with that
+
+396
+00:16:58,230 --> 00:17:00,310
+which worked fine for the first
+
+397
+00:17:00,310 --> 00:17:01,990
+generation of Macintoshes but when the
+
+398
+00:17:01,990 --> 00:17:03,430
+next generation came out which was
+
+399
+00:17:03,430 --> 00:17:09,060
+faster all the animation went crazy so
+
+400
+00:17:09,060 --> 00:17:12,160
+hyper car didn't anticipate that people
+
+401
+00:17:12,160 --> 00:17:14,410
+would be animating with it because the
+
+402
+00:17:14,410 --> 00:17:15,939
+CPU is at that time were so slow that
+
+403
+00:17:15,939 --> 00:17:17,709
+wasn't really an option but people did
+
+404
+00:17:17,709 --> 00:17:19,990
+it anyway so the lesson was if you don't
+
+405
+00:17:19,990 --> 00:17:22,240
+provide a right way the street will find
+
+406
+00:17:22,240 --> 00:17:23,770
+its own way we've certainly seen that
+
+407
+00:17:23,770 --> 00:17:26,569
+played over and over in the browser
+
+408
+00:17:26,569 --> 00:17:30,690
+so HyperCard had a big impact on the on
+
+409
+00:17:30,690 --> 00:17:32,519
+the evolution of the browser basically
+
+410
+00:17:32,519 --> 00:17:36,570
+netscape navigator to was combining
+
+411
+00:17:36,570 --> 00:17:39,029
+ideas from hypercard and combining ideas
+
+412
+00:17:39,029 --> 00:17:41,759
+from the original web browser and it
+
+413
+00:17:41,759 --> 00:17:43,440
+turns out that javascript is really well
+
+414
+00:17:43,440 --> 00:17:45,179
+suited to this model and that's not by
+
+415
+00:17:45,179 --> 00:17:48,059
+coincidence because javascript was
+
+416
+00:17:48,059 --> 00:17:50,669
+designed specifically to do this and
+
+417
+00:17:50,669 --> 00:17:53,220
+it's actually very very good at it so
+
+418
+00:17:53,220 --> 00:17:56,880
+the dom is awful i hope i'm not
+
+419
+00:17:56,880 --> 00:17:58,679
+surprising anybody anybody not aware
+
+420
+00:17:58,679 --> 00:18:01,889
+that the dom is awful but as awful as it
+
+421
+00:18:01,889 --> 00:18:05,309
+is with javascript the dom is really
+
+422
+00:18:05,309 --> 00:18:07,710
+effective and if you put an ajax library
+
+423
+00:18:07,710 --> 00:18:11,039
+on it like Yui 3 it becomes really
+
+424
+00:18:11,039 --> 00:18:15,809
+effective almost Pleasant so one of the
+
+425
+00:18:15,809 --> 00:18:17,759
+reasons why javascript is really good at
+
+426
+00:18:17,759 --> 00:18:19,200
+this and one of the reasons why you are
+
+427
+00:18:19,200 --> 00:18:20,399
+really good at this is because
+
+428
+00:18:20,399 --> 00:18:22,769
+javascript does not have read it's one
+
+429
+00:18:22,769 --> 00:18:24,480
+of the only modern programming languages
+
+430
+00:18:24,480 --> 00:18:27,029
+one of the only programming languages in
+
+431
+00:18:27,029 --> 00:18:28,710
+the history programming languages that
+
+432
+00:18:28,710 --> 00:18:31,730
+doesn't have blocking read built into it
+
+433
+00:18:31,730 --> 00:18:34,200
+this has always been seen as a big
+
+434
+00:18:34,200 --> 00:18:36,000
+disadvantage all JavaScript awful
+
+435
+00:18:36,000 --> 00:18:38,159
+because you can't read files with it but
+
+436
+00:18:38,159 --> 00:18:40,379
+that turns out to have been a good thing
+
+437
+00:18:40,379 --> 00:18:42,330
+because it means it's easier for you to
+
+438
+00:18:42,330 --> 00:18:45,360
+work with the event driven model than it
+
+439
+00:18:45,360 --> 00:18:47,039
+is for people who have practice with
+
+440
+00:18:47,039 --> 00:18:48,870
+other languages because you've never
+
+441
+00:18:48,870 --> 00:18:52,139
+blocked and so that the urge to want to
+
+442
+00:18:52,139 --> 00:18:54,389
+have to block and to find alternatives
+
+443
+00:18:54,389 --> 00:18:56,309
+to it it's not a problem for you you've
+
+444
+00:18:56,309 --> 00:19:01,649
+always done it right and you know read
+
+445
+00:19:01,649 --> 00:19:03,960
+is a problem in this model because we
+
+446
+00:19:03,960 --> 00:19:06,029
+eat blocks in blocking is bad for event
+
+447
+00:19:06,029 --> 00:19:08,460
+loops so JavaScript programmers are
+
+448
+00:19:08,460 --> 00:19:10,740
+smarter about using event loops than
+
+449
+00:19:10,740 --> 00:19:12,690
+programmers of other languages so
+
+450
+00:19:12,690 --> 00:19:17,190
+congratulations you're all smarter so
+
+451
+00:19:17,190 --> 00:19:19,409
+the event loop is just one approach to
+
+452
+00:19:19,409 --> 00:19:22,769
+concurrency we have a need to do lots of
+
+453
+00:19:22,769 --> 00:19:24,960
+things at the same time event loops are
+
+454
+00:19:24,960 --> 00:19:27,269
+one way to do that another is to use
+
+455
+00:19:27,269 --> 00:19:30,330
+threading and threading is the most
+
+456
+00:19:30,330 --> 00:19:31,620
+popular approach
+
+457
+00:19:31,620 --> 00:19:35,000
+of most programmers today so
+
+458
+00:19:35,000 --> 00:19:37,380
+everything's a trade-off there nothing
+
+459
+00:19:37,380 --> 00:19:39,960
+is perfect in technology so let's look
+
+460
+00:19:39,960 --> 00:19:42,720
+at the trade-offs with threading on the
+
+461
+00:19:42,720 --> 00:19:45,690
+pro side no rethinking is necessary so
+
+462
+00:19:45,690 --> 00:19:47,070
+you don't have to write your programs
+
+463
+00:19:47,070 --> 00:19:49,200
+inside out you can take any sequential
+
+464
+00:19:49,200 --> 00:19:51,390
+program put it in a thread it still
+
+465
+00:19:51,390 --> 00:19:55,230
+works so that's a huge advantage those
+
+466
+00:19:55,230 --> 00:19:56,970
+programs can block in fact they're
+
+467
+00:19:56,970 --> 00:19:58,530
+supposed to block the reason we have
+
+468
+00:19:58,530 --> 00:20:00,330
+threads isn't so we can do multiple
+
+469
+00:20:00,330 --> 00:20:02,220
+things at once it's so that we can stop
+
+470
+00:20:02,220 --> 00:20:04,050
+doing things and do other things while
+
+471
+00:20:04,050 --> 00:20:07,380
+that's still going on so can execution
+
+472
+00:20:07,380 --> 00:20:09,150
+will continue as long as any thread is
+
+473
+00:20:09,150 --> 00:20:12,570
+not blocked from the con side you have
+
+474
+00:20:12,570 --> 00:20:14,600
+to allocate stack memory for each thread
+
+475
+00:20:14,600 --> 00:20:16,830
+that was a problem once it's not a
+
+476
+00:20:16,830 --> 00:20:18,600
+problem now because memory is so
+
+477
+00:20:18,600 --> 00:20:22,559
+abundant a bigger problem is that if two
+
+478
+00:20:22,559 --> 00:20:24,840
+threads use the same memory a race may
+
+479
+00:20:24,840 --> 00:20:30,420
+occur and that is a big problem so here
+
+480
+00:20:30,420 --> 00:20:33,330
+we've got to JavaScript programs each is
+
+481
+00:20:33,330 --> 00:20:35,250
+only one line long each is going to run
+
+482
+00:20:35,250 --> 00:20:37,470
+in its own thread and they're both going
+
+483
+00:20:37,470 --> 00:20:40,350
+to run concurrently at the same time so
+
+484
+00:20:40,350 --> 00:20:42,890
+what would be the result of this program
+
+485
+00:20:42,890 --> 00:20:45,690
+one possible result would be the array a
+
+486
+00:20:45,690 --> 00:20:49,350
+and B and the other would be the array B
+
+487
+00:20:49,350 --> 00:20:51,390
+or a does everybody see how that could
+
+488
+00:20:51,390 --> 00:20:53,490
+happen because either those threads
+
+489
+00:20:53,490 --> 00:20:55,860
+could happen first and so you can't
+
+490
+00:20:55,860 --> 00:20:57,570
+predict ahead of time which is going to
+
+491
+00:20:57,570 --> 00:21:01,559
+win but that's not the big problem the
+
+492
+00:21:01,559 --> 00:21:05,370
+big problem is that there are two other
+
+493
+00:21:05,370 --> 00:21:08,760
+cases that could occur where after you
+
+494
+00:21:08,760 --> 00:21:11,130
+run that program you've got just a or
+
+495
+00:21:11,130 --> 00:21:13,110
+you've got just be that data has been
+
+496
+00:21:13,110 --> 00:21:16,830
+lost a hazard in thread programming is
+
+497
+00:21:16,830 --> 00:21:18,170
+any time you have a read-modify-write
+
+498
+00:21:18,170 --> 00:21:22,470
+which is basically all we do there's a
+
+499
+00:21:22,470 --> 00:21:24,929
+chance for collision so you can think of
+
+500
+00:21:24,929 --> 00:21:29,309
+threads as being cars or but they're
+
+501
+00:21:29,309 --> 00:21:31,080
+invisible cars so they can't see each
+
+502
+00:21:31,080 --> 00:21:32,370
+other but if they're ever in the same
+
+503
+00:21:32,370 --> 00:21:36,870
+place at the same time they crash so let
+
+504
+00:21:36,870 --> 00:21:39,490
+me show you what went on here
+
+505
+00:21:39,490 --> 00:21:42,640
+so when we append something to the end
+
+506
+00:21:42,640 --> 00:21:44,740
+of an array we can do that at one
+
+507
+00:21:44,740 --> 00:21:46,300
+statement in JavaScript but what
+
+508
+00:21:46,300 --> 00:21:48,400
+actually happens could be viewed as
+
+509
+00:21:48,400 --> 00:21:51,820
+several statements and so each of those
+
+510
+00:21:51,820 --> 00:21:53,500
+threads has those statements and they
+
+511
+00:21:53,500 --> 00:21:55,809
+could be interleaved in any possible way
+
+512
+00:21:55,809 --> 00:21:57,580
+there's no way to predict how they're
+
+513
+00:21:57,580 --> 00:22:00,520
+going to the interleaved and in this
+
+514
+00:22:00,520 --> 00:22:02,520
+case with this particular interleaving
+
+515
+00:22:02,520 --> 00:22:06,360
+the result is B because a gets clobbered
+
+516
+00:22:06,360 --> 00:22:11,250
+the last guy to write to the length wins
+
+517
+00:22:11,250 --> 00:22:16,570
+and this is terrible you know you
+
+518
+00:22:16,570 --> 00:22:18,550
+couldn't look at that program and see
+
+519
+00:22:18,550 --> 00:22:21,580
+you know what happened why'd our data
+
+520
+00:22:21,580 --> 00:22:23,620
+disappear well how did we command
+
+521
+00:22:23,620 --> 00:22:25,360
+consistent how do we become insecure
+
+522
+00:22:25,360 --> 00:22:29,860
+unreliable it's about all you can do is
+
+523
+00:22:29,860 --> 00:22:31,480
+say oh you're using threads there's your
+
+524
+00:22:31,480 --> 00:22:34,870
+problem so it's impossible to have
+
+525
+00:22:34,870 --> 00:22:37,059
+application integrity when subject to
+
+526
+00:22:37,059 --> 00:22:41,770
+race conditions now there's a solution
+
+527
+00:22:41,770 --> 00:22:43,450
+to raise conditions it's called mutual
+
+528
+00:22:43,450 --> 00:22:46,710
+exclusion so you can take some critical
+
+529
+00:22:46,710 --> 00:22:49,030
+section of code some set of statements
+
+530
+00:22:49,030 --> 00:22:52,870
+or some data structures and say only one
+
+531
+00:22:52,870 --> 00:22:55,870
+thread is able to have access to this at
+
+532
+00:22:55,870 --> 00:23:00,640
+a time and this has several names it's
+
+533
+00:23:00,640 --> 00:23:02,470
+sometimes called semaphores or monitors
+
+534
+00:23:02,470 --> 00:23:04,420
+or rendezvous in Java it's called
+
+535
+00:23:04,420 --> 00:23:06,370
+synchronization all these things are
+
+536
+00:23:06,370 --> 00:23:08,950
+pretty much equivalent this used to be
+
+537
+00:23:08,950 --> 00:23:12,640
+operating system stuff only people
+
+538
+00:23:12,640 --> 00:23:14,290
+writing operating systems ever cared
+
+539
+00:23:14,290 --> 00:23:15,970
+about this application programmers were
+
+540
+00:23:15,970 --> 00:23:19,240
+always exempt from it but it is leaked
+
+541
+00:23:19,240 --> 00:23:21,370
+into application space because of
+
+542
+00:23:21,370 --> 00:23:25,720
+networking because the delays now of
+
+543
+00:23:25,720 --> 00:23:27,250
+going over the network can be really
+
+544
+00:23:27,250 --> 00:23:31,120
+long and so having blocking I over the
+
+545
+00:23:31,120 --> 00:23:33,730
+network is intolerable and also because
+
+546
+00:23:33,730 --> 00:23:36,100
+of the multi-core problem that we have
+
+547
+00:23:36,100 --> 00:23:39,130
+lost the ability to make CPUs go faster
+
+548
+00:23:39,130 --> 00:23:41,080
+so to make systems go faster we have
+
+549
+00:23:41,080 --> 00:23:44,770
+more cpus and so now it's up to the
+
+550
+00:23:44,770 --> 00:23:47,620
+application developers to take advantage
+
+551
+00:23:47,620 --> 00:23:48,380
+of
+
+552
+00:23:48,380 --> 00:23:50,240
+that in order to make the machines go
+
+553
+00:23:50,240 --> 00:23:52,130
+faster because the hardware guy is have
+
+554
+00:23:52,130 --> 00:23:54,830
+given up and it turns out to be really
+
+555
+00:23:54,830 --> 00:23:59,360
+hard keeping multiple CPUs busy all at
+
+556
+00:23:59,360 --> 00:24:01,490
+the same time with one application is
+
+557
+00:24:01,490 --> 00:24:03,860
+something that is still an unsolved
+
+558
+00:24:03,860 --> 00:24:08,980
+problem but you're expected to do that
+
+559
+00:24:08,980 --> 00:24:12,860
+so under mutual exclusion only one
+
+560
+00:24:12,860 --> 00:24:14,480
+thread can be executing in a critical
+
+561
+00:24:14,480 --> 00:24:17,390
+section at a time and other threads that
+
+562
+00:24:17,390 --> 00:24:18,830
+are winged to execute in the critical
+
+563
+00:24:18,830 --> 00:24:23,060
+section are blocked if the threads don't
+
+564
+00:24:23,060 --> 00:24:24,500
+attract them the programs run at full
+
+565
+00:24:24,500 --> 00:24:27,140
+speed but if they do interact then races
+
+566
+00:24:27,140 --> 00:24:29,300
+will occur and less mutual exclusion is
+
+567
+00:24:29,300 --> 00:24:31,100
+employed but then there's another
+
+568
+00:24:31,100 --> 00:24:33,110
+problem there's the deadlock problem
+
+569
+00:24:33,110 --> 00:24:35,810
+where you've got two or more threads
+
+570
+00:24:35,810 --> 00:24:39,410
+which are waiting for another thread to
+
+571
+00:24:39,410 --> 00:24:41,180
+complete before they can proceed and
+
+572
+00:24:41,180 --> 00:24:43,610
+somehow they get into this deadly
+
+573
+00:24:43,610 --> 00:24:44,870
+embrace where they're waiting on each
+
+574
+00:24:44,870 --> 00:24:47,990
+other a real world example of this would
+
+575
+00:24:47,990 --> 00:24:51,260
+be gridlock we've got a bunch of cars
+
+576
+00:24:51,260 --> 00:24:53,120
+that all went into the intersection at
+
+577
+00:24:53,120 --> 00:24:55,070
+the same time this is Sal Paulo Brazil
+
+578
+00:24:55,070 --> 00:25:00,360
+about two blocks from the Yahoo office
+
+579
+00:25:00,370 --> 00:25:02,660
+they're all stuck everybody's waiting
+
+580
+00:25:02,660 --> 00:25:04,370
+for everybody else this is deadlock so
+
+581
+00:25:04,370 --> 00:25:06,110
+you don't want your programs doing this
+
+582
+00:25:06,110 --> 00:25:07,850
+and it turns out when you're doing
+
+583
+00:25:07,850 --> 00:25:11,120
+threads and synchronization deadlock is
+
+584
+00:25:11,120 --> 00:25:12,950
+really easy to cause and it's very
+
+585
+00:25:12,950 --> 00:25:15,830
+difficult to reason about so deadlock
+
+586
+00:25:15,830 --> 00:25:17,450
+occurs when threads are waiting on each
+
+587
+00:25:17,450 --> 00:25:20,630
+other races and deadlox are really hard
+
+588
+00:25:20,630 --> 00:25:23,570
+to think about they are the most
+
+589
+00:25:23,570 --> 00:25:25,880
+difficult problems to identify a debug
+
+590
+00:25:25,880 --> 00:25:27,500
+and correct one of the things that makes
+
+591
+00:25:27,500 --> 00:25:29,180
+them so hard is you can't predict when
+
+592
+00:25:29,180 --> 00:25:31,160
+they're going to occur and once they've
+
+593
+00:25:31,160 --> 00:25:32,720
+occurred that it may be impossible to
+
+594
+00:25:32,720 --> 00:25:34,910
+recreate so that they're the worst
+
+595
+00:25:34,910 --> 00:25:37,100
+possible kinds of bugs so managing
+
+596
+00:25:37,100 --> 00:25:39,170
+sequential logic which is what we do is
+
+597
+00:25:39,170 --> 00:25:42,320
+hard managing temporal logic is really
+
+598
+00:25:42,320 --> 00:25:43,850
+really hard and there are not many
+
+599
+00:25:43,850 --> 00:25:48,980
+people who can do that well so going
+
+600
+00:25:48,980 --> 00:25:51,470
+back to the cons if if two threads use
+
+601
+00:25:51,470 --> 00:25:54,440
+the same memory a race may occur and
+
+602
+00:25:54,440 --> 00:25:57,350
+that's actually worse than saying a race
+
+603
+00:25:57,350 --> 00:26:00,500
+will occur because if it if it does
+
+604
+00:26:00,500 --> 00:26:02,340
+occur predictably then you can
+
+605
+00:26:02,340 --> 00:26:08,520
+fix it but it may be that the temporal
+
+606
+00:26:08,520 --> 00:26:10,320
+signature of your program is really
+
+607
+00:26:10,320 --> 00:26:11,940
+different under test than it is in
+
+608
+00:26:11,940 --> 00:26:15,210
+production so it may work really well in
+
+609
+00:26:15,210 --> 00:26:16,679
+development but it fails when you show
+
+610
+00:26:16,679 --> 00:26:20,039
+it to your investors or it works really
+
+611
+00:26:20,039 --> 00:26:22,049
+well in in the early stage but fails
+
+612
+00:26:22,049 --> 00:26:24,840
+when you start to scale or it fails when
+
+613
+00:26:24,840 --> 00:26:26,340
+you're showing it to the MNA guys from
+
+614
+00:26:26,340 --> 00:26:30,150
+mega Corp they tend to go wrong at the
+
+615
+00:26:30,150 --> 00:26:32,159
+worst possible time there's some
+
+616
+00:26:32,159 --> 00:26:34,559
+overhead in thread management that it
+
+617
+00:26:34,559 --> 00:26:36,419
+doesn't come for free there's the threat
+
+618
+00:26:36,419 --> 00:26:40,320
+of deadlock which will just kill threads
+
+619
+00:26:40,320 --> 00:26:42,419
+and could possibly cascade to kill other
+
+620
+00:26:42,419 --> 00:26:44,010
+threads eventually strangling the whole
+
+621
+00:26:44,010 --> 00:26:47,640
+system thinking about reliability is
+
+622
+00:26:47,640 --> 00:26:51,630
+extremely difficult and ultimately what
+
+623
+00:26:51,630 --> 00:26:53,880
+we have is system application confusion
+
+624
+00:26:53,880 --> 00:26:57,480
+in my view the biggest design error in
+
+625
+00:26:57,480 --> 00:26:59,190
+Java was that it couldn't make up its
+
+626
+00:26:59,190 --> 00:27:00,600
+mind if it wanted to be a systems
+
+627
+00:27:00,600 --> 00:27:03,270
+language or an application language in a
+
+628
+00:27:03,270 --> 00:27:04,770
+systems language you have to have
+
+629
+00:27:04,770 --> 00:27:07,080
+threads in an application language you
+
+630
+00:27:07,080 --> 00:27:09,750
+should never have threads but because
+
+631
+00:27:09,750 --> 00:27:12,539
+they tried to bridge both they require
+
+632
+00:27:12,539 --> 00:27:14,610
+use of threads at the application level
+
+633
+00:27:14,610 --> 00:27:17,130
+and I think that's deadly fortunately
+
+634
+00:27:17,130 --> 00:27:21,090
+there is a good alternative to to
+
+635
+00:27:21,090 --> 00:27:25,880
+threading and that is that and that
+
+636
+00:27:25,880 --> 00:27:27,929
+alternative completely avoids all the
+
+637
+00:27:27,929 --> 00:27:30,120
+reliability hazards of threads and that
+
+638
+00:27:30,120 --> 00:27:31,890
+is the event loop or friendly event loop
+
+639
+00:27:31,890 --> 00:27:34,440
+it actually does all the stuff better so
+
+640
+00:27:34,440 --> 00:27:38,549
+again there are trade-offs the pro is
+
+641
+00:27:38,549 --> 00:27:40,679
+that it's completely free of races and
+
+642
+00:27:40,679 --> 00:27:43,350
+deadlox which is a huge huge advantage
+
+643
+00:27:43,350 --> 00:27:45,450
+you can be much more reliable turns out
+
+644
+00:27:45,450 --> 00:27:46,970
+you can also be much more efficient
+
+645
+00:27:46,970 --> 00:27:49,770
+there's only one stack which gets reused
+
+646
+00:27:49,770 --> 00:27:52,830
+on every turn that saves memory but
+
+647
+00:27:52,830 --> 00:27:55,860
+again that's not important anymore very
+
+648
+00:27:55,860 --> 00:27:58,440
+low overhead you don't have task
+
+649
+00:27:58,440 --> 00:28:02,279
+switching you're not doing memory faults
+
+650
+00:28:02,279 --> 00:28:05,100
+you're not doing any thread locking all
+
+651
+00:28:05,100 --> 00:28:07,220
+that expensive stuff you're just doing
+
+652
+00:28:07,220 --> 00:28:10,049
+computation as fast as machine can go
+
+653
+00:28:10,049 --> 00:28:12,360
+all of the idle time has been squeezed
+
+654
+00:28:12,360 --> 00:28:13,100
+out
+
+655
+00:28:13,100 --> 00:28:15,380
+just have pure computation the thing
+
+656
+00:28:15,380 --> 00:28:17,120
+that computers do best and it's
+
+657
+00:28:17,120 --> 00:28:19,970
+resilient if any turn fails the program
+
+658
+00:28:19,970 --> 00:28:22,669
+can still go on whereas in a thread
+
+659
+00:28:22,669 --> 00:28:26,840
+based system if any stack fails there's
+
+660
+00:28:26,840 --> 00:28:28,580
+a chance that that may cause cascading
+
+661
+00:28:28,580 --> 00:28:31,460
+failure of other threads as well now
+
+662
+00:28:31,460 --> 00:28:34,789
+comes with some cons cons are that the
+
+663
+00:28:34,789 --> 00:28:36,650
+program is never block you have to obey
+
+664
+00:28:36,650 --> 00:28:39,200
+the prime directive you have to program
+
+665
+00:28:39,200 --> 00:28:42,080
+inside out Wow but again your good of
+
+666
+00:28:42,080 --> 00:28:45,169
+this and turns must finish quickly this
+
+667
+00:28:45,169 --> 00:28:46,280
+is probably the most important
+
+668
+00:28:46,280 --> 00:28:47,990
+restriction says that not all
+
+669
+00:28:47,990 --> 00:28:50,510
+applications are well suited to running
+
+670
+00:28:50,510 --> 00:28:53,150
+as event loops but it turns out at very
+
+671
+00:28:53,150 --> 00:28:56,419
+large class of applications are so for
+
+672
+00:28:56,419 --> 00:28:58,190
+long running tasks like if you have to
+
+673
+00:28:58,190 --> 00:29:01,400
+factor pie in your web application which
+
+674
+00:29:01,400 --> 00:29:03,010
+is not something most of us have to do
+
+675
+00:29:03,010 --> 00:29:06,440
+there are two solutions for managing
+
+676
+00:29:06,440 --> 00:29:08,409
+that one is to use a technique called
+
+677
+00:29:08,409 --> 00:29:11,510
+iteration in which we break the task
+
+678
+00:29:11,510 --> 00:29:14,150
+into multiple turns and keep
+
+679
+00:29:14,150 --> 00:29:16,250
+resubmitting those turns to the event
+
+680
+00:29:16,250 --> 00:29:18,340
+queue for example you could have a
+
+681
+00:29:18,340 --> 00:29:22,220
+process in which you do one step of the
+
+682
+00:29:22,220 --> 00:29:24,860
+computation then do a set time out of
+
+683
+00:29:24,860 --> 00:29:27,650
+zero passing in the function which will
+
+684
+00:29:27,650 --> 00:29:29,780
+cause the next step in that computation
+
+685
+00:29:29,780 --> 00:29:31,549
+to happen you just keep doing that until
+
+686
+00:29:31,549 --> 00:29:33,620
+it finishes now that could end up taking
+
+687
+00:29:33,620 --> 00:29:36,740
+a very long time but each turn will be
+
+688
+00:29:36,740 --> 00:29:38,870
+very short and so the liveliness of the
+
+689
+00:29:38,870 --> 00:29:41,840
+system is maintained and all is good the
+
+690
+00:29:41,840 --> 00:29:44,270
+other thing you can do is move the task
+
+691
+00:29:44,270 --> 00:29:46,340
+into a separate process or worker and
+
+692
+00:29:46,340 --> 00:29:48,710
+that's a brilliant thing too one of the
+
+693
+00:29:48,710 --> 00:29:50,570
+advantages of workers is there's no
+
+694
+00:29:50,570 --> 00:29:52,070
+requirement that they actually be in the
+
+695
+00:29:52,070 --> 00:29:54,350
+same machine so we could send them
+
+696
+00:29:54,350 --> 00:29:56,990
+across the network and wherever we gots
+
+697
+00:29:56,990 --> 00:30:00,020
+their capability we can we can put them
+
+698
+00:30:00,020 --> 00:30:02,150
+and so that becomes a really powerful
+
+699
+00:30:02,150 --> 00:30:04,940
+model and in the event driven system
+
+700
+00:30:04,940 --> 00:30:07,670
+being fully distributed comes as a
+
+701
+00:30:07,670 --> 00:30:12,740
+fallout another approach people take to
+
+702
+00:30:12,740 --> 00:30:14,930
+doing io in programming languages over
+
+703
+00:30:14,930 --> 00:30:16,550
+the network is the remote procedure call
+
+704
+00:30:16,550 --> 00:30:19,340
+which combines two great ideas functions
+
+705
+00:30:19,340 --> 00:30:21,440
+and networking produces a really bad
+
+706
+00:30:21,440 --> 00:30:24,800
+idea like read it attempts to isolate
+
+707
+00:30:24,800 --> 00:30:28,460
+programs from time but the effect of
+
+708
+00:30:28,460 --> 00:30:30,260
+that is that the program blocks blacks
+
+709
+00:30:30,260 --> 00:30:34,070
+out it has last lost time so when you're
+
+710
+00:30:34,070 --> 00:30:36,110
+reading the program it's very difficult
+
+711
+00:30:36,110 --> 00:30:39,650
+by design by intention to see where it
+
+712
+00:30:39,650 --> 00:30:43,210
+is that time is being lost because the
+
+713
+00:30:43,210 --> 00:30:45,620
+blocking network calls are made to look
+
+714
+00:30:45,620 --> 00:30:47,690
+like local function calls you just can't
+
+715
+00:30:47,690 --> 00:30:50,540
+see where the time is going and that can
+
+716
+00:30:50,540 --> 00:30:52,250
+result in a very terrible experience for
+
+717
+00:30:52,250 --> 00:30:55,940
+the user because they see you know the
+
+718
+00:30:55,940 --> 00:30:58,520
+program blacks out and so the user is
+
+719
+00:30:58,520 --> 00:31:02,270
+going are you dead hello and that's it's
+
+720
+00:31:02,270 --> 00:31:04,610
+rude and disrespectful we should never
+
+721
+00:31:04,610 --> 00:31:07,220
+do that to human beings but it's hard to
+
+722
+00:31:07,220 --> 00:31:09,260
+avoid doing that when when you've got a
+
+723
+00:31:09,260 --> 00:31:11,990
+remote procedure call so we should be
+
+724
+00:31:11,990 --> 00:31:13,250
+doing the opposite we should be doing
+
+725
+00:31:13,250 --> 00:31:15,470
+latency compensation we want to give the
+
+726
+00:31:15,470 --> 00:31:18,500
+user feedback as early as possible the
+
+727
+00:31:18,500 --> 00:31:20,960
+leptin note were we were listening to
+
+728
+00:31:20,960 --> 00:31:23,000
+you we're working for you we tried to do
+
+729
+00:31:23,000 --> 00:31:27,230
+things we don't ever want to lock up the
+
+730
+00:31:27,230 --> 00:31:28,940
+browser of the client while we're
+
+731
+00:31:28,940 --> 00:31:30,440
+waiting for the network to do anything
+
+732
+00:31:30,440 --> 00:31:33,500
+in some applications the client can
+
+733
+00:31:33,500 --> 00:31:35,600
+predict what the server's response is
+
+734
+00:31:35,600 --> 00:31:38,810
+going to be and go ahead and do it so
+
+735
+00:31:38,810 --> 00:31:40,610
+the user gets immediate feedback and if
+
+736
+00:31:40,610 --> 00:31:42,440
+it turns out that the prediction was
+
+737
+00:31:42,440 --> 00:31:45,620
+incorrect then correct it later for
+
+738
+00:31:45,620 --> 00:31:47,450
+example if you have a game or chat
+
+739
+00:31:47,450 --> 00:31:49,630
+application being played over the net
+
+740
+00:31:49,630 --> 00:31:52,820
+the user makes a move and locally you
+
+741
+00:31:52,820 --> 00:31:54,860
+can determine that's a valid move or if
+
+742
+00:31:54,860 --> 00:31:58,370
+it's just a chat message go ahead and
+
+743
+00:31:58,370 --> 00:32:01,010
+display it as though it was accepted in
+
+744
+00:32:01,010 --> 00:32:02,330
+a few seconds you'll get the feedback
+
+745
+00:32:02,330 --> 00:32:03,920
+from the server telling you whether that
+
+746
+00:32:03,920 --> 00:32:07,640
+happened or not and if it did then you
+
+747
+00:32:07,640 --> 00:32:09,410
+can ignore that and if it didn't
+
+748
+00:32:09,410 --> 00:32:14,480
+than you correct it so security is
+
+749
+00:32:14,480 --> 00:32:16,520
+always important and and you really
+
+750
+00:32:16,520 --> 00:32:17,900
+can't have security if you don't have
+
+751
+00:32:17,900 --> 00:32:19,220
+reliability and we don't have your
+
+752
+00:32:19,220 --> 00:32:21,500
+liability when we have threads so we
+
+753
+00:32:21,500 --> 00:32:25,370
+have a much more secure model with the
+
+754
+00:32:25,370 --> 00:32:27,680
+event loop now just having event loops
+
+755
+00:32:27,680 --> 00:32:29,390
+does not guarantee that you're going to
+
+756
+00:32:29,390 --> 00:32:32,600
+be secure for example the browser is an
+
+757
+00:32:32,600 --> 00:32:34,340
+event loop driven system and were
+
+758
+00:32:34,340 --> 00:32:36,020
+subject to cross-site scripting attacks
+
+759
+00:32:36,020 --> 00:32:38,990
+which is terrible this is the worst
+
+760
+00:32:38,990 --> 00:32:41,110
+problem that we have in the browser
+
+761
+00:32:41,110 --> 00:32:44,780
+cross-site scripting has two causes the
+
+762
+00:32:44,780 --> 00:32:46,820
+sharing of the global object so every
+
+763
+00:32:46,820 --> 00:32:48,410
+piece of script no matter where comes
+
+764
+00:32:48,410 --> 00:32:50,300
+from gets in the same global object
+
+765
+00:32:50,300 --> 00:32:52,730
+which gives it all the same privileges
+
+766
+00:32:52,730 --> 00:32:54,590
+that your own site does including the
+
+767
+00:32:54,590 --> 00:32:57,770
+ability to interact with the entire
+
+768
+00:32:57,770 --> 00:33:01,310
+document to talk to the user if the user
+
+769
+00:33:01,310 --> 00:33:02,660
+is looking at the anti addition chrome
+
+770
+00:33:02,660 --> 00:33:06,440
+the chrome will say yeah legit gives you
+
+771
+00:33:06,440 --> 00:33:08,830
+the ability to talk to the server if
+
+772
+00:33:08,830 --> 00:33:11,270
+there's an SSL connection you get access
+
+773
+00:33:11,270 --> 00:33:13,850
+to the SSL ssl connection you get access
+
+774
+00:33:13,850 --> 00:33:15,650
+to all the cookies everything really
+
+775
+00:33:15,650 --> 00:33:20,110
+terrible there's also misinterpret
+
+776
+00:33:20,110 --> 00:33:23,330
+misinterpretation of HTML HTML is such a
+
+777
+00:33:23,330 --> 00:33:25,550
+complicated language with other
+
+778
+00:33:25,550 --> 00:33:27,620
+languages inside of it that it's very
+
+779
+00:33:27,620 --> 00:33:29,900
+difficult to determine if a piece of
+
+780
+00:33:29,900 --> 00:33:32,540
+code is going to be safe tragically
+
+781
+00:33:32,540 --> 00:33:36,260
+html5 ignores and worsens the xss
+
+782
+00:33:36,260 --> 00:33:40,280
+problem in recently the html5 editor
+
+783
+00:33:40,280 --> 00:33:43,580
+said that html5 doesn't ever have markup
+
+784
+00:33:43,580 --> 00:33:47,450
+injection vulnerabilities which is wrong
+
+785
+00:33:47,450 --> 00:33:52,250
+completely wrong so we can't expect help
+
+786
+00:33:52,250 --> 00:33:55,100
+from w3c but they're apparently not even
+
+787
+00:33:55,100 --> 00:33:57,830
+aware that there's a problem not
+
+788
+00:33:57,830 --> 00:33:59,000
+understanding the problem they're
+
+789
+00:33:59,000 --> 00:34:01,820
+unlikely to ever give us a solution so
+
+790
+00:34:01,820 --> 00:34:04,040
+the browser is a loaded gun aimed at
+
+791
+00:34:04,040 --> 00:34:06,680
+your head and that's what pulls the
+
+792
+00:34:06,680 --> 00:34:12,330
+trigger so page templates
+
+793
+00:34:12,330 --> 00:34:16,720
+are you know like PHP ASP JSP all those
+
+794
+00:34:16,720 --> 00:34:19,389
+Peas used to be a good way to develop
+
+795
+00:34:19,389 --> 00:34:23,560
+web applications but it there are some
+
+796
+00:34:23,560 --> 00:34:25,330
+problems with them now that one is that
+
+797
+00:34:25,330 --> 00:34:27,580
+the a template is to Richard a framework
+
+798
+00:34:27,580 --> 00:34:29,590
+that we're now building extremely
+
+799
+00:34:29,590 --> 00:34:31,990
+dynamic pages out of lots of components
+
+800
+00:34:31,990 --> 00:34:33,720
+coming from lots of different places and
+
+801
+00:34:33,720 --> 00:34:36,429
+putting them all into a simple template
+
+802
+00:34:36,429 --> 00:34:39,429
+really doesn't work very well but worse
+
+803
+00:34:39,429 --> 00:34:41,830
+than that it's way too easy to insert
+
+804
+00:34:41,830 --> 00:34:43,929
+text into a context where it might be
+
+805
+00:34:43,929 --> 00:34:47,230
+misinterpreted and executed completing
+
+806
+00:34:47,230 --> 00:34:51,609
+an XSS attack so can we do better by
+
+807
+00:34:51,609 --> 00:34:54,220
+using javascript on the server and there
+
+808
+00:34:54,220 --> 00:34:55,980
+are some obvious advantages to being
+
+809
+00:34:55,980 --> 00:34:58,240
+server side JavaScript one is that we
+
+810
+00:34:58,240 --> 00:34:59,619
+can take advantage of our new
+
+811
+00:34:59,619 --> 00:35:01,390
+understanding of JavaScript that turns
+
+812
+00:35:01,390 --> 00:35:03,730
+out javascript is a powerful expressive
+
+813
+00:35:03,730 --> 00:35:05,380
+programming language we can apply that
+
+814
+00:35:05,380 --> 00:35:08,859
+to server-side programming as well it
+
+815
+00:35:08,859 --> 00:35:10,050
+turns out this is not a new idea
+
+816
+00:35:10,050 --> 00:35:11,980
+netscape offered a server-side
+
+817
+00:35:11,980 --> 00:35:15,760
+JavaScript product in 1996 and it was
+
+818
+00:35:15,760 --> 00:35:19,900
+awful it used it was modeled after PHP
+
+819
+00:35:19,900 --> 00:35:22,540
+so it had a server tag in which which
+
+820
+00:35:22,540 --> 00:35:24,070
+looked like a script tag except it was
+
+821
+00:35:24,070 --> 00:35:25,720
+gripped that was going to run on the
+
+822
+00:35:25,720 --> 00:35:27,940
+server side and it had a write function
+
+823
+00:35:27,940 --> 00:35:30,070
+for inserting stuff into the outgoing
+
+824
+00:35:30,070 --> 00:35:32,530
+HTML stream it's just like document
+
+825
+00:35:32,530 --> 00:35:36,660
+right except on the server just as bad
+
+826
+00:35:36,660 --> 00:35:39,130
+so it had all the disadvantages of the
+
+827
+00:35:39,130 --> 00:35:41,200
+other page template assist amande at the
+
+828
+00:35:41,200 --> 00:35:45,940
+time really slow JavaScript engines so
+
+829
+00:35:45,940 --> 00:35:48,010
+what if we did it right what if we model
+
+830
+00:35:48,010 --> 00:35:49,990
+the server side using the same things
+
+831
+00:35:49,990 --> 00:35:52,060
+that we learned work so well on the
+
+832
+00:35:52,060 --> 00:35:54,970
+client side what if we had an event loop
+
+833
+00:35:54,970 --> 00:35:58,090
+in the server and it turns out that's
+
+834
+00:35:58,090 --> 00:36:00,160
+what no Jas is and there there are other
+
+835
+00:36:00,160 --> 00:36:02,410
+people doing similar stuff nodejs is the
+
+836
+00:36:02,410 --> 00:36:03,920
+the front-runner right now
+
+837
+00:36:03,920 --> 00:36:06,980
+and and there's really well worth
+
+838
+00:36:06,980 --> 00:36:09,710
+looking at so no Jas implements a web
+
+839
+00:36:09,710 --> 00:36:14,000
+server in a javascript event loop it is
+
+840
+00:36:14,000 --> 00:36:16,670
+a high-performance event pump it it
+
+841
+00:36:16,670 --> 00:36:18,500
+takes the event queue and pulls things
+
+842
+00:36:18,500 --> 00:36:21,319
+out and and doesn't really fast it
+
+843
+00:36:21,319 --> 00:36:23,780
+optimizes the event loop dispatch you
+
+844
+00:36:23,780 --> 00:36:25,670
+can get a lot of work done very quickly
+
+845
+00:36:25,670 --> 00:36:28,549
+all of the overhead is squeezed out so
+
+846
+00:36:28,549 --> 00:36:31,390
+the event queue is just pure computation
+
+847
+00:36:31,390 --> 00:36:34,849
+it got read right so filesystem read
+
+848
+00:36:34,849 --> 00:36:37,280
+takes a call back so it doesn't block
+
+849
+00:36:37,280 --> 00:36:39,500
+which is perfect that's exactly how we'd
+
+850
+00:36:39,500 --> 00:36:43,670
+should work everything in the no jsapi
+
+851
+00:36:43,670 --> 00:36:46,250
+is non blocking except there are some
+
+852
+00:36:46,250 --> 00:36:47,930
+synchronous functions which do block
+
+853
+00:36:47,930 --> 00:36:50,270
+there are non blocking versions but
+
+854
+00:36:50,270 --> 00:36:52,160
+there shouldn't be anything that blocks
+
+855
+00:36:52,160 --> 00:36:54,079
+and also require is blocking I think
+
+856
+00:36:54,079 --> 00:36:56,420
+that was a mistake as well it the model
+
+857
+00:36:56,420 --> 00:36:58,130
+really requires that everything be non
+
+858
+00:36:58,130 --> 00:37:00,680
+blocking but other than that no jf seems
+
+859
+00:37:00,680 --> 00:37:03,470
+to have gotten everything right so one
+
+860
+00:37:03,470 --> 00:37:05,359
+of the advantages of this is that you
+
+861
+00:37:05,359 --> 00:37:07,640
+can run your code on both sides of the
+
+862
+00:37:07,640 --> 00:37:11,619
+network so we have Yui 3 now running on
+
+863
+00:37:11,619 --> 00:37:15,680
+though j/s with a pseudo Dom so we can
+
+864
+00:37:15,680 --> 00:37:17,750
+now run exactly the same code in both
+
+865
+00:37:17,750 --> 00:37:20,569
+places and we can take advantage of of
+
+866
+00:37:20,569 --> 00:37:23,180
+why you eyes communication manager on
+
+867
+00:37:23,180 --> 00:37:26,450
+the server to go out and talk to say 10
+
+868
+00:37:26,450 --> 00:37:28,160
+different services which are going to
+
+869
+00:37:28,160 --> 00:37:30,829
+send back data which will get assembled
+
+870
+00:37:30,829 --> 00:37:33,230
+into your page and we can make all of
+
+871
+00:37:33,230 --> 00:37:36,559
+those requests simultaneously and so the
+
+872
+00:37:36,559 --> 00:37:39,319
+net cost is the max of all of those
+
+873
+00:37:39,319 --> 00:37:42,650
+requests whereas in PHP the net cost is
+
+874
+00:37:42,650 --> 00:37:43,849
+going to be the sum of all those
+
+875
+00:37:43,849 --> 00:37:45,470
+requests which is going to be a much
+
+876
+00:37:45,470 --> 00:37:47,960
+larger number now it turns out in PHP
+
+877
+00:37:47,960 --> 00:37:51,740
+you can do it the hard way but nobody
+
+878
+00:37:51,740 --> 00:37:55,069
+wants to do hard in PHP right that's it
+
+879
+00:37:55,069 --> 00:37:57,859
+that's not what it's for whereas in
+
+880
+00:37:57,859 --> 00:38:02,000
+JavaScript under Yui it is easy you just
+
+881
+00:38:02,000 --> 00:38:04,579
+wait for all the event handlers or all
+
+882
+00:38:04,579 --> 00:38:06,650
+the callbacks to fire and once they've
+
+883
+00:38:06,650 --> 00:38:09,290
+all fired on with the show so it's
+
+884
+00:38:09,290 --> 00:38:11,859
+really brilliant also we're finding that
+
+885
+00:38:11,859 --> 00:38:14,630
+we've got a really nice fallback story
+
+886
+00:38:14,630 --> 00:38:15,570
+now
+
+887
+00:38:15,570 --> 00:38:19,750
+we can if we sense where the browser is
+
+888
+00:38:19,750 --> 00:38:22,780
+a piece of crap like I don't say for
+
+889
+00:38:22,780 --> 00:38:27,730
+random ie6 and we're tired of supporting
+
+890
+00:38:27,730 --> 00:38:31,570
+ie6 we can run it all on the server and
+
+891
+00:38:31,570 --> 00:38:35,590
+just send them page views or if we
+
+892
+00:38:35,590 --> 00:38:37,210
+decide that our startup is taking too
+
+893
+00:38:37,210 --> 00:38:38,710
+long because we've got a huge amount of
+
+894
+00:38:38,710 --> 00:38:40,690
+code we might want to do the first view
+
+895
+00:38:40,690 --> 00:38:43,660
+on the server so that people can be
+
+896
+00:38:43,660 --> 00:38:45,070
+looking at that while the rest of the
+
+897
+00:38:45,070 --> 00:38:48,670
+script is loading on the browser we can
+
+898
+00:38:48,670 --> 00:38:50,140
+do that as well you don't have to write
+
+899
+00:38:50,140 --> 00:38:51,550
+everything two or three times to
+
+900
+00:38:51,550 --> 00:38:53,080
+accomplish all those things you only
+
+901
+00:38:53,080 --> 00:38:55,480
+have to write at once and with a good
+
+902
+00:38:55,480 --> 00:38:58,090
+library under you it just works so we've
+
+903
+00:38:58,090 --> 00:38:59,530
+got a lot of mobility a lot of
+
+904
+00:38:59,530 --> 00:39:05,130
+flexibility so good stuff they're
+
+905
+00:39:05,130 --> 00:39:07,120
+looking a little deeper looking at the
+
+906
+00:39:07,120 --> 00:39:09,730
+network itself we've got this stack of
+
+907
+00:39:09,730 --> 00:39:12,430
+protocols at the bottom we've got IP
+
+908
+00:39:12,430 --> 00:39:15,700
+which can deliver a packet from any
+
+909
+00:39:15,700 --> 00:39:17,740
+computer in the world to any other
+
+910
+00:39:17,740 --> 00:39:20,050
+computer in the world almost all the
+
+911
+00:39:20,050 --> 00:39:22,660
+time which is an amazing thing then on
+
+912
+00:39:22,660 --> 00:39:25,390
+top of that we've got TCP which provides
+
+913
+00:39:25,390 --> 00:39:29,590
+sessions reliability packet reordering
+
+914
+00:39:29,590 --> 00:39:32,440
+which is good stuff then we've got HTTP
+
+915
+00:39:32,440 --> 00:39:34,230
+which is really a document delivery
+
+916
+00:39:34,230 --> 00:39:36,880
+protocol which is stateless then on top
+
+917
+00:39:36,880 --> 00:39:38,920
+of that we're trying to do messaging in
+
+918
+00:39:38,920 --> 00:39:42,660
+Ajax but we have to do it on top of me
+
+919
+00:39:42,660 --> 00:39:45,760
+HTTP which has a lot of beneficence e in
+
+920
+00:39:45,760 --> 00:39:48,370
+it and it wants to be stateless but we
+
+921
+00:39:48,370 --> 00:39:51,520
+really want to be stateful because we're
+
+922
+00:39:51,520 --> 00:39:53,800
+doing session applications and so it'd
+
+923
+00:39:53,800 --> 00:39:55,930
+be really nice if we could just get rid
+
+924
+00:39:55,930 --> 00:40:00,520
+of HTTP and runny Jack's on top of TCP I
+
+925
+00:40:00,520 --> 00:40:02,050
+don't think we're ever going to be able
+
+926
+00:40:02,050 --> 00:40:03,130
+to do that because there's so much
+
+927
+00:40:03,130 --> 00:40:05,060
+arthritis or built into a network
+
+928
+00:40:05,060 --> 00:40:07,430
+now you know all the various proxy
+
+929
+00:40:07,430 --> 00:40:09,020
+servers and firewalls and stuff like
+
+930
+00:40:09,020 --> 00:40:10,940
+that that'll probably never work which
+
+931
+00:40:10,940 --> 00:40:14,120
+is really a shame so let's sort of go
+
+932
+00:40:14,120 --> 00:40:17,150
+back to the beginning of time so first
+
+933
+00:40:17,150 --> 00:40:18,830
+there was a browser and there was a
+
+934
+00:40:18,830 --> 00:40:22,220
+server and the browser makes requests to
+
+935
+00:40:22,220 --> 00:40:26,900
+the server and documents go back then we
+
+936
+00:40:26,900 --> 00:40:30,140
+got to the point where the demand on the
+
+937
+00:40:30,140 --> 00:40:32,450
+server was so large that a single server
+
+938
+00:40:32,450 --> 00:40:35,000
+couldn't do it anymore so there are
+
+939
+00:40:35,000 --> 00:40:37,310
+various implementations of having some
+
+940
+00:40:37,310 --> 00:40:39,020
+kind distributor which goes in front of
+
+941
+00:40:39,020 --> 00:40:41,090
+the site which can then direct traffic
+
+942
+00:40:41,090 --> 00:40:43,280
+maybe on a round-robin or at least used
+
+943
+00:40:43,280 --> 00:40:46,100
+or whatever basis to other servers
+
+944
+00:40:46,100 --> 00:40:49,220
+that'll actually do the work and then
+
+945
+00:40:49,220 --> 00:40:51,400
+they all go to a common database
+
+946
+00:40:51,400 --> 00:40:53,540
+initially that tends to be some kind of
+
+947
+00:40:53,540 --> 00:40:57,050
+SQL machine and if you're at all
+
+948
+00:40:57,050 --> 00:40:59,290
+successful that's going to fail because
+
+949
+00:40:59,290 --> 00:41:02,840
+it won't scale big enough to meet what
+
+950
+00:41:02,840 --> 00:41:06,140
+you have to do so you do tricks to make
+
+951
+00:41:06,140 --> 00:41:09,740
+SQL scale you'll you know splinter it or
+
+952
+00:41:09,740 --> 00:41:12,170
+do other things which violate the
+
+953
+00:41:12,170 --> 00:41:14,690
+relational model but you don't have to
+
+954
+00:41:14,690 --> 00:41:16,400
+rethink anything and that turns out to
+
+955
+00:41:16,400 --> 00:41:20,030
+be the most important thing but the
+
+956
+00:41:20,030 --> 00:41:22,400
+other approach is to consider a no SQL
+
+957
+00:41:22,400 --> 00:41:24,320
+database and I love these things so
+
+958
+00:41:24,320 --> 00:41:26,660
+we've got like couch and Mongo and a
+
+959
+00:41:26,660 --> 00:41:29,420
+whole bunch of others which are just
+
+960
+00:41:29,420 --> 00:41:31,730
+acting brilliantly there it turns out
+
+961
+00:41:31,730 --> 00:41:36,410
+yahoo has had a massive homegrown no SQL
+
+962
+00:41:36,410 --> 00:41:41,810
+database in productions of 1996 so these
+
+963
+00:41:41,810 --> 00:41:45,050
+are really good things so then we put
+
+964
+00:41:45,050 --> 00:41:47,060
+Ajax on top of this and now in addition
+
+965
+00:41:47,060 --> 00:41:49,460
+to the persistent state that you want to
+
+966
+00:41:49,460 --> 00:41:51,050
+keep in the database you've got a
+
+967
+00:41:51,050 --> 00:41:54,650
+femoral session state you know choose
+
+968
+00:41:54,650 --> 00:41:56,090
+sort of stuff that you're talking about
+
+969
+00:41:56,090 --> 00:41:58,520
+that isn't ready to commit yet where do
+
+970
+00:41:58,520 --> 00:42:02,210
+you put that stuff in this model where
+
+971
+00:42:02,210 --> 00:42:04,490
+you have the distributor you can't keep
+
+972
+00:42:04,490 --> 00:42:06,650
+it in the servers because each request
+
+973
+00:42:06,650 --> 00:42:08,380
+might end up going to a different server
+
+974
+00:42:08,380 --> 00:42:10,700
+so you end up having to put this
+
+975
+00:42:10,700 --> 00:42:12,050
+ephemeral information in the database
+
+976
+00:42:12,050 --> 00:42:14,240
+which is maybe the worst place in the
+
+977
+00:42:14,240 --> 00:42:14,779
+universe
+
+978
+00:42:14,779 --> 00:42:18,709
+you want to put it another approach to
+
+979
+00:42:18,709 --> 00:42:20,959
+that is something that you see in the
+
+980
+00:42:20,959 --> 00:42:23,959
+Elco server developed by chip morning
+
+981
+00:42:23,959 --> 00:42:26,390
+star in which the browser connects
+
+982
+00:42:26,390 --> 00:42:28,219
+initially to a session director and the
+
+983
+00:42:28,219 --> 00:42:30,529
+session director will then appoint some
+
+984
+00:42:30,529 --> 00:42:32,749
+server to be the place where the session
+
+985
+00:42:32,749 --> 00:42:35,150
+will live and from that point on the
+
+986
+00:42:35,150 --> 00:42:36,650
+browser connects only to that particular
+
+987
+00:42:36,650 --> 00:42:39,979
+server that server can then keep it's
+
+988
+00:42:39,979 --> 00:42:41,900
+ephemeral state in the most efficient
+
+989
+00:42:41,900 --> 00:42:43,189
+place in the world which is in
+
+990
+00:42:43,189 --> 00:42:45,130
+JavaScript variables which are
+
+991
+00:42:45,130 --> 00:42:47,900
+enclosures bound to the event handlers
+
+992
+00:42:47,900 --> 00:42:50,659
+in the event queue in the server so that
+
+993
+00:42:50,659 --> 00:42:55,400
+the overhead for getting at at session
+
+994
+00:42:55,400 --> 00:42:57,890
+state is zero it's absolutely free
+
+995
+00:42:57,890 --> 00:42:59,779
+there's no api for getting that stuff
+
+996
+00:42:59,779 --> 00:43:02,779
+because it's just in variables so it's
+
+997
+00:43:02,779 --> 00:43:11,059
+extremely efficient so i was talking to
+
+998
+00:43:11,059 --> 00:43:12,739
+a good friend of mine recently well
+
+999
+00:43:12,739 --> 00:43:15,589
+really smart guy about javascript and
+
+1000
+00:43:15,589 --> 00:43:17,419
+what we might do with it and i was
+
+1001
+00:43:17,419 --> 00:43:19,999
+talking about how i would like to see us
+
+1002
+00:43:19,999 --> 00:43:22,969
+implement the tail recursion
+
+1003
+00:43:22,969 --> 00:43:26,059
+optimization i talked about earlier in
+
+1004
+00:43:26,059 --> 00:43:30,809
+the language that would allow us to do
+
+1005
+00:43:30,819 --> 00:43:34,640
+recursion for looping which would have
+
+1006
+00:43:34,640 --> 00:43:36,799
+some efficiency benefits also what
+
+1007
+00:43:36,799 --> 00:43:39,229
+allows to have new styles of programming
+
+1008
+00:43:39,229 --> 00:43:40,939
+available such as continuation passing
+
+1009
+00:43:40,939 --> 00:43:44,299
+style and his answer to that was that
+
+1010
+00:43:44,299 --> 00:43:45,949
+he'd never used continuation passing
+
+1011
+00:43:45,949 --> 00:43:48,249
+style so he didn't see the value of it
+
+1012
+00:43:48,249 --> 00:43:51,529
+and I immediately recognized that as a
+
+1013
+00:43:51,529 --> 00:43:54,019
+stupid answer and I knew it was a stupid
+
+1014
+00:43:54,019 --> 00:43:55,609
+answer because I have made that same
+
+1015
+00:43:55,609 --> 00:43:57,319
+stupid arguments many times in my career
+
+1016
+00:43:57,319 --> 00:43:59,150
+and I've been hearing that same stupid
+
+1017
+00:43:59,150 --> 00:44:01,939
+stuff as long as I've been a programmer
+
+1018
+00:44:01,939 --> 00:44:05,539
+I've heard that argument used to explain
+
+1019
+00:44:05,539 --> 00:44:06,949
+why we shouldn't do event programming
+
+1020
+00:44:06,949 --> 00:44:08,299
+why we shouldn't use high level
+
+1021
+00:44:08,299 --> 00:44:12,799
+languages why we don't need recursion
+
+1022
+00:44:12,799 --> 00:44:14,390
+why we don't need closure and functions
+
+1023
+00:44:14,390 --> 00:44:16,479
+I don't understand it never needed it
+
+1024
+00:44:16,479 --> 00:44:19,519
+what good is it I can do my job
+
+1025
+00:44:19,519 --> 00:44:22,489
+perfectly well without knowing any more
+
+1026
+00:44:22,489 --> 00:44:23,340
+than what I know
+
+1027
+00:44:23,340 --> 00:44:25,850
+and that's a really dangerous thing so
+
+1028
+00:44:25,850 --> 00:44:30,330
+when Grace Hopper are we've come a long
+
+1029
+00:44:30,330 --> 00:44:32,490
+way in software engineering since Grace
+
+1030
+00:44:32,490 --> 00:44:34,680
+Hopper started us on the road of using
+
+1031
+00:44:34,680 --> 00:44:37,170
+software to develop software and we have
+
+1032
+00:44:37,170 --> 00:44:42,210
+a long way yet to go and in my view we
+
+1033
+00:44:42,210 --> 00:44:44,190
+should be a lot farther along by now
+
+1034
+00:44:44,190 --> 00:44:48,330
+than when we are and I think it's mainly
+
+1035
+00:44:48,330 --> 00:44:49,800
+because we get our own way that
+
+1036
+00:44:49,800 --> 00:44:52,080
+basically to take the next step forward
+
+1037
+00:44:52,080 --> 00:44:53,580
+we have to wait for a generation of
+
+1038
+00:44:53,580 --> 00:44:56,250
+programmers to die off before we can get
+
+1039
+00:44:56,250 --> 00:44:58,800
+critical mass of brains on the powerful
+
+1040
+00:44:58,800 --> 00:45:01,260
+no idea to go forward and we're now in
+
+1041
+00:45:01,260 --> 00:45:03,030
+this really interesting position where
+
+1042
+00:45:03,030 --> 00:45:04,230
+we're about to take the next step
+
+1043
+00:45:04,230 --> 00:45:06,270
+forward in application development and
+
+1044
+00:45:06,270 --> 00:45:08,870
+the language which is leading the way is
+
+1045
+00:45:08,870 --> 00:45:11,760
+JavaScript which is amazing javascript
+
+1046
+00:45:11,760 --> 00:45:14,940
+has transformed from this horrible
+
+1047
+00:45:14,940 --> 00:45:16,920
+little language that we can barely
+
+1048
+00:45:16,920 --> 00:45:19,350
+tolerate to language which we're
+
+1049
+00:45:19,350 --> 00:45:22,050
+embracing and is now leading everyone
+
+1050
+00:45:22,050 --> 00:45:28,140
+else so um show of hands anybody having
+
+1051
+00:45:28,140 --> 00:45:37,740
+strong
+
+1052
+00:45:37,750 --> 00:45:39,980
+let's try one more what do you think of
+
+1053
+00:45:39,980 --> 00:45:51,050
+this all opposed let's see two or three
+
+1054
+00:45:51,050 --> 00:46:00,110
+hands okay how about that Wow now how
+
+1055
+00:46:00,110 --> 00:46:03,680
+about this one I think it is too soon to
+
+1056
+00:46:03,680 --> 00:46:06,380
+call I see Microsoft doing some really
+
+1057
+00:46:06,380 --> 00:46:09,110
+good work on ie9 I've seen some
+
+1058
+00:46:09,110 --> 00:46:11,060
+applications which are running better on
+
+1059
+00:46:11,060 --> 00:46:15,050
+ie9 than any other browser so kudos to
+
+1060
+00:46:15,050 --> 00:46:19,340
+Microsoft for that but then we got that
+
+1061
+00:46:19,340 --> 00:46:22,370
+bombshell last night when Pete from
+
+1062
+00:46:22,370 --> 00:46:24,830
+Microsoft told us that they don't intend
+
+1063
+00:46:24,830 --> 00:46:28,040
+to implement all of equus script five in
+
+1064
+00:46:28,040 --> 00:46:30,050
+that standards compliance is apparently
+
+1065
+00:46:30,050 --> 00:46:33,140
+not important to them I'm really
+
+1066
+00:46:33,140 --> 00:46:36,320
+distressed by that so in my view the
+
+1067
+00:46:36,320 --> 00:46:39,350
+only web standard that matters is the
+
+1068
+00:46:39,350 --> 00:46:42,830
+aircon script standard because the DOM
+
+1069
+00:46:42,830 --> 00:46:45,050
+is crap right does everyone everybody
+
+1070
+00:46:45,050 --> 00:46:47,480
+knows that the standards for the Dom are
+
+1071
+00:46:47,480 --> 00:46:49,850
+crap it's always been crap we have
+
+1072
+00:46:49,850 --> 00:46:52,250
+terrible portability terrible
+
+1073
+00:46:52,250 --> 00:46:54,470
+reliability it's at the wrong level of
+
+1074
+00:46:54,470 --> 00:46:58,300
+abstraction everything about it is wrong
+
+1075
+00:46:58,300 --> 00:47:01,310
+but with JavaScript somehow we've made
+
+1076
+00:47:01,310 --> 00:47:03,320
+it work javascript is sort of the
+
+1077
+00:47:03,320 --> 00:47:05,960
+ultimate workaround tool whatever crap
+
+1078
+00:47:05,960 --> 00:47:08,420
+the browser can throw at us we can
+
+1079
+00:47:08,420 --> 00:47:11,510
+manage it with javascript and there a
+
+1080
+00:47:11,510 --> 00:47:12,980
+couple of reasons for that one is that
+
+1081
+00:47:12,980 --> 00:47:15,470
+javascript actually got a lot of stuff
+
+1082
+00:47:15,470 --> 00:47:17,510
+right it's actually a brilliant language
+
+1083
+00:47:17,510 --> 00:47:20,300
+despite its its defense you know deep
+
+1084
+00:47:20,300 --> 00:47:23,450
+down there is brilliance in the core of
+
+1085
+00:47:23,450 --> 00:47:26,140
+the language the other thing is that
+
+1086
+00:47:26,140 --> 00:47:30,800
+it's extremely portable that if you
+
+1087
+00:47:30,800 --> 00:47:32,510
+stick to the core part of the language
+
+1088
+00:47:32,510 --> 00:47:34,940
+you know that's sort of the giant subset
+
+1089
+00:47:34,940 --> 00:47:37,760
+of the language it runs everywhere it it
+
+1090
+00:47:37,760 --> 00:47:39,890
+keeps the write once run everywhere
+
+1091
+00:47:39,890 --> 00:47:44,180
+promised that java failed to keep and so
+
+1092
+00:47:44,180 --> 00:47:45,470
+that's why it's so distressing that
+
+1093
+00:47:45,470 --> 00:47:47,960
+Microsoft is now saying that standards
+
+1094
+00:47:47,960 --> 00:47:48,590
+compliant
+
+1095
+00:47:48,590 --> 00:47:50,750
+with the only web standard that matters
+
+1096
+00:47:50,750 --> 00:47:54,650
+is no longer important now they haven't
+
+1097
+00:47:54,650 --> 00:47:57,980
+shipped ie9 final yet so there's still
+
+1098
+00:47:57,980 --> 00:48:02,150
+time for Microsoft to do it right I hope
+
+1099
+00:48:02,150 --> 00:48:04,490
+that they will so on that optimistic
+
+1100
+00:48:04,490 --> 00:48:27,280
+note thank you and good night
+
+1101
+00:48:27,290 --> 00:48:33,740
+oh yeah so Tom well time are you
+
+1102
+00:48:33,740 --> 00:48:36,440
+demonstrating or time are you here I'm
+
+1103
+00:48:36,440 --> 00:48:40,160
+crowd cheering you in the room oh okay
+
+1104
+00:48:40,160 --> 00:48:44,750
+oh they are so are you talking about
+
+1105
+00:48:44,750 --> 00:48:58,110
+this this afternoon
+
+1106
+00:48:58,120 --> 00:49:00,860
+okay so you're going to be talking about
+
+1107
+00:49:00,860 --> 00:49:04,430
+the ability using Yui 3 on nodejs you're
+
+1108
+00:49:04,430 --> 00:49:08,240
+not talking about that oh okay so don't
+
+1109
+00:49:08,240 --> 00:49:13,670
+go to his anyway we have a
+
+1110
+00:49:13,670 --> 00:49:16,250
+demonstration of for example we've got a
+
+1111
+00:49:16,250 --> 00:49:22,520
+calendar widget and Yui and you run Yui
+
+1112
+00:49:22,520 --> 00:49:24,020
+3 in the browser and you can click on a
+
+1113
+00:49:24,020 --> 00:49:27,650
+date and the date opens up and so on you
+
+1114
+00:49:27,650 --> 00:49:29,420
+can do exactly the same thing on the
+
+1115
+00:49:29,420 --> 00:49:32,530
+server side using exactly the same code
+
+1116
+00:49:32,530 --> 00:49:35,900
+you just configure it so that instead of
+
+1117
+00:49:35,900 --> 00:49:39,590
+that you take the thing that it created
+
+1118
+00:49:39,590 --> 00:49:41,960
+on the server side serialized it taking
+
+1119
+00:49:41,960 --> 00:49:44,330
+its inner HTML and setting that to the
+
+1120
+00:49:44,330 --> 00:49:48,320
+browser instead so with a you know just
+
+1121
+00:49:48,320 --> 00:49:53,030
+a little bit of new library code you can
+
+1122
+00:49:53,030 --> 00:49:55,580
+have your application run on either side
+
+1123
+00:49:55,580 --> 00:49:58,940
+of the network or on both or you could
+
+1124
+00:49:58,940 --> 00:50:01,400
+also set up your application as a web
+
+1125
+00:50:01,400 --> 00:50:03,170
+service so if it's called in a
+
+1126
+00:50:03,170 --> 00:50:04,580
+particular way instead of building a
+
+1127
+00:50:04,580 --> 00:50:06,740
+pageview would only builds a div which
+
+1128
+00:50:06,740 --> 00:50:08,870
+you could then transport so it becomes
+
+1129
+00:50:08,870 --> 00:50:12,830
+much more flexible we used to have to if
+
+1130
+00:50:12,830 --> 00:50:14,510
+we want to get something like this have
+
+1131
+00:50:14,510 --> 00:50:16,130
+to write the application several times
+
+1132
+00:50:16,130 --> 00:50:19,450
+and now we only have to write up once
+
+1133
+00:50:19,450 --> 00:50:29,300
+anyone else yes
+
+1134
+00:50:29,310 --> 00:50:35,370
+a continuation passing is something that
+
+1135
+00:50:35,370 --> 00:50:39,870
+was developed with skiing and it's a way
+
+1136
+00:50:39,870 --> 00:50:42,870
+of you express a contact as a function
+
+1137
+00:50:42,870 --> 00:50:45,650
+and you can pass that along and so
+
+1138
+00:50:45,650 --> 00:50:48,270
+you've got a thread of execution in
+
+1139
+00:50:48,270 --> 00:50:50,550
+which functions never return that
+
+1140
+00:50:50,550 --> 00:50:53,360
+they're always going forward and and
+
+1141
+00:50:53,360 --> 00:50:56,070
+passing along the function that should
+
+1142
+00:50:56,070 --> 00:50:59,340
+return that should be given the result
+
+1143
+00:50:59,340 --> 00:51:01,200
+of the computation so far and so it's
+
+1144
+00:51:01,200 --> 00:51:02,940
+always going forward and because it
+
+1145
+00:51:02,940 --> 00:51:05,010
+never returns eventually you'll you'll
+
+1146
+00:51:05,010 --> 00:51:09,420
+have you'll exceed the stack so in order
+
+1147
+00:51:09,420 --> 00:51:11,880
+to make that work you need to be free of
+
+1148
+00:51:11,880 --> 00:51:14,010
+the stack and the tail recursion
+
+1149
+00:51:14,010 --> 00:51:15,780
+optimization or proper tail calls
+
+1150
+00:51:15,780 --> 00:51:21,060
+accomplish that so I I'm not certain
+
+1151
+00:51:21,060 --> 00:51:22,680
+that it's appropriate for all
+
+1152
+00:51:22,680 --> 00:51:24,180
+applications but for some of the stuff
+
+1153
+00:51:24,180 --> 00:51:25,260
+particularly some of the server side
+
+1154
+00:51:25,260 --> 00:51:27,240
+stuff that we're looking at where you
+
+1155
+00:51:27,240 --> 00:51:29,610
+get these really convoluted nesting of
+
+1156
+00:51:29,610 --> 00:51:31,440
+you know this callback in that one and
+
+1157
+00:51:31,440 --> 00:51:33,300
+that one having continuation passing
+
+1158
+00:51:33,300 --> 00:51:35,970
+would be another set of tools they would
+
+1159
+00:51:35,970 --> 00:51:43,680
+have for managing that complexity it's
+
+1160
+00:51:43,680 --> 00:51:45,060
+something that we've talked about in in
+
+1161
+00:51:45,060 --> 00:51:48,120
+tc39 which is the echo script committee
+
+1162
+00:51:48,120 --> 00:51:51,630
+the trade-off here we should talk about
+
+1163
+00:51:51,630 --> 00:51:57,480
+this because in certain cases we don't
+
+1164
+00:51:57,480 --> 00:52:02,250
+have to remember a a stack trace going
+
+1165
+00:52:02,250 --> 00:52:04,410
+backwards debugging becomes more
+
+1166
+00:52:04,410 --> 00:52:06,480
+difficult because you'll get to
+
+1167
+00:52:06,480 --> 00:52:08,550
+someplace in the debugger and you can't
+
+1168
+00:52:08,550 --> 00:52:10,650
+see how you got there because we're not
+
+1169
+00:52:10,650 --> 00:52:13,830
+tracking that information anymore so
+
+1170
+00:52:13,830 --> 00:52:15,120
+that's a trade-off some people have
+
+1171
+00:52:15,120 --> 00:52:16,740
+suggested we just turned that off while
+
+1172
+00:52:16,740 --> 00:52:18,390
+you're debugging but that means any
+
+1173
+00:52:18,390 --> 00:52:20,250
+algorithm that would fail without tail
+
+1174
+00:52:20,250 --> 00:52:22,230
+recursion would fail when you're
+
+1175
+00:52:22,230 --> 00:52:23,700
+debugging and so that doesn't actually
+
+1176
+00:52:23,700 --> 00:52:26,920
+solve anything so it's a hard trade-off
+
+1177
+00:52:26,920 --> 00:52:29,680
+and up until this point we've decided
+
+1178
+00:52:29,680 --> 00:52:33,430
+not to do it now it might be that being
+
+1179
+00:52:33,430 --> 00:52:35,470
+aware that this is going on a smart
+
+1180
+00:52:35,470 --> 00:52:38,559
+debugger could instead of relying on the
+
+1181
+00:52:38,559 --> 00:52:40,750
+stack to keep its state could be doing
+
+1182
+00:52:40,750 --> 00:52:42,790
+something else instead so it's not
+
+1183
+00:52:42,790 --> 00:52:47,049
+necessarily a hard trade-off but at this
+
+1184
+00:52:47,049 --> 00:52:49,210
+point the people who are most opposed to
+
+1185
+00:52:49,210 --> 00:52:53,049
+it our browser makers got probably
+
+1186
+00:52:53,049 --> 00:52:57,010
+because they can't determine what the
+
+1187
+00:52:57,010 --> 00:53:42,950
+cost of that's going to be to them yeah
+
+1188
+00:53:42,960 --> 00:53:46,599
+javascript is moving beyond its role as
+
+1189
+00:53:46,599 --> 00:53:49,900
+the language of the browser to be the
+
+1190
+00:53:49,900 --> 00:53:51,869
+language of the browser and the server
+
+1191
+00:53:51,869 --> 00:53:54,430
+and the synergies that will be available
+
+1192
+00:53:54,430 --> 00:53:56,770
+to the development community I think
+
+1193
+00:53:56,770 --> 00:54:16,550
+will be significant yes
+
+1194
+00:54:16,560 --> 00:54:18,610
+the thing I would like to change about
+
+1195
+00:54:18,610 --> 00:54:23,020
+html5 is I think they should have
+
+1196
+00:54:23,020 --> 00:54:24,130
+corrected the cross-site scripting
+
+1197
+00:54:24,130 --> 00:54:26,830
+hazard before adding powerful new
+
+1198
+00:54:26,830 --> 00:54:30,700
+capabilities so in my view html5 makes
+
+1199
+00:54:30,700 --> 00:54:34,560
+the problem worse in three ways that it
+
+1200
+00:54:34,560 --> 00:54:37,990
+increases the attack surface because
+
+1201
+00:54:37,990 --> 00:54:40,270
+it's huge and complicated anytime you
+
+1202
+00:54:40,270 --> 00:54:41,680
+have something that's huge and
+
+1203
+00:54:41,680 --> 00:54:43,780
+complicated and knew that means that
+
+1204
+00:54:43,780 --> 00:54:45,550
+they're more places that the attackers
+
+1205
+00:54:45,550 --> 00:54:47,320
+can figure out that the get happened
+
+1206
+00:54:47,320 --> 00:54:50,800
+cause harm the second is that even using
+
+1207
+00:54:50,800 --> 00:54:53,590
+the existing attacks which we saw
+
+1208
+00:54:53,590 --> 00:54:55,869
+Twitter taken down last week right so
+
+1209
+00:54:55,869 --> 00:54:59,860
+this is still an ongoing problem the
+
+1210
+00:54:59,860 --> 00:55:01,119
+attacker now gets powerful new
+
+1211
+00:55:01,119 --> 00:55:02,740
+capabilities that get access to your
+
+1212
+00:55:02,740 --> 00:55:05,740
+local database now and there's no
+
+1213
+00:55:05,740 --> 00:55:07,600
+restriction on what they can do to that
+
+1214
+00:55:07,600 --> 00:55:10,840
+database that's huge they now have new
+
+1215
+00:55:10,840 --> 00:55:12,460
+tools for getting out to the network in
+
+1216
+00:55:12,460 --> 00:55:14,710
+causing greater damage behind the
+
+1217
+00:55:14,710 --> 00:55:16,240
+firewall or wherever else and that's
+
+1218
+00:55:16,240 --> 00:55:19,630
+huge then the third is because html5 is
+
+1219
+00:55:19,630 --> 00:55:23,109
+so big and complicated and fuzzy it may
+
+1220
+00:55:23,109 --> 00:55:26,170
+take years before it's finished and I
+
+1221
+00:55:26,170 --> 00:55:28,300
+think we have to wait for that until we
+
+1222
+00:55:28,300 --> 00:55:32,410
+can get to a correct solution so it's
+
+1223
+00:55:32,410 --> 00:55:34,060
+postponing doing the right thing in
+
+1224
+00:55:34,060 --> 00:55:38,560
+addition to doing the wrong thing that
+
+1225
+00:55:38,560 --> 00:55:39,940
+said there are a lot of good ideas in
+
+1226
+00:55:39,940 --> 00:55:42,220
+html5 and it's nice that we're moving
+
+1227
+00:55:42,220 --> 00:55:45,040
+the web forward but I think they got
+
+1228
+00:55:45,040 --> 00:55:47,500
+their priorities wrong and they're doing
+
+1229
+00:55:47,500 --> 00:55:50,160
+things out of water it's really
+
+1230
+00:55:50,160 --> 00:55:52,660
+attractive to add shiny new features to
+
+1231
+00:55:52,660 --> 00:55:55,150
+a system it's much harder to correct the
+
+1232
+00:55:55,150 --> 00:55:56,800
+fundamental problems in the system and
+
+1233
+00:55:56,800 --> 00:55:58,540
+they chose not to do that and I think
+
+1234
+00:55:58,540 --> 00:57:20,170
+that was a tragic mistake yes
+
+1235
+00:57:20,180 --> 00:57:29,609
+thank you p I appreciate that and and I
+
+1236
+00:57:29,609 --> 00:57:31,290
+do very much hope that idea or that
+
+1237
+00:57:31,290 --> 00:57:33,240
+Microsoft excuse me does do the right
+
+1238
+00:57:33,240 --> 00:57:37,440
+thing on this that in particular equi
+
+1239
+00:57:37,440 --> 00:57:39,210
+script five isn't a standard that was
+
+1240
+00:57:39,210 --> 00:57:43,170
+forced on Microsoft out much like pretty
+
+1241
+00:57:43,170 --> 00:57:46,200
+much all of html5 ones that Microsoft
+
+1242
+00:57:46,200 --> 00:57:50,690
+actually participated in tc39 right was
+
+1243
+00:57:50,690 --> 00:57:54,200
+helped desiring echo script five
+
+1244
+00:57:54,200 --> 00:57:56,400
+Microsoft was the editor of the equity
+
+1245
+00:57:56,400 --> 00:57:59,970
+script five standard Microsoft voted yes
+
+1246
+00:57:59,970 --> 00:58:02,910
+at the General Assembly I would like for
+
+1247
+00:58:02,910 --> 00:58:05,190
+Microsoft to follow through on their
+
+1248
+00:58:05,190 --> 00:58:07,320
+development and good work on the script
+
+1249
+00:58:07,320 --> 00:58:12,750
+by thank you ok I think we're we're good
+
+1250
+00:58:12,750 --> 00:58:14,760
+with it with the questions now got to
+
+1251
+00:58:14,760 --> 00:58:16,770
+move on what duck will be around so you
+
+1252
+00:58:16,770 --> 00:58:18,650
+can ask them more questions later on
+

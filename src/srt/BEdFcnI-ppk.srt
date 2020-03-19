@@ -1,0 +1,1661 @@
+1
+00:00:08,759 --> 00:00:11,799
+
+hi so I'm changing live audio with the
+
+2
+00:00:11,799 --> 00:00:14,080
+Web Audio API yes I'm going to talk
+
+3
+00:00:14,080 --> 00:00:16,150
+about today but first let me quickly
+
+4
+00:00:16,150 --> 00:00:18,640
+introduce myself I'm some belem I'm a
+
+5
+00:00:18,640 --> 00:00:20,349
+front-end engineer it's made with love
+
+6
+00:00:20,349 --> 00:00:22,210
+you can find me on the Internet as some
+
+7
+00:00:22,210 --> 00:00:26,020
+me so I'm a guitar player I play guitar
+
+8
+00:00:26,020 --> 00:00:28,300
+in my bedroom in my living room just at
+
+9
+00:00:28,300 --> 00:00:29,980
+home and I have this collection of of
+
+10
+00:00:29,980 --> 00:00:33,160
+pedals to put effects on my guitar and I
+
+11
+00:00:33,160 --> 00:00:35,079
+got interested in how to display these
+
+12
+00:00:35,079 --> 00:00:37,059
+pedals work how did these effects come
+
+13
+00:00:37,059 --> 00:00:39,879
+to life so I started researching making
+
+14
+00:00:39,879 --> 00:00:42,239
+the pedals myself with electronic
+
+15
+00:00:42,239 --> 00:00:45,100
+circuitry and stuff and then I got the
+
+16
+00:00:45,100 --> 00:00:46,720
+idea like a we have the Web Audio API
+
+17
+00:00:46,720 --> 00:00:48,970
+maybe I can create this with just using
+
+18
+00:00:48,970 --> 00:00:51,430
+javascript so that's what I try to do
+
+19
+00:00:51,430 --> 00:00:53,920
+and that's what today I will just try to
+
+20
+00:00:53,920 --> 00:00:56,590
+explain how I did it and you'll get a
+
+21
+00:00:56,590 --> 00:01:01,480
+live demo yeah first the first thing we
+
+22
+00:01:01,480 --> 00:01:02,739
+need to do is get the sound of the
+
+23
+00:01:02,739 --> 00:01:04,899
+guitar in the browser so you can hear it
+
+24
+00:01:04,899 --> 00:01:06,579
+through the speaker and you can
+
+25
+00:01:06,579 --> 00:01:09,579
+manipulate the sound of the guitar with
+
+26
+00:01:09,579 --> 00:01:12,549
+the Web Audio API it's actually kind of
+
+27
+00:01:12,549 --> 00:01:14,409
+simple first you create a new audio
+
+28
+00:01:14,409 --> 00:01:16,869
+context which is the basics of the Web
+
+29
+00:01:16,869 --> 00:01:21,100
+Audio API then you get the audio input
+
+30
+00:01:21,100 --> 00:01:23,649
+of your computer so I just put the
+
+31
+00:01:23,649 --> 00:01:26,229
+guitar as a microphone basically I
+
+32
+00:01:26,229 --> 00:01:28,299
+connected it to my computer use
+
+33
+00:01:28,299 --> 00:01:30,759
+navigated up guess it getusermedia and I
+
+34
+00:01:30,759 --> 00:01:34,929
+can access the microphone this has been
+
+35
+00:01:34,929 --> 00:01:36,459
+deprecated like this and it's been
+
+36
+00:01:36,459 --> 00:01:38,619
+changed to navigator dot media devices
+
+37
+00:01:38,619 --> 00:01:41,259
+don't get user media but it only works
+
+38
+00:01:41,259 --> 00:01:43,929
+in Firefox and in chrome behind an
+
+39
+00:01:43,929 --> 00:01:45,819
+experimental web platforms feature flag
+
+40
+00:01:45,819 --> 00:01:49,990
+so for now I use the old version because
+
+41
+00:01:49,990 --> 00:01:54,009
+it's better supported and then basically
+
+42
+00:01:54,009 --> 00:01:55,810
+we're almost done getting the sound of
+
+43
+00:01:55,810 --> 00:01:58,029
+the guitar into the browser all you have
+
+44
+00:01:58,029 --> 00:02:00,729
+to do is create an input nodes from the
+
+45
+00:02:00,729 --> 00:02:02,229
+media stream we just cut from the
+
+46
+00:02:02,229 --> 00:02:04,389
+microphone off or from the guitar and
+
+47
+00:02:04,389 --> 00:02:06,849
+connected to the audio context
+
+48
+00:02:06,849 --> 00:02:09,270
+destination which is just the speaker's
+
+49
+00:02:09,270 --> 00:02:12,239
+that's step one I will demo this later
+
+50
+00:02:12,239 --> 00:02:14,470
+but basically that's all you have to do
+
+51
+00:02:14,470 --> 00:02:17,860
+to just get the sound of your guitar in
+
+52
+00:02:17,860 --> 00:02:19,069
+your browser and
+
+53
+00:02:19,069 --> 00:02:23,090
+you play guitar on the app step to add
+
+54
+00:02:23,090 --> 00:02:25,189
+effects to the guitar sound because
+
+55
+00:02:25,189 --> 00:02:27,319
+that's what I wanted to do I just wanted
+
+56
+00:02:27,319 --> 00:02:30,200
+to alter the sound you use some effects
+
+57
+00:02:30,200 --> 00:02:34,040
+and make some cool noise basically then
+
+58
+00:02:34,040 --> 00:02:36,739
+you have a few of different pedals which
+
+59
+00:02:36,739 --> 00:02:39,709
+you can find on most pedal boards the
+
+60
+00:02:39,709 --> 00:02:41,840
+most basic one is a volume pedal in
+
+61
+00:02:41,840 --> 00:02:44,239
+which with which you just can change the
+
+62
+00:02:44,239 --> 00:02:48,439
+volume of your guitar this is quite easy
+
+63
+00:02:48,439 --> 00:02:50,329
+because in the Web Audio API you have
+
+64
+00:02:50,329 --> 00:02:51,620
+something as the gain note which
+
+65
+00:02:51,620 --> 00:02:54,349
+controls the game or just the volume you
+
+66
+00:02:54,349 --> 00:02:56,689
+can create one which is odd with just
+
+67
+00:02:56,689 --> 00:02:58,459
+doing all your context or create game
+
+68
+00:02:58,459 --> 00:03:01,819
+and then set the game which is usually
+
+69
+00:03:01,819 --> 00:03:04,189
+between zero and one or zero percent and
+
+70
+00:03:04,189 --> 00:03:07,159
+1 percent then you connect the input
+
+71
+00:03:07,159 --> 00:03:08,810
+node to the gain nodes we gain out to
+
+72
+00:03:08,810 --> 00:03:11,000
+the audio context destination and you
+
+73
+00:03:11,000 --> 00:03:13,489
+have a chain of input gain and output
+
+74
+00:03:13,489 --> 00:03:16,310
+and the gain in the middle will control
+
+75
+00:03:16,310 --> 00:03:19,909
+the volume of your signal signal I have
+
+76
+00:03:19,909 --> 00:03:24,079
+a quick demo of how the gano it effects
+
+77
+00:03:24,079 --> 00:03:26,629
+your audio waves this is just an audio
+
+78
+00:03:26,629 --> 00:03:30,349
+wave of a fixed node but again out of
+
+79
+00:03:30,349 --> 00:03:34,519
+100% so the volume is 100% if you change
+
+80
+00:03:34,519 --> 00:03:36,319
+it to 50 you will see that the waves are
+
+81
+00:03:36,319 --> 00:03:38,870
+getting thinner if you put it bigger you
+
+82
+00:03:38,870 --> 00:03:40,909
+will see the way is get bigger but they
+
+83
+00:03:40,909 --> 00:03:42,500
+get clipped on the top of the top and
+
+84
+00:03:42,500 --> 00:03:45,079
+the bottom that's basically how the gain
+
+85
+00:03:45,079 --> 00:03:47,840
+no it works it just decreases or
+
+86
+00:03:47,840 --> 00:03:51,650
+increases the gain of your signal this
+
+87
+00:03:51,650 --> 00:03:53,419
+is the audio chain I talked about if you
+
+88
+00:03:53,419 --> 00:03:55,819
+just want to put a volume pedal on your
+
+89
+00:03:55,819 --> 00:03:58,609
+guitar sound or on any input sounds this
+
+90
+00:03:58,609 --> 00:04:00,199
+is what you have to do inputs do not
+
+91
+00:04:00,199 --> 00:04:01,909
+gain out outputs
+
+92
+00:04:01,909 --> 00:04:05,479
+done then the second one when you play
+
+93
+00:04:05,479 --> 00:04:08,900
+guitar unless you play country music or
+
+94
+00:04:08,900 --> 00:04:11,540
+so you want to have this little bit
+
+95
+00:04:11,540 --> 00:04:14,870
+gnarly sounding guitar or metal rock
+
+96
+00:04:14,870 --> 00:04:16,909
+whatever doesn't matter you want it to
+
+97
+00:04:16,909 --> 00:04:19,639
+be rough this is usually a distortion
+
+98
+00:04:19,639 --> 00:04:21,530
+pedal or a first pedal or an overdrive
+
+99
+00:04:21,530 --> 00:04:23,360
+pedal does it really matter it's all
+
+100
+00:04:23,360 --> 00:04:26,780
+something that affects the waves of the
+
+101
+00:04:26,780 --> 00:04:29,510
+sound waves in a way that it sounds
+
+102
+00:04:29,510 --> 00:04:30,650
+rough
+
+103
+00:04:30,650 --> 00:04:32,440
+dirty doesn't matter
+
+104
+00:04:32,440 --> 00:04:34,720
+we can do this with a wave shaper note a
+
+105
+00:04:34,720 --> 00:04:36,790
+wave shaper note is basically just a
+
+106
+00:04:36,790 --> 00:04:39,670
+note that you can create and you can
+
+107
+00:04:39,670 --> 00:04:42,760
+give it a mouth curve and it will apply
+
+108
+00:04:42,760 --> 00:04:46,420
+this curve to your audio signal it's
+
+109
+00:04:46,420 --> 00:04:49,360
+very complicated to calculate these
+
+110
+00:04:49,360 --> 00:04:52,860
+curves so there's one very good one on
+
+111
+00:04:52,860 --> 00:04:54,910
+stackoverflow there's a link in my
+
+112
+00:04:54,910 --> 00:04:57,070
+presentation if you want to see it it's
+
+113
+00:04:57,070 --> 00:04:59,500
+just a lot of math stuff which I don't
+
+114
+00:04:59,500 --> 00:05:04,300
+really understand but it works I can do
+
+115
+00:05:04,300 --> 00:05:06,760
+I can show you what it does because we
+
+116
+00:05:06,760 --> 00:05:08,770
+have the basic inputs I'm single again
+
+117
+00:05:08,770 --> 00:05:12,060
+it's just the sine wave if you apply the
+
+118
+00:05:12,060 --> 00:05:14,830
+formula or the curves to this sine wave
+
+119
+00:05:14,830 --> 00:05:16,810
+you will see that it's suddenly becomes
+
+120
+00:05:16,810 --> 00:05:18,340
+a totally different way if it's get
+
+121
+00:05:18,340 --> 00:05:20,140
+chopped off at the bottom and at the top
+
+122
+00:05:20,140 --> 00:05:22,510
+and this is what makes your sound
+
+123
+00:05:22,510 --> 00:05:26,320
+actually rough dirty proof you'll hear
+
+124
+00:05:26,320 --> 00:05:31,540
+this later as well one of if you want to
+
+125
+00:05:31,540 --> 00:05:33,520
+make it a single path it's just again
+
+126
+00:05:33,520 --> 00:05:36,070
+input wave shape or node output it's
+
+127
+00:05:36,070 --> 00:05:37,450
+always this simple you have the input
+
+128
+00:05:37,450 --> 00:05:38,860
+node you have the output which are the
+
+129
+00:05:38,860 --> 00:05:41,020
+speakers and in between you can just put
+
+130
+00:05:41,020 --> 00:05:44,830
+as many audio nodes as you want in this
+
+131
+00:05:44,830 --> 00:05:47,050
+case the volume and the distortion are
+
+132
+00:05:47,050 --> 00:05:50,380
+quite simple the next few examples will
+
+133
+00:05:50,380 --> 00:05:53,020
+be a bit more nodes in between but the
+
+134
+00:05:53,020 --> 00:05:55,690
+basic stay the same inputs audio notes
+
+135
+00:05:55,690 --> 00:05:59,170
+other audio nodes outputs then a third
+
+136
+00:05:59,170 --> 00:06:01,330
+pedal which you can commonly find on
+
+137
+00:06:01,330 --> 00:06:03,790
+guitar players or keyboard players or
+
+138
+00:06:03,790 --> 00:06:06,370
+whatever is a delay pedal a delay effect
+
+139
+00:06:06,370 --> 00:06:08,050
+is basically something that takes your
+
+140
+00:06:08,050 --> 00:06:10,150
+sound and repeats a few times while
+
+141
+00:06:10,150 --> 00:06:12,940
+failing out so you have this delayed
+
+142
+00:06:12,940 --> 00:06:16,540
+sounds after you play it to make this
+
+143
+00:06:16,540 --> 00:06:18,610
+there's a delay nodes in the Web Audio
+
+144
+00:06:18,610 --> 00:06:22,630
+API it's the same we do audio context or
+
+145
+00:06:22,630 --> 00:06:24,700
+create delay you can say the delay value
+
+146
+00:06:24,700 --> 00:06:28,210
+in this case it's one second you connect
+
+147
+00:06:28,210 --> 00:06:31,090
+it from input to delay node to the
+
+148
+00:06:31,090 --> 00:06:34,690
+output you have a delay but in essence
+
+149
+00:06:34,690 --> 00:06:37,240
+until I know it just delays the sound
+
+150
+00:06:37,240 --> 00:06:39,940
+and it doesn't really repeat it so if
+
+151
+00:06:39,940 --> 00:06:41,320
+you want to really make the delay effect
+
+152
+00:06:41,320 --> 00:06:45,550
+of the you want to rig ATAR it's a bit
+
+153
+00:06:45,550 --> 00:06:45,820
+more
+
+154
+00:06:45,820 --> 00:06:48,850
+complicated it looks like this we
+
+155
+00:06:48,850 --> 00:06:50,620
+basically just send the delay it sounds
+
+156
+00:06:50,620 --> 00:06:52,570
+too gay no it's decrease its value send
+
+157
+00:06:52,570 --> 00:06:54,280
+it back to delay back and forth until
+
+158
+00:06:54,280 --> 00:06:56,560
+the gain or the gain is zero so the
+
+159
+00:06:56,560 --> 00:06:58,290
+volume is zero so it will stop repeating
+
+160
+00:06:58,290 --> 00:07:03,310
+that way it fades out the next one is a
+
+161
+00:07:03,310 --> 00:07:06,880
+flanger pedal anger is a bit like a
+
+162
+00:07:06,880 --> 00:07:11,110
+delay but it has a dynamic time or
+
+163
+00:07:11,110 --> 00:07:13,630
+duration or speed of the delay so it's
+
+164
+00:07:13,630 --> 00:07:15,460
+not going to repeat like pom pom pom but
+
+165
+00:07:15,460 --> 00:07:17,890
+it's going to be like a sine wave going
+
+166
+00:07:17,890 --> 00:07:21,100
+up and down fast and slow and to create
+
+167
+00:07:21,100 --> 00:07:22,840
+a sine wave if we can use an oscillator
+
+168
+00:07:22,840 --> 00:07:25,450
+note oscillator notes are basically just
+
+169
+00:07:25,450 --> 00:07:28,600
+audio notes which create a sine wave or
+
+170
+00:07:28,600 --> 00:07:32,710
+a square wave just one big stone you can
+
+171
+00:07:32,710 --> 00:07:37,930
+use to make a synthesizer for example it
+
+172
+00:07:37,930 --> 00:07:40,720
+has a few values you can edit the most
+
+173
+00:07:40,720 --> 00:07:43,000
+important ones are type which is a sine
+
+174
+00:07:43,000 --> 00:07:45,820
+wave for a more a nice sine wave or a
+
+175
+00:07:45,820 --> 00:07:48,550
+square wave or a sawtooth wave or a
+
+176
+00:07:48,550 --> 00:07:50,800
+triangle wave and you can set the
+
+177
+00:07:50,800 --> 00:07:53,680
+frequency which is basically the tone of
+
+178
+00:07:53,680 --> 00:07:57,520
+your of your sounds if it's a height if
+
+179
+00:07:57,520 --> 00:07:59,020
+it's a high frequency it will be a very
+
+180
+00:07:59,020 --> 00:08:01,090
+high tone with a low frequency it will
+
+181
+00:08:01,090 --> 00:08:04,180
+be a very low tone you can put any
+
+182
+00:08:04,180 --> 00:08:06,820
+number you want but humans usually can
+
+183
+00:08:06,820 --> 00:08:09,520
+just hear that the frequency is between
+
+184
+00:08:09,520 --> 00:08:11,920
+20 and 20 thousands but if you want to
+
+185
+00:08:11,920 --> 00:08:14,200
+annoy your dog just put it on five you
+
+186
+00:08:14,200 --> 00:08:15,940
+will hear it you will not you will not
+
+187
+00:08:15,940 --> 00:08:22,360
+be happy I will here you can see and
+
+188
+00:08:22,360 --> 00:08:24,100
+also they don't know it by default it's
+
+189
+00:08:24,100 --> 00:08:26,890
+a sine wave which is just a sine wave if
+
+190
+00:08:26,890 --> 00:08:29,440
+you make it a square wave it's something
+
+191
+00:08:29,440 --> 00:08:29,770
+else
+
+192
+00:08:29,770 --> 00:08:34,090
+triangle wave sawtooth that's all
+
+193
+00:08:34,090 --> 00:08:36,219
+something else and then you can control
+
+194
+00:08:36,219 --> 00:08:38,530
+the Hertz which you will see it goes
+
+195
+00:08:38,530 --> 00:08:41,080
+faster and faster the higher the the
+
+196
+00:08:41,080 --> 00:08:44,020
+Hertz go and I can annoy you and let you
+
+197
+00:08:44,020 --> 00:08:48,250
+listen to the sound which is kinda
+
+198
+00:08:48,250 --> 00:08:50,950
+annoying but that's what is what an
+
+199
+00:08:50,950 --> 00:08:53,320
+oscillator does it just creates one one
+
+200
+00:08:53,320 --> 00:08:56,650
+sounds that just continues to be
+
+201
+00:08:56,650 --> 00:08:58,899
+annoying
+
+202
+00:08:58,899 --> 00:09:01,490
+one of the cool things though is that an
+
+203
+00:09:01,490 --> 00:09:04,459
+oscillator note it creates a wave so if
+
+204
+00:09:04,459 --> 00:09:07,130
+you want to create a dynamic delay like
+
+205
+00:09:07,130 --> 00:09:09,410
+in a flanger you can just create the
+
+206
+00:09:09,410 --> 00:09:11,990
+wave of the oscillator to the delay time
+
+207
+00:09:11,990 --> 00:09:14,300
+the delay note we saw earlier which you
+
+208
+00:09:14,300 --> 00:09:16,279
+can set the time so it will just go up
+
+209
+00:09:16,279 --> 00:09:18,440
+and down constantly depending on the
+
+210
+00:09:18,440 --> 00:09:20,720
+speed of your oscillator so the delay
+
+211
+00:09:20,720 --> 00:09:24,769
+will be dynamic a.k.a flanger basic
+
+212
+00:09:24,769 --> 00:09:27,800
+flanger then the last pedal I want to
+
+213
+00:09:27,800 --> 00:09:31,430
+talk about is a reverb pedal a reverb
+
+214
+00:09:31,430 --> 00:09:33,820
+effect is usually a bit of eco
+
+215
+00:09:33,820 --> 00:09:36,680
+atmosphere behind the sound of your
+
+216
+00:09:36,680 --> 00:09:39,370
+guitar or your keyboard or whatever
+
+217
+00:09:39,370 --> 00:09:43,519
+instrument you want to play and we can
+
+218
+00:09:43,519 --> 00:09:46,540
+do this with using a convo over note
+
+219
+00:09:46,540 --> 00:09:49,100
+it's a bit more difficult because you
+
+220
+00:09:49,100 --> 00:09:51,529
+have to load an impulse response file
+
+221
+00:09:51,529 --> 00:09:54,260
+then get an array buffer out of it and
+
+222
+00:09:54,260 --> 00:09:56,839
+then decode the audio data and put it as
+
+223
+00:09:56,839 --> 00:09:58,600
+a buffer of the controller nodes and
+
+224
+00:09:58,600 --> 00:10:00,920
+basically what this will do is an
+
+225
+00:10:00,920 --> 00:10:03,440
+impulse impulse response file is just a
+
+226
+00:10:03,440 --> 00:10:06,110
+file with characteristics like is a big
+
+227
+00:10:06,110 --> 00:10:08,149
+room it has some echo that
+
+228
+00:10:08,149 --> 00:10:10,370
+characteristics are in that file and the
+
+229
+00:10:10,370 --> 00:10:11,959
+convolve inaudible projects these
+
+230
+00:10:11,959 --> 00:10:14,209
+characteristics on the sounds you're
+
+231
+00:10:14,209 --> 00:10:18,260
+making so on my guitar I didn't make
+
+232
+00:10:18,260 --> 00:10:20,450
+this impulse response file myself but
+
+233
+00:10:20,450 --> 00:10:22,550
+I'm Chris Wilson has the Webber the
+
+234
+00:10:22,550 --> 00:10:24,920
+playground which has a very few very
+
+235
+00:10:24,920 --> 00:10:27,410
+good example or a few good examples
+
+236
+00:10:27,410 --> 00:10:30,740
+actually and then if you want to make
+
+237
+00:10:30,740 --> 00:10:33,140
+the effect it's also just a few notes
+
+238
+00:10:33,140 --> 00:10:35,209
+together with the convo over notes and
+
+239
+00:10:35,209 --> 00:10:38,570
+you get the the effect you want the
+
+240
+00:10:38,570 --> 00:10:43,100
+river actually so there are a lot a lot
+
+241
+00:10:43,100 --> 00:10:44,600
+of other notes I'm not going to talk
+
+242
+00:10:44,600 --> 00:10:46,550
+about all of them you have and as
+
+243
+00:10:46,550 --> 00:10:48,890
+analyzer note which just analyzes your
+
+244
+00:10:48,890 --> 00:10:52,190
+auto audio and you can get data like
+
+245
+00:10:52,190 --> 00:10:54,560
+frequency or stuff like in the first
+
+246
+00:10:54,560 --> 00:10:56,089
+slide I add the wave which you could see
+
+247
+00:10:56,089 --> 00:10:58,730
+it was just an analyzer node analyzing
+
+248
+00:10:58,730 --> 00:11:01,190
+my microphone if a big quad filter note
+
+249
+00:11:01,190 --> 00:11:02,959
+which is just to filter some frequencies
+
+250
+00:11:02,959 --> 00:11:05,510
+channels better and merger shell split
+
+251
+00:11:05,510 --> 00:11:08,630
+channels from stereo to mono or the
+
+252
+00:11:08,630 --> 00:11:10,970
+other way around I don't know to go from
+
+253
+00:11:10,970 --> 00:11:11,340
+left
+
+254
+00:11:11,340 --> 00:11:13,760
+right or if you have a seven points one
+
+255
+00:11:13,760 --> 00:11:16,560
+Dolby Surround system or something to
+
+256
+00:11:16,560 --> 00:11:19,500
+just position the audio inside a space
+
+257
+00:11:19,500 --> 00:11:22,530
+which can be 3d and you can use a
+
+258
+00:11:22,530 --> 00:11:24,390
+paranoid for that or a dynamics
+
+259
+00:11:24,390 --> 00:11:26,370
+compressor not-it's just to compress
+
+260
+00:11:26,370 --> 00:11:29,520
+audio and I'll go do it go into details
+
+261
+00:11:29,520 --> 00:11:31,080
+of these because they're cool but
+
+262
+00:11:31,080 --> 00:11:33,420
+they're not necessary for my
+
+263
+00:11:33,420 --> 00:11:38,250
+demonstration then it's cool that you
+
+264
+00:11:38,250 --> 00:11:39,720
+can create all these things but as
+
+265
+00:11:39,720 --> 00:11:41,460
+you've seen some of these effects are a
+
+266
+00:11:41,460 --> 00:11:43,470
+little bit complicated you have the
+
+267
+00:11:43,470 --> 00:11:44,850
+schemes and if all the notes working
+
+268
+00:11:44,850 --> 00:11:48,420
+together so I started building a library
+
+269
+00:11:48,420 --> 00:11:51,360
+where you can just create easy audio
+
+270
+00:11:51,360 --> 00:11:54,360
+effects it's kind of working
+
+271
+00:11:54,360 --> 00:11:56,910
+I used it there's still a lot for it to
+
+272
+00:11:56,910 --> 00:11:58,560
+do if somebody's interested you can
+
+273
+00:11:58,560 --> 00:12:01,800
+still help me or give feedback whatever
+
+274
+00:12:01,800 --> 00:12:03,870
+you want but basically it works like
+
+275
+00:12:03,870 --> 00:12:06,300
+this you want to have an input you want
+
+276
+00:12:06,300 --> 00:12:08,310
+the distortion or delay effect import it
+
+277
+00:12:08,310 --> 00:12:10,230
+create a new distortion or delay effect
+
+278
+00:12:10,230 --> 00:12:12,330
+and chain it all together that's all you
+
+279
+00:12:12,330 --> 00:12:15,540
+have to do so I'm quite happy with the
+
+280
+00:12:15,540 --> 00:12:18,930
+results already and now let's see if it
+
+281
+00:12:18,930 --> 00:12:37,070
+works
+
+282
+00:12:37,080 --> 00:12:39,149
+I'm not really good and playing guitar
+
+283
+00:12:39,149 --> 00:12:42,750
+in front of people but we'll see I've
+
+284
+00:12:42,750 --> 00:12:47,040
+made this small application on top of
+
+285
+00:12:47,040 --> 00:12:49,500
+this library I was I am building which
+
+286
+00:12:49,500 --> 00:12:52,410
+is just an interface to create the
+
+287
+00:12:52,410 --> 00:12:55,890
+effect notes first off you start by
+
+288
+00:12:55,890 --> 00:12:59,399
+creating an input node and let me see if
+
+289
+00:12:59,399 --> 00:13:03,270
+it's going to use my guitar yep if you
+
+290
+00:13:03,270 --> 00:13:05,760
+this is just now going from the input my
+
+291
+00:13:05,760 --> 00:13:07,910
+microphone to the output the speakers
+
+292
+00:13:07,910 --> 00:13:10,709
+which will just let you listen to the
+
+293
+00:13:10,709 --> 00:13:13,800
+guitar it's nothing effect yeah there's
+
+294
+00:13:13,800 --> 00:13:16,860
+no effect yet it's just input output
+
+295
+00:13:16,860 --> 00:13:19,230
+guitar but then you can start adding
+
+296
+00:13:19,230 --> 00:13:23,550
+effects like volume pedal which is now
+
+297
+00:13:23,550 --> 00:13:26,810
+the full volume but you can put
+
+298
+00:13:26,810 --> 00:13:30,670
+unless to create just control the volume
+
+299
+00:13:30,670 --> 00:13:37,940
+next up we have distortion it will just
+
+300
+00:13:37,940 --> 00:13:47,089
+make your guitar sound super badass the
+
+301
+00:13:47,089 --> 00:13:49,730
+next one is the delay effects I'm going
+
+302
+00:13:49,730 --> 00:14:07,650
+to put it a little bit faster so you can
+
+303
+00:14:07,660 --> 00:14:10,460
+just keep some going and fades out
+
+304
+00:14:10,460 --> 00:14:12,080
+eventually you can still control the
+
+305
+00:14:12,080 --> 00:14:13,850
+parameters but that's something you can
+
+306
+00:14:13,850 --> 00:14:16,220
+play with for hours and hours so I'm not
+
+307
+00:14:16,220 --> 00:14:18,500
+going to do this next up is the flanger
+
+308
+00:14:18,500 --> 00:14:21,650
+let me switch off the delay turn these
+
+309
+00:14:21,650 --> 00:14:24,560
+on because it's badass and then this is
+
+310
+00:14:24,560 --> 00:14:27,110
+the dynamic delay which goes faster and
+
+311
+00:14:27,110 --> 00:14:33,500
+slower waving sound in the audio that's
+
+312
+00:14:33,500 --> 00:14:39,080
+the flanger and then last the reverb
+
+313
+00:14:39,080 --> 00:14:50,880
+effect in the background
+
+314
+00:14:50,890 --> 00:14:53,200
+so we had this is basically just using
+
+315
+00:14:53,200 --> 00:14:55,480
+javascript to control the sound of my
+
+316
+00:14:55,480 --> 00:15:03,850
+guitar pretty cool Danny we're not
+
+317
+00:15:03,850 --> 00:15:06,130
+finished yet what if you have our hands
+
+318
+00:15:06,130 --> 00:15:07,540
+of not view if you don't have our hands
+
+319
+00:15:07,540 --> 00:15:09,250
+available to control the mouse because I
+
+320
+00:15:09,250 --> 00:15:11,290
+have my left hand on the guitar my right
+
+321
+00:15:11,290 --> 00:15:13,180
+hand on the pig but I want to switch
+
+322
+00:15:13,180 --> 00:15:15,310
+between effects and stuff there's
+
+323
+00:15:15,310 --> 00:15:17,320
+something called about MIDI API which
+
+324
+00:15:17,320 --> 00:15:20,260
+we've seen yesterday night it was very
+
+325
+00:15:20,260 --> 00:15:23,470
+cool so I've tried to integrate it with
+
+326
+00:15:23,470 --> 00:15:25,870
+this little app I have so I can just use
+
+327
+00:15:25,870 --> 00:15:28,720
+my feet to control the switching on and
+
+328
+00:15:28,720 --> 00:15:32,200
+off of the effects what I did is I built
+
+329
+00:15:32,200 --> 00:15:35,620
+this stuff which is just a piece of
+
+330
+00:15:35,620 --> 00:15:38,830
+aluminum with some switches and a Tesla
+
+331
+00:15:38,830 --> 00:15:44,590
+inside it it looks like the schematic is
+
+332
+00:15:44,590 --> 00:15:47,200
+roughly this hardware is just buttons
+
+333
+00:15:47,200 --> 00:15:49,680
+then they connect to the tassel which
+
+334
+00:15:49,680 --> 00:15:52,690
+has a socket connection to a server
+
+335
+00:15:52,690 --> 00:15:55,180
+running on my laptop which just converts
+
+336
+00:15:55,180 --> 00:15:57,940
+the signal to a MIDI signal basically I
+
+337
+00:15:57,940 --> 00:16:01,330
+wanted to put do to create a MIDI signal
+
+338
+00:16:01,330 --> 00:16:03,880
+on my Tesla but it doesn't support it
+
+339
+00:16:03,880 --> 00:16:06,460
+yet because the node libraries are just
+
+340
+00:16:06,460 --> 00:16:09,880
+bindings to the native core MIDI or the
+
+341
+00:16:09,880 --> 00:16:12,010
+windows engine experience so now I'm
+
+342
+00:16:12,010 --> 00:16:14,350
+just having a socket connection between
+
+343
+00:16:14,350 --> 00:16:18,790
+my laptop and my my pedals and hopefully
+
+344
+00:16:18,790 --> 00:16:21,870
+they will work because yeah Internet
+
+345
+00:16:21,870 --> 00:16:26,980
+network other web MIDI API is very
+
+346
+00:16:26,980 --> 00:16:28,870
+simple you just request MIDI access you
+
+347
+00:16:28,870 --> 00:16:31,020
+get a list of devices and then you
+
+348
+00:16:31,020 --> 00:16:33,280
+basically just choose the device you
+
+349
+00:16:33,280 --> 00:16:34,750
+want in this example I take the first
+
+350
+00:16:34,750 --> 00:16:36,850
+one but they have name so you can just
+
+351
+00:16:36,850 --> 00:16:42,880
+search for the name of your device let's
+
+352
+00:16:42,880 --> 00:16:47,049
+see if it works
+
+353
+00:16:47,059 --> 00:16:50,659
+I just turned off my inputs which is
+
+354
+00:16:50,659 --> 00:16:56,569
+nice I can just
+
+355
+00:16:56,579 --> 00:17:01,499
+all of the effects on my pedalboard
+
+356
+00:17:01,499 --> 00:17:05,159
+which is me you can you can just buy me
+
+357
+00:17:05,159 --> 00:17:07,079
+the pedals and use it but where's the
+
+358
+00:17:07,079 --> 00:17:10,189
+fun and that's just created yourself and
+
+359
+00:17:10,189 --> 00:17:18,370
+this is the end of the presentation
+
+360
+00:17:18,380 --> 00:17:25,500
+thank you if any of you guys are
+
+361
+00:17:25,500 --> 00:17:27,720
+interested if a few project and get up
+
+362
+00:17:27,720 --> 00:17:29,490
+which is the audio effects library or
+
+363
+00:17:29,490 --> 00:17:30,960
+the pedal board the little app you saw
+
+364
+00:17:30,960 --> 00:17:32,970
+the oscilloscope which is to create the
+
+365
+00:17:32,970 --> 00:17:35,340
+waves visually and my presentation is
+
+366
+00:17:35,340 --> 00:17:46,830
+also in get up so thank you I'm a bit
+
+367
+00:17:46,830 --> 00:17:51,179
+early so maybe questions is somebody
+
+368
+00:17:51,179 --> 00:17:52,490
+else who wants to come and play this
+
+369
+00:17:52,490 --> 00:17:54,779
+week we could do a Q&A or you could just
+
+370
+00:17:54,779 --> 00:17:57,120
+do it like a concert you know why that's
+
+371
+00:17:57,120 --> 00:17:59,519
+not going to happen they won't have any
+
+372
+00:17:59,519 --> 00:18:02,340
+questions I'll bring the microphone to
+
+373
+00:18:02,340 --> 00:18:02,639
+you
+
+374
+00:18:02,639 --> 00:18:09,480
+hopefully it's not gonna feedback hi
+
+375
+00:18:09,480 --> 00:18:12,600
+awesome presentation thank you how's the
+
+376
+00:18:12,600 --> 00:18:16,110
+latency it's sometimes really bad
+
+377
+00:18:16,110 --> 00:18:19,440
+sometimes super good it's depends on the
+
+378
+00:18:19,440 --> 00:18:21,299
+amount of tops fear you're running in
+
+379
+00:18:21,299 --> 00:18:23,279
+your Chrome or in whichever bus you're
+
+380
+00:18:23,279 --> 00:18:25,590
+using I found out that using Chrome has
+
+381
+00:18:25,590 --> 00:18:29,639
+the best audio that's because in Firefox
+
+382
+00:18:29,639 --> 00:18:32,159
+you have this annoying sound in the
+
+383
+00:18:32,159 --> 00:18:34,110
+background but Firefox does have very
+
+384
+00:18:34,110 --> 00:18:36,299
+cool developer tools to debug your audio
+
+385
+00:18:36,299 --> 00:18:39,809
+chain so I just use them to develop I
+
+386
+00:18:39,809 --> 00:18:42,240
+use the Firefox and Chrome just to
+
+387
+00:18:42,240 --> 00:18:44,460
+listen to it but yeah the latency like
+
+388
+00:18:44,460 --> 00:18:46,470
+you asked is just depends on your
+
+389
+00:18:46,470 --> 00:18:49,230
+computer on your tabs on the amount of
+
+390
+00:18:49,230 --> 00:18:51,840
+effects you put together that kind of
+
+391
+00:18:51,840 --> 00:18:53,610
+stuff all right thank you cannot do
+
+392
+00:18:53,610 --> 00:18:56,340
+superfast solos because you'll hear it a
+
+393
+00:18:56,340 --> 00:19:10,430
+bit later okay
+
+394
+00:19:10,440 --> 00:19:19,390
+hottest one
+
+395
+00:19:19,400 --> 00:19:24,650
+I want an extended demo please it was so
+
+396
+00:19:24,650 --> 00:19:26,900
+short please show us the pedal again
+
+397
+00:19:26,900 --> 00:19:29,090
+that was so nice I want to get a video
+
+398
+00:19:29,090 --> 00:19:33,290
+please just do something with the guitar
+
+399
+00:19:33,290 --> 00:19:38,240
+and use the pedal please that's my
+
+400
+00:19:38,240 --> 00:19:47,130
+question
+
+401
+00:19:47,140 --> 00:19:53,300
+I'm very happy is for questions so what
+
+402
+00:19:53,300 --> 00:20:00,590
+do you want to hear let's just create
+
+403
+00:20:00,590 --> 00:20:03,710
+some dirty stuff does anybody know where
+
+404
+00:20:03,710 --> 00:20:07,760
+a nice riff or something that's not a
+
+405
+00:20:07,760 --> 00:20:18,350
+riff that the whole song
+
+406
+00:20:18,360 --> 00:20:26,650
+quite hard because create a lot of cool
+
+407
+00:20:26,650 --> 00:20:30,700
+sounds and just play around with the
+
+408
+00:20:30,700 --> 00:20:31,900
+stuff let's see what we get for maybe we
+
+409
+00:20:31,900 --> 00:20:33,130
+get noise maybe we get something very
+
+410
+00:20:33,130 --> 00:20:48,669
+funky I really love flanger by its
+
+411
+00:20:48,669 --> 00:20:51,250
+sister makes everything seems like it's
+
+412
+00:20:51,250 --> 00:20:55,320
+a psychedelic rock band was playing then
+
+413
+00:20:55,320 --> 00:20:59,919
+it's all the pedals and all the settings
+
+414
+00:20:59,919 --> 00:21:04,090
+but I don't think that's interesting if
+
+415
+00:21:04,090 --> 00:21:14,039
+I can 70 be kidding I'm a musician
+

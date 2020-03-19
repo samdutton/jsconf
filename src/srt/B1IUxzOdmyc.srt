@@ -1,0 +1,2325 @@
+1
+00:00:00,000 --> 00:00:17,630
+
+[Music]
+
+2
+00:00:17,640 --> 00:00:19,439
+so hey guys I hope you are having a
+
+3
+00:00:19,439 --> 00:00:21,750
+great time in Singapore I love Singapore
+
+4
+00:00:21,750 --> 00:00:23,789
+personally are there any people from
+
+5
+00:00:23,789 --> 00:00:25,890
+Israel by the way can you raise their
+
+6
+00:00:25,890 --> 00:00:31,050
+hand okay I guess not so first of all
+
+7
+00:00:31,050 --> 00:00:32,880
+let me introduce myself my name is a tan
+
+8
+00:00:32,880 --> 00:00:35,010
+I come from Israel at the moment I live
+
+9
+00:00:35,010 --> 00:00:35,790
+in Taipei
+
+10
+00:00:35,790 --> 00:00:38,070
+I'm a full-stack JavaScript engineer I
+
+11
+00:00:38,070 --> 00:00:40,200
+do that full-time and I also do that for
+
+12
+00:00:40,200 --> 00:00:42,540
+fun this is why I give a talk right now
+
+13
+00:00:42,540 --> 00:00:45,360
+and when it comes to programming I
+
+14
+00:00:45,360 --> 00:00:47,940
+really like to dive deeply into stuff
+
+15
+00:00:47,940 --> 00:00:51,030
+which are trivial so trivial that it's
+
+16
+00:00:51,030 --> 00:00:53,219
+part of our daily routine and we just
+
+17
+00:00:53,219 --> 00:00:59,550
+overlook it and because it's something
+
+18
+00:00:59,550 --> 00:01:01,770
+so trivial then I'm gonna dive deeply
+
+19
+00:01:01,770 --> 00:01:03,480
+into it and naturally it's gonna be a
+
+20
+00:01:03,480 --> 00:01:05,700
+lot of a level talk so it's not gonna
+
+21
+00:01:05,700 --> 00:01:08,610
+turn you necessarily into better react
+
+22
+00:01:08,610 --> 00:01:11,520
+or angular developers but at the end of
+
+23
+00:01:11,520 --> 00:01:13,229
+the day you'll be able to solve problems
+
+24
+00:01:13,229 --> 00:01:15,240
+that a lot of programmers don't know how
+
+25
+00:01:15,240 --> 00:01:17,549
+to solve and just a new world of
+
+26
+00:01:17,549 --> 00:01:19,759
+possibilities will open up to you and
+
+27
+00:01:19,759 --> 00:01:23,790
+the subject of the day is äôt compilers
+
+28
+00:01:23,790 --> 00:01:27,930
+ahead of time so I assume that you're
+
+29
+00:01:27,930 --> 00:01:29,850
+pretty much familiar with the concept
+
+30
+00:01:29,850 --> 00:01:30,659
+okay
+
+31
+00:01:30,659 --> 00:01:34,759
+example compilers compilers for C or C++
+
+32
+00:01:34,759 --> 00:01:37,409
+where you basically take a code string
+
+33
+00:01:37,409 --> 00:01:40,189
+and you get it from one format into
+
+34
+00:01:40,189 --> 00:01:42,600
+native machine code or in the case of
+
+35
+00:01:42,600 --> 00:01:45,960
+JavaScript where you take yes next and
+
+36
+00:01:45,960 --> 00:01:50,340
+you compile it two years five now why is
+
+37
+00:01:50,340 --> 00:01:52,860
+it such a trivial topic to prove my
+
+38
+00:01:52,860 --> 00:01:55,500
+point I have few questions if it's true
+
+39
+00:01:55,500 --> 00:01:59,189
+for you please raise your hand who here
+
+40
+00:01:59,189 --> 00:02:01,920
+uses Babel to compile JavaScript
+
+41
+00:02:01,920 --> 00:02:05,040
+applications please raise your hand okay
+
+42
+00:02:05,040 --> 00:02:08,520
+a lot of people who here uses typescript
+
+43
+00:02:08,520 --> 00:02:11,580
+raise your hand okay again a lot of
+
+44
+00:02:11,580 --> 00:02:13,440
+people now listen carefully this is
+
+45
+00:02:13,440 --> 00:02:13,830
+likely
+
+46
+00:02:13,830 --> 00:02:17,130
+different who here uses es5 to write
+
+47
+00:02:17,130 --> 00:02:18,690
+Java see applications please raise your
+
+48
+00:02:18,690 --> 00:02:20,510
+hand
+
+49
+00:02:20,510 --> 00:02:24,770
+get out you know No
+
+50
+00:02:24,770 --> 00:02:28,560
+okay so we see that there's a common
+
+51
+00:02:28,560 --> 00:02:31,290
+pattern here right we all use Babel and
+
+52
+00:02:31,290 --> 00:02:32,460
+typescript and all these sort of
+
+53
+00:02:32,460 --> 00:02:34,950
+compilers but no one ever stopped and
+
+54
+00:02:34,950 --> 00:02:38,390
+wonder how does it actually work and
+
+55
+00:02:38,390 --> 00:02:40,350
+there's a lot of advantages to that
+
+56
+00:02:40,350 --> 00:02:41,940
+because once you know how it actually
+
+57
+00:02:41,940 --> 00:02:44,610
+works then you would know how to run
+
+58
+00:02:44,610 --> 00:02:46,620
+some processing before you actually go
+
+59
+00:02:46,620 --> 00:02:48,600
+to the interpreter rather than race
+
+60
+00:02:48,600 --> 00:02:53,250
+wasting some runtime processing power so
+
+61
+00:02:53,250 --> 00:02:56,540
+I'm gonna go through very trivial stuff
+
+62
+00:02:56,540 --> 00:03:01,290
+and later on I'm gonna dive deeply into
+
+63
+00:03:01,290 --> 00:03:06,870
+that so just bear with me yeah so why
+
+64
+00:03:06,870 --> 00:03:08,370
+exactly do we use ahead of time
+
+65
+00:03:08,370 --> 00:03:10,290
+compilers what are the advantages first
+
+66
+00:03:10,290 --> 00:03:13,100
+of all you can use it to optimize code
+
+67
+00:03:13,100 --> 00:03:15,900
+so let's say that we have parts of code
+
+68
+00:03:15,900 --> 00:03:18,570
+that we don't actually use such as tree
+
+69
+00:03:18,570 --> 00:03:21,060
+shaking where we import modules and we
+
+70
+00:03:21,060 --> 00:03:23,370
+end up not using these modules therefore
+
+71
+00:03:23,370 --> 00:03:25,440
+we can reduce that part of goat and
+
+72
+00:03:25,440 --> 00:03:29,820
+reduce bundle size or for example if we
+
+73
+00:03:29,820 --> 00:03:32,160
+have variable assignments of variables
+
+74
+00:03:32,160 --> 00:03:34,200
+that we don't actually use then we can
+
+75
+00:03:34,200 --> 00:03:35,820
+just delete that when we compile the
+
+76
+00:03:35,820 --> 00:03:37,380
+code and therefore save some memory
+
+77
+00:03:37,380 --> 00:03:41,190
+locations and one night what night why
+
+78
+00:03:41,190 --> 00:03:43,200
+not take it a step further using linters
+
+79
+00:03:43,200 --> 00:03:45,600
+so basically what the linter does it
+
+80
+00:03:45,600 --> 00:03:47,940
+says hey man listen there's something
+
+81
+00:03:47,940 --> 00:03:50,070
+wrong here okay you import that module
+
+82
+00:03:50,070 --> 00:03:52,260
+and you don't use it or maybe there's a
+
+83
+00:03:52,260 --> 00:03:56,060
+standard of code that we wanted to just
+
+84
+00:03:56,060 --> 00:03:58,920
+live up to our own expectations so let's
+
+85
+00:03:58,920 --> 00:04:01,350
+say we want to use conditions in a
+
+86
+00:04:01,350 --> 00:04:03,510
+specific way maybe closures in specific
+
+87
+00:04:03,510 --> 00:04:06,209
+places maybe we want to use to force use
+
+88
+00:04:06,209 --> 00:04:09,300
+constant variables so before we actually
+
+89
+00:04:09,300 --> 00:04:11,750
+run the optimization itself we can
+
+90
+00:04:11,750 --> 00:04:14,640
+basically make the code look a lot
+
+91
+00:04:14,640 --> 00:04:17,880
+better before we push it into our get
+
+92
+00:04:17,880 --> 00:04:22,020
+host also it enables backward
+
+93
+00:04:22,020 --> 00:04:23,060
+compatibility
+
+94
+00:04:23,060 --> 00:04:26,510
+now we all
+
+95
+00:04:26,510 --> 00:04:29,820
+use the latest features of JavaScript
+
+96
+00:04:29,820 --> 00:04:33,150
+and if I'll just open chrome dev tools
+
+97
+00:04:33,150 --> 00:04:36,600
+right now and I'll try to use syntax
+
+98
+00:04:36,600 --> 00:04:38,490
+such as arrow functions async/await
+
+99
+00:04:38,490 --> 00:04:42,360
+and so on it will work but we all know
+
+100
+00:04:42,360 --> 00:04:44,850
+that unfortunately there are internet
+
+101
+00:04:44,850 --> 00:04:47,370
+explorer 11 out there okay users that
+
+102
+00:04:47,370 --> 00:04:50,460
+use this old browser and we need to
+
+103
+00:04:50,460 --> 00:04:52,860
+enable backward compatibility because we
+
+104
+00:04:52,860 --> 00:04:54,630
+don't know what type of browser what
+
+105
+00:04:54,630 --> 00:04:56,010
+version of the browser the user is gonna
+
+106
+00:04:56,010 --> 00:04:58,530
+run therefore we need to ensure that we
+
+107
+00:04:58,530 --> 00:04:59,820
+use the least amount of features
+
+108
+00:04:59,820 --> 00:05:03,740
+possible when it comes to Eggman script
+
+109
+00:05:03,740 --> 00:05:08,700
+also when someone suggests a new feature
+
+110
+00:05:08,700 --> 00:05:11,430
+for the set of specifications for Eggman
+
+111
+00:05:11,430 --> 00:05:13,650
+script it takes time before it actually
+
+112
+00:05:13,650 --> 00:05:16,910
+gets accepted into the language because
+
+113
+00:05:16,910 --> 00:05:19,160
+the Committee needs to look at it
+
+114
+00:05:19,160 --> 00:05:22,289
+afterwards the community needs to also
+
+115
+00:05:22,289 --> 00:05:24,030
+see how it fits within the echo system
+
+116
+00:05:24,030 --> 00:05:28,110
+it needs to go through stages 0 1 2 3
+
+117
+00:05:28,110 --> 00:05:32,400
+and then all the browser's need they
+
+118
+00:05:32,400 --> 00:05:34,650
+need to implement that natively within
+
+119
+00:05:34,650 --> 00:05:36,690
+C++ and they all need to be aligned with
+
+120
+00:05:36,690 --> 00:05:39,380
+one another this process takes time
+
+121
+00:05:39,380 --> 00:05:42,389
+using an external compiler this is
+
+122
+00:05:42,389 --> 00:05:45,210
+relatively easy to just plug in another
+
+123
+00:05:45,210 --> 00:05:47,460
+feature and then basically there's a
+
+124
+00:05:47,460 --> 00:05:49,380
+layer on top which is common for all
+
+125
+00:05:49,380 --> 00:05:52,680
+browsers so it's very easy especially in
+
+126
+00:05:52,680 --> 00:05:54,450
+the case of Babel where the compiler is
+
+127
+00:05:54,450 --> 00:05:56,520
+written in a high-level languages such
+
+128
+00:05:56,520 --> 00:05:58,770
+as JavaScript and we also have the
+
+129
+00:05:58,770 --> 00:06:00,750
+opportunity to test the new feature and
+
+130
+00:06:00,750 --> 00:06:04,800
+see if it actually fits one final reason
+
+131
+00:06:04,800 --> 00:06:09,210
+is that we can use costume syntax also
+
+132
+00:06:09,210 --> 00:06:12,150
+known as language extensions such as
+
+133
+00:06:12,150 --> 00:06:15,780
+typescript where we basically have type
+
+134
+00:06:15,780 --> 00:06:18,510
+safety okay and we can see if the code
+
+135
+00:06:18,510 --> 00:06:21,660
+actually behaves the way we want or we
+
+136
+00:06:21,660 --> 00:06:22,770
+can use JSX
+
+137
+00:06:22,770 --> 00:06:25,200
+which is used vastly to write react
+
+138
+00:06:25,200 --> 00:06:28,130
+applications in a better way so
+
+139
+00:06:28,130 --> 00:06:30,330
+obviously there are advantages to the
+
+140
+00:06:30,330 --> 00:06:38,430
+compilers wait okay so there aren't
+
+141
+00:06:38,430 --> 00:06:40,319
+gonna be many slides the
+
+142
+00:06:40,319 --> 00:06:41,789
+there's gonna be this slide and another
+
+143
+00:06:41,789 --> 00:06:43,080
+one and that's it it's mostly gonna be
+
+144
+00:06:43,080 --> 00:06:45,569
+demonstration I hope I can get it right
+
+145
+00:06:45,569 --> 00:06:47,789
+because I'm not used to this setup like
+
+146
+00:06:47,789 --> 00:06:49,830
+they said this is like I mean I'm used
+
+147
+00:06:49,830 --> 00:06:52,139
+to Linux and this is like another world
+
+148
+00:06:52,139 --> 00:06:56,940
+for me anyways what are the stages of
+
+149
+00:06:56,940 --> 00:07:00,000
+the compilation everything that I'm
+
+150
+00:07:00,000 --> 00:07:03,599
+gonna mention it's um it is true for all
+
+151
+00:07:03,599 --> 00:07:06,000
+IOT compilers I believe although I want
+
+152
+00:07:06,000 --> 00:07:08,789
+to be more specific to Babel because
+
+153
+00:07:08,789 --> 00:07:11,550
+it's very popular within the ecosystem
+
+154
+00:07:11,550 --> 00:07:14,280
+it's also very easy to write plugins
+
+155
+00:07:14,280 --> 00:07:17,789
+into Babel but yeah everything is true
+
+156
+00:07:17,789 --> 00:07:21,090
+for all a ot compilers out there so
+
+157
+00:07:21,090 --> 00:07:24,750
+first stage first of all we take as an
+
+158
+00:07:24,750 --> 00:07:27,590
+input a code string and then we parse it
+
+159
+00:07:27,590 --> 00:07:30,030
+parsing what it means is that we put it
+
+160
+00:07:30,030 --> 00:07:33,180
+into a JSON ok this JSON is basically a
+
+161
+00:07:33,180 --> 00:07:35,610
+tree and the tree is made out of nodes
+
+162
+00:07:35,610 --> 00:07:38,219
+each and every node with that in that
+
+163
+00:07:38,219 --> 00:07:41,580
+tree represent a different feature
+
+164
+00:07:41,580 --> 00:07:43,969
+within the syntax this tree is called
+
+165
+00:07:43,969 --> 00:07:46,919
+ast abstract syntax tree because it
+
+166
+00:07:46,919 --> 00:07:51,630
+represents the syntax now comes the
+
+167
+00:07:51,630 --> 00:07:55,199
+second stage once we have the AST we
+
+168
+00:07:55,199 --> 00:07:58,229
+take it as an input and we generate code
+
+169
+00:07:58,229 --> 00:08:02,099
+out of it in a different format ok it's
+
+170
+00:08:02,099 --> 00:08:03,960
+very easy to do so we basically take a
+
+171
+00:08:03,960 --> 00:08:06,360
+specific node and then we generate the
+
+172
+00:08:06,360 --> 00:08:08,580
+magic code string to that specific node
+
+173
+00:08:08,580 --> 00:08:10,830
+in the case of Babel it's it's slightly
+
+174
+00:08:10,830 --> 00:08:13,680
+different but because Babel is it's not
+
+175
+00:08:13,680 --> 00:08:15,659
+exactly a compiler but it works exactly
+
+176
+00:08:15,659 --> 00:08:16,919
+the same way it's more like a
+
+177
+00:08:16,919 --> 00:08:19,860
+transformer so even though you take an
+
+178
+00:08:19,860 --> 00:08:22,229
+ast the generated code should be exactly
+
+179
+00:08:22,229 --> 00:08:25,199
+the same now I put a lot of information
+
+180
+00:08:25,199 --> 00:08:28,560
+out there and stuff like that the best
+
+181
+00:08:28,560 --> 00:08:30,330
+way to explain something is by
+
+182
+00:08:30,330 --> 00:08:32,130
+demonstrating so this is exactly what
+
+183
+00:08:32,130 --> 00:08:36,550
+I'm gonna do now so Lance
+
+184
+00:08:36,560 --> 00:08:40,560
+ok so let's focus on the ASD first how
+
+185
+00:08:40,560 --> 00:08:43,349
+does it the ASD looks like exactly so
+
+186
+00:08:43,349 --> 00:08:44,610
+there's a website out there it's called
+
+187
+00:08:44,610 --> 00:08:50,630
+a is the Explorer this one
+
+188
+00:08:50,630 --> 00:08:56,870
+and let's okay
+
+189
+00:08:56,870 --> 00:09:01,500
+and we have two windows in here okay in
+
+190
+00:09:01,500 --> 00:09:04,110
+the left window what we have is the text
+
+191
+00:09:04,110 --> 00:09:06,900
+editor where we can type code in the
+
+192
+00:09:06,900 --> 00:09:09,720
+right we have an object the Java sweet
+
+193
+00:09:09,720 --> 00:09:12,480
+object as I said the ast that represents
+
+194
+00:09:12,480 --> 00:09:17,340
+the code so what happens if I type just
+
+195
+00:09:17,340 --> 00:09:19,590
+a very generic code nothing special
+
+196
+00:09:19,590 --> 00:09:26,280
+about it so we see on the right that the
+
+197
+00:09:26,280 --> 00:09:29,340
+view got updated okay and on the right
+
+198
+00:09:29,340 --> 00:09:31,920
+this actually this is the ASD that
+
+199
+00:09:31,920 --> 00:09:35,220
+represents the code now what's nice
+
+200
+00:09:35,220 --> 00:09:37,710
+about this tool is not is that not only
+
+201
+00:09:37,710 --> 00:09:41,430
+it shows us the ast but it's very easy
+
+202
+00:09:41,430 --> 00:09:43,920
+to highlight the code and match it with
+
+203
+00:09:43,920 --> 00:09:47,460
+a correlated node so let's highlight
+
+204
+00:09:47,460 --> 00:09:52,470
+something on the left ok wait it doesn't
+
+205
+00:09:52,470 --> 00:09:56,520
+use the right parser okay I also explain
+
+206
+00:09:56,520 --> 00:10:00,540
+what it is so once I highlight something
+
+207
+00:10:00,540 --> 00:10:03,540
+on the left it will also be highlighted
+
+208
+00:10:03,540 --> 00:10:06,900
+on the right and vice versa if I hover
+
+209
+00:10:06,900 --> 00:10:09,660
+over a specific node type it will be
+
+210
+00:10:09,660 --> 00:10:13,320
+highlighted on the left so it's very
+
+211
+00:10:13,320 --> 00:10:15,810
+easy to see what represents the code and
+
+212
+00:10:15,810 --> 00:10:17,940
+if we'll take a specific node as an
+
+213
+00:10:17,940 --> 00:10:20,880
+example let's highlight number one over
+
+214
+00:10:20,880 --> 00:10:23,880
+there and we'll look at the node we'll
+
+215
+00:10:23,880 --> 00:10:27,120
+see that the type name actually matches
+
+216
+00:10:27,120 --> 00:10:29,310
+the description okay this is called a
+
+217
+00:10:29,310 --> 00:10:31,530
+numeric literal because literally this
+
+218
+00:10:31,530 --> 00:10:37,080
+is a number with the value 1 so this is
+
+219
+00:10:37,080 --> 00:10:39,660
+basically an ast and you see their nodes
+
+220
+00:10:39,660 --> 00:10:41,370
+which are nested with with one another
+
+221
+00:10:41,370 --> 00:10:45,840
+and it all starts from the root so this
+
+222
+00:10:45,840 --> 00:10:49,650
+principle is true for all syntax and
+
+223
+00:10:49,650 --> 00:10:54,120
+languages and a tree doesn't need to
+
+224
+00:10:54,120 --> 00:10:55,860
+look a certain way they can there can be
+
+225
+00:10:55,860 --> 00:10:58,920
+many parsers so baby launch seven is
+
+226
+00:10:58,920 --> 00:11:02,520
+what Babel used to use under the hood
+
+227
+00:11:02,520 --> 00:11:04,080
+now they read
+
+228
+00:11:04,080 --> 00:11:06,180
+they made it part of maples mono repo
+
+229
+00:11:06,180 --> 00:11:08,040
+and it they call it just Babel parser
+
+230
+00:11:08,040 --> 00:11:10,500
+but there are other parsers such as a
+
+231
+00:11:10,500 --> 00:11:11,690
+corn esprima
+
+232
+00:11:11,690 --> 00:11:16,230
+which played a very important role in in
+
+233
+00:11:16,230 --> 00:11:18,740
+when it comes to parsers in JavaScript
+
+234
+00:11:18,740 --> 00:11:22,560
+flow and typescript in utterly
+
+235
+00:11:22,560 --> 00:11:24,510
+JavaScript there can be many languages
+
+236
+00:11:24,510 --> 00:11:27,060
+there can be CSS graph QL HTML
+
+237
+00:11:27,060 --> 00:11:29,610
+handlebars services these principles
+
+238
+00:11:29,610 --> 00:11:34,519
+apply to all syntax and languages okay
+
+239
+00:11:34,519 --> 00:11:40,800
+now how exactly does it look within a
+
+240
+00:11:40,800 --> 00:11:42,810
+node.js application how exactly do I
+
+241
+00:11:42,810 --> 00:11:46,820
+take code and parse it into an AST so
+
+242
+00:11:46,820 --> 00:11:48,990
+because I'm here right now I can just
+
+243
+00:11:48,990 --> 00:11:50,820
+say anything and you would believe me
+
+244
+00:11:50,820 --> 00:11:53,070
+but I don't want that okay everything
+
+245
+00:11:53,070 --> 00:11:55,079
+that I say I want to back it up with
+
+246
+00:11:55,079 --> 00:11:59,310
+proofs so for that we will go to Babel
+
+247
+00:11:59,310 --> 00:12:11,850
+documentation website okay okay and in
+
+248
+00:12:11,850 --> 00:12:14,370
+the search bar there's a library called
+
+249
+00:12:14,370 --> 00:12:18,990
+Babel parser I hope you can see that
+
+250
+00:12:18,990 --> 00:12:22,770
+yeah and the API is fairly simple we
+
+251
+00:12:22,770 --> 00:12:26,160
+just import the parse function and we
+
+252
+00:12:26,160 --> 00:12:28,560
+provide it with a code string and the
+
+253
+00:12:28,560 --> 00:12:31,110
+output should be an ast now it accepts
+
+254
+00:12:31,110 --> 00:12:33,600
+all different kind of options but there
+
+255
+00:12:33,600 --> 00:12:36,029
+there is I don't want to go through it
+
+256
+00:12:36,029 --> 00:12:37,470
+because I want to keep things simple but
+
+257
+00:12:37,470 --> 00:12:40,560
+however there is a specific option that
+
+258
+00:12:40,560 --> 00:12:41,760
+would like to focus on this is the
+
+259
+00:12:41,760 --> 00:12:48,740
+plugins option by default it will parse
+
+260
+00:12:48,740 --> 00:12:53,209
+only a limited set of features of nodes
+
+261
+00:12:53,209 --> 00:12:57,120
+but there are different nodes which are
+
+262
+00:12:57,120 --> 00:13:00,060
+not officially part of ACMA script nodes
+
+263
+00:13:00,060 --> 00:13:04,170
+which are in stage 0 1 2 or 3 so they
+
+264
+00:13:04,170 --> 00:13:06,300
+won't be parsed by default and for that
+
+265
+00:13:06,300 --> 00:13:09,620
+we need to say to the 3d parser
+
+266
+00:13:09,620 --> 00:13:12,260
+explicitly that it needs to parse them
+
+267
+00:13:12,260 --> 00:13:14,100
+so features that you're probably
+
+268
+00:13:14,100 --> 00:13:16,680
+familiar with such as a single radar big
+
+269
+00:13:16,680 --> 00:13:18,180
+in that we just stopped
+
+270
+00:13:18,180 --> 00:13:20,130
+class property is quite private class
+
+271
+00:13:20,130 --> 00:13:21,899
+properties and things that are quite
+
+272
+00:13:21,899 --> 00:13:25,440
+frankly not even familiar with and we
+
+273
+00:13:25,440 --> 00:13:28,980
+can also tell the parser to support no
+
+274
+00:13:28,980 --> 00:13:31,440
+types of language extensions okay so
+
+275
+00:13:31,440 --> 00:13:33,420
+like I mentioned earlier there are some
+
+276
+00:13:33,420 --> 00:13:34,740
+features which are not part of any
+
+277
+00:13:34,740 --> 00:13:38,660
+specification such as flow JSX
+
+278
+00:13:38,660 --> 00:13:41,970
+so under the hood this is how it happens
+
+279
+00:13:41,970 --> 00:13:43,800
+Babel officially supports it and also
+
+280
+00:13:43,800 --> 00:13:46,649
+typescript that's interesting this is
+
+281
+00:13:46,649 --> 00:13:49,290
+not what typescript uses typescript has
+
+282
+00:13:49,290 --> 00:13:51,509
+a dedicated parser and compiler
+
+283
+00:13:51,509 --> 00:13:54,360
+although babel also supports parsing
+
+284
+00:13:54,360 --> 00:13:56,310
+types with limited features of of it
+
+285
+00:13:56,310 --> 00:14:01,110
+it's still nice to have so now let's see
+
+286
+00:14:01,110 --> 00:14:09,340
+a demonstration in a node.js application
+
+287
+00:14:09,350 --> 00:14:12,740
+yeah so this is a very simple program
+
+288
+00:14:12,740 --> 00:14:15,420
+what I have here I import the parse
+
+289
+00:14:15,420 --> 00:14:20,160
+function and then I provide it with a
+
+290
+00:14:20,160 --> 00:14:24,209
+code string and then I parse it and the
+
+291
+00:14:24,209 --> 00:14:26,459
+output is an AST and what I do I print
+
+292
+00:14:26,459 --> 00:14:28,439
+to the console a string if I'd version
+
+293
+00:14:28,439 --> 00:14:31,170
+of the ast and the expected output
+
+294
+00:14:31,170 --> 00:14:33,540
+should simply be an ast now I'll run the
+
+295
+00:14:33,540 --> 00:14:37,319
+program right again this is an
+
+296
+00:14:37,319 --> 00:14:44,360
+environment I'm not really used to okay
+
+297
+00:14:44,360 --> 00:14:48,180
+so the output is is an ast this is just
+
+298
+00:14:48,180 --> 00:14:51,180
+a JSON JSON that is described describes
+
+299
+00:14:51,180 --> 00:14:52,649
+the code I'm not going to go through it
+
+300
+00:14:52,649 --> 00:14:54,600
+because this is very boring but I think
+
+301
+00:14:54,600 --> 00:14:57,449
+we got the principle once we saw because
+
+302
+00:14:57,449 --> 00:15:00,750
+of what we saw in is DX for now the
+
+303
+00:15:00,750 --> 00:15:04,860
+second stage once we have an ast we put
+
+304
+00:15:04,860 --> 00:15:07,860
+it back into code this stage is called
+
+305
+00:15:07,860 --> 00:15:11,490
+generating so I'll go to babbles
+
+306
+00:15:11,490 --> 00:15:14,279
+documentation website again and we will
+
+307
+00:15:14,279 --> 00:15:21,269
+look at the library called generator so
+
+308
+00:15:21,269 --> 00:15:24,000
+again very simple API we simply accept
+
+309
+00:15:24,000 --> 00:15:27,300
+an ast as the first argument the output
+
+310
+00:15:27,300 --> 00:15:30,809
+should be code and again I would like to
+
+311
+00:15:30,809 --> 00:15:31,740
+demonstrate that
+
+312
+00:15:31,740 --> 00:15:41,840
+quickly
+
+313
+00:15:41,850 --> 00:15:47,040
+okay good so in addition to what I did
+
+314
+00:15:47,040 --> 00:15:50,670
+earlier now I have the generate function
+
+315
+00:15:50,670 --> 00:15:54,630
+and once I import it I provided with the
+
+316
+00:15:54,630 --> 00:15:56,880
+generated ast and I print it to the
+
+317
+00:15:56,880 --> 00:16:00,060
+console and the output should be exactly
+
+318
+00:16:00,060 --> 00:16:05,860
+the same and let's run the program again
+
+319
+00:16:05,870 --> 00:16:09,120
+you see this is it's not exactly the
+
+320
+00:16:09,120 --> 00:16:12,000
+same it's slightly different because
+
+321
+00:16:12,000 --> 00:16:13,260
+there are semicolons white are
+
+322
+00:16:13,260 --> 00:16:14,970
+semicolons because the ast doesn't
+
+323
+00:16:14,970 --> 00:16:15,990
+contain information about these
+
+324
+00:16:15,990 --> 00:16:19,050
+semicolons it simply puts the code back
+
+325
+00:16:19,050 --> 00:16:27,750
+in the way it can and now I want to go
+
+326
+00:16:27,750 --> 00:16:31,680
+back to the slides by the way you see
+
+327
+00:16:31,680 --> 00:16:33,480
+that the output is exactly similar to
+
+328
+00:16:33,480 --> 00:16:35,280
+the input now when we look at the
+
+329
+00:16:35,280 --> 00:16:38,040
+traditional compiler the input and the
+
+330
+00:16:38,040 --> 00:16:40,410
+output should be different okay when it
+
+331
+00:16:40,410 --> 00:16:42,330
+when you look at C++ for example because
+
+332
+00:16:42,330 --> 00:16:43,950
+the output is in native machine code but
+
+333
+00:16:43,950 --> 00:16:47,160
+Babel is not exactly a compiler it's
+
+334
+00:16:47,160 --> 00:16:49,890
+like a transformer or a transpiler and
+
+335
+00:16:49,890 --> 00:16:54,990
+it works in a slightly different way but
+
+336
+00:16:54,990 --> 00:16:56,850
+soon I'll talk about it and we'll see
+
+337
+00:16:56,850 --> 00:17:02,460
+how from yes next it goes to es5 so back
+
+338
+00:17:02,460 --> 00:17:05,520
+to the slides i would like to add
+
+339
+00:17:05,520 --> 00:17:10,680
+another optional stage it comes between
+
+340
+00:17:10,680 --> 00:17:12,530
+stage 1 and stage 2
+
+341
+00:17:12,530 --> 00:17:16,050
+okay so stage 2 becomes stage 3 and why
+
+342
+00:17:16,050 --> 00:17:18,180
+this is like I do it like that this is
+
+343
+00:17:18,180 --> 00:17:21,980
+an optional stage because most compilers
+
+344
+00:17:21,980 --> 00:17:24,420
+sorry a compiler doesn't necessarily
+
+345
+00:17:24,420 --> 00:17:26,670
+need to have that stage in order to work
+
+346
+00:17:26,670 --> 00:17:30,000
+properly but this is a very powerful
+
+347
+00:17:30,000 --> 00:17:33,690
+stage because using that stage we can
+
+348
+00:17:33,690 --> 00:17:37,050
+actually apply pre-processing to the
+
+349
+00:17:37,050 --> 00:17:39,750
+code and run optimizations before we
+
+350
+00:17:39,750 --> 00:17:42,380
+actually address the interpreter and
+
+351
+00:17:42,380 --> 00:17:44,940
+this is by far the most complex stage
+
+352
+00:17:44,940 --> 00:17:46,980
+because this is API specific there's a
+
+353
+00:17:46,980 --> 00:17:49,260
+lot a lot of things to know about the
+
+354
+00:17:49,260 --> 00:17:54,090
+API and we'll soon see why so going back
+
+355
+00:17:54,090 --> 00:17:56,800
+to the code
+
+356
+00:17:56,810 --> 00:17:58,830
+now let's say that I would like to
+
+357
+00:17:58,830 --> 00:18:01,860
+transform the code with traditional
+
+358
+00:18:01,860 --> 00:18:04,470
+methods using only regular expression
+
+359
+00:18:04,470 --> 00:18:08,400
+this would be very complicated because a
+
+360
+00:18:08,400 --> 00:18:12,690
+code can have scopes and maybe there's a
+
+361
+00:18:12,690 --> 00:18:14,550
+a piece of code which is wrapped with
+
+362
+00:18:14,550 --> 00:18:16,620
+brackets or something like that which
+
+363
+00:18:16,620 --> 00:18:19,920
+makes the the transformation irrelevant
+
+364
+00:18:19,920 --> 00:18:23,580
+this is why we have the ASD the ASD
+
+365
+00:18:23,580 --> 00:18:26,460
+makes it easy on us to transform the
+
+366
+00:18:26,460 --> 00:18:30,560
+code so let's say that I would like
+
+367
+00:18:30,560 --> 00:18:35,370
+through transformation to change Const C
+
+368
+00:18:35,370 --> 00:18:41,300
+into Const B so how do I do that
+
+369
+00:18:41,300 --> 00:18:45,480
+what do I need to do is to address the
+
+370
+00:18:45,480 --> 00:18:48,720
+right node with the right property and
+
+371
+00:18:48,720 --> 00:18:52,050
+then change its value and once we put it
+
+372
+00:18:52,050 --> 00:18:55,290
+back into a code stream because the code
+
+373
+00:18:55,290 --> 00:18:56,790
+string the new code string is derived
+
+374
+00:18:56,790 --> 00:18:59,910
+from the ast then we should have a
+
+375
+00:18:59,910 --> 00:19:05,490
+transformed code so we copy that and we
+
+376
+00:19:05,490 --> 00:19:07,530
+go to ast export this is how I actually
+
+377
+00:19:07,530 --> 00:19:09,510
+work when I write Babel plugins oh I
+
+378
+00:19:09,510 --> 00:19:16,830
+want to transform code and I paste it ok
+
+379
+00:19:16,830 --> 00:19:19,950
+and then we see that it got updated on
+
+380
+00:19:19,950 --> 00:19:24,630
+the right now what I do I highlight the
+
+381
+00:19:24,630 --> 00:19:27,560
+code that I would like to transform and
+
+382
+00:19:27,560 --> 00:19:30,360
+then the corresponding node is being
+
+383
+00:19:30,360 --> 00:19:34,830
+highlighted on the right now what I do I
+
+384
+00:19:34,830 --> 00:19:36,840
+need to look for the path that
+
+385
+00:19:36,840 --> 00:19:38,430
+represents the node so I start from the
+
+386
+00:19:38,430 --> 00:19:42,000
+root and I try I write down the path so
+
+387
+00:19:42,000 --> 00:19:44,960
+it goes to program body position 0
+
+388
+00:19:44,960 --> 00:19:49,290
+declarations position 0 ID name let's
+
+389
+00:19:49,290 --> 00:19:51,390
+say that I wrote everything down in the
+
+390
+00:19:51,390 --> 00:19:59,510
+text editor and I have it right here
+
+391
+00:19:59,520 --> 00:20:05,850
+yes yeah so I changed the ASD I changed
+
+392
+00:20:05,850 --> 00:20:07,890
+the value C to B and therefore once I
+
+393
+00:20:07,890 --> 00:20:10,200
+put it back into code the expected
+
+394
+00:20:10,200 --> 00:20:17,570
+output should be the following you see
+
+395
+00:20:17,570 --> 00:20:22,410
+so I changed the code now there's a
+
+396
+00:20:22,410 --> 00:20:25,110
+problem with that approach because what
+
+397
+00:20:25,110 --> 00:20:28,230
+I did right now is to specific I want to
+
+398
+00:20:28,230 --> 00:20:30,120
+have like some sort of a generic pattern
+
+399
+00:20:30,120 --> 00:20:33,150
+that I can apply and it will be true for
+
+400
+00:20:33,150 --> 00:20:35,660
+any code string that I get as an input
+
+401
+00:20:35,660 --> 00:20:37,980
+something like regular expression okay
+
+402
+00:20:37,980 --> 00:20:42,270
+because a code can wear many shapes and
+
+403
+00:20:42,270 --> 00:20:42,840
+forms
+
+404
+00:20:42,840 --> 00:20:46,440
+this is way too specific so there's a
+
+405
+00:20:46,440 --> 00:20:49,230
+problem with that approach many
+
+406
+00:20:49,230 --> 00:20:51,900
+compilers they implement a mechanism and
+
+407
+00:20:51,900 --> 00:20:54,350
+they provided provide us with an API
+
+408
+00:20:54,350 --> 00:20:59,520
+which lets us transform the code in a
+
+409
+00:20:59,520 --> 00:21:06,530
+more generic way okay so using that API
+
+410
+00:21:06,530 --> 00:21:09,960
+what we do we basically walk through the
+
+411
+00:21:09,960 --> 00:21:12,360
+ast through each and every node in the
+
+412
+00:21:12,360 --> 00:21:14,250
+ast you can call it walk or run or
+
+413
+00:21:14,250 --> 00:21:16,110
+traverse essentially these verbs they
+
+414
+00:21:16,110 --> 00:21:18,960
+all represent the same thing and then we
+
+415
+00:21:18,960 --> 00:21:21,720
+apply transformation callbacks for each
+
+416
+00:21:21,720 --> 00:21:24,240
+and every node individually so if we
+
+417
+00:21:24,240 --> 00:21:26,430
+look at the ASD and we'll try to
+
+418
+00:21:26,430 --> 00:21:28,980
+demonstrate it what it does it goes - it
+
+419
+00:21:28,980 --> 00:21:31,830
+starts with the root it goes through the
+
+420
+00:21:31,830 --> 00:21:34,980
+the the root node it goes deeper to
+
+421
+00:21:34,980 --> 00:21:37,770
+program variable declaration and then
+
+422
+00:21:37,770 --> 00:21:39,900
+once it sees a transformation callback
+
+423
+00:21:39,900 --> 00:21:41,610
+then it goes to the callback applies the
+
+424
+00:21:41,610 --> 00:21:43,530
+logic and then it keeps walking through
+
+425
+00:21:43,530 --> 00:21:47,490
+the tree if we look at babel labels
+
+426
+00:21:47,490 --> 00:21:50,640
+documentation website there's a library
+
+427
+00:21:50,640 --> 00:21:57,379
+called babel Traverse
+
+428
+00:21:57,389 --> 00:22:00,169
+and Traverse does exactly what I said
+
+429
+00:22:00,169 --> 00:22:03,779
+it's the first argument it accepts an
+
+430
+00:22:03,779 --> 00:22:07,559
+ASD as the second argument it accepts an
+
+431
+00:22:07,559 --> 00:22:10,139
+object which is called a visitor because
+
+432
+00:22:10,139 --> 00:22:13,589
+this object visits the ASD as we walk
+
+433
+00:22:13,589 --> 00:22:16,950
+through it and this object contains
+
+434
+00:22:16,950 --> 00:22:20,309
+callbacks the names of the callbacks
+
+435
+00:22:20,309 --> 00:22:24,239
+represents the nodes that is it is going
+
+436
+00:22:24,239 --> 00:22:27,779
+to transform and as the first argument
+
+437
+00:22:27,779 --> 00:22:30,299
+it accepts an object that contains the
+
+438
+00:22:30,299 --> 00:22:33,899
+node and then we can actually do all our
+
+439
+00:22:33,899 --> 00:22:36,299
+changes on the node that we would like
+
+440
+00:22:36,299 --> 00:22:37,679
+to transform and we can also apply
+
+441
+00:22:37,679 --> 00:22:41,159
+conditions and logic to it it also
+
+442
+00:22:41,159 --> 00:22:43,259
+accepts more arguments I don't want to
+
+443
+00:22:43,259 --> 00:22:44,639
+get into that because I want to keep
+
+444
+00:22:44,639 --> 00:22:47,039
+things very simple once you understand
+
+445
+00:22:47,039 --> 00:22:49,979
+the core it's very easy to get deeper
+
+446
+00:22:49,979 --> 00:22:52,320
+and and investigate more about the
+
+447
+00:22:52,320 --> 00:22:56,459
+subject so let me show you another
+
+448
+00:22:56,459 --> 00:23:08,430
+demonstration of that
+
+449
+00:23:08,440 --> 00:23:12,590
+so in addition to what I had earlier now
+
+450
+00:23:12,590 --> 00:23:15,290
+I use the Traverse function to traverse
+
+451
+00:23:15,290 --> 00:23:19,070
+to the ast and I apply transformation
+
+452
+00:23:19,070 --> 00:23:24,140
+callbacks so if I have that input what I
+
+453
+00:23:24,140 --> 00:23:31,820
+would like to have whoop the expected
+
+454
+00:23:31,820 --> 00:23:34,250
+output should be something like that so
+
+455
+00:23:34,250 --> 00:23:37,280
+let's say that I change all the variable
+
+456
+00:23:37,280 --> 00:23:40,180
+assignments from whatever this is to be
+
+457
+00:23:40,180 --> 00:23:44,780
+everything should be B and the values
+
+458
+00:23:44,780 --> 00:23:51,230
+should all change to two an FN should
+
+459
+00:23:51,230 --> 00:23:54,230
+change to F and two so this is the
+
+460
+00:23:54,230 --> 00:23:59,410
+expected output so how do I do that I
+
+461
+00:23:59,410 --> 00:24:03,710
+use the right callback names with the
+
+462
+00:24:03,710 --> 00:24:07,100
+right visitor and then I change the
+
+463
+00:24:07,100 --> 00:24:09,880
+corresponding nodes again how do I know
+
+464
+00:24:09,880 --> 00:24:12,500
+how does the API looks like and what
+
+465
+00:24:12,500 --> 00:24:13,580
+notes to address
+
+466
+00:24:13,580 --> 00:24:19,510
+I go to ASD Explorer and then I
+
+467
+00:24:19,510 --> 00:24:23,660
+highlight the code the the parts of the
+
+468
+00:24:23,660 --> 00:24:24,980
+code that I would actually like to
+
+469
+00:24:24,980 --> 00:24:26,870
+transform and then I look at the node I
+
+470
+00:24:26,870 --> 00:24:30,050
+see what is the name of the node and I
+
+471
+00:24:30,050 --> 00:24:31,730
+see how the signature of the nodes of
+
+472
+00:24:31,730 --> 00:24:34,250
+the node looks like and this is how I
+
+473
+00:24:34,250 --> 00:24:40,910
+know how the API looks like now if I
+
+474
+00:24:40,910 --> 00:24:44,260
+will run the code the output should be
+
+475
+00:24:44,260 --> 00:24:54,740
+what I just wrote over there
+
+476
+00:24:54,750 --> 00:24:59,050
+you see and just to prove it to you that
+
+477
+00:24:59,050 --> 00:25:01,030
+this is a general pattern and it's not
+
+478
+00:25:01,030 --> 00:25:03,610
+just specific to that code I can add
+
+479
+00:25:03,610 --> 00:25:06,210
+another variable assignment over here
+
+480
+00:25:06,210 --> 00:25:10,210
+and this should change to be equals to
+
+481
+00:25:10,210 --> 00:25:25,600
+as well right this is nice now this is
+
+482
+00:25:25,600 --> 00:25:30,550
+how we transform code so the visitor
+
+483
+00:25:30,550 --> 00:25:34,450
+over here this is what a Babel plugin is
+
+484
+00:25:34,450 --> 00:25:36,850
+all about a plug-in is just a visitor
+
+485
+00:25:36,850 --> 00:25:39,400
+okay Babel wanted to make it easy on us
+
+486
+00:25:39,400 --> 00:25:42,760
+and they wanted to give us a way to
+
+487
+00:25:42,760 --> 00:25:46,480
+implement custom features using plugins
+
+488
+00:25:46,480 --> 00:25:48,970
+and so in order to do that what we need
+
+489
+00:25:48,970 --> 00:25:51,360
+to do is simply to write a visitor and
+
+490
+00:25:51,360 --> 00:25:54,010
+what we do we specify it in the Babel
+
+491
+00:25:54,010 --> 00:25:56,260
+r/c then it looks for the the right name
+
+492
+00:25:56,260 --> 00:25:58,090
+in the non modules and then it applies
+
+493
+00:25:58,090 --> 00:26:00,910
+the visitor once it walks to the ast
+
+494
+00:26:00,910 --> 00:26:04,240
+before it actually compiles it now let's
+
+495
+00:26:04,240 --> 00:26:11,140
+see an example plug-in so what I have
+
+496
+00:26:11,140 --> 00:26:14,260
+here is a program which the input is
+
+497
+00:26:14,260 --> 00:26:16,150
+exactly the same as we had earlier and
+
+498
+00:26:16,150 --> 00:26:18,040
+the plug-in is exactly what we had
+
+499
+00:26:18,040 --> 00:26:20,050
+earlier again a plug-in is a visitor it
+
+500
+00:26:20,050 --> 00:26:22,180
+accepts more options that will make it
+
+501
+00:26:22,180 --> 00:26:25,720
+easy on us to transform the code but
+
+502
+00:26:25,720 --> 00:26:27,540
+again I want to keep things very simple
+
+503
+00:26:27,540 --> 00:26:30,760
+because the visitor is the same and the
+
+504
+00:26:30,760 --> 00:26:33,130
+input is the same therefore the output
+
+505
+00:26:33,130 --> 00:26:35,890
+should be exactly the same as well so
+
+506
+00:26:35,890 --> 00:26:43,670
+I'm going to run the program again and
+
+507
+00:26:43,680 --> 00:26:51,070
+the output is exactly the same now how
+
+508
+00:26:51,070 --> 00:26:56,850
+exactly from that do we reach yes five
+
+509
+00:26:56,850 --> 00:26:59,230
+okay because so far it just it looks
+
+510
+00:26:59,230 --> 00:27:06,610
+like it remains to be is next so
+
+511
+00:27:06,610 --> 00:27:11,200
+yes five is simply a set of plugins that
+
+512
+00:27:11,200 --> 00:27:15,190
+transforms the code in a way that it
+
+513
+00:27:15,190 --> 00:27:19,419
+will from east next it will turn into es
+
+514
+00:27:19,419 --> 00:27:22,720
+five a set of plugins is also called a
+
+515
+00:27:22,720 --> 00:27:25,659
+preset this is what a preset is a preset
+
+516
+00:27:25,659 --> 00:27:31,090
+is simply a set of plugins so in order
+
+517
+00:27:31,090 --> 00:27:35,440
+to transform to es 5 what we do we load
+
+518
+00:27:35,440 --> 00:27:39,279
+a set of plugins using the Babel E&V
+
+519
+00:27:39,279 --> 00:27:44,320
+preset the env env preset what it does
+
+520
+00:27:44,320 --> 00:27:46,779
+it applies plugins based on the
+
+521
+00:27:46,779 --> 00:27:48,429
+environment that we would like to
+
+522
+00:27:48,429 --> 00:27:50,760
+transform to okay how does it know that
+
+523
+00:27:50,760 --> 00:27:56,309
+based on what's written on package.json
+
+524
+00:27:56,309 --> 00:27:59,970
+now I'm gonna apply this plug-in and
+
+525
+00:27:59,970 --> 00:28:02,110
+you'll see that we'll be transformed to
+
+526
+00:28:02,110 --> 00:28:08,289
+years five and let's make the input a
+
+527
+00:28:08,289 --> 00:28:20,320
+little bit more yes next
+
+528
+00:28:20,330 --> 00:28:31,049
+and we'll run the demo again and the
+
+529
+00:28:31,049 --> 00:28:34,859
+output is the s5 as you can see does so
+
+530
+00:28:34,859 --> 00:28:37,229
+this is how Babel works okay this is how
+
+531
+00:28:37,229 --> 00:28:40,470
+it works now what's the point of it okay
+
+532
+00:28:40,470 --> 00:28:43,830
+why is it such a powerful tool because
+
+533
+00:28:43,830 --> 00:28:45,179
+using that knowledge you can write
+
+534
+00:28:45,179 --> 00:28:47,970
+plugins yourself and enhance the user
+
+535
+00:28:47,970 --> 00:28:51,570
+experience as a programmer so I'll give
+
+536
+00:28:51,570 --> 00:28:54,019
+you example plugins that I wrote myself
+
+537
+00:28:54,019 --> 00:28:56,549
+you don't necessarily have to agree with
+
+538
+00:28:56,549 --> 00:28:58,409
+what they do maybe you don't like their
+
+539
+00:28:58,409 --> 00:29:00,450
+functionality but again just understand
+
+540
+00:29:00,450 --> 00:29:02,249
+the power behind that sort of
+
+541
+00:29:02,249 --> 00:29:06,580
+information
+
+542
+00:29:06,590 --> 00:29:10,320
+okay so first plug-in is a plug-in for
+
+543
+00:29:10,320 --> 00:29:13,019
+if you're familiar with the new react
+
+544
+00:29:13,019 --> 00:29:17,389
+hooks API in what I do I transform data
+
+545
+00:29:17,389 --> 00:29:20,220
+okay and the problem is that once I
+
+546
+00:29:20,220 --> 00:29:21,989
+enter the rendering phase each and every
+
+547
+00:29:21,989 --> 00:29:25,639
+time I would need to apply that logic or
+
+548
+00:29:25,639 --> 00:29:29,700
+here if I have anonymous call back each
+
+549
+00:29:29,700 --> 00:29:32,009
+time and enter the rendering phase I
+
+550
+00:29:32,009 --> 00:29:33,539
+would need to initialize that callback
+
+551
+00:29:33,539 --> 00:29:36,419
+so what I need to do is to cache the
+
+552
+00:29:36,419 --> 00:29:39,599
+result using your use call back or use
+
+553
+00:29:39,599 --> 00:29:43,169
+me-mow so with that plug-in you can
+
+554
+00:29:43,169 --> 00:29:47,099
+automatically apply use mimo with the
+
+555
+00:29:47,099 --> 00:29:49,080
+right arguments you just type it
+
+556
+00:29:49,080 --> 00:29:52,109
+normally as you would and then it
+
+557
+00:29:52,109 --> 00:29:53,909
+optimizes the code for you ahead of time
+
+558
+00:29:53,909 --> 00:29:57,389
+or it also does things like creating
+
+559
+00:29:57,389 --> 00:30:01,349
+anonymous components where it caches the
+
+560
+00:30:01,349 --> 00:30:04,049
+callback results and you don't need to
+
+561
+00:30:04,049 --> 00:30:06,899
+put used callback and therefore save
+
+562
+00:30:06,899 --> 00:30:11,489
+some errors second and final plug-in
+
+563
+00:30:11,489 --> 00:30:12,749
+that I wrote something for style
+
+564
+00:30:12,749 --> 00:30:14,940
+components rather than creating a
+
+565
+00:30:14,940 --> 00:30:17,340
+dedicated component per each component
+
+566
+00:30:17,340 --> 00:30:19,470
+that you would like to encapsulate its
+
+567
+00:30:19,470 --> 00:30:24,090
+style you can use the single stylesheet
+
+568
+00:30:24,090 --> 00:30:27,149
+component and use underscore to
+
+569
+00:30:27,149 --> 00:30:30,320
+encapsulate private class names
+
+570
+00:30:30,320 --> 00:30:32,000
+and what the plugin will do it will
+
+571
+00:30:32,000 --> 00:30:34,639
+prefix it automatically therefore
+
+572
+00:30:34,639 --> 00:30:43,519
+encapsulate the styles so that was
+
+573
+00:30:43,519 --> 00:30:44,480
+basically it
+
+574
+00:30:44,480 --> 00:30:47,330
+I hope you liked it there isn't much
+
+575
+00:30:47,330 --> 00:30:49,029
+information about it online
+
+576
+00:30:49,029 --> 00:30:52,340
+documentation is very very poor but I
+
+577
+00:30:52,340 --> 00:30:54,769
+did write few articles about it and I'm
+
+578
+00:30:54,769 --> 00:30:56,710
+also gonna upload a video about it and
+
+579
+00:30:56,710 --> 00:31:00,799
+also be sure to use se explore and babel
+
+580
+00:31:00,799 --> 00:31:03,289
+dogs if you have any further questions
+
+581
+00:31:03,289 --> 00:31:06,200
+feel free to address me later on in the
+

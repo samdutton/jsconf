@@ -1,0 +1,2617 @@
+1
+00:00:00,500 --> 00:00:19,160
+
+[Music]
+
+2
+00:00:19,160 --> 00:00:23,699
+how are you are you well rested after
+
+3
+00:00:23,699 --> 00:00:29,640
+the break so my my name is Marco I'm
+
+4
+00:00:29,640 --> 00:00:32,040
+amazed that my surname got pronounced
+
+5
+00:00:32,040 --> 00:00:33,210
+right
+
+6
+00:00:33,210 --> 00:00:37,140
+anyways I work for sack overflow I'm
+
+7
+00:00:37,140 --> 00:00:38,730
+going to talk a bit about the
+
+8
+00:00:38,730 --> 00:00:41,730
+architecture so how do we build stuff
+
+9
+00:00:41,730 --> 00:00:47,219
+and first thing so there is this
+
+10
+00:00:47,219 --> 00:00:49,860
+fantastic QR code if you scan it you'll
+
+11
+00:00:49,860 --> 00:00:53,879
+be able to follow along the slides okay
+
+12
+00:00:53,879 --> 00:00:57,059
+is I don't know if it works but you can
+
+13
+00:00:57,059 --> 00:01:00,329
+try anyways so we are by the way we are
+
+14
+00:01:00,329 --> 00:01:04,379
+a c-sharp company so we use C sharp
+
+15
+00:01:04,379 --> 00:01:08,040
+we are not no js' and before anybody of
+
+16
+00:01:08,040 --> 00:01:09,630
+you ask me the question that asks me
+
+17
+00:01:09,630 --> 00:01:11,490
+every time why don't use nodejs or
+
+18
+00:01:11,490 --> 00:01:13,500
+whatever okay if you do that I'm gonna
+
+19
+00:01:13,500 --> 00:01:17,369
+make fun of you because of left ok so be
+
+20
+00:01:17,369 --> 00:01:21,330
+careful anyway so architecture so I
+
+21
+00:01:21,330 --> 00:01:23,430
+looked up the definition of architecture
+
+22
+00:01:23,430 --> 00:01:25,860
+and it says the art of science of
+
+23
+00:01:25,860 --> 00:01:28,770
+building specifically your practice of
+
+24
+00:01:28,770 --> 00:01:30,360
+designing and building structures
+
+25
+00:01:30,360 --> 00:01:33,420
+especially habitable ones of course in
+
+26
+00:01:33,420 --> 00:01:35,070
+our case you know a software
+
+27
+00:01:35,070 --> 00:01:36,299
+architecture is not about building
+
+28
+00:01:36,299 --> 00:01:38,790
+houses is about building software where
+
+29
+00:01:38,790 --> 00:01:41,820
+is the same concept and architecture is
+
+30
+00:01:41,820 --> 00:01:43,439
+actually something that existed for a
+
+31
+00:01:43,439 --> 00:01:46,290
+long time it was studied since we have
+
+32
+00:01:46,290 --> 00:01:49,020
+texts talking about architecture there
+
+33
+00:01:49,020 --> 00:01:51,689
+are more than 2,000 years years old and
+
+34
+00:01:51,689 --> 00:01:54,149
+one thing that was notable even at the
+
+35
+00:01:54,149 --> 00:01:57,030
+time is three characteristics that make
+
+36
+00:01:57,030 --> 00:01:58,920
+the concept of architecture so three
+
+37
+00:01:58,920 --> 00:02:01,229
+things that architected things must have
+
+38
+00:02:01,229 --> 00:02:03,960
+so the first thing is durability right
+
+39
+00:02:03,960 --> 00:02:05,700
+so you building a house you're building
+
+40
+00:02:05,700 --> 00:02:07,890
+a temple you don't want the temple to
+
+41
+00:02:07,890 --> 00:02:11,180
+meltdown when it's raining for example
+
+42
+00:02:11,180 --> 00:02:12,390
+the
+
+43
+00:02:12,390 --> 00:02:15,000
+thing is utility right you you created
+
+44
+00:02:15,000 --> 00:02:16,740
+your fantastic temple you forgot to put
+
+45
+00:02:16,740 --> 00:02:20,160
+in the doors and you know you can't go
+
+46
+00:02:20,160 --> 00:02:22,860
+into it so it doesn't really work so so
+
+47
+00:02:22,860 --> 00:02:24,270
+you need to have something that doesn't
+
+48
+00:02:24,270 --> 00:02:26,370
+fall down and something that you can
+
+49
+00:02:26,370 --> 00:02:28,920
+actually use but it's more interesting
+
+50
+00:02:28,920 --> 00:02:31,170
+the third characteristic that a good
+
+51
+00:02:31,170 --> 00:02:36,020
+architecture must have and is beauty and
+
+52
+00:02:36,020 --> 00:02:38,730
+you can see how for example for a church
+
+53
+00:02:38,730 --> 00:02:41,280
+or for a temple or for even for a house
+
+54
+00:02:41,280 --> 00:02:44,310
+or a villa it may be something obvious
+
+55
+00:02:44,310 --> 00:02:46,860
+right you want it to be beautiful but
+
+56
+00:02:46,860 --> 00:02:50,150
+how does it work with code right and
+
+57
+00:02:50,150 --> 00:02:53,519
+this is open to interpretation and but
+
+58
+00:02:53,519 --> 00:02:58,280
+in our case we certainly have
+
+59
+00:02:58,280 --> 00:03:02,900
+interpreted this as to mean performance
+
+60
+00:03:02,900 --> 00:03:05,850
+so for us it's important that the code
+
+61
+00:03:05,850 --> 00:03:07,769
+that we that we build is very efficient
+
+62
+00:03:07,769 --> 00:03:10,860
+and efficiency is the ability to do
+
+63
+00:03:10,860 --> 00:03:14,760
+something without without waste so there
+
+64
+00:03:14,760 --> 00:03:20,370
+is one good way that we a method that we
+
+65
+00:03:20,370 --> 00:03:23,610
+know all about that is very very
+
+66
+00:03:23,610 --> 00:03:25,799
+efficient and allows us to get to
+
+67
+00:03:25,799 --> 00:03:31,019
+solutions which perform that maximize
+
+68
+00:03:31,019 --> 00:03:34,769
+the performance very easily and that
+
+69
+00:03:34,769 --> 00:03:38,040
+method is the scientific method so if
+
+70
+00:03:38,040 --> 00:03:39,660
+you think about it
+
+71
+00:03:39,660 --> 00:03:41,489
+when when people when you have
+
+72
+00:03:41,489 --> 00:03:45,769
+scientists doing science what they do is
+
+73
+00:03:45,769 --> 00:03:51,940
+they have some observations and they
+
+74
+00:03:51,950 --> 00:03:55,380
+think of a theory or some model that
+
+75
+00:03:55,380 --> 00:03:57,329
+will explain the observed observations
+
+76
+00:03:57,329 --> 00:03:58,650
+and use that model to make predictions
+
+77
+00:03:58,650 --> 00:04:03,090
+and then they make experiments and then
+
+78
+00:04:03,090 --> 00:04:05,040
+they verify whether these experiments
+
+79
+00:04:05,040 --> 00:04:08,700
+are actually are actually confirming or
+
+80
+00:04:08,700 --> 00:04:10,709
+disproving their policies so the most
+
+81
+00:04:10,709 --> 00:04:12,290
+important meeting here are these three
+
+82
+00:04:12,290 --> 00:04:16,680
+the small 3-step cycle here you know
+
+83
+00:04:16,680 --> 00:04:19,950
+where you gather we gather data you
+
+84
+00:04:19,950 --> 00:04:23,099
+refine and alter expand so you analyze
+
+85
+00:04:23,099 --> 00:04:23,669
+your day
+
+86
+00:04:23,669 --> 00:04:26,280
+and you build new theories all the time
+
+87
+00:04:26,280 --> 00:04:29,729
+and we basically did something very
+
+88
+00:04:29,729 --> 00:04:33,779
+similar so when we when we do code we
+
+89
+00:04:33,779 --> 00:04:37,680
+build build code we build the product we
+
+90
+00:04:37,680 --> 00:04:40,710
+measure performance and then we analyze
+
+91
+00:04:40,710 --> 00:04:43,560
+the measurements and this allows us to
+
+92
+00:04:43,560 --> 00:04:47,969
+define how to build the rest the rest of
+
+93
+00:04:47,969 --> 00:04:51,300
+the product so the first thing that
+
+94
+00:04:51,300 --> 00:04:55,340
+anybody is going to ask you if you are a
+
+95
+00:04:55,340 --> 00:04:58,740
+customer and you want someone to design
+
+96
+00:04:58,740 --> 00:05:00,900
+a church for you they're going to ask
+
+97
+00:05:00,900 --> 00:05:02,939
+you okay so you want like something
+
+98
+00:05:02,939 --> 00:05:05,460
+small what's your budget you know or
+
+99
+00:05:05,460 --> 00:05:09,419
+something big so knowing the
+
+100
+00:05:09,419 --> 00:05:12,000
+characteristics of what you're building
+
+101
+00:05:12,000 --> 00:05:17,219
+is very important and therefore this
+
+102
+00:05:17,219 --> 00:05:18,659
+this whole talk would be meaningless
+
+103
+00:05:18,659 --> 00:05:20,669
+unless I told you a little bit about
+
+104
+00:05:20,669 --> 00:05:23,669
+Stack Overflow and the kind of scale
+
+105
+00:05:23,669 --> 00:05:26,580
+that we have so you can sort of relate
+
+106
+00:05:26,580 --> 00:05:29,909
+or or see why we go to such lengths to
+
+107
+00:05:29,909 --> 00:05:34,400
+do to do these things so first of all
+
+108
+00:05:34,400 --> 00:05:37,349
+this is the top sites according to
+
+109
+00:05:37,349 --> 00:05:40,229
+contest which is one of the two top
+
+110
+00:05:40,229 --> 00:05:43,319
+measurement agencies that tell you how
+
+111
+00:05:43,319 --> 00:05:45,509
+many unique visitors you have every
+
+112
+00:05:45,509 --> 00:05:49,860
+month that were Flo would be between 17
+
+113
+00:05:49,860 --> 00:05:52,710
+or 18 it's not there for a couple of
+
+114
+00:05:52,710 --> 00:05:54,719
+reasons and but the most important one
+
+115
+00:05:54,719 --> 00:05:57,389
+is that we have our traffic is actually
+
+116
+00:05:57,389 --> 00:06:00,689
+split around all our network of sites so
+
+117
+00:06:00,689 --> 00:06:02,310
+Stack Overflow is part of a larger
+
+118
+00:06:02,310 --> 00:06:07,800
+network of 160 different sites with
+
+119
+00:06:07,800 --> 00:06:09,539
+different topics that go from cooking to
+
+120
+00:06:09,539 --> 00:06:13,589
+English to Japanese to philosophy or
+
+121
+00:06:13,589 --> 00:06:18,810
+physics so Quantcast doesn't really work
+
+122
+00:06:18,810 --> 00:06:21,379
+very well for this kind of setup and
+
+123
+00:06:21,379 --> 00:06:24,330
+therefore it is split all the traffic in
+
+124
+00:06:24,330 --> 00:06:26,789
+different blocks but putting them
+
+125
+00:06:26,789 --> 00:06:28,979
+together we would be somewhere between
+
+126
+00:06:28,979 --> 00:06:33,920
+Wikipedia and people which is pretty big
+
+127
+00:06:33,930 --> 00:06:36,060
+by the way I was telling you is not very
+
+128
+00:06:36,060 --> 00:06:38,130
+you know podcast is not very reliable I
+
+129
+00:06:38,130 --> 00:06:40,800
+can tell you why so does anybody
+
+130
+00:06:40,800 --> 00:06:43,230
+remember this coming out maybe in
+
+131
+00:06:43,230 --> 00:06:43,970
+September
+
+132
+00:06:43,970 --> 00:06:46,590
+so basically North Korea screwed up
+
+133
+00:06:46,590 --> 00:06:48,570
+there there both the router
+
+134
+00:06:48,570 --> 00:06:51,000
+configuration and turns out they have 28
+
+135
+00:06:51,000 --> 00:06:54,810
+websites in the whole country so you can
+
+136
+00:06:54,810 --> 00:06:58,770
+imagine them you know or like there and
+
+137
+00:06:58,770 --> 00:07:01,500
+according to Qantas what are they
+
+138
+00:07:01,500 --> 00:07:07,659
+looking at Stack Overflow
+
+139
+00:07:07,669 --> 00:07:10,290
+so apparently we are very popular in
+
+140
+00:07:10,290 --> 00:07:11,790
+North Korea so now you can trust this
+
+141
+00:07:11,790 --> 00:07:17,660
+numbers clearly but okay it's just funny
+
+142
+00:07:17,660 --> 00:07:20,790
+so I think in some version of this talk
+
+143
+00:07:20,790 --> 00:07:26,970
+since 2013 when I when I started giving
+
+144
+00:07:26,970 --> 00:07:31,380
+this talk we had somewhere around 100
+
+145
+00:07:31,380 --> 00:07:33,330
+websites in our network that was talking
+
+146
+00:07:33,330 --> 00:07:37,740
+about nowadays we have 160 and we are
+
+147
+00:07:37,740 --> 00:07:42,750
+still growing of course and these are
+
+148
+00:07:42,750 --> 00:07:43,470
+pageviews
+
+149
+00:07:43,470 --> 00:07:46,350
+so again Quantcast so believe it you
+
+150
+00:07:46,350 --> 00:07:47,580
+know take it or leave it
+
+151
+00:07:47,580 --> 00:07:50,940
+but we were around 400 million pageviews
+
+152
+00:07:50,940 --> 00:07:52,950
+per month when I joined and we're
+
+153
+00:07:52,950 --> 00:07:55,890
+talking about this and nowadays we are
+
+154
+00:07:55,890 --> 00:07:59,100
+actually over 1 1 billion 1.2 billion
+
+155
+00:07:59,100 --> 00:08:01,289
+per month and this is not really up to
+
+156
+00:08:01,289 --> 00:08:06,510
+date on the other hand the number of web
+
+157
+00:08:06,510 --> 00:08:11,160
+servers was one in 2008 when the when
+
+158
+00:08:11,160 --> 00:08:14,130
+the site started then he grew a bit to
+
+159
+00:08:14,130 --> 00:08:15,660
+five in two thousand nine thousand ten
+
+160
+00:08:15,660 --> 00:08:18,510
+and then 2011 we went to nine web
+
+161
+00:08:18,510 --> 00:08:21,530
+servers and ever since then I started
+
+162
+00:08:21,530 --> 00:08:24,900
+talking and we grew like we doubled up
+
+163
+00:08:24,900 --> 00:08:26,639
+our traffic tripled our traffic and we
+
+164
+00:08:26,639 --> 00:08:31,080
+still online web servers so to give you
+
+165
+00:08:31,080 --> 00:08:35,490
+an idea I was looking today at some
+
+166
+00:08:35,490 --> 00:08:38,279
+stats for some other sites which are
+
+167
+00:08:38,279 --> 00:08:42,599
+there in the in that list so Pinterest
+
+168
+00:08:42,599 --> 00:08:44,850
+which is two steps of on top of us
+
+169
+00:08:44,850 --> 00:08:46,850
+in 2012 the what
+
+170
+00:08:46,850 --> 00:08:52,440
+150 servers Wikipedia which is I think
+
+171
+00:08:52,440 --> 00:08:56,190
+below us or just above us I have more or
+
+172
+00:08:56,190 --> 00:08:57,960
+less 10 times the amount of hardware
+
+173
+00:08:57,960 --> 00:09:03,720
+that we have so how do we do this we do
+
+174
+00:09:03,720 --> 00:09:07,580
+this with this small poor man's
+
+175
+00:09:07,580 --> 00:09:09,950
+scientific method build measure analyze
+
+176
+00:09:09,950 --> 00:09:11,610
+so I'm going to give you a few examples
+
+177
+00:09:11,610 --> 00:09:16,640
+very quickly because time runs out so
+
+178
+00:09:16,640 --> 00:09:19,350
+first of all with the hardware so this
+
+179
+00:09:19,350 --> 00:09:22,860
+is an actual picture of our own server
+
+180
+00:09:22,860 --> 00:09:26,910
+farm server farm three racks and as you
+
+181
+00:09:26,910 --> 00:09:29,160
+can see there is not much there and
+
+182
+00:09:29,160 --> 00:09:32,430
+they're mostly databases all the stuff
+
+183
+00:09:32,430 --> 00:09:35,550
+that you see up here all these numerous
+
+184
+00:09:35,550 --> 00:09:37,700
+things here they're all these drives
+
+185
+00:09:37,700 --> 00:09:40,560
+because we have a lot of content right
+
+186
+00:09:40,560 --> 00:09:43,500
+so our main concern is actually running
+
+187
+00:09:43,500 --> 00:09:46,940
+out of space is not running out of power
+
+188
+00:09:46,940 --> 00:09:51,570
+so what do we do we serve the site and
+
+189
+00:09:51,570 --> 00:09:53,040
+then we have this fantastic dashboard
+
+190
+00:09:53,040 --> 00:09:54,450
+which is an open source project called
+
+191
+00:09:54,450 --> 00:09:59,100
+observer which allows you to measure the
+
+192
+00:09:59,100 --> 00:10:01,440
+performance of all the servers in it and
+
+193
+00:10:01,440 --> 00:10:04,589
+as you can see in this screenshot can
+
+194
+00:10:04,589 --> 00:10:11,850
+you read it yes so up here there are the
+
+195
+00:10:11,850 --> 00:10:14,730
+database servers and you can see we got
+
+196
+00:10:14,730 --> 00:10:18,720
+four and the way they are set up they
+
+197
+00:10:18,720 --> 00:10:21,120
+are two for the network and two just for
+
+198
+00:10:21,120 --> 00:10:24,270
+Stack Overflow of each pair one is
+
+199
+00:10:24,270 --> 00:10:26,760
+read-only and the other one also accepts
+
+200
+00:10:26,760 --> 00:10:30,350
+writes so basically there is only one
+
+201
+00:10:30,350 --> 00:10:36,709
+server doing the actual hard work and
+
+202
+00:10:36,709 --> 00:10:39,860
+this one's got a lot of RAM
+
+203
+00:10:39,860 --> 00:10:42,329
+even though nowadays you know there is
+
+204
+00:10:42,329 --> 00:10:48,060
+common to see terabytes of RAM so these
+
+205
+00:10:48,060 --> 00:10:50,459
+are the web servers so this one runs
+
+206
+00:10:50,459 --> 00:10:53,279
+like promotions and not the sides the
+
+207
+00:10:53,279 --> 00:10:56,220
+sides are actually on this nine here as
+
+208
+00:10:56,220 --> 00:10:58,020
+you can see this is a typical day and
+
+209
+00:10:58,020 --> 00:11:00,310
+their CPU is like five percent
+
+210
+00:11:00,310 --> 00:11:03,520
+10% so we have not only we only run on
+
+211
+00:11:03,520 --> 00:11:06,310
+nine but these nine web servers are
+
+212
+00:11:06,310 --> 00:11:09,010
+really really under capacity so we could
+
+213
+00:11:09,010 --> 00:11:11,800
+lose a few of them and still be up and
+
+214
+00:11:11,800 --> 00:11:14,020
+nobody wouldn't notice in fact sometimes
+
+215
+00:11:14,020 --> 00:11:15,490
+when there is something dangerous we
+
+216
+00:11:15,490 --> 00:11:20,410
+just take one out of the out of the load
+
+217
+00:11:20,410 --> 00:11:22,450
+balancer and try to deploy stuff in
+
+218
+00:11:22,450 --> 00:11:22,779
+there
+
+219
+00:11:22,779 --> 00:11:24,670
+so if it goes crazy if he goes crazy we
+
+220
+00:11:24,670 --> 00:11:26,470
+can just shut it up shut it down and
+
+221
+00:11:26,470 --> 00:11:28,750
+nobody cares because the traffic is
+
+222
+00:11:28,750 --> 00:11:31,510
+gonna just go on in fact we have
+
+223
+00:11:31,510 --> 00:11:33,190
+calculated that we could probably use
+
+224
+00:11:33,190 --> 00:11:35,140
+just one less web server and serve all
+
+225
+00:11:35,140 --> 00:11:39,620
+the traffic if we were crazy enough
+
+226
+00:11:39,630 --> 00:11:43,270
+after we get all this data what we do is
+
+227
+00:11:43,270 --> 00:11:46,330
+do one big spreadsheet and we try to
+
+228
+00:11:46,330 --> 00:11:48,730
+understand how much space are going to
+
+229
+00:11:48,730 --> 00:11:52,110
+need next year and then based on that we
+
+230
+00:11:52,110 --> 00:11:55,029
+buy new discs or buy new servers and so
+
+231
+00:11:55,029 --> 00:11:55,839
+on and so on
+
+232
+00:11:55,839 --> 00:12:02,400
+so again it's literally physically built
+
+233
+00:12:02,400 --> 00:12:08,680
+measure and analyze the data and this is
+
+234
+00:12:08,680 --> 00:12:10,270
+the architecture overall I just wanted
+
+235
+00:12:10,270 --> 00:12:14,620
+to give a quick overview a word based so
+
+236
+00:12:14,620 --> 00:12:19,420
+on top here this is where you are right
+
+237
+00:12:19,420 --> 00:12:21,820
+so the requests come in here go through
+
+238
+00:12:21,820 --> 00:12:24,460
+Reuters all the borderline stuff they go
+
+239
+00:12:24,460 --> 00:12:26,170
+through low load balancer which is like
+
+240
+00:12:26,170 --> 00:12:28,600
+one machine active and one machine is
+
+241
+00:12:28,600 --> 00:12:31,089
+just stand by and they go into the
+
+242
+00:12:31,089 --> 00:12:33,610
+famous nine web servers and in the back
+
+243
+00:12:33,610 --> 00:12:36,610
+hand there is really very little there
+
+244
+00:12:36,610 --> 00:12:39,390
+there is Redis which runs on two boxes
+
+245
+00:12:39,390 --> 00:12:41,980
+there is elasticsearch that runs on
+
+246
+00:12:41,980 --> 00:12:47,200
+three and we use that for searching the
+
+247
+00:12:47,200 --> 00:12:49,510
+service tier is more interesting what
+
+248
+00:12:49,510 --> 00:12:53,310
+this does is it's a specialized index of
+
+249
+00:12:53,310 --> 00:12:56,020
+questions and questions and tags are you
+
+250
+00:12:56,020 --> 00:12:58,080
+familiar with the waste our flow works
+
+251
+00:12:58,080 --> 00:13:00,760
+you know I have a questions as a tag so
+
+252
+00:13:00,760 --> 00:13:02,589
+you know this question you see sure of
+
+253
+00:13:02,589 --> 00:13:05,279
+this question is no js' or whatever and
+
+254
+00:13:05,279 --> 00:13:08,680
+when you navigate the site especially if
+
+255
+00:13:08,680 --> 00:13:09,630
+you're logged in which
+
+256
+00:13:09,630 --> 00:13:12,830
+to guess which questions are going to be
+
+257
+00:13:12,830 --> 00:13:16,170
+interesting to you and we do that based
+
+258
+00:13:16,170 --> 00:13:20,520
+on tags so there is a lot of querying
+
+259
+00:13:20,520 --> 00:13:23,220
+going boolean query going on with with
+
+260
+00:13:23,220 --> 00:13:26,070
+the tags and that actually can't be
+
+261
+00:13:26,070 --> 00:13:29,220
+performed by sequel server that would be
+
+262
+00:13:29,220 --> 00:13:33,480
+absolutely crazy so we moved on to
+
+263
+00:13:33,480 --> 00:13:34,950
+something having something completely in
+
+264
+00:13:34,950 --> 00:13:38,190
+memory but that also was too much and
+
+265
+00:13:38,190 --> 00:13:40,650
+then so we move it to a separate server
+
+266
+00:13:40,650 --> 00:13:43,710
+which only does that and then finally we
+
+267
+00:13:43,710 --> 00:13:50,640
+have a single server so again build
+
+268
+00:13:50,640 --> 00:13:54,060
+measure analyze that particular build
+
+269
+00:13:54,060 --> 00:13:57,930
+measure analyze just shown was actually
+
+270
+00:13:57,930 --> 00:14:03,720
+quite slow right you can do maybe yearly
+
+271
+00:14:03,720 --> 00:14:05,940
+hardware refresh cycle if you're using
+
+272
+00:14:05,940 --> 00:14:09,210
+the cloud you can increase the number of
+
+273
+00:14:09,210 --> 00:14:11,430
+servers if you need to but in any Indian
+
+274
+00:14:11,430 --> 00:14:13,010
+case you don't do that like
+
+275
+00:14:13,010 --> 00:14:16,260
+second-by-second it's something that you
+
+276
+00:14:16,260 --> 00:14:18,690
+do with time and whereas it's important
+
+277
+00:14:18,690 --> 00:14:21,180
+to have these cycles optimized for speed
+
+278
+00:14:21,180 --> 00:14:24,810
+so if you can do this cycle very quickly
+
+279
+00:14:24,810 --> 00:14:28,500
+it's important because what this cycle
+
+280
+00:14:28,500 --> 00:14:31,170
+does is takes a solution your product it
+
+281
+00:14:31,170 --> 00:14:33,060
+just changes it slightly in the way it's
+
+282
+00:14:33,060 --> 00:14:35,190
+implemented so it fits better your
+
+283
+00:14:35,190 --> 00:14:37,410
+condition and the faster you can iterate
+
+284
+00:14:37,410 --> 00:14:40,140
+the quicker it converges to an optimal
+
+285
+00:14:40,140 --> 00:14:46,140
+solution so an example of this is actual
+
+286
+00:14:46,140 --> 00:14:48,240
+code right so this is an example of code
+
+287
+00:14:48,240 --> 00:14:52,530
+and I'll show it again later one thing
+
+288
+00:14:52,530 --> 00:14:53,970
+that you can see in here and we
+
+289
+00:14:53,970 --> 00:15:01,290
+optimized for is that this code
+
+290
+00:15:01,290 --> 00:15:04,560
+basically what it does it takes all the
+
+291
+00:15:04,560 --> 00:15:07,290
+table out of the DB this table contains
+
+292
+00:15:07,290 --> 00:15:09,660
+content in particular it contains our
+
+293
+00:15:09,660 --> 00:15:12,480
+health center and the store sitting in
+
+294
+00:15:12,480 --> 00:15:15,210
+cash and installing a static object and
+
+295
+00:15:15,210 --> 00:15:18,990
+it's there for use and and all the stuff
+
+296
+00:15:18,990 --> 00:15:20,160
+is done in 10 lines of
+
+297
+00:15:20,160 --> 00:15:22,680
+and the reason is you know the less code
+
+298
+00:15:22,680 --> 00:15:25,410
+you write the faster you are in this
+
+299
+00:15:25,410 --> 00:15:27,840
+step the faster your cycle is so it's
+
+300
+00:15:27,840 --> 00:15:32,730
+important how do we measure that
+
+301
+00:15:32,730 --> 00:15:34,830
+so once you have your page is being
+
+302
+00:15:34,830 --> 00:15:39,180
+rendered normal users just see the site
+
+303
+00:15:39,180 --> 00:15:43,560
+right so they just see that the page as
+
+304
+00:15:43,560 --> 00:15:48,090
+developers see up here a small rectangle
+
+305
+00:15:48,090 --> 00:15:51,500
+with the time so this page actually took
+
+306
+00:15:51,500 --> 00:15:56,850
+100 no so yeah 150 119 one millisecond
+
+307
+00:15:56,850 --> 00:15:58,560
+to to render this was really really slow
+
+308
+00:15:58,560 --> 00:16:03,120
+for some reason in any case you can see
+
+309
+00:16:03,120 --> 00:16:05,550
+what's wrong if you're a developer you
+
+310
+00:16:05,550 --> 00:16:07,560
+can go up there click click on it and
+
+311
+00:16:07,560 --> 00:16:10,380
+you get actually a complete breakdown on
+
+312
+00:16:10,380 --> 00:16:13,290
+how the page was rendered where time was
+
+313
+00:16:13,290 --> 00:16:16,380
+spent was it spent in this column here
+
+314
+00:16:16,380 --> 00:16:18,150
+which is sequel was it spent on Redis
+
+315
+00:16:18,150 --> 00:16:21,420
+calls was spent on elastic if there is
+
+316
+00:16:21,420 --> 00:16:23,880
+some elastic calls in there you would
+
+317
+00:16:23,880 --> 00:16:26,250
+also have a column and this tells you
+
+318
+00:16:26,250 --> 00:16:28,110
+pretty much what you need to optimize
+
+319
+00:16:28,110 --> 00:16:31,740
+and what the problems are not only that
+
+320
+00:16:31,740 --> 00:16:35,730
+but profiling everything at every at
+
+321
+00:16:35,730 --> 00:16:37,920
+every call allows us to actually store a
+
+322
+00:16:37,920 --> 00:16:41,550
+subset of this data and put it in a
+
+323
+00:16:41,550 --> 00:16:45,600
+sequel in a sequel database so not only
+
+324
+00:16:45,600 --> 00:16:47,670
+I can see this particular page what
+
+325
+00:16:47,670 --> 00:16:51,150
+happened in this particular rendering
+
+326
+00:16:51,150 --> 00:16:54,180
+instance but I can also run averages
+
+327
+00:16:54,180 --> 00:16:57,570
+over the last day for example and see
+
+328
+00:16:57,570 --> 00:16:59,790
+okay how is the site how is this
+
+329
+00:16:59,790 --> 00:17:03,600
+particular page performing today and
+
+330
+00:17:03,600 --> 00:17:06,209
+then allows you allows me to actually
+
+331
+00:17:06,209 --> 00:17:09,900
+get to graphs like this one so this is
+
+332
+00:17:09,900 --> 00:17:12,689
+just something I did on a random day to
+
+333
+00:17:12,689 --> 00:17:15,300
+tweet about it but as you can see this
+
+334
+00:17:15,300 --> 00:17:17,459
+is a question page so when when you go
+
+335
+00:17:17,459 --> 00:17:19,470
+on Google and say okay how do i parse
+
+336
+00:17:19,470 --> 00:17:23,069
+HTML with the regex you land on our page
+
+337
+00:17:23,069 --> 00:17:26,520
+and this is that page so these are the
+
+338
+00:17:26,520 --> 00:17:28,610
+measurements for that page and
+
+339
+00:17:28,610 --> 00:17:31,750
+can see rendering that page takes
+
+340
+00:17:31,750 --> 00:17:35,270
+between maybe twenty ten and twenty
+
+341
+00:17:35,270 --> 00:17:38,210
+milliseconds for most part and you can
+
+342
+00:17:38,210 --> 00:17:41,330
+see also in here that about two three
+
+343
+00:17:41,330 --> 00:17:45,380
+milliseconds of spent on average in in
+
+344
+00:17:45,380 --> 00:17:49,220
+sequel and read this is like crazy it's
+
+345
+00:17:49,220 --> 00:17:50,929
+like sub milliseconds we can't even
+
+346
+00:17:50,929 --> 00:17:54,620
+measure it from most most part and it's
+
+347
+00:17:54,620 --> 00:17:56,000
+also interesting to see that there are
+
+348
+00:17:56,000 --> 00:18:00,320
+some spikes here those spikes are things
+
+349
+00:18:00,320 --> 00:18:02,660
+that went wrong garbage collections and
+
+350
+00:18:02,660 --> 00:18:04,940
+so on and so pages which are not
+
+351
+00:18:04,940 --> 00:18:06,740
+performing as well as they could for
+
+352
+00:18:06,740 --> 00:18:09,950
+example the one I was showing before had
+
+353
+00:18:09,950 --> 00:18:12,200
+some problem it would definitely be in
+
+354
+00:18:12,200 --> 00:18:18,320
+this small spike there so of course you
+
+355
+00:18:18,320 --> 00:18:21,290
+know understanding which pages perform
+
+356
+00:18:21,290 --> 00:18:24,830
+worse allows you to focus your effort in
+
+357
+00:18:24,830 --> 00:18:27,110
+making them faster and this is how you
+
+358
+00:18:27,110 --> 00:18:28,640
+get pages that rendering ten
+
+359
+00:18:28,640 --> 00:18:31,610
+milliseconds I'm pretty sure your
+
+360
+00:18:31,610 --> 00:18:33,410
+applications not as fast as this if you
+
+361
+00:18:33,410 --> 00:18:41,840
+do web so I mean all these optimizations
+
+362
+00:18:41,840 --> 00:18:44,990
+would be not very useful unless this
+
+363
+00:18:44,990 --> 00:18:47,840
+cycling would would was fast in fact I
+
+364
+00:18:47,840 --> 00:18:50,660
+think our cycle is pretty it's pretty
+
+365
+00:18:50,660 --> 00:18:56,740
+fast so I actually went on and measured
+
+366
+00:18:56,740 --> 00:19:00,169
+how many deployments we do on those nine
+
+367
+00:19:00,169 --> 00:19:02,750
+web servers every day so when I joined I
+
+368
+00:19:02,750 --> 00:19:06,260
+was told it was five they lied to me it
+
+369
+00:19:06,260 --> 00:19:09,140
+was so I joined somewhere around here
+
+370
+00:19:09,140 --> 00:19:12,440
+and actually was five like the first
+
+371
+00:19:12,440 --> 00:19:16,309
+month though and they went down and then
+
+372
+00:19:16,309 --> 00:19:18,890
+growing back up again so we are around
+
+373
+00:19:18,890 --> 00:19:20,870
+five four four five deployments a day
+
+374
+00:19:20,870 --> 00:19:25,120
+which is actually pretty good at least
+
+375
+00:19:25,120 --> 00:19:28,820
+according to my former career where a
+
+376
+00:19:28,820 --> 00:19:33,260
+deployment took six months by the way
+
+377
+00:19:33,260 --> 00:19:35,780
+does anybody know why there is the spy
+
+378
+00:19:35,780 --> 00:19:38,179
+here of like a gazillion developments
+
+379
+00:19:38,179 --> 00:19:43,379
+just for that month anybody can guess
+
+380
+00:19:43,389 --> 00:19:51,619
+sorry rejects no so this is because we
+
+381
+00:19:51,619 --> 00:19:53,539
+release documentation and which is like
+
+382
+00:19:53,539 --> 00:19:56,200
+a major expansion of the site is like a
+
+383
+00:19:56,200 --> 00:19:59,149
+completely new part in which there are
+
+384
+00:19:59,149 --> 00:20:01,149
+many examples documentation for
+
+385
+00:20:01,149 --> 00:20:04,519
+languages and features and of course
+
+386
+00:20:04,519 --> 00:20:07,099
+that came out with a large number of
+
+387
+00:20:07,099 --> 00:20:09,529
+bikes and large number of consequent
+
+388
+00:20:09,529 --> 00:20:12,499
+deployments so I was telling you before
+
+389
+00:20:12,499 --> 00:20:16,209
+about the Help Center
+
+390
+00:20:16,219 --> 00:20:20,599
+so the Help Center is just a random part
+
+391
+00:20:20,599 --> 00:20:21,829
+of the site it's not a major part or
+
+392
+00:20:21,829 --> 00:20:24,769
+site but even that is optimized and as I
+
+393
+00:20:24,769 --> 00:20:26,299
+was showing you before so this is the
+
+394
+00:20:26,299 --> 00:20:28,879
+code that actually is a complete storage
+
+395
+00:20:28,879 --> 00:20:32,690
+of all the all the Help Center articles
+
+396
+00:20:32,690 --> 00:20:34,820
+they're just you know blatantly stored
+
+397
+00:20:34,820 --> 00:20:37,489
+in memory they're stored in a global
+
+398
+00:20:37,489 --> 00:20:39,469
+variable which is something that if you
+
+399
+00:20:39,469 --> 00:20:41,299
+went to any computer science course they
+
+400
+00:20:41,299 --> 00:20:43,519
+would have told you never to do and we
+
+401
+00:20:43,519 --> 00:20:47,329
+do it it's all everything is cache the
+
+402
+00:20:47,329 --> 00:20:50,059
+global cache is a nice object at what it
+
+403
+00:20:50,059 --> 00:20:52,249
+does it looks in memory do I have it in
+
+404
+00:20:52,249 --> 00:20:54,349
+memory yes okay here it goes
+
+405
+00:20:54,349 --> 00:20:55,940
+if I don't have it memory I'll look on
+
+406
+00:20:55,940 --> 00:20:58,849
+readies for everything readies no ok
+
+407
+00:20:58,849 --> 00:21:01,249
+then otherwise I'll just execute this
+
+408
+00:21:01,249 --> 00:21:03,769
+lambda over here you got lambdas now in
+
+409
+00:21:03,769 --> 00:21:09,769
+node.js right and and this is our ORM
+
+410
+00:21:09,769 --> 00:21:13,909
+layer two lines of code basically this
+
+411
+00:21:13,909 --> 00:21:15,919
+opens up a connection and this part runs
+
+412
+00:21:15,919 --> 00:21:19,869
+and maps this people so as you can see
+
+413
+00:21:19,869 --> 00:21:23,659
+the code is very is very tight and it's
+
+414
+00:21:23,659 --> 00:21:26,479
+actually using a lot of this particular
+
+415
+00:21:26,479 --> 00:21:30,409
+way of doing things where we use a lot
+
+416
+00:21:30,409 --> 00:21:33,339
+of global stuff a lot of static stuff
+
+417
+00:21:33,339 --> 00:21:36,709
+which in in language like the C sharp is
+
+418
+00:21:36,709 --> 00:21:39,019
+really really not something you should
+
+419
+00:21:39,019 --> 00:21:41,359
+be doing and we do it because it's fast
+
+420
+00:21:41,359 --> 00:21:47,959
+it's really really damn fast there are
+
+421
+00:21:47,959 --> 00:21:50,059
+also examples of caching which are
+
+422
+00:21:50,059 --> 00:21:52,799
+really strange
+
+423
+00:21:52,799 --> 00:21:54,840
+for example this is the actually the
+
+424
+00:21:54,840 --> 00:21:57,540
+answer to should I help connect parse
+
+425
+00:21:57,540 --> 00:22:01,470
+HTML with the regex you can't anyways
+
+426
+00:22:01,470 --> 00:22:03,360
+this is just a question it's a very
+
+427
+00:22:03,360 --> 00:22:07,170
+popular popular answer sorry and as all
+
+428
+00:22:07,170 --> 00:22:09,510
+answers there is up there there is three
+
+429
+00:22:09,510 --> 00:22:11,790
+small tabs they allow you to change the
+
+430
+00:22:11,790 --> 00:22:14,580
+order of the answers whether you want to
+
+431
+00:22:14,580 --> 00:22:17,309
+see the latest active one the oldest one
+
+432
+00:22:17,309 --> 00:22:20,220
+or the most water one on top so that's a
+
+433
+00:22:20,220 --> 00:22:22,049
+completely static content you know
+
+434
+00:22:22,049 --> 00:22:24,030
+there's nothing in it that you need to
+
+435
+00:22:24,030 --> 00:22:26,700
+do you know there is no calculations
+
+436
+00:22:26,700 --> 00:22:29,070
+there is nothing the only thing that we
+
+437
+00:22:29,070 --> 00:22:31,169
+need to do in order to display that in
+
+438
+00:22:31,169 --> 00:22:34,350
+the backend is actually create objects
+
+439
+00:22:34,350 --> 00:22:36,690
+for the three tabs and then we just
+
+440
+00:22:36,690 --> 00:22:41,970
+render them right except that code is on
+
+441
+00:22:41,970 --> 00:22:44,130
+a page which is rendered 1.2 billion
+
+442
+00:22:44,130 --> 00:22:47,669
+times a month so that's a lot a hell of
+
+443
+00:22:47,669 --> 00:22:49,460
+a lot of objects that are created here
+
+444
+00:22:49,460 --> 00:22:52,440
+so in order to further optimize the code
+
+445
+00:22:52,440 --> 00:22:57,690
+it actually makes sense to cache in
+
+446
+00:22:57,690 --> 00:23:00,299
+memory those three objects so we just
+
+447
+00:23:00,299 --> 00:23:01,710
+create them once instead of creating
+
+448
+00:23:01,710 --> 00:23:07,110
+them every time the reason for this is
+
+449
+00:23:07,110 --> 00:23:10,799
+garbage collection and if you do not yes
+
+450
+00:23:10,799 --> 00:23:12,299
+you should be worrying about garbage
+
+451
+00:23:12,299 --> 00:23:15,419
+collection even though you may not have
+
+452
+00:23:15,419 --> 00:23:19,260
+been thinking about it so far what
+
+453
+00:23:19,260 --> 00:23:21,210
+garbage collection is is the magic thing
+
+454
+00:23:21,210 --> 00:23:23,549
+that allows you to create new objects
+
+455
+00:23:23,549 --> 00:23:26,059
+and then you never have to delete them
+
+456
+00:23:26,059 --> 00:23:28,559
+you know in old times when people
+
+457
+00:23:28,559 --> 00:23:31,770
+actually use see you couldn't just
+
+458
+00:23:31,770 --> 00:23:34,679
+create something out of nowhere the way
+
+459
+00:23:34,679 --> 00:23:36,870
+to do to do it of course is you know to
+
+460
+00:23:36,870 --> 00:23:39,210
+ask the runtime okay give me a chunk of
+
+461
+00:23:39,210 --> 00:23:41,400
+memory then you use it and then you give
+
+462
+00:23:41,400 --> 00:23:42,690
+it back and say okay I don't need it
+
+463
+00:23:42,690 --> 00:23:44,730
+anymore if you forget to give it back
+
+464
+00:23:44,730 --> 00:23:46,590
+then you keep on using more and more
+
+465
+00:23:46,590 --> 00:23:48,299
+memory and then at the end you run out
+
+466
+00:23:48,299 --> 00:23:51,240
+of memory but in a managed language like
+
+467
+00:23:51,240 --> 00:23:53,429
+like JavaScript or C sharp you don't
+
+468
+00:23:53,429 --> 00:23:54,809
+actually need to give that memory
+
+469
+00:23:54,809 --> 00:23:57,030
+because the system is so smart that he
+
+470
+00:23:57,030 --> 00:23:58,470
+figures out okay you don't need this
+
+471
+00:23:58,470 --> 00:24:00,690
+stuff anymore so I'll just reclaim the
+
+472
+00:24:00,690 --> 00:24:03,300
+memory for you and this is done by a
+
+473
+00:24:03,300 --> 00:24:04,060
+thread
+
+474
+00:24:04,060 --> 00:24:05,860
+and bacon thread called the garbage
+
+475
+00:24:05,860 --> 00:24:07,780
+collector and what it does it takes all
+
+476
+00:24:07,780 --> 00:24:10,870
+your objects all your functions all your
+
+477
+00:24:10,870 --> 00:24:14,230
+contexts and goes through and see which
+
+478
+00:24:14,230 --> 00:24:16,210
+one depends on which and which one is
+
+479
+00:24:16,210 --> 00:24:18,700
+still alive which one is otoscope and
+
+480
+00:24:18,700 --> 00:24:21,970
+then it clears up all the space this is
+
+481
+00:24:21,970 --> 00:24:23,620
+great because it allows your code to be
+
+482
+00:24:23,620 --> 00:24:25,960
+very simple but it sucks
+
+483
+00:24:25,960 --> 00:24:29,680
+because in order to do this the garbage
+
+484
+00:24:29,680 --> 00:24:32,160
+collector needs to actually freeze all
+
+485
+00:24:32,160 --> 00:24:34,840
+all your code from prevent your home
+
+486
+00:24:34,840 --> 00:24:36,550
+from running at some point and just
+
+487
+00:24:36,550 --> 00:24:39,100
+clear up everything so if you got if you
+
+488
+00:24:39,100 --> 00:24:41,080
+create a lot of instances or if you get
+
+489
+00:24:41,080 --> 00:24:45,180
+create very complicated instances then
+
+490
+00:24:45,180 --> 00:24:48,610
+this becomes this becomes complicated
+
+491
+00:24:48,610 --> 00:24:50,770
+and it takes a long time so you don't
+
+492
+00:24:50,770 --> 00:24:52,630
+want to do that one example is
+
+493
+00:24:52,630 --> 00:24:54,550
+dependency injection so it is something
+
+494
+00:24:54,550 --> 00:24:56,710
+that you do a lot with with testing
+
+495
+00:24:56,710 --> 00:24:59,440
+right so instead of creating objects
+
+496
+00:24:59,440 --> 00:25:01,990
+instead of getting them from the DB what
+
+497
+00:25:01,990 --> 00:25:05,410
+do you do you create a container and
+
+498
+00:25:05,410 --> 00:25:08,080
+that container is a magic object and
+
+499
+00:25:08,080 --> 00:25:10,030
+knows how to build stuff and it knows
+
+500
+00:25:10,030 --> 00:25:11,650
+whether you're testing or not testing
+
+501
+00:25:11,650 --> 00:25:13,360
+and if you're testing use your test
+
+502
+00:25:13,360 --> 00:25:15,490
+object and if you're not testing it's
+
+503
+00:25:15,490 --> 00:25:17,770
+going to give you the real object so you
+
+504
+00:25:17,770 --> 00:25:19,840
+can like the couple stuff you can do
+
+505
+00:25:19,840 --> 00:25:22,360
+stuff without going to the database and
+
+506
+00:25:22,360 --> 00:25:24,250
+so on all right you can do fantastic
+
+507
+00:25:24,250 --> 00:25:27,100
+stuff like this right so you go to the
+
+508
+00:25:27,100 --> 00:25:29,800
+repository say I want to get this thing
+
+509
+00:25:29,800 --> 00:25:33,430
+and then and you don't know what it does
+
+510
+00:25:33,430 --> 00:25:35,560
+right it could be if we go into a mock
+
+511
+00:25:35,560 --> 00:25:37,720
+object but in this case it particularly
+
+512
+00:25:37,720 --> 00:25:40,270
+is doing a lot of things like it's the
+
+513
+00:25:40,270 --> 00:25:41,950
+invalidation security login and so on
+
+514
+00:25:41,950 --> 00:25:45,790
+and you can't do this again because in
+
+515
+00:25:45,790 --> 00:25:47,230
+reality what you're doing behind the
+
+516
+00:25:47,230 --> 00:25:49,930
+scenes in the in the in the repositories
+
+517
+00:25:49,930 --> 00:25:51,460
+you're creating a bunch of objects with
+
+518
+00:25:51,460 --> 00:25:54,400
+all this stuff and we can't do that in
+
+519
+00:25:54,400 --> 00:25:57,310
+fact we can't do that and therefore
+
+520
+00:25:57,310 --> 00:25:59,850
+testing gets really really hard and
+
+521
+00:25:59,850 --> 00:26:03,820
+therefore there you go we have very very
+
+522
+00:26:03,820 --> 00:26:06,580
+few tests in the code basically we don't
+
+523
+00:26:06,580 --> 00:26:12,620
+unit us at all so
+
+524
+00:26:12,620 --> 00:26:17,180
+build measure analyze more stuff right
+
+525
+00:26:17,180 --> 00:26:20,090
+so I was telling you about about unit
+
+526
+00:26:20,090 --> 00:26:25,880
+tests right yeah that's the most
+
+527
+00:26:25,880 --> 00:26:28,400
+interesting man in the world so that's
+
+528
+00:26:28,400 --> 00:26:33,860
+pretty much a testing strategy so what
+
+529
+00:26:33,860 --> 00:26:35,540
+happens when you when you do this right
+
+530
+00:26:35,540 --> 00:26:38,780
+so what happens is okay if you do it in
+
+531
+00:26:38,780 --> 00:26:40,250
+your likes or during a financial
+
+532
+00:26:40,250 --> 00:26:44,000
+institution it's really bad if you're a
+
+533
+00:26:44,000 --> 00:26:45,620
+site like Stack Overflow with your main
+
+534
+00:26:45,620 --> 00:26:49,370
+customers are developers you get bug
+
+535
+00:26:49,370 --> 00:26:54,350
+reports right so we have automated
+
+536
+00:26:54,350 --> 00:27:00,140
+testers actually a lot of them do
+
+537
+00:27:00,140 --> 00:27:04,010
+JavaScript and what happens is we
+
+538
+00:27:04,010 --> 00:27:09,260
+actually get the solution so there you
+
+539
+00:27:09,260 --> 00:27:11,780
+go see this is how you approximate stuff
+
+540
+00:27:11,780 --> 00:27:13,490
+so you know you do the best of your
+
+541
+00:27:13,490 --> 00:27:22,810
+condition anyway so
+
+542
+00:27:22,820 --> 00:27:25,170
+anyways if you think you have pressure
+
+543
+00:27:25,170 --> 00:27:27,300
+we do our pressure okay so we go down
+
+544
+00:27:27,300 --> 00:27:30,360
+and we go we go on TechCrunch okay this
+
+545
+00:27:30,360 --> 00:27:35,440
+is not it's not a fake
+
+546
+00:27:35,450 --> 00:27:37,920
+okay build measure analyze and it's
+
+547
+00:27:37,920 --> 00:27:39,930
+another cycle that we have okay it's not
+
+548
+00:27:39,930 --> 00:27:44,550
+exactly that in practice is you know you
+
+549
+00:27:44,550 --> 00:27:48,030
+hire great programmers or programmers
+
+550
+00:27:48,030 --> 00:27:49,950
+that really have a lot of passion for
+
+551
+00:27:49,950 --> 00:27:50,690
+what they do
+
+552
+00:27:50,690 --> 00:27:55,860
+hackers and then you give them the right
+
+553
+00:27:55,860 --> 00:27:57,360
+tools for the job
+
+554
+00:27:57,360 --> 00:27:59,880
+right so you empower them you give them
+
+555
+00:27:59,880 --> 00:28:02,070
+you know the harder the one the softer
+
+556
+00:28:02,070 --> 00:28:06,150
+they want the trust they want and what
+
+557
+00:28:06,150 --> 00:28:07,770
+they do is create great code or
+
+558
+00:28:07,770 --> 00:28:11,700
+performant code and having a great code
+
+559
+00:28:11,700 --> 00:28:13,410
+base I mean if successful product is
+
+560
+00:28:13,410 --> 00:28:16,140
+what gets you again there are kind of
+
+561
+00:28:16,140 --> 00:28:17,670
+people that you want to have in your
+
+562
+00:28:17,670 --> 00:28:20,220
+company so isn't there a kind of cycle
+
+563
+00:28:20,220 --> 00:28:21,750
+that we have but we are very conscious
+
+564
+00:28:21,750 --> 00:28:23,610
+about it and it's very much
+
+565
+00:28:23,610 --> 00:28:25,940
+part of what we do on a day to day basis
+
+566
+00:28:25,940 --> 00:28:30,150
+and so I was just going to talk about
+
+567
+00:28:30,150 --> 00:28:32,220
+hackers and this what came out like a
+
+568
+00:28:32,220 --> 00:28:35,340
+90s movie so no real hackers look like
+
+569
+00:28:35,340 --> 00:28:39,690
+this okay not really in the seventies
+
+570
+00:28:39,690 --> 00:28:42,450
+though can anybody guess what company
+
+571
+00:28:42,450 --> 00:28:51,300
+disease yeah so yes so we have a policy
+
+572
+00:28:51,300 --> 00:28:52,860
+where you can get all all the all the
+
+573
+00:28:52,860 --> 00:28:54,810
+tools that you want and if having three
+
+574
+00:28:54,810 --> 00:28:58,320
+monitors is absolutely normal and you
+
+575
+00:28:58,320 --> 00:29:01,230
+know having your favorite like clicky
+
+576
+00:29:01,230 --> 00:29:03,540
+keyboard or you know visual studio if
+
+577
+00:29:03,540 --> 00:29:05,460
+you need it or whatever so it's
+
+578
+00:29:05,460 --> 00:29:08,850
+important to have all this thing coding
+
+579
+00:29:08,850 --> 00:29:12,960
+wise we do stuff that okay people are
+
+580
+00:29:12,960 --> 00:29:15,030
+actually I've been discouraged from
+
+581
+00:29:15,030 --> 00:29:18,450
+doing in all the other jobs I had like
+
+582
+00:29:18,450 --> 00:29:22,100
+for example they compiling your
+
+583
+00:29:22,100 --> 00:29:25,170
+intermediate code that gets rendered is
+
+584
+00:29:25,170 --> 00:29:27,060
+something maybe you don't do we no js'
+
+585
+00:29:27,060 --> 00:29:28,890
+but we do it all the time to in order to
+
+586
+00:29:28,890 --> 00:29:31,590
+to improve performance or if you look at
+
+587
+00:29:31,590 --> 00:29:31,990
+it
+
+588
+00:29:31,990 --> 00:29:33,880
+with queries look at the query plans of
+
+589
+00:29:33,880 --> 00:29:36,160
+the my security plans and look at all
+
+590
+00:29:36,160 --> 00:29:38,170
+the little bits and tweaks you can put
+
+591
+00:29:38,170 --> 00:29:42,010
+into to make it's just likely faster all
+
+592
+00:29:42,010 --> 00:29:44,100
+right so it's a cycle again you know
+
+593
+00:29:44,100 --> 00:29:48,840
+hackers tools and and results are code
+
+594
+00:29:48,840 --> 00:29:53,100
+so in conclusion I have 15 seconds
+
+595
+00:29:53,100 --> 00:29:56,050
+okay so performance is a feature and not
+
+596
+00:29:56,050 --> 00:29:58,510
+a luxury at least for us as I was
+
+597
+00:29:58,510 --> 00:30:01,240
+telling you you know you want this site
+
+598
+00:30:01,240 --> 00:30:03,910
+it doesn't fall down and you want a site
+
+599
+00:30:03,910 --> 00:30:06,250
+that is usable and but it's you want to
+
+600
+00:30:06,250 --> 00:30:08,410
+have the code base which is beautiful in
+
+601
+00:30:08,410 --> 00:30:10,690
+our case performance is the beauty of
+
+602
+00:30:10,690 --> 00:30:15,130
+our core base in order to optimize
+
+603
+00:30:15,130 --> 00:30:18,309
+performance you need to have cycles and
+
+604
+00:30:18,309 --> 00:30:21,429
+I'm pretty sure that no matter what your
+
+605
+00:30:21,429 --> 00:30:24,340
+priorities are in your in your company
+
+606
+00:30:24,340 --> 00:30:27,130
+you have your seen cycles you maybe you
+
+607
+00:30:27,130 --> 00:30:29,380
+do a Giles and you have weekly cycles
+
+608
+00:30:29,380 --> 00:30:31,570
+but you need to be very conscious about
+
+609
+00:30:31,570 --> 00:30:33,730
+these cycles and optimize for them you
+
+610
+00:30:33,730 --> 00:30:35,860
+know I'm pretty sure that most companies
+
+611
+00:30:35,860 --> 00:30:38,410
+don't measure as much as we do so all
+
+612
+00:30:38,410 --> 00:30:43,809
+the cycle schedules hewed up the results
+
+613
+00:30:43,809 --> 00:30:45,190
+that you get are become very very
+
+614
+00:30:45,190 --> 00:30:48,160
+specific to your case as I was saying
+
+615
+00:30:48,160 --> 00:30:51,220
+you know automated testers this is
+
+616
+00:30:51,220 --> 00:30:53,530
+specific to us it won't work anywhere
+
+617
+00:30:53,530 --> 00:30:56,740
+else but it's also extremely high value
+
+618
+00:30:56,740 --> 00:30:59,470
+if you think about all that I've talked
+
+619
+00:30:59,470 --> 00:31:05,260
+about and how we can do code which is
+
+620
+00:31:05,260 --> 00:31:07,360
+not testable but then we can test it
+
+621
+00:31:07,360 --> 00:31:09,370
+another way it's all a chain of things
+
+622
+00:31:09,370 --> 00:31:11,890
+that work together and this only works
+
+623
+00:31:11,890 --> 00:31:14,740
+for us and you need to build the same
+
+624
+00:31:14,740 --> 00:31:17,230
+thing in your own case you need to build
+
+625
+00:31:17,230 --> 00:31:20,380
+the perfect architecture for your own
+
+626
+00:31:20,380 --> 00:31:22,030
+case if someone comes to you and tells
+
+627
+00:31:22,030 --> 00:31:25,809
+you just do whatever architecture acts
+
+628
+00:31:25,809 --> 00:31:29,230
+several less we had the new one is
+
+629
+00:31:29,230 --> 00:31:31,330
+everything's going to be better maybe
+
+630
+00:31:31,330 --> 00:31:34,059
+it's true maybe it's not true you know
+
+631
+00:31:34,059 --> 00:31:37,770
+it really depends whether it fits you
+
+632
+00:31:37,770 --> 00:31:40,630
+garbage collection is a pain at scale
+
+633
+00:31:40,630 --> 00:31:45,380
+and you know I know js2 sorry
+
+634
+00:31:45,390 --> 00:31:47,910
+so you need to hire hackers and hire
+
+635
+00:31:47,910 --> 00:31:49,830
+people with a passion for coding that go
+
+636
+00:31:49,830 --> 00:31:52,230
+beyond you know just merely doing the
+
+637
+00:31:52,230 --> 00:31:53,670
+job for eight hours and then going home
+
+638
+00:31:53,670 --> 00:31:57,090
+and I need to insert a plug about Stack
+
+639
+00:31:57,090 --> 00:31:58,890
+Overflow jobs and this is how we
+
+640
+00:31:58,890 --> 00:32:01,890
+monetize so if you want the job we job
+
+641
+00:32:01,890 --> 00:32:06,240
+for you and buy three monitors because
+
+642
+00:32:06,240 --> 00:32:09,960
+come on they are cheap now so anyway so
+
+643
+00:32:09,960 --> 00:32:13,440
+quick announcement you know we have
+
+644
+00:32:13,440 --> 00:32:17,520
+badges to encourage good behavior we are
+
+645
+00:32:17,520 --> 00:32:19,940
+giving away today in tomorrow this badge
+
+646
+00:32:19,940 --> 00:32:23,070
+it's a silver badge cannot robot in
+
+647
+00:32:23,070 --> 00:32:24,870
+order to get it you have to come and
+
+648
+00:32:24,870 --> 00:32:27,990
+talk to me and I give you a code to
+
+649
+00:32:27,990 --> 00:32:30,510
+unlock one for yourself and this just
+
+650
+00:32:30,510 --> 00:32:32,190
+encourage people to come and talk to us
+
+651
+00:32:32,190 --> 00:32:36,860
+that's all the reason that is there so
+
+652
+00:32:36,860 --> 00:32:40,590
+that's thing and that's it so that's my
+
+653
+00:32:40,590 --> 00:32:44,190
+Twitter and that's a game so thank you
+
+654
+00:32:44,190 --> 00:32:45,540
+very much
+

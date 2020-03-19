@@ -1,0 +1,1609 @@
+1
+00:00:17,350 --> 00:00:19,720
+
+yeah this is my personal subtitle of the
+
+2
+00:00:19,720 --> 00:00:21,280
+talk which is why you know give me one
+
+3
+00:00:21,280 --> 00:00:25,630
+point oh and it's kind of funny actually
+
+4
+00:00:25,630 --> 00:00:28,540
+because that subtitle is really sort of
+
+5
+00:00:28,540 --> 00:00:30,760
+the crux of the talk but before I go
+
+6
+00:00:30,760 --> 00:00:32,950
+into that I'm trailer Robbins I go by
+
+7
+00:00:32,950 --> 00:00:34,989
+the index zero on the Internet I started
+
+8
+00:00:34,989 --> 00:00:36,850
+a company called no jitsu with some guys
+
+9
+00:00:36,850 --> 00:00:39,250
+back there and that little seal there
+
+10
+00:00:39,250 --> 00:00:41,530
+everything is that we made this so and
+
+11
+00:00:41,530 --> 00:00:43,390
+when I say that no one point 0 is really
+
+12
+00:00:43,390 --> 00:00:45,400
+the crux of this talk is that it's just
+
+13
+00:00:45,400 --> 00:00:47,440
+what's the problem right how do you run
+
+14
+00:00:47,440 --> 00:00:49,300
+something in production that is by
+
+15
+00:00:49,300 --> 00:00:52,239
+definition unstable right like it's kind
+
+16
+00:00:52,239 --> 00:00:53,860
+of a it's a catch-22 right it's a
+
+17
+00:00:53,860 --> 00:00:57,070
+Occam's razor you know it's no good what
+
+18
+00:00:57,070 --> 00:00:59,320
+do you do let's start small right like
+
+19
+00:00:59,320 --> 00:01:01,570
+little things right you probably want to
+
+20
+00:01:01,570 --> 00:01:05,110
+be listening for errors so this is a
+
+21
+00:01:05,110 --> 00:01:07,960
+pretty common pattern but what the thing
+
+22
+00:01:07,960 --> 00:01:09,670
+is in a lot of this code that I see
+
+23
+00:01:09,670 --> 00:01:12,130
+people don't include the last line right
+
+24
+00:01:12,130 --> 00:01:14,470
+so they don't include process not exit
+
+25
+00:01:14,470 --> 00:01:16,570
+so that means that oh I've got something
+
+26
+00:01:16,570 --> 00:01:17,830
+went wrong and I'm just going to assume
+
+27
+00:01:17,830 --> 00:01:20,020
+that that things are fine and things
+
+28
+00:01:20,020 --> 00:01:21,939
+will fix themselves that's that's wrong
+
+29
+00:01:21,939 --> 00:01:23,560
+don't do that you're gonna you're going
+
+30
+00:01:23,560 --> 00:01:26,500
+to kick yourself later I think I could
+
+31
+00:01:26,500 --> 00:01:28,539
+name five off the top of my head your
+
+32
+00:01:28,539 --> 00:01:30,969
+HTTP parser is borked you know the
+
+33
+00:01:30,969 --> 00:01:32,530
+sockets are going to stay open when they
+
+34
+00:01:32,530 --> 00:01:34,299
+should be half closed like the list goes
+
+35
+00:01:34,299 --> 00:01:36,240
+on just don't do this use this snippet
+
+36
+00:01:36,240 --> 00:01:39,009
+log your log things somewhere if you're
+
+37
+00:01:39,009 --> 00:01:40,750
+really good you can log it in database
+
+38
+00:01:40,750 --> 00:01:44,439
+so you know grey log 2 we use log liat
+
+39
+00:01:44,439 --> 00:01:46,719
+no jitsu it's great service hoptoad I
+
+40
+00:01:46,719 --> 00:01:49,479
+know people use that too and you know
+
+41
+00:01:49,479 --> 00:01:50,829
+when I talk about listening for errors
+
+42
+00:01:50,829 --> 00:01:53,200
+you really gotta listen for errors like
+
+43
+00:01:53,200 --> 00:01:55,000
+all of them even the ones that aren't
+
+44
+00:01:55,000 --> 00:01:57,399
+documented as errors and this is a great
+
+45
+00:01:57,399 --> 00:02:00,369
+little snippet this will get you so this
+
+46
+00:02:00,369 --> 00:02:01,329
+is we're going to make an outgoing
+
+47
+00:02:01,329 --> 00:02:03,399
+request to google com really really
+
+48
+00:02:03,399 --> 00:02:05,409
+simple straightforward stuff and the
+
+49
+00:02:05,409 --> 00:02:07,149
+HTTP module is going to return us a
+
+50
+00:02:07,149 --> 00:02:09,520
+request and that request actually throws
+
+51
+00:02:09,520 --> 00:02:11,350
+an error event if something goes wrong
+
+52
+00:02:11,350 --> 00:02:14,319
+in the inner socket and that little code
+
+53
+00:02:14,319 --> 00:02:15,700
+line on the bottom is where this error
+
+54
+00:02:15,700 --> 00:02:17,200
+gets thrown and you can read through
+
+55
+00:02:17,200 --> 00:02:19,510
+that if you're really interested but if
+
+56
+00:02:19,510 --> 00:02:21,430
+you don't catch this error your apps
+
+57
+00:02:21,430 --> 00:02:23,370
+just going to crash for no good reason
+
+58
+00:02:23,370 --> 00:02:26,110
+so you want to look at where the error
+
+59
+00:02:26,110 --> 00:02:27,940
+events are you want to read the docs and
+
+60
+00:02:27,940 --> 00:02:29,590
+see what
+
+61
+00:02:29,590 --> 00:02:31,660
+aventa meters throw the error event and
+
+62
+00:02:31,660 --> 00:02:34,030
+this little you know string error is
+
+63
+00:02:34,030 --> 00:02:36,910
+significant in that anytime you emit
+
+64
+00:02:36,910 --> 00:02:39,580
+error if it's not trapped it's going to
+
+65
+00:02:39,580 --> 00:02:41,560
+get thrown as a process unhandled
+
+66
+00:02:41,560 --> 00:02:42,700
+exception error so it's going to
+
+67
+00:02:42,700 --> 00:02:44,200
+escalate immediately to exiting your
+
+68
+00:02:44,200 --> 00:02:46,569
+process which obviously is something
+
+69
+00:02:46,569 --> 00:02:48,400
+that you don't want to do I mean you
+
+70
+00:02:48,400 --> 00:02:49,660
+want to keep your process running as
+
+71
+00:02:49,660 --> 00:02:54,459
+long as you can so that everyone get
+
+72
+00:02:54,459 --> 00:02:55,989
+that we got eighty percent of people
+
+73
+00:02:55,989 --> 00:02:57,760
+using your prodding this before it's old
+
+74
+00:02:57,760 --> 00:03:00,549
+news another one is that you know I
+
+75
+00:03:00,549 --> 00:03:03,280
+mentioned events and a vented I oh I'm
+
+76
+00:03:03,280 --> 00:03:05,590
+sure that's come up a lot and you need
+
+77
+00:03:05,590 --> 00:03:07,660
+to watch for these things right this is
+
+78
+00:03:07,660 --> 00:03:10,450
+a we rent run and maintain a project
+
+79
+00:03:10,450 --> 00:03:13,090
+called node HTTP proxy which is a basic
+
+80
+00:03:13,090 --> 00:03:14,950
+straightforward reverse proxy written in
+
+81
+00:03:14,950 --> 00:03:16,900
+node it's pretty fast you know it
+
+82
+00:03:16,900 --> 00:03:18,610
+competes with things that are like NC
+
+83
+00:03:18,610 --> 00:03:20,049
+which is kind of whole point of node
+
+84
+00:03:20,049 --> 00:03:23,500
+itself but this was a fun bug defined
+
+85
+00:03:23,500 --> 00:03:25,299
+which is that you know the event in
+
+86
+00:03:25,299 --> 00:03:27,310
+meters we're getting more listeners
+
+87
+00:03:27,310 --> 00:03:29,290
+every time so there was some sort of
+
+88
+00:03:29,290 --> 00:03:32,290
+weak in my event emitter listener and
+
+89
+00:03:32,290 --> 00:03:34,239
+that's can be a real problem i mean
+
+90
+00:03:34,239 --> 00:03:36,100
+let's look at this code sample right so
+
+91
+00:03:36,100 --> 00:03:38,230
+I've got the events module I'm going to
+
+92
+00:03:38,230 --> 00:03:41,019
+require that and then I'm gonna you know
+
+93
+00:03:41,019 --> 00:03:42,549
+do something right and when I do
+
+94
+00:03:42,549 --> 00:03:44,709
+something i'm going to say you know
+
+95
+00:03:44,709 --> 00:03:47,079
+return event emitter and later on and
+
+96
+00:03:47,079 --> 00:03:49,030
+MIT the done event and this is a pattern
+
+97
+00:03:49,030 --> 00:03:51,299
+you see all over the node code base that
+
+98
+00:03:51,299 --> 00:03:54,010
+HTTP example that i was going through
+
+99
+00:03:54,010 --> 00:03:57,450
+earlier was pretty much the same thing
+
+100
+00:03:57,450 --> 00:04:00,010
+but the problem is is that this done
+
+101
+00:04:00,010 --> 00:04:02,919
+event only gets emitted once right so
+
+102
+00:04:02,919 --> 00:04:06,310
+why would you use the first block which
+
+103
+00:04:06,310 --> 00:04:08,319
+says hey I want to listen to this done
+
+104
+00:04:08,319 --> 00:04:11,109
+event in perpetuity in that there could
+
+105
+00:04:11,109 --> 00:04:13,060
+be many done events being emitted from
+
+106
+00:04:13,060 --> 00:04:15,989
+this particular event emitter over time
+
+107
+00:04:15,989 --> 00:04:19,450
+versus I know as a user that this
+
+108
+00:04:19,450 --> 00:04:21,010
+particular event emitter is only going
+
+109
+00:04:21,010 --> 00:04:23,410
+to vit the done event once so I should
+
+110
+00:04:23,410 --> 00:04:26,349
+use that once which will remove the
+
+111
+00:04:26,349 --> 00:04:28,539
+event handler once the event has fired
+
+112
+00:04:28,539 --> 00:04:31,210
+the first time and you know you ask
+
+113
+00:04:31,210 --> 00:04:32,800
+yourself well this doesn't really matter
+
+114
+00:04:32,800 --> 00:04:34,450
+right you know I'll just have latent
+
+115
+00:04:34,450 --> 00:04:36,610
+event two meters or you know event
+
+116
+00:04:36,610 --> 00:04:39,099
+handlers around problem is as garbage
+
+117
+00:04:39,099 --> 00:04:40,780
+collection in long running processes
+
+118
+00:04:40,780 --> 00:04:43,180
+because if you actually have some
+
+119
+00:04:43,180 --> 00:04:46,150
+thing in the event handler that's
+
+120
+00:04:46,150 --> 00:04:47,949
+outside of the original closure scope
+
+121
+00:04:47,949 --> 00:04:49,210
+that you would have wanted to get
+
+122
+00:04:49,210 --> 00:04:51,940
+garbage collected if that event emitter
+
+123
+00:04:51,940 --> 00:04:53,919
+or throw that event handler for that
+
+124
+00:04:53,919 --> 00:04:56,560
+particular emitter is not removed then
+
+125
+00:04:56,560 --> 00:04:58,030
+that function is still around and it
+
+126
+00:04:58,030 --> 00:05:00,039
+needs to maintain that reference over
+
+127
+00:05:00,039 --> 00:05:02,590
+time and this can be really tricky and
+
+128
+00:05:02,590 --> 00:05:06,070
+hard to debug so just be aware that over
+
+129
+00:05:06,070 --> 00:05:07,810
+time you should just be as conservative
+
+130
+00:05:07,810 --> 00:05:09,550
+as you can about listening to events and
+
+131
+00:05:09,550 --> 00:05:14,289
+adding functional listeners so use a
+
+132
+00:05:14,289 --> 00:05:17,710
+process monitor upstart monett I wrote
+
+133
+00:05:17,710 --> 00:05:19,750
+this thing called forever I'm going to
+
+134
+00:05:19,750 --> 00:05:21,340
+walk through a little example of it it's
+
+135
+00:05:21,340 --> 00:05:23,590
+all written a note I've gotten some some
+
+136
+00:05:23,590 --> 00:05:25,630
+crap for you know reinventing the wheel
+
+137
+00:05:25,630 --> 00:05:27,910
+but I like this to a lot that's what
+
+138
+00:05:27,910 --> 00:05:30,669
+kind of why I wrote it right so let me
+
+139
+00:05:30,669 --> 00:05:36,520
+grab my tool and so let's imagine that
+
+140
+00:05:36,520 --> 00:05:39,430
+my resolution was terrible and i need to
+
+141
+00:05:39,430 --> 00:05:46,509
+change it Oh back to the back to the
+
+142
+00:05:46,509 --> 00:05:52,409
+monitor problem 1024 x 768 no that's
+
+143
+00:05:52,409 --> 00:05:56,740
+that's the right size oh well we'll do a
+
+144
+00:05:56,740 --> 00:06:02,320
+live sorry about this guy's this is just
+
+145
+00:06:02,320 --> 00:06:09,290
+the wrong size
+
+146
+00:06:09,300 --> 00:06:12,790
+let's try this one this one looks better
+
+147
+00:06:12,790 --> 00:06:21,040
+yeah here we go okay cool so I'm gonna
+
+148
+00:06:21,040 --> 00:06:26,950
+jump into the project and I actually
+
+149
+00:06:26,950 --> 00:06:29,830
+have it open over here and it's a good
+
+150
+00:06:29,830 --> 00:06:32,650
+little sample of some of the just you
+
+151
+00:06:32,650 --> 00:06:34,330
+know simple code samples under this
+
+152
+00:06:34,330 --> 00:06:36,880
+examples library that I use to say hey
+
+153
+00:06:36,880 --> 00:06:38,710
+what are the common cases that people
+
+154
+00:06:38,710 --> 00:06:41,230
+are going to do and how can we prevent
+
+155
+00:06:41,230 --> 00:06:43,660
+against those things miss behaving badly
+
+156
+00:06:43,660 --> 00:06:46,750
+even when you accept the concept of user
+
+157
+00:06:46,750 --> 00:06:49,120
+error so things like you know just
+
+158
+00:06:49,120 --> 00:06:50,740
+always throw I mean what happens when I
+
+159
+00:06:50,740 --> 00:06:52,420
+just run a process that always throws an
+
+160
+00:06:52,420 --> 00:06:53,770
+exception right that's probably not a
+
+161
+00:06:53,770 --> 00:06:56,950
+not a good thing to write or in this
+
+162
+00:06:56,950 --> 00:06:59,110
+case this is probably the simplest hello
+
+163
+00:06:59,110 --> 00:07:00,820
+world app that you're ever going to see
+
+164
+00:07:00,820 --> 00:07:02,890
+a node right we grab something from the
+
+165
+00:07:02,890 --> 00:07:04,720
+command line we create a server we
+
+166
+00:07:04,720 --> 00:07:06,850
+listened on the specified port we write
+
+167
+00:07:06,850 --> 00:07:08,680
+something really really straightforward
+
+168
+00:07:08,680 --> 00:07:10,900
+stuff and what happens what I want to
+
+169
+00:07:10,900 --> 00:07:12,220
+run that kind of forever right so
+
+170
+00:07:12,220 --> 00:07:16,210
+forever start examples server and I can
+
+171
+00:07:16,210 --> 00:07:17,740
+continue to pass command-line options
+
+172
+00:07:17,740 --> 00:07:20,410
+through forever tooth child process and
+
+173
+00:07:20,410 --> 00:07:21,850
+so here I'm going to tell it to listen
+
+174
+00:07:21,850 --> 00:07:24,820
+on 80 80 and so you know forever saw
+
+175
+00:07:24,820 --> 00:07:28,300
+that process that script and now I can't
+
+176
+00:07:28,300 --> 00:07:30,880
+fight and tight we can see that that guy
+
+177
+00:07:30,880 --> 00:07:34,600
+is running we can see that it has to pee
+
+178
+00:07:34,600 --> 00:07:36,130
+IDs right so this is going to start up a
+
+179
+00:07:36,130 --> 00:07:38,500
+forever process and to monitor the child
+
+180
+00:07:38,500 --> 00:07:40,600
+process that it starts for you and in
+
+181
+00:07:40,600 --> 00:07:41,980
+that case the significant one is that
+
+182
+00:07:41,980 --> 00:07:43,540
+the first one is the child process
+
+183
+00:07:43,540 --> 00:07:45,490
+second one is the forever process so if
+
+184
+00:07:45,490 --> 00:07:51,760
+I kill 1925 now I have a new process all
+
+185
+00:07:51,760 --> 00:07:53,800
+right restart it for me and you can see
+
+186
+00:07:53,800 --> 00:07:55,990
+that the uptime on the left there has
+
+187
+00:07:55,990 --> 00:07:57,820
+been reset so it will just keep going
+
+188
+00:07:57,820 --> 00:07:59,590
+forever it's kind of a whole point and I
+
+189
+00:07:59,590 --> 00:08:03,250
+can stop it right and now it's not there
+
+190
+00:08:03,250 --> 00:08:07,360
+anymore so this is useful I really enjoy
+
+191
+00:08:07,360 --> 00:08:08,950
+using it and we actually have some other
+
+192
+00:08:08,950 --> 00:08:10,240
+tools at nerd Jitsu that we're going to
+
+193
+00:08:10,240 --> 00:08:12,360
+be talking about on thursday at no time
+
+194
+00:08:12,360 --> 00:08:16,110
+that this play is really nice with so
+
+195
+00:08:16,110 --> 00:08:20,039
+back to the talk which way is it this
+
+196
+00:08:20,039 --> 00:08:26,819
+way there we go so listen forevers use
+
+197
+00:08:26,819 --> 00:08:29,099
+process monitor great the next one
+
+198
+00:08:29,099 --> 00:08:30,569
+really is you want stabilize your
+
+199
+00:08:30,569 --> 00:08:33,140
+dependencies I think this is sort of a
+
+200
+00:08:33,140 --> 00:08:35,519
+catch-22 of the node community that a
+
+201
+00:08:35,519 --> 00:08:37,860
+lot of people who are new to know don't
+
+202
+00:08:37,860 --> 00:08:39,839
+necessarily pick up on immediately think
+
+203
+00:08:39,839 --> 00:08:41,430
+there are a lot of modules out there and
+
+204
+00:08:41,430 --> 00:08:42,810
+that is at the same time a great thing
+
+205
+00:08:42,810 --> 00:08:44,700
+but also kind of bad things you need to
+
+206
+00:08:44,700 --> 00:08:46,140
+know which ones are good who's
+
+207
+00:08:46,140 --> 00:08:47,700
+contributing a lot who's writing these
+
+208
+00:08:47,700 --> 00:08:50,310
+things and also just include them in
+
+209
+00:08:50,310 --> 00:08:53,880
+your package JSON files this is one of
+
+210
+00:08:53,880 --> 00:08:55,709
+the ones that I love to find in people's
+
+211
+00:08:55,709 --> 00:08:57,269
+production environments right you just
+
+212
+00:08:57,269 --> 00:08:59,690
+forgot to install this particular
+
+213
+00:08:59,690 --> 00:09:03,540
+dependency on that box and now it's not
+
+214
+00:09:03,540 --> 00:09:05,310
+there so how do you solve that problem
+
+215
+00:09:05,310 --> 00:09:07,709
+if you're not diligent about reading
+
+216
+00:09:07,709 --> 00:09:09,839
+through your own code and finding your
+
+217
+00:09:09,839 --> 00:09:11,910
+dependencies beforehand before you
+
+218
+00:09:11,910 --> 00:09:15,480
+deploy and in this case I wrote another
+
+219
+00:09:15,480 --> 00:09:17,940
+tool to do this and it's called the
+
+220
+00:09:17,940 --> 00:09:19,620
+required analyzer and it will do it for
+
+221
+00:09:19,620 --> 00:09:23,130
+you so let's walk through that again in
+
+222
+00:09:23,130 --> 00:09:25,649
+another small sample so in this case
+
+223
+00:09:25,649 --> 00:09:30,959
+let's just run it on forever so when I
+
+224
+00:09:30,959 --> 00:09:32,790
+talk about package.json files I mean I
+
+225
+00:09:32,790 --> 00:09:35,339
+kind of assumed everybody seen one but
+
+226
+00:09:35,339 --> 00:09:37,829
+here's the forever package.json so it's
+
+227
+00:09:37,829 --> 00:09:40,019
+got some repository some keywords and
+
+228
+00:09:40,019 --> 00:09:42,390
+some dependencies right so a bunch of
+
+229
+00:09:42,390 --> 00:09:44,279
+dependencies in here I've maintained
+
+230
+00:09:44,279 --> 00:09:46,860
+this myself but let's just kill those we
+
+231
+00:09:46,860 --> 00:09:48,480
+don't want those anymore we're just no
+
+232
+00:09:48,480 --> 00:09:49,649
+dependencies there's going to be a bad
+
+233
+00:09:49,649 --> 00:09:52,920
+application developer but now I'm just
+
+234
+00:09:52,920 --> 00:09:58,470
+going to find them again so it's going
+
+235
+00:09:58,470 --> 00:10:00,630
+to analyze the raw dependencies find
+
+236
+00:10:00,630 --> 00:10:02,699
+them for me and find a subset of them
+
+237
+00:10:02,699 --> 00:10:04,019
+because right now it's only going to be
+
+238
+00:10:04,019 --> 00:10:07,339
+looking at the package.json for my main
+
+239
+00:10:07,339 --> 00:10:11,980
+property so
+
+240
+00:10:11,980 --> 00:10:14,560
+when I say that I mean main right here
+
+241
+00:10:14,560 --> 00:10:17,020
+as in it's actually kind of a fun tool
+
+242
+00:10:17,020 --> 00:10:18,760
+to read through because what it actually
+
+243
+00:10:18,760 --> 00:10:21,010
+does it goes out and it spawns off a
+
+244
+00:10:21,010 --> 00:10:27,130
+child process for my mouse it's always
+
+245
+00:10:27,130 --> 00:10:33,150
+lost it spawns off a child process for
+
+246
+00:10:33,150 --> 00:10:36,790
+this and this is actually really simple
+
+247
+00:10:36,790 --> 00:10:38,710
+a little file all it does is it kind of
+
+248
+00:10:38,710 --> 00:10:42,940
+monkey patches the internal module load
+
+249
+00:10:42,940 --> 00:10:45,040
+inside of a node.js and then outputs
+
+250
+00:10:45,040 --> 00:10:46,600
+everything that goes into your require
+
+251
+00:10:46,600 --> 00:10:48,490
+statements and processes those and
+
+252
+00:10:48,490 --> 00:10:50,920
+analyzes them later obviously you would
+
+253
+00:10:50,920 --> 00:10:52,060
+never want to include this code in
+
+254
+00:10:52,060 --> 00:10:53,560
+production which is why it spawns it as
+
+255
+00:10:53,560 --> 00:10:55,060
+a child process to keep everything in
+
+256
+00:10:55,060 --> 00:10:57,160
+isolation and then it just sort of reads
+
+257
+00:10:57,160 --> 00:10:58,900
+through and says oh well what's I 9pm
+
+258
+00:10:58,900 --> 00:11:01,180
+what's a local file and then just build
+
+259
+00:11:01,180 --> 00:11:02,080
+that out right it back to your
+
+260
+00:11:02,080 --> 00:11:04,270
+package.json so in this case we go back
+
+261
+00:11:04,270 --> 00:11:06,400
+to the forever package.json we see we
+
+262
+00:11:06,400 --> 00:11:08,080
+have some dependencies in here now I
+
+263
+00:11:08,080 --> 00:11:11,290
+actually want to keep by a long list so
+
+264
+00:11:11,290 --> 00:11:20,260
+I'll keep those so this is a little
+
+265
+00:11:20,260 --> 00:11:21,640
+thing I mentioned at the beginning of my
+
+266
+00:11:21,640 --> 00:11:23,020
+talk but we're actually be pushing this
+
+267
+00:11:23,020 --> 00:11:24,640
+out to all the projects that we use and
+
+268
+00:11:24,640 --> 00:11:26,620
+maintain in production and no jitsu so
+
+269
+00:11:26,620 --> 00:11:28,150
+if you look for this seal like we're on
+
+270
+00:11:28,150 --> 00:11:29,770
+top of it I kind of have a reputation
+
+271
+00:11:29,770 --> 00:11:33,070
+for not sleeping and it's true I all I
+
+272
+00:11:33,070 --> 00:11:37,170
+do is work so if it's broken I'll fix it
+
+273
+00:11:37,170 --> 00:11:40,720
+the next kind of big catch-22 in node is
+
+274
+00:11:40,720 --> 00:11:43,000
+that people don't really structure their
+
+275
+00:11:43,000 --> 00:11:44,410
+code at all or there is just no
+
+276
+00:11:44,410 --> 00:11:47,680
+convention commonly accepted that is the
+
+277
+00:11:47,680 --> 00:11:49,510
+right way to structure your code so this
+
+278
+00:11:49,510 --> 00:11:51,100
+is a pretty common example of how I
+
+279
+00:11:51,100 --> 00:11:53,320
+choose to structure my code but you
+
+280
+00:11:53,320 --> 00:11:55,120
+should just pick something and stick to
+
+281
+00:11:55,120 --> 00:11:57,940
+it so here you've got you know bin is
+
+282
+00:11:57,940 --> 00:12:00,550
+basically all of your runtime files I've
+
+283
+00:12:00,550 --> 00:12:02,110
+got some configuration probably with
+
+284
+00:12:02,110 --> 00:12:04,780
+environments and then you know under lib
+
+285
+00:12:04,780 --> 00:12:06,730
+is all of your app code and I typically
+
+286
+00:12:06,730 --> 00:12:08,320
+will have another folder underneath that
+
+287
+00:12:08,320 --> 00:12:10,990
+called you know app name and then app
+
+288
+00:12:10,990 --> 00:12:13,690
+name Jas and just to name space those
+
+289
+00:12:13,690 --> 00:12:16,210
+things a little bit nicer and then some
+
+290
+00:12:16,210 --> 00:12:18,700
+public static files and some tests
+
+291
+00:12:18,700 --> 00:12:21,610
+similarly named spaced vendor I guess
+
+292
+00:12:21,610 --> 00:12:22,900
+that's probably a draw over from the
+
+293
+00:12:22,900 --> 00:12:25,420
+Ruby days of various gets
+
+294
+00:12:25,420 --> 00:12:27,670
+modules that you can't get through NPM
+
+295
+00:12:27,670 --> 00:12:30,160
+and you'll you'll thank me when you
+
+296
+00:12:30,160 --> 00:12:31,930
+start running big apps in production and
+
+297
+00:12:31,930 --> 00:12:34,060
+you actually use a code template at all
+
+298
+00:12:34,060 --> 00:12:36,340
+because I've seen way too many Express
+
+299
+00:12:36,340 --> 00:12:37,900
+applications that just have one giant
+
+300
+00:12:37,900 --> 00:12:40,330
+server file and it's it's really
+
+301
+00:12:40,330 --> 00:12:45,130
+annoying to debug so lastly here is
+
+302
+00:12:45,130 --> 00:12:47,770
+decide on a network architecture and by
+
+303
+00:12:47,770 --> 00:12:49,870
+that I really mean you know to proxy or
+
+304
+00:12:49,870 --> 00:12:52,150
+not to proxy that is the question and
+
+305
+00:12:52,150 --> 00:12:53,920
+you're probably looking at me like what
+
+306
+00:12:53,920 --> 00:12:56,800
+is he talking about so the first option
+
+307
+00:12:56,800 --> 00:12:58,270
+here is that you can share a file
+
+308
+00:12:58,270 --> 00:13:00,610
+descriptor between multiple servers and
+
+309
+00:13:00,610 --> 00:13:03,340
+this is actually written into a library
+
+310
+00:13:03,340 --> 00:13:06,850
+that I like called cluster and what it
+
+311
+00:13:06,850 --> 00:13:08,230
+does is that it essentially says okay
+
+312
+00:13:08,230 --> 00:13:10,180
+i'm going to start up as a server then
+
+313
+00:13:10,180 --> 00:13:11,620
+i'm going to make a file descriptor that
+
+314
+00:13:11,620 --> 00:13:13,090
+represents a eunuch socket for a
+
+315
+00:13:13,090 --> 00:13:14,800
+particular port and then i'm going to
+
+316
+00:13:14,800 --> 00:13:17,350
+spawn up a bunch of children that's the
+
+317
+00:13:17,350 --> 00:13:19,060
+second code sample here and i'm going to
+
+318
+00:13:19,060 --> 00:13:21,310
+pass them those file descriptors and
+
+319
+00:13:21,310 --> 00:13:23,170
+tell them hey you should use this file
+
+320
+00:13:23,170 --> 00:13:26,950
+descriptor for your STD of course the
+
+321
+00:13:26,950 --> 00:13:28,690
+second option here this doesn't scale
+
+322
+00:13:28,690 --> 00:13:30,160
+horizontally right you can only do this
+
+323
+00:13:30,160 --> 00:13:32,650
+on a single machine the second option if
+
+324
+00:13:32,650 --> 00:13:34,270
+you're ever going to do any sort of
+
+325
+00:13:34,270 --> 00:13:36,760
+horizontal scaling is to use a
+
+326
+00:13:36,760 --> 00:13:40,090
+round-robin proxy and a forward HTTP
+
+327
+00:13:40,090 --> 00:13:42,100
+proxy which is what we do at no jitsu
+
+328
+00:13:42,100 --> 00:13:45,130
+because we scale out your application to
+
+329
+00:13:45,130 --> 00:13:46,840
+a bunch of small machines and then we
+
+330
+00:13:46,840 --> 00:13:48,820
+basically do a variant of simple
+
+331
+00:13:48,820 --> 00:13:50,980
+round-robin proxying pretty much like
+
+332
+00:13:50,980 --> 00:13:53,410
+this so you can see up there we have two
+
+333
+00:13:53,410 --> 00:13:55,930
+IP addresses and the port's that they're
+
+334
+00:13:55,930 --> 00:13:58,030
+listening on and then we create a proxy
+
+335
+00:13:58,030 --> 00:14:00,400
+server and we just say hey grab the next
+
+336
+00:14:00,400 --> 00:14:03,130
+address proxy to the target a pen that
+
+337
+00:14:03,130 --> 00:14:05,350
+to the end of the list rinse repeat just
+
+338
+00:14:05,350 --> 00:14:07,300
+keep doing that so you can start up your
+
+339
+00:14:07,300 --> 00:14:09,400
+application on different ports on the
+
+340
+00:14:09,400 --> 00:14:10,690
+same machine and then just round-robin
+
+341
+00:14:10,690 --> 00:14:14,230
+proxy between them so i think i actually
+
+342
+00:14:14,230 --> 00:14:15,850
+have a couple of minutes to take some
+
+343
+00:14:15,850 --> 00:14:27,079
+questions so anybody yeah
+
+344
+00:14:27,089 --> 00:14:29,059
+Oh
+
+345
+00:14:29,059 --> 00:14:31,189
+so the things that it misses right now
+
+346
+00:14:31,189 --> 00:14:32,499
+and the thing is is that it has a
+
+347
+00:14:32,499 --> 00:14:35,329
+full-fledged API in code that you could
+
+348
+00:14:35,329 --> 00:14:37,579
+find those for but right now the CLI
+
+349
+00:14:37,579 --> 00:14:39,589
+tool just looks for the main property in
+
+350
+00:14:39,589 --> 00:14:41,659
+the package.json so if you have bin
+
+351
+00:14:41,659 --> 00:14:43,099
+scripts that have dependencies that
+
+352
+00:14:43,099 --> 00:14:45,799
+aren't referenced by your individual
+
+353
+00:14:45,799 --> 00:14:48,289
+main library it's going to miss those if
+
+354
+00:14:48,289 --> 00:14:50,389
+you have test dependencies that it's
+
+355
+00:14:50,389 --> 00:14:52,249
+missing but I'm going to probably adding
+
+356
+00:14:52,249 --> 00:14:53,869
+that in the next week or two of you know
+
+357
+00:14:53,869 --> 00:14:55,849
+just add extra properties look at those
+
+358
+00:14:55,849 --> 00:15:09,060
+files run them that kind of stuff
+
+359
+00:15:09,070 --> 00:15:11,540
+yeah I mean that's a good point you know
+
+360
+00:15:11,540 --> 00:15:13,760
+I've seen some other libraries there was
+
+361
+00:15:13,760 --> 00:15:16,370
+another require analyzer that I saw that
+
+362
+00:15:16,370 --> 00:15:18,440
+was just written so ridiculously poorly
+
+363
+00:15:18,440 --> 00:15:21,170
+that I had compelled to write it
+
+364
+00:15:21,170 --> 00:15:23,510
+correctly and you know the main reason
+
+365
+00:15:23,510 --> 00:15:25,580
+there that wife was written report is
+
+366
+00:15:25,580 --> 00:15:27,380
+that all of the interesting code was
+
+367
+00:15:27,380 --> 00:15:29,150
+under their bin folder so there was
+
+368
+00:15:29,150 --> 00:15:30,950
+absolutely no opportunity for you as a
+
+369
+00:15:30,950 --> 00:15:33,160
+developer to use that programmatically
+
+370
+00:15:33,160 --> 00:15:36,710
+and so if I I didn't jump on the network
+
+371
+00:15:36,710 --> 00:15:37,970
+because I don't feel like getting pooped
+
+372
+00:15:37,970 --> 00:15:40,760
+on on Twitter so I don't have any
+
+373
+00:15:40,760 --> 00:15:43,190
+internet right now but I would jump to
+
+374
+00:15:43,190 --> 00:15:44,780
+the project page and show you some of
+
+375
+00:15:44,780 --> 00:15:46,460
+those samples but again both of these
+
+376
+00:15:46,460 --> 00:15:48,020
+projects they're on my github there on
+
+377
+00:15:48,020 --> 00:15:50,150
+the ninjutsu github so check those out
+
+378
+00:15:50,150 --> 00:15:52,310
+open an issue I usually respond to the
+
+379
+00:15:52,310 --> 00:16:04,700
+same day
+
+380
+00:16:04,710 --> 00:16:06,640
+you know that's that's a good question
+
+381
+00:16:06,640 --> 00:16:10,720
+it's it's a question that we answer
+
+382
+00:16:10,720 --> 00:16:12,190
+differently at no jitsu I think than
+
+383
+00:16:12,190 --> 00:16:14,950
+most people because we write 75% of all
+
+384
+00:16:14,950 --> 00:16:16,270
+the libraries that we use in production
+
+385
+00:16:16,270 --> 00:16:18,970
+but generally you probably want to have
+
+386
+00:16:18,970 --> 00:16:21,220
+some upper bound or instead of just
+
+387
+00:16:21,220 --> 00:16:22,450
+having an upper bound just have a
+
+388
+00:16:22,450 --> 00:16:24,520
+straight equals and then you can track
+
+389
+00:16:24,520 --> 00:16:26,050
+those and manage those yourself as you
+
+390
+00:16:26,050 --> 00:16:29,050
+go up but honestly for sort of where
+
+391
+00:16:29,050 --> 00:16:30,610
+nodes maturity is going back to the
+
+392
+00:16:30,610 --> 00:16:33,010
+subtitle of this talk overall you should
+
+393
+00:16:33,010 --> 00:16:35,410
+be looking at the packages watching the
+
+394
+00:16:35,410 --> 00:16:38,470
+commits like as Michael Rogers one of
+
+395
+00:16:38,470 --> 00:16:40,660
+the organizers of note comp and Jas comp
+
+396
+00:16:40,660 --> 00:16:42,670
+says that note is the first technology
+
+397
+00:16:42,670 --> 00:16:44,410
+to grow up in a post github age and
+
+398
+00:16:44,410 --> 00:16:46,480
+that's really made a lot of difference
+
+399
+00:16:46,480 --> 00:16:47,830
+like you should be using it you should
+
+400
+00:16:47,830 --> 00:16:50,380
+be following people that's how I stay up
+
+401
+00:16:50,380 --> 00:16:52,210
+with things and it's really become a
+
+402
+00:16:52,210 --> 00:16:57,070
+necessity at this point all right thank
+

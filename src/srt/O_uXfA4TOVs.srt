@@ -1,0 +1,1225 @@
+1
+00:00:09,200 --> 00:00:15,299
+
+I'm Matthew I work at Yammer a web
+
+2
+00:00:15,299 --> 00:00:17,310
+developer I've been working a lot of
+
+3
+00:00:17,310 --> 00:00:19,890
+different areas of the web stack I guess
+
+4
+00:00:19,890 --> 00:00:22,920
+for kind of a long time and my home has
+
+5
+00:00:22,920 --> 00:00:25,800
+always been JavaScript so it's really
+
+6
+00:00:25,800 --> 00:00:28,680
+exciting to be able to use finally
+
+7
+00:00:28,680 --> 00:00:30,119
+actually be able to use real JavaScript
+
+8
+00:00:30,119 --> 00:00:32,940
+on the server and do full stack
+
+9
+00:00:32,940 --> 00:00:35,489
+development we use a lot of JavaScript
+
+10
+00:00:35,489 --> 00:00:38,309
+at Yammer in a number of different
+
+11
+00:00:38,309 --> 00:00:41,550
+environments our desktop app is
+
+12
+00:00:41,550 --> 00:00:45,270
+JavaScript of course all the web
+
+13
+00:00:45,270 --> 00:00:47,610
+browsers for our web client we use
+
+14
+00:00:47,610 --> 00:00:50,250
+JavaScript in an embedded server-side
+
+15
+00:00:50,250 --> 00:00:52,440
+environment called the Ruby racer which
+
+16
+00:00:52,440 --> 00:00:56,370
+embeds a v8 process in in Ruby and of
+
+17
+00:00:56,370 --> 00:00:58,559
+course we've got a fairly new node
+
+18
+00:00:58,559 --> 00:01:00,629
+service that handles all of our file
+
+19
+00:01:00,629 --> 00:01:02,640
+uploads so I'm going to try to talk a
+
+20
+00:01:02,640 --> 00:01:05,189
+little bit about that it's a pretty
+
+21
+00:01:05,189 --> 00:01:07,140
+short time so I'm going to try to keep
+
+22
+00:01:07,140 --> 00:01:08,640
+it very high level and just kind of
+
+23
+00:01:08,640 --> 00:01:11,340
+power through it so the first lesson
+
+24
+00:01:11,340 --> 00:01:12,750
+this is all stuff that I wish I had
+
+25
+00:01:12,750 --> 00:01:14,820
+known sort of going into the process
+
+26
+00:01:14,820 --> 00:01:17,310
+sort of lessons learned and the first
+
+27
+00:01:17,310 --> 00:01:19,759
+sort of most important thing is is
+
+28
+00:01:19,759 --> 00:01:21,780
+organizing your code and thinking a
+
+29
+00:01:21,780 --> 00:01:24,990
+little bit beforehand as you're building
+
+30
+00:01:24,990 --> 00:01:28,500
+and part of this is sort of the good
+
+31
+00:01:28,500 --> 00:01:30,659
+problem that we have in JavaScript and
+
+32
+00:01:30,659 --> 00:01:32,460
+even more specifically with node that
+
+33
+00:01:32,460 --> 00:01:34,770
+it's really really easy to build
+
+34
+00:01:34,770 --> 00:01:37,350
+something that's immediately useful it's
+
+35
+00:01:37,350 --> 00:01:38,700
+very easy to step out a prototype that
+
+36
+00:01:38,700 --> 00:01:41,640
+does most of what you want almost kind
+
+37
+00:01:41,640 --> 00:01:44,009
+of too easy because as the
+
+38
+00:01:44,009 --> 00:01:47,130
+specifications grow and change ppl makes
+
+39
+00:01:47,130 --> 00:01:50,310
+what seemed to be very small changes to
+
+40
+00:01:50,310 --> 00:01:52,380
+the code to the specification what
+
+41
+00:01:52,380 --> 00:01:53,490
+you're what you're actually supposed to
+
+42
+00:01:53,490 --> 00:01:57,060
+be doing and ends up having a big impact
+
+43
+00:01:57,060 --> 00:01:59,250
+on the rest of the code base so it
+
+44
+00:01:59,250 --> 00:02:02,579
+rapidly can devolve into the old school
+
+45
+00:02:02,579 --> 00:02:05,549
+sort of PHP hairball code especially
+
+46
+00:02:05,549 --> 00:02:09,080
+because of be asynchronous the callbacks
+
+47
+00:02:09,080 --> 00:02:11,520
+some of us who've been using javascript
+
+48
+00:02:11,520 --> 00:02:12,569
+for a very very long
+
+49
+00:02:12,569 --> 00:02:14,489
+time on the front end are probably
+
+50
+00:02:14,489 --> 00:02:16,049
+pretty comfortable maybe a little too
+
+51
+00:02:16,049 --> 00:02:19,230
+comfortable with the the inside out
+
+52
+00:02:19,230 --> 00:02:22,230
+programming of using callbacks and
+
+53
+00:02:22,230 --> 00:02:25,439
+events but trying to keep things a
+
+54
+00:02:25,439 --> 00:02:27,150
+little more clear because it becomes
+
+55
+00:02:27,150 --> 00:02:29,459
+really really important if you want to
+
+56
+00:02:29,459 --> 00:02:32,400
+be able to modify your code and make bug
+
+57
+00:02:32,400 --> 00:02:36,329
+fixes the other small problem is how to
+
+58
+00:02:36,329 --> 00:02:38,969
+manage third party dependencies in your
+
+59
+00:02:38,969 --> 00:02:40,500
+code base where to put them how to
+
+60
+00:02:40,500 --> 00:02:45,239
+organize the code right so with that
+
+61
+00:02:45,239 --> 00:02:48,870
+said the other fairly significant
+
+62
+00:02:48,870 --> 00:02:51,540
+problem is dependencies the node
+
+63
+00:02:51,540 --> 00:02:56,000
+ecosystem is still really really new so
+
+64
+00:02:56,000 --> 00:02:58,889
+so finding the appropriate library to
+
+65
+00:02:58,889 --> 00:03:01,260
+use making sure that it does all of what
+
+66
+00:03:01,260 --> 00:03:03,120
+you want or most of what you want on how
+
+67
+00:03:03,120 --> 00:03:06,030
+to deal with that twenty percent that
+
+68
+00:03:06,030 --> 00:03:08,879
+doesn't do that isn't what you want
+
+69
+00:03:08,879 --> 00:03:13,829
+becomes a bit of a problem so when so
+
+70
+00:03:13,829 --> 00:03:15,269
+the service that we're running is
+
+71
+00:03:15,269 --> 00:03:16,949
+something that I started building it's
+
+72
+00:03:16,949 --> 00:03:18,930
+based on it on some code that I started
+
+73
+00:03:18,930 --> 00:03:23,790
+writing very very early and NPM was very
+
+74
+00:03:23,790 --> 00:03:25,349
+very much not there at the time it's
+
+75
+00:03:25,349 --> 00:03:28,859
+it's the way in p.m. works now is
+
+76
+00:03:28,859 --> 00:03:30,750
+probably what we would have wanted
+
+77
+00:03:30,750 --> 00:03:32,430
+installing the dependencies locally
+
+78
+00:03:32,430 --> 00:03:35,159
+makes a application deployment a lot
+
+79
+00:03:35,159 --> 00:03:38,040
+easier but at the time npm using NPM
+
+80
+00:03:38,040 --> 00:03:39,659
+really was an option for us it wasn't
+
+81
+00:03:39,659 --> 00:03:41,939
+something we could explain to our ops
+
+82
+00:03:41,939 --> 00:03:45,389
+people that we needed and ask them to
+
+83
+00:03:45,389 --> 00:03:47,959
+use it the third-party modules that we
+
+84
+00:03:47,959 --> 00:03:51,030
+needed to use we're also not quite there
+
+85
+00:03:51,030 --> 00:03:53,340
+and some of that is bugginess because
+
+86
+00:03:53,340 --> 00:03:55,139
+they're very very new and some of that
+
+87
+00:03:55,139 --> 00:03:56,699
+is because we're all very very focused
+
+88
+00:03:56,699 --> 00:03:58,079
+here i think as javascript people on
+
+89
+00:03:58,079 --> 00:03:59,669
+getting our jobs done and building cool
+
+90
+00:03:59,669 --> 00:04:01,680
+stuff so everyone is building these
+
+91
+00:04:01,680 --> 00:04:04,019
+modules with the intent of using it for
+
+92
+00:04:04,019 --> 00:04:05,969
+whether there's whatever their specific
+
+93
+00:04:05,969 --> 00:04:12,000
+purpose is so adapting that to something
+
+94
+00:04:12,000 --> 00:04:13,979
+more general purpose or to your to your
+
+95
+00:04:13,979 --> 00:04:15,840
+needs becomes a little bit more
+
+96
+00:04:15,840 --> 00:04:18,269
+difficult so what we're doing right now
+
+97
+00:04:18,269 --> 00:04:19,829
+we just kind of sidestep the whole thing
+
+98
+00:04:19,829 --> 00:04:22,919
+we have slurped all of the dependencies
+
+99
+00:04:22,919 --> 00:04:24,900
+into our code base we're making the
+
+100
+00:04:24,900 --> 00:04:26,520
+modifications in place
+
+101
+00:04:26,520 --> 00:04:29,190
+pushing patches back upstream this is
+
+102
+00:04:29,190 --> 00:04:31,470
+obviously not optimal we don't like copy
+
+103
+00:04:31,470 --> 00:04:34,080
+paste modify in our own code base and so
+
+104
+00:04:34,080 --> 00:04:35,550
+doing that with libraries is probably
+
+105
+00:04:35,550 --> 00:04:37,710
+not the right decision either that's
+
+106
+00:04:37,710 --> 00:04:40,349
+something that we we hope we can fix and
+
+107
+00:04:40,349 --> 00:04:42,300
+now that NPM installs the modules
+
+108
+00:04:42,300 --> 00:04:44,310
+locally it's a lot nicer story
+
+109
+00:04:44,310 --> 00:04:46,919
+deployment becomes a lot easier you're
+
+110
+00:04:46,919 --> 00:04:48,750
+not relying on this global like thing
+
+111
+00:04:48,750 --> 00:04:50,819
+out in the out in the the language
+
+112
+00:04:50,819 --> 00:04:53,360
+somewhere the language library somewhere
+
+113
+00:04:53,360 --> 00:04:57,030
+right so this is probably them yes so
+
+114
+00:04:57,030 --> 00:04:57,990
+sorry if you're offended by strong
+
+115
+00:04:57,990 --> 00:05:01,259
+language but this is a really important
+
+116
+00:05:01,259 --> 00:05:04,069
+lesson and it applies not just
+
+117
+00:05:04,069 --> 00:05:09,090
+operationally deploying all of the
+
+118
+00:05:09,090 --> 00:05:11,580
+things like this talk bar being spilled
+
+119
+00:05:11,580 --> 00:05:13,680
+and things not working just assuming
+
+120
+00:05:13,680 --> 00:05:15,389
+that things are going to go wrong is in
+
+121
+00:05:15,389 --> 00:05:17,490
+general a good idea but it also applies
+
+122
+00:05:17,490 --> 00:05:18,930
+more specifically to the asynchronous
+
+123
+00:05:18,930 --> 00:05:21,509
+programming model right so you do a call
+
+124
+00:05:21,509 --> 00:05:24,330
+back the interpreter goes along on a tap
+
+125
+00:05:24,330 --> 00:05:26,430
+anyway and in theory something is good
+
+126
+00:05:26,430 --> 00:05:28,620
+is going to happen and you'll be back in
+
+127
+00:05:28,620 --> 00:05:31,940
+the area of code that you care about
+
+128
+00:05:31,940 --> 00:05:36,080
+sometimes things obviously go wrong and
+
+129
+00:05:36,080 --> 00:05:38,639
+figuring out how to handle this in this
+
+130
+00:05:38,639 --> 00:05:41,370
+asynchronous process that's juggling all
+
+131
+00:05:41,370 --> 00:05:43,590
+of these different requests at once can
+
+132
+00:05:43,590 --> 00:05:46,909
+get kind of complicated and hairy so
+
+133
+00:05:46,909 --> 00:05:49,199
+this is a pretty common pattern I think
+
+134
+00:05:49,199 --> 00:05:50,520
+on the UI side and it seems to work
+
+135
+00:05:50,520 --> 00:05:51,930
+pretty well on the server as well where
+
+136
+00:05:51,930 --> 00:05:54,659
+you assume air condition you basically
+
+137
+00:05:54,659 --> 00:05:57,810
+throw an error or call function that is
+
+138
+00:05:57,810 --> 00:05:59,580
+an error handler wrap it in a set time
+
+139
+00:05:59,580 --> 00:06:02,880
+out that you will later on cancel if
+
+140
+00:06:02,880 --> 00:06:06,180
+things turn out ok so just assume it's
+
+141
+00:06:06,180 --> 00:06:08,039
+going to be bad and if it comes back and
+
+142
+00:06:08,039 --> 00:06:09,630
+everything's fine if your unit of work
+
+143
+00:06:09,630 --> 00:06:12,060
+successfully completes you cancel the
+
+144
+00:06:12,060 --> 00:06:14,789
+air that's pretty common pattern on the
+
+145
+00:06:14,789 --> 00:06:16,949
+UI side that doesn't scale well when the
+
+146
+00:06:16,949 --> 00:06:18,810
+app becomes more more complicated so we
+
+147
+00:06:18,810 --> 00:06:20,490
+ended up with something like an
+
+148
+00:06:20,490 --> 00:06:23,009
+in-flight registry where each step in
+
+149
+00:06:23,009 --> 00:06:27,360
+the process is given an ID we basically
+
+150
+00:06:27,360 --> 00:06:30,750
+have big object literal with named keys
+
+151
+00:06:30,750 --> 00:06:33,210
+in it for all the various steps being
+
+152
+00:06:33,210 --> 00:06:34,440
+processed by all the different
+
+153
+00:06:34,440 --> 00:06:35,849
+associated with all the different
+
+154
+00:06:35,849 --> 00:06:40,050
+requests a unit of work goes
+
+155
+00:06:40,050 --> 00:06:41,400
+off and a lot of times of course it's
+
+156
+00:06:41,400 --> 00:06:42,930
+something related to I oh it's something
+
+157
+00:06:42,930 --> 00:06:45,180
+asynchronous with a call back we make an
+
+158
+00:06:45,180 --> 00:06:48,659
+entry with the basically it's a time
+
+159
+00:06:48,659 --> 00:06:51,720
+stamp saying when this is when it when
+
+160
+00:06:51,720 --> 00:06:53,669
+this should be done and we have a
+
+161
+00:06:53,669 --> 00:06:55,349
+process watcher that looks that pokes
+
+162
+00:06:55,349 --> 00:06:57,210
+through this list every couple of
+
+163
+00:06:57,210 --> 00:06:59,430
+seconds to see basically what's overdue
+
+164
+00:06:59,430 --> 00:07:01,889
+and if something's overdue then we
+
+165
+00:07:01,889 --> 00:07:03,599
+perform whatever the default error
+
+166
+00:07:03,599 --> 00:07:06,060
+handling condition is error handling
+
+167
+00:07:06,060 --> 00:07:10,560
+code is so that in combination with the
+
+168
+00:07:10,560 --> 00:07:12,120
+uncaught exception means your process
+
+169
+00:07:12,120 --> 00:07:14,009
+generally stays up and running it's
+
+170
+00:07:14,009 --> 00:07:15,539
+really really important to log all of
+
+171
+00:07:15,539 --> 00:07:18,060
+the errors in detail so that you know
+
+172
+00:07:18,060 --> 00:07:20,639
+exactly why these unexpected things are
+
+173
+00:07:20,639 --> 00:07:22,680
+happening but even when they're with
+
+174
+00:07:22,680 --> 00:07:25,080
+this approach even if they're unexpected
+
+175
+00:07:25,080 --> 00:07:29,520
+errors the request or your control flow
+
+176
+00:07:29,520 --> 00:07:31,770
+knows that this thing is should be in
+
+177
+00:07:31,770 --> 00:07:33,360
+flight and should be coming back at some
+
+178
+00:07:33,360 --> 00:07:35,509
+point and if something goes badly wrong
+
+179
+00:07:35,509 --> 00:07:38,009
+eventually your process your in-flight
+
+180
+00:07:38,009 --> 00:07:40,020
+watcher is going to notice and tell that
+
+181
+00:07:40,020 --> 00:07:42,840
+request you know ship some meaningful
+
+182
+00:07:42,840 --> 00:07:45,270
+requests back to the browser telling
+
+183
+00:07:45,270 --> 00:07:50,370
+what to do so that leads right into the
+
+184
+00:07:50,370 --> 00:07:54,360
+next bit which is visibility into your
+
+185
+00:07:54,360 --> 00:07:59,400
+app because the code what's that okay
+
+186
+00:07:59,400 --> 00:08:01,770
+thanks because the code base is pretty
+
+187
+00:08:01,770 --> 00:08:05,250
+complicated our node app is doing a lot
+
+188
+00:08:05,250 --> 00:08:08,699
+of different stuff at once streaming
+
+189
+00:08:08,699 --> 00:08:10,199
+stuff to the file system shipping stuff
+
+190
+00:08:10,199 --> 00:08:12,210
+off to Amazon thumbnailing it's doing
+
+191
+00:08:12,210 --> 00:08:14,460
+all of this stuff at once so knowing
+
+192
+00:08:14,460 --> 00:08:15,750
+when there's some sort of a problem
+
+193
+00:08:15,750 --> 00:08:17,669
+which piece of the process went wrong is
+
+194
+00:08:17,669 --> 00:08:20,430
+really really important so measure
+
+195
+00:08:20,430 --> 00:08:22,409
+everything and build it in from the very
+
+196
+00:08:22,409 --> 00:08:25,409
+very beginning it's way easier to start
+
+197
+00:08:25,409 --> 00:08:27,060
+with something small that has a bunch of
+
+198
+00:08:27,060 --> 00:08:28,800
+metrics built into it then go in and
+
+199
+00:08:28,800 --> 00:08:30,750
+retrofit your complicated code base with
+
+200
+00:08:30,750 --> 00:08:32,550
+all the appropriate metrics measure of
+
+201
+00:08:32,550 --> 00:08:34,709
+hitting log the out of everything
+
+202
+00:08:34,709 --> 00:08:36,630
+so that you know what's happening and
+
+203
+00:08:36,630 --> 00:08:40,380
+I'd also like to point out here we're
+
+204
+00:08:40,380 --> 00:08:42,839
+now using this metrics library which is
+
+205
+00:08:42,839 --> 00:08:46,529
+a node.js port of coda Hales Scala
+
+206
+00:08:46,529 --> 00:08:49,550
+metrics library that Mike I be here
+
+207
+00:08:49,550 --> 00:08:53,579
+wrote so definitely check that out see
+
+208
+00:08:53,579 --> 00:08:54,030
+what you think
+
+209
+00:08:54,030 --> 00:08:58,350
+give us give us patches please this is
+
+210
+00:08:58,350 --> 00:09:01,140
+the last bit and I would actually say
+
+211
+00:09:01,140 --> 00:09:03,000
+that this might be the most important
+
+212
+00:09:03,000 --> 00:09:10,380
+piece of all and that's because note is
+
+213
+00:09:10,380 --> 00:09:12,660
+still very very new and so things still
+
+214
+00:09:12,660 --> 00:09:17,040
+kind of go wrong a lot and if you rope
+
+215
+00:09:17,040 --> 00:09:18,240
+in your ops people from the very
+
+216
+00:09:18,240 --> 00:09:20,010
+beginning and work with them there's a
+
+217
+00:09:20,010 --> 00:09:22,200
+lot more goodwill and they're a lot more
+
+218
+00:09:22,200 --> 00:09:24,420
+patient with your bleeding edge node
+
+219
+00:09:24,420 --> 00:09:27,590
+service if you talk to them first and
+
+220
+00:09:27,590 --> 00:09:30,000
+make sure that you're sort of being a
+
+221
+00:09:30,000 --> 00:09:32,070
+good citizen so at Yammer we've got a
+
+222
+00:09:32,070 --> 00:09:34,410
+bunch of other services written in Java
+
+223
+00:09:34,410 --> 00:09:38,250
+and Scala and knowing upfront sort of
+
+224
+00:09:38,250 --> 00:09:40,200
+what is expected of an HTTP service at
+
+225
+00:09:40,200 --> 00:09:41,850
+Yammer knowing knowing the things that
+
+226
+00:09:41,850 --> 00:09:43,700
+we should do so the deployment story
+
+227
+00:09:43,700 --> 00:09:48,720
+restarts metrics reporting all of these
+
+228
+00:09:48,720 --> 00:09:50,670
+things know knowing what we should be
+
+229
+00:09:50,670 --> 00:09:52,940
+doing is really really important so
+
+230
+00:09:52,940 --> 00:09:54,990
+talking to these guys up front and
+
+231
+00:09:54,990 --> 00:09:56,430
+knowing what's expected knowing what
+
+232
+00:09:56,430 --> 00:09:59,250
+would make their lives easier means that
+
+233
+00:09:59,250 --> 00:10:01,410
+there's a lot less bitterness and angst
+
+234
+00:10:01,410 --> 00:10:03,090
+when your service wakes them up at two
+
+235
+00:10:03,090 --> 00:10:05,160
+in the morning right they're the guys
+
+236
+00:10:05,160 --> 00:10:08,790
+who have to deal with that so yes I
+
+237
+00:10:08,790 --> 00:10:11,190
+think that said I'm MDE on twitter if
+
+238
+00:10:11,190 --> 00:10:13,050
+you are interested in this javascript
+
+239
+00:10:13,050 --> 00:10:15,240
+stuff that we're doing a Yammer I can
+
+240
+00:10:15,240 --> 00:10:16,680
+point you to the other devs at Yammer
+
+241
+00:10:16,680 --> 00:10:20,280
+who are dealing with whatever different
+
+242
+00:10:20,280 --> 00:10:22,620
+technologies we also have a developer
+
+243
+00:10:22,620 --> 00:10:26,400
+center that Michael Rogers has put
+
+244
+00:10:26,400 --> 00:10:28,620
+together he's been working for us for a
+
+245
+00:10:28,620 --> 00:10:30,570
+couple of months and really kicking ass
+
+246
+00:10:30,570 --> 00:10:31,770
+we're really really thrilled to have him
+
+247
+00:10:31,770 --> 00:10:34,740
+so check out the developer center I
+
+248
+00:10:34,740 --> 00:10:36,510
+guess that's really it unless there are
+
+249
+00:10:36,510 --> 00:10:39,570
+questions how big is our no deployment
+
+250
+00:10:39,570 --> 00:10:44,160
+um right now we have a very small
+
+251
+00:10:44,160 --> 00:10:47,490
+cluster it's three servers I do not have
+
+252
+00:10:47,490 --> 00:10:49,740
+statistics on the number of uploads
+
+253
+00:10:49,740 --> 00:10:52,020
+process per day or anything yet we're
+
+254
+00:10:52,020 --> 00:10:53,250
+measuring it I just don't know what it
+
+255
+00:10:53,250 --> 00:10:55,360
+is
+
+256
+00:10:55,370 --> 00:10:59,970
+that's an interesting question okay yeah
+
+257
+00:10:59,970 --> 00:11:02,190
+the question was how do we sell ops on
+
+258
+00:11:02,190 --> 00:11:04,830
+deploying something so new there are a
+
+259
+00:11:04,830 --> 00:11:06,300
+couple of different good reasons to
+
+260
+00:11:06,300 --> 00:11:08,640
+deploy this particular thing as a node
+
+261
+00:11:08,640 --> 00:11:11,370
+service some of it was the dynamics of
+
+262
+00:11:11,370 --> 00:11:12,750
+the different teams working on it at the
+
+263
+00:11:12,750 --> 00:11:14,820
+time this was sort of under the umbrella
+
+264
+00:11:14,820 --> 00:11:16,920
+of the platform team which was very very
+
+265
+00:11:16,920 --> 00:11:19,110
+javascript heavy I think the Ops guys
+
+266
+00:11:19,110 --> 00:11:21,360
+also recognize the value of node that
+
+267
+00:11:21,360 --> 00:11:23,640
+it's an important thing in technology so
+
+268
+00:11:23,640 --> 00:11:25,320
+getting some operational expertise in
+
+269
+00:11:25,320 --> 00:11:26,790
+that is I think they understand that
+
+270
+00:11:26,790 --> 00:11:30,060
+that's important also the fact that the
+
+271
+00:11:30,060 --> 00:11:31,260
+particular thing that we were doing
+
+272
+00:11:31,260 --> 00:11:35,070
+which is streaming file uploads its note
+
+273
+00:11:35,070 --> 00:11:37,410
+is very very well suited to performing
+
+274
+00:11:37,410 --> 00:11:39,390
+that kind of work and I think they also
+
+275
+00:11:39,390 --> 00:11:42,810
+recognize the importance of node in the
+
+276
+00:11:42,810 --> 00:11:44,820
+JavaScript world and so doing
+
+277
+00:11:44,820 --> 00:11:46,830
+interesting things you know with
+
+278
+00:11:46,830 --> 00:11:49,170
+javascript in real life and production
+
+279
+00:11:49,170 --> 00:11:51,330
+is something that you should do if
+
+280
+00:11:51,330 --> 00:11:53,100
+you're interested in plugging into the
+
+281
+00:11:53,100 --> 00:11:55,140
+Jazz community it's I mean it is
+
+282
+00:11:55,140 --> 00:11:59,640
+political but it's also bad ass so you
+
+283
+00:11:59,640 --> 00:12:05,790
+know anything else okay so he's asking
+
+284
+00:12:05,790 --> 00:12:08,280
+about storing the data for the in-flight
+
+285
+00:12:08,280 --> 00:12:10,110
+registry and something like CouchDB
+
+286
+00:12:10,110 --> 00:12:12,240
+that's not particularly useful for us
+
+287
+00:12:12,240 --> 00:12:14,010
+because this is processing file uploads
+
+288
+00:12:14,010 --> 00:12:17,520
+and we're we're tracking basically about
+
+289
+00:12:17,520 --> 00:12:19,950
+pretty short ephemeral steps so it's
+
+290
+00:12:19,950 --> 00:12:21,810
+like how long this file should take to
+
+291
+00:12:21,810 --> 00:12:23,520
+be shipped off to Amazon and once that
+
+292
+00:12:23,520 --> 00:12:25,290
+uploads done it's done so just keeping
+
+293
+00:12:25,290 --> 00:12:26,970
+that in memory is a lot a lot more
+
+294
+00:12:26,970 --> 00:12:31,680
+efficient what's that it's not something
+
+295
+00:12:31,680 --> 00:12:32,820
+that would be appropriate for what we're
+
+296
+00:12:32,820 --> 00:12:34,770
+doing but if it's something long-lived
+
+297
+00:12:34,770 --> 00:12:37,380
+yeah that's mean that would seem
+
+298
+00:12:37,380 --> 00:12:40,200
+reasonable or if you need to communicate
+
+299
+00:12:40,200 --> 00:12:42,840
+between nodes in the server excuse me
+
+300
+00:12:42,840 --> 00:12:45,120
+server nodes in a cluster that might be
+
+301
+00:12:45,120 --> 00:12:47,670
+a nice suit we're actually using Redis
+
+302
+00:12:47,670 --> 00:12:50,850
+cluster to communicate between nodes in
+
+303
+00:12:50,850 --> 00:12:52,440
+the server so if you're interested more
+
+304
+00:12:52,440 --> 00:12:54,570
+in exactly what we're doing definitely
+
+305
+00:12:54,570 --> 00:12:56,460
+talk to me because I think I'm about to
+
+306
+00:12:56,460 --> 00:13:00,329
+get the cane here right so thanks
+

@@ -1,0 +1,3657 @@
+1
+00:00:00,000 --> 00:00:13,110
+
+I
+
+2
+00:00:13,120 --> 00:00:16,400
+so the topic of this talk is going to be
+
+3
+00:00:16,400 --> 00:00:19,040
+a performance beyond page load I'm glad
+
+4
+00:00:19,040 --> 00:00:20,869
+that Jeffrey gave a real good
+
+5
+00:00:20,869 --> 00:00:22,160
+introduction about the networking
+
+6
+00:00:22,160 --> 00:00:23,779
+performance so when you say the
+
+7
+00:00:23,779 --> 00:00:25,490
+performance of a web page is divided
+
+8
+00:00:25,490 --> 00:00:27,260
+into two components that is networking
+
+9
+00:00:27,260 --> 00:00:28,520
+performance and the rendering
+
+10
+00:00:28,520 --> 00:00:30,619
+performance while networking performance
+
+11
+00:00:30,619 --> 00:00:32,239
+takes care of your page load time and
+
+12
+00:00:32,239 --> 00:00:35,330
+the start render time rendering
+
+13
+00:00:35,330 --> 00:00:37,730
+performance will be taking care of the
+
+14
+00:00:37,730 --> 00:00:40,190
+performance of your interactions on a
+
+15
+00:00:40,190 --> 00:00:42,050
+web page so that is what we will be
+
+16
+00:00:42,050 --> 00:00:44,660
+focusing upon our goal will be to build
+
+17
+00:00:44,660 --> 00:00:46,760
+smooth interactions and even to
+
+18
+00:00:46,760 --> 00:00:48,890
+understand as toward the issues are if
+
+19
+00:00:48,890 --> 00:00:51,829
+there are any with your web page or your
+
+20
+00:00:51,829 --> 00:00:54,079
+interactions on your web page and how
+
+21
+00:00:54,079 --> 00:00:56,030
+you should take care of them so let's
+
+22
+00:00:56,030 --> 00:00:58,969
+start on we start off with a small
+
+23
+00:00:58,969 --> 00:01:00,860
+survey I guess with the show of friends
+
+24
+00:01:00,860 --> 00:01:02,960
+you can actually tell whether you belong
+
+25
+00:01:02,960 --> 00:01:05,869
+to it or not so my first question will
+
+26
+00:01:05,869 --> 00:01:07,940
+be how many of you like animations in
+
+27
+00:01:07,940 --> 00:01:12,070
+material design with a show friend okay
+
+28
+00:01:12,070 --> 00:01:15,770
+some people not not all of you but i
+
+29
+00:01:15,770 --> 00:01:17,659
+guess it's mostly related to the fact
+
+30
+00:01:17,659 --> 00:01:19,340
+that animations haven't been performing
+
+31
+00:01:19,340 --> 00:01:22,790
+very well on HTML right or it may be
+
+32
+00:01:22,790 --> 00:01:24,710
+performing well on native devices but
+
+33
+00:01:24,710 --> 00:01:28,130
+not on nom on your mobile in the mobile
+
+34
+00:01:28,130 --> 00:01:30,590
+browser so we are going to tackle such
+
+35
+00:01:30,590 --> 00:01:32,510
+issues in the coming in the coming
+
+36
+00:01:32,510 --> 00:01:33,890
+slides and I will be discussing them
+
+37
+00:01:33,890 --> 00:01:38,720
+briefly so you won't like animations if
+
+38
+00:01:38,720 --> 00:01:40,909
+they are not smooth our goal will be to
+
+39
+00:01:40,909 --> 00:01:44,360
+make sure that we have this things in
+
+40
+00:01:44,360 --> 00:01:47,119
+place we follow the best practices but
+
+41
+00:01:47,119 --> 00:01:49,790
+some people want to tell meet like hacks
+
+42
+00:01:49,790 --> 00:01:52,549
+right because it's not up to you to
+
+43
+00:01:52,549 --> 00:01:54,049
+actually take care of them it should be
+
+44
+00:01:54,049 --> 00:01:58,040
+the I mean it should be for the browsers
+
+45
+00:01:58,040 --> 00:01:59,689
+to actually make it sure that whatever
+
+46
+00:01:59,689 --> 00:02:01,880
+you have put in in your code actually is
+
+47
+00:02:01,880 --> 00:02:04,340
+performing and varied drones on the web
+
+48
+00:02:04,340 --> 00:02:06,439
+browser eight runs performant Lee that
+
+49
+00:02:06,439 --> 00:02:09,290
+is at 60fps so there is this a
+
+50
+00:02:09,290 --> 00:02:10,700
+mix-and-match of different things that I
+
+51
+00:02:10,700 --> 00:02:13,280
+will be talking about their hacks and
+
+52
+00:02:13,280 --> 00:02:15,200
+there are best practices and we'll be
+
+53
+00:02:15,200 --> 00:02:18,739
+discussing them so starting off with
+
+54
+00:02:18,739 --> 00:02:21,169
+rendering performance I just told you
+
+55
+00:02:21,169 --> 00:02:22,579
+about the goal which will be to build
+
+56
+00:02:22,579 --> 00:02:24,950
+smooth interactions so let's start with
+
+57
+00:02:24,950 --> 00:02:25,180
+the
+
+58
+00:02:25,180 --> 00:02:27,879
+a steady Archy study is basically about
+
+59
+00:02:27,879 --> 00:02:31,689
+a girl and a boy where the boy asks the
+
+60
+00:02:31,689 --> 00:02:34,560
+girl to marry him he proposes her and
+
+61
+00:02:34,560 --> 00:02:37,840
+luckily he is responded with an answer
+
+62
+00:02:37,840 --> 00:02:42,939
+which is yes so what next is shopping
+
+63
+00:02:42,939 --> 00:02:45,639
+shopping for that particular shopping
+
+64
+00:02:45,639 --> 00:02:48,489
+for that wedding basically and it is a
+
+65
+00:02:48,489 --> 00:02:51,159
+shopping that is up the the bride the
+
+66
+00:02:51,159 --> 00:02:54,579
+bridal couple is is shopping on on a
+
+67
+00:02:54,579 --> 00:02:58,450
+mobile website okay though what happens
+
+68
+00:02:58,450 --> 00:03:01,450
+next is something that we didn't
+
+69
+00:03:01,450 --> 00:03:03,669
+anticipate for but it is something what
+
+70
+00:03:03,669 --> 00:03:06,430
+happened so this is the reaction of the
+
+71
+00:03:06,430 --> 00:03:09,159
+girl after she was I mean going through
+
+72
+00:03:09,159 --> 00:03:10,659
+the mobile website and trying to
+
+73
+00:03:10,659 --> 00:03:14,230
+purchase from over there so it doesn't
+
+74
+00:03:14,230 --> 00:03:15,969
+look happy right so we need to make sure
+
+75
+00:03:15,969 --> 00:03:18,189
+that this reaction doesn't happen for
+
+76
+00:03:18,189 --> 00:03:22,480
+your own customers as well so the bad
+
+77
+00:03:22,480 --> 00:03:25,060
+performance of shopping portal it leads
+
+78
+00:03:25,060 --> 00:03:28,060
+to do I need to tell you that the bad
+
+79
+00:03:28,060 --> 00:03:30,459
+performance is basically the rendering
+
+80
+00:03:30,459 --> 00:03:31,750
+performance and not the networking
+
+81
+00:03:31,750 --> 00:03:33,190
+performance that will be discussing over
+
+82
+00:03:33,190 --> 00:03:35,229
+here over here we are talking about the
+
+83
+00:03:35,229 --> 00:03:37,180
+interactions that are there on a web
+
+84
+00:03:37,180 --> 00:03:40,590
+page and how they affected the
+
+85
+00:03:40,590 --> 00:03:44,590
+experience of that particular bride so
+
+86
+00:03:44,590 --> 00:03:48,669
+this is that followed next after after
+
+87
+00:03:48,669 --> 00:03:50,349
+that particular reaction this is
+
+88
+00:03:50,349 --> 00:03:52,090
+basically a meeting between developers
+
+89
+00:03:52,090 --> 00:03:55,150
+project managers and the testers to
+
+90
+00:03:55,150 --> 00:03:57,819
+understand as to what went wrong or what
+
+91
+00:03:57,819 --> 00:04:00,819
+can be the solution for improving the
+
+92
+00:04:00,819 --> 00:04:02,799
+rendering performance of their of their
+
+93
+00:04:02,799 --> 00:04:06,310
+mobile web application so i am not
+
+94
+00:04:06,310 --> 00:04:08,079
+actually going to focus upon just the
+
+95
+00:04:08,079 --> 00:04:09,790
+mobile web experience but it will be the
+
+96
+00:04:09,790 --> 00:04:11,259
+performance it will be the rendering
+
+97
+00:04:11,259 --> 00:04:15,909
+performance in general ok so wait up it
+
+98
+00:04:15,909 --> 00:04:18,880
+is so as far as now i have just told you
+
+99
+00:04:18,880 --> 00:04:20,500
+about the case study in general it was
+
+100
+00:04:20,500 --> 00:04:23,050
+simply about tom about the experience of
+
+101
+00:04:23,050 --> 00:04:24,909
+the customer how it impacted what are
+
+102
+00:04:24,909 --> 00:04:26,169
+the different things that people are
+
+103
+00:04:26,169 --> 00:04:29,320
+thinking about but let's take a
+
+104
+00:04:29,320 --> 00:04:31,090
+technical perspective regarding this and
+
+105
+00:04:31,090 --> 00:04:32,889
+understand as to what exactly happen
+
+106
+00:04:32,889 --> 00:04:34,930
+what is the technical issue around it
+
+107
+00:04:34,930 --> 00:04:37,930
+what what is it because of and what are
+
+108
+00:04:37,930 --> 00:04:39,110
+the different solutions that
+
+109
+00:04:39,110 --> 00:04:42,550
+you can actually use to overcome it okay
+
+110
+00:04:42,550 --> 00:04:45,860
+so a small commercial break this is
+
+111
+00:04:45,860 --> 00:04:49,280
+about me my name is a puta Saxena I hail
+
+112
+00:04:49,280 --> 00:04:51,380
+from India I work as a first second
+
+113
+00:04:51,380 --> 00:04:54,110
+junior and you can follow me at up would
+
+114
+00:04:54,110 --> 00:04:56,300
+underscore Saxena if you have any sort
+
+115
+00:04:56,300 --> 00:04:57,350
+of questions related to performance
+
+116
+00:04:57,350 --> 00:04:59,630
+whether we eat a networking performance
+
+117
+00:04:59,630 --> 00:05:00,890
+or the rendering performance you can
+
+118
+00:05:00,890 --> 00:05:03,170
+simply tweet up to me and I'll make sure
+
+119
+00:05:03,170 --> 00:05:07,700
+that I try to answer that the companies
+
+120
+00:05:07,700 --> 00:05:09,620
+that I've worked with and I'm working
+
+121
+00:05:09,620 --> 00:05:11,630
+with ving affair before that I had
+
+122
+00:05:11,630 --> 00:05:13,220
+worked with LinkedIn which is now a
+
+123
+00:05:13,220 --> 00:05:15,200
+SlideShare which was now linkedin and
+
+124
+00:05:15,200 --> 00:05:18,230
+director some other conferences that I
+
+125
+00:05:18,230 --> 00:05:20,390
+have contributed to before the talks
+
+126
+00:05:20,390 --> 00:05:22,640
+mostly focused upon performance but it
+
+127
+00:05:22,640 --> 00:05:25,430
+was more about networking and even a bit
+
+128
+00:05:25,430 --> 00:05:26,930
+about gaming performance so in case you
+
+129
+00:05:26,930 --> 00:05:30,050
+want to check them out please do so
+
+130
+00:05:30,050 --> 00:05:34,130
+let's start off with basics ok so when I
+
+131
+00:05:34,130 --> 00:05:36,500
+talk about basics I actually come to
+
+132
+00:05:36,500 --> 00:05:39,320
+this I remember this picture from my
+
+133
+00:05:39,320 --> 00:05:41,900
+childhood which is about a Bioscope so
+
+134
+00:05:41,900 --> 00:05:43,640
+with a show of hands how many of you
+
+135
+00:05:43,640 --> 00:05:47,420
+understand what is a Bioscope ok just
+
+136
+00:05:47,420 --> 00:05:49,850
+one two three okay not not a lot of
+
+137
+00:05:49,850 --> 00:05:51,260
+people understand what is Bioscope so
+
+138
+00:05:51,260 --> 00:05:53,510
+basically it's a small device where
+
+139
+00:05:53,510 --> 00:05:55,130
+there are different stills of a
+
+140
+00:05:55,130 --> 00:05:57,260
+particular animation or a movie and they
+
+141
+00:05:57,260 --> 00:05:58,850
+are moved manually by a particular
+
+142
+00:05:58,850 --> 00:06:01,100
+person who is the owner of this
+
+143
+00:06:01,100 --> 00:06:03,380
+particular device and people will be
+
+144
+00:06:03,380 --> 00:06:05,150
+able to look through through these holes
+
+145
+00:06:05,150 --> 00:06:07,070
+that you can see the aluminum shells and
+
+146
+00:06:07,070 --> 00:06:09,920
+through that when a person moves those
+
+147
+00:06:09,920 --> 00:06:12,370
+stills it appears like an animated movie
+
+148
+00:06:12,370 --> 00:06:14,960
+so on the right you are able to see the
+
+149
+00:06:14,960 --> 00:06:18,260
+stills of the animation that is that is
+
+150
+00:06:18,260 --> 00:06:19,730
+played by the particular person and
+
+151
+00:06:19,730 --> 00:06:22,580
+that's how it is so this is a similar
+
+152
+00:06:22,580 --> 00:06:28,630
+concept that is followed when you even
+
+153
+00:06:28,630 --> 00:06:30,800
+when you even display a particular
+
+154
+00:06:30,800 --> 00:06:32,720
+picture on our on a screen so what
+
+155
+00:06:32,720 --> 00:06:35,120
+happens is that the devices refresh the
+
+156
+00:06:35,120 --> 00:06:38,150
+screen at 60 frames per second and that
+
+157
+00:06:38,150 --> 00:06:40,490
+is how they say that they are able to
+
+158
+00:06:40,490 --> 00:06:42,770
+display at 60fps or even more than that
+
+159
+00:06:42,770 --> 00:06:45,530
+like 120 fps so what is happening is
+
+160
+00:06:45,530 --> 00:06:47,930
+that there are 120 frames per second
+
+161
+00:06:47,930 --> 00:06:50,590
+that are played on a particular screen
+
+162
+00:06:50,590 --> 00:06:52,900
+the frame budget that
+
+163
+00:06:52,900 --> 00:06:54,940
+comes to us to make our particular
+
+164
+00:06:54,940 --> 00:06:58,570
+operation is 16 milliseconds how we did
+
+165
+00:06:58,570 --> 00:07:00,280
+this calculation is that in once again
+
+166
+00:07:00,280 --> 00:07:02,560
+you have to display 60 frames so you do
+
+167
+00:07:02,560 --> 00:07:04,419
+a simple calculation that is divided and
+
+168
+00:07:04,419 --> 00:07:07,780
+what you get is 16 milliseconds so in 16
+
+169
+00:07:07,780 --> 00:07:10,150
+milliseconds you have to make sure that
+
+170
+00:07:10,150 --> 00:07:12,039
+everything or every operation that you
+
+171
+00:07:12,039 --> 00:07:14,470
+are performing is under 16 milliseconds
+
+172
+00:07:14,470 --> 00:07:18,070
+if in case it exceeds 16 milliseconds
+
+173
+00:07:18,070 --> 00:07:19,990
+then you will be able to encounter
+
+174
+00:07:19,990 --> 00:07:22,690
+something that you won't want to though
+
+175
+00:07:22,690 --> 00:07:24,669
+there are also some other householding
+
+176
+00:07:24,669 --> 00:07:26,740
+works that a browser needs to needs to
+
+177
+00:07:26,740 --> 00:07:29,320
+take a while while carrying out your
+
+178
+00:07:29,320 --> 00:07:31,720
+operation which leaves you with just 10
+
+179
+00:07:31,720 --> 00:07:34,240
+milliseconds in total so you need to
+
+180
+00:07:34,240 --> 00:07:35,260
+actually make sure that whatever
+
+181
+00:07:35,260 --> 00:07:36,940
+operation you are performing is
+
+182
+00:07:36,940 --> 00:07:39,100
+completed in 10 milliseconds or less
+
+183
+00:07:39,100 --> 00:07:42,880
+than that and 10 milliseconds isn't a
+
+184
+00:07:42,880 --> 00:07:46,539
+lot of time when failing to meet 10
+
+185
+00:07:46,539 --> 00:07:48,610
+milliseconds we come across the behavior
+
+186
+00:07:48,610 --> 00:07:50,500
+which you don't like which is termed as
+
+187
+00:07:50,500 --> 00:07:53,440
+jank okay so if there's a scroll that
+
+188
+00:07:53,440 --> 00:07:55,990
+you're Rob doing and you see that there
+
+189
+00:07:55,990 --> 00:07:58,120
+is a lag in between what you will term
+
+190
+00:07:58,120 --> 00:08:03,669
+it with is will be jack so this is the
+
+191
+00:08:03,669 --> 00:08:05,050
+experience that I was talking about a
+
+192
+00:08:05,050 --> 00:08:07,180
+person is trying to scroll the page but
+
+193
+00:08:07,180 --> 00:08:09,550
+he seems but he sees that it's actually
+
+194
+00:08:09,550 --> 00:08:11,789
+not strolling the reason for it is that
+
+195
+00:08:11,789 --> 00:08:15,190
+it is so some operation is taking some a
+
+196
+00:08:15,190 --> 00:08:18,010
+lot of time okay which is not allowing
+
+197
+00:08:18,010 --> 00:08:21,880
+the pager to paint okay and because of
+
+198
+00:08:21,880 --> 00:08:23,949
+that he actually sees that there is a
+
+199
+00:08:23,949 --> 00:08:25,900
+jitter or a lag or basically he's
+
+200
+00:08:25,900 --> 00:08:30,190
+encountering jank so let's understand as
+
+201
+00:08:30,190 --> 00:08:32,800
+to how a browser renders a particular
+
+202
+00:08:32,800 --> 00:08:35,740
+draw a particular webpage or how a CSS
+
+203
+00:08:35,740 --> 00:08:39,940
+operation is applied onto a web page so
+
+204
+00:08:39,940 --> 00:08:41,709
+the pixel pipeline comprises of these
+
+205
+00:08:41,709 --> 00:08:45,430
+five stages if I may say it starts off
+
+206
+00:08:45,430 --> 00:08:46,990
+with JavaScript because most of the
+
+207
+00:08:46,990 --> 00:08:48,850
+interactions may trigger from JavaScript
+
+208
+00:08:48,850 --> 00:08:52,150
+it can also in the via CSS also which is
+
+209
+00:08:52,150 --> 00:08:54,339
+the second stage but let's think that
+
+210
+00:08:54,339 --> 00:08:55,779
+you have made some sort of interaction
+
+211
+00:08:55,779 --> 00:08:58,720
+and it goes to your JavaScript okay what
+
+212
+00:08:58,720 --> 00:09:01,180
+happens is that you do some sort of i
+
+213
+00:09:01,180 --> 00:09:04,079
+mean Dom manipulation which basically
+
+214
+00:09:04,079 --> 00:09:06,490
+creates us corresponding style
+
+215
+00:09:06,490 --> 00:09:09,240
+and it is passed on to the next stage
+
+216
+00:09:09,240 --> 00:09:12,130
+following the style there are three sort
+
+217
+00:09:12,130 --> 00:09:14,350
+of operations that can be applied
+
+218
+00:09:14,350 --> 00:09:16,720
+depending upon the CSS rule that is
+
+219
+00:09:16,720 --> 00:09:19,120
+applied from the style style stage and
+
+220
+00:09:19,120 --> 00:09:23,290
+these three operations are layout pane
+
+221
+00:09:23,290 --> 00:09:25,899
+and composite I'll be briefly described
+
+222
+00:09:25,899 --> 00:09:28,120
+are describing each one of them as to
+
+223
+00:09:28,120 --> 00:09:29,649
+what they do what are they responsible
+
+224
+00:09:29,649 --> 00:09:32,350
+for and what impact do they have on
+
+225
+00:09:32,350 --> 00:09:37,000
+performance so first comes in is layout
+
+226
+00:09:37,000 --> 00:09:39,580
+layout is is an operation which is
+
+227
+00:09:39,580 --> 00:09:42,220
+triggered when you reposition or you
+
+228
+00:09:42,220 --> 00:09:44,620
+change the size of a particular element
+
+229
+00:09:44,620 --> 00:09:46,779
+so that basically triggers a layout
+
+230
+00:09:46,779 --> 00:09:50,589
+operation so as you can see over here
+
+231
+00:09:50,589 --> 00:09:52,600
+this is a particular web page where I
+
+232
+00:09:52,600 --> 00:09:54,580
+have highlighted the boundaries of
+
+233
+00:09:54,580 --> 00:09:57,010
+element and whenever you do some sort of
+
+234
+00:09:57,010 --> 00:09:59,230
+change on the size or the position of a
+
+235
+00:09:59,230 --> 00:10:01,089
+particular element the layout operation
+
+236
+00:10:01,089 --> 00:10:02,940
+will be triggered in the pixel pipeline
+
+237
+00:10:02,940 --> 00:10:05,440
+after the layout operation paint
+
+238
+00:10:05,440 --> 00:10:07,209
+operation will be triggered and after
+
+239
+00:10:07,209 --> 00:10:08,950
+paint it will be the composite operation
+
+240
+00:10:08,950 --> 00:10:11,440
+that will be triggered so layout will be
+
+241
+00:10:11,440 --> 00:10:14,079
+the most expensive operation when it
+
+242
+00:10:14,079 --> 00:10:17,320
+gets triggered the CSS properties that
+
+243
+00:10:17,320 --> 00:10:18,760
+are responsible for triggering the
+
+244
+00:10:18,760 --> 00:10:21,820
+layout operation are all of these so you
+
+245
+00:10:21,820 --> 00:10:23,829
+can basically go to them I will def I
+
+246
+00:10:23,829 --> 00:10:26,350
+love I'll tell you as to what or what
+
+247
+00:10:26,350 --> 00:10:28,240
+site you can go to and understand as to
+
+248
+00:10:28,240 --> 00:10:30,399
+what CSS property corresponds to which
+
+249
+00:10:30,399 --> 00:10:32,500
+operation or what operation does it
+
+250
+00:10:32,500 --> 00:10:34,779
+trigger so over here you will be able to
+
+251
+00:10:34,779 --> 00:10:37,480
+see the CSS property for example width
+
+252
+00:10:37,480 --> 00:10:39,310
+it basically changes the size of a
+
+253
+00:10:39,310 --> 00:10:41,170
+particular element and thus is labeled
+
+254
+00:10:41,170 --> 00:10:43,600
+under the layout operation category that
+
+255
+00:10:43,600 --> 00:10:46,630
+is it triggers a layout operation comes
+
+256
+00:10:46,630 --> 00:10:49,750
+next is paint what is paint operation so
+
+257
+00:10:49,750 --> 00:10:52,329
+the paint operation is about when the
+
+258
+00:10:52,329 --> 00:10:54,070
+when the pixels of a particular element
+
+259
+00:10:54,070 --> 00:10:55,870
+are changed or they need to get
+
+260
+00:10:55,870 --> 00:10:58,570
+repainted that is that is how we define
+
+261
+00:10:58,570 --> 00:11:00,760
+a paint operation so when you actually
+
+262
+00:11:00,760 --> 00:11:03,610
+see that an element's layout has been
+
+263
+00:11:03,610 --> 00:11:06,310
+changed that as its size or position has
+
+264
+00:11:06,310 --> 00:11:08,380
+been changed so inside a web page there
+
+265
+00:11:08,380 --> 00:11:09,970
+might be some elements right which are
+
+266
+00:11:09,970 --> 00:11:12,370
+getting their pixels repainted so that
+
+267
+00:11:12,370 --> 00:11:14,230
+is why the paint operation is triggered
+
+268
+00:11:14,230 --> 00:11:16,779
+after layout but there are CSS rules
+
+269
+00:11:16,779 --> 00:11:19,209
+that allow you to just trigger the paint
+
+270
+00:11:19,209 --> 00:11:20,170
+operation
+
+271
+00:11:20,170 --> 00:11:22,690
+so let's understand that over here you
+
+272
+00:11:22,690 --> 00:11:25,180
+can see that paint comes after layout
+
+273
+00:11:25,180 --> 00:11:27,430
+operation but it can be triggered by a
+
+274
+00:11:27,430 --> 00:11:32,220
+CSS property directly also so this is a
+
+275
+00:11:32,220 --> 00:11:34,720
+simple screenshot or we can see
+
+276
+00:11:34,720 --> 00:11:37,029
+different colored pictures though this
+
+277
+00:11:37,029 --> 00:11:39,760
+yes CSS property that is responsible for
+
+278
+00:11:39,760 --> 00:11:42,040
+triggering a paint operation just a
+
+279
+00:11:42,040 --> 00:11:43,570
+paint operation I am NOT saying about
+
+280
+00:11:43,570 --> 00:11:46,149
+the layout are color background color
+
+281
+00:11:46,149 --> 00:11:51,130
+and and all of these CSS properties
+
+282
+00:11:51,130 --> 00:11:53,019
+they're all are responsible for
+
+283
+00:11:53,019 --> 00:11:56,910
+triggering a paint operation directly ok
+
+284
+00:11:56,910 --> 00:11:59,820
+the next comes in is composting
+
+285
+00:11:59,820 --> 00:12:02,320
+composting is an operation which allows
+
+286
+00:12:02,320 --> 00:12:04,870
+a browser to basically compose it
+
+287
+00:12:04,870 --> 00:12:07,630
+different layers together and render a
+
+288
+00:12:07,630 --> 00:12:10,779
+web page it comes the third in all of
+
+289
+00:12:10,779 --> 00:12:12,399
+these operations and the last in the
+
+290
+00:12:12,399 --> 00:12:15,370
+pixel pipeline ok so first comes in is a
+
+291
+00:12:15,370 --> 00:12:17,529
+layout operation comes next is paint and
+
+292
+00:12:17,529 --> 00:12:19,720
+then composition where all of the layers
+
+293
+00:12:19,720 --> 00:12:23,949
+are composted together so this is how
+
+294
+00:12:23,949 --> 00:12:25,930
+you can picture eyes a web page there
+
+295
+00:12:25,930 --> 00:12:27,870
+are different layers on a webpage and
+
+296
+00:12:27,870 --> 00:12:31,449
+upon upon the rendering of a webpage or
+
+297
+00:12:31,449 --> 00:12:33,610
+when there is a change the last step
+
+298
+00:12:33,610 --> 00:12:35,560
+that happens is this the composition of
+
+299
+00:12:35,560 --> 00:12:39,670
+different layers to render a web page so
+
+300
+00:12:39,670 --> 00:12:43,480
+this is the order of how what the
+
+301
+00:12:43,480 --> 00:12:44,980
+performance impact of different
+
+302
+00:12:44,980 --> 00:12:48,490
+operations have on in a pixel pipeline
+
+303
+00:12:48,490 --> 00:12:51,220
+the most impacted or the most expensive
+
+304
+00:12:51,220 --> 00:12:54,490
+operation to perform is layout followed
+
+305
+00:12:54,490 --> 00:12:56,949
+by paint and followed by composite the
+
+306
+00:12:56,949 --> 00:12:58,540
+reason being that layout triggers paint
+
+307
+00:12:58,540 --> 00:13:01,420
+and composite aerosol paint just
+
+308
+00:13:01,420 --> 00:13:04,149
+triggering itself but composite as well
+
+309
+00:13:04,149 --> 00:13:06,430
+and composite is the last operation
+
+310
+00:13:06,430 --> 00:13:08,290
+which is triggered by CSS properties
+
+311
+00:13:08,290 --> 00:13:10,870
+like transform or opacity so you might
+
+312
+00:13:10,870 --> 00:13:13,060
+have heard of people saying that you
+
+313
+00:13:13,060 --> 00:13:15,730
+should use css3 animations or you should
+
+314
+00:13:15,730 --> 00:13:18,639
+use css3 transform instead of using
+
+315
+00:13:18,639 --> 00:13:21,819
+javascript or instead of using some of
+
+316
+00:13:21,819 --> 00:13:23,800
+that paint operation so the reason
+
+317
+00:13:23,800 --> 00:13:26,350
+because so the reason is that only the
+
+318
+00:13:26,350 --> 00:13:28,750
+composition operation is applied in case
+
+319
+00:13:28,750 --> 00:13:32,890
+of transform and opacity change okay so
+
+320
+00:13:32,890 --> 00:13:33,939
+how do you analyze the
+
+321
+00:13:33,939 --> 00:13:35,739
+moments of a web page now we have
+
+322
+00:13:35,739 --> 00:13:37,089
+understood our theoretical knowledge
+
+323
+00:13:37,089 --> 00:13:38,559
+right that there are three sort of
+
+324
+00:13:38,559 --> 00:13:40,659
+operations but let's try to do something
+
+325
+00:13:40,659 --> 00:13:44,439
+practical so the thing that we need to
+
+326
+00:13:44,439 --> 00:13:46,419
+understand as to what how we can analyze
+
+327
+00:13:46,419 --> 00:13:50,079
+our web page is first as an FPS meter I
+
+328
+00:13:50,079 --> 00:13:51,879
+have mentioned about the chrome dev
+
+329
+00:13:51,879 --> 00:13:54,579
+tools because it has a feature that it
+
+330
+00:13:54,579 --> 00:13:57,909
+is able to display a frame rate on a
+
+331
+00:13:57,909 --> 00:13:59,169
+particular web page while you are doing
+
+332
+00:13:59,169 --> 00:14:01,059
+different sort of interactions though
+
+333
+00:14:01,059 --> 00:14:02,529
+they are readily available in different
+
+334
+00:14:02,529 --> 00:14:04,869
+other browsers and you just have to see
+
+335
+00:14:04,869 --> 00:14:07,149
+for it there are several other libraries
+
+336
+00:14:07,149 --> 00:14:09,459
+also that you can include in your web
+
+337
+00:14:09,459 --> 00:14:11,319
+page and you can actually see as to what
+
+338
+00:14:11,319 --> 00:14:14,049
+frame rate is running for a while you
+
+339
+00:14:14,049 --> 00:14:17,139
+are doing is some sort of interaction so
+
+340
+00:14:17,139 --> 00:14:19,689
+this is the screenshot a way you can see
+
+341
+00:14:19,689 --> 00:14:22,479
+on the top right I have my frame rate
+
+342
+00:14:22,479 --> 00:14:24,789
+which is running when I enable it on
+
+343
+00:14:24,789 --> 00:14:27,489
+chrome I even display as to how you can
+
+344
+00:14:27,489 --> 00:14:29,529
+enable it by yourself though it's simply
+
+345
+00:14:29,529 --> 00:14:32,379
+a I mean I have made a screenshot where
+
+346
+00:14:32,379 --> 00:14:34,839
+while doing an interaction I was able to
+
+347
+00:14:34,839 --> 00:14:36,909
+see that the frame rate frame rate was
+
+348
+00:14:36,909 --> 00:14:40,059
+dripping even below 30 FPS which was the
+
+349
+00:14:40,059 --> 00:14:48,519
+reason of the jank to come in next comes
+
+350
+00:14:48,519 --> 00:14:52,059
+in is enables paint flashing so what is
+
+351
+00:14:52,059 --> 00:14:54,429
+paint flashing allowing you to do it
+
+352
+00:14:54,429 --> 00:14:56,519
+allows you to see as to what all
+
+353
+00:14:56,519 --> 00:14:59,619
+elements are undergoing a repaint okay
+
+354
+00:14:59,619 --> 00:15:01,959
+so when you see a lot of paint
+
+355
+00:15:01,959 --> 00:15:03,669
+operations happening while you are doing
+
+356
+00:15:03,669 --> 00:15:05,349
+some sort of interaction you will be
+
+357
+00:15:05,349 --> 00:15:07,720
+able to see as to whether a particular
+
+358
+00:15:07,720 --> 00:15:09,699
+element that you wanted to repaint is
+
+359
+00:15:09,699 --> 00:15:12,129
+repainted or not and what other
+
+360
+00:15:12,129 --> 00:15:14,499
+components are affected because you
+
+361
+00:15:14,499 --> 00:15:16,479
+might trigger a layout operation which
+
+362
+00:15:16,479 --> 00:15:18,099
+can further repaint all of the elements
+
+363
+00:15:18,099 --> 00:15:20,049
+on a web page and which is a warning
+
+364
+00:15:20,049 --> 00:15:24,369
+sign for you right so this is how a web
+
+365
+00:15:24,369 --> 00:15:26,559
+page looks like when you have enabled
+
+366
+00:15:26,559 --> 00:15:29,049
+flash painting and you can see a lot of
+
+367
+00:15:29,049 --> 00:15:34,089
+elements getting repainted the site that
+
+368
+00:15:34,089 --> 00:15:36,579
+I have audited for it was material up
+
+369
+00:15:36,579 --> 00:15:40,419
+calm and as of now so i'll be explaining
+
+370
+00:15:40,419 --> 00:15:41,919
+as to what was the reason behind it
+
+371
+00:15:41,919 --> 00:15:45,100
+because of this this situation to
+
+372
+00:15:45,100 --> 00:15:46,329
+comment where you can see the entire
+
+373
+00:15:46,329 --> 00:15:47,160
+screen to
+
+374
+00:15:47,160 --> 00:15:50,730
+repainted the next is chrome devtools
+
+375
+00:15:50,730 --> 00:15:53,519
+timeline so the timeline allows you to
+
+376
+00:15:53,519 --> 00:15:55,649
+actually see as to what all operations
+
+377
+00:15:55,649 --> 00:15:58,139
+are performed when you do a record of a
+
+378
+00:15:58,139 --> 00:15:59,879
+particular timeline or when you do a
+
+379
+00:15:59,879 --> 00:16:01,649
+record of the interactions for your web
+
+380
+00:16:01,649 --> 00:16:04,620
+page so this looks something like this
+
+381
+00:16:04,620 --> 00:16:07,470
+and what you are able to see below is
+
+382
+00:16:07,470 --> 00:16:10,050
+that there are different frames that are
+
+383
+00:16:10,050 --> 00:16:13,019
+that you can see and with every frame
+
+384
+00:16:13,019 --> 00:16:15,540
+that is exceeding the 16 millisecond
+
+385
+00:16:15,540 --> 00:16:17,399
+window you can actually see them going
+
+386
+00:16:17,399 --> 00:16:20,339
+above 30 frames per second line which is
+
+387
+00:16:20,339 --> 00:16:23,339
+the top most in this okay below that is
+
+388
+00:16:23,339 --> 00:16:26,519
+60 fps so over here you can see that at
+
+389
+00:16:26,519 --> 00:16:30,209
+a lot of times javascript is taking a
+
+390
+00:16:30,209 --> 00:16:32,550
+lot of time and because of that the next
+
+391
+00:16:32,550 --> 00:16:34,670
+operation that happens which is paint is
+
+392
+00:16:34,670 --> 00:16:38,579
+is taking its own time which is because
+
+393
+00:16:38,579 --> 00:16:40,860
+of which the total time taken in a
+
+394
+00:16:40,860 --> 00:16:43,319
+single frame exceeds 10 millisecond or
+
+395
+00:16:43,319 --> 00:16:45,870
+16 millisecond in total this is the
+
+396
+00:16:45,870 --> 00:16:48,000
+reason for you to understand that a jank
+
+397
+00:16:48,000 --> 00:16:51,990
+is happening so what are the performance
+
+398
+00:16:51,990 --> 00:16:53,670
+best practices as I mentioned earlier
+
+399
+00:16:53,670 --> 00:16:55,860
+you might want to think of it like best
+
+400
+00:16:55,860 --> 00:16:58,350
+practices or even hacks but yeah if you
+
+401
+00:16:58,350 --> 00:17:00,180
+want to make your customers experience
+
+402
+00:17:00,180 --> 00:17:02,939
+sir I mean smooth then this is the way
+
+403
+00:17:02,939 --> 00:17:07,650
+to go forward with so first in this is
+
+404
+00:17:07,650 --> 00:17:12,030
+CPU versus GPU so CPU is not efficient
+
+405
+00:17:12,030 --> 00:17:13,559
+in handling the graphics related
+
+406
+00:17:13,559 --> 00:17:15,510
+operations while GPU is built for it
+
+407
+00:17:15,510 --> 00:17:18,270
+right so we need to understand that
+
+408
+00:17:18,270 --> 00:17:21,209
+JavaScript utilizes CPU which is
+
+409
+00:17:21,209 --> 00:17:23,069
+followed by GPU when it is manipulating
+
+410
+00:17:23,069 --> 00:17:26,250
+style so what you want to avoid is using
+
+411
+00:17:26,250 --> 00:17:29,309
+javascript to trigger style operations
+
+412
+00:17:29,309 --> 00:17:31,919
+or to manipulate your dome so in that in
+
+413
+00:17:31,919 --> 00:17:34,440
+those cases you will want to use CSS
+
+414
+00:17:34,440 --> 00:17:37,049
+instead of using javascript though with
+
+415
+00:17:37,049 --> 00:17:39,480
+the animation API coming the web
+
+416
+00:17:39,480 --> 00:17:41,309
+animation API coming to JavaScript it
+
+417
+00:17:41,309 --> 00:17:43,409
+will be hardware accelerated and we'll
+
+418
+00:17:43,409 --> 00:17:46,200
+be using GPU though I mean its support
+
+419
+00:17:46,200 --> 00:17:47,909
+is very limited as the Florence still in
+
+420
+00:17:47,909 --> 00:17:50,100
+the beta stage it's not very stable so
+
+421
+00:17:50,100 --> 00:17:52,350
+it's yet to be there so as of now you
+
+422
+00:17:52,350 --> 00:17:55,230
+can think of using styles for
+
+423
+00:17:55,230 --> 00:17:56,610
+manipulating your Dom instead of
+
+424
+00:17:56,610 --> 00:17:59,760
+JavaScript a rule of thumb is as simple
+
+425
+00:17:59,760 --> 00:18:00,720
+as that
+
+426
+00:18:00,720 --> 00:18:03,210
+use glasses to update element styling
+
+427
+00:18:03,210 --> 00:18:05,610
+instead of using javascript an example
+
+428
+00:18:05,610 --> 00:18:08,490
+for this will be a will be the following
+
+429
+00:18:08,490 --> 00:18:11,700
+code where earlier in the first part i
+
+430
+00:18:11,700 --> 00:18:14,429
+am using CSS and i am removing and
+
+431
+00:18:14,429 --> 00:18:16,890
+adding classes to basically apply some
+
+432
+00:18:16,890 --> 00:18:19,730
+sort of style to a particular element in
+
+433
+00:18:19,730 --> 00:18:21,510
+javascript what you will be doing
+
+434
+00:18:21,510 --> 00:18:24,539
+similarly if when not using CSS will be
+
+435
+00:18:24,539 --> 00:18:26,610
+something of this operation where you
+
+436
+00:18:26,610 --> 00:18:28,230
+define as to what all the properties you
+
+437
+00:18:28,230 --> 00:18:30,990
+want to change and you simply apply and
+
+438
+00:18:30,990 --> 00:18:33,330
+you simply change the style of the
+
+439
+00:18:33,330 --> 00:18:35,940
+javascript element the process that's
+
+440
+00:18:35,940 --> 00:18:38,850
+followed is comprised of another step in
+
+441
+00:18:38,850 --> 00:18:41,100
+javascript which is rasterization and
+
+442
+00:18:41,100 --> 00:18:43,309
+which takes a lot of time and as
+
+443
+00:18:43,309 --> 00:18:45,390
+continuously improved by the web
+
+444
+00:18:45,390 --> 00:18:47,789
+browsers though when you compare it with
+
+445
+00:18:47,789 --> 00:18:50,280
+the house ESS is doing it it's a lot
+
+446
+00:18:50,280 --> 00:18:54,480
+more performant so style calculations
+
+447
+00:18:54,480 --> 00:18:57,720
+are the reference will be a CSS triggers
+
+448
+00:18:57,720 --> 00:19:02,549
+com so let me open it up over here our
+
+449
+00:19:02,549 --> 00:19:06,030
+CSS triggers is a great contribution by
+
+450
+00:19:06,030 --> 00:19:07,770
+a developer advocate by the name Paul
+
+451
+00:19:07,770 --> 00:19:09,840
+Lewis and what you can do over here as
+
+452
+00:19:09,840 --> 00:19:12,299
+you can see as to what CSS property
+
+453
+00:19:12,299 --> 00:19:15,059
+triggers what all operations so if I
+
+454
+00:19:15,059 --> 00:19:17,070
+write or in the filter over here like
+
+455
+00:19:17,070 --> 00:19:20,220
+color so you can see that it triggers a
+
+456
+00:19:20,220 --> 00:19:22,350
+paint operation followed by a composite
+
+457
+00:19:22,350 --> 00:19:25,200
+operation right and it doesn't trigger a
+
+458
+00:19:25,200 --> 00:19:27,570
+layout operation if you change it to
+
+459
+00:19:27,570 --> 00:19:30,809
+width you'll be able to see that it
+
+460
+00:19:30,809 --> 00:19:33,480
+triggers a layout operation followed by
+
+461
+00:19:33,480 --> 00:19:35,940
+paint followed by composer I am NOT
+
+462
+00:19:35,940 --> 00:19:39,090
+asking you to mug these CSS rules and
+
+463
+00:19:39,090 --> 00:19:41,250
+their corresponding operations but have
+
+464
+00:19:41,250 --> 00:19:43,919
+a thought about it so that when you are
+
+465
+00:19:43,919 --> 00:19:46,140
+using it in your daily workflow you'll
+
+466
+00:19:46,140 --> 00:19:47,010
+be able to have that particular
+
+467
+00:19:47,010 --> 00:19:49,409
+understanding and gradually it can
+
+468
+00:19:49,409 --> 00:19:52,320
+become a habit so you are more so you
+
+469
+00:19:52,320 --> 00:19:54,150
+have a better understanding as to what
+
+470
+00:19:54,150 --> 00:19:55,830
+CSS property applies what sort of
+
+471
+00:19:55,830 --> 00:19:57,990
+functions what sort of operation and
+
+472
+00:19:57,990 --> 00:20:00,510
+what performance impact has it has on a
+
+473
+00:20:00,510 --> 00:20:07,530
+web page performance coming back so
+
+474
+00:20:07,530 --> 00:20:09,330
+these are some of the things that one
+
+475
+00:20:09,330 --> 00:20:12,470
+must follow
+
+476
+00:20:12,480 --> 00:20:14,730
+what needs to really understand as to
+
+477
+00:20:14,730 --> 00:20:17,070
+what impact a rendering performance has
+
+478
+00:20:17,070 --> 00:20:19,020
+on the webpage or how is their running
+
+479
+00:20:19,020 --> 00:20:21,240
+performance so what you need to do is
+
+480
+00:20:21,240 --> 00:20:23,220
+you need to profile you need to profile
+
+481
+00:20:23,220 --> 00:20:25,350
+your page you might not want to go to
+
+482
+00:20:25,350 --> 00:20:28,380
+the extent of using timeline as I
+
+483
+00:20:28,380 --> 00:20:31,049
+displayed before but you might want to
+
+484
+00:20:31,049 --> 00:20:32,850
+actually see as to what all elements are
+
+485
+00:20:32,850 --> 00:20:34,799
+getting repainted upon some sort of
+
+486
+00:20:34,799 --> 00:20:37,710
+interaction I guess while you you are
+
+487
+00:20:37,710 --> 00:20:39,570
+doing a code review you can look for
+
+488
+00:20:39,570 --> 00:20:42,299
+these these subtleties subtle things and
+
+489
+00:20:42,299 --> 00:20:45,780
+maybe help each other to uh to do it
+
+490
+00:20:45,780 --> 00:20:48,210
+better and that's how you can make it a
+
+491
+00:20:48,210 --> 00:20:50,970
+habit comes next is choosing your CSS
+
+492
+00:20:50,970 --> 00:20:52,679
+rules wisely once you are able to
+
+493
+00:20:52,679 --> 00:20:54,870
+understand as to what the issues is you
+
+494
+00:20:54,870 --> 00:20:57,299
+will be able to see as to what is the
+
+495
+00:20:57,299 --> 00:21:00,120
+CSS properties that are getting applied
+
+496
+00:21:00,120 --> 00:21:01,919
+when you are making some sort of
+
+497
+00:21:01,919 --> 00:21:04,530
+operation and you can see as to what
+
+498
+00:21:04,530 --> 00:21:06,570
+operations are triggered that is layout
+
+499
+00:21:06,570 --> 00:21:08,520
+paint or trick or composite and
+
+500
+00:21:08,520 --> 00:21:10,650
+depending upon that you can take
+
+501
+00:21:10,650 --> 00:21:13,380
+decisions whether some sort of operation
+
+502
+00:21:13,380 --> 00:21:15,990
+is possible in an animation or not
+
+503
+00:21:15,990 --> 00:21:19,290
+without a without having less than 30
+
+504
+00:21:19,290 --> 00:21:23,370
+FPS or 60 FPS next comes in is avoid
+
+505
+00:21:23,370 --> 00:21:25,530
+triggering layout / paint operation
+
+506
+00:21:25,530 --> 00:21:28,080
+repeatedly on when animating so as I
+
+507
+00:21:28,080 --> 00:21:29,850
+mentioned just before when you're
+
+508
+00:21:29,850 --> 00:21:32,880
+animating try to just use the composite
+
+509
+00:21:32,880 --> 00:21:35,220
+operation or the CSS property that only
+
+510
+00:21:35,220 --> 00:21:37,860
+trigger a composite operation and not a
+
+511
+00:21:37,860 --> 00:21:41,179
+paint because that's really expensive
+
+512
+00:21:41,179 --> 00:21:44,610
+comes next is a prefer using transform
+
+513
+00:21:44,610 --> 00:21:49,110
+and opacity as I just mentioned next
+
+514
+00:21:49,110 --> 00:21:51,510
+comes in reducing the complexity of CSS
+
+515
+00:21:51,510 --> 00:21:55,890
+selectors so this is a code by a one of
+
+516
+00:21:55,890 --> 00:21:58,290
+the developers at opera and what they
+
+517
+00:21:58,290 --> 00:22:01,799
+said is that when applying a CSS rule on
+
+518
+00:22:01,799 --> 00:22:03,390
+a particular element fifty percent of
+
+519
+00:22:03,390 --> 00:22:06,450
+the time is actually spent on on getting
+
+520
+00:22:06,450 --> 00:22:08,520
+that sell us on getting on finding the
+
+521
+00:22:08,520 --> 00:22:10,830
+particular element why the selector so
+
+522
+00:22:10,830 --> 00:22:13,260
+in case you are having a very complex
+
+523
+00:22:13,260 --> 00:22:15,720
+selector you might want to have it less
+
+524
+00:22:15,720 --> 00:22:18,929
+complex okay and have it that way
+
+525
+00:22:18,929 --> 00:22:20,340
+because otherwise it will take a lot of
+
+526
+00:22:20,340 --> 00:22:22,740
+time I guess in the last slide what he
+
+527
+00:22:22,740 --> 00:22:25,980
+mentioned was that it was like maybe a
+
+528
+00:22:25,980 --> 00:22:29,130
+20 or even more than that the selector
+
+529
+00:22:29,130 --> 00:22:31,740
+the entire length of the selector and in
+
+530
+00:22:31,740 --> 00:22:33,840
+those cases it took a lot of time for
+
+531
+00:22:33,840 --> 00:22:36,900
+the mobile to render that particular web
+
+532
+00:22:36,900 --> 00:22:39,090
+page and apply that particular CSS rule
+
+533
+00:22:39,090 --> 00:22:41,130
+on on a particular element so need to
+
+534
+00:22:41,130 --> 00:22:42,960
+make sure that you don't go into such
+
+535
+00:22:42,960 --> 00:22:44,630
+cases especially when using
+
+536
+00:22:44,630 --> 00:22:47,220
+preprocessors for example says or less
+
+537
+00:22:47,220 --> 00:22:51,780
+right so this is a small example over
+
+538
+00:22:51,780 --> 00:22:53,850
+here i have mentioned a class where i am
+
+539
+00:22:53,850 --> 00:22:56,400
+applying some sort of rules which is dot
+
+540
+00:22:56,400 --> 00:22:59,669
+title and on the next side I have a box
+
+541
+00:22:59,669 --> 00:23:01,919
+which is the parent element and on the
+
+542
+00:23:01,919 --> 00:23:05,400
+last child I am having inside it I have
+
+543
+00:23:05,400 --> 00:23:08,429
+the title div or an element which is
+
+544
+00:23:08,429 --> 00:23:11,760
+having a class if I can basically use
+
+545
+00:23:11,760 --> 00:23:14,610
+dot title instead of using this sort of
+
+546
+00:23:14,610 --> 00:23:17,070
+CSS selectivity I should use dot title
+
+547
+00:23:17,070 --> 00:23:20,030
+okay because it's a bit more performant
+
+548
+00:23:20,030 --> 00:23:22,740
+now the next thing that comes in is that
+
+549
+00:23:22,740 --> 00:23:24,390
+CSS selectors have already been
+
+550
+00:23:24,390 --> 00:23:26,340
+optimized I won't ask you to actually
+
+551
+00:23:26,340 --> 00:23:28,140
+spend your time over this but please
+
+552
+00:23:28,140 --> 00:23:29,549
+make sure that you have an understanding
+
+553
+00:23:29,549 --> 00:23:32,250
+about this the next comes in remove
+
+554
+00:23:32,250 --> 00:23:35,580
+unused CSS rules the CSS selectors as I
+
+555
+00:23:35,580 --> 00:23:38,370
+said are already performant though if
+
+556
+00:23:38,370 --> 00:23:41,070
+you have those CSS rules which are not
+
+557
+00:23:41,070 --> 00:23:43,770
+used browsers pay spends a lot more time
+
+558
+00:23:43,770 --> 00:23:45,809
+to see as to what element it means to
+
+559
+00:23:45,809 --> 00:23:47,970
+apply it on so you'll want to actually
+
+560
+00:23:47,970 --> 00:23:49,500
+automate this particular task of
+
+561
+00:23:49,500 --> 00:23:52,020
+removing the CSS that's not used at all
+
+562
+00:23:52,020 --> 00:23:55,530
+on your webpage so there are several I
+
+563
+00:23:55,530 --> 00:23:57,750
+mean tasks and plugins that are
+
+564
+00:23:57,750 --> 00:24:00,059
+available both for Gulf and grant that
+
+565
+00:24:00,059 --> 00:24:03,510
+you can use for removing the unused CSS
+
+566
+00:24:03,510 --> 00:24:07,440
+rules comes next is reduced the number
+
+567
+00:24:07,440 --> 00:24:10,740
+of elements being style so when when a
+
+568
+00:24:10,740 --> 00:24:12,120
+particular interaction is happening on a
+
+569
+00:24:12,120 --> 00:24:14,460
+web page please see to it that only the
+
+570
+00:24:14,460 --> 00:24:17,130
+elements that need to be updated or
+
+571
+00:24:17,130 --> 00:24:19,530
+repainted and not each of the element on
+
+572
+00:24:19,530 --> 00:24:21,570
+the web page is getting updated an
+
+573
+00:24:21,570 --> 00:24:23,850
+example will be google com i will be
+
+574
+00:24:23,850 --> 00:24:26,190
+sharing it later as to what all elements
+
+575
+00:24:26,190 --> 00:24:27,630
+are affected with some sort of
+
+576
+00:24:27,630 --> 00:24:29,580
+interaction and you will be able to
+
+577
+00:24:29,580 --> 00:24:30,900
+understand as to how you can implement
+
+578
+00:24:30,900 --> 00:24:34,770
+it on your web page also comes next is
+
+579
+00:24:34,770 --> 00:24:38,220
+measure your style recalculation cost so
+
+580
+00:24:38,220 --> 00:24:39,240
+when you're animate
+
+581
+00:24:39,240 --> 00:24:41,220
+there's a recalculation that is
+
+582
+00:24:41,220 --> 00:24:43,260
+happening with every frame you need to
+
+583
+00:24:43,260 --> 00:24:45,380
+make sure that the styles that you are
+
+584
+00:24:45,380 --> 00:24:47,490
+that you are applying on a particular
+
+585
+00:24:47,490 --> 00:24:50,340
+element when you are animating they are
+
+586
+00:24:50,340 --> 00:24:53,640
+not very expensive an example for this
+
+587
+00:24:53,640 --> 00:24:56,940
+is this there's a Elaine and I have
+
+588
+00:24:56,940 --> 00:24:59,790
+applied a hover over that I have an even
+
+589
+00:24:59,790 --> 00:25:02,640
+bounded on which I change the background
+
+590
+00:25:02,640 --> 00:25:04,770
+color now background color is a paint
+
+591
+00:25:04,770 --> 00:25:07,350
+operation so I need to make sure that
+
+592
+00:25:07,350 --> 00:25:10,920
+that no other thing or I am NOT term I
+
+593
+00:25:10,920 --> 00:25:13,260
+am NOT doing something in parallel which
+
+594
+00:25:13,260 --> 00:25:17,160
+may exceed my frame window an example
+
+595
+00:25:17,160 --> 00:25:20,070
+would have been on caring is calm when
+
+596
+00:25:20,070 --> 00:25:22,350
+we perforated them so what happened was
+
+597
+00:25:22,350 --> 00:25:24,300
+that there were several Li elements and
+
+598
+00:25:24,300 --> 00:25:26,790
+there was a whole property and on top of
+
+599
+00:25:26,790 --> 00:25:29,309
+it the color was changing while we were
+
+600
+00:25:29,309 --> 00:25:31,830
+hovering and when we were scrolling the
+
+601
+00:25:31,830 --> 00:25:33,720
+particular webpage over those li
+
+602
+00:25:33,720 --> 00:25:36,330
+elements which had the background color
+
+603
+00:25:36,330 --> 00:25:39,450
+change on her property it basically made
+
+604
+00:25:39,450 --> 00:25:42,330
+it exceed the frame window of 16
+
+605
+00:25:42,330 --> 00:25:43,650
+milliseconds order 10 millisecond window
+
+606
+00:25:43,650 --> 00:25:46,290
+so in those cases we were able to see
+
+607
+00:25:46,290 --> 00:25:48,540
+Jack and such is the case that you can
+
+608
+00:25:48,540 --> 00:25:50,429
+find when you have a style recalculation
+
+609
+00:25:50,429 --> 00:25:52,950
+on a particular event which is happening
+
+610
+00:25:52,950 --> 00:25:57,090
+repeatedly comes next is reducing paint
+
+611
+00:25:57,090 --> 00:25:59,610
+area or don't paint unnecessarily and
+
+612
+00:25:59,610 --> 00:26:02,340
+avoid union of damage reasons what I
+
+613
+00:26:02,340 --> 00:26:04,770
+mean by this is in this picture you are
+
+614
+00:26:04,770 --> 00:26:06,059
+able to see that there are different
+
+615
+00:26:06,059 --> 00:26:08,309
+elements getting updated from the
+
+616
+00:26:08,309 --> 00:26:09,809
+boundaries you are able to see as to
+
+617
+00:26:09,809 --> 00:26:12,780
+what elements are getting updated though
+
+618
+00:26:12,780 --> 00:26:14,910
+because the entire screen is getting
+
+619
+00:26:14,910 --> 00:26:18,540
+repainted what is kicking into place is
+
+620
+00:26:18,540 --> 00:26:21,240
+union of damage regions so let's say
+
+621
+00:26:21,240 --> 00:26:23,550
+that there are three there are three
+
+622
+00:26:23,550 --> 00:26:25,860
+elements on a web page which are big and
+
+623
+00:26:25,860 --> 00:26:27,929
+they are getting updated so the browser
+
+624
+00:26:27,929 --> 00:26:30,390
+says that instead of repainting just
+
+625
+00:26:30,390 --> 00:26:32,880
+three elements why not paint the entire
+
+626
+00:26:32,880 --> 00:26:35,700
+page so that it takes a lot a lot less
+
+627
+00:26:35,700 --> 00:26:37,860
+time for me instead of for repainting
+
+628
+00:26:37,860 --> 00:26:39,600
+those three elements individually one
+
+629
+00:26:39,600 --> 00:26:42,900
+after the other or simultaneously so you
+
+630
+00:26:42,900 --> 00:26:44,520
+need to make sure that something of this
+
+631
+00:26:44,520 --> 00:26:46,350
+sort is not happening because it might
+
+632
+00:26:46,350 --> 00:26:50,100
+lead to a janky experience comes next is
+
+633
+00:26:50,100 --> 00:26:53,070
+CSS animations as I mentioned before
+
+634
+00:26:53,070 --> 00:26:54,990
+you should use composite operations
+
+635
+00:26:54,990 --> 00:26:58,820
+while your CSS animating a lot of other
+
+636
+00:26:58,820 --> 00:27:02,100
+JavaScript libraries also capitalize on
+
+637
+00:27:02,100 --> 00:27:05,789
+this on this on this behavior of
+
+638
+00:27:05,789 --> 00:27:08,309
+browsers for example famous it simply
+
+639
+00:27:08,309 --> 00:27:10,980
+uses transformation to make animations
+
+640
+00:27:10,980 --> 00:27:13,950
+and run them at 60fps so you might want
+
+641
+00:27:13,950 --> 00:27:20,659
+to explore it further comes next is
+
+642
+00:27:20,659 --> 00:27:23,730
+debouncing the input handlers the input
+
+643
+00:27:23,730 --> 00:27:25,710
+handlers can be even the actions or the
+
+644
+00:27:25,710 --> 00:27:28,549
+association on a particular event an
+
+645
+00:27:28,549 --> 00:27:30,720
+example that I have taken is disabling
+
+646
+00:27:30,720 --> 00:27:32,549
+over event listener while scrolling and
+
+647
+00:27:32,549 --> 00:27:35,519
+this is the example that I made earlier
+
+648
+00:27:35,519 --> 00:27:37,710
+this is can I use com and as you can see
+
+649
+00:27:37,710 --> 00:27:40,289
+there are lot of allies and on the right
+
+650
+00:27:40,289 --> 00:27:41,700
+you are able to see that there is a
+
+651
+00:27:41,700 --> 00:27:45,210
+hover property in which I am changing
+
+652
+00:27:45,210 --> 00:27:47,850
+the color so this this was the reason
+
+653
+00:27:47,850 --> 00:27:50,070
+that we were able to see a janky
+
+654
+00:27:50,070 --> 00:27:52,259
+experience and when we disabled that
+
+655
+00:27:52,259 --> 00:27:54,179
+covert we were able to see the jank
+
+656
+00:27:54,179 --> 00:27:57,299
+being gone so how you can do this is a
+
+657
+00:27:57,299 --> 00:27:59,250
+simple hack that you can incorporate in
+
+658
+00:27:59,250 --> 00:28:01,200
+your own web pages is that when you're
+
+659
+00:28:01,200 --> 00:28:03,779
+scrolling you can actually disable all
+
+660
+00:28:03,779 --> 00:28:07,320
+of the CSS / events that are associated
+
+661
+00:28:07,320 --> 00:28:09,600
+on a particular element by doing a
+
+662
+00:28:09,600 --> 00:28:11,309
+pointer events none property on a
+
+663
+00:28:11,309 --> 00:28:13,320
+particular class and you can apply that
+
+664
+00:28:13,320 --> 00:28:15,750
+same class on top of body so when you're
+
+665
+00:28:15,750 --> 00:28:17,909
+scrolling you can add a class of pointer
+
+666
+00:28:17,909 --> 00:28:20,370
+events none to the body and it will make
+
+667
+00:28:20,370 --> 00:28:22,200
+sure that no such home where property
+
+668
+00:28:22,200 --> 00:28:24,000
+gets activated while you're scrolling
+
+669
+00:28:24,000 --> 00:28:25,860
+once you are done with it it will
+
+670
+00:28:25,860 --> 00:28:27,389
+restore it back by removing that
+
+671
+00:28:27,389 --> 00:28:29,009
+particular class and you'll be in a
+
+672
+00:28:29,009 --> 00:28:30,779
+situation and you'll be in the normal
+
+673
+00:28:30,779 --> 00:28:34,860
+behavior of your oval properties comes
+
+674
+00:28:34,860 --> 00:28:36,899
+next promoting elements that update
+
+675
+00:28:36,899 --> 00:28:39,120
+frequently we just saw a great talk
+
+676
+00:28:39,120 --> 00:28:41,730
+about SVG animations a lot of time what
+
+677
+00:28:41,730 --> 00:28:43,710
+happens is that the animations are
+
+678
+00:28:43,710 --> 00:28:46,950
+happening and and because of an
+
+679
+00:28:46,950 --> 00:28:48,899
+animation that element is getting
+
+680
+00:28:48,899 --> 00:28:51,120
+repainted now because that element is
+
+681
+00:28:51,120 --> 00:28:53,070
+getting repainted you might want to
+
+682
+00:28:53,070 --> 00:28:54,929
+actually promote it to its own layer so
+
+683
+00:28:54,929 --> 00:28:57,629
+that it's just composited it the time is
+
+684
+00:28:57,629 --> 00:28:59,940
+actually not spent in repainted it again
+
+685
+00:28:59,940 --> 00:29:01,889
+and again but you need to make sure that
+
+686
+00:29:01,889 --> 00:29:04,919
+whatever you are promoting is done after
+
+687
+00:29:04,919 --> 00:29:06,340
+you have profiled and
+
+688
+00:29:06,340 --> 00:29:09,429
+seeing that it may or that it may affect
+
+689
+00:29:09,429 --> 00:29:11,380
+your pace performance because otherwise
+
+690
+00:29:11,380 --> 00:29:13,809
+you'll just you can do a similar thing
+
+691
+00:29:13,809 --> 00:29:15,940
+where you can now where you can update
+
+692
+00:29:15,940 --> 00:29:18,100
+where you can promote every element to
+
+693
+00:29:18,100 --> 00:29:19,809
+its own layer right but that will
+
+694
+00:29:19,809 --> 00:29:23,710
+consume a lot more memory so this is an
+
+695
+00:29:23,710 --> 00:29:26,020
+example where you can see a particular
+
+696
+00:29:26,020 --> 00:29:27,820
+image which is having its own layer and
+
+697
+00:29:27,820 --> 00:29:30,760
+the text which is after this there might
+
+698
+00:29:30,760 --> 00:29:32,529
+be some sort of animation that can be
+
+699
+00:29:32,529 --> 00:29:34,360
+applied to the image which is displayed
+
+700
+00:29:34,360 --> 00:29:39,429
+over here so here is the fun fact or did
+
+701
+00:29:39,429 --> 00:29:41,980
+against know that position fixed
+
+702
+00:29:41,980 --> 00:29:44,950
+elements and scrollable elements are do
+
+703
+00:29:44,950 --> 00:29:47,020
+get repainted every time you do some
+
+704
+00:29:47,020 --> 00:29:49,000
+sort of interaction with them so
+
+705
+00:29:49,000 --> 00:29:51,039
+whenever so I guess a lot of us are
+
+706
+00:29:51,039 --> 00:29:53,710
+using headers right which are position
+
+707
+00:29:53,710 --> 00:29:55,750
+fixed headers or fixed elements on top
+
+708
+00:29:55,750 --> 00:29:58,210
+of a web page in those cases those
+
+709
+00:29:58,210 --> 00:30:01,779
+elements get repainted there there are
+
+710
+00:30:01,779 --> 00:30:04,090
+hacks are there is actually a hacked
+
+711
+00:30:04,090 --> 00:30:05,440
+which allows you to go over it and
+
+712
+00:30:05,440 --> 00:30:07,600
+basically promote it to own layer but
+
+713
+00:30:07,600 --> 00:30:08,890
+you need to make sure that you have
+
+714
+00:30:08,890 --> 00:30:11,039
+profiles it before you go ahead with it
+
+715
+00:30:11,039 --> 00:30:13,510
+so this is the hack that I was talking
+
+716
+00:30:13,510 --> 00:30:16,149
+about will change transform is a CSS
+
+717
+00:30:16,149 --> 00:30:18,010
+property that allows you to tell the
+
+718
+00:30:18,010 --> 00:30:20,529
+browser that hey this element is getting
+
+719
+00:30:20,529 --> 00:30:23,020
+repainted a lot a lot of times and you
+
+720
+00:30:23,020 --> 00:30:24,970
+need to make sure that it's promoted to
+
+721
+00:30:24,970 --> 00:30:27,100
+its own layer the other hack is
+
+722
+00:30:27,100 --> 00:30:30,460
+transformed translate Z 0 though will
+
+723
+00:30:30,460 --> 00:30:33,250
+change transform is is available in most
+
+724
+00:30:33,250 --> 00:30:35,289
+of the browsers and as a fallback you
+
+725
+00:30:35,289 --> 00:30:37,029
+might want to use transform translate 0
+
+726
+00:30:37,029 --> 00:30:39,399
+as well both of their functions is to
+
+727
+00:30:39,399 --> 00:30:40,870
+basically promote a particular element
+
+728
+00:30:40,870 --> 00:30:44,380
+to its own layer I'll basically go
+
+729
+00:30:44,380 --> 00:30:45,850
+through a live performance audit so that
+
+730
+00:30:45,850 --> 00:30:48,130
+you guys can understand as to what I'm
+
+731
+00:30:48,130 --> 00:30:50,380
+telling in general as of now about the
+
+732
+00:30:50,380 --> 00:30:52,750
+best practices but follow along with me
+
+733
+00:30:52,750 --> 00:30:55,409
+till we do a performance audit alive
+
+734
+00:30:55,409 --> 00:30:59,200
+comes next is gifs and performance so
+
+735
+00:30:59,200 --> 00:31:00,820
+gifs and performance don't go hand in
+
+736
+00:31:00,820 --> 00:31:02,980
+hand obviously because Jeff's get
+
+737
+00:31:02,980 --> 00:31:04,779
+repainted every time they have a new
+
+738
+00:31:04,779 --> 00:31:07,929
+frame so because of them material up
+
+739
+00:31:07,929 --> 00:31:09,520
+calm which is a great website about
+
+740
+00:31:09,520 --> 00:31:11,890
+showcasing the material design projects
+
+741
+00:31:11,890 --> 00:31:14,500
+it was getting a lot of janky experience
+
+742
+00:31:14,500 --> 00:31:16,870
+it was able to see that lag and
+
+743
+00:31:16,870 --> 00:31:18,280
+performance in the rendering performance
+
+744
+00:31:18,280 --> 00:31:20,110
+the reason for it was
+
+745
+00:31:20,110 --> 00:31:21,790
+a lot of elements were getting repainted
+
+746
+00:31:21,790 --> 00:31:24,580
+and a lot of time union of damage
+
+747
+00:31:24,580 --> 00:31:28,270
+regions was was what getting applied by
+
+748
+00:31:28,270 --> 00:31:30,490
+the browser so their entire page was
+
+749
+00:31:30,490 --> 00:31:32,770
+getting repainted when the small ships
+
+750
+00:31:32,770 --> 00:31:38,350
+over there so this is an example of the
+
+751
+00:31:38,350 --> 00:31:40,660
+screenshot that I took both of these are
+
+752
+00:31:40,660 --> 00:31:44,350
+images and when I enabled paint flashing
+
+753
+00:31:44,350 --> 00:31:46,360
+I was able to see that both of them are
+
+754
+00:31:46,360 --> 00:31:49,600
+getting updated every time every time
+
+755
+00:31:49,600 --> 00:31:51,820
+there was a change in the frame of that
+
+756
+00:31:51,820 --> 00:31:53,740
+particular jiff so you might want to
+
+757
+00:31:53,740 --> 00:31:56,380
+disable gifs once they are not in the
+
+758
+00:31:56,380 --> 00:31:58,419
+viewport so that so that they don't
+
+759
+00:31:58,419 --> 00:32:00,640
+actually contribute to the impact of
+
+760
+00:32:00,640 --> 00:32:02,110
+their running of the rendering
+
+761
+00:32:02,110 --> 00:32:06,010
+performance of your web page so now it's
+
+762
+00:32:06,010 --> 00:32:10,780
+time to do a live performance audit so I
+
+763
+00:32:10,780 --> 00:32:13,210
+have opened up this console of mine I'm
+
+764
+00:32:13,210 --> 00:32:14,650
+using chrome dev tools you can use any
+
+765
+00:32:14,650 --> 00:32:17,860
+other browser devtools lady want it's a
+
+766
+00:32:17,860 --> 00:32:20,110
+bit more simpler in Chrome so that is
+
+767
+00:32:20,110 --> 00:32:22,630
+why I'm using it so as of now you can
+
+768
+00:32:22,630 --> 00:32:25,900
+see the that I have enabled paint
+
+769
+00:32:25,900 --> 00:32:27,669
+flashing and because of that you are
+
+770
+00:32:27,669 --> 00:32:29,260
+able to see as to what elements are
+
+771
+00:32:29,260 --> 00:32:31,540
+getting repainted so let me go above and
+
+772
+00:32:31,540 --> 00:32:35,559
+the lookout for for its Jeff animation
+
+773
+00:32:35,559 --> 00:32:38,590
+ok so now i'm not into the viewport and
+
+774
+00:32:38,590 --> 00:32:41,200
+you can see that a jiff is getting
+
+775
+00:32:41,200 --> 00:32:43,480
+repainted every time it has a new frame
+
+776
+00:32:43,480 --> 00:32:46,750
+right it's on the top right that you can
+
+777
+00:32:46,750 --> 00:32:50,440
+see over here now what you can what you
+
+778
+00:32:50,440 --> 00:32:52,780
+need to make sure that if such a such
+
+779
+00:32:52,780 --> 00:32:54,429
+thing is happening on your web page as
+
+780
+00:32:54,429 --> 00:32:56,500
+well you might want to disable it by
+
+781
+00:32:56,500 --> 00:32:59,020
+removing its source by replacing it with
+
+782
+00:32:59,020 --> 00:33:02,020
+another static image per se or you can
+
+783
+00:33:02,020 --> 00:33:05,350
+use some other technique comes next is
+
+784
+00:33:05,350 --> 00:33:08,080
+show layer borders so it allows us to
+
+785
+00:33:08,080 --> 00:33:10,570
+see actually what are the different
+
+786
+00:33:10,570 --> 00:33:12,790
+layers on a web page it might not be
+
+787
+00:33:12,790 --> 00:33:15,429
+making a lot of sense but let me do
+
+788
+00:33:15,429 --> 00:33:18,100
+something as if now so over here I'm
+
+789
+00:33:18,100 --> 00:33:19,960
+interacting with this particular element
+
+790
+00:33:19,960 --> 00:33:22,840
+and I am just crawling a I mean up and
+
+791
+00:33:22,840 --> 00:33:24,760
+bottom on this particular element can
+
+792
+00:33:24,760 --> 00:33:27,280
+you see that entire list is getting
+
+793
+00:33:27,280 --> 00:33:30,309
+repainted when I am scrolling it was a
+
+794
+00:33:30,309 --> 00:33:31,990
+fun fact that I said before that
+
+795
+00:33:31,990 --> 00:33:33,940
+scrollable element skate repainted
+
+796
+00:33:33,940 --> 00:33:36,610
+so this is something that you that you
+
+797
+00:33:36,610 --> 00:33:38,409
+would want to avoid that when you are
+
+798
+00:33:38,409 --> 00:33:40,240
+actually scrolling our particulars a
+
+799
+00:33:40,240 --> 00:33:42,340
+particular element what is the need for
+
+800
+00:33:42,340 --> 00:33:44,860
+the entire element to get repainted so
+
+801
+00:33:44,860 --> 00:33:47,529
+the hack in this case would be to simply
+
+802
+00:33:47,529 --> 00:33:52,690
+inspect this fuel and apply a will
+
+803
+00:33:52,690 --> 00:34:03,039
+change transform property yep and now
+
+804
+00:34:03,039 --> 00:34:05,049
+when you stall you are able to see that
+
+805
+00:34:05,049 --> 00:34:06,580
+the entire element is not getting
+
+806
+00:34:06,580 --> 00:34:09,490
+repainted so this is a hack that people
+
+807
+00:34:09,490 --> 00:34:12,579
+say that it's a hack but if you want to
+
+808
+00:34:12,579 --> 00:34:14,710
+improve your page performance this is
+
+809
+00:34:14,710 --> 00:34:16,270
+something that you can incorporate as
+
+810
+00:34:16,270 --> 00:34:21,250
+well so this is it and there are several
+
+811
+00:34:21,250 --> 00:34:22,750
+other things that I just mentioned
+
+812
+00:34:22,750 --> 00:34:24,490
+before that you can apply to do a
+
+813
+00:34:24,490 --> 00:34:26,679
+similar thing over here also there are
+
+814
+00:34:26,679 --> 00:34:29,800
+the as you can see the entire element is
+
+815
+00:34:29,800 --> 00:34:32,829
+getting repainted which comprises of
+
+816
+00:34:32,829 --> 00:34:35,319
+different pics so you might want to
+
+817
+00:34:35,319 --> 00:34:38,319
+avoid this so a similar hack that we did
+
+818
+00:34:38,319 --> 00:34:40,149
+for hacker news widget you can do a
+
+819
+00:34:40,149 --> 00:34:45,690
+similar one for dribble as well okay and
+
+820
+00:34:45,690 --> 00:34:49,750
+after after we have applied this
+
+821
+00:34:49,750 --> 00:34:52,690
+particular will change transform
+
+822
+00:34:52,690 --> 00:34:55,389
+property I said that it has been
+
+823
+00:34:55,389 --> 00:34:57,129
+promoted to its own layer now let's
+
+824
+00:34:57,129 --> 00:35:00,369
+verify now when I say show layer borders
+
+825
+00:35:00,369 --> 00:35:02,650
+you are actually able to see a blue line
+
+826
+00:35:02,650 --> 00:35:05,710
+on the hacker news widget right so this
+
+827
+00:35:05,710 --> 00:35:07,990
+is because this element is now upgraded
+
+828
+00:35:07,990 --> 00:35:10,329
+to its own layer now actually let me
+
+829
+00:35:10,329 --> 00:35:13,150
+remove this will change transform okay
+
+830
+00:35:13,150 --> 00:35:17,020
+and now let's show layer Boris okay I
+
+831
+00:35:17,020 --> 00:35:19,810
+guess it has been already upgraded to
+
+832
+00:35:19,810 --> 00:35:21,190
+its own layer this is the reason for it
+
+833
+00:35:21,190 --> 00:35:23,619
+but otherwise it would not display that
+
+834
+00:35:23,619 --> 00:35:25,990
+blue border around that particular
+
+835
+00:35:25,990 --> 00:35:34,780
+element so coming back at H con 2012 and
+
+836
+00:35:34,780 --> 00:35:36,940
+I guess we are all all aware about the
+
+837
+00:35:36,940 --> 00:35:38,950
+rendering performance that they have a
+
+838
+00:35:38,950 --> 00:35:41,140
+serious impact about the customers
+
+839
+00:35:41,140 --> 00:35:43,480
+experience so this is a case study which
+
+840
+00:35:43,480 --> 00:35:45,520
+facebook mentioned that when it reduced
+
+841
+00:35:45,520 --> 00:35:47,770
+the frame rate from 16 millisecond
+
+842
+00:35:47,770 --> 00:35:51,730
+from 60 FPS to 30fps they saw a decrease
+
+843
+00:35:51,730 --> 00:35:53,830
+in the user engagement so this is the
+
+844
+00:35:53,830 --> 00:35:55,270
+reason that you should really think of
+
+845
+00:35:55,270 --> 00:35:57,040
+improving your rendering performance of
+
+846
+00:35:57,040 --> 00:36:01,420
+your webpages part 2 performance will be
+
+847
+00:36:01,420 --> 00:36:04,270
+to practice it and make it a continuous
+
+848
+00:36:04,270 --> 00:36:06,670
+habit we have put in / for dead calm
+
+849
+00:36:06,670 --> 00:36:08,770
+which allows you to actually see as to
+
+850
+00:36:08,770 --> 00:36:11,410
+when we are performance or a different
+
+851
+00:36:11,410 --> 00:36:13,690
+web applications we make them live so
+
+852
+00:36:13,690 --> 00:36:16,210
+that developers like you can see as to
+
+853
+00:36:16,210 --> 00:36:18,400
+how we performance or it did and do by
+
+854
+00:36:18,400 --> 00:36:20,980
+the same by yourself so this is what we
+
+855
+00:36:20,980 --> 00:36:22,810
+intend to do with / for it we have also
+
+856
+00:36:22,810 --> 00:36:25,750
+put in our documentation which we are
+
+857
+00:36:25,750 --> 00:36:28,120
+updating regularly where you can see as
+
+858
+00:36:28,120 --> 00:36:30,310
+to what are the different things related
+
+859
+00:36:30,310 --> 00:36:31,690
+to rendering performance what are the
+
+860
+00:36:31,690 --> 00:36:33,640
+issues what are the different articles
+
+861
+00:36:33,640 --> 00:36:35,470
+that you should look out for when there
+
+862
+00:36:35,470 --> 00:36:38,440
+is a particular impact of your web
+
+863
+00:36:38,440 --> 00:36:39,940
+performance so you might want to check
+
+864
+00:36:39,940 --> 00:36:42,160
+out perforate calm in those cases in
+
+865
+00:36:42,160 --> 00:36:44,080
+case you have done a performance audit
+
+866
+00:36:44,080 --> 00:36:46,120
+by yourself you might want to ping us at
+
+867
+00:36:46,120 --> 00:36:48,460
+afford it and we will be happy to add it
+
+868
+00:36:48,460 --> 00:36:52,210
+in our repository as well so that's it
+
+869
+00:36:52,210 --> 00:36:58,450
+thanks everyone I have noticed when we
+
+870
+00:36:58,450 --> 00:37:00,250
+were working on animation on mobile
+
+871
+00:37:00,250 --> 00:37:03,850
+devices different type like iphone 6 6
+
+872
+00:37:03,850 --> 00:37:07,510
+s5 there is difference and the lagging
+
+873
+00:37:07,510 --> 00:37:08,860
+of performance when it comes to
+
+874
+00:37:08,860 --> 00:37:11,950
+rendering so do you have any idea why it
+
+875
+00:37:11,950 --> 00:37:15,040
+happens so so when you say that you are
+
+876
+00:37:15,040 --> 00:37:16,360
+able to see a lagging lag and
+
+877
+00:37:16,360 --> 00:37:19,660
+performance there are different reasons
+
+878
+00:37:19,660 --> 00:37:22,210
+for it and the way I would want to
+
+879
+00:37:22,210 --> 00:37:23,980
+explain is that over in the slides over
+
+880
+00:37:23,980 --> 00:37:26,650
+here I simply discussed as to how CSS
+
+881
+00:37:26,650 --> 00:37:28,480
+can impact your page performance though
+
+882
+00:37:28,480 --> 00:37:29,980
+it can be triggered by a JavaScript as
+
+883
+00:37:29,980 --> 00:37:32,410
+well for example there is a consecutive
+
+884
+00:37:32,410 --> 00:37:34,120
+Dom read and write which might be
+
+885
+00:37:34,120 --> 00:37:36,040
+happening and impacting its performance
+
+886
+00:37:36,040 --> 00:37:38,620
+and there are several other issues that
+
+887
+00:37:38,620 --> 00:37:40,780
+can be related to it so the way that I
+
+888
+00:37:40,780 --> 00:37:42,850
+did up offered it for the rendering
+
+889
+00:37:42,850 --> 00:37:44,560
+performance you can do a similar for
+
+890
+00:37:44,560 --> 00:37:46,030
+your own application and understand as
+
+891
+00:37:46,030 --> 00:37:48,370
+to what is the thing that which is the
+
+892
+00:37:48,370 --> 00:37:51,610
+reason for the jank eNOS in your case it
+
+893
+00:37:51,610 --> 00:37:53,980
+won't be a generic answer but you need
+
+894
+00:37:53,980 --> 00:37:55,030
+to understand as to what are the
+
+895
+00:37:55,030 --> 00:37:57,430
+different issues that can impact a page
+
+896
+00:37:57,430 --> 00:37:58,990
+performance and that's how you can
+
+897
+00:37:58,990 --> 00:38:01,690
+resolve it there is a way to like
+
+898
+00:38:01,690 --> 00:38:06,700
+debug this on native iOS like a instead
+
+899
+00:38:06,700 --> 00:38:09,850
+of using chrome tools so i have because
+
+900
+00:38:09,850 --> 00:38:11,440
+in chrome tools it does not show any
+
+901
+00:38:11,440 --> 00:38:13,930
+difference even when you try to
+
+902
+00:38:13,930 --> 00:38:16,810
+reproduce it in the same way but on
+
+903
+00:38:16,810 --> 00:38:18,610
+native iOS devices it shows the
+
+904
+00:38:18,610 --> 00:38:23,560
+difference ok I because these issues are
+
+905
+00:38:23,560 --> 00:38:25,990
+like generic they happen the same way on
+
+906
+00:38:25,990 --> 00:38:27,850
+the desktop and the mobile devices as
+
+907
+00:38:27,850 --> 00:38:30,580
+well so I didn't actually had da I mean
+
+908
+00:38:30,580 --> 00:38:33,010
+much much difference between the while
+
+909
+00:38:33,010 --> 00:38:34,600
+analyzing the performance of a
+
+910
+00:38:34,600 --> 00:38:36,130
+particular application on desktop and
+
+911
+00:38:36,130 --> 00:38:39,160
+mobile but I have to see in that case as
+
+912
+00:38:39,160 --> 00:38:41,440
+to what what is the exact thing which is
+
+913
+00:38:41,440 --> 00:38:43,360
+making a difference between the two
+
+914
+00:38:43,360 --> 00:38:47,410
+devices so yeah not sure about the exact
+

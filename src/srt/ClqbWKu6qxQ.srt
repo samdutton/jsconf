@@ -1,0 +1,2305 @@
+1
+00:00:05,190 --> 00:00:09,240
+
+hi everyone i'm lynn clark and I make
+
+2
+00:00:09,240 --> 00:00:11,610
+code cartoons and today I'm going to
+
+3
+00:00:11,610 --> 00:00:13,709
+walk you through the wilds of data
+
+4
+00:00:13,709 --> 00:00:16,230
+handling and react so how you handle
+
+5
+00:00:16,230 --> 00:00:19,740
+state any react application and I call
+
+6
+00:00:19,740 --> 00:00:21,630
+it the wilds because when you first look
+
+7
+00:00:21,630 --> 00:00:24,030
+at the landscape it can seem like it's
+
+8
+00:00:24,030 --> 00:00:26,160
+an untamed profusion of different
+
+9
+00:00:26,160 --> 00:00:29,670
+options for how to handle data it's
+
+10
+00:00:29,670 --> 00:00:30,930
+really hard to figure out when you're
+
+11
+00:00:30,930 --> 00:00:33,450
+looking at it what you might want to use
+
+12
+00:00:33,450 --> 00:00:36,199
+and why you might want to use it but
+
+13
+00:00:36,199 --> 00:00:38,399
+when you look closer you'll see that
+
+14
+00:00:38,399 --> 00:00:41,640
+there are three groupings of ways to do
+
+15
+00:00:41,640 --> 00:00:44,100
+this and they're actually easier to
+
+16
+00:00:44,100 --> 00:00:46,050
+understand than you might think so I
+
+17
+00:00:46,050 --> 00:00:47,789
+want to go for a whirlwind tour through
+
+18
+00:00:47,789 --> 00:00:49,710
+them so that you can have a better idea
+
+19
+00:00:49,710 --> 00:00:51,989
+when you approach your next appt why you
+
+20
+00:00:51,989 --> 00:00:55,559
+might want to use any one of these so
+
+21
+00:00:55,559 --> 00:00:59,129
+the first of these was flux and I'm
+
+22
+00:00:59,129 --> 00:01:00,749
+going to start with the colonel of the
+
+23
+00:01:00,749 --> 00:01:04,530
+idea that flux introduced that carries
+
+24
+00:01:04,530 --> 00:01:08,190
+through to redux and to relay and that's
+
+25
+00:01:08,190 --> 00:01:11,730
+it don't worry if you don't understand
+
+26
+00:01:11,730 --> 00:01:13,800
+it because this whole project started
+
+27
+00:01:13,800 --> 00:01:16,860
+because I couldn't understand it but
+
+28
+00:01:16,860 --> 00:01:19,080
+once you understand flux this diagram is
+
+29
+00:01:19,080 --> 00:01:23,490
+very clear before explaining the diagram
+
+30
+00:01:23,490 --> 00:01:26,580
+I should explain the problem that flux
+
+31
+00:01:26,580 --> 00:01:31,080
+solves so flux and react both come out
+
+32
+00:01:31,080 --> 00:01:33,090
+of Facebook and they were developed side
+
+33
+00:01:33,090 --> 00:01:35,010
+by side to address a certain set of
+
+34
+00:01:35,010 --> 00:01:39,420
+problems one really good example of this
+
+35
+00:01:39,420 --> 00:01:42,210
+set of problems was the notification bug
+
+36
+00:01:42,210 --> 00:01:44,280
+how many people remember this you know a
+
+37
+00:01:44,280 --> 00:01:46,910
+few years ago you go on facebook and
+
+38
+00:01:46,910 --> 00:01:49,080
+you'd be clicking around and all of a
+
+39
+00:01:49,080 --> 00:01:50,310
+sudden you see a notification for a new
+
+40
+00:01:50,310 --> 00:01:52,350
+message and you click the messages icon
+
+41
+00:01:52,350 --> 00:01:54,870
+and look at your messages and there's no
+
+42
+00:01:54,870 --> 00:01:57,990
+new message and so the notification goes
+
+43
+00:01:57,990 --> 00:02:00,690
+away and you start doing whatever you're
+
+44
+00:02:00,690 --> 00:02:04,110
+doing again and then all the sudden
+
+45
+00:02:04,110 --> 00:02:06,720
+comes back and just keep going back and
+
+46
+00:02:06,720 --> 00:02:09,149
+forth and back and forth and back in
+
+47
+00:02:09,149 --> 00:02:13,770
+this cycle this wasn't just a cycle for
+
+48
+00:02:13,770 --> 00:02:16,860
+you the user it was also a cycle for the
+
+49
+00:02:16,860 --> 00:02:18,100
+team at Facebook
+
+50
+00:02:18,100 --> 00:02:20,470
+you know they'd fix it it'd be resolved
+
+51
+00:02:20,470 --> 00:02:21,880
+for a few weeks and then all the sudden
+
+52
+00:02:21,880 --> 00:02:25,600
+would come back again so they wanted to
+
+53
+00:02:25,600 --> 00:02:28,360
+fix this once and for all and end this
+
+54
+00:02:28,360 --> 00:02:32,080
+cycle of unpredictability when they
+
+55
+00:02:32,080 --> 00:02:33,760
+looked at it more closely they realize
+
+56
+00:02:33,760 --> 00:02:36,700
+the source of the problems was the way
+
+57
+00:02:36,700 --> 00:02:40,780
+that they were handling data they had
+
+58
+00:02:40,780 --> 00:02:43,990
+these models and the models which held
+
+59
+00:02:43,990 --> 00:02:46,180
+the data would pass the data to the
+
+60
+00:02:46,180 --> 00:02:48,160
+views which would present the data to
+
+61
+00:02:48,160 --> 00:02:50,470
+the user would format it in HTML for the
+
+62
+00:02:50,470 --> 00:02:54,070
+user the views also provided a user
+
+63
+00:02:54,070 --> 00:02:55,960
+interface for the user to put data back
+
+64
+00:02:55,960 --> 00:02:58,360
+into the system so the views needed to
+
+65
+00:02:58,360 --> 00:02:59,860
+communicate back to the model they need
+
+66
+00:02:59,860 --> 00:03:02,740
+to update that data in the model but
+
+67
+00:03:02,740 --> 00:03:04,300
+sometimes when you may have changed to
+
+68
+00:03:04,300 --> 00:03:06,370
+one model another model would need to
+
+69
+00:03:06,370 --> 00:03:08,140
+update in response so you have this
+
+70
+00:03:08,140 --> 00:03:11,230
+communication between models too so this
+
+71
+00:03:11,230 --> 00:03:13,090
+starts to look kind of like an epic game
+
+72
+00:03:13,090 --> 00:03:15,550
+of pong it's really hard to figure out
+
+73
+00:03:15,550 --> 00:03:19,720
+where the ball is going to land throw in
+
+74
+00:03:19,720 --> 00:03:21,550
+the fact that these updates could be
+
+75
+00:03:21,550 --> 00:03:23,890
+triggered asynchronously you know you
+
+76
+00:03:23,890 --> 00:03:27,120
+could have a update that comes in and
+
+77
+00:03:27,120 --> 00:03:29,500
+kicks off two more that are happening
+
+78
+00:03:29,500 --> 00:03:32,440
+concurrently and that's kind of like
+
+79
+00:03:32,440 --> 00:03:34,600
+taking a bag of ping pong balls and
+
+80
+00:03:34,600 --> 00:03:35,890
+throwing it into your pong game like
+
+81
+00:03:35,890 --> 00:03:36,970
+everything is bouncing all over
+
+82
+00:03:36,970 --> 00:03:39,160
+everywhere as incredibly hard to figure
+
+83
+00:03:39,160 --> 00:03:44,080
+out where everything's go and so that
+
+84
+00:03:44,080 --> 00:03:47,260
+brings us back to this diagram that's
+
+85
+00:03:47,260 --> 00:03:49,120
+what you'll find if you see the flux
+
+86
+00:03:49,120 --> 00:03:52,750
+docks and this is the way that Facebook
+
+87
+00:03:52,750 --> 00:03:55,600
+solved that problem of the ping pong
+
+88
+00:03:55,600 --> 00:03:57,270
+balls just bouncing all over the place
+
+89
+00:03:57,270 --> 00:04:00,720
+it was with a unidirectional data flow
+
+90
+00:04:00,720 --> 00:04:04,420
+so you'll notice that this data flows
+
+91
+00:04:04,420 --> 00:04:06,190
+from one thing to the other my guess the
+
+92
+00:04:06,190 --> 00:04:08,380
+end it starts back at the beginning and
+
+93
+00:04:08,380 --> 00:04:10,960
+you should also notice that the first
+
+94
+00:04:10,960 --> 00:04:13,720
+thing there the first thing that starts
+
+95
+00:04:13,720 --> 00:04:16,840
+off this cycle is the action that's
+
+96
+00:04:16,840 --> 00:04:21,250
+going to become more important later but
+
+97
+00:04:21,250 --> 00:04:23,200
+if you don't understand what the parts
+
+98
+00:04:23,200 --> 00:04:24,970
+do I don't think this diagram even
+
+99
+00:04:24,970 --> 00:04:26,380
+though it shows you this unidirectional
+
+100
+00:04:26,380 --> 00:04:28,479
+data flow it doesn't give you a good
+
+101
+00:04:28,479 --> 00:04:31,630
+mental model of what exactly is going
+
+102
+00:04:31,630 --> 00:04:37,270
+on and it certainly didn't help me what
+
+103
+00:04:37,270 --> 00:04:40,810
+did help me was thinking about all the
+
+104
+00:04:40,810 --> 00:04:42,250
+different parts of flux as different
+
+105
+00:04:42,250 --> 00:04:46,030
+characters working together to take on a
+
+106
+00:04:46,030 --> 00:04:49,120
+certain task so I want to introduce you
+
+107
+00:04:49,120 --> 00:04:50,920
+to the characters that I have in my head
+
+108
+00:04:50,920 --> 00:04:52,420
+and hopefully that helps you understand
+
+109
+00:04:52,420 --> 00:04:58,900
+flux too so the first of these is the
+
+110
+00:04:58,900 --> 00:05:00,610
+action creator and I think of the action
+
+111
+00:05:00,610 --> 00:05:02,730
+creator as a telegraph operator
+
+112
+00:05:02,730 --> 00:05:05,200
+basically other characters come to the
+
+113
+00:05:05,200 --> 00:05:07,420
+action creator with a change that they
+
+114
+00:05:07,420 --> 00:05:08,980
+want to make and they have the action
+
+115
+00:05:08,980 --> 00:05:12,310
+creator format an action that represents
+
+116
+00:05:12,310 --> 00:05:14,410
+that change the action creators the one
+
+117
+00:05:14,410 --> 00:05:16,210
+that knows how the rest of the system
+
+118
+00:05:16,210 --> 00:05:18,010
+what language the rest of the system
+
+119
+00:05:18,010 --> 00:05:19,450
+speaks and it knows how to format these
+
+120
+00:05:19,450 --> 00:05:21,130
+actions in a way that the rest of the
+
+121
+00:05:21,130 --> 00:05:25,060
+system will understand them each change
+
+122
+00:05:25,060 --> 00:05:27,670
+that of you wants to make the action
+
+123
+00:05:27,670 --> 00:05:29,290
+creator turns into an object that
+
+124
+00:05:29,290 --> 00:05:32,620
+represents it the object has a type
+
+125
+00:05:32,620 --> 00:05:34,690
+something like message created message
+
+126
+00:05:34,690 --> 00:05:39,160
+read message delete and a payload which
+
+127
+00:05:39,160 --> 00:05:41,350
+tells it what message to do this to what
+
+128
+00:05:41,350 --> 00:05:43,570
+the text of that message is so you
+
+129
+00:05:43,570 --> 00:05:46,650
+define the list of those types like a
+
+130
+00:05:46,650 --> 00:05:50,740
+message create and have a full list of
+
+131
+00:05:50,740 --> 00:05:53,320
+all of the different possible actions in
+
+132
+00:05:53,320 --> 00:05:55,030
+your system so this is kind of nice
+
+133
+00:05:55,030 --> 00:05:58,060
+because it provides an API you know if a
+
+134
+00:05:58,060 --> 00:05:59,830
+new developer comes onto your projects
+
+135
+00:05:59,830 --> 00:06:01,390
+you just point them to this list of
+
+136
+00:06:01,390 --> 00:06:03,340
+different actions in your system and
+
+137
+00:06:03,340 --> 00:06:05,110
+they can know all the different things
+
+138
+00:06:05,110 --> 00:06:09,490
+that your system does so once the action
+
+139
+00:06:09,490 --> 00:06:10,840
+creator for mass this action creates
+
+140
+00:06:10,840 --> 00:06:13,150
+this object then it passes it off to the
+
+141
+00:06:13,150 --> 00:06:16,180
+dispatcher and I think of the dispatcher
+
+142
+00:06:16,180 --> 00:06:19,390
+is basically a switchboard operator it's
+
+143
+00:06:19,390 --> 00:06:22,480
+a big registry of callbacks it lists all
+
+144
+00:06:22,480 --> 00:06:24,370
+the stores has a list of all the stores
+
+145
+00:06:24,370 --> 00:06:26,350
+that need to be updated whenever in
+
+146
+00:06:26,350 --> 00:06:30,100
+action comes in and so it will send
+
+147
+00:06:30,100 --> 00:06:32,470
+those actions that come into it to all
+
+148
+00:06:32,470 --> 00:06:33,790
+the stores and I'll do it synchronously
+
+149
+00:06:33,790 --> 00:06:36,610
+it will actually not have different ping
+
+150
+00:06:36,610 --> 00:06:38,170
+pong balls going at the same time it'll
+
+151
+00:06:38,170 --> 00:06:40,870
+make sure that all of the action goes
+
+152
+00:06:40,870 --> 00:06:42,280
+through the stores before it triggers
+
+153
+00:06:42,280 --> 00:06:44,110
+the next one
+
+154
+00:06:44,110 --> 00:06:46,210
+now the flux dispatcher is different
+
+155
+00:06:46,210 --> 00:06:48,160
+from dispatchers in other systems and it
+
+156
+00:06:48,160 --> 00:06:52,180
+is different in that the action is
+
+157
+00:06:52,180 --> 00:06:54,220
+dispatched to every single store and
+
+158
+00:06:54,220 --> 00:06:55,780
+other systems a lot of times the
+
+159
+00:06:55,780 --> 00:06:57,640
+dispatcher will allow you to subscribe
+
+160
+00:06:57,640 --> 00:06:59,860
+to a certain set of actions so your
+
+161
+00:06:59,860 --> 00:07:01,420
+store might say I only want to hear
+
+162
+00:07:01,420 --> 00:07:03,520
+about message create actions and the
+
+163
+00:07:03,520 --> 00:07:04,810
+dispatcher will only send it that kind
+
+164
+00:07:04,810 --> 00:07:07,300
+of action flux sends all of the actions
+
+165
+00:07:07,300 --> 00:07:09,100
+to the store and it's the stores
+
+166
+00:07:09,100 --> 00:07:11,500
+responsibility to say hey I don't really
+
+167
+00:07:11,500 --> 00:07:13,420
+care about this one or I'm going to make
+
+168
+00:07:13,420 --> 00:07:18,130
+a change based on this type so now we
+
+169
+00:07:18,130 --> 00:07:21,700
+get to the store I think of the store as
+
+170
+00:07:21,700 --> 00:07:24,970
+an over controlling bureaucrat all state
+
+171
+00:07:24,970 --> 00:07:28,080
+and state logic live on the store and
+
+172
+00:07:28,080 --> 00:07:30,610
+there are no setters there's no way to
+
+173
+00:07:30,610 --> 00:07:33,090
+get in and change the data in the store
+
+174
+00:07:33,090 --> 00:07:36,160
+except for this action pipeline so I
+
+175
+00:07:36,160 --> 00:07:37,240
+think of it as you know the store is
+
+176
+00:07:37,240 --> 00:07:39,070
+basically saying no you're not going to
+
+177
+00:07:39,070 --> 00:07:40,930
+touch this data only I can touch this
+
+178
+00:07:40,930 --> 00:07:42,940
+data and if you want to make me to make
+
+179
+00:07:42,940 --> 00:07:44,560
+any changes to it you're going to have
+
+180
+00:07:44,560 --> 00:07:45,400
+to go through the official channels
+
+181
+00:07:45,400 --> 00:07:46,750
+you're gonna have to go through the
+
+182
+00:07:46,750 --> 00:07:51,220
+action pipeline once the store has
+
+183
+00:07:51,220 --> 00:07:53,980
+actually made its changes to the data we
+
+184
+00:07:53,980 --> 00:07:56,740
+get to the view and we have a controller
+
+185
+00:07:56,740 --> 00:07:59,110
+view and the view this underneath the
+
+186
+00:07:59,110 --> 00:08:02,080
+controller view so the view is basically
+
+187
+00:08:02,080 --> 00:08:03,730
+a presenter that just takes the data
+
+188
+00:08:03,730 --> 00:08:06,310
+that is given and turns that into the
+
+189
+00:08:06,310 --> 00:08:07,630
+something that the user can understand
+
+190
+00:08:07,630 --> 00:08:10,930
+turns it into HTML it renders the data
+
+191
+00:08:10,930 --> 00:08:14,320
+that it gets from the store the
+
+192
+00:08:14,320 --> 00:08:15,640
+controller view is a little bit more
+
+193
+00:08:15,640 --> 00:08:17,170
+aware of what's going on in the system
+
+194
+00:08:17,170 --> 00:08:19,300
+it basically acts as a middle manager
+
+195
+00:08:19,300 --> 00:08:21,780
+between the store and the presenter it
+
+196
+00:08:21,780 --> 00:08:25,330
+fetches data from the store and gives it
+
+197
+00:08:25,330 --> 00:08:29,200
+to the view underneath it to render so
+
+198
+00:08:29,200 --> 00:08:30,730
+those are the characters in flux now
+
+199
+00:08:30,730 --> 00:08:32,320
+let's take a look at how they all work
+
+200
+00:08:32,320 --> 00:08:35,260
+together to make an application happen
+
+201
+00:08:35,260 --> 00:08:38,740
+and before they start doing their actual
+
+202
+00:08:38,740 --> 00:08:41,229
+tasks they need to initialize they need
+
+203
+00:08:41,229 --> 00:08:43,090
+to do some set up to start talking to
+
+204
+00:08:43,090 --> 00:08:44,140
+each other so we're going to start with
+
+205
+00:08:44,140 --> 00:08:45,760
+a set up and then we'll look at how the
+
+206
+00:08:45,760 --> 00:08:49,420
+application works once it set up so to
+
+207
+00:08:49,420 --> 00:08:51,010
+set up the store will tell the
+
+208
+00:08:51,010 --> 00:08:53,290
+dispatcher what call back to you is
+
+209
+00:08:53,290 --> 00:08:55,510
+they'll say hey here's a call back as
+
+210
+00:08:55,510 --> 00:08:56,980
+soon as an action comes in just let me
+
+211
+00:08:56,980 --> 00:08:57,480
+know
+
+212
+00:08:57,480 --> 00:09:02,259
+and then the controller view will talk
+
+213
+00:09:02,259 --> 00:09:05,350
+to the store and we'll say hey can you
+
+214
+00:09:05,350 --> 00:09:07,569
+give me the state whatever initial state
+
+215
+00:09:07,569 --> 00:09:09,370
+you have and i'm going to send that down
+
+216
+00:09:09,370 --> 00:09:12,819
+to my views and so the store sends the
+
+217
+00:09:12,819 --> 00:09:14,649
+state which the control of you sends
+
+218
+00:09:14,649 --> 00:09:16,720
+down to the views below it to render the
+
+219
+00:09:16,720 --> 00:09:18,100
+this is the initial render of the app
+
+220
+00:09:18,100 --> 00:09:20,769
+and then the controller view goes back
+
+221
+00:09:20,769 --> 00:09:23,500
+up to the store and says and if any
+
+222
+00:09:23,500 --> 00:09:26,920
+updates come in just let me know and so
+
+223
+00:09:26,920 --> 00:09:32,439
+give us the store a call back to call so
+
+224
+00:09:32,439 --> 00:09:33,910
+everybody knows how to talk to each
+
+225
+00:09:33,910 --> 00:09:37,689
+other now and now we can start actually
+
+226
+00:09:37,689 --> 00:09:41,680
+performing having user interactions so
+
+227
+00:09:41,680 --> 00:09:43,329
+the user is going to update the middle
+
+228
+00:09:43,329 --> 00:09:48,970
+number set it to 10 and the view which
+
+229
+00:09:48,970 --> 00:09:51,279
+has received this user interaction is
+
+230
+00:09:51,279 --> 00:09:52,660
+going to go down to the action creator
+
+231
+00:09:52,660 --> 00:09:54,699
+and say hey here's some information can
+
+232
+00:09:54,699 --> 00:09:56,170
+you format in action for me and send it
+
+233
+00:09:56,170 --> 00:09:58,360
+off to the dispatcher so the action
+
+234
+00:09:58,360 --> 00:10:00,370
+Creator creates the action gives it the
+
+235
+00:10:00,370 --> 00:10:03,459
+action type and formats the payload and
+
+236
+00:10:03,459 --> 00:10:05,970
+then sends it off to the dispatcher and
+
+237
+00:10:05,970 --> 00:10:09,430
+then the dispatcher feeds it into the
+
+238
+00:10:09,430 --> 00:10:12,130
+store and of course this is where the
+
+239
+00:10:12,130 --> 00:10:14,529
+store says do I care about this how do i
+
+240
+00:10:14,529 --> 00:10:16,269
+change the data based on this action
+
+241
+00:10:16,269 --> 00:10:19,810
+type so then the store changes the the
+
+242
+00:10:19,810 --> 00:10:22,689
+data that it holds and it lets the
+
+243
+00:10:22,689 --> 00:10:24,370
+control of you know and then the
+
+244
+00:10:24,370 --> 00:10:26,740
+controller view says okay great and asks
+
+245
+00:10:26,740 --> 00:10:29,490
+the store to send down the new data and
+
+246
+00:10:29,490 --> 00:10:31,990
+then we'll pass it into the view below
+
+247
+00:10:31,990 --> 00:10:38,290
+it to rerender so that's flux you know
+
+248
+00:10:38,290 --> 00:10:40,240
+it ended the cycle of unpredictability
+
+249
+00:10:40,240 --> 00:10:42,550
+and all rejoiced and created a hundred
+
+250
+00:10:42,550 --> 00:10:45,699
+different implementations of it and now
+
+251
+00:10:45,699 --> 00:10:49,990
+we move on to redox redux is a lot like
+
+252
+00:10:49,990 --> 00:10:51,850
+flocks so it's just a couple of
+
+253
+00:10:51,850 --> 00:10:53,980
+different couple of differences between
+
+254
+00:10:53,980 --> 00:10:57,579
+Redux and flocks but if sup flux solved
+
+255
+00:10:57,579 --> 00:11:07,040
+the problem of this
+
+256
+00:11:07,050 --> 00:11:26,319
+you
+
+257
+00:11:26,329 --> 00:11:28,670
+but I think that this is a really good
+
+258
+00:11:28,670 --> 00:11:31,160
+use case for illustrating the changes
+
+259
+00:11:31,160 --> 00:11:35,389
+that he made so he was seeing debugging
+
+260
+00:11:35,389 --> 00:11:37,100
+techniques in other communities like hot
+
+261
+00:11:37,100 --> 00:11:38,779
+modular reloading and time travel
+
+262
+00:11:38,779 --> 00:11:41,149
+debugging and he wanted to introduce or
+
+263
+00:11:41,149 --> 00:11:45,709
+improve them and react but before I get
+
+264
+00:11:45,709 --> 00:11:46,970
+into that I should probably explain what
+
+265
+00:11:46,970 --> 00:11:50,720
+those two things are so let's start with
+
+266
+00:11:50,720 --> 00:11:54,529
+hot module reloading imagine that you're
+
+267
+00:11:54,529 --> 00:11:56,209
+developing a to-do application and this
+
+268
+00:11:56,209 --> 00:11:59,179
+is your to-do list object so you've
+
+269
+00:11:59,179 --> 00:12:01,339
+added a few to deuce you know eat sleep
+
+270
+00:12:01,339 --> 00:12:05,149
+and you want to change the way there
+
+271
+00:12:05,149 --> 00:12:06,679
+you're adding the to do's because you've
+
+272
+00:12:06,679 --> 00:12:08,329
+realized that as they are added to the
+
+273
+00:12:08,329 --> 00:12:10,339
+bottom of the list it's kind of hard to
+
+274
+00:12:10,339 --> 00:12:11,779
+tell that you're adding you to do is you
+
+275
+00:12:11,779 --> 00:12:12,920
+want to add them to the top of the list
+
+276
+00:12:12,920 --> 00:12:14,269
+so that people can see the new to do is
+
+277
+00:12:14,269 --> 00:12:20,869
+is coming in now as you're testing this
+
+278
+00:12:20,869 --> 00:12:23,540
+think about changing this ad to do
+
+279
+00:12:23,540 --> 00:12:25,730
+function so that it adds it to the front
+
+280
+00:12:25,730 --> 00:12:27,290
+instead of the back how would you
+
+281
+00:12:27,290 --> 00:12:29,449
+actually see that change happening once
+
+282
+00:12:29,449 --> 00:12:30,499
+you've made the change to the code how
+
+283
+00:12:30,499 --> 00:12:31,669
+would you actually check in your app
+
+284
+00:12:31,669 --> 00:12:33,860
+that it's working well you'd have to
+
+285
+00:12:33,860 --> 00:12:37,040
+reload this object but when you reload
+
+286
+00:12:37,040 --> 00:12:39,470
+the object you lose the state that's on
+
+287
+00:12:39,470 --> 00:12:41,029
+it you lose all of those two dues that
+
+288
+00:12:41,029 --> 00:12:45,079
+you would add in but you can avoid this
+
+289
+00:12:45,079 --> 00:12:47,509
+problem and the way that you do that is
+
+290
+00:12:47,509 --> 00:12:50,660
+by splitting up the object into two
+
+291
+00:12:50,660 --> 00:12:52,369
+different objects one that holds the
+
+292
+00:12:52,369 --> 00:12:54,230
+state and one that holds the
+
+293
+00:12:54,230 --> 00:12:57,199
+functionality that changes the state so
+
+294
+00:12:57,199 --> 00:12:59,899
+then you can reload the object that has
+
+295
+00:12:59,899 --> 00:13:02,439
+the functionality that changes the state
+
+296
+00:13:02,439 --> 00:13:05,029
+but you don't have to reload the object
+
+297
+00:13:05,029 --> 00:13:08,959
+that holds the state so this helps you
+
+298
+00:13:08,959 --> 00:13:10,759
+to bug faster because you don't have to
+
+299
+00:13:10,759 --> 00:13:12,649
+keep replicating the state every time
+
+300
+00:13:12,649 --> 00:13:14,720
+you change every time you fix a little
+
+301
+00:13:14,720 --> 00:13:18,980
+thing in your functionality time travel
+
+302
+00:13:18,980 --> 00:13:21,799
+debugging is kind of similar and what it
+
+303
+00:13:21,799 --> 00:13:24,350
+handles so with time travel debugging
+
+304
+00:13:24,350 --> 00:13:26,119
+let's start about thinking about how you
+
+305
+00:13:26,119 --> 00:13:29,569
+step through to debug a nap so you start
+
+306
+00:13:29,569 --> 00:13:32,389
+with initial state and then you perform
+
+307
+00:13:32,389 --> 00:13:35,720
+an action and that equals a new state
+
+308
+00:13:35,720 --> 00:13:38,209
+your application is in a different state
+
+309
+00:13:38,209 --> 00:13:40,369
+action and then you take another action
+
+310
+00:13:40,369 --> 00:13:43,910
+and another action what if your bug is
+
+311
+00:13:43,910 --> 00:13:46,999
+happening between step 2 and step 3 even
+
+312
+00:13:46,999 --> 00:13:48,589
+though we have this hot module reloading
+
+313
+00:13:48,589 --> 00:13:51,139
+which will keep the state you really
+
+314
+00:13:51,139 --> 00:13:53,149
+need to step backwards in time in order
+
+315
+00:13:53,149 --> 00:13:55,550
+to be able to test that between the
+
+316
+00:13:55,550 --> 00:13:57,199
+second and third action that you're
+
+317
+00:13:57,199 --> 00:14:03,050
+fixing whatever problems there what time
+
+318
+00:14:03,050 --> 00:14:04,999
+travel debugging does is lets you do
+
+319
+00:14:04,999 --> 00:14:06,769
+that it lets you step backwards in time
+
+320
+00:14:06,769 --> 00:14:08,509
+so that when you change your
+
+321
+00:14:08,509 --> 00:14:10,699
+functionality then you can perform that
+
+322
+00:14:10,699 --> 00:14:12,050
+action again and you don't have to do
+
+323
+00:14:12,050 --> 00:14:16,519
+the first or the second one again so
+
+324
+00:14:16,519 --> 00:14:18,319
+what do you need to do in order to make
+
+325
+00:14:18,319 --> 00:14:19,790
+time travel to volume work well you need
+
+326
+00:14:19,790 --> 00:14:22,249
+to get a snapshot of your state at each
+
+327
+00:14:22,249 --> 00:14:25,610
+of these points and how do you do that
+
+328
+00:14:25,610 --> 00:14:27,319
+well you can kind of see it already in
+
+329
+00:14:27,319 --> 00:14:29,689
+the way that I've drawn this you treat
+
+330
+00:14:29,689 --> 00:14:33,139
+this as an equation as a function your
+
+331
+00:14:33,139 --> 00:14:36,589
+initial state comes in and you add the
+
+332
+00:14:36,589 --> 00:14:39,350
+action but you don't change the initial
+
+333
+00:14:39,350 --> 00:14:41,389
+state you don't change that state object
+
+334
+00:14:41,389 --> 00:14:45,769
+you create a new state object and you
+
+335
+00:14:45,769 --> 00:14:47,869
+just keep an array of all these state
+
+336
+00:14:47,869 --> 00:14:51,980
+objects as they're going through this is
+
+337
+00:14:51,980 --> 00:14:53,480
+what people are talking about when they
+
+338
+00:14:53,480 --> 00:14:54,949
+talk about immutability it's the idea
+
+339
+00:14:54,949 --> 00:14:57,559
+that you don't change the things that
+
+340
+00:14:57,559 --> 00:14:59,119
+are coming into your function and you
+
+341
+00:14:59,119 --> 00:15:01,429
+don't change the object itself you just
+
+342
+00:15:01,429 --> 00:15:04,009
+take in some parameters and you output
+
+343
+00:15:04,009 --> 00:15:07,399
+you return you use your return value to
+
+344
+00:15:07,399 --> 00:15:11,689
+to give your caller or the value that it
+
+345
+00:15:11,689 --> 00:15:15,499
+means so Redux makes it possible to do
+
+346
+00:15:15,499 --> 00:15:17,389
+both of these things to do hot module
+
+347
+00:15:17,389 --> 00:15:19,459
+reloading on stateful objects and to do
+
+348
+00:15:19,459 --> 00:15:22,399
+time-travel debugging I'm not going to
+
+349
+00:15:22,399 --> 00:15:24,439
+dive too deep into a detailed
+
+350
+00:15:24,439 --> 00:15:26,809
+walkthrough of redox because it mostly
+
+351
+00:15:26,809 --> 00:15:29,240
+is like flocks and I've written this all
+
+352
+00:15:29,240 --> 00:15:31,279
+up if you want to go into a deep dive of
+
+353
+00:15:31,279 --> 00:15:33,559
+redux you can go check code cartoons com
+
+354
+00:15:33,559 --> 00:15:38,329
+to see that I do want to point out two
+
+355
+00:15:38,329 --> 00:15:42,350
+of the key differences though the first
+
+356
+00:15:42,350 --> 00:15:45,379
+is the way that the store works instead
+
+357
+00:15:45,379 --> 00:15:46,819
+of managing the logic the store just
+
+358
+00:15:46,819 --> 00:15:49,579
+holds on to the state it has like this
+
+359
+00:15:49,579 --> 00:15:51,400
+one state object the stink
+
+360
+00:15:51,400 --> 00:15:54,700
+single state tree it has all of the
+
+361
+00:15:54,700 --> 00:15:56,860
+state in the app which is holding on to
+
+362
+00:15:56,860 --> 00:15:58,450
+and then when an action comes in it
+
+363
+00:15:58,450 --> 00:16:01,690
+passes the state and the action off to
+
+364
+00:16:01,690 --> 00:16:03,400
+another object it passes that off to the
+
+365
+00:16:03,400 --> 00:16:06,820
+reducer and it's the reducer that figure
+
+366
+00:16:06,820 --> 00:16:08,470
+out how the state needs to change and
+
+367
+00:16:08,470 --> 00:16:10,840
+response to the action so you'll
+
+368
+00:16:10,840 --> 00:16:12,250
+remember this is what we needed for hot
+
+369
+00:16:12,250 --> 00:16:14,230
+module reloading you know we needed to
+
+370
+00:16:14,230 --> 00:16:15,850
+have an object that's holding on to the
+
+371
+00:16:15,850 --> 00:16:17,320
+state and an object that's actually
+
+372
+00:16:17,320 --> 00:16:20,100
+performing that changes on the state and
+
+373
+00:16:20,100 --> 00:16:22,420
+these reducers they do something else
+
+374
+00:16:22,420 --> 00:16:24,910
+too they make copies instead of changing
+
+375
+00:16:24,910 --> 00:16:26,680
+the state that's coming into them they
+
+376
+00:16:26,680 --> 00:16:29,350
+make copies of that state and then they
+
+377
+00:16:29,350 --> 00:16:31,240
+give that back to the store and so the
+
+378
+00:16:31,240 --> 00:16:32,560
+store just swaps out the state it's
+
+379
+00:16:32,560 --> 00:16:39,130
+holding on to for the new state there's
+
+380
+00:16:39,130 --> 00:16:40,660
+another difference between flux and
+
+381
+00:16:40,660 --> 00:16:42,400
+redox and that's the way that the state
+
+382
+00:16:42,400 --> 00:16:44,490
+is sent from the store to the view layer
+
+383
+00:16:44,490 --> 00:16:49,990
+so you know how in flux we had the view
+
+384
+00:16:49,990 --> 00:16:52,630
+layer letting the store know that it
+
+385
+00:16:52,630 --> 00:16:54,060
+existed and that needs to have these
+
+386
+00:16:54,060 --> 00:16:58,810
+callbacks called in redox there's
+
+387
+00:16:58,810 --> 00:17:00,100
+something called the view layer binding
+
+388
+00:17:00,100 --> 00:17:02,320
+and this will take care of a lot of that
+
+389
+00:17:02,320 --> 00:17:04,720
+plumbing for you so it reduces the
+
+390
+00:17:04,720 --> 00:17:10,420
+boilerplate a bit so that's redux and
+
+391
+00:17:10,420 --> 00:17:13,959
+now we move on to relay if you've been
+
+392
+00:17:13,959 --> 00:17:15,790
+following along closely up until this
+
+393
+00:17:15,790 --> 00:17:18,130
+point you might have a question that
+
+394
+00:17:18,130 --> 00:17:20,530
+you've been thinking about where's the
+
+395
+00:17:20,530 --> 00:17:23,440
+cloud where does the interaction with
+
+396
+00:17:23,440 --> 00:17:27,070
+the server happen in flux there's not
+
+397
+00:17:27,070 --> 00:17:30,520
+really a greed upon set place to do that
+
+398
+00:17:30,520 --> 00:17:33,160
+with the server even at Facebook
+
+399
+00:17:33,160 --> 00:17:34,540
+different teams would do this in
+
+400
+00:17:34,540 --> 00:17:39,310
+different places in redox there is one
+
+401
+00:17:39,310 --> 00:17:41,790
+place which is recommended middleware
+
+402
+00:17:41,790 --> 00:17:44,020
+but it still require some extra code to
+
+403
+00:17:44,020 --> 00:17:48,070
+wire it up really connects you to the
+
+404
+00:17:48,070 --> 00:17:50,350
+cloud and it wires it all up for you
+
+405
+00:17:50,350 --> 00:17:52,090
+without you having to put in too much
+
+406
+00:17:52,090 --> 00:17:55,710
+extra work at least on the client side
+
+407
+00:17:55,710 --> 00:17:58,240
+so let's look at how relay connects your
+
+408
+00:17:58,240 --> 00:17:59,680
+client up to the cloud but first we
+
+409
+00:17:59,680 --> 00:18:00,809
+should ask
+
+410
+00:18:00,809 --> 00:18:05,370
+what's in the cloud in the case of an
+
+411
+00:18:05,370 --> 00:18:07,679
+app like Facebook it's a huge graph of
+
+412
+00:18:07,679 --> 00:18:10,230
+data and when I talk about graphs here
+
+413
+00:18:10,230 --> 00:18:11,909
+i'm talking about graphs like graph
+
+414
+00:18:11,909 --> 00:18:14,730
+theory so a whole bunch of things and
+
+415
+00:18:14,730 --> 00:18:16,889
+relationships between those things and
+
+416
+00:18:16,889 --> 00:18:17,999
+these things they'll be things like
+
+417
+00:18:17,999 --> 00:18:20,249
+users and events and the relationships
+
+418
+00:18:20,249 --> 00:18:21,960
+will be things like friend are invited
+
+419
+00:18:21,960 --> 00:18:25,980
+to in graph a graph theory these are
+
+420
+00:18:25,980 --> 00:18:27,990
+often called nodes the things are nodes
+
+421
+00:18:27,990 --> 00:18:30,210
+and the relationships between them are
+
+422
+00:18:30,210 --> 00:18:33,929
+edges so you have this huge graph of
+
+423
+00:18:33,929 --> 00:18:35,549
+things and relationships between them
+
+424
+00:18:35,549 --> 00:18:38,789
+are nodes and edges but when you're
+
+425
+00:18:38,789 --> 00:18:40,889
+showing a page to an individual user you
+
+426
+00:18:40,889 --> 00:18:42,149
+don't care about this huge graph you
+
+427
+00:18:42,149 --> 00:18:43,950
+only care about a small section of this
+
+428
+00:18:43,950 --> 00:18:48,299
+graph and what really does is it makes
+
+429
+00:18:48,299 --> 00:18:49,799
+the connection between that small
+
+430
+00:18:49,799 --> 00:18:51,389
+section of the graph that you care about
+
+431
+00:18:51,389 --> 00:18:54,389
+in the cloud and your copy of it in your
+
+432
+00:18:54,389 --> 00:18:59,610
+local cache it knows how to manage this
+
+433
+00:18:59,610 --> 00:19:02,340
+for you because you declare in your
+
+434
+00:19:02,340 --> 00:19:04,919
+components which bit of the graph each
+
+435
+00:19:04,919 --> 00:19:07,259
+component cares about so it knows
+
+436
+00:19:07,259 --> 00:19:09,059
+exactly which bits of the graph to pull
+
+437
+00:19:09,059 --> 00:19:12,690
+down so let's go pair this with the way
+
+438
+00:19:12,690 --> 00:19:14,519
+the communication with the cloud usually
+
+439
+00:19:14,519 --> 00:19:16,919
+happens in a lot of other apps not all
+
+440
+00:19:16,919 --> 00:19:19,440
+other apps but a lot of other apps you'd
+
+441
+00:19:19,440 --> 00:19:20,879
+make a request your app would make your
+
+442
+00:19:20,879 --> 00:19:24,090
+request to the server and you have a
+
+443
+00:19:24,090 --> 00:19:26,039
+component tree you have this avatar bio
+
+444
+00:19:26,039 --> 00:19:29,100
+component you'll send up the request and
+
+445
+00:19:29,100 --> 00:19:31,799
+the server knows exactly what to deliver
+
+446
+00:19:31,799 --> 00:19:35,309
+because it delivers the same thing so it
+
+447
+00:19:35,309 --> 00:19:37,350
+will deliver the name location and
+
+448
+00:19:37,350 --> 00:19:39,059
+picture properties because it that's the
+
+449
+00:19:39,059 --> 00:19:40,289
+list of things that it knows it has to
+
+450
+00:19:40,289 --> 00:19:48,360
+deliver the problem is if you need to
+
+451
+00:19:48,360 --> 00:19:50,850
+add a new property to the avatar or the
+
+452
+00:19:50,850 --> 00:19:53,159
+bio component or if you rearrange things
+
+453
+00:19:53,159 --> 00:19:55,740
+if you remove the bio component the
+
+454
+00:19:55,740 --> 00:19:57,779
+server doesn't know about that you
+
+455
+00:19:57,779 --> 00:19:59,490
+actually have to make a change in the
+
+456
+00:19:59,490 --> 00:20:01,200
+server code at the same time as you're
+
+457
+00:20:01,200 --> 00:20:03,149
+changing the client code so this is
+
+458
+00:20:03,149 --> 00:20:07,890
+coupling what really does in contrast
+
+459
+00:20:07,890 --> 00:20:10,230
+is half the components say exactly what
+
+460
+00:20:10,230 --> 00:20:13,380
+it needs it says exactly the data that
+
+461
+00:20:13,380 --> 00:20:15,300
+it needs in order to render so the
+
+462
+00:20:15,300 --> 00:20:17,280
+avatar would say i need the picture the
+
+463
+00:20:17,280 --> 00:20:18,570
+bio says i need the name and location
+
+464
+00:20:18,570 --> 00:20:21,450
+and then the parent pulls those together
+
+465
+00:20:21,450 --> 00:20:23,400
+and sends that off as a query to the
+
+466
+00:20:23,400 --> 00:20:25,470
+server and the server prepares it on
+
+467
+00:20:25,470 --> 00:20:31,530
+demand for the for the application so it
+
+468
+00:20:31,530 --> 00:20:33,000
+gets pulled down and sent out to the
+
+469
+00:20:33,000 --> 00:20:36,030
+components when it gets put in a local
+
+470
+00:20:36,030 --> 00:20:39,360
+cache when you have this kind of
+
+471
+00:20:39,360 --> 00:20:40,890
+structure it enables some really cool
+
+472
+00:20:40,890 --> 00:20:43,470
+things having your components say
+
+473
+00:20:43,470 --> 00:20:45,390
+exactly what data it corresponds to in
+
+474
+00:20:45,390 --> 00:20:47,730
+the graph it makes it possible to
+
+475
+00:20:47,730 --> 00:20:50,700
+automatically do things like splitting
+
+476
+00:20:50,700 --> 00:20:52,260
+up your query so that you can have a
+
+477
+00:20:52,260 --> 00:20:53,880
+part that's delivered immediately and
+
+478
+00:20:53,880 --> 00:20:55,470
+gets rendered to the user immediately
+
+479
+00:20:55,470 --> 00:20:56,940
+that you know crease that more
+
+480
+00:20:56,940 --> 00:20:59,790
+responsive feeling and a part that's
+
+481
+00:20:59,790 --> 00:21:02,040
+deferred you send both those queries up
+
+482
+00:21:02,040 --> 00:21:05,220
+at the same time one will come down
+
+483
+00:21:05,220 --> 00:21:08,580
+first immediately and will render out
+
+484
+00:21:08,580 --> 00:21:11,010
+the component the other will come down
+
+485
+00:21:11,010 --> 00:21:12,810
+later will get merged into the data will
+
+486
+00:21:12,810 --> 00:21:14,820
+get merged into the little bit of the
+
+487
+00:21:14,820 --> 00:21:16,140
+graph that you have in your local cache
+
+488
+00:21:16,140 --> 00:21:18,450
+and then it will be sent out to its
+
+489
+00:21:18,450 --> 00:21:21,930
+component and that will render it also
+
+490
+00:21:21,930 --> 00:21:23,430
+makes it possible for you to reduce the
+
+491
+00:21:23,430 --> 00:21:25,050
+size of queries that you're sending up
+
+492
+00:21:25,050 --> 00:21:27,270
+so let's say you have your day than this
+
+493
+00:21:27,270 --> 00:21:30,300
+local cache now and you've gotten to
+
+494
+00:21:30,300 --> 00:21:33,180
+another page and you need to get a
+
+495
+00:21:33,180 --> 00:21:35,220
+little bit more data in order to render
+
+496
+00:21:35,220 --> 00:21:37,710
+this page but you already have most of
+
+497
+00:21:37,710 --> 00:21:39,060
+the state than your local cache so you
+
+498
+00:21:39,060 --> 00:21:40,430
+don't really need to download it again
+
+499
+00:21:40,430 --> 00:21:43,110
+so we'll just take out really we'll just
+
+500
+00:21:43,110 --> 00:21:44,400
+take out the bits of data that you have
+
+501
+00:21:44,400 --> 00:21:47,070
+in your local cache push it up push up
+
+502
+00:21:47,070 --> 00:21:50,310
+the query and then when that comes down
+
+503
+00:21:50,310 --> 00:21:51,990
+I'll merge it into the graph send it out
+
+504
+00:21:51,990 --> 00:21:53,520
+to the component and it doesn't just do
+
+505
+00:21:53,520 --> 00:21:54,600
+this for data that you have in your
+
+506
+00:21:54,600 --> 00:21:56,970
+local cache it keeps track of pending
+
+507
+00:21:56,970 --> 00:21:58,290
+queries and what parts of the graph
+
+508
+00:21:58,290 --> 00:22:00,060
+those are pulling down so you know
+
+509
+00:22:00,060 --> 00:22:01,530
+queries that have gone off to the server
+
+510
+00:22:01,530 --> 00:22:04,410
+but haven't come back yet and it will
+
+511
+00:22:04,410 --> 00:22:07,050
+remove those from the outgoing queries
+
+512
+00:22:07,050 --> 00:22:12,070
+to
+
+513
+00:22:12,080 --> 00:22:14,820
+it also makes it really easy to sync any
+
+514
+00:22:14,820 --> 00:22:16,830
+changes that you're making to the data
+
+515
+00:22:16,830 --> 00:22:19,529
+in the browser up back up to the server
+
+516
+00:22:19,529 --> 00:22:22,139
+it will even handle optimistic changes
+
+517
+00:22:22,139 --> 00:22:25,590
+to the UI so you know assuming that
+
+518
+00:22:25,590 --> 00:22:26,759
+you're going to be able to write this
+
+519
+00:22:26,759 --> 00:22:29,519
+data to the cloud and updating the UI as
+
+520
+00:22:29,519 --> 00:22:35,070
+if you were able to do it so you send up
+
+521
+00:22:35,070 --> 00:22:37,710
+this let's say that you accepted an
+
+522
+00:22:37,710 --> 00:22:40,049
+invite to an event you send that up to
+
+523
+00:22:40,049 --> 00:22:43,110
+the server it makes the change in your
+
+524
+00:22:43,110 --> 00:22:44,820
+local cache and actually displays it to
+
+525
+00:22:44,820 --> 00:22:47,340
+the user and then when the response
+
+526
+00:22:47,340 --> 00:22:48,840
+comes back down you know might be an
+
+527
+00:22:48,840 --> 00:22:51,059
+error it might not be it'll handle that
+
+528
+00:22:51,059 --> 00:22:54,840
+whatever comes down now I don't have
+
+529
+00:22:54,840 --> 00:22:57,299
+enough time to go deeply into how relay
+
+530
+00:22:57,299 --> 00:22:59,549
+does this house you'll see there are a
+
+531
+00:22:59,549 --> 00:23:01,049
+ton of characters involved here and
+
+532
+00:23:01,049 --> 00:23:02,460
+that's because relays doing so much more
+
+533
+00:23:02,460 --> 00:23:03,929
+for you it's actually a framework as
+
+534
+00:23:03,929 --> 00:23:06,480
+opposed to flux and redux their patterns
+
+535
+00:23:06,480 --> 00:23:08,999
+for handling data but relay is a
+
+536
+00:23:08,999 --> 00:23:12,539
+framework I do want to point out the
+
+537
+00:23:12,539 --> 00:23:14,190
+thread that ties it to the other two
+
+538
+00:23:14,190 --> 00:23:17,820
+though and that is that state is changed
+
+539
+00:23:17,820 --> 00:23:20,190
+using objects that represent that change
+
+540
+00:23:20,190 --> 00:23:23,399
+in flux and redux you have the actions
+
+541
+00:23:23,399 --> 00:23:26,519
+and relay you have mutations that get
+
+542
+00:23:26,519 --> 00:23:31,169
+passed around to make these changes so
+
+543
+00:23:31,169 --> 00:23:34,379
+that's relay if you want to dig deeper
+
+544
+00:23:34,379 --> 00:23:36,029
+into it I'm going to be publishing a
+
+545
+00:23:36,029 --> 00:23:38,340
+series of posts that explained
+
+546
+00:23:38,340 --> 00:23:40,379
+everything about relay starting next
+
+547
+00:23:40,379 --> 00:23:42,210
+week so you can follow code cartoons or
+
+548
+00:23:42,210 --> 00:23:44,159
+sign up for the mailing list to get
+
+549
+00:23:44,159 --> 00:23:47,759
+notification of that so let's review
+
+550
+00:23:47,759 --> 00:23:52,529
+these three starting with flux so flux
+
+551
+00:23:52,529 --> 00:23:55,259
+addressed the unpredictability of data
+
+552
+00:23:55,259 --> 00:23:57,149
+flowing through Facebook's apps and the
+
+553
+00:23:57,149 --> 00:23:58,919
+way it did it was with a unidirectional
+
+554
+00:23:58,919 --> 00:24:02,519
+data flow you know views asking action
+
+555
+00:24:02,519 --> 00:24:04,440
+you know creating action having the
+
+556
+00:24:04,440 --> 00:24:06,090
+action creator Creed actions sending it
+
+557
+00:24:06,090 --> 00:24:07,980
+off to this patcher which sends it off
+
+558
+00:24:07,980 --> 00:24:09,600
+to the stores which changed the state
+
+559
+00:24:09,600 --> 00:24:12,360
+and then let the view know that the sea
+
+560
+00:24:12,360 --> 00:24:13,590
+has been changed and then the view
+
+561
+00:24:13,590 --> 00:24:16,470
+requests the state and sends it down to
+
+562
+00:24:16,470 --> 00:24:22,379
+the views Redux built on this and just
+
+563
+00:24:22,379 --> 00:24:24,070
+modified a few things by
+
+564
+00:24:24,070 --> 00:24:28,060
+breaking out the state into its own the
+
+565
+00:24:28,060 --> 00:24:29,800
+state storage into its own object and
+
+566
+00:24:29,800 --> 00:24:32,530
+the functionality that changes that
+
+567
+00:24:32,530 --> 00:24:35,140
+states into a different object and also
+
+568
+00:24:35,140 --> 00:24:39,120
+collecting snapshots of the state and
+
+569
+00:24:39,120 --> 00:24:42,730
+then relay built on some of the same
+
+570
+00:24:42,730 --> 00:24:45,010
+ideas as flux but made it possible for
+
+571
+00:24:45,010 --> 00:24:47,170
+you to connect the section of the graph
+
+572
+00:24:47,170 --> 00:24:49,390
+and the cloud that you care about to the
+
+573
+00:24:49,390 --> 00:24:53,860
+local cache in the browser thanks very
+
+574
+00:24:53,860 --> 00:24:54,910
+much for listening I hope that was
+
+575
+00:24:54,910 --> 00:24:57,220
+helpful and if you want to learn more
+
+576
+00:24:57,220 --> 00:24:58,630
+about any of the stuff check out code
+

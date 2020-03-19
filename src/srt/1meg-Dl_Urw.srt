@@ -1,0 +1,1145 @@
+1
+00:00:08,750 --> 00:00:12,050
+
+hi everyone I'm Lin Clark and I make
+
+2
+00:00:12,050 --> 00:00:15,860
+Coke cartoons and I also work at Mozilla
+
+3
+00:00:15,860 --> 00:00:18,500
+on things like webassembly which I gave
+
+4
+00:00:18,500 --> 00:00:20,119
+a talk about last year here at Jay has
+
+5
+00:00:20,119 --> 00:00:21,470
+come for you in fact that was what was
+
+6
+00:00:21,470 --> 00:00:23,810
+featured on there and this talk is about
+
+7
+00:00:23,810 --> 00:00:26,690
+webassembly too but this is a different
+
+8
+00:00:26,690 --> 00:00:29,710
+kind of talk from last year's talk I
+
+9
+00:00:29,710 --> 00:00:31,789
+think you've all probably seen this
+
+10
+00:00:31,789 --> 00:00:34,129
+structure by now it's kind of hard to
+
+11
+00:00:34,129 --> 00:00:36,260
+miss right in the middle there but you
+
+12
+00:00:36,260 --> 00:00:39,710
+may have wondered what it was doing it's
+
+13
+00:00:39,710 --> 00:00:42,250
+playing animations created by all of you
+
+14
+00:00:42,250 --> 00:00:47,680
+but why why did we want to do this well
+
+15
+00:00:47,680 --> 00:00:50,329
+one of the hardest problems when you're
+
+16
+00:00:50,329 --> 00:00:52,219
+learning a new programming language is
+
+17
+00:00:52,219 --> 00:00:54,170
+figuring out a project that you can work
+
+18
+00:00:54,170 --> 00:00:56,300
+on one that will teach you the basics of
+
+19
+00:00:56,300 --> 00:00:58,789
+the programming language but still keep
+
+20
+00:00:58,789 --> 00:01:00,410
+you interested enough to keep learning
+
+21
+00:01:00,410 --> 00:01:03,680
+more because there are only so many
+
+22
+00:01:03,680 --> 00:01:06,110
+times they can implement HelloWorld in a
+
+23
+00:01:06,110 --> 00:01:07,940
+new language and have it be interesting
+
+24
+00:01:07,940 --> 00:01:11,240
+at all because your hello world has no
+
+25
+00:01:11,240 --> 00:01:15,530
+real-world impact but what if your hello
+
+26
+00:01:15,530 --> 00:01:17,960
+world could have an impact on the real
+
+27
+00:01:17,960 --> 00:01:20,930
+world what if your hello world could
+
+28
+00:01:20,930 --> 00:01:23,049
+control a structure like this one and
+
+29
+00:01:23,049 --> 00:01:25,729
+that's exactly what you can do your
+
+30
+00:01:25,729 --> 00:01:27,500
+hello world can play a light animation
+
+31
+00:01:27,500 --> 00:01:30,530
+on the space out there now some of these
+
+32
+00:01:30,530 --> 00:01:32,810
+animations are made with JavaScript and
+
+33
+00:01:32,810 --> 00:01:35,450
+if you're here you might not be too
+
+34
+00:01:35,450 --> 00:01:37,340
+interested in a JavaScript hello world
+
+35
+00:01:37,340 --> 00:01:41,030
+but some of the animations are made in a
+
+36
+00:01:41,030 --> 00:01:43,189
+language that you may be interested in
+
+37
+00:01:43,189 --> 00:01:46,880
+learning and that's rust compiled to web
+
+38
+00:01:46,880 --> 00:01:50,090
+assembly so you'll be coming away from
+
+39
+00:01:50,090 --> 00:01:51,890
+jeaious convey you with lots of new
+
+40
+00:01:51,890 --> 00:01:54,290
+friends and lots of new experiences and
+
+41
+00:01:54,290 --> 00:01:56,600
+I hope that one of those new experiences
+
+42
+00:01:56,600 --> 00:01:59,990
+is your first rust module compiled to
+
+43
+00:01:59,990 --> 00:02:03,470
+web assembly so let's get started on
+
+44
+00:02:03,470 --> 00:02:05,689
+baby's first rust - web assembly module
+
+45
+00:02:05,689 --> 00:02:09,380
+and this is kind of the perfect project
+
+46
+00:02:09,380 --> 00:02:11,600
+for that not because this is the kind of
+
+47
+00:02:11,600 --> 00:02:13,340
+project that you would usually use web
+
+48
+00:02:13,340 --> 00:02:16,160
+assembly for people use web assembly
+
+49
+00:02:16,160 --> 00:02:17,599
+because they want to supercharge their
+
+50
+00:02:17,599 --> 00:02:19,510
+application and make it run faster or
+
+51
+00:02:19,510 --> 00:02:21,700
+because they want to use the same
+
+52
+00:02:21,700 --> 00:02:25,959
+on the web and other platforms this
+
+53
+00:02:25,959 --> 00:02:28,510
+project doesn't do either of those we
+
+54
+00:02:28,510 --> 00:02:30,100
+create these animations ahead of time so
+
+55
+00:02:30,100 --> 00:02:32,200
+we don't care about having consistent
+
+56
+00:02:32,200 --> 00:02:34,480
+high performance and we don't need to
+
+57
+00:02:34,480 --> 00:02:36,370
+run on any other devices so we don't
+
+58
+00:02:36,370 --> 00:02:39,880
+need it to be portable the reason that
+
+59
+00:02:39,880 --> 00:02:41,470
+this is a good project for getting
+
+60
+00:02:41,470 --> 00:02:43,420
+started with web assembly is not because
+
+61
+00:02:43,420 --> 00:02:45,040
+this is what you usually use web
+
+62
+00:02:45,040 --> 00:02:48,459
+assembly for instead it's because it's
+
+63
+00:02:48,459 --> 00:02:50,170
+really useful in giving you a mental
+
+64
+00:02:50,170 --> 00:02:52,420
+model of how javascript and web assembly
+
+65
+00:02:52,420 --> 00:02:56,290
+work together so let's take a look at
+
+66
+00:02:56,290 --> 00:02:58,420
+what we need to do to take control of
+
+67
+00:02:58,420 --> 00:03:00,760
+this space with web assembly and then
+
+68
+00:03:00,760 --> 00:03:02,680
+I'll explain what makes a good mental
+
+69
+00:03:02,680 --> 00:03:04,120
+model for how web assembly and
+
+70
+00:03:04,120 --> 00:03:09,280
+JavaScript work together what we have
+
+71
+00:03:09,280 --> 00:03:12,150
+here is a three dimensional space and
+
+72
+00:03:12,150 --> 00:03:13,930
+really if you think about it it's
+
+73
+00:03:13,930 --> 00:03:15,390
+actually a four dimensional space
+
+74
+00:03:15,390 --> 00:03:18,840
+because we're going through time as well
+
+75
+00:03:18,840 --> 00:03:21,489
+the computer can't think in these four
+
+76
+00:03:21,489 --> 00:03:24,700
+dimensions so so how do we make these
+
+77
+00:03:24,700 --> 00:03:26,950
+four dimensions make sense to the
+
+78
+00:03:26,950 --> 00:03:30,220
+computer let's start with the fourth
+
+79
+00:03:30,220 --> 00:03:32,910
+dimension and collapse down from there
+
+80
+00:03:32,910 --> 00:03:35,799
+you're probably familiar with the way
+
+81
+00:03:35,799 --> 00:03:37,299
+that we make time the fourth dimension
+
+82
+00:03:37,299 --> 00:03:40,840
+makes sense to computers that's by using
+
+83
+00:03:40,840 --> 00:03:45,070
+these things called frames on the web we
+
+84
+00:03:45,070 --> 00:03:47,500
+talk about having 60 frames per second
+
+85
+00:03:47,500 --> 00:03:49,239
+that's what you need to have smooth
+
+86
+00:03:49,239 --> 00:03:52,660
+animations across the screen what that
+
+87
+00:03:52,660 --> 00:03:54,549
+really means is that you have 60
+
+88
+00:03:54,549 --> 00:03:56,500
+different snapshots of the screen of
+
+89
+00:03:56,500 --> 00:03:58,030
+what the animation should look like at
+
+90
+00:03:58,030 --> 00:04:02,739
+60 different moments in that second it's
+
+91
+00:04:02,739 --> 00:04:05,110
+kind of like a flipbook and each frame
+
+92
+00:04:05,110 --> 00:04:08,380
+is like a page in that flip book in our
+
+93
+00:04:08,380 --> 00:04:10,690
+case the snapshot is a snapshot of what
+
+94
+00:04:10,690 --> 00:04:12,220
+the lights on the space should look like
+
+95
+00:04:12,220 --> 00:04:15,519
+and our frame rate for that is 35 frames
+
+96
+00:04:15,519 --> 00:04:19,299
+per second so that brings us down to a
+
+97
+00:04:19,299 --> 00:04:21,430
+sequence of snapshots of the space a
+
+98
+00:04:21,430 --> 00:04:23,530
+sequence of 3d representations of the
+
+99
+00:04:23,530 --> 00:04:26,620
+space now we want to go from 3d to 2d
+
+100
+00:04:26,620 --> 00:04:29,740
+and in this case it's pretty easy all we
+
+101
+00:04:29,740 --> 00:04:32,140
+need to do is take the space and flatten
+
+102
+00:04:32,140 --> 00:04:33,520
+it out into basically a big sheet of
+
+103
+00:04:33,520 --> 00:04:34,870
+graph paper
+
+104
+00:04:34,870 --> 00:04:37,910
+so now we're down to 2d we just need to
+
+105
+00:04:37,910 --> 00:04:41,330
+collapse this one more time the way we
+
+106
+00:04:41,330 --> 00:04:43,340
+can do that is by taking each row and
+
+107
+00:04:43,340 --> 00:04:45,470
+putting that row next to the previous
+
+108
+00:04:45,470 --> 00:04:48,200
+row so now we're down to this line of
+
+109
+00:04:48,200 --> 00:04:50,900
+pixels and we can put this in memory
+
+110
+00:04:50,900 --> 00:04:52,880
+because memory is basically just the
+
+111
+00:04:52,880 --> 00:04:56,120
+line of boxes so this means that we've
+
+112
+00:04:56,120 --> 00:04:57,890
+gotten it down to a one dimensional
+
+113
+00:04:57,890 --> 00:04:59,870
+representation we still have all of the
+
+114
+00:04:59,870 --> 00:05:01,880
+data that we had in the two or the three
+
+115
+00:05:01,880 --> 00:05:03,770
+year the four dimensional representation
+
+116
+00:05:03,770 --> 00:05:05,870
+of this space is just being represented
+
+117
+00:05:05,870 --> 00:05:07,400
+in a different way it's being
+
+118
+00:05:07,400 --> 00:05:11,960
+represented as a line the reason that
+
+119
+00:05:11,960 --> 00:05:14,390
+this is a good mental model for how web
+
+120
+00:05:14,390 --> 00:05:16,520
+assembly and JavaScript work together is
+
+121
+00:05:16,520 --> 00:05:18,620
+because one of the main ways to
+
+122
+00:05:18,620 --> 00:05:20,570
+communicate between web assembly and
+
+123
+00:05:20,570 --> 00:05:22,880
+JavaScript at the moment is through
+
+124
+00:05:22,880 --> 00:05:25,310
+something called linear memory it's
+
+125
+00:05:25,310 --> 00:05:27,230
+basically a line of memory that you use
+
+126
+00:05:27,230 --> 00:05:30,410
+to represent things the web assembly
+
+127
+00:05:30,410 --> 00:05:32,240
+module and the JavaScript that's running
+
+128
+00:05:32,240 --> 00:05:34,550
+that module both have access to this
+
+129
+00:05:34,550 --> 00:05:36,680
+object through a JavaScript object
+
+130
+00:05:36,680 --> 00:05:39,590
+called an array buffer and this is just
+
+131
+00:05:39,590 --> 00:05:41,090
+an array of bytes and bytes are just
+
+132
+00:05:41,090 --> 00:05:44,330
+numbers so to make this animation happen
+
+133
+00:05:44,330 --> 00:05:46,720
+JavaScript tells the web assembly module
+
+134
+00:05:46,720 --> 00:05:50,150
+okay fill in the animation now and it
+
+135
+00:05:50,150 --> 00:05:52,250
+does this by calling a method or a
+
+136
+00:05:52,250 --> 00:05:56,150
+function on the web assembly module web
+
+137
+00:05:56,150 --> 00:05:57,650
+assembly will go and fill in all of the
+
+138
+00:05:57,650 --> 00:05:59,630
+numbers for each pixel in the linear
+
+139
+00:05:59,630 --> 00:06:02,570
+memory and then JavaScript code can pull
+
+140
+00:06:02,570 --> 00:06:04,610
+those numbers out and serialize them
+
+141
+00:06:04,610 --> 00:06:06,440
+into something that can be sent to the
+
+142
+00:06:06,440 --> 00:06:10,490
+space let's look more closely at the
+
+143
+00:06:10,490 --> 00:06:13,190
+JavaScript side of things let's see how
+
+144
+00:06:13,190 --> 00:06:15,290
+it pulls data out of the memory and uses
+
+145
+00:06:15,290 --> 00:06:18,380
+it if you're getting into the
+
+146
+00:06:18,380 --> 00:06:19,490
+nitty-gritty of this if you're doing
+
+147
+00:06:19,490 --> 00:06:21,440
+things the hard way and not using any
+
+148
+00:06:21,440 --> 00:06:23,300
+libraries then you're going to be
+
+149
+00:06:23,300 --> 00:06:25,190
+working directly with this linear memory
+
+150
+00:06:25,190 --> 00:06:28,130
+and this linear memory is just one big
+
+151
+00:06:28,130 --> 00:06:32,030
+line of ones and zeroes when you want to
+
+152
+00:06:32,030 --> 00:06:33,860
+create meaning from this line of ones
+
+153
+00:06:33,860 --> 00:06:35,510
+and zeroes you have to figure out how to
+
+154
+00:06:35,510 --> 00:06:38,810
+split them up to do this you create a
+
+155
+00:06:38,810 --> 00:06:41,600
+typed array view on the array buffer and
+
+156
+00:06:41,600 --> 00:06:44,060
+basically this just tells JavaScript how
+
+157
+00:06:44,060 --> 00:06:45,830
+to break up the bits in this array
+
+158
+00:06:45,830 --> 00:06:48,360
+buffer it's basically like drawing boxes
+
+159
+00:06:48,360 --> 00:06:50,340
+around the biz to say which bits belong
+
+160
+00:06:50,340 --> 00:06:53,340
+to which number for example if you are
+
+161
+00:06:53,340 --> 00:06:56,159
+using hexadecimal values then your
+
+162
+00:06:56,159 --> 00:06:58,469
+numbers would be 42 bits wide so you
+
+163
+00:06:58,469 --> 00:07:00,539
+need a box that could fit at least 40
+
+164
+00:07:00,539 --> 00:07:03,449
+sorry if you're using hexadecimal values
+
+165
+00:07:03,449 --> 00:07:04,830
+than your numbers where you 24 bits wide
+
+166
+00:07:04,830 --> 00:07:06,719
+so you need a box that can fit at least
+
+167
+00:07:06,719 --> 00:07:09,810
+24 bits and each box would contain a
+
+168
+00:07:09,810 --> 00:07:13,919
+pixel the smallest box that fits those
+
+169
+00:07:13,919 --> 00:07:17,370
+24 bits is 32 bits wide so we would
+
+170
+00:07:17,370 --> 00:07:20,099
+create au inch 32 view on the buffer and
+
+171
+00:07:20,099 --> 00:07:23,509
+that would wrap the bits up in boxes in
+
+172
+00:07:23,509 --> 00:07:25,620
+this case we'd have to add a little
+
+173
+00:07:25,620 --> 00:07:27,389
+padding to fill it out I'm not showing
+
+174
+00:07:27,389 --> 00:07:28,979
+that but there would be some extra zeros
+
+175
+00:07:28,979 --> 00:07:34,400
+in here in contrast if we use RGB values
+
+176
+00:07:34,400 --> 00:07:37,500
+the boxes would only be 8 bits wide and
+
+177
+00:07:37,500 --> 00:07:39,990
+we would take every three boxes and use
+
+178
+00:07:39,990 --> 00:07:44,460
+those as our our G and B values then you
+
+179
+00:07:44,460 --> 00:07:45,930
+would iterate over the boxes and pull
+
+180
+00:07:45,930 --> 00:07:47,900
+out the numbers and move the data around
+
+181
+00:07:47,900 --> 00:07:51,500
+insist more sensible data structures for
+
+182
+00:07:51,500 --> 00:07:54,270
+a project like this that's not too bad
+
+183
+00:07:54,270 --> 00:07:57,599
+because because colors map very well to
+
+184
+00:07:57,599 --> 00:07:59,940
+numbers and we don't have very complex
+
+185
+00:07:59,940 --> 00:08:01,589
+data structures here we just have the
+
+186
+00:08:01,589 --> 00:08:04,139
+our G and the B but when you start
+
+187
+00:08:04,139 --> 00:08:05,969
+getting more complex data structures
+
+188
+00:08:05,969 --> 00:08:08,789
+having to deal with memory this directly
+
+189
+00:08:08,789 --> 00:08:13,080
+can be a big pain the reason that you
+
+190
+00:08:13,080 --> 00:08:15,060
+have to deal with memory so directly
+
+191
+00:08:15,060 --> 00:08:16,830
+with webassembly right now the reason
+
+192
+00:08:16,830 --> 00:08:18,419
+that you can't just pass an object from
+
+193
+00:08:18,419 --> 00:08:20,370
+JavaScript into web assembly and have
+
+194
+00:08:20,370 --> 00:08:22,139
+web assembly changed properties and
+
+195
+00:08:22,139 --> 00:08:24,360
+values on it and then give that object
+
+196
+00:08:24,360 --> 00:08:26,219
+back is because webassembly doesn't yet
+
+197
+00:08:26,219 --> 00:08:29,129
+have direct access to JavaScript objects
+
+198
+00:08:29,129 --> 00:08:32,190
+or the Dom that is in the works the web
+
+199
+00:08:32,190 --> 00:08:33,839
+assembly community group is working on
+
+200
+00:08:33,839 --> 00:08:37,140
+specifying that but just because that
+
+201
+00:08:37,140 --> 00:08:38,430
+isn't here yet that doesn't mean that
+
+202
+00:08:38,430 --> 00:08:39,899
+you have to wait before you can start
+
+203
+00:08:39,899 --> 00:08:41,550
+working with objects you don't have to
+
+204
+00:08:41,550 --> 00:08:44,430
+wait you can pass objects into your web
+
+205
+00:08:44,430 --> 00:08:46,680
+assembly and get objects back from your
+
+206
+00:08:46,680 --> 00:08:50,010
+JavaScript to do this you can use a
+
+207
+00:08:50,010 --> 00:08:52,579
+library that gives you this nicer API
+
+208
+00:08:52,579 --> 00:08:55,930
+this library is called wasm bind gen
+
+209
+00:08:55,930 --> 00:08:58,180
+it wraps the web assembly module in a
+
+210
+00:08:58,180 --> 00:09:00,730
+JavaScript wrapper and this wrapper
+
+211
+00:09:00,730 --> 00:09:02,890
+knows how to take complex JavaScript
+
+212
+00:09:02,890 --> 00:09:04,720
+objects and write them into linear
+
+213
+00:09:04,720 --> 00:09:06,790
+memory and when the web assembly
+
+214
+00:09:06,790 --> 00:09:08,890
+function returns a value the j/s wrapper
+
+215
+00:09:08,890 --> 00:09:10,660
+can take data from linear memory and
+
+216
+00:09:10,660 --> 00:09:13,839
+turn it back into a json jacked to do
+
+217
+00:09:13,839 --> 00:09:15,760
+this it looks at function signatures in
+
+218
+00:09:15,760 --> 00:09:17,410
+your rust code and figures out exactly
+
+219
+00:09:17,410 --> 00:09:19,420
+what kind of javascript wrapper is
+
+220
+00:09:19,420 --> 00:09:20,490
+needed
+
+221
+00:09:20,490 --> 00:09:22,660
+this works for built-in types like
+
+222
+00:09:22,660 --> 00:09:25,149
+strings and it also works for types that
+
+223
+00:09:25,149 --> 00:09:27,550
+you define in your code wise and bind
+
+224
+00:09:27,550 --> 00:09:29,740
+gen will take the RUS trucks and turn
+
+225
+00:09:29,740 --> 00:09:33,420
+them into JavaScript object classes
+
+226
+00:09:33,420 --> 00:09:36,459
+right now this tool is specific to rust
+
+227
+00:09:36,459 --> 00:09:38,649
+but with the way that it's architected
+
+228
+00:09:38,649 --> 00:09:40,660
+we can add support for this kind of
+
+229
+00:09:40,660 --> 00:09:42,490
+higher-level interaction for other
+
+230
+00:09:42,490 --> 00:09:46,470
+languages languages like C and C++
+
+231
+00:09:46,470 --> 00:09:48,520
+there's a session that will cover the
+
+232
+00:09:48,520 --> 00:09:50,320
+basics of rust and some of these other
+
+233
+00:09:50,320 --> 00:09:52,420
+topics likewise some bind gen and woz
+
+234
+00:09:52,420 --> 00:09:54,610
+impac which you can use to package up
+
+235
+00:09:54,610 --> 00:09:57,430
+your wasm modules to go up on NPM and
+
+236
+00:09:57,430 --> 00:09:59,709
+this session will be tomorrow at the
+
+237
+00:09:59,709 --> 00:10:02,740
+Mozilla booth starting at 13:30 at 1:30
+
+238
+00:10:02,740 --> 00:10:07,480
+p.m. so hopefully now you can see how to
+
+239
+00:10:07,480 --> 00:10:10,029
+take control of this space and how you
+
+240
+00:10:10,029 --> 00:10:12,100
+can say hello to the world and hello to
+
+241
+00:10:12,100 --> 00:10:15,820
+the world of web assembly before I wrap
+
+242
+00:10:15,820 --> 00:10:17,230
+this up I do want to give credit to the
+
+243
+00:10:17,230 --> 00:10:18,990
+people that made this project possible
+
+244
+00:10:18,990 --> 00:10:22,240
+the seeds for the idea of this product
+
+245
+00:10:22,240 --> 00:10:23,650
+it came from a dance party that I
+
+246
+00:10:23,650 --> 00:10:25,720
+attended in Pittsburgh that had a space
+
+247
+00:10:25,720 --> 00:10:27,850
+like this but the project was only
+
+248
+00:10:27,850 --> 00:10:30,160
+possible because of the amazing group of
+
+249
+00:10:30,160 --> 00:10:32,350
+people that gathered to make it a
+
+250
+00:10:32,350 --> 00:10:32,860
+reality
+
+251
+00:10:32,860 --> 00:10:35,080
+so I want to say thank you to Sandra /
+
+252
+00:10:35,080 --> 00:10:37,900
+sing I came to her with a vision and she
+
+253
+00:10:37,900 --> 00:10:40,450
+made that vision real I want to also
+
+254
+00:10:40,450 --> 00:10:41,860
+want to say thank you to Dan Brown and
+
+255
+00:10:41,860 --> 00:10:44,170
+Matt's a Pluto who took that vision and
+
+256
+00:10:44,170 --> 00:10:45,579
+turned it into something even more
+
+257
+00:10:45,579 --> 00:10:47,910
+exciting and engaging than I imagined
+
+258
+00:10:47,910 --> 00:10:50,110
+until Schneider Wright who helped me
+
+259
+00:10:50,110 --> 00:10:51,279
+figure out how to bring all of these
+
+260
+00:10:51,279 --> 00:10:52,709
+different pieces together
+
+261
+00:10:52,709 --> 00:10:55,390
+Josh Mira naxi who created the site and
+
+262
+00:10:55,390 --> 00:10:56,500
+made taking control of the space
+
+263
+00:10:56,500 --> 00:10:59,380
+possible dan Callahan who you also saw
+
+264
+00:10:59,380 --> 00:11:01,510
+in that video he jumped in with his
+
+265
+00:11:01,510 --> 00:11:03,190
+debugging and development wizardry to
+
+266
+00:11:03,190 --> 00:11:04,950
+ensure all of the pieces work together
+
+267
+00:11:04,950 --> 00:11:07,390
+Trevor F Smith who created the virtual
+
+268
+00:11:07,390 --> 00:11:09,100
+space so that everybody can experience
+
+269
+00:11:09,100 --> 00:11:10,870
+this even if they aren't here at the
+
+270
+00:11:10,870 --> 00:11:14,500
+event also Michel Bonita and URI delenn
+
+271
+00:11:14,500 --> 00:11:15,970
+Dec whose work on webassembly studio
+
+272
+00:11:15,970 --> 00:11:17,380
+makes it possible to share webassembly
+
+273
+00:11:17,380 --> 00:11:19,840
+with the whole new audience row stations
+
+274
+00:11:19,840 --> 00:11:21,910
+Alex Kryten Ashley Williams Sarah Myers
+
+275
+00:11:21,910 --> 00:11:24,190
+Jana Jana our creditor fluorine gilt
+
+276
+00:11:24,190 --> 00:11:26,620
+receive clap Nick Fabian and flock e who
+
+277
+00:11:26,620 --> 00:11:28,870
+worked on webassembly studios rust
+
+278
+00:11:28,870 --> 00:11:30,220
+integration helped aspiring Russ
+
+279
+00:11:30,220 --> 00:11:32,920
+developers level up their skills the J's
+
+280
+00:11:32,920 --> 00:11:34,300
+confit you team for all of their hard
+
+281
+00:11:34,300 --> 00:11:35,500
+work in making sure that this
+
+282
+00:11:35,500 --> 00:11:37,780
+installation get off the ground and of
+
+283
+00:11:37,780 --> 00:11:39,220
+course umbral the artist whose work
+
+284
+00:11:39,220 --> 00:11:41,350
+inspired this project and she's
+
+285
+00:11:41,350 --> 00:11:42,520
+hard-working sure that we could share it
+
+286
+00:11:42,520 --> 00:11:45,880
+with you thank you and Alice party
+

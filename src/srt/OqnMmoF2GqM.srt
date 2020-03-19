@@ -1,0 +1,3333 @@
+1
+00:00:15,340 --> 00:00:17,170
+
+yeah and I'm here to talk about chakra
+
+2
+00:00:17,170 --> 00:00:19,390
+in case it's not such a household name
+
+3
+00:00:19,390 --> 00:00:22,330
+as v8 chakra is the JavaScript engine in
+
+4
+00:00:22,330 --> 00:00:26,650
+99 9 10 and in april of this year at JS
+
+5
+00:00:26,650 --> 00:00:29,020
+convey you multi suggested that I come
+
+6
+00:00:29,020 --> 00:00:31,029
+and talk about chakra I got really
+
+7
+00:00:31,029 --> 00:00:32,860
+excited because even though we've been
+
+8
+00:00:32,860 --> 00:00:34,540
+working on it for about four years we
+
+9
+00:00:34,540 --> 00:00:36,160
+really haven't spoken publicly very much
+
+10
+00:00:36,160 --> 00:00:40,300
+about the internals and then as the talk
+
+11
+00:00:40,300 --> 00:00:42,610
+drew near I realized that I have 30
+
+12
+00:00:42,610 --> 00:00:43,840
+minutes for it then I thought oh crap
+
+13
+00:00:43,840 --> 00:00:45,400
+I'm going to have 30 minutes to tell you
+
+14
+00:00:45,400 --> 00:00:46,930
+about what we've been up to in the last
+
+15
+00:00:46,930 --> 00:00:49,270
+four years and then it occurred to me
+
+16
+00:00:49,270 --> 00:00:50,380
+that one of the best things I could do
+
+17
+00:00:50,380 --> 00:00:54,190
+is shift over here too let's see if you
+
+18
+00:00:54,190 --> 00:00:57,309
+can see that will switch over to my this
+
+19
+00:00:57,309 --> 00:01:00,070
+way this way there we go will fire off
+
+20
+00:01:00,070 --> 00:01:02,860
+our command line JavaScript host and
+
+21
+00:01:02,860 --> 00:01:05,259
+I'll just run some JavaScript and will
+
+22
+00:01:05,259 --> 00:01:07,420
+spit out the machine code that we emit
+
+23
+00:01:07,420 --> 00:01:08,920
+and then I can kind of walk you through
+
+24
+00:01:08,920 --> 00:01:10,810
+the details of it and no letter probably
+
+25
+00:01:10,810 --> 00:01:13,330
+feel about 30 minutes of our time maybe
+
+26
+00:01:13,330 --> 00:01:14,380
+a little bit more so maybe it's not such
+
+27
+00:01:14,380 --> 00:01:16,930
+a good idea so instead of dancing you
+
+28
+00:01:16,930 --> 00:01:18,640
+with my compiler voodoo knowledge I will
+
+29
+00:01:18,640 --> 00:01:22,270
+instead try to amaze you with my fancy
+
+30
+00:01:22,270 --> 00:01:24,580
+animated slides let me take that one out
+
+31
+00:01:24,580 --> 00:01:31,410
+of the way alright great so chakra Oh
+
+32
+00:01:31,410 --> 00:01:34,959
+focus there we go start working now
+
+33
+00:01:34,959 --> 00:01:38,619
+there we go under the hood in 30 minutes
+
+34
+00:01:38,619 --> 00:01:40,509
+or less let's see how much I can show
+
+35
+00:01:40,509 --> 00:01:43,690
+you some way started the project four
+
+36
+00:01:43,690 --> 00:01:47,289
+years ago in sometime late in 2008 we
+
+37
+00:01:47,289 --> 00:01:49,020
+obviously wanted to rewrite the
+
+38
+00:01:49,020 --> 00:01:51,759
+JavaScript engine to be faster so we
+
+39
+00:01:51,759 --> 00:01:54,190
+ripped out the old JavaScript engine
+
+40
+00:01:54,190 --> 00:01:57,910
+from ie8 we added JIT compiler obviously
+
+41
+00:01:57,910 --> 00:01:59,190
+the main goal was to make things faster
+
+42
+00:01:59,190 --> 00:02:01,420
+but at the same time we didn't want to
+
+43
+00:02:01,420 --> 00:02:03,459
+sacrifice security and we didn't want to
+
+44
+00:02:03,459 --> 00:02:06,330
+sacrifice in a bit of interoperability
+
+45
+00:02:06,330 --> 00:02:09,009
+as it turns out adding a jit to any
+
+46
+00:02:09,009 --> 00:02:11,440
+process is a very juicy target for a
+
+47
+00:02:11,440 --> 00:02:14,349
+potential attacker we will take some
+
+48
+00:02:14,349 --> 00:02:16,239
+performance hits in order to maintain
+
+49
+00:02:16,239 --> 00:02:18,250
+security will dive in this a little bit
+
+50
+00:02:18,250 --> 00:02:20,080
+more and then second we wanted to be
+
+51
+00:02:20,080 --> 00:02:22,090
+sure they were absolutely compliant with
+
+52
+00:02:22,090 --> 00:02:25,269
+the ACMA scripts spec so you know and I
+
+53
+00:02:25,269 --> 00:02:28,030
+the dark days of ie8 and before you have
+
+54
+00:02:28,030 --> 00:02:29,200
+to deal with all kinds of quirks
+
+55
+00:02:29,200 --> 00:02:30,970
+such we are to be sure that that's not a
+
+56
+00:02:30,970 --> 00:02:33,879
+problem in ie9 and and beyond so you
+
+57
+00:02:33,879 --> 00:02:35,080
+want to be sure you write script once
+
+58
+00:02:35,080 --> 00:02:36,790
+and it runs consistently on all the
+
+59
+00:02:36,790 --> 00:02:42,849
+browsers yeah and even our view of
+
+60
+00:02:42,849 --> 00:02:44,950
+performance is somewhat more nuanced and
+
+61
+00:02:44,950 --> 00:02:47,349
+balanced we want to be sure that we we
+
+62
+00:02:47,349 --> 00:02:48,700
+are really good on page load because
+
+63
+00:02:48,700 --> 00:02:50,500
+that's important as well as on just the
+
+64
+00:02:50,500 --> 00:02:53,319
+raw execution and really what I want to
+
+65
+00:02:53,319 --> 00:02:54,849
+tell you about this kind of the story of
+
+66
+00:02:54,849 --> 00:02:57,340
+building chakra why was built they were
+
+67
+00:02:57,340 --> 00:02:59,260
+was built what's different about it then
+
+68
+00:02:59,260 --> 00:03:00,940
+in some of the other engines and then
+
+69
+00:03:00,940 --> 00:03:02,769
+what is new and I 10 since we're just
+
+70
+00:03:02,769 --> 00:03:04,810
+about ready to ship it publicly
+
+71
+00:03:04,810 --> 00:03:07,030
+officially so we'll dive under the hood
+
+72
+00:03:07,030 --> 00:03:09,610
+a little bit there so let's start with
+
+73
+00:03:09,610 --> 00:03:11,440
+security oh by the way I promised some
+
+74
+00:03:11,440 --> 00:03:13,360
+assembly in my intro there will be some
+
+75
+00:03:13,360 --> 00:03:16,180
+of that so that's a quick preview of
+
+76
+00:03:16,180 --> 00:03:19,150
+what we're about to see I'm so security
+
+77
+00:03:19,150 --> 00:03:22,239
+I'm when you add a jit to the process
+
+78
+00:03:22,239 --> 00:03:25,540
+becomes a very potentially juicy target
+
+79
+00:03:25,540 --> 00:03:27,459
+for for an attack we want to be sure
+
+80
+00:03:27,459 --> 00:03:29,290
+that our engine is not the source of
+
+81
+00:03:29,290 --> 00:03:31,569
+exploits in the browser if you think
+
+82
+00:03:31,569 --> 00:03:33,130
+about what the JIT compiler does it
+
+83
+00:03:33,130 --> 00:03:34,900
+basically writes a bunch of data in the
+
+84
+00:03:34,900 --> 00:03:37,389
+memory and then points the CPU and the
+
+85
+00:03:37,389 --> 00:03:40,389
+data and says run that stuff and if your
+
+86
+00:03:40,389 --> 00:03:41,920
+attacker that's almost exactly what you
+
+87
+00:03:41,920 --> 00:03:43,150
+want to do you want to be able to write
+
+88
+00:03:43,150 --> 00:03:44,440
+some malicious code and then you want
+
+89
+00:03:44,440 --> 00:03:47,200
+the the processor to run that for you so
+
+90
+00:03:47,200 --> 00:03:48,639
+if you can get ahold of the chunk of
+
+91
+00:03:48,639 --> 00:03:50,380
+memory where where the JIT compiler
+
+92
+00:03:50,380 --> 00:03:51,880
+emitted some code and then you can write
+
+93
+00:03:51,880 --> 00:03:53,680
+your own stuff in there you pretty much
+
+94
+00:03:53,680 --> 00:03:56,470
+own the process so we take a number of
+
+95
+00:03:56,470 --> 00:03:58,180
+steps to make that as difficult as
+
+96
+00:03:58,180 --> 00:04:01,120
+possible for starters the most important
+
+97
+00:04:01,120 --> 00:04:02,620
+thing the most important mitigation that
+
+98
+00:04:02,620 --> 00:04:05,410
+we have is we actually lock the pages
+
+99
+00:04:05,410 --> 00:04:07,959
+that we write our code to so we mark
+
+100
+00:04:07,959 --> 00:04:10,359
+them as not executable sorry nan
+
+101
+00:04:10,359 --> 00:04:12,700
+writable but executable which means no
+
+102
+00:04:12,700 --> 00:04:14,319
+one else can write to that to those
+
+103
+00:04:14,319 --> 00:04:15,760
+pages any more data after we've
+
+104
+00:04:15,760 --> 00:04:18,459
+generated code that minimizes the window
+
+105
+00:04:18,459 --> 00:04:21,519
+that anyone can have to try to modify
+
+106
+00:04:21,519 --> 00:04:23,080
+things after we've written them to that
+
+107
+00:04:23,080 --> 00:04:25,990
+piece of code and then we also make it
+
+108
+00:04:25,990 --> 00:04:27,849
+difficult to figure out exactly where
+
+109
+00:04:27,849 --> 00:04:29,710
+the code is emitted first we use some of
+
+110
+00:04:29,710 --> 00:04:31,289
+the operating system mechanisms the
+
+111
+00:04:31,289 --> 00:04:34,630
+address space layout randomization but
+
+112
+00:04:34,630 --> 00:04:36,820
+then we also randomly layout where the
+
+113
+00:04:36,820 --> 00:04:39,220
+function start so we add some no ops in
+
+114
+00:04:39,220 --> 00:04:40,720
+the beginning sometimes there are no up
+
+115
+00:04:40,720 --> 00:04:41,800
+sometimes there are interrupt
+
+116
+00:04:41,800 --> 00:04:43,200
+instructions
+
+117
+00:04:43,200 --> 00:04:45,580
+we actually emit some random no ops
+
+118
+00:04:45,580 --> 00:04:47,260
+within the body of a function just
+
+119
+00:04:47,260 --> 00:04:49,150
+randomly sprinkle them throughout which
+
+120
+00:04:49,150 --> 00:04:50,680
+again makes it that much more difficult
+
+121
+00:04:50,680 --> 00:04:53,280
+to figure out where where the code lives
+
+122
+00:04:53,280 --> 00:04:56,740
+and then it turns out that if you write
+
+123
+00:04:56,740 --> 00:04:58,090
+JavaScript you actually have control
+
+124
+00:04:58,090 --> 00:05:00,070
+over some pieces of the data that we
+
+125
+00:05:00,070 --> 00:05:02,080
+will write out if you imagine when you
+
+126
+00:05:02,080 --> 00:05:04,390
+have a constant say a value 12 somewhere
+
+127
+00:05:04,390 --> 00:05:07,810
+we say in VAR x equals 12 that value has
+
+128
+00:05:07,810 --> 00:05:10,870
+to be encoded somewhere and then it
+
+129
+00:05:10,870 --> 00:05:13,960
+turns out that it only takes 16 bits to
+
+130
+00:05:13,960 --> 00:05:16,960
+encode an instruction in assembly on at
+
+131
+00:05:16,960 --> 00:05:19,060
+least in those processors so technically
+
+132
+00:05:19,060 --> 00:05:20,650
+speaking if you can have a constant that
+
+133
+00:05:20,650 --> 00:05:23,230
+is 16 bits or more you can put
+
+134
+00:05:23,230 --> 00:05:25,300
+instructions directly in the indie code
+
+135
+00:05:25,300 --> 00:05:28,060
+that we admit so to to take that control
+
+136
+00:05:28,060 --> 00:05:29,710
+away from you will actually encode those
+
+137
+00:05:29,710 --> 00:05:32,860
+60 bit 16-bit or more values by
+
+138
+00:05:32,860 --> 00:05:35,080
+extraordinary so that's what you see in
+
+139
+00:05:35,080 --> 00:05:37,330
+here and then on top of that we do a
+
+140
+00:05:37,330 --> 00:05:39,040
+couple of other things we actually cap
+
+141
+00:05:39,040 --> 00:05:40,600
+the amount of code that we will generate
+
+142
+00:05:40,600 --> 00:05:42,490
+just to be sure you cannot fill the
+
+143
+00:05:42,490 --> 00:05:44,950
+entire memory with with random code and
+
+144
+00:05:44,950 --> 00:05:46,990
+then jump somewhere there or write to a
+
+145
+00:05:46,990 --> 00:05:49,840
+random location and then one actually
+
+146
+00:05:49,840 --> 00:05:51,250
+comes to allocating pages we also
+
+147
+00:05:51,250 --> 00:05:53,320
+randomized those allocations so all
+
+148
+00:05:53,320 --> 00:05:55,120
+these things combined make it very
+
+149
+00:05:55,120 --> 00:05:57,520
+difficult to own the code that we omit
+
+150
+00:05:57,520 --> 00:06:00,820
+in any way and the first part that I
+
+151
+00:06:00,820 --> 00:06:02,260
+mentioned the locking of the pages is
+
+152
+00:06:02,260 --> 00:06:03,790
+actually different between chakra and
+
+153
+00:06:03,790 --> 00:06:06,010
+any of the other engines and does have
+
+154
+00:06:06,010 --> 00:06:08,110
+some implications like we we ourselves
+
+155
+00:06:08,110 --> 00:06:10,000
+are not able to modify the code after
+
+156
+00:06:10,000 --> 00:06:12,280
+you wrote it out so that's one of the
+
+157
+00:06:12,280 --> 00:06:13,930
+cases we will take some performance hit
+
+158
+00:06:13,930 --> 00:06:16,540
+to get that security and that's
+
+159
+00:06:16,540 --> 00:06:17,740
+something that differentiate is from
+
+160
+00:06:17,740 --> 00:06:21,130
+from others the other thing I mentioned
+
+161
+00:06:21,130 --> 00:06:24,970
+was the compliance spec compliance akma
+
+162
+00:06:24,970 --> 00:06:26,919
+script is a well-written spec but it's
+
+163
+00:06:26,919 --> 00:06:28,960
+every spec it leaves some little nuances
+
+164
+00:06:28,960 --> 00:06:31,419
+kind of up to interpretation so we
+
+165
+00:06:31,419 --> 00:06:32,650
+believe that it's important to have a
+
+166
+00:06:32,650 --> 00:06:34,630
+suite of tests that can empirically
+
+167
+00:06:34,630 --> 00:06:36,850
+verify that we all agree on what the
+
+168
+00:06:36,850 --> 00:06:38,890
+spec says so we worked with Google and
+
+169
+00:06:38,890 --> 00:06:42,070
+with others to create the test 262 which
+
+170
+00:06:42,070 --> 00:06:45,700
+now has some 11,000 different tests that
+
+171
+00:06:45,700 --> 00:06:47,560
+verify compliance Lakmal script and up
+
+172
+00:06:47,560 --> 00:06:48,910
+until about two weeks ago we were
+
+173
+00:06:48,910 --> 00:06:50,919
+actually passing all of them but then
+
+174
+00:06:50,919 --> 00:06:53,020
+sometime two weeks ago a few more out
+
+175
+00:06:53,020 --> 00:06:54,760
+were added to deal with the utf-8
+
+176
+00:06:54,760 --> 00:06:56,249
+encoding and
+
+177
+00:06:56,249 --> 00:06:57,719
+turns out there is a some there's a bug
+
+178
+00:06:57,719 --> 00:06:59,219
+in the unknowing OS in some weird
+
+179
+00:06:59,219 --> 00:07:02,129
+sorting algorithm that affects us so
+
+180
+00:07:02,129 --> 00:07:03,989
+we're now failing one test but we're
+
+181
+00:07:03,989 --> 00:07:05,699
+still actually doing quite well when it
+
+182
+00:07:05,699 --> 00:07:07,349
+comes to the pass rate and again we're
+
+183
+00:07:07,349 --> 00:07:09,029
+committed to making sure that that we
+
+184
+00:07:09,029 --> 00:07:11,789
+stay compliant with the spec so with
+
+185
+00:07:11,789 --> 00:07:13,169
+more tests are added that actually
+
+186
+00:07:13,169 --> 00:07:15,449
+expose issues that we might have we'll
+
+187
+00:07:15,449 --> 00:07:17,249
+make sure we fix them and the good news
+
+188
+00:07:17,249 --> 00:07:18,749
+for you is generally speaking all the
+
+189
+00:07:18,749 --> 00:07:20,279
+other browsers are also converging on a
+
+190
+00:07:20,279 --> 00:07:22,259
+very high pass rate so you can really
+
+191
+00:07:22,259 --> 00:07:24,779
+count on on your xmas crypt compliant
+
+192
+00:07:24,779 --> 00:07:26,999
+spec I mean script to run in all the
+
+193
+00:07:26,999 --> 00:07:30,689
+browsers in the same way okay great most
+
+194
+00:07:30,689 --> 00:07:31,919
+of the talk will be about performance
+
+195
+00:07:31,919 --> 00:07:34,319
+though and I did say that we care about
+
+196
+00:07:34,319 --> 00:07:37,049
+page load why do we care about page load
+
+197
+00:07:37,049 --> 00:07:39,629
+well even though the web is evolving and
+
+198
+00:07:39,629 --> 00:07:41,129
+the apps are getting more fancy and more
+
+199
+00:07:41,129 --> 00:07:42,719
+sophisticated most of the people still
+
+200
+00:07:42,719 --> 00:07:44,249
+experience the web is a bunch of pages
+
+201
+00:07:44,249 --> 00:07:46,889
+that they navigate to and their
+
+202
+00:07:46,889 --> 00:07:48,539
+experience is primarily affected by how
+
+203
+00:07:48,539 --> 00:07:50,899
+quickly those pages load and since
+
+204
+00:07:50,899 --> 00:07:53,159
+JavaScript execution is oftentimes on
+
+205
+00:07:53,159 --> 00:07:54,989
+the critical path of that we try to make
+
+206
+00:07:54,989 --> 00:07:56,159
+sure that we get out of the way as
+
+207
+00:07:56,159 --> 00:07:58,829
+quickly as we can so that dictated that
+
+208
+00:07:58,829 --> 00:08:01,499
+we kept an interpreter in chakra we have
+
+209
+00:08:01,499 --> 00:08:03,299
+a compiler but we retain the interpreter
+
+210
+00:08:03,299 --> 00:08:05,249
+so we can start executing your code as
+
+211
+00:08:05,249 --> 00:08:07,829
+fast as possible so here's a quick
+
+212
+00:08:07,829 --> 00:08:09,389
+little diagram of what we do with your
+
+213
+00:08:09,389 --> 00:08:11,069
+code when we see source code we pass it
+
+214
+00:08:11,069 --> 00:08:13,199
+through the parser we produce an ASD
+
+215
+00:08:13,199 --> 00:08:14,909
+then we feed it to a byte code generator
+
+216
+00:08:14,909 --> 00:08:17,339
+which generates bytecode which then we
+
+217
+00:08:17,339 --> 00:08:19,199
+start interpreting as fast as we can and
+
+218
+00:08:19,199 --> 00:08:21,029
+please do appreciate my pulsating
+
+219
+00:08:21,029 --> 00:08:25,469
+interpreter right there but the main
+
+220
+00:08:25,469 --> 00:08:27,749
+point here is we believe generating
+
+221
+00:08:27,749 --> 00:08:30,029
+bytecode is faster than then compiling
+
+222
+00:08:30,029 --> 00:08:32,309
+to machine instructions so in order to
+
+223
+00:08:32,309 --> 00:08:35,159
+give you as fast startup as possible we
+
+224
+00:08:35,159 --> 00:08:37,529
+will get to the interpreter first and
+
+225
+00:08:37,529 --> 00:08:40,319
+we'll start executing there but we do
+
+226
+00:08:40,319 --> 00:08:44,459
+more it turns out most of the sites
+
+227
+00:08:44,459 --> 00:08:46,259
+bring in a bunch of JavaScript libraries
+
+228
+00:08:46,259 --> 00:08:48,149
+out of which only a small portion is
+
+229
+00:08:48,149 --> 00:08:50,399
+ever executed and even a small smaller
+
+230
+00:08:50,399 --> 00:08:52,680
+portion is executed at startup so it's
+
+231
+00:08:52,680 --> 00:08:54,209
+important that we don't spend all the
+
+232
+00:08:54,209 --> 00:08:56,040
+time parsing all the code and generating
+
+233
+00:08:56,040 --> 00:08:57,720
+the bytecode for all the stuff that is
+
+234
+00:08:57,720 --> 00:09:00,360
+never used so we do instead is we defer
+
+235
+00:09:00,360 --> 00:09:01,680
+parsing of anything that is not
+
+236
+00:09:01,680 --> 00:09:04,500
+immediately executed so we actually wait
+
+237
+00:09:04,500 --> 00:09:06,750
+until you call a function before we do
+
+238
+00:09:06,750 --> 00:09:08,269
+all the all the work that is required
+
+239
+00:09:08,269 --> 00:09:10,500
+there's a caveat there
+
+240
+00:09:10,500 --> 00:09:13,090
+requirement of the spec is that we parse
+
+241
+00:09:13,090 --> 00:09:15,130
+everything for syntax errors but that's
+
+242
+00:09:15,130 --> 00:09:18,070
+a relatively quick pass so you know the
+
+243
+00:09:18,070 --> 00:09:19,540
+FIR loading of your code is still a good
+
+244
+00:09:19,540 --> 00:09:21,280
+idea because we will have to parse all
+
+245
+00:09:21,280 --> 00:09:23,200
+of it at least for syntax errors but
+
+246
+00:09:23,200 --> 00:09:24,550
+generally speaking all the hard work is
+
+247
+00:09:24,550 --> 00:09:25,990
+deferred until it's absolutely required
+
+248
+00:09:25,990 --> 00:09:28,980
+and we try to do even more we try to
+
+249
+00:09:28,980 --> 00:09:31,270
+preserve some of the information that we
+
+250
+00:09:31,270 --> 00:09:32,920
+have between one page load and another
+
+251
+00:09:32,920 --> 00:09:34,480
+will actually keep track of the
+
+252
+00:09:34,480 --> 00:09:35,800
+functions in JavaScript that got
+
+253
+00:09:35,800 --> 00:09:37,510
+executed to make sure that we parse
+
+254
+00:09:37,510 --> 00:09:39,070
+those right away and we defer everything
+
+255
+00:09:39,070 --> 00:09:41,530
+else and then I'll tell you more about
+
+256
+00:09:41,530 --> 00:09:43,480
+Windows 8 applications at the end but
+
+257
+00:09:43,480 --> 00:09:45,100
+for those written in JavaScript we
+
+258
+00:09:45,100 --> 00:09:46,930
+actually even cache the bytecode so we
+
+259
+00:09:46,930 --> 00:09:48,790
+don't have to parse or generate bytecode
+
+260
+00:09:48,790 --> 00:09:50,950
+at all which helps us greatly on startup
+
+261
+00:09:50,950 --> 00:09:55,990
+for those so page load is important but
+
+262
+00:09:55,990 --> 00:09:57,280
+of course we care about executing
+
+263
+00:09:57,280 --> 00:09:59,110
+JavaScript as fast as possible to for
+
+264
+00:09:59,110 --> 00:10:02,140
+the larger apps so we start an
+
+265
+00:10:02,140 --> 00:10:04,930
+interpreter and as we interpret we
+
+266
+00:10:04,930 --> 00:10:07,920
+collect there we go profile information
+
+267
+00:10:07,920 --> 00:10:10,870
+basically data about what types of
+
+268
+00:10:10,870 --> 00:10:13,510
+parameters variables properties we saw
+
+269
+00:10:13,510 --> 00:10:16,660
+it's kind of similar to what v8 does and
+
+270
+00:10:16,660 --> 00:10:19,990
+what Firefox also does and then we feed
+
+271
+00:10:19,990 --> 00:10:21,520
+that information when the function is
+
+272
+00:10:21,520 --> 00:10:24,130
+hot enough to start compiling into our
+
+273
+00:10:24,130 --> 00:10:26,650
+jit compiler along with the bytecode for
+
+274
+00:10:26,650 --> 00:10:28,600
+the given function now what's different
+
+275
+00:10:28,600 --> 00:10:30,970
+in chakra is that we've bet heavily on
+
+276
+00:10:30,970 --> 00:10:33,130
+concurrency we believe there's a trend
+
+277
+00:10:33,130 --> 00:10:35,770
+in in hardware to having more and more
+
+278
+00:10:35,770 --> 00:10:37,240
+cores so you want to take advantage of
+
+279
+00:10:37,240 --> 00:10:39,280
+them as much as possible so in this case
+
+280
+00:10:39,280 --> 00:10:41,320
+our jit compiler runs concurrently on a
+
+281
+00:10:41,320 --> 00:10:42,910
+background thread and if you have
+
+282
+00:10:42,910 --> 00:10:45,040
+multiple cores you can get the
+
+283
+00:10:45,040 --> 00:10:46,720
+compilation while you're executing the
+
+284
+00:10:46,720 --> 00:10:48,490
+code so we can continue running your
+
+285
+00:10:48,490 --> 00:10:50,740
+code in the interpreter even as the JIT
+
+286
+00:10:50,740 --> 00:10:52,960
+compiler produces machine code for a
+
+287
+00:10:52,960 --> 00:10:54,940
+given function and then when that
+
+288
+00:10:54,940 --> 00:10:56,890
+machine code is ready we will swap it
+
+289
+00:10:56,890 --> 00:10:58,690
+back in and i will continue executing
+
+290
+00:10:58,690 --> 00:11:00,820
+just the machine code not interpreted
+
+291
+00:11:00,820 --> 00:11:04,120
+anymore so that minimizes any pauses
+
+292
+00:11:04,120 --> 00:11:05,560
+that might be introduced on the UI
+
+293
+00:11:05,560 --> 00:11:08,590
+thread by compilation everything is done
+
+294
+00:11:08,590 --> 00:11:13,540
+on the background thread and then the
+
+295
+00:11:13,540 --> 00:11:15,010
+other component of the system the
+
+296
+00:11:15,010 --> 00:11:16,690
+garbage collector is also designed to be
+
+297
+00:11:16,690 --> 00:11:18,210
+run concurrently as much as possible
+
+298
+00:11:18,210 --> 00:11:20,920
+most of the marketing and the sweeping
+
+299
+00:11:20,920 --> 00:11:22,480
+that we do leave a mark and sweep
+
+300
+00:11:22,480 --> 00:11:24,190
+collector is actually done concurrently
+
+301
+00:11:24,190 --> 00:11:26,260
+well there are some portions that we
+
+302
+00:11:26,260 --> 00:11:28,060
+have to do on the UI thread I won't get
+
+303
+00:11:28,060 --> 00:11:30,190
+into great detail of that but for the
+
+304
+00:11:30,190 --> 00:11:31,510
+most part we do the bulk of the work
+
+305
+00:11:31,510 --> 00:11:33,400
+concurrently so if you have three cores
+
+306
+00:11:33,400 --> 00:11:36,070
+and if you need to compile and garbage
+
+307
+00:11:36,070 --> 00:11:37,630
+collect and run your code concurrently
+
+308
+00:11:37,630 --> 00:11:39,670
+we can do all that stuff as long as you
+
+309
+00:11:39,670 --> 00:11:41,680
+have enough course and we believe we can
+
+310
+00:11:41,680 --> 00:11:43,210
+actually expand that relatively easily
+
+311
+00:11:43,210 --> 00:11:45,520
+to paralyse over more cores of those
+
+312
+00:11:45,520 --> 00:11:47,860
+become available so that's the key
+
+313
+00:11:47,860 --> 00:11:49,390
+aspect of our architecture there is
+
+314
+00:11:49,390 --> 00:11:52,090
+different from from other browsers and
+
+315
+00:11:52,090 --> 00:11:56,260
+then that the rest of the talk I'll
+
+316
+00:11:56,260 --> 00:11:57,730
+spend talking about the changes we've
+
+317
+00:11:57,730 --> 00:11:59,500
+made in ie10 particularly our jit
+
+318
+00:11:59,500 --> 00:12:03,010
+compiler because we've changed it quite
+
+319
+00:12:03,010 --> 00:12:05,230
+dramatically so you may or may not know
+
+320
+00:12:05,230 --> 00:12:08,050
+that in ie9 we we were able to generate
+
+321
+00:12:08,050 --> 00:12:11,680
+machine code only for x86 if you rent a
+
+322
+00:12:11,680 --> 00:12:14,440
+64-bit version of IE 9 you're actually
+
+323
+00:12:14,440 --> 00:12:17,230
+running in the interpreter only in i-10
+
+324
+00:12:17,230 --> 00:12:19,420
+we added machine code for x64 and
+
+325
+00:12:19,420 --> 00:12:22,240
+forearm as well so in all these cases we
+
+326
+00:12:22,240 --> 00:12:25,150
+have full JIT compilers now and then we
+
+327
+00:12:25,150 --> 00:12:27,760
+change the general philosophy of our jit
+
+328
+00:12:27,760 --> 00:12:30,310
+code that we omit I'll talk about that
+
+329
+00:12:30,310 --> 00:12:32,140
+in some detail but we we kind of adopted
+
+330
+00:12:32,140 --> 00:12:33,940
+a similar model do you see and other
+
+331
+00:12:33,940 --> 00:12:36,310
+browsers today of generating optimistic
+
+332
+00:12:36,310 --> 00:12:38,620
+code and then if things go wrong then
+
+333
+00:12:38,620 --> 00:12:40,870
+we'll just bail out and we read it if we
+
+334
+00:12:40,870 --> 00:12:43,270
+need to and that gives us a number of
+
+335
+00:12:43,270 --> 00:12:45,610
+other benefits we can generate faster
+
+336
+00:12:45,610 --> 00:12:48,820
+math both floating point and integer we
+
+337
+00:12:48,820 --> 00:12:51,190
+can do function inlining and we can we
+
+338
+00:12:51,190 --> 00:12:52,120
+actually have a number of other
+
+339
+00:12:52,120 --> 00:12:53,830
+optimizations are just strictly from the
+
+340
+00:12:53,830 --> 00:12:56,380
+compiler land and we also added support
+
+341
+00:12:56,380 --> 00:12:58,090
+for typed arrays that's not really a
+
+342
+00:12:58,090 --> 00:12:59,680
+compiler optimization but it gives you
+
+343
+00:12:59,680 --> 00:13:01,780
+if you really want access to native data
+
+344
+00:13:01,780 --> 00:13:05,860
+that is critical alright so the
+
+345
+00:13:05,860 --> 00:13:08,020
+optimistic profile based jet what is
+
+346
+00:13:08,020 --> 00:13:09,430
+that beast now if you're hanging out in
+
+347
+00:13:09,430 --> 00:13:12,070
+the in the bubble room this morning you
+
+348
+00:13:12,070 --> 00:13:13,720
+probably have seen much of that
+
+349
+00:13:13,720 --> 00:13:15,100
+explained but for those who are in there
+
+350
+00:13:15,100 --> 00:13:18,220
+I'll cover some of the basics so in ie9
+
+351
+00:13:18,220 --> 00:13:20,290
+the code that we would omit looks kind
+
+352
+00:13:20,290 --> 00:13:22,510
+of like this graphically we basically
+
+353
+00:13:22,510 --> 00:13:24,760
+try to handle all the nooks and crannies
+
+354
+00:13:24,760 --> 00:13:27,520
+of the of the JavaScript semantics so if
+
+355
+00:13:27,520 --> 00:13:29,770
+you have a plus B you know maybe two
+
+356
+00:13:29,770 --> 00:13:31,270
+numbers that you have to add by maybe it
+
+357
+00:13:31,270 --> 00:13:33,160
+is two strings I have to concatenate or
+
+358
+00:13:33,160 --> 00:13:34,750
+what have you we were trying to handle
+
+359
+00:13:34,750 --> 00:13:37,120
+all these cases which meant for
+
+360
+00:13:37,120 --> 00:13:37,570
+everything
+
+361
+00:13:37,570 --> 00:13:39,010
+other than integers we'd have to call
+
+362
+00:13:39,010 --> 00:13:40,870
+into the run time to do the operation
+
+363
+00:13:40,870 --> 00:13:42,640
+get back the result and then try to
+
+364
+00:13:42,640 --> 00:13:44,680
+continue which oftentimes men that we
+
+365
+00:13:44,680 --> 00:13:46,060
+have to call back into the runtime and
+
+366
+00:13:46,060 --> 00:13:49,150
+back and forth so for for integer
+
+367
+00:13:49,150 --> 00:13:50,830
+operations we were generally pretty
+
+368
+00:13:50,830 --> 00:13:52,570
+pretty good but for certain other things
+
+369
+00:13:52,570 --> 00:13:56,560
+we were not in 90 10 we're doing things
+
+370
+00:13:56,560 --> 00:13:58,180
+differently so we will collect the
+
+371
+00:13:58,180 --> 00:14:00,160
+profile that I mentioned before so now
+
+372
+00:14:00,160 --> 00:14:02,080
+we know that we primarily operates a on
+
+373
+00:14:02,080 --> 00:14:03,910
+floating point numbers so we'll generate
+
+374
+00:14:03,910 --> 00:14:05,820
+the code that is specialized for those
+
+375
+00:14:05,820 --> 00:14:08,080
+which typically results in a much
+
+376
+00:14:08,080 --> 00:14:09,730
+shorter and more compact and more
+
+377
+00:14:09,730 --> 00:14:11,560
+efficient code but then we have to check
+
+378
+00:14:11,560 --> 00:14:13,990
+that the conditions that we expect are
+
+379
+00:14:13,990 --> 00:14:15,970
+still true so if now he passes a bunch
+
+380
+00:14:15,970 --> 00:14:17,560
+of strings we have to do something else
+
+381
+00:14:17,560 --> 00:14:19,780
+so that's their little diamond on top we
+
+382
+00:14:19,780 --> 00:14:21,490
+check the conditions and if they turn
+
+383
+00:14:21,490 --> 00:14:23,260
+out to be false we have to bail out so
+
+384
+00:14:23,260 --> 00:14:25,830
+in our case bailing out means
+
+385
+00:14:25,830 --> 00:14:28,060
+transferring the state of execution over
+
+386
+00:14:28,060 --> 00:14:30,040
+to the interpreter and then continuing
+
+387
+00:14:30,040 --> 00:14:32,350
+that function in the interpreter when we
+
+388
+00:14:32,350 --> 00:14:34,530
+call the function again we will reach
+
+389
+00:14:34,530 --> 00:14:36,940
+re-enter the digit code if the
+
+390
+00:14:36,940 --> 00:14:38,410
+conditions are still not met will bail
+
+391
+00:14:38,410 --> 00:14:40,620
+out again if that happens sufficiently
+
+392
+00:14:40,620 --> 00:14:42,670
+frequently we will decide that it's time
+
+393
+00:14:42,670 --> 00:14:45,070
+to reach it that code with a different
+
+394
+00:14:45,070 --> 00:14:46,690
+set of conditions maybe it's a more
+
+395
+00:14:46,690 --> 00:14:48,070
+generic code again that is a little
+
+396
+00:14:48,070 --> 00:14:50,080
+slower but if that's the data you gave
+
+397
+00:14:50,080 --> 00:14:51,970
+us that's what we have to work with so
+
+398
+00:14:51,970 --> 00:14:54,460
+generally speaking our code adapts over
+
+399
+00:14:54,460 --> 00:14:58,780
+time to the data that you pass us great
+
+400
+00:14:58,780 --> 00:15:01,150
+and I mentioned that gives us a chance
+
+401
+00:15:01,150 --> 00:15:04,540
+to generate more efficient code but
+
+402
+00:15:04,540 --> 00:15:05,860
+first a little bit of a background why
+
+403
+00:15:05,860 --> 00:15:08,500
+that even matters you probably are well
+
+404
+00:15:08,500 --> 00:15:10,690
+familiar than JavaScript variables are
+
+405
+00:15:10,690 --> 00:15:13,570
+dynamically typed so at any given point
+
+406
+00:15:13,570 --> 00:15:15,670
+say a in this case could be a number
+
+407
+00:15:15,670 --> 00:15:18,640
+first then the floating point number are
+
+408
+00:15:18,640 --> 00:15:21,130
+straying that an object then even a data
+
+409
+00:15:21,130 --> 00:15:24,760
+a piece of date and we have to deal with
+
+410
+00:15:24,760 --> 00:15:26,140
+all the different values so typically
+
+411
+00:15:26,140 --> 00:15:28,690
+they were encoded on the heap with some
+
+412
+00:15:28,690 --> 00:15:31,090
+form of a type tag and then the value to
+
+413
+00:15:31,090 --> 00:15:32,830
+tell us how to deal with those those
+
+414
+00:15:32,830 --> 00:15:36,220
+types of values and they have to be
+
+415
+00:15:36,220 --> 00:15:37,510
+allocated on the heap and then the
+
+416
+00:15:37,510 --> 00:15:38,740
+garbage collector when they're no longer
+
+417
+00:15:38,740 --> 00:15:41,050
+used has to collect them all which has a
+
+418
+00:15:41,050 --> 00:15:42,760
+high overhead of course when it comes to
+
+419
+00:15:42,760 --> 00:15:46,150
+memory and then this also means that
+
+420
+00:15:46,150 --> 00:15:48,280
+that up the basic operations are quite
+
+421
+00:15:48,280 --> 00:15:49,720
+inefficient so if you just take this
+
+422
+00:15:49,720 --> 00:15:51,370
+simple a plus B plus C
+
+423
+00:15:51,370 --> 00:15:52,420
+you kind of break it down into
+
+424
+00:15:52,420 --> 00:15:54,010
+individual operations you have to add a
+
+425
+00:15:54,010 --> 00:15:55,990
+and B and then add the result to see and
+
+426
+00:15:55,990 --> 00:15:58,990
+then return that it turns out that it's
+
+427
+00:15:58,990 --> 00:16:00,400
+this lengthy sequence of things that you
+
+428
+00:16:00,400 --> 00:16:02,080
+have to do so you have to get a type of
+
+429
+00:16:02,080 --> 00:16:05,470
+a type of B then the value of a in value
+
+430
+00:16:05,470 --> 00:16:07,810
+of B then based on the types we have to
+
+431
+00:16:07,810 --> 00:16:09,580
+decide what to do maybe it's adding two
+
+432
+00:16:09,580 --> 00:16:11,250
+numbers maybe it's concatenated strings
+
+433
+00:16:11,250 --> 00:16:13,750
+then finally we have to execute that
+
+434
+00:16:13,750 --> 00:16:16,810
+operation get the result back stick it
+
+435
+00:16:16,810 --> 00:16:18,220
+back on the heap and only then we can
+
+436
+00:16:18,220 --> 00:16:22,270
+return it that's very inefficient in 99
+
+437
+00:16:22,270 --> 00:16:24,550
+we we employ the same trick that most of
+
+438
+00:16:24,550 --> 00:16:26,350
+the modern engines now do and that's
+
+439
+00:16:26,350 --> 00:16:27,880
+kind of a common thing in dynamically
+
+440
+00:16:27,880 --> 00:16:31,380
+typed languages we we use number tagging
+
+441
+00:16:31,380 --> 00:16:33,610
+if you're not familiar with it the idea
+
+442
+00:16:33,610 --> 00:16:36,370
+is generally pointers are aligned to a
+
+443
+00:16:36,370 --> 00:16:38,230
+certain boundary so the least
+
+444
+00:16:38,230 --> 00:16:40,690
+significant bits typically three or four
+
+445
+00:16:40,690 --> 00:16:43,660
+are always zero so we can stick a one in
+
+446
+00:16:43,660 --> 00:16:45,279
+one of those bits and then use the rest
+
+447
+00:16:45,279 --> 00:16:46,779
+of the bits to indicate to actually
+
+448
+00:16:46,779 --> 00:16:49,210
+store the value of the integer it's like
+
+449
+00:16:49,210 --> 00:16:50,800
+in this case the number 3 can be encoded
+
+450
+00:16:50,800 --> 00:16:52,890
+directly in the register or on the stack
+
+451
+00:16:52,890 --> 00:16:54,910
+that helps because we don't have to
+
+452
+00:16:54,910 --> 00:16:56,800
+allocate it on the heap and grab it from
+
+453
+00:16:56,800 --> 00:16:59,470
+a heap every single time so in 99 we
+
+454
+00:16:59,470 --> 00:17:02,380
+were using that in ie10 on the 64-bit
+
+455
+00:17:02,380 --> 00:17:04,839
+platform we have more bits available so
+
+456
+00:17:04,839 --> 00:17:06,550
+we can stick floating-point numbers and
+
+457
+00:17:06,550 --> 00:17:09,250
+large integers also directly into
+
+458
+00:17:09,250 --> 00:17:12,730
+registers on a stack so that helps with
+
+459
+00:17:12,730 --> 00:17:14,980
+the math operations there are so long
+
+460
+00:17:14,980 --> 00:17:16,990
+sequence of steps but each of those
+
+461
+00:17:16,990 --> 00:17:19,240
+steps is a whole lot cheaper so if it
+
+462
+00:17:19,240 --> 00:17:20,980
+comes when it comes to grabbing the type
+
+463
+00:17:20,980 --> 00:17:23,020
+we just have to check for that one bit
+
+464
+00:17:23,020 --> 00:17:25,150
+we don't have to go the heap to get the
+
+465
+00:17:25,150 --> 00:17:26,740
+value we just have to remove the bit
+
+466
+00:17:26,740 --> 00:17:29,350
+that's also cheaper then we know what
+
+467
+00:17:29,350 --> 00:17:31,510
+operation to do just add two numbers and
+
+468
+00:17:31,510 --> 00:17:33,850
+at the end we just have to tag the
+
+469
+00:17:33,850 --> 00:17:35,200
+number instead of sticking back on the
+
+470
+00:17:35,200 --> 00:17:37,750
+heat great so there was better than the
+
+471
+00:17:37,750 --> 00:17:40,240
+you know and I ate but night n we can do
+
+472
+00:17:40,240 --> 00:17:42,160
+much better than that because now we
+
+473
+00:17:42,160 --> 00:17:43,809
+don't have to worry about all the other
+
+474
+00:17:43,809 --> 00:17:45,900
+conditions that we might want to handle
+
+475
+00:17:45,900 --> 00:17:49,030
+so that's just an example of an
+
+476
+00:17:49,030 --> 00:17:50,559
+operation a set of operations that we
+
+477
+00:17:50,559 --> 00:17:52,150
+will do from the SunSpider benchmark
+
+478
+00:17:52,150 --> 00:17:54,250
+this little loop right there basically
+
+479
+00:17:54,250 --> 00:17:56,110
+translates into that assembly do you see
+
+480
+00:17:56,110 --> 00:17:57,850
+on the right and if you well versed in
+
+481
+00:17:57,850 --> 00:17:59,830
+assembly you can get an idea that's
+
+482
+00:17:59,830 --> 00:18:01,570
+probably there's just about as tight as
+
+483
+00:18:01,570 --> 00:18:03,850
+it can be that's the something that a
+
+484
+00:18:03,850 --> 00:18:05,170
+c++ compiler wouldn't
+
+485
+00:18:05,170 --> 00:18:06,760
+be particularly ashamed of generating
+
+486
+00:18:06,760 --> 00:18:08,860
+for the same kind of code so it's quite
+
+487
+00:18:08,860 --> 00:18:10,480
+efficient with a one little exception
+
+488
+00:18:10,480 --> 00:18:11,980
+over there we have to check for the
+
+489
+00:18:11,980 --> 00:18:13,780
+overflow which is just required by the
+
+490
+00:18:13,780 --> 00:18:16,480
+semantics of the JavaScript operations
+
+491
+00:18:16,480 --> 00:18:18,910
+and if overflow happens you will notice
+
+492
+00:18:18,910 --> 00:18:20,350
+will actually bail out of this code and
+
+493
+00:18:20,350 --> 00:18:24,040
+and will try to reach it so that make
+
+494
+00:18:24,040 --> 00:18:27,190
+that makes integer math much faster for
+
+495
+00:18:27,190 --> 00:18:28,480
+floating-point math this is even more
+
+496
+00:18:28,480 --> 00:18:30,190
+important because previously you always
+
+497
+00:18:30,190 --> 00:18:31,900
+have to box the floating-point numbers
+
+498
+00:18:31,900 --> 00:18:34,210
+back and forth another example from
+
+499
+00:18:34,210 --> 00:18:36,430
+sunspider and again if you look at the
+
+500
+00:18:36,430 --> 00:18:38,110
+instructions on the right it's basically
+
+501
+00:18:38,110 --> 00:18:40,030
+just floating point operations on
+
+502
+00:18:40,030 --> 00:18:42,790
+registers so it's quite efficient a
+
+503
+00:18:42,790 --> 00:18:44,680
+couple exceptions there we actually take
+
+504
+00:18:44,680 --> 00:18:46,750
+a register spill this move SD that is
+
+505
+00:18:46,750 --> 00:18:49,000
+marked in red our linear scan register
+
+506
+00:18:49,000 --> 00:18:51,070
+allocator has some limitations in this
+
+507
+00:18:51,070 --> 00:18:53,470
+case it shows to spill this register and
+
+508
+00:18:53,470 --> 00:18:56,230
+then there's also the overflow check but
+
+509
+00:18:56,230 --> 00:18:57,970
+again generally speaking for local
+
+510
+00:18:57,970 --> 00:18:59,980
+variables for parameters they can
+
+511
+00:18:59,980 --> 00:19:01,630
+generate very tight and very efficient
+
+512
+00:19:01,630 --> 00:19:05,230
+floating-point and energy map there are
+
+513
+00:19:05,230 --> 00:19:07,270
+some limitations to it when you start
+
+514
+00:19:07,270 --> 00:19:09,040
+sticking those values into properties or
+
+515
+00:19:09,040 --> 00:19:10,600
+or extracting in front properties we
+
+516
+00:19:10,600 --> 00:19:12,690
+still have to box them or or tag them
+
+517
+00:19:12,690 --> 00:19:15,280
+and it turns out that you do actually do
+
+518
+00:19:15,280 --> 00:19:17,410
+a lot of operations on properties so
+
+519
+00:19:17,410 --> 00:19:21,070
+property access is also important and we
+
+520
+00:19:21,070 --> 00:19:23,350
+did a lot to make it faster in 99 we did
+
+521
+00:19:23,350 --> 00:19:25,600
+even more in ie10 I'll cover some of
+
+522
+00:19:25,600 --> 00:19:27,940
+that in the next few slides so generally
+
+523
+00:19:27,940 --> 00:19:29,560
+speaking it as a background which may be
+
+524
+00:19:29,560 --> 00:19:31,660
+obvious javascript objects just bags of
+
+525
+00:19:31,660 --> 00:19:33,670
+properties so traditionally you never
+
+526
+00:19:33,670 --> 00:19:35,740
+knew if you wanted to grab property X
+
+527
+00:19:35,740 --> 00:19:37,840
+you know when you were to find the value
+
+528
+00:19:37,840 --> 00:19:39,370
+of that property you always have to do a
+
+529
+00:19:39,370 --> 00:19:41,560
+dictionary you look up get the value and
+
+530
+00:19:41,560 --> 00:19:44,850
+then the same thing next time around
+
+531
+00:19:44,850 --> 00:19:47,380
+inline caches are typically used to help
+
+532
+00:19:47,380 --> 00:19:49,300
+that what they really are or just a way
+
+533
+00:19:49,300 --> 00:19:52,000
+to store to remember some information so
+
+534
+00:19:52,000 --> 00:19:53,380
+if you remember the object that you saw
+
+535
+00:19:53,380 --> 00:19:55,390
+before and know where to find property X
+
+536
+00:19:55,390 --> 00:20:00,040
+next time you could do it faster alright
+
+537
+00:20:00,040 --> 00:20:03,360
+so in ie9 we we added inline caches and
+
+538
+00:20:03,360 --> 00:20:05,530
+for the inline caches we have to keep
+
+539
+00:20:05,530 --> 00:20:08,350
+track of shapes of the objects or
+
+540
+00:20:08,350 --> 00:20:09,760
+internal classes as they're called in
+
+541
+00:20:09,760 --> 00:20:12,580
+the eighth and we kind of typically call
+
+542
+00:20:12,580 --> 00:20:15,130
+them internal types so here's an example
+
+543
+00:20:15,130 --> 00:20:17,260
+of a constructor that creates two
+
+544
+00:20:17,260 --> 00:20:18,640
+different objects and just gives an x
+
+545
+00:20:18,640 --> 00:20:19,000
+and y
+
+546
+00:20:19,000 --> 00:20:22,060
+properties and shapes are basically
+
+547
+00:20:22,060 --> 00:20:24,340
+sequences of properties that are added
+
+548
+00:20:24,340 --> 00:20:26,470
+to an object so we follow the evolution
+
+549
+00:20:26,470 --> 00:20:28,840
+of an object and then we associate a
+
+550
+00:20:28,840 --> 00:20:30,790
+certain shape with that object so here
+
+551
+00:20:30,790 --> 00:20:33,580
+the shape would be X Y and the bubble
+
+552
+00:20:33,580 --> 00:20:35,020
+indicates that it's the right from a
+
+553
+00:20:35,020 --> 00:20:37,360
+certain prototype if then you create the
+
+554
+00:20:37,360 --> 00:20:40,030
+second object b2 which follows the exact
+
+555
+00:20:40,030 --> 00:20:42,430
+same code path it'll have the same type
+
+556
+00:20:42,430 --> 00:20:46,090
+or shape and then subsequent accesses
+
+557
+00:20:46,090 --> 00:20:47,650
+the properties of those objects will be
+
+558
+00:20:47,650 --> 00:20:49,630
+monomorphic meaning the objects will
+
+559
+00:20:49,630 --> 00:20:51,610
+have the same shape and we can do quite
+
+560
+00:20:51,610 --> 00:20:54,490
+well in ie9 for for those types of
+
+561
+00:20:54,490 --> 00:20:57,760
+objects here's just a quick example if
+
+562
+00:20:57,760 --> 00:20:59,950
+you now call this reset method in a loop
+
+563
+00:20:59,950 --> 00:21:03,070
+which then tries to set x and y 20 we
+
+564
+00:21:03,070 --> 00:21:04,630
+have an inline cassius o ciated right
+
+565
+00:21:04,630 --> 00:21:06,220
+here with that instruction and the
+
+566
+00:21:06,220 --> 00:21:07,930
+inline cash remembers the type and
+
+567
+00:21:07,930 --> 00:21:12,010
+remembers the slot at which we found
+
+568
+00:21:12,010 --> 00:21:14,470
+property X last time it starts zeroed
+
+569
+00:21:14,470 --> 00:21:16,510
+out there is nothing there and this is
+
+570
+00:21:16,510 --> 00:21:18,100
+roughly the code that we would omit for
+
+571
+00:21:18,100 --> 00:21:20,320
+to access that property you don't have
+
+572
+00:21:20,320 --> 00:21:22,600
+to understand all of it the key thing
+
+573
+00:21:22,600 --> 00:21:25,180
+here is we check the type or the shape
+
+574
+00:21:25,180 --> 00:21:27,820
+of the object against the shape shape
+
+575
+00:21:27,820 --> 00:21:29,550
+that we remember in the inline cash
+
+576
+00:21:29,550 --> 00:21:31,660
+right now they don't match because the
+
+577
+00:21:31,660 --> 00:21:33,190
+cash is not initialized so we have to do
+
+578
+00:21:33,190 --> 00:21:35,800
+a slow look up but after we're done we
+
+579
+00:21:35,800 --> 00:21:37,210
+store that information in the inline
+
+580
+00:21:37,210 --> 00:21:39,730
+cash and so next time around when you go
+
+581
+00:21:39,730 --> 00:21:42,400
+through that loop and get to this type
+
+582
+00:21:42,400 --> 00:21:45,190
+check it succeeds and so if it succeeds
+
+583
+00:21:45,190 --> 00:21:47,050
+we have a fast way of getting them or
+
+584
+00:21:47,050 --> 00:21:48,550
+setting the value of that property we
+
+585
+00:21:48,550 --> 00:21:49,870
+just made those those three instructions
+
+586
+00:21:49,870 --> 00:21:52,600
+so that works really well if the shapes
+
+587
+00:21:52,600 --> 00:21:55,210
+match but in JavaScript you can throw
+
+588
+00:21:55,210 --> 00:21:56,590
+additional properties into objects
+
+589
+00:21:56,590 --> 00:21:59,860
+afterwards and in this case if b2 got a
+
+590
+00:21:59,860 --> 00:22:01,870
+property see now it has a different
+
+591
+00:22:01,870 --> 00:22:03,580
+shape so we have two different objects
+
+592
+00:22:03,580 --> 00:22:05,950
+with different shapes and so access has
+
+593
+00:22:05,950 --> 00:22:09,190
+become polymorphic and a 99 there are
+
+594
+00:22:09,190 --> 00:22:11,080
+some limitations to how fast you can be
+
+595
+00:22:11,080 --> 00:22:13,210
+with the polymorphic properties because
+
+596
+00:22:13,210 --> 00:22:15,520
+we only remember one type at a time so
+
+597
+00:22:15,520 --> 00:22:17,680
+here is the same example with with those
+
+598
+00:22:17,680 --> 00:22:19,840
+two modified objects and we started off
+
+599
+00:22:19,840 --> 00:22:23,080
+the same way we populate the cash but
+
+600
+00:22:23,080 --> 00:22:24,280
+then on a second iteration of the loop
+
+601
+00:22:24,280 --> 00:22:26,440
+when it comes to this check we remember
+
+602
+00:22:26,440 --> 00:22:30,310
+XY what we have now is XYZ so we the
+
+603
+00:22:30,310 --> 00:22:32,990
+types don't match and we have to go down
+
+604
+00:22:32,990 --> 00:22:35,240
+that so basically in the worst possible
+
+605
+00:22:35,240 --> 00:22:37,010
+case if you were just flip-flopping
+
+606
+00:22:37,010 --> 00:22:39,440
+between two different types we would
+
+607
+00:22:39,440 --> 00:22:40,970
+always go down the slow path and our
+
+608
+00:22:40,970 --> 00:22:42,320
+inline caches weren't particularly
+
+609
+00:22:42,320 --> 00:22:44,780
+helpful it turned out that uh for the
+
+610
+00:22:44,780 --> 00:22:46,730
+most part the accesses aren't exactly
+
+611
+00:22:46,730 --> 00:22:48,890
+alternating like that so most of the
+
+612
+00:22:48,890 --> 00:22:50,540
+time you're still hitting the cash but
+
+613
+00:22:50,540 --> 00:22:52,280
+there's a some performance overhead of
+
+614
+00:22:52,280 --> 00:22:55,340
+polymorphic properties so night n we
+
+615
+00:22:55,340 --> 00:22:57,710
+actually added two polymorphic caches
+
+616
+00:22:57,710 --> 00:23:00,140
+that can keep track of virtually
+
+617
+00:23:00,140 --> 00:23:01,610
+unlimited number of types so our
+
+618
+00:23:01,610 --> 00:23:03,110
+polymorphic property access is much
+
+619
+00:23:03,110 --> 00:23:06,640
+better and then we took advantage of the
+
+620
+00:23:06,640 --> 00:23:09,590
+optimistic code generation to get better
+
+621
+00:23:09,590 --> 00:23:12,559
+property access using object type
+
+622
+00:23:12,559 --> 00:23:14,150
+specialization I will explain that and
+
+623
+00:23:14,150 --> 00:23:15,950
+then we generally streamlight our object
+
+624
+00:23:15,950 --> 00:23:17,240
+layout to make them thinner and
+
+625
+00:23:17,240 --> 00:23:19,340
+requiring fewer allocations and then
+
+626
+00:23:19,340 --> 00:23:20,929
+some of the compiler optimizations added
+
+627
+00:23:20,929 --> 00:23:23,780
+also apply to those and so here's an
+
+628
+00:23:23,780 --> 00:23:25,790
+example on the left hand side it would
+
+629
+00:23:25,790 --> 00:23:27,650
+be the code that we would generate a 99
+
+630
+00:23:27,650 --> 00:23:29,480
+to add the values of those three
+
+631
+00:23:29,480 --> 00:23:32,210
+properties and on the right hand side is
+
+632
+00:23:32,210 --> 00:23:34,400
+what we do at i-10 so 99 you see that we
+
+633
+00:23:34,400 --> 00:23:36,020
+execute the same sequence of operations
+
+634
+00:23:36,020 --> 00:23:37,970
+for every one of those those property
+
+635
+00:23:37,970 --> 00:23:40,370
+loads we checked the type of 0 every
+
+636
+00:23:40,370 --> 00:23:41,660
+single time even though it's the same
+
+637
+00:23:41,660 --> 00:23:44,420
+object oh so it seems redundant it turns
+
+638
+00:23:44,420 --> 00:23:46,220
+out it wasn't trivial to eliminate but
+
+639
+00:23:46,220 --> 00:23:48,290
+9010 we did get smarter we just omit
+
+640
+00:23:48,290 --> 00:23:50,120
+this check once and then subsequent
+
+641
+00:23:50,120 --> 00:23:51,950
+property loads we just know exactly
+
+642
+00:23:51,950 --> 00:23:54,230
+where to find x y&z once we know the
+
+643
+00:23:54,230 --> 00:23:57,320
+shape of of 0 and you notice those
+
+644
+00:23:57,320 --> 00:23:58,970
+bailout instructions there on the light
+
+645
+00:23:58,970 --> 00:24:01,400
+on the right those basically mean that
+
+646
+00:24:01,400 --> 00:24:02,990
+if we're the objects shape does not
+
+647
+00:24:02,990 --> 00:24:04,250
+match we have to jump out to the
+
+648
+00:24:04,250 --> 00:24:06,020
+interpreter and we have to deal with it
+
+649
+00:24:06,020 --> 00:24:08,059
+there and we will recompile the the
+
+650
+00:24:08,059 --> 00:24:11,660
+function later so this is great that
+
+651
+00:24:11,660 --> 00:24:13,790
+actually is more efficient where you get
+
+652
+00:24:13,790 --> 00:24:15,380
+the biggest bang for the buck is when
+
+653
+00:24:15,380 --> 00:24:17,630
+that type of instruction is executed in
+
+654
+00:24:17,630 --> 00:24:20,179
+the loop with the loop invariant code
+
+655
+00:24:20,179 --> 00:24:22,790
+motion we can detect that the object o
+
+656
+00:24:22,790 --> 00:24:24,860
+is now changing and we can hoist all
+
+657
+00:24:24,860 --> 00:24:26,390
+these expensive checks outside of the
+
+658
+00:24:26,390 --> 00:24:28,670
+loop we run them once and then in the
+
+659
+00:24:28,670 --> 00:24:32,960
+loop the execute multiple times we avoid
+
+660
+00:24:32,960 --> 00:24:35,300
+the overhead in this trivial example it
+
+661
+00:24:35,300 --> 00:24:38,450
+turns out that x y&z also don't change
+
+662
+00:24:38,450 --> 00:24:41,390
+so we hoist the loads of those and since
+
+663
+00:24:41,390 --> 00:24:43,820
+they don't change the plus operations
+
+664
+00:24:43,820 --> 00:24:45,830
+are also redundant and they can be moved
+
+665
+00:24:45,830 --> 00:24:46,790
+out of the loop so
+
+666
+00:24:46,790 --> 00:24:48,170
+this trivial example the loop itself
+
+667
+00:24:48,170 --> 00:24:52,670
+becomes quite trivial but then if you
+
+668
+00:24:52,670 --> 00:24:54,530
+were to insert a function call into that
+
+669
+00:24:54,530 --> 00:24:56,960
+loop we would have a problem because it
+
+670
+00:24:56,960 --> 00:24:59,090
+turns out in JavaScript function calls
+
+671
+00:24:59,090 --> 00:25:01,790
+can change half of the world so the
+
+672
+00:25:01,790 --> 00:25:03,830
+function calculate for all we know could
+
+673
+00:25:03,830 --> 00:25:05,630
+be changing the shape of o may be
+
+674
+00:25:05,630 --> 00:25:08,210
+removed property X or something and so
+
+675
+00:25:08,210 --> 00:25:10,250
+now we have to execute all these checks
+
+676
+00:25:10,250 --> 00:25:11,960
+and all these loads on every iteration
+
+677
+00:25:11,960 --> 00:25:14,540
+of the loop so function calls tend to
+
+678
+00:25:14,540 --> 00:25:16,910
+kill most of the optimizations than any
+
+679
+00:25:16,910 --> 00:25:19,160
+of the engines can do and that's why
+
+680
+00:25:19,160 --> 00:25:20,510
+function inlining is such a critical
+
+681
+00:25:20,510 --> 00:25:23,770
+piece of of every video of every
+
+682
+00:25:23,770 --> 00:25:26,990
+JavaScript engine today so if you can
+
+683
+00:25:26,990 --> 00:25:30,200
+inline calculate we can see inside that
+
+684
+00:25:30,200 --> 00:25:31,850
+we can prove that Oh still doesn't
+
+685
+00:25:31,850 --> 00:25:34,040
+change and XYZ still doesn't change so
+
+686
+00:25:34,040 --> 00:25:35,390
+all these things can be still hoisted
+
+687
+00:25:35,390 --> 00:25:37,670
+outside of the loop so not only do we
+
+688
+00:25:37,670 --> 00:25:39,260
+eliminate the overhead of the function
+
+689
+00:25:39,260 --> 00:25:41,060
+call but we get to retain some of the
+
+690
+00:25:41,060 --> 00:25:42,850
+other optimizations that we did before
+
+691
+00:25:42,850 --> 00:25:46,220
+so in lining in ie10 is also a great
+
+692
+00:25:46,220 --> 00:25:49,370
+benefit and so yeah so better math
+
+693
+00:25:49,370 --> 00:25:51,590
+better property access a function
+
+694
+00:25:51,590 --> 00:25:52,910
+aligning those are the critical pieces
+
+695
+00:25:52,910 --> 00:25:55,370
+that we added in i-10 and it kind of
+
+696
+00:25:55,370 --> 00:25:57,670
+covers the basics of the JIT compiler
+
+697
+00:25:57,670 --> 00:26:00,890
+and I am I about five minutes left I
+
+698
+00:26:00,890 --> 00:26:02,210
+only want to mention a couple of
+
+699
+00:26:02,210 --> 00:26:03,590
+additional things I alluded to this
+
+700
+00:26:03,590 --> 00:26:06,650
+already you may or may not know that in
+
+701
+00:26:06,650 --> 00:26:08,510
+Windows 8 we actually took a big bet on
+
+702
+00:26:08,510 --> 00:26:11,330
+JavaScript and HTML so we can build
+
+703
+00:26:11,330 --> 00:26:14,120
+native applications in Windows 8 using
+
+704
+00:26:14,120 --> 00:26:16,520
+web technologies they're not running any
+
+705
+00:26:16,520 --> 00:26:17,720
+kind of a web control or anything like
+
+706
+00:26:17,720 --> 00:26:19,400
+that they're actually native apps that
+
+707
+00:26:19,400 --> 00:26:22,040
+have access to all the native API and in
+
+708
+00:26:22,040 --> 00:26:24,020
+fact several of the apps that we ship in
+
+709
+00:26:24,020 --> 00:26:25,940
+box with windows 8 are written in
+
+710
+00:26:25,940 --> 00:26:28,220
+JavaScript and HTML so if you ever
+
+711
+00:26:28,220 --> 00:26:30,350
+wanted to stretch your muscle flexing
+
+712
+00:26:30,350 --> 00:26:31,940
+JavaScript muscles on a different
+
+713
+00:26:31,940 --> 00:26:34,580
+platform use definitely encouraged to
+
+714
+00:26:34,580 --> 00:26:37,040
+try to grab the windows 8 and then try
+
+715
+00:26:37,040 --> 00:26:38,600
+to play with it we think it's an
+
+716
+00:26:38,600 --> 00:26:39,770
+interesting opportunity and it's
+
+717
+00:26:39,770 --> 00:26:41,930
+definitely we believe that it's where
+
+718
+00:26:41,930 --> 00:26:45,230
+the future is and we want to support the
+
+719
+00:26:45,230 --> 00:26:47,600
+platform the web platform as a way of
+
+720
+00:26:47,600 --> 00:26:50,990
+developing apps for Windows 8 and then
+
+721
+00:26:50,990 --> 00:26:54,200
+my last cheesy slide for the day are we
+
+722
+00:26:54,200 --> 00:26:55,670
+done of course we're not there's a bunch
+
+723
+00:26:55,670 --> 00:26:56,950
+of other things that we'd like to do
+
+724
+00:26:56,950 --> 00:26:58,940
+there are some things that are not as
+
+725
+00:26:58,940 --> 00:27:00,620
+efficient as they as they should
+
+726
+00:27:00,620 --> 00:27:02,570
+but there is also a bunch of trends that
+
+727
+00:27:02,570 --> 00:27:03,890
+we kind of follow that you want to make
+
+728
+00:27:03,890 --> 00:27:07,490
+sure chakra is a great engine for so of
+
+729
+00:27:07,490 --> 00:27:10,160
+course as es5 gets more adoption there
+
+730
+00:27:10,160 --> 00:27:11,750
+are certain things we like to optimize
+
+731
+00:27:11,750 --> 00:27:14,660
+as Ahmed script 6 is evolving we also
+
+732
+00:27:14,660 --> 00:27:16,730
+want to be sure that we first comply
+
+733
+00:27:16,730 --> 00:27:17,870
+with the spec second that the
+
+734
+00:27:17,870 --> 00:27:21,860
+implementation is fast html5 games
+
+735
+00:27:21,860 --> 00:27:23,540
+certainly an important target for us
+
+736
+00:27:23,540 --> 00:27:25,610
+Windows 8 apps of course you want to
+
+737
+00:27:25,610 --> 00:27:26,990
+make sure that they run very fast and
+
+738
+00:27:26,990 --> 00:27:29,270
+then other things your web workers are
+
+739
+00:27:29,270 --> 00:27:31,309
+an interesting trend for instance maybe
+
+740
+00:27:31,309 --> 00:27:33,740
+more concurrent compilation they more
+
+741
+00:27:33,740 --> 00:27:35,059
+concurrent garbage collection as in
+
+742
+00:27:35,059 --> 00:27:38,630
+order to handle concurrency in advanced
+
+743
+00:27:38,630 --> 00:27:40,850
+apps and so on and so forth the bottom
+
+744
+00:27:40,850 --> 00:27:43,160
+line is we want to be sure that chakra
+
+745
+00:27:43,160 --> 00:27:45,140
+is a great platform for building the
+
+746
+00:27:45,140 --> 00:27:46,460
+kind of apps that you want to build
+
+747
+00:27:46,460 --> 00:27:48,980
+today and tomorrow and with that I think
+
+748
+00:27:48,980 --> 00:27:51,559
+we have about three minutes left so I'm
+
+749
+00:27:51,559 --> 00:27:53,600
+happy to take questions you can also
+
+750
+00:27:53,600 --> 00:28:05,660
+grab me with by email or Twitter thanks
+
+751
+00:28:05,660 --> 00:28:07,929
+but I was I had a quick question you
+
+752
+00:28:07,929 --> 00:28:10,970
+said that you just in time compile in 64
+
+753
+00:28:10,970 --> 00:28:12,290
+bit but I was under the impression that
+
+754
+00:28:12,290 --> 00:28:14,330
+data execution protection was mandatory
+
+755
+00:28:14,330 --> 00:28:17,360
+for 64-bit applications so which would
+
+756
+00:28:17,360 --> 00:28:21,290
+make the memory not not executable how
+
+757
+00:28:21,290 --> 00:28:22,970
+do you get around that no there's there
+
+758
+00:28:22,970 --> 00:28:25,160
+is an API that a process can call to
+
+759
+00:28:25,160 --> 00:28:27,370
+make a piece of executable or data
+
+760
+00:28:27,370 --> 00:28:30,800
+executable and we call that API but what
+
+761
+00:28:30,800 --> 00:28:32,540
+we what we make sure is that the window
+
+762
+00:28:32,540 --> 00:28:36,020
+of of time that you have to potentially
+
+763
+00:28:36,020 --> 00:28:38,120
+override the code that we omit it before
+
+764
+00:28:38,120 --> 00:28:40,700
+it's locked up is minimal it's just
+
+765
+00:28:40,700 --> 00:28:42,440
+really the time between we copy the
+
+766
+00:28:42,440 --> 00:28:45,260
+buffer into the right page and we lock
+
+767
+00:28:45,260 --> 00:28:53,080
+it
+
+768
+00:28:53,090 --> 00:28:56,210
+so so my main question is can you
+
+769
+00:28:56,210 --> 00:28:58,010
+actually see the generated code on a
+
+770
+00:28:58,010 --> 00:29:00,860
+normal chakra not on some custom build
+
+771
+00:29:00,860 --> 00:29:04,130
+no you can't set an internal tool that
+
+772
+00:29:04,130 --> 00:29:05,900
+that basically host chakra in a
+
+773
+00:29:05,900 --> 00:29:08,780
+statically well if you were able to
+
+774
+00:29:08,780 --> 00:29:11,330
+build a checked build of chakra than yes
+
+775
+00:29:11,330 --> 00:29:13,340
+all the switches for dumping the output
+
+776
+00:29:13,340 --> 00:29:15,470
+are there but that's not what we should
+
+777
+00:29:15,470 --> 00:29:22,160
+I have a question about the the inline
+
+778
+00:29:22,160 --> 00:29:24,230
+caches yeah so since you can't actually
+
+779
+00:29:24,230 --> 00:29:28,190
+right into the memory once it's been the
+
+780
+00:29:28,190 --> 00:29:30,080
+code has already been generated where do
+
+781
+00:29:30,080 --> 00:29:31,670
+you actually keep yes that's an
+
+782
+00:29:31,670 --> 00:29:32,840
+excellent question i forgot to mention
+
+783
+00:29:32,840 --> 00:29:35,600
+that specifically so inline caches are
+
+784
+00:29:35,600 --> 00:29:36,800
+implemented differently on different
+
+785
+00:29:36,800 --> 00:29:38,930
+engines in some cases an inline cash is
+
+786
+00:29:38,930 --> 00:29:41,270
+actually a snippet of code with directly
+
+787
+00:29:41,270 --> 00:29:43,790
+hard-coded values in our case that
+
+788
+00:29:43,790 --> 00:29:45,710
+cannot be because we need to be able to
+
+789
+00:29:45,710 --> 00:29:47,630
+update the cache so for us a cache is
+
+790
+00:29:47,630 --> 00:29:50,210
+just a piece of data that that our code
+
+791
+00:29:50,210 --> 00:29:52,370
+references so we have our we hard code
+
+792
+00:29:52,370 --> 00:29:54,740
+the location of the inline cash in the
+
+793
+00:29:54,740 --> 00:29:57,410
+assembly that we omit but then the cash
+
+794
+00:29:57,410 --> 00:29:59,180
+itself is just data and is not protected
+
+795
+00:29:59,180 --> 00:30:03,520
+so we can override it that make sense
+
+796
+00:30:03,520 --> 00:30:06,680
+all right um so you mentioned bytecode
+
+797
+00:30:06,680 --> 00:30:08,660
+caching for Windows 8 apps so you
+
+798
+00:30:08,660 --> 00:30:10,460
+compile the bytecode and you put that in
+
+799
+00:30:10,460 --> 00:30:12,170
+the store and we down with that does
+
+800
+00:30:12,170 --> 00:30:15,290
+that work for or am I am I correct and
+
+801
+00:30:15,290 --> 00:30:17,150
+how that works and why don't you do that
+
+802
+00:30:17,150 --> 00:30:20,570
+for caching JavaScript and i-10 right so
+
+803
+00:30:20,570 --> 00:30:21,980
+it's actually slightly different than
+
+804
+00:30:21,980 --> 00:30:24,290
+that we regenerate bytecode on the
+
+805
+00:30:24,290 --> 00:30:26,410
+target machine when you install the app
+
+806
+00:30:26,410 --> 00:30:29,330
+we schedule the byte code generation
+
+807
+00:30:29,330 --> 00:30:30,890
+sort of in the background and whenever
+
+808
+00:30:30,890 --> 00:30:33,110
+that is available we will start using
+
+809
+00:30:33,110 --> 00:30:35,060
+the bytecode until then we can we can
+
+810
+00:30:35,060 --> 00:30:36,380
+still run from source code there's no
+
+811
+00:30:36,380 --> 00:30:38,810
+limitation there so the bike go is not
+
+812
+00:30:38,810 --> 00:30:40,190
+in the store strictly speaking it sits
+
+813
+00:30:40,190 --> 00:30:42,110
+on the machine we did contemplate
+
+814
+00:30:42,110 --> 00:30:44,060
+putting it in the browser and it's so
+
+815
+00:30:44,060 --> 00:30:45,350
+very much a question that we're
+
+816
+00:30:45,350 --> 00:30:47,840
+considering it's a little harder in a
+
+817
+00:30:47,840 --> 00:30:49,880
+sense that you don't have a moment when
+
+818
+00:30:49,880 --> 00:30:51,470
+the app is installed in the box and
+
+819
+00:30:51,470 --> 00:30:53,330
+certainly JavaScript can be you know the
+
+820
+00:30:53,330 --> 00:30:55,250
+JavaScript that you load can be changing
+
+821
+00:30:55,250 --> 00:30:57,260
+more frequently than then the app that
+
+822
+00:30:57,260 --> 00:30:58,610
+is installed in the box but there's
+
+823
+00:30:58,610 --> 00:31:01,010
+nothing technically you're making it
+
+824
+00:31:01,010 --> 00:31:02,060
+impossible and we certainly are
+
+825
+00:31:02,060 --> 00:31:05,090
+contemplating that as well if
+
+826
+00:31:05,090 --> 00:31:08,570
+will windows phone 8 be running chakra
+
+827
+00:31:08,570 --> 00:31:11,510
+true well windows phone 8 windows why I
+
+828
+00:31:11,510 --> 00:31:15,140
+guess we'll get I 10 yes okay that
+
+829
+00:31:15,140 --> 00:31:17,480
+didn't answer the question uh what what
+
+830
+00:31:17,480 --> 00:31:19,280
+do you mean by chakra to you mean they
+
+831
+00:31:19,280 --> 00:31:21,920
+would run the same JavaScript and yeah
+
+832
+00:31:21,920 --> 00:31:28,280
+okay sorry any the question all right
+
+833
+00:31:28,280 --> 00:31:29,720
+let's see that's it thank you very much
+

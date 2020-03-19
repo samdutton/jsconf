@@ -1,0 +1,2729 @@
+1
+00:00:05,630 --> 00:00:09,360
+
+so now that we're all friends and see me
+
+2
+00:00:09,360 --> 00:00:11,910
+little round of my machine I'm just
+
+3
+00:00:11,910 --> 00:00:14,099
+going to cut right to the chase and kind
+
+4
+00:00:14,099 --> 00:00:15,690
+of be a bit straight up I think building
+
+5
+00:00:15,690 --> 00:00:17,760
+and front-end JavaScript applications is
+
+6
+00:00:17,760 --> 00:00:20,220
+pretty damn hard and I think there are a
+
+7
+00:00:20,220 --> 00:00:21,570
+bunch of factors that contribute to this
+
+8
+00:00:21,570 --> 00:00:23,550
+and one of those factors is that they're
+
+9
+00:00:23,550 --> 00:00:25,260
+just giant balls or state which is what
+
+10
+00:00:25,260 --> 00:00:27,840
+Pete was talking about so I thought
+
+11
+00:00:27,840 --> 00:00:29,190
+would be kind of interesting to take a
+
+12
+00:00:29,190 --> 00:00:31,080
+bit of a step back and and maybe play
+
+13
+00:00:31,080 --> 00:00:33,629
+the devil's advocate and take a critical
+
+14
+00:00:33,629 --> 00:00:34,890
+look at some of the patterns that we see
+
+15
+00:00:34,890 --> 00:00:37,860
+being applied on front-end JavaScript
+
+16
+00:00:37,860 --> 00:00:40,020
+code bases and see if they give us ways
+
+17
+00:00:40,020 --> 00:00:42,270
+of handling state and events in a
+
+18
+00:00:42,270 --> 00:00:45,829
+scalable and maintainable fashion and
+
+19
+00:00:45,829 --> 00:00:47,790
+then maybe we'll take a look at some of
+
+20
+00:00:47,790 --> 00:00:49,710
+the tactics that we can use to help us
+
+21
+00:00:49,710 --> 00:00:52,170
+better embrace state and events without
+
+22
+00:00:52,170 --> 00:00:54,770
+sacrificing clarity in our architecture
+
+23
+00:00:54,770 --> 00:00:57,210
+so I'll just introduce myself that's not
+
+24
+00:00:57,210 --> 00:00:59,730
+me I'm Amy I've come from New Zealand if
+
+25
+00:00:59,730 --> 00:01:00,930
+you're ever in Wellington and you want
+
+26
+00:01:00,930 --> 00:01:02,130
+to hang out just give me a shout on
+
+27
+00:01:02,130 --> 00:01:04,229
+twitter i'm a meep and it's jared see
+
+28
+00:01:04,229 --> 00:01:06,390
+that i work at github I'm if you want
+
+29
+00:01:06,390 --> 00:01:08,310
+some stickers my buddy Marcus's down
+
+30
+00:01:08,310 --> 00:01:10,040
+front he's got a whole pile of them
+
+31
+00:01:10,040 --> 00:01:13,820
+direct all of your attention that way um
+
+32
+00:01:13,820 --> 00:01:16,740
+I've also got a tiny confession I don't
+
+33
+00:01:16,740 --> 00:01:19,500
+write any JavaScript yet github I build
+
+34
+00:01:19,500 --> 00:01:21,540
+the github windows clients I'm a windows
+
+35
+00:01:21,540 --> 00:01:24,180
+developer I'm actually pretty new to
+
+36
+00:01:24,180 --> 00:01:26,490
+github and before that I was writing a
+
+37
+00:01:26,490 --> 00:01:28,680
+whole ton of JavaScript building epson
+
+38
+00:01:28,680 --> 00:01:31,680
+and backbone so in terms of architecture
+
+39
+00:01:31,680 --> 00:01:34,320
+front end-front end apps to have
+
+40
+00:01:34,320 --> 00:01:35,520
+actually quite a bit in common with
+
+41
+00:01:35,520 --> 00:01:36,869
+desktop applications and the thing that
+
+42
+00:01:36,869 --> 00:01:38,610
+ties them together is that they have
+
+43
+00:01:38,610 --> 00:01:41,040
+heaps and heaps of state so front-end
+
+44
+00:01:41,040 --> 00:01:42,869
+javascript ads contain lots of different
+
+45
+00:01:42,869 --> 00:01:44,070
+kinds of state they've got the state of
+
+46
+00:01:44,070 --> 00:01:46,619
+the court entities are models they've
+
+47
+00:01:46,619 --> 00:01:48,330
+got that state that needs to be kept in
+
+48
+00:01:48,330 --> 00:01:50,159
+sync with the server we've got the state
+
+49
+00:01:50,159 --> 00:01:51,930
+of the address bar we've got the state
+
+50
+00:01:51,930 --> 00:01:53,189
+of all the different views that are
+
+51
+00:01:53,189 --> 00:01:54,630
+presenting various bits of information
+
+52
+00:01:54,630 --> 00:01:56,280
+on the screen at any given point in time
+
+53
+00:01:56,280 --> 00:01:58,439
+and then we've got the overall state of
+
+54
+00:01:58,439 --> 00:02:00,420
+our application memory management all of
+
+55
+00:02:00,420 --> 00:02:03,180
+those kinds of things so on its own
+
+56
+00:02:03,180 --> 00:02:05,400
+state isn't very interesting what makes
+
+57
+00:02:05,400 --> 00:02:07,020
+an application interesting is the
+
+58
+00:02:07,020 --> 00:02:09,060
+interaction with that stage so we're
+
+59
+00:02:09,060 --> 00:02:10,590
+able to interact with the state and
+
+60
+00:02:10,590 --> 00:02:13,650
+force new transitions new states on the
+
+61
+00:02:13,650 --> 00:02:14,630
+system in some
+
+62
+00:02:14,630 --> 00:02:15,470
+we have something that's way more
+
+63
+00:02:15,470 --> 00:02:18,230
+compelling so traditionally state
+
+64
+00:02:18,230 --> 00:02:19,760
+transitions are going to occur by our
+
+65
+00:02:19,760 --> 00:02:21,920
+events so for example you've got some
+
+66
+00:02:21,920 --> 00:02:23,930
+data on the screen at xbox somebody into
+
+67
+00:02:23,930 --> 00:02:25,610
+some information they click Save the
+
+68
+00:02:25,610 --> 00:02:27,650
+model gets updated and we transition
+
+69
+00:02:27,650 --> 00:02:29,450
+into a new state it might be an invalid
+
+70
+00:02:29,450 --> 00:02:32,240
+state so the thing about these
+
+71
+00:02:32,240 --> 00:02:34,760
+heavy-duty thick client JavaScript apps
+
+72
+00:02:34,760 --> 00:02:36,530
+is that basically this brought these
+
+73
+00:02:36,530 --> 00:02:37,940
+blobs of code that kind of just sit
+
+74
+00:02:37,940 --> 00:02:39,380
+there and wait for interesting things to
+
+75
+00:02:39,380 --> 00:02:41,750
+happen and we have a bunch of ways that
+
+76
+00:02:41,750 --> 00:02:43,250
+we can make interesting things happens
+
+77
+00:02:43,250 --> 00:02:44,930
+we've got Dom events which I like click
+
+78
+00:02:44,930 --> 00:02:47,150
+drag k out there's a whole pile of them
+
+79
+00:02:47,150 --> 00:02:49,070
+and we've got model events so that might
+
+80
+00:02:49,070 --> 00:02:50,990
+be when we transition into that invalid
+
+81
+00:02:50,990 --> 00:02:52,730
+state our model might raise a signal to
+
+82
+00:02:52,730 --> 00:02:54,410
+say hey I'm actually in a valid state
+
+83
+00:02:54,410 --> 00:02:55,730
+and people who are interested in that
+
+84
+00:02:55,730 --> 00:02:58,820
+and we subscribe to those events we've
+
+85
+00:02:58,820 --> 00:03:01,070
+also got router events so these are kept
+
+86
+00:03:01,070 --> 00:03:03,140
+off when the address bar changes and we
+
+87
+00:03:03,140 --> 00:03:04,880
+need to do interesting things to the
+
+88
+00:03:04,880 --> 00:03:08,060
+overall view state of our application so
+
+89
+00:03:08,060 --> 00:03:09,530
+we've got lots of steak and we've got
+
+90
+00:03:09,530 --> 00:03:11,630
+lots of means and they all need to be
+
+91
+00:03:11,630 --> 00:03:14,540
+managed and if we don't manage them in a
+
+92
+00:03:14,540 --> 00:03:16,490
+way that kind of accurately separates
+
+93
+00:03:16,490 --> 00:03:18,590
+all of the concerns out and state and
+
+94
+00:03:18,590 --> 00:03:20,300
+events they're going to get really tough
+
+95
+00:03:20,300 --> 00:03:23,120
+to manage so I've got a really contrived
+
+96
+00:03:23,120 --> 00:03:26,090
+example here of estate and events being
+
+97
+00:03:26,090 --> 00:03:29,960
+managed in a pretty sub optimal way so
+
+98
+00:03:29,960 --> 00:03:32,030
+we've got a view it's a part of you
+
+99
+00:03:32,030 --> 00:03:33,710
+there's a there's a there's just one
+
+100
+00:03:33,710 --> 00:03:36,550
+lone party animal at the party party dog
+
+101
+00:03:36,550 --> 00:03:38,360
+and we're going to have an invitation
+
+102
+00:03:38,360 --> 00:03:41,840
+list as well so here we can input a new
+
+103
+00:03:41,840 --> 00:03:43,580
+enemy Warner right to the invite to the
+
+104
+00:03:43,580 --> 00:03:45,230
+party and we've got a button with an
+
+105
+00:03:45,230 --> 00:03:48,890
+onclick handler shout out awesome so
+
+106
+00:03:48,890 --> 00:03:51,680
+don't please don't do this and so when
+
+107
+00:03:51,680 --> 00:03:52,910
+somebody clicks that button to invite
+
+108
+00:03:52,910 --> 00:03:54,740
+the animal we're going to use jQuery to
+
+109
+00:03:54,740 --> 00:03:56,150
+reach into the dome to grab the state of
+
+110
+00:03:56,150 --> 00:03:57,560
+the textbox we're going to pull that bit
+
+111
+00:03:57,560 --> 00:03:58,880
+of information out we're going to invite
+
+112
+00:03:58,880 --> 00:04:00,290
+it and more to the party we're going to
+
+113
+00:04:00,290 --> 00:04:02,000
+build up a new view we're going to reach
+
+114
+00:04:02,000 --> 00:04:03,650
+back into the Brahman and put that in
+
+115
+00:04:03,650 --> 00:04:05,660
+there we're doing a whole pile of like
+
+116
+00:04:05,660 --> 00:04:08,900
+just it's spaghetti code basically so if
+
+117
+00:04:08,900 --> 00:04:10,370
+you're going to extrapolate that kind of
+
+118
+00:04:10,370 --> 00:04:13,610
+code to its natural conclusion it's it's
+
+119
+00:04:13,610 --> 00:04:15,110
+easy to see that we've got a state and
+
+120
+00:04:15,110 --> 00:04:16,760
+state changes state and state
+
+121
+00:04:16,760 --> 00:04:19,130
+transitions being intertwined and we're
+
+122
+00:04:19,130 --> 00:04:20,480
+very quickly going to end up with an
+
+123
+00:04:20,480 --> 00:04:23,810
+unmaintained codebase so the more state
+
+124
+00:04:23,810 --> 00:04:26,060
+you have the harder it is to manipulate
+
+125
+00:04:26,060 --> 00:04:27,210
+state and then
+
+126
+00:04:27,210 --> 00:04:28,560
+the trickier it all becomes to manage
+
+127
+00:04:28,560 --> 00:04:31,319
+and so this is where people are going
+
+128
+00:04:31,319 --> 00:04:32,729
+hey we've got design patterns and that's
+
+129
+00:04:32,729 --> 00:04:34,470
+awesome we totally do they've come to
+
+130
+00:04:34,470 --> 00:04:38,699
+save our souls so the thing that I think
+
+131
+00:04:38,699 --> 00:04:39,960
+find really interesting about design
+
+132
+00:04:39,960 --> 00:04:41,699
+patterns is I contrast what's going on
+
+133
+00:04:41,699 --> 00:04:42,870
+in like the physical world of
+
+134
+00:04:42,870 --> 00:04:44,490
+engineering to what's going on in the
+
+135
+00:04:44,490 --> 00:04:46,639
+software and world of engineering like
+
+136
+00:04:46,639 --> 00:04:48,360
+physical engineers are going to build
+
+137
+00:04:48,360 --> 00:04:49,620
+buildings like this and they have a
+
+138
+00:04:49,620 --> 00:04:51,300
+specific way that they need to construct
+
+139
+00:04:51,300 --> 00:04:52,530
+the building so that it doesn't kind of
+
+140
+00:04:52,530 --> 00:04:54,419
+collapse and kill everybody inside and
+
+141
+00:04:54,419 --> 00:04:55,620
+they're going to need to do that
+
+142
+00:04:55,620 --> 00:04:58,080
+regardless of the outcome of the
+
+143
+00:04:58,080 --> 00:04:59,550
+building whether it's going to be a meat
+
+144
+00:04:59,550 --> 00:05:03,180
+market or whatever but in software we we
+
+145
+00:05:03,180 --> 00:05:05,520
+kind of had these these loser ideas that
+
+146
+00:05:05,520 --> 00:05:07,259
+we can apply in very different contexts
+
+147
+00:05:07,259 --> 00:05:10,050
+so I mean I guess was me not bound by
+
+148
+00:05:10,050 --> 00:05:12,930
+the laws of physics to a point so it's
+
+149
+00:05:12,930 --> 00:05:14,099
+interesting because it means that we can
+
+150
+00:05:14,099 --> 00:05:15,720
+take patterns that have been applied and
+
+151
+00:05:15,720 --> 00:05:17,699
+very very different contexts and start
+
+152
+00:05:17,699 --> 00:05:20,159
+applying them to help us solve
+
+153
+00:05:20,159 --> 00:05:22,080
+interesting problems and new contexts
+
+154
+00:05:22,080 --> 00:05:24,750
+and it means those ideas kind of evolve
+
+155
+00:05:24,750 --> 00:05:26,130
+a little bit like memes on the internet
+
+156
+00:05:26,130 --> 00:05:28,020
+right like mean actually means anything
+
+157
+00:05:28,020 --> 00:05:30,060
+that's spread or inherited in an on
+
+158
+00:05:30,060 --> 00:05:31,699
+genetic fashion which basically means
+
+159
+00:05:31,699 --> 00:05:35,970
+memes or ideas so their ideas it stuck
+
+160
+00:05:35,970 --> 00:05:37,409
+because they're funny or because
+
+161
+00:05:37,409 --> 00:05:39,120
+everyone thinks that they contain an
+
+162
+00:05:39,120 --> 00:05:40,770
+interesting solution to a tricky problem
+
+163
+00:05:40,770 --> 00:05:44,610
+and I think that in v-star the MV star
+
+164
+00:05:44,610 --> 00:05:46,560
+family of patents is an example of this
+
+165
+00:05:46,560 --> 00:05:49,590
+so originally presentation patterns that
+
+166
+00:05:49,590 --> 00:05:51,539
+fall under this category they actually
+
+167
+00:05:51,539 --> 00:05:53,969
+originated from building desktop clients
+
+168
+00:05:53,969 --> 00:05:56,820
+and then over time web and web server
+
+169
+00:05:56,820 --> 00:05:58,409
+programming became really popular and
+
+170
+00:05:58,409 --> 00:06:00,210
+these presentation patterns were applied
+
+171
+00:06:00,210 --> 00:06:03,300
+in that context so we end up with web
+
+172
+00:06:03,300 --> 00:06:05,120
+server frameworks like rails which
+
+173
+00:06:05,120 --> 00:06:07,680
+implementations of MVC and then we've
+
+174
+00:06:07,680 --> 00:06:09,539
+got these kick-ass front-end JavaScript
+
+175
+00:06:09,539 --> 00:06:11,190
+frameworks which are also claiming to be
+
+176
+00:06:11,190 --> 00:06:14,039
+implementations of an MVC pattern and I
+
+177
+00:06:14,039 --> 00:06:15,509
+really don't want to turn this into a
+
+178
+00:06:15,509 --> 00:06:17,490
+conversation about like who's doing in
+
+179
+00:06:17,490 --> 00:06:19,139
+bc by the book because that's not
+
+180
+00:06:19,139 --> 00:06:21,120
+particularly interesting but what is
+
+181
+00:06:21,120 --> 00:06:23,400
+interesting is to take a look at how
+
+182
+00:06:23,400 --> 00:06:26,219
+each of those flavors are being applied
+
+183
+00:06:26,219 --> 00:06:28,139
+in the different contexts and how they
+
+184
+00:06:28,139 --> 00:06:30,210
+affect how we manage state and how we
+
+185
+00:06:30,210 --> 00:06:33,389
+manage state transitions so I'm going to
+
+186
+00:06:33,389 --> 00:06:37,440
+take a quick look at how we manage state
+
+187
+00:06:37,440 --> 00:06:38,880
+and the web server environment so
+
+188
+00:06:38,880 --> 00:06:39,870
+hopefully some of this is going
+
+189
+00:06:39,870 --> 00:06:42,210
+mostly a reminder so we've got models
+
+190
+00:06:42,210 --> 00:06:44,130
+they are the guts of our application
+
+191
+00:06:44,130 --> 00:06:45,840
+it's where all the interesting domain
+
+192
+00:06:45,840 --> 00:06:48,330
+logic is going to occur we've got views
+
+193
+00:06:48,330 --> 00:06:50,370
+and though the presentation of that of
+
+194
+00:06:50,370 --> 00:06:52,740
+those models and typically this is going
+
+195
+00:06:52,740 --> 00:06:54,990
+to be like a JSON document or an HTML
+
+196
+00:06:54,990 --> 00:06:56,880
+document so the interesting thing about
+
+197
+00:06:56,880 --> 00:06:58,680
+views in this context is that they are a
+
+198
+00:06:58,680 --> 00:07:02,640
+snapshot of the models current state and
+
+199
+00:07:02,640 --> 00:07:04,140
+then we have controllers which are
+
+200
+00:07:04,140 --> 00:07:05,760
+responsible for sending commands down to
+
+201
+00:07:05,760 --> 00:07:08,220
+the model maybe they will transition the
+
+202
+00:07:08,220 --> 00:07:10,020
+model into a new state mr. step back
+
+203
+00:07:10,020 --> 00:07:12,030
+maybe just query it and then they're
+
+204
+00:07:12,030 --> 00:07:13,650
+going to return a snapshot of that
+
+205
+00:07:13,650 --> 00:07:15,390
+current state a representation of that
+
+206
+00:07:15,390 --> 00:07:18,320
+current state and then we have routers
+
+207
+00:07:18,320 --> 00:07:20,640
+so they are responsible for doing some
+
+208
+00:07:20,640 --> 00:07:21,990
+pattern matching of an incoming web
+
+209
+00:07:21,990 --> 00:07:24,480
+request routing that off to a designated
+
+210
+00:07:24,480 --> 00:07:26,430
+designated controller and then to an
+
+211
+00:07:26,430 --> 00:07:28,710
+action which is the action selection is
+
+212
+00:07:28,710 --> 00:07:30,600
+normally done with a combination of the
+
+213
+00:07:30,600 --> 00:07:33,090
+URL that's come in and the HTTP verb
+
+214
+00:07:33,090 --> 00:07:35,910
+that's being used so how does this
+
+215
+00:07:35,910 --> 00:07:37,380
+relate to how state as miniature on the
+
+216
+00:07:37,380 --> 00:07:39,300
+web server environment or hopefully
+
+217
+00:07:39,300 --> 00:07:40,590
+you're going what are you talking about
+
+218
+00:07:40,590 --> 00:07:41,730
+we don't have state on the web server
+
+219
+00:07:41,730 --> 00:07:43,350
+environment we want to be stateless
+
+220
+00:07:43,350 --> 00:07:44,580
+because we want to be able to scalar
+
+221
+00:07:44,580 --> 00:07:48,480
+applications so how are we achieving the
+
+222
+00:07:48,480 --> 00:07:50,220
+stainless pneus while we persisting our
+
+223
+00:07:50,220 --> 00:07:53,270
+models to a data store of some kind and
+
+224
+00:07:53,270 --> 00:07:56,040
+so in this environment where state is
+
+225
+00:07:56,040 --> 00:07:58,020
+persisted to a data store and we're able
+
+226
+00:07:58,020 --> 00:08:00,900
+to address that state via HTTP like we
+
+227
+00:08:00,900 --> 00:08:03,300
+can say HTTP get me all the animals at
+
+228
+00:08:03,300 --> 00:08:05,610
+the party and then if we find out one of
+
+229
+00:08:05,610 --> 00:08:07,500
+the animals is causing a bit of a
+
+230
+00:08:07,500 --> 00:08:09,050
+commotion and we want to kick them out
+
+231
+00:08:09,050 --> 00:08:12,810
+we can just execute an HTTP HTTP delete
+
+232
+00:08:12,810 --> 00:08:15,150
+against that same resource so what we've
+
+233
+00:08:15,150 --> 00:08:16,740
+essentially done here is we've simulated
+
+234
+00:08:16,740 --> 00:08:19,260
+a state transition across the HTTP
+
+235
+00:08:19,260 --> 00:08:20,940
+boundary across the client-server
+
+236
+00:08:20,940 --> 00:08:23,520
+boundary and what that means is all
+
+237
+00:08:23,520 --> 00:08:25,620
+states and all state transitions are
+
+238
+00:08:25,620 --> 00:08:30,210
+necessarily addressable via HTTP so
+
+239
+00:08:30,210 --> 00:08:31,710
+quick example we've got a couple of
+
+240
+00:08:31,710 --> 00:08:33,450
+routes here that we're defining against
+
+241
+00:08:33,450 --> 00:08:35,670
+the same party resource get post and
+
+242
+00:08:35,670 --> 00:08:38,400
+delete the get example is going to take
+
+243
+00:08:38,400 --> 00:08:40,500
+the incoming perimeter it's going to go
+
+244
+00:08:40,500 --> 00:08:41,670
+to the data store and find the
+
+245
+00:08:41,670 --> 00:08:43,260
+particular animal and return a snapshot
+
+246
+00:08:43,260 --> 00:08:45,810
+of that current state we're going to add
+
+247
+00:08:45,810 --> 00:08:47,460
+an animal to the party we're going to
+
+248
+00:08:47,460 --> 00:08:49,170
+grab that and come with parameter again
+
+249
+00:08:49,170 --> 00:08:51,390
+we're going to modify the state persist
+
+250
+00:08:51,390 --> 00:08:53,209
+it down to the data store and then rich
+
+251
+00:08:53,209 --> 00:08:55,160
+a new snapshot of the pub the parties
+
+252
+00:08:55,160 --> 00:08:59,119
+are state with an extra attendee and the
+
+253
+00:08:59,119 --> 00:09:00,529
+same goes for the delete when we want to
+
+254
+00:09:00,529 --> 00:09:01,699
+kick somebody out we're going to modify
+
+255
+00:09:01,699 --> 00:09:03,319
+the state of the party persist that back
+
+256
+00:09:03,319 --> 00:09:04,879
+to the data store and then return a new
+
+257
+00:09:04,879 --> 00:09:08,540
+snapshot so routers are matching a web
+
+258
+00:09:08,540 --> 00:09:10,490
+request pattern it's handing it off to a
+
+259
+00:09:10,490 --> 00:09:12,499
+controller and invoking an action who's
+
+260
+00:09:12,499 --> 00:09:13,699
+going to do a model look out in an
+
+261
+00:09:13,699 --> 00:09:16,249
+update and return a snapshot of the new
+
+262
+00:09:16,249 --> 00:09:20,779
+view so because of that client-server
+
+263
+00:09:20,779 --> 00:09:23,449
+boundary all of the states and all of
+
+264
+00:09:23,449 --> 00:09:25,129
+our interesting events are addressable
+
+265
+00:09:25,129 --> 00:09:28,399
+via HTTP and the way that we use rounds
+
+266
+00:09:28,399 --> 00:09:30,379
+means that our architecture is very
+
+267
+00:09:30,379 --> 00:09:33,499
+linear so requests come in something may
+
+268
+00:09:33,499 --> 00:09:34,939
+or may not happen to change the model
+
+269
+00:09:34,939 --> 00:09:37,459
+state and a snapshot has returned so
+
+270
+00:09:37,459 --> 00:09:38,929
+we've gone down the stack and up the
+
+271
+00:09:38,929 --> 00:09:44,629
+stack again so the key difference for
+
+272
+00:09:44,629 --> 00:09:46,519
+the way that we implement MVC on the
+
+273
+00:09:46,519 --> 00:09:47,809
+server and the way that we're going to
+
+274
+00:09:47,809 --> 00:09:50,209
+implement NBC on the client is that the
+
+275
+00:09:50,209 --> 00:09:52,490
+implementation on the client has a lot
+
+276
+00:09:52,490 --> 00:09:55,910
+of state we don't need to try super hard
+
+277
+00:09:55,910 --> 00:09:57,499
+to be stateless anymore in fact we want
+
+278
+00:09:57,499 --> 00:09:59,509
+to embrace stage so we're keeping a
+
+279
+00:09:59,509 --> 00:10:01,309
+bunch of things in memory here to form a
+
+280
+00:10:01,309 --> 00:10:03,499
+cohesive application and it all comes
+
+281
+00:10:03,499 --> 00:10:05,720
+together to form a very rich and non
+
+282
+00:10:05,720 --> 00:10:09,230
+linear state-space we've got our models
+
+283
+00:10:09,230 --> 00:10:11,240
+they usually coupled with a snapshot
+
+284
+00:10:11,240 --> 00:10:12,589
+that's coming back from a server that
+
+285
+00:10:12,589 --> 00:10:14,540
+JSON document that might come back and
+
+286
+00:10:14,540 --> 00:10:16,759
+then we add an extra layer of complexity
+
+287
+00:10:16,759 --> 00:10:18,529
+on top of that we've got validation
+
+288
+00:10:18,529 --> 00:10:21,889
+security we are playing new behaviors
+
+289
+00:10:21,889 --> 00:10:23,809
+through other functions we've got to
+
+290
+00:10:23,809 --> 00:10:25,459
+decide when we keep that state and sync
+
+291
+00:10:25,459 --> 00:10:26,990
+with the server so we're keeping that in
+
+292
+00:10:26,990 --> 00:10:30,110
+mind at all times the number of possible
+
+293
+00:10:30,110 --> 00:10:31,759
+states that we've just put on top of
+
+294
+00:10:31,759 --> 00:10:34,249
+that snapshot has just has blown out
+
+295
+00:10:34,249 --> 00:10:37,790
+proportionally on the screen at any one
+
+296
+00:10:37,790 --> 00:10:39,379
+time we've got many different views that
+
+297
+00:10:39,379 --> 00:10:40,970
+are each presenting different model
+
+298
+00:10:40,970 --> 00:10:43,309
+states and together those views to find
+
+299
+00:10:43,309 --> 00:10:45,889
+the overall view state so what many
+
+300
+00:10:45,889 --> 00:10:47,990
+items can we see in the sidebar like are
+
+301
+00:10:47,990 --> 00:10:50,329
+we able to eat it the that the Palean
+
+302
+00:10:50,329 --> 00:10:52,129
+kick somebody out are we able to invite
+
+303
+00:10:52,129 --> 00:10:54,379
+a new animal to the party and are we
+
+304
+00:10:54,379 --> 00:10:55,970
+even able to see what's going on the
+
+305
+00:10:55,970 --> 00:10:57,589
+shenanigans going on inside this party
+
+306
+00:10:57,589 --> 00:10:59,389
+so this is adding again to the
+
+307
+00:10:59,389 --> 00:11:01,759
+complexity that we have in the state
+
+308
+00:11:01,759 --> 00:11:04,070
+space
+
+309
+00:11:04,080 --> 00:11:06,180
+and with overall we've got the overall
+
+310
+00:11:06,180 --> 00:11:08,100
+application state as well so this is
+
+311
+00:11:08,100 --> 00:11:10,140
+things like which models which modules
+
+312
+00:11:10,140 --> 00:11:12,180
+and controllers are currently active and
+
+313
+00:11:12,180 --> 00:11:13,740
+which ones are no longer active and
+
+314
+00:11:13,740 --> 00:11:16,320
+should be cleaned up in order to free up
+
+315
+00:11:16,320 --> 00:11:20,670
+that memory that we hogging and of
+
+316
+00:11:20,670 --> 00:11:23,190
+course that state our state boundary
+
+317
+00:11:23,190 --> 00:11:25,320
+that we had on the server that client
+
+318
+00:11:25,320 --> 00:11:26,960
+super boundary is no longer relevant
+
+319
+00:11:26,960 --> 00:11:29,310
+suddenly we don't have to emulate state
+
+320
+00:11:29,310 --> 00:11:31,860
+transitions across a boundary state and
+
+321
+00:11:31,860 --> 00:11:33,480
+the transitions occur within the same
+
+322
+00:11:33,480 --> 00:11:35,820
+execution context which is awesome
+
+323
+00:11:35,820 --> 00:11:37,440
+because it means we have a much much
+
+324
+00:11:37,440 --> 00:11:39,360
+richer set of concepts if we can
+
+325
+00:11:39,360 --> 00:11:45,150
+architect a replication around so as the
+
+326
+00:11:45,150 --> 00:11:46,440
+state space grows and we're moving
+
+327
+00:11:46,440 --> 00:11:48,180
+around the state space in a very
+
+328
+00:11:48,180 --> 00:11:50,970
+nonlinear fashion things get complicated
+
+329
+00:11:50,970 --> 00:11:53,430
+really really quickly it has a
+
+330
+00:11:53,430 --> 00:11:54,870
+dimensionality to the problem which
+
+331
+00:11:54,870 --> 00:11:56,970
+makes managing all of this really really
+
+332
+00:11:56,970 --> 00:11:59,100
+tricky so we need to have a plan we need
+
+333
+00:11:59,100 --> 00:12:00,900
+to apply some memes some ideas some
+
+334
+00:12:00,900 --> 00:12:03,630
+patterns to help us out here and not end
+
+335
+00:12:03,630 --> 00:12:08,490
+up in a spaghetti code soup so we
+
+336
+00:12:08,490 --> 00:12:10,200
+originally brought over these
+
+337
+00:12:10,200 --> 00:12:11,790
+presentation patterns onto the client to
+
+338
+00:12:11,790 --> 00:12:13,440
+help us deal with complexity the
+
+339
+00:12:13,440 --> 00:12:14,970
+complexity that we saw on the client
+
+340
+00:12:14,970 --> 00:12:17,370
+we've got models we've got our views in
+
+341
+00:12:17,370 --> 00:12:19,740
+our controllers these concepts that we
+
+342
+00:12:19,740 --> 00:12:21,720
+were saw on the server I mean whatever
+
+343
+00:12:21,720 --> 00:12:23,250
+you want to call that controller part
+
+344
+00:12:23,250 --> 00:12:26,400
+I'm I have weird feelings about that
+
+345
+00:12:26,400 --> 00:12:29,610
+name and then we've got routes okay and
+
+346
+00:12:29,610 --> 00:12:31,650
+we add those to the equations so that we
+
+347
+00:12:31,650 --> 00:12:35,160
+can so that we can address parts of our
+
+348
+00:12:35,160 --> 00:12:36,900
+state space so I look at this and I
+
+349
+00:12:36,900 --> 00:12:38,760
+think this is a little weird like why do
+
+350
+00:12:38,760 --> 00:12:40,500
+we have right routes here like on the
+
+351
+00:12:40,500 --> 00:12:42,390
+server the the purpose that they served
+
+352
+00:12:42,390 --> 00:12:44,730
+was that we needed to be able to address
+
+353
+00:12:44,730 --> 00:12:46,650
+all the transitions and all the states
+
+354
+00:12:46,650 --> 00:12:48,810
+and here we don't really need to do that
+
+355
+00:12:48,810 --> 00:12:50,970
+and then I remember okay it's actually
+
+356
+00:12:50,970 --> 00:12:52,470
+not weird at all because we still need
+
+357
+00:12:52,470 --> 00:12:53,790
+to be able to address parts of that
+
+358
+00:12:53,790 --> 00:12:56,400
+state space we absolutely need to be
+
+359
+00:12:56,400 --> 00:12:58,230
+able to take the URL in the address bar
+
+360
+00:12:58,230 --> 00:12:59,820
+and give that to your friend and have
+
+361
+00:12:59,820 --> 00:13:03,170
+them see exactly the same state on the
+
+362
+00:13:03,170 --> 00:13:06,390
+the web page so address ability and the
+
+363
+00:13:06,390 --> 00:13:08,640
+support of routes are still a really key
+
+364
+00:13:08,640 --> 00:13:14,790
+part of our of our design
+
+365
+00:13:14,800 --> 00:13:17,980
+so let's take a little look at the
+
+366
+00:13:17,980 --> 00:13:19,450
+typical way that we might structure some
+
+367
+00:13:19,450 --> 00:13:21,220
+of our client side code to account for
+
+368
+00:13:21,220 --> 00:13:23,019
+the need to be able to address all parts
+
+369
+00:13:23,019 --> 00:13:24,820
+of the state space so I'm going to give
+
+370
+00:13:24,820 --> 00:13:28,660
+this example in backbone so we've got an
+
+371
+00:13:28,660 --> 00:13:31,420
+animal and a collection of partying
+
+372
+00:13:31,420 --> 00:13:34,120
+animals we've got a party view which has
+
+373
+00:13:34,120 --> 00:13:36,190
+a template and a render function and
+
+374
+00:13:36,190 --> 00:13:37,300
+what it's going to do is it's going to
+
+375
+00:13:37,300 --> 00:13:38,829
+take the template it's going to take the
+
+376
+00:13:38,829 --> 00:13:40,000
+model and it's going to mash them
+
+377
+00:13:40,000 --> 00:13:41,470
+together expect something out onto the
+
+378
+00:13:41,470 --> 00:13:45,700
+view and then we've got our router and
+
+379
+00:13:45,700 --> 00:13:46,990
+we're defining a couple of routes here
+
+380
+00:13:46,990 --> 00:13:49,450
+we can start the party and and turn the
+
+381
+00:13:49,450 --> 00:13:52,300
+music on and let them go and we can also
+
+382
+00:13:52,300 --> 00:13:54,730
+uninvite any misbehavior people so we're
+
+383
+00:13:54,730 --> 00:13:56,709
+going to revoke party rights what we're
+
+384
+00:13:56,709 --> 00:13:58,029
+doing here is we're taking an incoming
+
+385
+00:13:58,029 --> 00:13:59,950
+parameter from the URL we're grabbing
+
+386
+00:13:59,950 --> 00:14:01,779
+that collection we are finding the
+
+387
+00:14:01,779 --> 00:14:03,040
+animal in the collection we're
+
+388
+00:14:03,040 --> 00:14:04,600
+destroying the model and we're reaching
+
+389
+00:14:04,600 --> 00:14:07,269
+back into the into the Dom to remove the
+
+390
+00:14:07,269 --> 00:14:10,930
+view and in the starting the party case
+
+391
+00:14:10,930 --> 00:14:13,269
+it's very similar we're creating we're
+
+392
+00:14:13,269 --> 00:14:15,519
+creating of you doing a fish and a
+
+393
+00:14:15,519 --> 00:14:18,760
+render so what's going on here we're
+
+394
+00:14:18,760 --> 00:14:20,170
+breaking encapsulation to push
+
+395
+00:14:20,170 --> 00:14:22,149
+everything up into the Russian portion
+
+396
+00:14:22,149 --> 00:14:25,440
+of our code so we've got this view
+
+397
+00:14:25,440 --> 00:14:28,149
+controller thing that's responsible for
+
+398
+00:14:28,149 --> 00:14:30,970
+doing some initial rendering and then
+
+399
+00:14:30,970 --> 00:14:33,640
+when it's got a reference to our model
+
+400
+00:14:33,640 --> 00:14:34,839
+and then the round kicks off and the
+
+401
+00:14:34,839 --> 00:14:35,920
+first thing that it does it does an
+
+402
+00:14:35,920 --> 00:14:38,890
+active look up for the model so we've
+
+403
+00:14:38,890 --> 00:14:41,170
+got these stateful concepts where our
+
+404
+00:14:41,170 --> 00:14:42,459
+view already has a reference to the
+
+405
+00:14:42,459 --> 00:14:43,600
+model but we're going to grab the
+
+406
+00:14:43,600 --> 00:14:45,160
+collection and do look up anywhere okay
+
+407
+00:14:45,160 --> 00:14:47,500
+that's fine and then we're going to
+
+408
+00:14:47,500 --> 00:14:48,910
+perform an extra the hints that model
+
+409
+00:14:48,910 --> 00:14:50,649
+and we're going to transition it into a
+
+410
+00:14:50,649 --> 00:14:53,709
+new state and then the next thing we
+
+411
+00:14:53,709 --> 00:14:55,839
+need to do is deal with some view
+
+412
+00:14:55,839 --> 00:14:58,690
+concerns by ie we need to remove that
+
+413
+00:14:58,690 --> 00:15:01,149
+few from from the screen so again we're
+
+414
+00:15:01,149 --> 00:15:03,339
+breaking encapsulation here the view
+
+415
+00:15:03,339 --> 00:15:05,290
+controller thing already has a reference
+
+416
+00:15:05,290 --> 00:15:07,270
+to the Dom element why are we creating
+
+417
+00:15:07,270 --> 00:15:08,980
+the spaghetti code in the router why
+
+418
+00:15:08,980 --> 00:15:10,570
+wouldn't we just let the view be in
+
+419
+00:15:10,570 --> 00:15:12,310
+charge over time that's going to become
+
+420
+00:15:12,310 --> 00:15:16,269
+very difficult to maintain over time so
+
+421
+00:15:16,269 --> 00:15:18,190
+on the client side we're often working
+
+422
+00:15:18,190 --> 00:15:19,810
+with these heavily stateful frameworks
+
+423
+00:15:19,810 --> 00:15:21,670
+and all the objects that we need in
+
+424
+00:15:21,670 --> 00:15:23,470
+order to perform a state transition that
+
+425
+00:15:23,470 --> 00:15:25,510
+already instantiated and already held in
+
+426
+00:15:25,510 --> 00:15:28,080
+memory we don't need to structure
+
+427
+00:15:28,080 --> 00:15:30,030
+application in the same way as we were
+
+428
+00:15:30,030 --> 00:15:32,190
+on the server because on the client we
+
+429
+00:15:32,190 --> 00:15:34,770
+can fully embrace stayed we don't need
+
+430
+00:15:34,770 --> 00:15:36,810
+to manipulate our models like they arose
+
+431
+00:15:36,810 --> 00:15:39,060
+in a database a models can be rich
+
+432
+00:15:39,060 --> 00:15:43,740
+interactive real objects so we took
+
+433
+00:15:43,740 --> 00:15:46,110
+these ideas these flavors of MVC that we
+
+434
+00:15:46,110 --> 00:15:48,000
+saw on the server and we try to apply
+
+435
+00:15:48,000 --> 00:15:50,580
+that very linear approach to the client
+
+436
+00:15:50,580 --> 00:15:52,530
+and we started to break encapsulation
+
+437
+00:15:52,530 --> 00:15:55,320
+pretty quickly an order 200 application
+
+438
+00:15:55,320 --> 00:15:57,420
+around the design and and the need to
+
+439
+00:15:57,420 --> 00:15:59,850
+support routes we started to treat state
+
+440
+00:15:59,850 --> 00:16:02,490
+and events and the very things that give
+
+441
+00:16:02,490 --> 00:16:04,500
+us that rich interactivity on the client
+
+442
+00:16:04,500 --> 00:16:06,150
+side we started to treat that like a
+
+443
+00:16:06,150 --> 00:16:10,140
+second-class citizen at the side of the
+
+444
+00:16:10,140 --> 00:16:12,120
+talk I showed you that or fall jQuery
+
+445
+00:16:12,120 --> 00:16:15,890
+madness we were doing weird things like
+
+446
+00:16:15,890 --> 00:16:18,540
+triggering events from the DOM and then
+
+447
+00:16:18,540 --> 00:16:21,210
+I reaching into the Dom to grab the
+
+448
+00:16:21,210 --> 00:16:22,620
+state and then persisting that state
+
+449
+00:16:22,620 --> 00:16:24,600
+back into the diamond it was all kind of
+
+450
+00:16:24,600 --> 00:16:26,580
+crazy we were executing that state
+
+451
+00:16:26,580 --> 00:16:28,650
+transition to update the DOM and show
+
+452
+00:16:28,650 --> 00:16:30,990
+the new state and that code doesn't
+
+453
+00:16:30,990 --> 00:16:33,300
+scale very well beyond a very simple use
+
+454
+00:16:33,300 --> 00:16:35,760
+case and the reason is because it breaks
+
+455
+00:16:35,760 --> 00:16:38,190
+encapsulation and I kind of feel like
+
+456
+00:16:38,190 --> 00:16:39,810
+we're back at this again we're using
+
+457
+00:16:39,810 --> 00:16:41,280
+routes heavily because they're
+
+458
+00:16:41,280 --> 00:16:43,410
+convenient but in doing this we're
+
+459
+00:16:43,410 --> 00:16:46,400
+sacrificing clarity in our architecture
+
+460
+00:16:46,400 --> 00:16:49,920
+so to build accessible single page
+
+461
+00:16:49,920 --> 00:16:51,900
+JavaScript apps we still need to use
+
+462
+00:16:51,900 --> 00:16:54,090
+rounds and it's critical that we're able
+
+463
+00:16:54,090 --> 00:16:55,590
+to address portions of the state space
+
+464
+00:16:55,590 --> 00:16:58,260
+but in my mind routes are a feature
+
+465
+00:16:58,260 --> 00:17:00,750
+they're not the cornerstone of our
+
+466
+00:17:00,750 --> 00:17:03,150
+architecture the cornerstone of our
+
+467
+00:17:03,150 --> 00:17:05,040
+design and architecture should really be
+
+468
+00:17:05,040 --> 00:17:08,339
+concerned with state and events so I
+
+469
+00:17:08,339 --> 00:17:10,740
+routes the problem here I don't I don't
+
+470
+00:17:10,740 --> 00:17:11,850
+think right so the problem here I think
+
+471
+00:17:11,850 --> 00:17:13,620
+the thing that's causing us pain is only
+
+472
+00:17:13,620 --> 00:17:15,270
+using routes as the part of the
+
+473
+00:17:15,270 --> 00:17:17,280
+architecture breaking that encapsulation
+
+474
+00:17:17,280 --> 00:17:19,320
+of the views and the models in order to
+
+475
+00:17:19,320 --> 00:17:21,120
+get it done as quickly as possible it's
+
+476
+00:17:21,120 --> 00:17:25,650
+not giving us a way to scale a design so
+
+477
+00:17:25,650 --> 00:17:27,540
+separating concerns as we've seen is
+
+478
+00:17:27,540 --> 00:17:30,030
+super important we've implemented that
+
+479
+00:17:30,030 --> 00:17:32,190
+NBC design pattern on the client and the
+
+480
+00:17:32,190 --> 00:17:33,420
+first place to get rid of all that
+
+481
+00:17:33,420 --> 00:17:35,910
+tangled mess but somewhere in the course
+
+482
+00:17:35,910 --> 00:17:37,470
+of that doing that with two closely
+
+483
+00:17:37,470 --> 00:17:39,550
+emulated the designs that we see
+
+484
+00:17:39,550 --> 00:17:41,140
+on the server the things that work
+
+485
+00:17:41,140 --> 00:17:42,760
+really well for stateless with
+
+486
+00:17:42,760 --> 00:17:45,010
+applications and as the complexity grows
+
+487
+00:17:45,010 --> 00:17:48,010
+in our various state full application we
+
+488
+00:17:48,010 --> 00:17:49,210
+start to see the cracks and that
+
+489
+00:17:49,210 --> 00:17:53,050
+approach so thankfully I think we can
+
+490
+00:17:53,050 --> 00:17:54,670
+find a happy medium where we can embrace
+
+491
+00:17:54,670 --> 00:17:56,110
+the need for routes on the client
+
+492
+00:17:56,110 --> 00:17:59,170
+without relying on them to drive state
+
+493
+00:17:59,170 --> 00:18:01,750
+and state changes within our application
+
+494
+00:18:01,750 --> 00:18:04,330
+we can use events in a composable
+
+495
+00:18:04,330 --> 00:18:06,250
+architecture to help us separate out our
+
+496
+00:18:06,250 --> 00:18:09,940
+concerns so let's first take a look at
+
+497
+00:18:09,940 --> 00:18:11,800
+the bloated router code example that I
+
+498
+00:18:11,800 --> 00:18:15,280
+gave hopefully it's starting to start to
+
+499
+00:18:15,280 --> 00:18:17,050
+be apparent that addressing a state
+
+500
+00:18:17,050 --> 00:18:19,090
+transition like a delete is probably not
+
+501
+00:18:19,090 --> 00:18:21,490
+the best thing to do in this case so
+
+502
+00:18:21,490 --> 00:18:23,140
+we've still got our models we've got our
+
+503
+00:18:23,140 --> 00:18:25,330
+animal model and our party animal
+
+504
+00:18:25,330 --> 00:18:27,880
+collection we've got a party animal view
+
+505
+00:18:27,880 --> 00:18:29,980
+which as before has a template but now
+
+506
+00:18:29,980 --> 00:18:32,020
+it has an event hash which is cool
+
+507
+00:18:32,020 --> 00:18:34,120
+because it means that this view is now
+
+508
+00:18:34,120 --> 00:18:36,970
+listening for click events on a link and
+
+509
+00:18:36,970 --> 00:18:38,710
+it's going to write that down to a
+
+510
+00:18:38,710 --> 00:18:42,640
+delete function that delete function is
+
+511
+00:18:42,640 --> 00:18:44,230
+able to say hey I'm just going to delete
+
+512
+00:18:44,230 --> 00:18:45,970
+the model that I have a reference to and
+
+513
+00:18:45,970 --> 00:18:48,340
+then I'm going to close myself which is
+
+514
+00:18:48,340 --> 00:18:50,950
+so much more simpler than looking up a
+
+515
+00:18:50,950 --> 00:18:54,390
+model and look reaching into the DOM and
+
+516
+00:18:54,390 --> 00:18:56,800
+removing this debt from from the Dom
+
+517
+00:18:56,800 --> 00:18:59,460
+it's kind of the concerns are way more
+
+518
+00:18:59,460 --> 00:19:03,820
+way more encapsulated in this case so as
+
+519
+00:19:03,820 --> 00:19:04,870
+I say we don't need to do that
+
+520
+00:19:04,870 --> 00:19:07,840
+unnecessary look up anymore we're also
+
+521
+00:19:07,840 --> 00:19:10,030
+using declarative events so we combine
+
+522
+00:19:10,030 --> 00:19:12,400
+the delete link to the delete the delete
+
+523
+00:19:12,400 --> 00:19:15,040
+function on the view and it allows us to
+
+524
+00:19:15,040 --> 00:19:16,900
+call destroy on the model directly which
+
+525
+00:19:16,900 --> 00:19:19,180
+is a huge one and for bonus points we
+
+526
+00:19:19,180 --> 00:19:22,780
+live interview take care of itself so
+
+527
+00:19:22,780 --> 00:19:24,460
+that's fine but I said earlier that
+
+528
+00:19:24,460 --> 00:19:26,440
+routing is still a key part of the
+
+529
+00:19:26,440 --> 00:19:27,850
+client-side code and we need to support
+
+530
+00:19:27,850 --> 00:19:30,190
+this feature of addressability and some
+
+531
+00:19:30,190 --> 00:19:32,860
+of the state space our application is
+
+532
+00:19:32,860 --> 00:19:34,120
+going to suck if we don't do this we
+
+533
+00:19:34,120 --> 00:19:35,800
+need to be able to give those URLs to
+
+534
+00:19:35,800 --> 00:19:37,660
+our friends so that they can arrive at
+
+535
+00:19:37,660 --> 00:19:40,900
+the same state that we did so how can we
+
+536
+00:19:40,900 --> 00:19:43,900
+better embrace the need for an event
+
+537
+00:19:43,900 --> 00:19:45,940
+rich envy whatever you want to call it
+
+538
+00:19:45,940 --> 00:19:48,250
+pattern and the need for routes in a
+
+539
+00:19:48,250 --> 00:19:50,710
+clear architecture so I just want to
+
+540
+00:19:50,710 --> 00:19:52,440
+show you a couple of ideas
+
+541
+00:19:52,440 --> 00:19:54,810
+it means and you guys can apply them in
+
+542
+00:19:54,810 --> 00:19:58,640
+whichever way you choose as appropriate
+
+543
+00:19:58,640 --> 00:20:00,660
+so we're going to take those models
+
+544
+00:20:00,660 --> 00:20:03,120
+those rich objects those views which are
+
+545
+00:20:03,120 --> 00:20:04,920
+responsible for rendering templates and
+
+546
+00:20:04,920 --> 00:20:07,530
+then the views mediating any interaction
+
+547
+00:20:07,530 --> 00:20:09,960
+between the template and sorry the DOM
+
+548
+00:20:09,960 --> 00:20:11,940
+and translating that back down to the
+
+549
+00:20:11,940 --> 00:20:13,620
+model and we've got a controller object
+
+550
+00:20:13,620 --> 00:20:15,270
+which is responsible for keeping track
+
+551
+00:20:15,270 --> 00:20:17,250
+of those models and views and we're
+
+552
+00:20:17,250 --> 00:20:18,780
+going to take all of those and we're
+
+553
+00:20:18,780 --> 00:20:19,920
+going to put them into a single
+
+554
+00:20:19,920 --> 00:20:23,090
+component logical component and module
+
+555
+00:20:23,090 --> 00:20:25,350
+so module was responsible for
+
+556
+00:20:25,350 --> 00:20:27,270
+coordinating all of the state and events
+
+557
+00:20:27,270 --> 00:20:30,780
+that we have at a very micro level so
+
+558
+00:20:30,780 --> 00:20:31,800
+we're not talking a one-to-one
+
+559
+00:20:31,800 --> 00:20:33,210
+relationship here we're talking about
+
+560
+00:20:33,210 --> 00:20:36,570
+many views mini models all aggregated
+
+561
+00:20:36,570 --> 00:20:38,670
+within a module because they are related
+
+562
+00:20:38,670 --> 00:20:40,380
+to each other on some level of
+
+563
+00:20:40,380 --> 00:20:44,250
+functionality so it's a discrete area of
+
+564
+00:20:44,250 --> 00:20:46,290
+a discrete functional unit I guess you
+
+565
+00:20:46,290 --> 00:20:50,190
+could say so those modules are free to
+
+566
+00:20:50,190 --> 00:20:52,200
+present views and raise events within
+
+567
+00:20:52,200 --> 00:20:54,030
+themselves and keep track of their own
+
+568
+00:20:54,030 --> 00:20:57,240
+internal state so just to briefly note
+
+569
+00:20:57,240 --> 00:20:58,800
+that while these models are kind of
+
+570
+00:20:58,800 --> 00:21:02,130
+motor sonic not models modules are free
+
+571
+00:21:02,130 --> 00:21:05,040
+to present their views I don't think
+
+572
+00:21:05,040 --> 00:21:06,780
+they should be directly free to start
+
+573
+00:21:06,780 --> 00:21:08,580
+placing themselves on the Dom because
+
+574
+00:21:08,580 --> 00:21:10,290
+then your coupling those modules to the
+
+575
+00:21:10,290 --> 00:21:12,840
+state of the Dom at any given time so
+
+576
+00:21:12,840 --> 00:21:14,610
+rather what should happen is we should
+
+577
+00:21:14,610 --> 00:21:17,040
+delegate that responsibility to another
+
+578
+00:21:17,040 --> 00:21:19,140
+component or some another component
+
+579
+00:21:19,140 --> 00:21:21,930
+responsible for making a choice of how
+
+580
+00:21:21,930 --> 00:21:23,820
+our overall view state is going to be
+
+581
+00:21:23,820 --> 00:21:25,890
+composed and so this is going to be the
+
+582
+00:21:25,890 --> 00:21:28,200
+job of some kind of layout manager thing
+
+583
+00:21:28,200 --> 00:21:31,080
+naming things as hard it's
+
+584
+00:21:31,080 --> 00:21:32,880
+responsibility is going to be to compose
+
+585
+00:21:32,880 --> 00:21:36,660
+the UI so the layout manager is going to
+
+586
+00:21:36,660 --> 00:21:39,540
+define a top-level view a shell and it's
+
+587
+00:21:39,540 --> 00:21:41,190
+going to have areas that the modules are
+
+588
+00:21:41,190 --> 00:21:43,260
+able to render within so like a sidebar
+
+589
+00:21:43,260 --> 00:21:47,460
+for two main content region and when a
+
+590
+00:21:47,460 --> 00:21:49,410
+new module is activated the layout
+
+591
+00:21:49,410 --> 00:21:51,510
+manager is going to be responsible for
+
+592
+00:21:51,510 --> 00:21:54,480
+swapping out existing views with the new
+
+593
+00:21:54,480 --> 00:21:56,820
+views that this module is presenting so
+
+594
+00:21:56,820 --> 00:21:58,290
+internally the module can figure out
+
+595
+00:21:58,290 --> 00:22:00,390
+which control are in which view and all
+
+596
+00:22:00,390 --> 00:22:01,800
+of that kind of stuff needs to be
+
+597
+00:22:01,800 --> 00:22:04,140
+presented but the layout manager is
+
+598
+00:22:04,140 --> 00:22:06,070
+responsible for that composite
+
+599
+00:22:06,070 --> 00:22:08,000
+so it's going to look a little bit like
+
+600
+00:22:08,000 --> 00:22:09,440
+this we've got a bunch of modules
+
+601
+00:22:09,440 --> 00:22:11,299
+presenting Mike reviews and a layout
+
+602
+00:22:11,299 --> 00:22:13,220
+composer working out how they all work
+
+603
+00:22:13,220 --> 00:22:16,100
+together responsible for composing that
+
+604
+00:22:16,100 --> 00:22:19,400
+you I so this placement is going to
+
+605
+00:22:19,400 --> 00:22:21,530
+occur when our new module is activated
+
+606
+00:22:21,530 --> 00:22:24,740
+how does that work so the thing I think
+
+607
+00:22:24,740 --> 00:22:26,900
+should be responsible for this is
+
+608
+00:22:26,900 --> 00:22:28,669
+forgiving the modules to the layout
+
+609
+00:22:28,669 --> 00:22:30,230
+manager as some kind of dispatcher
+
+610
+00:22:30,230 --> 00:22:32,120
+object it's going to listen for
+
+611
+00:22:32,120 --> 00:22:33,919
+interesting events which indicate that a
+
+612
+00:22:33,919 --> 00:22:36,799
+new module needs to be involved and when
+
+613
+00:22:36,799 --> 00:22:39,650
+it when it asks when when it receives
+
+614
+00:22:39,650 --> 00:22:41,210
+these interesting events it's going to
+
+615
+00:22:41,210 --> 00:22:42,440
+load the target module it's going to
+
+616
+00:22:42,440 --> 00:22:43,850
+instantiate it and it's going to give it
+
+617
+00:22:43,850 --> 00:22:46,700
+to the layout manager who will then in
+
+618
+00:22:46,700 --> 00:22:51,500
+turn compose the application shell so
+
+619
+00:22:51,500 --> 00:22:53,510
+one of the interesting events that this
+
+620
+00:22:53,510 --> 00:22:55,640
+dispatcher object thing might listen to
+
+621
+00:22:55,640 --> 00:22:59,870
+our our routes so a routing event might
+
+622
+00:22:59,870 --> 00:23:01,220
+fire and the router is going to
+
+623
+00:23:01,220 --> 00:23:03,260
+facilitate the mapping between a URL and
+
+624
+00:23:03,260 --> 00:23:05,570
+a module or even a collection of modules
+
+625
+00:23:05,570 --> 00:23:08,090
+it's responsible for observing on and
+
+626
+00:23:08,090 --> 00:23:10,610
+acting on URL changes but it doesn't
+
+627
+00:23:10,610 --> 00:23:12,530
+actually do anything with it other than
+
+628
+00:23:12,530 --> 00:23:14,539
+say hey the routes changed and these are
+
+629
+00:23:14,539 --> 00:23:15,710
+the modules that I know you need to
+
+630
+00:23:15,710 --> 00:23:18,919
+invoke now it's going to delegate over
+
+631
+00:23:18,919 --> 00:23:21,200
+to the dispatcher and the really cool
+
+632
+00:23:21,200 --> 00:23:22,669
+thing about this as it means that other
+
+633
+00:23:22,669 --> 00:23:24,860
+events have the opportunity to be raised
+
+634
+00:23:24,860 --> 00:23:26,720
+and signal to the dispatcher that new
+
+635
+00:23:26,720 --> 00:23:28,039
+module should be loaded we're not
+
+636
+00:23:28,039 --> 00:23:30,230
+hinging our design around route changes
+
+637
+00:23:30,230 --> 00:23:32,059
+or out changes kind of sit on the side
+
+638
+00:23:32,059 --> 00:23:42,350
+as a feature
+
+639
+00:23:42,360 --> 00:23:45,180
+and then the last thing that we have is
+
+640
+00:23:45,180 --> 00:23:48,330
+the bootstrap over application so this
+
+641
+00:23:48,330 --> 00:23:49,710
+is the entry point and the extra point
+
+642
+00:23:49,710 --> 00:23:51,420
+of our application and it's responsible
+
+643
+00:23:51,420 --> 00:23:53,610
+for composing the the top level
+
+644
+00:23:53,610 --> 00:23:55,950
+architecture that we've kind of got
+
+645
+00:23:55,950 --> 00:23:58,440
+going on here and it also acts as an
+
+646
+00:23:58,440 --> 00:24:02,460
+extension point for your life cycle so
+
+647
+00:24:02,460 --> 00:24:03,900
+we've split up some of those concerns
+
+648
+00:24:03,900 --> 00:24:06,840
+that we had around state and events and
+
+649
+00:24:06,840 --> 00:24:08,070
+all the many views that we were
+
+650
+00:24:08,070 --> 00:24:09,420
+displaying at any given point in time
+
+651
+00:24:09,420 --> 00:24:12,060
+and the state of the address bar we've
+
+652
+00:24:12,060 --> 00:24:13,860
+come up with a much more composable
+
+653
+00:24:13,860 --> 00:24:15,960
+design where we're using events to
+
+654
+00:24:15,960 --> 00:24:17,580
+transition into new states and a
+
+655
+00:24:17,580 --> 00:24:21,540
+nonlinear fashion so I've actually gone
+
+656
+00:24:21,540 --> 00:24:24,930
+really quick so if it was too long and
+
+657
+00:24:24,930 --> 00:24:27,240
+you didn't read it because reasons I'll
+
+658
+00:24:27,240 --> 00:24:29,430
+sum it up for you so the management of
+
+659
+00:24:29,430 --> 00:24:30,900
+our state's basically it's really hard
+
+660
+00:24:30,900 --> 00:24:33,420
+when we don't separate our concerns when
+
+661
+00:24:33,420 --> 00:24:35,160
+when the complexity starts to blow out
+
+662
+00:24:35,160 --> 00:24:37,590
+on the client we should be using routes
+
+663
+00:24:37,590 --> 00:24:39,330
+were dressed state but never state
+
+664
+00:24:39,330 --> 00:24:41,280
+transitions and we should be taking
+
+665
+00:24:41,280 --> 00:24:43,920
+ideas from one context from it from
+
+666
+00:24:43,920 --> 00:24:45,690
+another and applying them and taking
+
+667
+00:24:45,690 --> 00:24:47,490
+inspiration server that's great that's
+
+668
+00:24:47,490 --> 00:24:49,950
+how new ideas form but if we're not
+
+669
+00:24:49,950 --> 00:24:51,540
+careful and we treat this like a
+
+670
+00:24:51,540 --> 00:24:54,720
+rulebook we start to apply patterns that
+
+671
+00:24:54,720 --> 00:24:57,390
+work well for a linear for a linear
+
+672
+00:24:57,390 --> 00:24:59,820
+architecture in an estate space where
+
+673
+00:24:59,820 --> 00:25:01,530
+it's nonlinear and the cracks start to
+
+674
+00:25:01,530 --> 00:25:04,380
+show so we need to mold these ideas to
+
+675
+00:25:04,380 --> 00:25:06,030
+support the new requirements the
+
+676
+00:25:06,030 --> 00:25:10,140
+requirement to be stifled so we need to
+
+677
+00:25:10,140 --> 00:25:11,880
+embrace events within the same xicon
+
+678
+00:25:11,880 --> 00:25:14,340
+execution context and we don't want to
+
+679
+00:25:14,340 --> 00:25:17,970
+make everything into our router we need
+
+680
+00:25:17,970 --> 00:25:19,410
+to make sure that we're architecting our
+
+681
+00:25:19,410 --> 00:25:22,050
+client side code lists like it's a web
+
+682
+00:25:22,050 --> 00:25:24,360
+server because let's face it it's not a
+

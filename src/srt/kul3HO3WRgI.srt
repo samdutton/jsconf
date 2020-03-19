@@ -1,0 +1,2813 @@
+1
+00:00:15,380 --> 00:00:17,990
+
+so my name is Andy Wingo I work for a
+
+2
+00:00:17,990 --> 00:00:20,390
+company out of Spain called Eagle iya we
+
+3
+00:00:20,390 --> 00:00:22,160
+do a lot of consulting around WebKit and
+
+4
+00:00:22,160 --> 00:00:25,160
+as such I've gotten into javascriptcore
+
+5
+00:00:25,160 --> 00:00:27,770
+a bit javascriptcore is the the
+
+6
+00:00:27,770 --> 00:00:30,529
+javascript engine of the WebKit project
+
+7
+00:00:30,529 --> 00:00:33,950
+itself in fact a bit on VA before on
+
+8
+00:00:33,950 --> 00:00:36,190
+JavaScript core but in reality I'm a
+
+9
+00:00:36,190 --> 00:00:38,840
+traveler in foreign lands here's my
+
+10
+00:00:38,840 --> 00:00:42,800
+heart is from scheme language so it's
+
+11
+00:00:42,800 --> 00:00:44,000
+interesting coming into these
+
+12
+00:00:44,000 --> 00:00:45,800
+implications from the outside and seeing
+
+13
+00:00:45,800 --> 00:00:48,110
+you know what's really going on and the
+
+14
+00:00:48,110 --> 00:00:51,020
+tag for this talk had a bit of hubris
+
+15
+00:00:51,020 --> 00:00:54,860
+associate with it I think claiming that
+
+16
+00:00:54,860 --> 00:00:56,960
+JavaScript cores as fast as v8 on its
+
+17
+00:00:56,960 --> 00:01:00,290
+own benchmark and as we'll see that that
+
+18
+00:01:00,290 --> 00:01:03,530
+claim has a shape to it and some of that
+
+19
+00:01:03,530 --> 00:01:06,619
+shape is true and some that shape is not
+
+20
+00:01:06,619 --> 00:01:10,220
+quite true yet but let's take a look at
+
+21
+00:01:10,220 --> 00:01:13,040
+the DFG at the optimizing compiler of
+
+22
+00:01:13,040 --> 00:01:16,250
+the JavaScript core engine and see you
+
+23
+00:01:16,250 --> 00:01:19,939
+know what is it that it actually does so
+
+24
+00:01:19,939 --> 00:01:22,719
+it as I mention the the DFG is
+
+25
+00:01:22,719 --> 00:01:25,630
+JavaScript course optimizing compiler
+
+26
+00:01:25,630 --> 00:01:28,069
+you know the standard architecture of
+
+27
+00:01:28,069 --> 00:01:29,509
+these JavaScript engines is you have
+
+28
+00:01:29,509 --> 00:01:31,520
+something for dealing with cold code and
+
+29
+00:01:31,520 --> 00:01:32,960
+something for dealing with hot code and
+
+30
+00:01:32,960 --> 00:01:35,030
+for javascriptcore we have the low-level
+
+31
+00:01:35,030 --> 00:01:37,130
+interpreter for very cold code there's
+
+32
+00:01:37,130 --> 00:01:38,960
+an intermediate phase with what we call
+
+33
+00:01:38,960 --> 00:01:41,420
+the baseline JIT which is a jit that
+
+34
+00:01:41,420 --> 00:01:43,520
+doesn't do any global analysis or
+
+35
+00:01:43,520 --> 00:01:45,289
+optimization and then we have the DFG
+
+36
+00:01:45,289 --> 00:01:47,569
+jutt which is able to take a bit more
+
+37
+00:01:47,569 --> 00:01:49,490
+time it has a bit more information and
+
+38
+00:01:49,490 --> 00:01:51,499
+it take a bit more of a global view on
+
+39
+00:01:51,499 --> 00:01:54,469
+your program so this much is fairly well
+
+40
+00:01:54,469 --> 00:01:56,719
+known but I don't think it's very you
+
+41
+00:01:56,719 --> 00:01:59,119
+know well understood you know what what
+
+42
+00:01:59,119 --> 00:02:00,740
+it is that this engine does with your
+
+43
+00:02:00,740 --> 00:02:02,929
+code and how it works and you know what
+
+44
+00:02:02,929 --> 00:02:04,759
+does performance characteristics are so
+
+45
+00:02:04,759 --> 00:02:06,709
+I would like to take a more empirical
+
+46
+00:02:06,709 --> 00:02:09,229
+approach to it I would like to you know
+
+47
+00:02:09,229 --> 00:02:12,560
+measure the dfgg it and see how it does
+
+48
+00:02:12,560 --> 00:02:14,450
+on various representative test cases and
+
+49
+00:02:14,450 --> 00:02:17,150
+see ya when it does this when when is it
+
+50
+00:02:17,150 --> 00:02:18,800
+kick in what are its dynamic
+
+51
+00:02:18,800 --> 00:02:20,810
+characteristics not simply you know
+
+52
+00:02:20,810 --> 00:02:23,000
+performance as a number which is great
+
+53
+00:02:23,000 --> 00:02:24,980
+for the marketing folks but performance
+
+54
+00:02:24,980 --> 00:02:26,840
+as a shape and distribution which is
+
+55
+00:02:26,840 --> 00:02:29,120
+much more interesting from a perspective
+
+56
+00:02:29,120 --> 00:02:31,670
+understanding the software I'd also take
+
+57
+00:02:31,670 --> 00:02:34,360
+like to take a look at the assembly code
+
+58
+00:02:34,360 --> 00:02:36,920
+that is produced by this so I promise it
+
+59
+00:02:36,920 --> 00:02:38,599
+won't be all assembly back I think it's
+
+60
+00:02:38,599 --> 00:02:40,010
+kind of interesting to see how your
+
+61
+00:02:40,010 --> 00:02:42,200
+javascript is translated into what
+
+62
+00:02:42,200 --> 00:02:45,650
+machine code when you run on a browser
+
+63
+00:02:45,650 --> 00:02:49,730
+with javascript poor so as my tool in
+
+64
+00:02:49,730 --> 00:02:51,829
+this regard i'm going to use the the v8
+
+65
+00:02:51,829 --> 00:02:55,780
+benchmarks v8 version 7 benchmarks and
+
+66
+00:02:55,780 --> 00:02:58,909
+these benchmarks are really geared
+
+67
+00:02:58,909 --> 00:03:01,250
+towards optimizing compilers right they
+
+68
+00:03:01,250 --> 00:03:03,230
+don't test anything else in your system
+
+69
+00:03:03,230 --> 00:03:05,359
+they test your optimizing the output of
+
+70
+00:03:05,359 --> 00:03:07,370
+your optimizing compiler and and also
+
+71
+00:03:07,370 --> 00:03:09,890
+your garbage collector as well and the
+
+72
+00:03:09,890 --> 00:03:11,239
+reason you can know about these is they
+
+73
+00:03:11,239 --> 00:03:13,760
+take quite a long time to run and they
+
+74
+00:03:13,760 --> 00:03:15,349
+take a long time I run because they take
+
+75
+00:03:15,349 --> 00:03:18,590
+a full second to warm up the code for
+
+76
+00:03:18,590 --> 00:03:20,510
+each benchmark and then they measure
+
+77
+00:03:20,510 --> 00:03:24,590
+over another second how they take a
+
+78
+00:03:24,590 --> 00:03:26,359
+number of iterations until you get up to
+
+79
+00:03:26,359 --> 00:03:28,250
+a second of iterations of these
+
+80
+00:03:28,250 --> 00:03:30,680
+benchmarks and they they divide the time
+
+81
+00:03:30,680 --> 00:03:33,470
+by the iterations and you get a time per
+
+82
+00:03:33,470 --> 00:03:36,260
+iteration and that that time ends up
+
+83
+00:03:36,260 --> 00:03:37,819
+going on the denominator of the results
+
+84
+00:03:37,819 --> 00:03:39,980
+so that you know higher values on the v8
+
+85
+00:03:39,980 --> 00:03:41,989
+benchmark as we all know actually
+
+86
+00:03:41,989 --> 00:03:45,430
+correspond to higher performance and so
+
+87
+00:03:45,430 --> 00:03:47,780
+it's very good for measuring you know
+
+88
+00:03:47,780 --> 00:03:50,209
+the best that your compiler can do but
+
+89
+00:03:50,209 --> 00:03:52,239
+it's it's not so good for you know
+
+90
+00:03:52,239 --> 00:03:54,500
+investigating characteristics of the
+
+91
+00:03:54,500 --> 00:03:56,329
+invitation I will take a look first
+
+92
+00:03:56,329 --> 00:03:58,040
+though it you know what are these
+
+93
+00:03:58,040 --> 00:04:00,949
+numbers I have a graph here i'm not sure
+
+94
+00:04:00,949 --> 00:04:02,629
+if these numbers are terribly visible to
+
+95
+00:04:02,629 --> 00:04:06,319
+y'all the green bars correspond to this
+
+96
+00:04:06,319 --> 00:04:09,049
+baseline JIT which doesn't do any global
+
+97
+00:04:09,049 --> 00:04:10,819
+analysis in the yellow bars correspond
+
+98
+00:04:10,819 --> 00:04:13,099
+to the DFG jet which is the optimizing
+
+99
+00:04:13,099 --> 00:04:14,540
+compiler and you can see on you know we
+
+100
+00:04:14,540 --> 00:04:16,489
+get three and four times improvements
+
+101
+00:04:16,489 --> 00:04:18,289
+except on the regular expression one
+
+102
+00:04:18,289 --> 00:04:20,209
+which I'll talk a little bit later about
+
+103
+00:04:20,209 --> 00:04:22,880
+now I want to also use this graph to
+
+104
+00:04:22,880 --> 00:04:27,260
+introduce a idea I'm trying to work on
+
+105
+00:04:27,260 --> 00:04:28,880
+this presentation it's probably not you
+
+106
+00:04:28,880 --> 00:04:30,410
+know finish and can be much better but
+
+107
+00:04:30,410 --> 00:04:32,240
+it's that you know performance is not
+
+108
+00:04:32,240 --> 00:04:35,120
+simply a number it is a distribution
+
+109
+00:04:35,120 --> 00:04:37,880
+that you can sample you need to take a
+
+110
+00:04:37,880 --> 00:04:39,950
+number of samples and see you know what
+
+111
+00:04:39,950 --> 00:04:41,180
+is the range of performance that I
+
+112
+00:04:41,180 --> 00:04:43,280
+expect so at the top of all these
+
+113
+00:04:43,280 --> 00:04:45,080
+bars I've got little histograms
+
+114
+00:04:45,080 --> 00:04:47,060
+superimposed I don't know what I'm doing
+
+115
+00:04:47,060 --> 00:04:49,130
+this quite right anyway but you can see
+
+116
+00:04:49,130 --> 00:04:52,520
+like for example on this DFG jet
+
+117
+00:04:52,520 --> 00:04:54,200
+histogram we see that they're all very
+
+118
+00:04:54,200 --> 00:04:56,540
+tightly clustered whereas on this other
+
+119
+00:04:56,540 --> 00:04:58,820
+dfgg histogram we have a bimodal
+
+120
+00:04:58,820 --> 00:05:00,590
+distribution they're pretty tight you
+
+121
+00:05:00,590 --> 00:05:02,000
+know but they're your performance tend
+
+122
+00:05:02,000 --> 00:05:03,290
+to cluster those two values and that's
+
+123
+00:05:03,290 --> 00:05:04,490
+something you really can't capture with
+
+124
+00:05:04,490 --> 00:05:06,080
+the median and I'm going to use this
+
+125
+00:05:06,080 --> 00:05:09,080
+sort of thing as we go forward to really
+
+126
+00:05:09,080 --> 00:05:12,350
+pull apart some of these benchmarks and
+
+127
+00:05:12,350 --> 00:05:14,750
+really I'm not going to use to the
+
+128
+00:05:14,750 --> 00:05:17,960
+straight v8 benchmarks to as my tool I'm
+
+129
+00:05:17,960 --> 00:05:21,860
+going to hack them a bit too to see what
+
+130
+00:05:21,860 --> 00:05:23,300
+are the dynamic characteristics of the
+
+131
+00:05:23,300 --> 00:05:26,990
+DFG I'm going to make the warm-up time
+
+132
+00:05:26,990 --> 00:05:29,540
+variable starting from Nam warm-up at
+
+133
+00:05:29,540 --> 00:05:32,419
+all all the way up to a second with more
+
+134
+00:05:32,419 --> 00:05:34,970
+samples closer to zero so after zero
+
+135
+00:05:34,970 --> 00:05:36,890
+milliseconds after five milliseconds
+
+136
+00:05:36,890 --> 00:05:39,590
+after 10 milliseconds meaning after 10
+
+137
+00:05:39,590 --> 00:05:40,760
+milliseconds you know what's the
+
+138
+00:05:40,760 --> 00:05:42,590
+performance I can expect on my webpage
+
+139
+00:05:42,590 --> 00:05:45,770
+with javascriptcore after 25
+
+140
+00:05:45,770 --> 00:05:47,570
+milliseconds what's what's the kind of
+
+141
+00:05:47,570 --> 00:05:49,580
+performance I can expect and then the
+
+142
+00:05:49,580 --> 00:05:51,260
+thing I measure after the warm-up is
+
+143
+00:05:51,260 --> 00:05:54,830
+going to be 5 milliseconds of a runtime
+
+144
+00:05:54,830 --> 00:05:59,450
+and it it's a good measure of the code
+
+145
+00:05:59,450 --> 00:06:01,940
+that the DFG can produce but it's a it's
+
+146
+00:06:01,940 --> 00:06:03,860
+a very tricky measurement as well
+
+147
+00:06:03,860 --> 00:06:05,840
+because it's sensitive let's say in
+
+148
+00:06:05,840 --> 00:06:07,490
+those five milliseconds milliseconds
+
+149
+00:06:07,490 --> 00:06:09,229
+where I'm measuring you know what if GC
+
+150
+00:06:09,229 --> 00:06:12,320
+hits well you know I I'm going to get
+
+151
+00:06:12,320 --> 00:06:13,820
+much worse results for that particular
+
+152
+00:06:13,820 --> 00:06:17,750
+run for example or what if the optimizer
+
+153
+00:06:17,750 --> 00:06:19,880
+decides to optimize a lot of code in
+
+154
+00:06:19,880 --> 00:06:22,729
+that 5 millisecond window well you know
+
+155
+00:06:22,729 --> 00:06:24,800
+also I can I can experience some
+
+156
+00:06:24,800 --> 00:06:27,440
+slowdowns oh and as well we have some
+
+157
+00:06:27,440 --> 00:06:29,810
+issues with timer precision in
+
+158
+00:06:29,810 --> 00:06:31,460
+JavaScript for memory for measuring
+
+159
+00:06:31,460 --> 00:06:33,380
+these things I'm using that more precise
+
+160
+00:06:33,380 --> 00:06:35,450
+timer that's available in the JC runtime
+
+161
+00:06:35,450 --> 00:06:37,880
+called precise time which gives me a bit
+
+162
+00:06:37,880 --> 00:06:40,430
+more precision in this regard but all of
+
+163
+00:06:40,430 --> 00:06:42,950
+these things you know these unexpected
+
+164
+00:06:42,950 --> 00:06:45,680
+pauses these you know sources of
+
+165
+00:06:45,680 --> 00:06:47,360
+variation in performance can also affect
+
+166
+00:06:47,360 --> 00:06:49,400
+your real code so i think it's is not
+
+167
+00:06:49,400 --> 00:06:50,690
+unfair to actually be measuring these
+
+168
+00:06:50,690 --> 00:06:54,200
+things so in this experiment more than
+
+169
+00:06:54,200 --> 00:06:55,729
+other ones we really need to take a look
+
+170
+00:06:55,729 --> 00:06:56,870
+at this shape
+
+171
+00:06:56,870 --> 00:06:58,460
+performance again and see you know
+
+172
+00:06:58,460 --> 00:07:00,290
+what's going on went out of the way
+
+173
+00:07:00,290 --> 00:07:02,180
+let's take a look at the first v8
+
+174
+00:07:02,180 --> 00:07:04,780
+benchmark which is a Richards benchmark
+
+175
+00:07:04,780 --> 00:07:08,600
+it's a scheduler and it uses some bit
+
+176
+00:07:08,600 --> 00:07:10,400
+operations for maintaining the states of
+
+177
+00:07:10,400 --> 00:07:14,210
+tasks in the scheduler and it uses a
+
+178
+00:07:14,210 --> 00:07:16,340
+bunch of objects with properties and
+
+179
+00:07:16,340 --> 00:07:18,560
+prototype resolution and such what we
+
+180
+00:07:18,560 --> 00:07:20,240
+can see here is that you know here at
+
+181
+00:07:20,240 --> 00:07:21,470
+zero milliseconds we're starting off
+
+182
+00:07:21,470 --> 00:07:23,780
+with pretty poor performance which is
+
+183
+00:07:23,780 --> 00:07:25,580
+natural you don't want to spend your
+
+184
+00:07:25,580 --> 00:07:27,050
+time optimizing code that you don't know
+
+185
+00:07:27,050 --> 00:07:29,960
+is going to run but after you know 5
+
+186
+00:07:29,960 --> 00:07:32,590
+milliseconds 10 milliseconds certainly
+
+187
+00:07:32,590 --> 00:07:35,660
+after 75 milliseconds we're up to our
+
+188
+00:07:35,660 --> 00:07:38,710
+peak performance these vertical lines
+
+189
+00:07:38,710 --> 00:07:41,720
+indicate runs of the optimizing compiler
+
+190
+00:07:41,720 --> 00:07:43,790
+so you can see if they're all clustered
+
+191
+00:07:43,790 --> 00:07:45,590
+before 75 but you probably can't even
+
+192
+00:07:45,590 --> 00:07:49,100
+read that let's go to 0 5 10 15 25 4075
+
+193
+00:07:49,100 --> 00:07:53,330
+one 2203 2,500 seven hundred a thousand
+
+194
+00:07:53,330 --> 00:07:56,090
+milliseconds right so from zero to one
+
+195
+00:07:56,090 --> 00:07:59,450
+second this is your the dynamic profile
+
+196
+00:07:59,450 --> 00:08:01,970
+of the DFG performance and what we see
+
+197
+00:08:01,970 --> 00:08:04,460
+graphed here is the distribution of
+
+198
+00:08:04,460 --> 00:08:06,110
+performance results that I've taken so
+
+199
+00:08:06,110 --> 00:08:09,290
+for I for example warmed up v 8 40
+
+200
+00:08:09,290 --> 00:08:10,850
+milliseconds and then measured the next
+
+201
+00:08:10,850 --> 00:08:13,190
+five milliseconds 50 times alright and
+
+202
+00:08:13,190 --> 00:08:15,140
+those 50 values are applied here same
+
+203
+00:08:15,140 --> 00:08:17,270
+for 5 milliseconds st. for 10 I don't
+
+204
+00:08:17,270 --> 00:08:19,070
+know I tried to make it understandable
+
+205
+00:08:19,070 --> 00:08:21,350
+but it's a it's a novel graph kind and
+
+206
+00:08:21,350 --> 00:08:23,810
+that never goes over quite so well what
+
+207
+00:08:23,810 --> 00:08:25,400
+we see though is performance is fairly
+
+208
+00:08:25,400 --> 00:08:28,100
+tightly clustered the paint there's more
+
+209
+00:08:28,100 --> 00:08:30,460
+paint that means that there's a higher
+
+210
+00:08:30,460 --> 00:08:33,710
+variance in in the performance and here
+
+211
+00:08:33,710 --> 00:08:35,390
+we see things are fairly tight it goes
+
+212
+00:08:35,390 --> 00:08:37,610
+up drops down a bit for some reason I
+
+213
+00:08:37,610 --> 00:08:40,370
+don't quite understand but then no
+
+214
+00:08:40,370 --> 00:08:43,040
+optimizing compiler run happens after 75
+
+215
+00:08:43,040 --> 00:08:45,650
+milliseconds so 75 milliseconds in this
+
+216
+00:08:45,650 --> 00:08:47,840
+benchmark and the DFG is done all that
+
+217
+00:08:47,840 --> 00:08:53,060
+it sees fit to do and so we get a three
+
+218
+00:08:53,060 --> 00:08:57,190
+point seven times performance increase
+
+219
+00:08:57,190 --> 00:09:00,860
+1.0 would be no no increase at all on
+
+220
+00:09:00,860 --> 00:09:03,200
+this particular benchmark relative to
+
+221
+00:09:03,200 --> 00:09:06,230
+the baseline JIT measured over a full
+
+222
+00:09:06,230 --> 00:09:10,070
+second and now we get in a hardcore
+
+223
+00:09:10,070 --> 00:09:11,140
+stuff
+
+224
+00:09:11,140 --> 00:09:13,910
+one of the things that turned out we'll
+
+225
+00:09:13,910 --> 00:09:15,050
+just take an example of one of the
+
+226
+00:09:15,050 --> 00:09:17,630
+functions that that we went to optimize
+
+227
+00:09:17,630 --> 00:09:19,490
+here I don't know how many of you have
+
+228
+00:09:19,490 --> 00:09:21,080
+looked at the source code for the v8
+
+229
+00:09:21,080 --> 00:09:24,950
+benchmarks few y'all the engine hackers
+
+230
+00:09:24,950 --> 00:09:29,120
+I see right so the rest of y'all here's
+
+231
+00:09:29,120 --> 00:09:32,690
+the JavaScript up here we add something
+
+232
+00:09:32,690 --> 00:09:35,330
+to a task saying you know is suspended
+
+233
+00:09:35,330 --> 00:09:39,590
+we do a bit and compare and we have
+
+234
+00:09:39,590 --> 00:09:41,720
+another clause that their logical order
+
+235
+00:09:41,720 --> 00:09:43,580
+together and we return it and the
+
+236
+00:09:43,580 --> 00:09:46,550
+assembly that's below is what you can
+
+237
+00:09:46,550 --> 00:09:48,170
+see on the screen right now corresponds
+
+238
+00:09:48,170 --> 00:09:51,860
+to this this dot state bitwise and with
+
+239
+00:09:51,860 --> 00:09:55,490
+state held first we get this which is a
+
+240
+00:09:55,490 --> 00:09:58,070
+local variable and that's just a memory
+
+241
+00:09:58,070 --> 00:10:00,530
+reference we checked that this has the
+
+242
+00:10:00,530 --> 00:10:02,720
+prototype that we saw when it was
+
+243
+00:10:02,720 --> 00:10:04,460
+initially compiled but it was optimized
+
+244
+00:10:04,460 --> 00:10:06,410
+and if it does not have this prototype
+
+245
+00:10:06,410 --> 00:10:07,610
+we're going to jump to this bailout
+
+246
+00:10:07,610 --> 00:10:11,300
+which one we d optimize which might be a
+
+247
+00:10:11,300 --> 00:10:13,190
+word you've heard from other discussions
+
+248
+00:10:13,190 --> 00:10:15,710
+of optimizing compilers like crankshaft
+
+249
+00:10:15,710 --> 00:10:19,190
+for example then we once we verified
+
+250
+00:10:19,190 --> 00:10:21,410
+that the this object has the shape that
+
+251
+00:10:21,410 --> 00:10:25,250
+we're expecting we directly reference a
+
+252
+00:10:25,250 --> 00:10:27,560
+field in the object using you know what
+
+253
+00:10:27,560 --> 00:10:30,520
+with the v8 folks called hidden classes
+
+254
+00:10:30,520 --> 00:10:32,570
+we get the global variable corresponding
+
+255
+00:10:32,570 --> 00:10:35,030
+to state held so unfortunately we didn't
+
+256
+00:10:35,030 --> 00:10:37,880
+in line this to a constant but okay and
+
+257
+00:10:37,880 --> 00:10:39,550
+then we go ahead and do the bitwise and
+
+258
+00:10:39,550 --> 00:10:42,560
+the first four instructions correspond
+
+259
+00:10:42,560 --> 00:10:45,560
+to type checks that the this state and
+
+260
+00:10:45,560 --> 00:10:49,220
+the state held are both integers are 14
+
+261
+00:10:49,220 --> 00:10:51,200
+this is a 64-bit assembly code and are
+
+262
+00:10:51,200 --> 00:10:53,870
+14 holds the number tag so we compare
+
+263
+00:10:53,870 --> 00:10:56,050
+the number tag on the on the value
+
+264
+00:10:56,050 --> 00:10:58,730
+javascriptcore uses the nan boxing
+
+265
+00:10:58,730 --> 00:11:01,400
+technique nan boxing folks heard of it
+
+266
+00:11:01,400 --> 00:11:03,950
+yeah awesome you guys great if you
+
+267
+00:11:03,950 --> 00:11:05,810
+haven't heard of it you know search nan
+
+268
+00:11:05,810 --> 00:11:07,670
+boxing on the web also search for an
+
+269
+00:11:07,670 --> 00:11:09,890
+unboxing and I don't think there's you
+
+270
+00:11:09,890 --> 00:11:12,290
+know any pugilistic encounters but not I
+
+271
+00:11:12,290 --> 00:11:15,220
+don't know finally after this we have
+
+272
+00:11:15,220 --> 00:11:17,690
+some comparisons we compared the the
+
+273
+00:11:17,690 --> 00:11:21,470
+value to 0 we invert it we actually
+
+274
+00:11:21,470 --> 00:11:23,300
+store it to memory that's the set local
+
+275
+00:11:23,300 --> 00:11:24,080
+and we do
+
+276
+00:11:24,080 --> 00:11:27,170
+branch and and this is sub-optimal to be
+
+277
+00:11:27,170 --> 00:11:29,090
+honest like many of these things could
+
+278
+00:11:29,090 --> 00:11:31,130
+be joined together but you know this
+
+279
+00:11:31,130 --> 00:11:33,110
+this these are the instructions that are
+
+280
+00:11:33,110 --> 00:11:35,600
+produced for that in a very first part
+
+281
+00:11:35,600 --> 00:11:38,330
+of this function there are some more and
+
+282
+00:11:38,330 --> 00:11:40,040
+finally we return and then after the end
+
+283
+00:11:40,040 --> 00:11:42,140
+of the main path all the bailouts all
+
+284
+00:11:42,140 --> 00:11:44,270
+the points where we you know jump too if
+
+285
+00:11:44,270 --> 00:11:47,660
+something wasn't expected I gotta check
+
+286
+00:11:47,660 --> 00:11:48,860
+myself because I could talk about this
+
+287
+00:11:48,860 --> 00:11:50,540
+forever that's just the first benchmark
+
+288
+00:11:50,540 --> 00:11:53,420
+so the second is Delta blue it's a
+
+289
+00:11:53,420 --> 00:11:58,670
+constraint solver and we get a fine
+
+290
+00:11:58,670 --> 00:12:00,950
+speed up on this one we get a bit more
+
+291
+00:12:00,950 --> 00:12:02,780
+more paint here as you can see there's
+
+292
+00:12:02,780 --> 00:12:04,670
+more yellow there's more variance
+
+293
+00:12:04,670 --> 00:12:05,810
+towards there and I'll talk a little bit
+
+294
+00:12:05,810 --> 00:12:07,430
+more about what that means but on this
+
+295
+00:12:07,430 --> 00:12:09,260
+one it's very it's very important to in
+
+296
+00:12:09,260 --> 00:12:13,130
+line but we see some bit if I look at
+
+297
+00:12:13,130 --> 00:12:14,780
+the logs and i'll i'll talk about how to
+
+298
+00:12:14,780 --> 00:12:17,240
+get the logs a little bit later I think
+
+299
+00:12:17,240 --> 00:12:21,050
+yeah we see some entries like delaying
+
+300
+00:12:21,050 --> 00:12:23,960
+optimization for this thing and it's
+
+301
+00:12:23,960 --> 00:12:25,070
+called in a loop because we have
+
+302
+00:12:25,070 --> 00:12:27,080
+insufficient profiling and so this
+
+303
+00:12:27,080 --> 00:12:28,910
+indicates that you know for this
+
+304
+00:12:28,910 --> 00:12:30,410
+optimizing compiler as with all
+
+305
+00:12:30,410 --> 00:12:32,870
+JavaScript optimizing compilers we need
+
+306
+00:12:32,870 --> 00:12:35,630
+what they call profiling which is the
+
+307
+00:12:35,630 --> 00:12:37,520
+the runtime type feedback the type
+
+308
+00:12:37,520 --> 00:12:41,900
+information and there's actually a an
+
+309
+00:12:41,900 --> 00:12:43,970
+option to tweak how much it weights or
+
+310
+00:12:43,970 --> 00:12:45,770
+doesn't wait for some profiling
+
+311
+00:12:45,770 --> 00:12:48,290
+information and in this case it hits the
+
+312
+00:12:48,290 --> 00:12:51,800
+maximum of five attempts to profile so
+
+313
+00:12:51,800 --> 00:12:53,630
+it starts first it up after twenty
+
+314
+00:12:53,630 --> 00:12:55,880
+milliseconds and then eventually after
+
+315
+00:12:55,880 --> 00:12:58,460
+trying again for more times that at 40
+
+316
+00:12:58,460 --> 00:13:00,410
+milliseconds in it goes ahead and
+
+317
+00:13:00,410 --> 00:13:02,660
+increase the optimized code it's like it
+
+318
+00:13:02,660 --> 00:13:03,980
+would like more information so it's
+
+319
+00:13:03,980 --> 00:13:05,660
+going to wait for it it waits doesn't
+
+320
+00:13:05,660 --> 00:13:09,140
+find it so it produces a code that's a
+
+321
+00:13:09,140 --> 00:13:12,560
+general flavor of things this is I look
+
+322
+00:13:12,560 --> 00:13:14,840
+through the logs for you know what kinds
+
+323
+00:13:14,840 --> 00:13:17,390
+of functions were actually compiled in
+
+324
+00:13:17,390 --> 00:13:19,820
+this early phase and if I go back to the
+
+325
+00:13:19,820 --> 00:13:21,800
+graph sorry for switching back and forth
+
+326
+00:13:21,800 --> 00:13:24,560
+we see that you know it's really between
+
+327
+00:13:24,560 --> 00:13:27,230
+15 and 25 and 40 milliseconds is where
+
+328
+00:13:27,230 --> 00:13:29,480
+we start to jump up to our level and
+
+329
+00:13:29,480 --> 00:13:32,120
+that's that's generally the time range
+
+330
+00:13:32,120 --> 00:13:33,470
+that you're optimizing compiler will
+
+331
+00:13:33,470 --> 00:13:35,420
+kick in and I saw this is one of the
+
+332
+00:13:35,420 --> 00:13:36,860
+functions it doesn't look very hot to me
+
+333
+00:13:36,860 --> 00:13:37,350
+I'm
+
+334
+00:13:37,350 --> 00:13:41,310
+I haven't actually run the damn profiler
+
+335
+00:13:41,310 --> 00:13:43,350
+and seen if this is hot but you know
+
+336
+00:13:43,350 --> 00:13:44,580
+just looking to code it didn't look like
+
+337
+00:13:44,580 --> 00:13:45,630
+it was going to be something that was
+
+338
+00:13:45,630 --> 00:13:47,460
+particularly hot and what I what that
+
+339
+00:13:47,460 --> 00:13:50,340
+indicates to me is that here we just
+
+340
+00:13:50,340 --> 00:13:52,560
+have a lot of work to do and indeed if
+
+341
+00:13:52,560 --> 00:13:55,020
+we go back apologize again going back we
+
+342
+00:13:55,020 --> 00:13:58,200
+see a lot more vertical lines in this
+
+343
+00:13:58,200 --> 00:14:00,210
+one compared to richards and they go a
+
+344
+00:14:00,210 --> 00:14:02,430
+lot later you know they go after 75 it
+
+345
+00:14:02,430 --> 00:14:04,260
+seems like oh there's some out all the
+
+346
+00:14:04,260 --> 00:14:05,640
+way up at a thousand and I'm sure if it
+
+347
+00:14:05,640 --> 00:14:09,300
+ran for more more would run so some code
+
+348
+00:14:09,300 --> 00:14:11,070
+especially code with small functions it
+
+349
+00:14:11,070 --> 00:14:14,550
+needs a bunch of inlining and such it's
+
+350
+00:14:14,550 --> 00:14:15,570
+going to take some more work to be
+
+351
+00:14:15,570 --> 00:14:17,820
+optimized Richard's the the previous
+
+352
+00:14:17,820 --> 00:14:19,920
+example it was a bit simpler for the DFG
+
+353
+00:14:19,920 --> 00:14:23,780
+to work with the next one is a crypto
+
+354
+00:14:23,780 --> 00:14:27,390
+crypto is kind of interesting it deals a
+
+355
+00:14:27,390 --> 00:14:28,530
+lot with integers and it deals a lot
+
+356
+00:14:28,530 --> 00:14:32,460
+with arrays as well again we see a lot
+
+357
+00:14:32,460 --> 00:14:35,820
+of lines the there you can see some
+
+358
+00:14:35,820 --> 00:14:38,700
+notable clustering as well clustering is
+
+359
+00:14:38,700 --> 00:14:40,020
+like when a line is bigger that's
+
+360
+00:14:40,020 --> 00:14:41,730
+because two lines are drawn really close
+
+361
+00:14:41,730 --> 00:14:45,690
+together the DFG optimizer will kick in
+
+362
+00:14:45,690 --> 00:14:47,760
+based on a profile count so for example
+
+363
+00:14:47,760 --> 00:14:50,820
+a loop executes a thousand times or
+
+364
+00:14:50,820 --> 00:14:53,730
+something and that can lead to
+
+365
+00:14:53,730 --> 00:14:55,500
+clustering because there are a lot of
+
+366
+00:14:55,500 --> 00:14:57,810
+loops and functions whose execution
+
+367
+00:14:57,810 --> 00:14:59,430
+counts are linked you know if you call
+
+368
+00:14:59,430 --> 00:15:01,710
+this function a thousand times then this
+
+369
+00:15:01,710 --> 00:15:03,270
+loop will run five thousand times and
+
+370
+00:15:03,270 --> 00:15:04,500
+this other function will run a thousand
+
+371
+00:15:04,500 --> 00:15:06,810
+times so they can all kick in about the
+
+372
+00:15:06,810 --> 00:15:08,850
+same time so you can you can get this
+
+373
+00:15:08,850 --> 00:15:10,860
+sort of clustering effect it usually
+
+374
+00:15:10,860 --> 00:15:12,650
+doesn't affect performance I don't think
+
+375
+00:15:12,650 --> 00:15:14,760
+maybe it can cause an affirmation
+
+376
+00:15:14,760 --> 00:15:18,030
+optimization slow down but no no it's an
+
+377
+00:15:18,030 --> 00:15:21,150
+interesting characteristic but I like
+
+378
+00:15:21,150 --> 00:15:23,010
+this one because crypto is a great
+
+379
+00:15:23,010 --> 00:15:24,600
+benchmark to optimize because there's
+
+380
+00:15:24,600 --> 00:15:27,450
+lots of you know classical compiler
+
+381
+00:15:27,450 --> 00:15:29,910
+optimizations that you know us compiler
+
+382
+00:15:29,910 --> 00:15:32,040
+nerds really really dig on and this is a
+
+383
+00:15:32,040 --> 00:15:33,690
+one of the functions that's in the
+
+384
+00:15:33,690 --> 00:15:36,390
+benchmark because we can see you know we
+
+385
+00:15:36,390 --> 00:15:40,290
+have a lot of integer operations trying
+
+386
+00:15:40,290 --> 00:15:41,670
+to keep in the range of integers that
+
+387
+00:15:41,670 --> 00:15:44,490
+are efficient in JavaScript and if I
+
+388
+00:15:44,490 --> 00:15:46,260
+take a look at one of the particular
+
+389
+00:15:46,260 --> 00:15:49,230
+lines which is fetching a value from an
+
+390
+00:15:49,230 --> 00:15:51,300
+array and then doing a bitwise and with
+
+391
+00:15:51,300 --> 00:15:54,269
+constant we can see that we get the
+
+392
+00:15:54,269 --> 00:15:58,769
+array which which is this array we fetch
+
+393
+00:15:58,769 --> 00:16:03,360
+that out from memory we get I which for
+
+394
+00:16:03,360 --> 00:16:05,459
+some reason is in memory as well I don't
+
+395
+00:16:05,459 --> 00:16:07,529
+think it's actually a good idea for it
+
+396
+00:16:07,529 --> 00:16:10,410
+to be in memory but okay and we get this
+
+397
+00:16:10,410 --> 00:16:11,670
+this is actually a relatively new thing
+
+398
+00:16:11,670 --> 00:16:13,850
+just landed about a month ago this
+
+399
+00:16:13,850 --> 00:16:17,100
+butterfly representation this is a way
+
+400
+00:16:17,100 --> 00:16:21,180
+in the future to store out of line data
+
+401
+00:16:21,180 --> 00:16:24,269
+like the elements in an array to
+
+402
+00:16:24,269 --> 00:16:26,430
+potentially store them as unbox values
+
+403
+00:16:26,430 --> 00:16:28,860
+it's not completely taken advantage of
+
+404
+00:16:28,860 --> 00:16:29,970
+yet and I think it's one of the things
+
+405
+00:16:29,970 --> 00:16:32,459
+that in JavaScript core in the DFG will
+
+406
+00:16:32,459 --> 00:16:35,040
+start to see in the next couple months
+
+407
+00:16:35,040 --> 00:16:38,310
+or so but this is a pointer to either a
+
+408
+00:16:38,310 --> 00:16:41,610
+small amount of inline data so if your
+
+409
+00:16:41,610 --> 00:16:42,839
+array only has two elements for example
+
+410
+00:16:42,839 --> 00:16:44,130
+they're probably going to be allocated
+
+411
+00:16:44,130 --> 00:16:46,440
+in the same block as your as your object
+
+412
+00:16:46,440 --> 00:16:48,390
+or a pointer to out of line data
+
+413
+00:16:48,390 --> 00:16:51,570
+containing the rest of the array the get
+
+414
+00:16:51,570 --> 00:16:56,010
+byval checks that the integers and
+
+415
+00:16:56,010 --> 00:16:59,370
+bounds up for the array and if not it
+
+416
+00:16:59,370 --> 00:17:02,160
+bails out fetches the value and checks
+
+417
+00:17:02,160 --> 00:17:04,050
+if the value is a hole and if not it
+
+418
+00:17:04,050 --> 00:17:05,910
+bails out and then finally we do a
+
+419
+00:17:05,910 --> 00:17:08,010
+bitwise and another thing that I wasn't
+
+420
+00:17:08,010 --> 00:17:11,130
+mentioning before is that between these
+
+421
+00:17:11,130 --> 00:17:13,800
+operations these operations are the part
+
+422
+00:17:13,800 --> 00:17:15,540
+of the internal representation of the
+
+423
+00:17:15,540 --> 00:17:17,610
+DFG compiler so they don't they
+
+424
+00:17:17,610 --> 00:17:19,829
+correspond loosely the things that you
+
+425
+00:17:19,829 --> 00:17:22,110
+need to do semantically in JavaScript
+
+426
+00:17:22,110 --> 00:17:23,520
+but they don't correspond exactly the
+
+427
+00:17:23,520 --> 00:17:25,439
+bytecode they don't correspond exactly
+
+428
+00:17:25,439 --> 00:17:28,559
+to the the specification either but what
+
+429
+00:17:28,559 --> 00:17:33,390
+we see is that for example we have we
+
+430
+00:17:33,390 --> 00:17:34,919
+get this array and we put it in our 10
+
+431
+00:17:34,919 --> 00:17:38,460
+and then down here we use our 10 and
+
+432
+00:17:38,460 --> 00:17:41,220
+then later on we can use a we can use
+
+433
+00:17:41,220 --> 00:17:42,809
+these values directly in those registers
+
+434
+00:17:42,809 --> 00:17:44,610
+register allocation is you know
+
+435
+00:17:44,610 --> 00:17:47,910
+obviously a huge optimization that all
+
+436
+00:17:47,910 --> 00:17:50,010
+of the optimizing compilers do and so
+
+437
+00:17:50,010 --> 00:17:51,960
+even if you don't have a lot of type
+
+438
+00:17:51,960 --> 00:17:54,059
+information in running the optimizing
+
+439
+00:17:54,059 --> 00:17:55,640
+compiler on a piece of code can still be
+
+440
+00:17:55,640 --> 00:18:00,590
+quite advantageous right so raytrace
+
+441
+00:18:00,590 --> 00:18:03,570
+here we have an interesting example is
+
+442
+00:18:03,570 --> 00:18:05,280
+the first floating-point example and
+
+443
+00:18:05,280 --> 00:18:07,980
+VA test suites it uses some
+
+444
+00:18:07,980 --> 00:18:09,780
+floating-point math and it uses objects
+
+445
+00:18:09,780 --> 00:18:12,060
+with floating point fields so like this
+
+446
+00:18:12,060 --> 00:18:14,910
+X being a floating point number we see
+
+447
+00:18:14,910 --> 00:18:16,530
+very tight performance here and then we
+
+448
+00:18:16,530 --> 00:18:19,530
+as we warm up a bit more we start to see
+
+449
+00:18:19,530 --> 00:18:22,410
+a bit more variance and whenever you see
+
+450
+00:18:22,410 --> 00:18:25,080
+variance in a very small benchmark like
+
+451
+00:18:25,080 --> 00:18:27,870
+this it means that something is slowing
+
+452
+00:18:27,870 --> 00:18:31,080
+down the benchmark sometimes but not
+
+453
+00:18:31,080 --> 00:18:34,830
+some other times so any guesses as to
+
+454
+00:18:34,830 --> 00:18:36,060
+what this could be in this particular
+
+455
+00:18:36,060 --> 00:18:42,450
+case yes yes exactly the reason we have
+
+456
+00:18:42,450 --> 00:18:44,100
+so much variance and you probably can
+
+457
+00:18:44,100 --> 00:18:45,210
+see this right now but it goes from here
+
+458
+00:18:45,210 --> 00:18:46,890
+all the way to hear there's a histogram
+
+459
+00:18:46,890 --> 00:18:49,050
+line drawn there is because sometimes we
+
+460
+00:18:49,050 --> 00:18:50,400
+hit garbage collection and sometimes we
+
+461
+00:18:50,400 --> 00:18:52,410
+don't in the right trace example we get
+
+462
+00:18:52,410 --> 00:18:54,810
+a lot of short-lived objects with
+
+463
+00:18:54,810 --> 00:18:57,540
+floating point fields so you can you can
+
+464
+00:18:57,540 --> 00:18:59,190
+get very good performance as long as you
+
+465
+00:18:59,190 --> 00:19:01,050
+don't have GE and if you do hit GC you
+
+466
+00:19:01,050 --> 00:19:03,180
+get less performance and I'll talk about
+
+467
+00:19:03,180 --> 00:19:05,750
+that a bit more when we get to the more
+
+468
+00:19:05,750 --> 00:19:08,100
+strong tests of the garbage collector
+
+469
+00:19:08,100 --> 00:19:11,400
+later as one example of code that the
+
+470
+00:19:11,400 --> 00:19:13,950
+DFG works with for this one we have this
+
+471
+00:19:13,950 --> 00:19:16,320
+normalized function and it takes a
+
+472
+00:19:16,320 --> 00:19:18,390
+vector and it returns a new vector and
+
+473
+00:19:18,390 --> 00:19:21,810
+at normal I normalized as it compiles
+
+474
+00:19:21,810 --> 00:19:23,940
+dysfunction when the DFG gets to this
+
+475
+00:19:23,940 --> 00:19:27,090
+top magnitude it's going to inline the
+
+476
+00:19:27,090 --> 00:19:29,580
+code for this magnitude which is pretty
+
+477
+00:19:29,580 --> 00:19:31,710
+awesome optimization I also done by
+
+478
+00:19:31,710 --> 00:19:35,100
+other other systems but you know it's
+
+479
+00:19:35,100 --> 00:19:38,030
+pretty key to do and I just want to
+
+480
+00:19:38,030 --> 00:19:41,310
+focus a bit on what happens when we
+
+481
+00:19:41,310 --> 00:19:44,720
+store the result for this x divided by M
+
+482
+00:19:44,720 --> 00:19:47,550
+we ended up dividing by things they're
+
+483
+00:19:47,550 --> 00:19:49,470
+placed in SSC registers so it's just one
+
+484
+00:19:49,470 --> 00:19:51,270
+instruction after we've loaded up the
+
+485
+00:19:51,270 --> 00:19:53,130
+values but then when we go to store it
+
+486
+00:19:53,130 --> 00:19:58,130
+we re add a number tag on a value in the
+
+487
+00:19:58,130 --> 00:20:00,510
+high beds to the value or I think it
+
+488
+00:20:00,510 --> 00:20:03,290
+rotates the value around actually and
+
+489
+00:20:03,290 --> 00:20:05,960
+and we store it as a sort of general
+
+490
+00:20:05,960 --> 00:20:09,000
+JavaScript object which only occupies
+
+491
+00:20:09,000 --> 00:20:13,740
+one word but in into this object which
+
+492
+00:20:13,740 --> 00:20:16,320
+means that we don't have fields that are
+
+493
+00:20:16,320 --> 00:20:19,130
+unboxed values in javascript core we
+
+494
+00:20:19,130 --> 00:20:22,160
+have this decks can be like an in 32 for
+
+495
+00:20:22,160 --> 00:20:24,110
+example or this that X can be a float
+
+496
+00:20:24,110 --> 00:20:25,070
+and we always know it's a float
+
+497
+00:20:25,070 --> 00:20:26,870
+otherwise we you know we would leave off
+
+498
+00:20:26,870 --> 00:20:31,550
+this tagging step early Boyer again we
+
+499
+00:20:31,550 --> 00:20:33,950
+see a lot of paint because we see a lot
+
+500
+00:20:33,950 --> 00:20:38,780
+of short-term allocations these are two
+
+501
+00:20:38,780 --> 00:20:41,210
+benchmarks that were translated from
+
+502
+00:20:41,210 --> 00:20:44,180
+scheme actually by an automatic
+
+503
+00:20:44,180 --> 00:20:46,760
+translator by same fellow that does the
+
+504
+00:20:46,760 --> 00:20:48,860
+dart to JavaScript translator in cinelli
+
+505
+00:20:48,860 --> 00:20:52,580
+and so what we see are a lot of calls to
+
+506
+00:20:52,580 --> 00:20:54,200
+small functions and a lot of allocation
+
+507
+00:20:54,200 --> 00:20:56,870
+of short-lived objects so this is
+
+508
+00:20:56,870 --> 00:20:58,700
+something that a generational collector
+
+509
+00:20:58,700 --> 00:21:01,400
+collector will do really awesome on but
+
+510
+00:21:01,400 --> 00:21:05,450
+in JavaScript kors case when the garbage
+
+511
+00:21:05,450 --> 00:21:06,890
+collector needs to run it actually stops
+
+512
+00:21:06,890 --> 00:21:10,040
+everything and then it scans the entire
+
+513
+00:21:10,040 --> 00:21:13,850
+space in parallel I mean you have maybe
+
+514
+00:21:13,850 --> 00:21:15,470
+eight cores in your system or four cores
+
+515
+00:21:15,470 --> 00:21:17,990
+and it will use all of them but it does
+
+516
+00:21:17,990 --> 00:21:19,910
+have to scan the whole space to see
+
+517
+00:21:19,910 --> 00:21:21,740
+what's live and what's dead and then it
+
+518
+00:21:21,740 --> 00:21:23,690
+lets a program go on and that leads to
+
+519
+00:21:23,690 --> 00:21:26,000
+this you know these huge variances here
+
+520
+00:21:26,000 --> 00:21:30,140
+here here an ongoing I think the outside
+
+521
+00:21:30,140 --> 00:21:32,690
+color corresponds to ninety percent of
+
+522
+00:21:32,690 --> 00:21:35,660
+the samples and that red in the middle
+
+523
+00:21:35,660 --> 00:21:38,810
+is the the middle ten percent you can
+
+524
+00:21:38,810 --> 00:21:41,000
+think of the the reddest red is a kind
+
+525
+00:21:41,000 --> 00:21:46,160
+of median line on these so it's just an
+
+526
+00:21:46,160 --> 00:21:48,740
+indication of this this thing I you know
+
+527
+00:21:48,740 --> 00:21:50,480
+if you take nothing else from this
+
+528
+00:21:50,480 --> 00:21:52,790
+presentation is that you know numbers
+
+529
+00:21:52,790 --> 00:21:54,020
+are really awesome what you're having
+
+530
+00:21:54,020 --> 00:21:55,760
+you know shootouts and races and
+
+531
+00:21:55,760 --> 00:21:57,920
+marketing and things like that but if
+
+532
+00:21:57,920 --> 00:21:59,810
+you actually want to understand you know
+
+533
+00:21:59,810 --> 00:22:02,210
+anything about your own performance then
+
+534
+00:22:02,210 --> 00:22:04,310
+you need to treat performance as a
+
+535
+00:22:04,310 --> 00:22:06,740
+distribution of values and not simply a
+
+536
+00:22:06,740 --> 00:22:11,630
+number next we've got the regular
+
+537
+00:22:11,630 --> 00:22:12,830
+expression benchmark and there's not
+
+538
+00:22:12,830 --> 00:22:15,320
+really anything to say here because the
+
+539
+00:22:15,320 --> 00:22:16,520
+regular expressions have their own
+
+540
+00:22:16,520 --> 00:22:18,620
+compiler than in all the engines and
+
+541
+00:22:18,620 --> 00:22:19,970
+it's not really subject to the
+
+542
+00:22:19,970 --> 00:22:22,850
+optimizing compiler and so the DFG
+
+543
+00:22:22,850 --> 00:22:24,290
+doesn't really do anything for us here
+
+544
+00:22:24,290 --> 00:22:27,830
+and that's that's basically that it it
+
+545
+00:22:27,830 --> 00:22:30,410
+seems to run but very few times maybe 15
+
+546
+00:22:30,410 --> 00:22:32,960
+times or so giving us a
+
+547
+00:22:32,960 --> 00:22:34,640
+I speed up in the loops around which the
+
+548
+00:22:34,640 --> 00:22:37,580
+regular expressions run but but not on
+
+549
+00:22:37,580 --> 00:22:39,559
+the regular expressions themselves which
+
+550
+00:22:39,559 --> 00:22:43,429
+take the bulk of the time finally we're
+
+551
+00:22:43,429 --> 00:22:46,940
+getting to the end here I think good we
+
+552
+00:22:46,940 --> 00:22:49,570
+have the splay benchmark which tests
+
+553
+00:22:49,570 --> 00:22:51,830
+allocations that are very long-lived so
+
+554
+00:22:51,830 --> 00:22:53,360
+it's terrible for generational
+
+555
+00:22:53,360 --> 00:22:55,070
+collectors JavaScript court actually
+
+556
+00:22:55,070 --> 00:22:57,590
+does fairly well in this but what you
+
+557
+00:22:57,590 --> 00:23:00,409
+can see again is is the huge amount of
+
+558
+00:23:00,409 --> 00:23:02,600
+variance here we go from know all the
+
+559
+00:23:02,600 --> 00:23:03,860
+way on the bottom here when we have to
+
+560
+00:23:03,860 --> 00:23:06,049
+stop the world and you know Mark an
+
+561
+00:23:06,049 --> 00:23:08,690
+enormous heap to you know something is
+
+562
+00:23:08,690 --> 00:23:11,270
+quite good up there and and you don't
+
+563
+00:23:11,270 --> 00:23:13,010
+see the this kind of variance if you
+
+564
+00:23:13,010 --> 00:23:14,779
+just look at the numbers in the end like
+
+565
+00:23:14,779 --> 00:23:16,520
+if you just look at the the raw
+
+566
+00:23:16,520 --> 00:23:18,529
+performance numbers measured over a
+
+567
+00:23:18,529 --> 00:23:20,120
+second because if you measure a second
+
+568
+00:23:20,120 --> 00:23:22,340
+you're amortizing all these garbage
+
+569
+00:23:22,340 --> 00:23:24,260
+collection costs you're not measuring
+
+570
+00:23:24,260 --> 00:23:25,880
+you know what is your maximum pause time
+
+571
+00:23:25,880 --> 00:23:28,279
+for example so in this case we're seeing
+
+572
+00:23:28,279 --> 00:23:33,200
+a pretty poor maximum pause time because
+
+573
+00:23:33,200 --> 00:23:35,750
+of this stop the world although it's
+
+574
+00:23:35,750 --> 00:23:37,220
+parallel you know but stop the world
+
+575
+00:23:37,220 --> 00:23:41,659
+marker and finally we have the newest
+
+576
+00:23:41,659 --> 00:23:44,029
+addition to the v8 benchmarks I guess if
+
+577
+00:23:44,029 --> 00:23:45,770
+they're still around and we don't all
+
+578
+00:23:45,770 --> 00:23:48,590
+move to octane benchmarks or such which
+
+579
+00:23:48,590 --> 00:23:50,659
+is a navier-stokes benchmark it has a
+
+580
+00:23:50,659 --> 00:23:53,299
+ray large array of floating-point
+
+581
+00:23:53,299 --> 00:23:55,220
+numbers but not using the type to raise
+
+582
+00:23:55,220 --> 00:23:58,909
+so what this really measures is okay
+
+583
+00:23:58,909 --> 00:24:00,649
+first of all are you doing good floating
+
+584
+00:24:00,649 --> 00:24:02,419
+point wise does your optimizing compiler
+
+585
+00:24:02,419 --> 00:24:05,029
+deal with floating point well and can
+
+586
+00:24:05,029 --> 00:24:06,590
+you automatically turn arrays of
+
+587
+00:24:06,590 --> 00:24:08,840
+floating point values into a raised of
+
+588
+00:24:08,840 --> 00:24:12,140
+unbox floats you know and in the case of
+
+589
+00:24:12,140 --> 00:24:14,090
+v8 they can do this and the case of
+
+590
+00:24:14,090 --> 00:24:17,360
+javascriptcore you know we can so for
+
+591
+00:24:17,360 --> 00:24:19,880
+example this get byval fetches a value
+
+592
+00:24:19,880 --> 00:24:23,210
+at the index with the same range check
+
+593
+00:24:23,210 --> 00:24:29,539
+and is it a hole and we get we get some
+
+594
+00:24:29,539 --> 00:24:32,029
+local value I think and then we turned
+
+595
+00:24:32,029 --> 00:24:34,429
+this value we got into a double which
+
+596
+00:24:34,429 --> 00:24:35,870
+actually doesn't take very much code but
+
+597
+00:24:35,870 --> 00:24:38,720
+it's more than if it was an unboxed
+
+598
+00:24:38,720 --> 00:24:39,740
+array and we knew it was a double
+
+599
+00:24:39,740 --> 00:24:44,840
+already so yeah no no automatic turning
+
+600
+00:24:44,840 --> 00:24:46,900
+of arrays into double erase
+
+601
+00:24:46,900 --> 00:24:48,920
+finally before I close I'd like to
+
+602
+00:24:48,920 --> 00:24:51,560
+mention how I got this data if you want
+
+603
+00:24:51,560 --> 00:24:54,410
+JSC and I think there's so many apple
+
+604
+00:24:54,410 --> 00:24:56,300
+laptops right here you probably have
+
+605
+00:24:56,300 --> 00:24:57,680
+JavaScript core installed if you can
+
+606
+00:24:57,680 --> 00:25:00,410
+locate the JSC program if you run it
+
+607
+00:25:00,410 --> 00:25:02,030
+with dash dash options it gives you a
+
+608
+00:25:02,030 --> 00:25:05,780
+spit out of knobs you can turn the dash
+
+609
+00:25:05,780 --> 00:25:09,460
+D will dump bike code which is useful in
+
+610
+00:25:09,460 --> 00:25:12,050
+together with the app together with a
+
+611
+00:25:12,050 --> 00:25:14,390
+disassembly if you say show DFG
+
+612
+00:25:14,390 --> 00:25:16,910
+disassembly but in order to get the time
+
+613
+00:25:16,910 --> 00:25:18,860
+stamps the information that I showed you
+
+614
+00:25:18,860 --> 00:25:21,320
+you have to enable some verbose logging
+
+615
+00:25:21,320 --> 00:25:24,830
+and the the graphs that I showed you I
+
+616
+00:25:24,830 --> 00:25:26,390
+measured them without the verbose
+
+617
+00:25:26,390 --> 00:25:29,030
+logging and then I superimposed the DFG
+
+618
+00:25:29,030 --> 00:25:32,420
+vertical bars after enabling verbose
+
+619
+00:25:32,420 --> 00:25:33,920
+logging so they were from separate runs
+
+620
+00:25:33,920 --> 00:25:36,380
+and not entirely identical so you know
+
+621
+00:25:36,380 --> 00:25:38,780
+don't try to correlate those two
+
+622
+00:25:38,780 --> 00:25:43,910
+precisely right so back to the hubris I
+
+623
+00:25:43,910 --> 00:25:46,580
+guess you know javascriptcore is fast as
+
+624
+00:25:46,580 --> 00:25:49,270
+v8 on its own benchmark and stuff and
+
+625
+00:25:49,270 --> 00:25:52,730
+and yeah it is and it's faster and it's
+
+626
+00:25:52,730 --> 00:25:56,990
+slower also because you know we got a
+
+627
+00:25:56,990 --> 00:25:58,130
+bunch of different tests like we're
+
+628
+00:25:58,130 --> 00:26:00,020
+doing real great on Richards I say you
+
+629
+00:26:00,020 --> 00:26:01,700
+know we is a JavaScript core hacker I
+
+630
+00:26:01,700 --> 00:26:03,230
+don't actually have a dog in this race
+
+631
+00:26:03,230 --> 00:26:06,140
+but you know do great on Richards not so
+
+632
+00:26:06,140 --> 00:26:08,590
+great on Delta blue the same on Krypto
+
+633
+00:26:08,590 --> 00:26:11,930
+really eating it on early boyer but
+
+634
+00:26:11,930 --> 00:26:13,880
+we're you know picking up on splay yeah
+
+635
+00:26:13,880 --> 00:26:16,520
+and it is you know a classic example of
+
+636
+00:26:16,520 --> 00:26:18,530
+you know boy javascriptcore is you know
+
+637
+00:26:18,530 --> 00:26:20,210
+really killing it on display right but
+
+638
+00:26:20,210 --> 00:26:22,550
+the pause time it's not on this graph
+
+639
+00:26:22,550 --> 00:26:24,290
+right you can't see it because those
+
+640
+00:26:24,290 --> 00:26:25,790
+costs are more dives over the entire
+
+641
+00:26:25,790 --> 00:26:28,730
+second of collection so yeah that's
+
+642
+00:26:28,730 --> 00:26:31,250
+that's javascriptcore is optimizing
+
+643
+00:26:31,250 --> 00:26:41,980
+compiler I'll take some questions now
+
+644
+00:26:41,990 --> 00:26:49,170
+sure first of all awesome talk love the
+
+645
+00:26:49,170 --> 00:26:51,840
+tub thank you for being you know BM geek
+
+646
+00:26:51,840 --> 00:26:53,640
+obvious they do the question I have is
+
+647
+00:26:53,640 --> 00:26:55,710
+for the butterfly um forgot what that
+
+648
+00:26:55,710 --> 00:26:59,010
+was not view but something else or is
+
+649
+00:26:59,010 --> 00:27:01,230
+that intended to be for arrays only is
+
+650
+00:27:01,230 --> 00:27:03,360
+there a plan for making unboxed values
+
+651
+00:27:03,360 --> 00:27:05,190
+for objects as well for property on I
+
+652
+00:27:05,190 --> 00:27:07,860
+think it's for both I haven't talked
+
+653
+00:27:07,860 --> 00:27:10,380
+with the fellow that it meant but as far
+
+654
+00:27:10,380 --> 00:27:12,210
+as I understand it's for both sounds
+
+655
+00:27:12,210 --> 00:27:25,380
+very cool hi hi are there plans to
+
+656
+00:27:25,380 --> 00:27:27,150
+expose this information for developers
+
+657
+00:27:27,150 --> 00:27:30,840
+like when are you know certain parts of
+
+658
+00:27:30,840 --> 00:27:33,630
+the code hot when is your program
+
+659
+00:27:33,630 --> 00:27:34,560
+actually doing something bad that's
+
+660
+00:27:34,560 --> 00:27:36,560
+throwing off the digit and whatever
+
+661
+00:27:36,560 --> 00:27:38,340
+because it does that's actually
+
+662
+00:27:38,340 --> 00:27:39,810
+something that that we're missing right
+
+663
+00:27:39,810 --> 00:27:42,540
+now that that kind of information that's
+
+664
+00:27:42,540 --> 00:27:45,450
+a good question i think the general
+
+665
+00:27:45,450 --> 00:27:47,460
+answer that is the profiler and the
+
+666
+00:27:47,460 --> 00:27:50,310
+profiler i believe is hooked up to the
+
+667
+00:27:50,310 --> 00:27:52,500
+inspector and if it's not that that's a
+
+668
+00:27:52,500 --> 00:27:56,940
+problem I mean that doesn't really tell
+
+669
+00:27:56,940 --> 00:27:58,440
+you that it's actually throwing it off I
+
+670
+00:27:58,440 --> 00:28:00,330
+mean it just you see a decrease in
+
+671
+00:28:00,330 --> 00:28:01,710
+performance but it doesn't really tell
+
+672
+00:28:01,710 --> 00:28:03,530
+you you know which part of the code is
+
+673
+00:28:03,530 --> 00:28:06,060
+it's causing it or you know why your
+
+674
+00:28:06,060 --> 00:28:10,020
+your your kid is failing basically so is
+
+675
+00:28:10,020 --> 00:28:12,080
+there I don't know like maybe like a
+
+676
+00:28:12,080 --> 00:28:15,360
+heat map that would be awesome it's not
+
+677
+00:28:15,360 --> 00:28:20,190
+even that yet okay so JavaScript co has
+
+678
+00:28:20,190 --> 00:28:22,710
+three different compilers that seems
+
+679
+00:28:22,710 --> 00:28:25,710
+like a fairly high number do they really
+
+680
+00:28:25,710 --> 00:28:29,340
+need that many I don't think so uh I
+
+681
+00:28:29,340 --> 00:28:34,740
+believe the plan is well the plan is
+
+682
+00:28:34,740 --> 00:28:36,570
+driven by results right so does the
+
+683
+00:28:36,570 --> 00:28:40,920
+slowdown something or not and i think
+
+684
+00:28:40,920 --> 00:28:43,530
+the low-level interpreter has seemed to
+
+685
+00:28:43,530 --> 00:28:45,840
+work for just munching a lot of code
+
+686
+00:28:45,840 --> 00:28:49,350
+that doesn't run very often and the DFG
+
+687
+00:28:49,350 --> 00:28:51,300
+works for hot code and i think the
+
+688
+00:28:51,300 --> 00:28:52,680
+question is is this baseline JIT
+
+689
+00:28:52,680 --> 00:28:53,400
+necessary
+
+690
+00:28:53,400 --> 00:28:56,760
+and it seems it right now to remove it
+
+691
+00:28:56,760 --> 00:29:02,400
+is not worth it's still in a performance
+
+692
+00:29:02,400 --> 00:29:03,810
+improvement but I think that's probably
+
+693
+00:29:03,810 --> 00:29:06,690
+due to inefficiencies or things that
+
+694
+00:29:06,690 --> 00:29:08,790
+aren't complete in the me optimizing
+
+695
+00:29:08,790 --> 00:29:12,030
+compiler more than any fundamental
+
+696
+00:29:12,030 --> 00:29:14,310
+architectural advantage so I'm kind of
+
+697
+00:29:14,310 --> 00:29:24,020
+talking about so
+
+698
+00:29:24,030 --> 00:29:26,470
+just to double check as I understand the
+
+699
+00:29:26,470 --> 00:29:28,720
+the JIT compiler runs in thread so you
+
+700
+00:29:28,720 --> 00:29:30,220
+have to stop the world in order to
+
+701
+00:29:30,220 --> 00:29:33,309
+compile so like the bunching of
+
+702
+00:29:33,309 --> 00:29:35,200
+compilation could cause pauses in and of
+
+703
+00:29:35,200 --> 00:29:41,620
+itself as well yeah okay I guess that's
+

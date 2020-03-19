@@ -1,0 +1,1929 @@
+1
+00:00:00,180 --> 00:00:11,269
+
+[Music]
+
+2
+00:00:11,269 --> 00:00:13,380
+thank you so much for having me although
+
+3
+00:00:13,380 --> 00:00:16,049
+in Singapore this is my first time in
+
+4
+00:00:16,049 --> 00:00:18,330
+Singapore and my first time in Southeast
+
+5
+00:00:18,330 --> 00:00:22,410
+Asia so I'm kind of excited you have
+
+6
+00:00:22,410 --> 00:00:25,619
+like so many good plants it's it's
+
+7
+00:00:25,619 --> 00:00:28,949
+pretty it's I love it and wildlife is
+
+8
+00:00:28,949 --> 00:00:30,929
+pretty good I'm like used to Cody's and
+
+9
+00:00:30,929 --> 00:00:33,090
+little trash pandas in my backyard but
+
+10
+00:00:33,090 --> 00:00:35,130
+you have like lizards which is really
+
+11
+00:00:35,130 --> 00:00:35,690
+cool
+
+12
+00:00:35,690 --> 00:00:40,410
+yeah way better alright so I'm gonna
+
+13
+00:00:40,410 --> 00:00:42,570
+talk about storytelling and I'm gonna
+
+14
+00:00:42,570 --> 00:00:45,719
+talk about using performance observers
+
+15
+00:00:45,719 --> 00:00:56,129
+to do that so I'm arena hello
+
+16
+00:00:56,129 --> 00:00:58,590
+I am a developer you can find me on
+
+17
+00:00:58,590 --> 00:01:01,469
+github I do
+
+18
+00:01:01,469 --> 00:01:03,840
+code for work and sometimes I maintain a
+
+19
+00:01:03,840 --> 00:01:05,790
+few projects here and there write up a
+
+20
+00:01:05,790 --> 00:01:07,260
+few projects here in there in my spare
+
+21
+00:01:07,260 --> 00:01:10,740
+time but in other parts of my time I
+
+22
+00:01:10,740 --> 00:01:16,170
+like to draw and so sometimes I draw
+
+23
+00:01:16,170 --> 00:01:18,270
+like random stuff but sometimes I draw
+
+24
+00:01:18,270 --> 00:01:21,180
+what I like to call computer art so it's
+
+25
+00:01:21,180 --> 00:01:22,650
+like little guides that I've put
+
+26
+00:01:22,650 --> 00:01:24,390
+together on several things that are
+
+27
+00:01:24,390 --> 00:01:26,250
+interesting in the computer world like
+
+28
+00:01:26,250 --> 00:01:28,590
+things on streams or working with async
+
+29
+00:01:28,590 --> 00:01:31,799
+hooks or how v8 works and so today's
+
+30
+00:01:31,799 --> 00:01:33,329
+talk is gonna be a little bit like that
+
+31
+00:01:33,329 --> 00:01:35,880
+but in a talk format so I've tried to
+
+32
+00:01:35,880 --> 00:01:37,920
+like kind of build a narrative around
+
+33
+00:01:37,920 --> 00:01:39,869
+using performance observers and how we
+
+34
+00:01:39,869 --> 00:01:42,960
+can use those as narrative in our own
+
+35
+00:01:42,960 --> 00:01:46,320
+applications I also like ramen so
+
+36
+00:01:46,320 --> 00:01:48,570
+there's a few pictures of ramen I hope
+
+37
+00:01:48,570 --> 00:01:50,790
+you like ramen too ate a lot of ramen
+
+38
+00:01:50,790 --> 00:01:54,149
+I had like 11 bowls of ramen for the 13
+
+39
+00:01:54,149 --> 00:01:56,399
+days I was in Japan and December it was
+
+40
+00:01:56,399 --> 00:01:57,270
+pretty great
+
+41
+00:01:57,270 --> 00:01:59,520
+so hello storytelling performance
+
+42
+00:01:59,520 --> 00:02:01,649
+observers like I said we're gonna try to
+
+43
+00:02:01,649 --> 00:02:03,390
+build it a little bit of a narrative as
+
+44
+00:02:03,390 --> 00:02:05,909
+to how we can build out applications
+
+45
+00:02:05,909 --> 00:02:08,489
+know a little bit more about them as we
+
+46
+00:02:08,489 --> 00:02:11,340
+work in our enid process
+
+47
+00:02:11,340 --> 00:02:14,940
+so mostly I'll be talking about node but
+
+48
+00:02:14,940 --> 00:02:16,650
+there might be some kind of browser
+
+49
+00:02:16,650 --> 00:02:21,270
+references to that as well so why are we
+
+50
+00:02:21,270 --> 00:02:24,300
+even here like why why do we want to
+
+51
+00:02:24,300 --> 00:02:26,280
+kind of find out more about our
+
+52
+00:02:26,280 --> 00:02:28,650
+applications I think that comes down to
+
+53
+00:02:28,650 --> 00:02:33,000
+the fact that we like we need to have
+
+54
+00:02:33,000 --> 00:02:34,769
+more knowledge as to what's going on we
+
+55
+00:02:34,769 --> 00:02:37,349
+want to know or when a request comes in
+
+56
+00:02:37,349 --> 00:02:39,330
+and what happens after that and how long
+
+57
+00:02:39,330 --> 00:02:41,819
+does it take for us to look up a thing
+
+58
+00:02:41,819 --> 00:02:43,470
+in the database how long does it take us
+
+59
+00:02:43,470 --> 00:02:46,650
+to do I put in the database what's the
+
+60
+00:02:46,650 --> 00:02:48,660
+difference between writing to the
+
+61
+00:02:48,660 --> 00:02:50,700
+database versus writing to Redis and
+
+62
+00:02:50,700 --> 00:02:53,790
+these kinds of metrics we kind of we
+
+63
+00:02:53,790 --> 00:02:54,989
+kind of want to know it all and
+
+64
+00:02:54,989 --> 00:02:58,190
+sometimes it's hard in your processes
+
+65
+00:02:58,190 --> 00:03:02,239
+but we want to know the numbers anyway
+
+66
+00:03:02,239 --> 00:03:04,530
+and numbers are pretty important so
+
+67
+00:03:04,530 --> 00:03:06,360
+that's kind of the thing like we want to
+
+68
+00:03:06,360 --> 00:03:08,640
+know the numbers because numbers gets us
+
+69
+00:03:08,640 --> 00:03:10,489
+places and then we can either improve or
+
+70
+00:03:10,489 --> 00:03:13,019
+I don't know I don't know if we want to
+
+71
+00:03:13,019 --> 00:03:15,570
+not improve but or stay the same in
+
+72
+00:03:15,570 --> 00:03:18,030
+terms of how we build stuff out it's
+
+73
+00:03:18,030 --> 00:03:20,340
+numbers numbers are pretty important but
+
+74
+00:03:20,340 --> 00:03:23,640
+where numbers takes us is you know to
+
+75
+00:03:23,640 --> 00:03:25,590
+kind of keep on with us with a theme of
+
+76
+00:03:25,590 --> 00:03:27,480
+storytelling and having a narrative a
+
+77
+00:03:27,480 --> 00:03:29,519
+lot of the times what we'll do to get
+
+78
+00:03:29,519 --> 00:03:31,140
+some sort of story or some sort of
+
+79
+00:03:31,140 --> 00:03:33,390
+tracking in our applications as having
+
+80
+00:03:33,390 --> 00:03:37,140
+loggers so there's one like you know
+
+81
+00:03:37,140 --> 00:03:39,000
+there is a pinot logger that gets just a
+
+82
+00:03:39,000 --> 00:03:40,440
+little bit of information about what
+
+83
+00:03:40,440 --> 00:03:42,630
+happens in our application we put that
+
+84
+00:03:42,630 --> 00:03:45,150
+together with our server and we get some
+
+85
+00:03:45,150 --> 00:03:48,389
+data out so we can see how long like how
+
+86
+00:03:48,389 --> 00:03:51,359
+long something takes can probably get a
+
+87
+00:03:51,359 --> 00:03:53,579
+little bit more from the process ID and
+
+88
+00:03:53,579 --> 00:03:55,410
+we kind of can use that information to
+
+89
+00:03:55,410 --> 00:03:57,510
+our advantage and kind of build out that
+
+90
+00:03:57,510 --> 00:04:00,269
+narrative so loggers loggers are great
+
+91
+00:04:00,269 --> 00:04:03,180
+but we wanted to kind of go from numbers
+
+92
+00:04:03,180 --> 00:04:05,370
+and we want to be able to track some
+
+93
+00:04:05,370 --> 00:04:07,470
+sort of information from there right we
+
+94
+00:04:07,470 --> 00:04:09,030
+don't want to just have numbers that are
+
+95
+00:04:09,030 --> 00:04:11,010
+unrelated to each other so we want to go
+
+96
+00:04:11,010 --> 00:04:13,350
+from numbers to tracking and eventually
+
+97
+00:04:13,350 --> 00:04:15,900
+maybe go to something like tracing to be
+
+98
+00:04:15,900 --> 00:04:19,530
+able to actually build a proper
+
+99
+00:04:19,530 --> 00:04:21,340
+narrative about our
+
+100
+00:04:21,340 --> 00:04:31,650
+so tracing wood is tracing strange I
+
+101
+00:04:31,650 --> 00:04:33,849
+wasn't listening to Bobby when I was
+
+102
+00:04:33,849 --> 00:04:37,240
+putting this together but I don't know
+
+103
+00:04:37,240 --> 00:04:40,479
+just kinda came to mind so open tracing
+
+104
+00:04:40,479 --> 00:04:43,599
+IO is a pretty good source or pretty
+
+105
+00:04:43,599 --> 00:04:46,389
+good kind of metric or sorry not we're
+
+106
+00:04:46,389 --> 00:04:48,039
+talking the word I'm looking for a
+
+107
+00:04:48,039 --> 00:04:50,020
+standard so they've put together kind of
+
+108
+00:04:50,020 --> 00:04:52,090
+a thing about what tracing does so
+
+109
+00:04:52,090 --> 00:04:53,500
+tracing tells you a story of a
+
+110
+00:04:53,500 --> 00:04:55,120
+transaction so tracing is a lot about
+
+111
+00:04:55,120 --> 00:04:57,219
+what a workflow does and what a
+
+112
+00:04:57,219 --> 00:05:00,009
+transaction does in your system and you
+
+113
+00:05:00,009 --> 00:05:01,569
+want to be able to kind of propagate it
+
+114
+00:05:01,569 --> 00:05:04,150
+through a system and see what it is that
+
+115
+00:05:04,150 --> 00:05:06,729
+you come up with so eventually you
+
+116
+00:05:06,729 --> 00:05:08,650
+basically have like a single parent and
+
+117
+00:05:08,650 --> 00:05:11,740
+a single parent has a bunch of children
+
+118
+00:05:11,740 --> 00:05:13,330
+that it spins up like different
+
+119
+00:05:13,330 --> 00:05:15,069
+processes that start off with a single
+
+120
+00:05:15,069 --> 00:05:17,560
+parent those children can have other
+
+121
+00:05:17,560 --> 00:05:19,839
+children and so eventually you kind of
+
+122
+00:05:19,839 --> 00:05:21,729
+build out this tree so the way to think
+
+123
+00:05:21,729 --> 00:05:25,000
+about it is that for example you have a
+
+124
+00:05:25,000 --> 00:05:30,189
+play in four parts the play itself is a
+
+125
+00:05:30,189 --> 00:05:32,289
+trace or parent and then the four parts
+
+126
+00:05:32,289 --> 00:05:34,810
+are like the spans and like the acts in
+
+127
+00:05:34,810 --> 00:05:37,659
+the four parts or the spans spans and
+
+128
+00:05:37,659 --> 00:05:39,069
+things like that so it's kind of like
+
+129
+00:05:39,069 --> 00:05:42,759
+your story but in a more technical point
+
+130
+00:05:42,759 --> 00:05:45,729
+of view and so like I said before a
+
+131
+00:05:45,729 --> 00:05:49,000
+trace is a trace is useful to put
+
+132
+00:05:49,000 --> 00:05:52,229
+together transaction right so a
+
+133
+00:05:52,229 --> 00:05:54,580
+transaction is something like a request
+
+134
+00:05:54,580 --> 00:05:56,649
+so putting together a history of a
+
+135
+00:05:56,649 --> 00:05:59,589
+request will build a trace of the said
+
+136
+00:05:59,589 --> 00:06:01,750
+request so if we were to look at
+
+137
+00:06:01,750 --> 00:06:03,819
+something like this we are then able to
+
+138
+00:06:03,819 --> 00:06:06,069
+say that okay our entire trace is this
+
+139
+00:06:06,069 --> 00:06:08,560
+and then it soul spans is an actual post
+
+140
+00:06:08,560 --> 00:06:11,229
+request and then from that post request
+
+141
+00:06:11,229 --> 00:06:14,169
+we went to authenticate the user we went
+
+142
+00:06:14,169 --> 00:06:16,389
+to from that post request get the data
+
+143
+00:06:16,389 --> 00:06:19,479
+save it to Redis but we also wanted to
+
+144
+00:06:19,479 --> 00:06:21,099
+save it to the database so these are the
+
+145
+00:06:21,099 --> 00:06:23,229
+two spans that can work at the same time
+
+146
+00:06:23,229 --> 00:06:26,199
+and then part of that is we want to send
+
+147
+00:06:26,199 --> 00:06:27,789
+back some sort of message to the user
+
+148
+00:06:27,789 --> 00:06:30,069
+and so that entire thing makes up the
+
+149
+00:06:30,069 --> 00:06:31,779
+trace and these different transactions
+
+150
+00:06:31,779 --> 00:06:35,080
+kind of put together in there
+
+151
+00:06:35,080 --> 00:06:38,960
+and so that I talked about tracing but
+
+152
+00:06:38,960 --> 00:06:42,680
+then I want to like go back to the
+
+153
+00:06:42,680 --> 00:06:44,270
+performance timeline and the performance
+
+154
+00:06:44,270 --> 00:06:47,120
+API so it's interesting to know the
+
+155
+00:06:47,120 --> 00:06:48,680
+narrative and tracing kind of helps us
+
+156
+00:06:48,680 --> 00:06:51,259
+build that narrative about what it is
+
+157
+00:06:51,259 --> 00:06:53,240
+that's going on but I wanted to look
+
+158
+00:06:53,240 --> 00:06:55,249
+into the performance timeline and the
+
+159
+00:06:55,249 --> 00:06:57,499
+performance API and see what kind of
+
+160
+00:06:57,499 --> 00:07:00,879
+information I can get from using that
+
+161
+00:07:00,879 --> 00:07:04,930
+kind of thing so what happened is that
+
+162
+00:07:04,930 --> 00:07:07,159
+performance timeline kind of got put
+
+163
+00:07:07,159 --> 00:07:10,789
+together by the w3c and that's what got
+
+164
+00:07:10,789 --> 00:07:15,550
+implemented in both the browser and node
+
+165
+00:07:15,550 --> 00:07:19,189
+so window dot performance if most
+
+166
+00:07:19,189 --> 00:07:21,080
+browsers now support this you're able to
+
+167
+00:07:21,080 --> 00:07:25,039
+kind of get whatever the information you
+
+168
+00:07:25,039 --> 00:07:27,259
+need on timing and navigation in window
+
+169
+00:07:27,259 --> 00:07:29,719
+performance the equivalent to that is
+
+170
+00:07:29,719 --> 00:07:34,009
+require perfect and note in node greater
+
+171
+00:07:34,009 --> 00:07:36,589
+than 8.5 so then you're kind of getting
+
+172
+00:07:36,589 --> 00:07:38,599
+the same thing by requiring per folks
+
+173
+00:07:38,599 --> 00:07:41,330
+and having the performance object there
+
+174
+00:07:41,330 --> 00:07:43,250
+are so also timings and node origin and
+
+175
+00:07:43,250 --> 00:07:49,039
+that's kind of thing so per folks or is
+
+176
+00:07:49,039 --> 00:07:51,740
+is the establishment of what an
+
+177
+00:07:51,740 --> 00:07:53,419
+application timeline is so what is an
+
+178
+00:07:53,419 --> 00:07:56,779
+application timeline so essentially it
+
+179
+00:07:56,779 --> 00:07:59,539
+is a timeline so a request or a trace of
+
+180
+00:07:59,539 --> 00:08:00,979
+their quests like we talked to you we're
+
+181
+00:08:00,979 --> 00:08:03,110
+talking about the trace so kind of the
+
+182
+00:08:03,110 --> 00:08:04,849
+same thing request you start off with
+
+183
+00:08:04,849 --> 00:08:05,990
+that and the things that happened
+
+184
+00:08:05,990 --> 00:08:07,310
+throughout that and the things you can
+
+185
+00:08:07,310 --> 00:08:10,210
+measure go together in an application
+
+186
+00:08:10,210 --> 00:08:15,169
+timeline so in a case of browser you're
+
+187
+00:08:15,169 --> 00:08:16,789
+kind of looking at a few different
+
+188
+00:08:16,789 --> 00:08:18,740
+things you're looking at when they're
+
+189
+00:08:18,740 --> 00:08:20,539
+reserved loads you're looking at a pain
+
+190
+00:08:20,539 --> 00:08:22,490
+time you might be looking at the
+
+191
+00:08:22,490 --> 00:08:24,680
+navigation so these are the kinds of
+
+192
+00:08:24,680 --> 00:08:26,149
+things that go inside the performance
+
+193
+00:08:26,149 --> 00:08:27,889
+timeline
+
+194
+00:08:27,889 --> 00:08:30,259
+so let's actually dig a little bit
+
+195
+00:08:30,259 --> 00:08:32,240
+deeper so require perfect let's look
+
+196
+00:08:32,240 --> 00:08:35,570
+into it so we're able to get a few
+
+197
+00:08:35,570 --> 00:08:39,070
+things from performed dot performance
+
+198
+00:08:39,070 --> 00:08:41,570
+per folks and
+
+199
+00:08:41,570 --> 00:08:43,460
+the access to mark and measure so what
+
+200
+00:08:43,460 --> 00:08:45,500
+are these mark and measure things well
+
+201
+00:08:45,500 --> 00:08:47,090
+the easiest way to go about it was
+
+202
+00:08:47,090 --> 00:08:49,130
+actually like digging through the API
+
+203
+00:08:49,130 --> 00:08:52,310
+so when you want to get something to be
+
+204
+00:08:52,310 --> 00:08:54,050
+marked or measured within your
+
+205
+00:08:54,050 --> 00:08:58,130
+performance timeline you basically want
+
+206
+00:08:58,130 --> 00:08:59,960
+to find out how long something takes to
+
+207
+00:08:59,960 --> 00:09:02,530
+load or how long's a process takes to
+
+208
+00:09:02,530 --> 00:09:05,210
+run or like if you're running a loop
+
+209
+00:09:05,210 --> 00:09:06,800
+like how long does it take you to get
+
+210
+00:09:06,800 --> 00:09:08,330
+through the entire look kind of thing so
+
+211
+00:09:08,330 --> 00:09:12,650
+what you'll start off with is you mark a
+
+212
+00:09:12,650 --> 00:09:16,220
+start point in your timeline or and in
+
+213
+00:09:16,220 --> 00:09:17,690
+your application you mark an end point
+
+214
+00:09:17,690 --> 00:09:20,210
+in your application and then you are
+
+215
+00:09:20,210 --> 00:09:22,460
+able to run a doc measure on it and see
+
+216
+00:09:22,460 --> 00:09:25,000
+how long that piece of code takes to run
+
+217
+00:09:25,000 --> 00:09:27,980
+you're then able to get entries from it
+
+218
+00:09:27,980 --> 00:09:30,920
+and seeing what exactly that particular
+
+219
+00:09:30,920 --> 00:09:33,650
+entry looks like it's start time its
+
+220
+00:09:33,650 --> 00:09:38,120
+duration what type it is is it and then
+
+221
+00:09:38,120 --> 00:09:41,300
+afterwards you've got to clear it like
+
+222
+00:09:41,300 --> 00:09:43,880
+erase it all together so it's not part
+
+223
+00:09:43,880 --> 00:09:46,790
+of your timeline anymore so what it
+
+224
+00:09:46,790 --> 00:09:50,000
+looks like code wise is like this so for
+
+225
+00:09:50,000 --> 00:09:52,040
+example we have a simple post request
+
+226
+00:09:52,040 --> 00:09:55,550
+that we're trying to make we're pressing
+
+227
+00:09:55,550 --> 00:09:56,990
+the data or we're writing into the
+
+228
+00:09:56,990 --> 00:09:59,180
+database and then what we want to do is
+
+229
+00:09:59,180 --> 00:10:00,860
+we want to set a mark in the beginning
+
+230
+00:10:00,860 --> 00:10:02,810
+of that pork's request just to see how
+
+231
+00:10:02,810 --> 00:10:05,180
+long the the put actually takes how long
+
+232
+00:10:05,180 --> 00:10:07,180
+does it take us to spit the data back up
+
+233
+00:10:07,180 --> 00:10:10,580
+to your client what you're then able to
+
+234
+00:10:10,580 --> 00:10:15,200
+do is mark an end within that put and
+
+235
+00:10:15,200 --> 00:10:18,020
+you are then able to measure it out from
+
+236
+00:10:18,020 --> 00:10:18,800
+start to end
+
+237
+00:10:18,800 --> 00:10:22,190
+so something like this and then once
+
+238
+00:10:22,190 --> 00:10:24,860
+you're able to get the entries of that
+
+239
+00:10:24,860 --> 00:10:28,190
+particular start to end measurement out
+
+240
+00:10:28,190 --> 00:10:30,890
+you're able to print it off and see how
+
+241
+00:10:30,890 --> 00:10:34,250
+long something like that take so this is
+
+242
+00:10:34,250 --> 00:10:37,580
+an example that I wrote making a raman
+
+243
+00:10:37,580 --> 00:10:39,890
+database for myself so I can know all
+
+244
+00:10:39,890 --> 00:10:41,360
+the good ramen shops and remember them
+
+245
+00:10:41,360 --> 00:10:42,980
+because at this point I went to too many
+
+246
+00:10:42,980 --> 00:10:45,890
+and I don't remember so I heard Keisuke
+
+247
+00:10:45,890 --> 00:10:47,810
+is good in Singapore somebody tell me
+
+248
+00:10:47,810 --> 00:10:49,100
+otherwise or like tell me a different
+
+249
+00:10:49,100 --> 00:10:52,160
+one so you get the performance entry out
+
+250
+00:10:52,160 --> 00:10:54,300
+and it's got the
+
+251
+00:10:54,300 --> 00:10:56,580
+the entry type start time and the
+
+252
+00:10:56,580 --> 00:10:58,650
+duration so able to work with that and
+
+253
+00:10:58,650 --> 00:11:00,270
+see how long something like that takes
+
+254
+00:11:00,270 --> 00:11:04,590
+cool and this is again like to zoom in
+
+255
+00:11:04,590 --> 00:11:06,300
+this is what the entry object looks like
+
+256
+00:11:06,300 --> 00:11:09,540
+name entry type start time and how long
+
+257
+00:11:09,540 --> 00:11:11,640
+it actually takes really useful for
+
+258
+00:11:11,640 --> 00:11:13,590
+debugging
+
+259
+00:11:13,590 --> 00:11:15,270
+so let's actually zoom in into that
+
+260
+00:11:15,270 --> 00:11:17,340
+performance entry so we started off by
+
+261
+00:11:17,340 --> 00:11:21,630
+saying we have a time line we have
+
+262
+00:11:21,630 --> 00:11:23,430
+certain entries inside that time line
+
+263
+00:11:23,430 --> 00:11:26,340
+certain things that need to load but
+
+264
+00:11:26,340 --> 00:11:28,290
+let's look at the performance buffer so
+
+265
+00:11:28,290 --> 00:11:30,330
+performance buffer is where we put all
+
+266
+00:11:30,330 --> 00:11:32,400
+of the entries in so every time we do a
+
+267
+00:11:32,400 --> 00:11:35,160
+mark like we did an example and know
+
+268
+00:11:35,160 --> 00:11:36,180
+what every time there's a garbage
+
+269
+00:11:36,180 --> 00:11:38,640
+collection entry or a function entry or
+
+270
+00:11:38,640 --> 00:11:40,890
+a note entry these kinds of things they
+
+271
+00:11:40,890 --> 00:11:44,250
+all go into the performance buffer so
+
+272
+00:11:44,250 --> 00:11:46,500
+there is like a used up space and unused
+
+273
+00:11:46,500 --> 00:11:52,950
+up space which means there and the thing
+
+274
+00:11:52,950 --> 00:11:54,780
+about the the buffer itself is that
+
+275
+00:11:54,780 --> 00:11:57,060
+there's only 150 entries you can have in
+
+276
+00:11:57,060 --> 00:11:58,560
+there which means you've got to clear
+
+277
+00:11:58,560 --> 00:12:00,570
+them so when I was mentioning previously
+
+278
+00:12:00,570 --> 00:12:02,490
+like we've got a clear at the end of the
+
+279
+00:12:02,490 --> 00:12:04,350
+the mark and the measure it's because
+
+280
+00:12:04,350 --> 00:12:05,850
+the buffer fills up and then we get
+
+281
+00:12:05,850 --> 00:12:07,980
+memory leaks so you kind of want to make
+
+282
+00:12:07,980 --> 00:12:10,460
+sure the buffer is consistently cleared
+
+283
+00:12:10,460 --> 00:12:13,050
+and so there's a few different types of
+
+284
+00:12:13,050 --> 00:12:15,780
+them note has different ones in the
+
+285
+00:12:15,780 --> 00:12:17,460
+browser so I'm gonna do the comparison
+
+286
+00:12:17,460 --> 00:12:22,040
+here so node has mark and measure node
+
+287
+00:12:22,040 --> 00:12:25,080
+garbage collection function 8 and http2
+
+288
+00:12:25,080 --> 00:12:28,080
+for now maybe there will be more once a
+
+289
+00:12:28,080 --> 00:12:29,550
+few more pull requests come in kind of
+
+290
+00:12:29,550 --> 00:12:32,550
+thing and the browser also does the
+
+291
+00:12:32,550 --> 00:12:34,020
+paint events and the frames and
+
+292
+00:12:34,020 --> 00:12:37,710
+navigation and resources cool but like I
+
+293
+00:12:37,710 --> 00:12:40,790
+said previously we this buffer only has
+
+294
+00:12:40,790 --> 00:12:42,990
+150 entries so we've got to be able to
+
+295
+00:12:42,990 --> 00:12:44,640
+clear it as we go
+
+296
+00:12:44,640 --> 00:12:47,820
+so you clear that by just calling duck
+
+297
+00:12:47,820 --> 00:12:52,140
+clear and to like give you an example of
+
+298
+00:12:52,140 --> 00:12:54,870
+what it looks like it's just clear marks
+
+299
+00:12:54,870 --> 00:12:56,850
+and clear measures and clear functions
+
+300
+00:12:56,850 --> 00:13:01,110
+are the ones that are present in node so
+
+301
+00:13:01,110 --> 00:13:02,880
+if we were to clear it and then call
+
+302
+00:13:02,880 --> 00:13:05,500
+measure again
+
+303
+00:13:05,500 --> 00:13:14,080
+we'll get will basically throw cool so
+
+304
+00:13:14,080 --> 00:13:18,760
+you clear it clearly buffer there but
+
+305
+00:13:18,760 --> 00:13:20,230
+the thing about this is like okay we're
+
+306
+00:13:20,230 --> 00:13:22,810
+kind of marking these as we go along as
+
+307
+00:13:22,810 --> 00:13:25,270
+we're debugging the application or we're
+
+308
+00:13:25,270 --> 00:13:27,310
+trying to establish like some
+
+309
+00:13:27,310 --> 00:13:29,080
+differences between writing toyotas and
+
+310
+00:13:29,080 --> 00:13:31,779
+writing to the database for example but
+
+311
+00:13:31,779 --> 00:13:33,370
+we need to be able to keep track of
+
+312
+00:13:33,370 --> 00:13:36,670
+these so a good way to look at this is
+
+313
+00:13:36,670 --> 00:13:39,850
+using the performance observers so what
+
+314
+00:13:39,850 --> 00:13:41,620
+our performance observers what are we
+
+315
+00:13:41,620 --> 00:13:44,470
+observing really so a performance
+
+316
+00:13:44,470 --> 00:13:46,870
+observer is just an instance that takes
+
+317
+00:13:46,870 --> 00:13:49,660
+a callback that works with the list of
+
+318
+00:13:49,660 --> 00:13:51,370
+the performance entries so the ones we
+
+319
+00:13:51,370 --> 00:13:54,040
+talked about previously and the observer
+
+320
+00:13:54,040 --> 00:13:56,620
+object so essentially in your
+
+321
+00:13:56,620 --> 00:13:58,660
+application you go through certain
+
+322
+00:13:58,660 --> 00:14:00,310
+entries so like the marks and the
+
+323
+00:14:00,310 --> 00:14:02,260
+measures that we were doing in the above
+
+324
+00:14:02,260 --> 00:14:05,650
+example and some stuff that note gives
+
+325
+00:14:05,650 --> 00:14:07,570
+you as is like garbage collection events
+
+326
+00:14:07,570 --> 00:14:09,310
+obviously you don't specifically mark
+
+327
+00:14:09,310 --> 00:14:12,900
+them and all those entries go into the
+
+328
+00:14:12,900 --> 00:14:16,420
+their observers list so all of them just
+
+329
+00:14:16,420 --> 00:14:17,980
+kind of keep on piling up in there and
+
+330
+00:14:17,980 --> 00:14:19,150
+then what you're able to do with that
+
+331
+00:14:19,150 --> 00:14:20,830
+list is actually get some information
+
+332
+00:14:20,830 --> 00:14:23,650
+out of there so a good example of that
+
+333
+00:14:23,650 --> 00:14:29,320
+is so this is how you would set it up
+
+334
+00:14:29,320 --> 00:14:31,839
+right like have a few entry types you
+
+335
+00:14:31,839 --> 00:14:33,430
+want to monitor and you want to your
+
+336
+00:14:33,430 --> 00:14:35,950
+observe it to work with function measure
+
+337
+00:14:35,950 --> 00:14:39,279
+I kind of just put them all together and
+
+338
+00:14:39,279 --> 00:14:42,180
+then what you do is say okay I'm gonna
+
+339
+00:14:42,180 --> 00:14:44,529
+buffer them as well so that they all
+
+340
+00:14:44,529 --> 00:14:49,930
+come in like a sync and then once I
+
+341
+00:14:49,930 --> 00:14:52,570
+launch my application I get the garbage
+
+342
+00:14:52,570 --> 00:14:54,910
+collection events and then the ones that
+
+343
+00:14:54,910 --> 00:14:56,980
+I've marked previously to kind of get
+
+344
+00:14:56,980 --> 00:15:02,860
+there and I'm actually probably just
+
+345
+00:15:02,860 --> 00:15:03,880
+going to show you what I did because
+
+346
+00:15:03,880 --> 00:15:07,890
+that code sample was kind of small
+
+347
+00:15:07,900 --> 00:15:10,839
+all right how's the font size on that
+
+348
+00:15:10,839 --> 00:15:17,680
+okay all right so I worked with the
+
+349
+00:15:17,680 --> 00:15:20,980
+entry types and then what my what my
+
+350
+00:15:20,980 --> 00:15:22,930
+server did so I just set up like a basic
+
+351
+00:15:22,930 --> 00:15:25,570
+server what I set up in my server is I
+
+352
+00:15:25,570 --> 00:15:30,460
+marked a few events so one here and then
+
+353
+00:15:30,460 --> 00:15:33,010
+I just put one in a loop so it like runs
+
+354
+00:15:33,010 --> 00:15:35,440
+through and afterwards are clear the
+
+355
+00:15:35,440 --> 00:15:38,950
+marks and what my handler dars is just
+
+356
+00:15:38,950 --> 00:15:44,160
+it looks at the entries that come back
+
+357
+00:15:44,160 --> 00:15:48,160
+so then if we were to launch the server
+
+358
+00:15:48,160 --> 00:15:50,080
+we'll get the to garbage collection
+
+359
+00:15:50,080 --> 00:15:52,660
+events and then we'll get the actual
+
+360
+00:15:52,660 --> 00:15:55,180
+marks that we are watching for they'll
+
+361
+00:15:55,180 --> 00:15:57,130
+come back and is like nice list that you
+
+362
+00:15:57,130 --> 00:15:59,080
+can then work with and log out and maybe
+
+363
+00:15:59,080 --> 00:16:03,580
+do some more information with it now I
+
+364
+00:16:03,580 --> 00:16:10,960
+wanted to I just switched to team acts
+
+365
+00:16:10,960 --> 00:16:13,660
+so I'm like my fingers are used to my
+
+366
+00:16:13,660 --> 00:16:15,400
+previous bindings and I keep pressing
+
+367
+00:16:15,400 --> 00:16:16,900
+the previous bindings and they don't
+
+368
+00:16:16,900 --> 00:16:21,459
+work muscle-memory am i right so I'm
+
+369
+00:16:21,459 --> 00:16:23,380
+gonna run start and then I'm just gonna
+
+370
+00:16:23,380 --> 00:16:32,860
+curl because oh no this wasn't even like
+
+371
+00:16:32,860 --> 00:16:36,760
+a demo demo I'm already sucking at this
+
+372
+00:16:36,760 --> 00:16:39,790
+so I'm gonna actually run a node example
+
+373
+00:16:39,790 --> 00:16:42,880
+yes cuz that was a different thing so I
+
+374
+00:16:42,880 --> 00:16:45,520
+get the two performance entries for the
+
+375
+00:16:45,520 --> 00:16:49,510
+garbage collection to do two and then
+
+376
+00:16:49,510 --> 00:16:54,120
+I'm gonna run the nice little soft serve
+
+377
+00:16:54,120 --> 00:16:59,860
+on a tea and then I get all the other
+
+378
+00:16:59,860 --> 00:17:04,689
+marks that I've put in there cool so we
+
+379
+00:17:04,689 --> 00:17:06,429
+get these like objects all in one
+
+380
+00:17:06,429 --> 00:17:08,319
+convenient spot and we can monitor them
+
+381
+00:17:08,319 --> 00:17:10,030
+through the performance observer in our
+
+382
+00:17:10,030 --> 00:17:15,490
+applications which is great
+
+383
+00:17:15,500 --> 00:17:19,280
+so there's I just like these two modules
+
+384
+00:17:19,280 --> 00:17:22,640
+I wanted to introduce you to so they
+
+385
+00:17:22,640 --> 00:17:24,799
+used to only have because the
+
+386
+00:17:24,799 --> 00:17:28,220
+performance API is available in both the
+
+387
+00:17:28,220 --> 00:17:30,470
+browser and the server these two worked
+
+388
+00:17:30,470 --> 00:17:33,500
+with just the browser's api's and I just
+
+389
+00:17:33,500 --> 00:17:35,990
+patched them so they both no work would
+
+390
+00:17:35,990 --> 00:17:37,490
+note and make it a little bit easier so
+
+391
+00:17:37,490 --> 00:17:39,230
+instead of you having to set up the
+
+392
+00:17:39,230 --> 00:17:41,299
+entire observer kind of just on
+
+393
+00:17:41,299 --> 00:17:43,610
+performance just observing for you and I
+
+394
+00:17:43,610 --> 00:17:45,380
+know timing handles the timing entries
+
+395
+00:17:45,380 --> 00:17:46,850
+which were the first things we talked
+
+396
+00:17:46,850 --> 00:17:49,850
+about so it's kind of easy to get to
+
+397
+00:17:49,850 --> 00:17:51,500
+work with that and then once you're able
+
+398
+00:17:51,500 --> 00:17:55,059
+to use those or just observers
+
+399
+00:17:55,059 --> 00:17:57,740
+performance observer API or at the mark
+
+400
+00:17:57,740 --> 00:17:59,720
+and measure it kind of can just put them
+
+401
+00:17:59,720 --> 00:18:01,940
+into like any application node
+
+402
+00:18:01,940 --> 00:18:03,289
+application you want like you can work
+
+403
+00:18:03,289 --> 00:18:06,559
+make it work with FASTA Phi or like the
+
+404
+00:18:06,559 --> 00:18:10,039
+one I work on is Mary but either/or like
+
+405
+00:18:10,039 --> 00:18:11,450
+you can just put that in your
+
+406
+00:18:11,450 --> 00:18:14,150
+application and kind of start seeing how
+
+407
+00:18:14,150 --> 00:18:17,870
+you can work with those but kind of the
+
+408
+00:18:17,870 --> 00:18:19,460
+things I wanted to talk about is that
+
+409
+00:18:19,460 --> 00:18:20,960
+okay so I was playing around with these
+
+410
+00:18:20,960 --> 00:18:23,830
+and I wanted to do quite a bit of like
+
+411
+00:18:23,830 --> 00:18:27,110
+storytelling with performance observers
+
+412
+00:18:27,110 --> 00:18:29,390
+but what I ended up finding out is that
+
+413
+00:18:29,390 --> 00:18:33,289
+it's mark and measure super useful to be
+
+414
+00:18:33,289 --> 00:18:35,600
+able to figure out like how long
+
+415
+00:18:35,600 --> 00:18:37,700
+something takes in your application and
+
+416
+00:18:37,700 --> 00:18:39,110
+it's useful for debugging like
+
+417
+00:18:39,110 --> 00:18:42,080
+development purposes but it doesn't
+
+418
+00:18:42,080 --> 00:18:44,059
+actually build like a narrative property
+
+419
+00:18:44,059 --> 00:18:46,520
+properly because you're not able to kind
+
+420
+00:18:46,520 --> 00:18:48,919
+of put anything together and you want to
+
+421
+00:18:48,919 --> 00:18:51,590
+be able to have a story and you want to
+
+422
+00:18:51,590 --> 00:18:53,390
+be able to put a trace together and you
+
+423
+00:18:53,390 --> 00:18:57,080
+want to be able to kind of chain things
+
+424
+00:18:57,080 --> 00:18:58,429
+and that's a little bit harder with
+
+425
+00:18:58,429 --> 00:19:00,140
+observables so I found that it's like
+
+426
+00:19:00,140 --> 00:19:03,080
+it's definitely a development thing and
+
+427
+00:19:03,080 --> 00:19:04,429
+development environment thing to be able
+
+428
+00:19:04,429 --> 00:19:07,190
+to kind of predict that before you
+
+429
+00:19:07,190 --> 00:19:09,409
+deploy to production kind of thing so
+
+430
+00:19:09,409 --> 00:19:11,900
+building narrative is hard but the thing
+
+431
+00:19:11,900 --> 00:19:14,059
+that I found is that okay so I want to
+
+432
+00:19:14,059 --> 00:19:16,909
+be able to build narrative and the API
+
+433
+00:19:16,909 --> 00:19:20,150
+that I like for that is actually async
+
+434
+00:19:20,150 --> 00:19:21,980
+hooks and this talk was not meant to be
+
+435
+00:19:21,980 --> 00:19:23,540
+about acing hoops but I wanted to
+
+436
+00:19:23,540 --> 00:19:25,790
+briefly mention them as well so with
+
+437
+00:19:25,790 --> 00:19:26,850
+that with async Oh
+
+438
+00:19:26,850 --> 00:19:28,800
+so I think I'm able to build an actual
+
+439
+00:19:28,800 --> 00:19:32,790
+proper kind of trackable narrative that
+
+440
+00:19:32,790 --> 00:19:34,650
+I want to be able to see in my
+
+441
+00:19:34,650 --> 00:19:37,830
+application code and because performance
+
+442
+00:19:37,830 --> 00:19:41,520
+observers kind of add and performance
+
+443
+00:19:41,520 --> 00:19:43,800
+api adds a bit of an overhead in your
+
+444
+00:19:43,800 --> 00:19:46,920
+application async Oaks are much less so
+
+445
+00:19:46,920 --> 00:19:48,960
+and plus they add a little bit of a
+
+446
+00:19:48,960 --> 00:19:50,730
+narrative to it so you gotta kind of
+
+447
+00:19:50,730 --> 00:19:53,370
+balance those out as to what what is you
+
+448
+00:19:53,370 --> 00:19:54,930
+gotta cost it out like as to what you
+
+449
+00:19:54,930 --> 00:19:57,960
+want but like I said I didn't want this
+
+450
+00:19:57,960 --> 00:20:00,690
+talk to be on ASA cook so I just briefly
+
+451
+00:20:00,690 --> 00:20:03,000
+mentioning them and there's like a talk
+
+452
+00:20:03,000 --> 00:20:05,100
+that Thurston Lawrence did add note
+
+453
+00:20:05,100 --> 00:20:07,050
+convey about them he's done a bunch of
+
+454
+00:20:07,050 --> 00:20:08,640
+work with them and it's like really good
+
+455
+00:20:08,640 --> 00:20:11,610
+and I also wrote a little guide for them
+
+456
+00:20:11,610 --> 00:20:14,030
+as well if you want to look into that
+
+457
+00:20:14,030 --> 00:20:17,250
+and there's like a module that actually
+
+458
+00:20:17,250 --> 00:20:19,140
+helps you create traceable events that
+
+459
+00:20:19,140 --> 00:20:21,810
+you can specifically Rison to and build
+
+460
+00:20:21,810 --> 00:20:27,540
+a better narrative so kind of wrapping
+
+461
+00:20:27,540 --> 00:20:28,950
+up as to what we talked about so we
+
+462
+00:20:28,950 --> 00:20:30,930
+talked about the performance timeline we
+
+463
+00:20:30,930 --> 00:20:34,170
+talked about being able to look at the
+
+464
+00:20:34,170 --> 00:20:35,640
+timeline and see kind of what
+
+465
+00:20:35,640 --> 00:20:39,810
+performance entries we can look at and
+
+466
+00:20:39,810 --> 00:20:41,790
+what kind of useful information we can
+
+467
+00:20:41,790 --> 00:20:46,530
+derive from them so that we also talked
+
+468
+00:20:46,530 --> 00:20:49,530
+about the specific mark and measure and
+
+469
+00:20:49,530 --> 00:20:51,810
+using those to be able to debug certain
+
+470
+00:20:51,810 --> 00:20:54,180
+parts of our application and work with
+
+471
+00:20:54,180 --> 00:20:57,120
+those parts of our applications and we
+
+472
+00:20:57,120 --> 00:20:59,310
+also talked about the fact that once we
+
+473
+00:20:59,310 --> 00:21:01,860
+were able to get all of our entries in
+
+474
+00:21:01,860 --> 00:21:04,010
+one place we're able to see and compare
+
+475
+00:21:04,010 --> 00:21:07,260
+what exactly that they do in our
+
+476
+00:21:07,260 --> 00:21:08,790
+application using the performance
+
+477
+00:21:08,790 --> 00:21:15,210
+observer portion of the API yeah so that
+
+478
+00:21:15,210 --> 00:21:17,400
+was the talk I wanted to give I am
+
+479
+00:21:17,400 --> 00:21:20,130
+really happy that you're able to have me
+
+480
+00:21:20,130 --> 00:21:22,230
+I hope you enjoyed it and if you have
+
+481
+00:21:22,230 --> 00:21:26,040
+any more questions come say hi on
+
+482
+00:21:26,040 --> 00:21:30,520
+Twitter or just come say hi
+
