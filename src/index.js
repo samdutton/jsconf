@@ -251,9 +251,13 @@ function processCaptions(videoId, captions) {
 
   for (const caption of captions) {
     // Replace line breaks in the captions and remove any stray whitespace.
-    caption.text = caption.text.replace(/\n/, ' ').trim();
+    caption.text = caption.text.
+      replace(/\n/, ' ').
+      // The subtitle module returns 'undefined' for blank lines
+      replace(`undefined`, '').
+      trim();
 
-    // caption.text is plain text that will bee used for search indexing.
+    // caption.text is plain text that will be used for search indexing.
     // caption.html will be marked up for transcript HTML.
     caption.html = caption.text;
 
@@ -264,7 +268,7 @@ function processCaptions(videoId, captions) {
     // Remove speaker names from caption text so they aren't indexed as content.
     caption.text = caption.text.replace(SPEAKER_REGEX, '');
     // Test for dodgy characters, just in case.
-    if (/^[^a-zA-Z0-9 .\-?]+$/.test(caption.text)) {
+    if (/^[^a-zA-Z0-9 ._>-?\[\]]+$/.test(caption.text)) {
       logError(`Found unexpected character in caption: ${caption.text}`);
     }
     // Add a search index document for each caption, indexing caption.plainText
