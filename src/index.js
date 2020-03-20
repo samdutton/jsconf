@@ -33,8 +33,8 @@ const VALIDATOR_IGNORE = [
   'Warning: Section lacks heading. Consider using "h2"-"h6" elements to ' +
     'add identifying headings to all sections.'];
 
-// Create index page linking to standalone transcripts.
-let CREATE_STANDALONE_HOMEPAGE = true;
+let CREATE_CAPTION_DOC = false;
+let CREATE_STANDALONE_HOMEPAGE = true; // index page linking to standalone transcripts
 let CREATE_SEARCH_INDEX = false;
 const ERROR_LOG = 'error-log.txt';
 const VERSION = '1.0 beta';
@@ -50,6 +50,9 @@ const HTML_BOTTOM = fs.readFileSync('./html-fragments/bottom.html', 'utf8');
 const SPEAKER_REGEX = /^([A-Z1-9 \-]+): */;
 
 let currentSpeaker;
+// Array of caption data (if requested).
+// This can be used for third party indexing.
+const captionDocItems = [];
 let docNum = 0;
 let numCaptions = 0;
 let numErrors = 0;
@@ -62,29 +65,35 @@ const videoIds = [];
 
 let DO_VALIDATION = false;
 
+const CAPTION_DOC_FILEPATH = `${DATA_DIR}/captions.json`;
+const DATA_DIR = 'data';
 let SRT_DIR = 'srt';
 // Use ../docs for integration with GitHub Pages.
-let APP_DIR = '../docs';
-const APP_TRANSCRIPTS_DIR = `${APP_DIR}/transcripts`;
-const STANDALONE_DIR = `${APP_DIR}/standalone`;
-const STANDALONE_TRANSCRIPTS_DIR = `${APP_DIR}/standalone/transcripts`;
-const SEARCH_INDEX_FILEPATH = `${APP_DIR}/data/index.json`;
-const SPEAKERS_DATA_FILEPATH = `${APP_DIR}/data/speakers.json`;
+let OUTPUT_DIR = '../docs';
+const SEARCH_DIR = `${OUTPUT_DIR}/search`;
+const SEARCH_TRANSCRIPTS_DIR = `${OUTPUT_DIR}/search/transcripts`;
+const STANDALONE_DIR = `${OUTPUT_DIR}/standalone`;
+const STANDALONE_TRANSCRIPTS_DIR = `${OUTPUT_DIR}/standalone/transcripts`;
+const SEARCH_INDEX_FILEPATH = `${SEARCH_DIR}/data/index.json`;
+const SPEAKERS_DATA_FILEPATH = `${SEARCH_DIR}/data/speakers.json`;
 
 const argv = require('yargs')
   .alias('a', 'append')
   .alias('c', 'index')
+  .alias('d', 'data')
   .alias('h', 'help')
   .alias('i', 'input')
   .alias('l', 'validate')
   .alias('o', 'output')
   .describe('a', 'Append/overwrite: don\'t delete existing files in output directory')
-  .describe('c', `Create index page linking to HTML output, ` +
-    `default is ${CREATE_STANDALONE_HOMEPAGE}`) // index page for standalone transcripts
+  // Create index page linking to HTML output, []()i.e. transcript 'pages'.
+  .describe('c', `Create index page linking to standalone transcripts, ` +
+    `default is ${CREATE_STANDALONE_HOMEPAGE}`)
+  .describe('d', 'Create document for caption data for third party indexing')
   .describe('i', `Input directory, default is ${SRT_DIR}`)
   .describe('l', 'Validate HTML output')
-  .describe('o', `Output directory, default is ${APP_DIR}`)
-  .describe('s', `Create search index file`)
+  .describe('o', `Output directory, default is ${OUTPUT_DIR}`)
+  .describe('s', 'Create search index file')
   .help('h')
   .argv;
 
@@ -109,6 +118,12 @@ if (argv.c) {
   CREATE_STANDALONE_HOMEPAGE = argv.c; // index page for standalone transcripts
 }
 
+if (argv.d) {
+  CREATE_CAPTION_DOC = true;
+  console.log(`Create document for caption data for third party indexing` +
+    `at ${CAPTION_DOC_FILEPATH}`);
+}
+
 if (argv.i) {
   SRT_DIR = argv.i;
 }
@@ -118,7 +133,7 @@ if (argv.l) {
 }
 
 if (argv.o) {
-  APP_DIR = argv.o;
+  OUTPUT_DIR = argv.o;
 }
 
 if (argv.s) {
@@ -197,6 +212,9 @@ function processSrtText(videoId, text) {
     if (CREATE_STANDALONE_HOMEPAGE) { // page linking to standalone transcripts
       createStandaloneHomePage();
     }
+    if (CREATE_CAPTION_DOC) {
+      writeFile(CAPTION_DOC_FILEPATH, captionDocItems.stringify());
+    }
     if (CREATE_SEARCH_INDEX) {
       writeFile(SEARCH_INDEX_FILEPATH, searchIndex.export());
       console.log(`\nWrote search index to \x1b[97m${SEARCH_INDEX_FILEPATH}\x1b[0m, ` +
@@ -235,7 +253,7 @@ function processVideoData(videoId, captions) {
       html +
       HTML_BOTTOM;
   const standaloneFilepath = `${STANDALONE_TRANSCRIPTS_DIR}/${videoId}.html`;
-  const searchFilepath = `${APP_TRANSCRIPTS_DIR}/${videoId}.html`;
+  const searchFilepath = `${SEARCH_TRANSCRIPTS_DIR}/${videoId}.html`;
   // If validation not requested, just write the file.
   validateThenWrite(standaloneFilepath, htmlStandalone);
   validateThenWrite(searchFilepath, html);
@@ -254,10 +272,11 @@ function processCaptions(videoId, captions) {
     caption.text = caption.text.
       replace(/\n/, ' ').
       // The subtitle module returns 'undefined' for blank lines
+      // https://github.com/gsantiago/subtitle.js/issues/43
       replace(`undefined`, '').
       trim();
 
-    // caption.text is plain text that will be used for search indexing.
+    // caption.text is plain text that will bee used for search indexing.
     // caption.html will be marked up for transcript HTML.
     caption.html = caption.text;
 
@@ -268,11 +287,27 @@ function processCaptions(videoId, captions) {
     // Remove speaker names from caption text so they aren't indexed as content.
     caption.text = caption.text.replace(SPEAKER_REGEX, '');
     // Test for dodgy characters, just in case.
-    if (/^[^a-zA-Z0-9 ._>-?\[\]]+$/.test(caption.text)) {
+    if (/^[^a-zA-Z0-9 .\-?]+$/.test(caption.text)) {
       logError(`Found unexpected character in caption: ${caption.text}`);
     }
+
+    const doc = {
+      id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
+      sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
+      st: caption.start / 1000, // SRT uses milliseconds; YouTube uses seconds.
+      t: caption.text,
+      v: videoId,
+    };
+
     // Add a search index document for each caption, indexing caption.plainText
-    addSearchIndexDoc(videoId, caption);
+    if (CREATE_SEARCH_INDEX) {
+      addSearchIndexDoc(doc);
+    }
+
+    // For each caption, add an item to the data doc
+    if (CREATE_CAPTION_DOC) {
+      addCaptionDocItem(doc);
+    }
 
     // Check for a change of speaker and add markup to speaker names.
     caption.html = handleSpeakerNames(caption.html);
@@ -301,22 +336,17 @@ function processCaptions(videoId, captions) {
   return html;
 }
 
-function addSearchIndexDoc(videoId, caption) {
-  // NB: This must come after handleSpeakerNames() is called.
-  if (CREATE_SEARCH_INDEX) {
-    const doc = {
-      id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
-      sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
-      st: caption.start / 1000, // SRT uses milliseconds; YouTube uses seconds.
-      t: caption.text,
-      v: videoId,
-    };
-    searchIndex.add(doc, (error) => {
-      if (error) {
-        logError(`Error creating search index: ${error}`);
-      }
-    });
-  }
+function addCaptionDocItem(doc) {
+  captionDocItems.push(doc);
+}
+
+function addSearchIndexDoc(doc) {
+// NB: This must come after handleSpeakerNames() is called.
+  searchIndex.add(doc, (error) => {
+    if (error) {
+      logError(`Error creating search index: ${error}`);
+    }
+  });
 }
 
 // Create index page linking to transcripts.
@@ -467,13 +497,12 @@ function checkIfComplete() {
 // Check if all transcript HTML files have been written.
 // async function checkIfComplete() {
 // try {
-//   let filenames = await fsPromises.readdir(APP_TRANSCRIPTS_DIR);
+//   let filenames = await fsPromises.readdir(SEARCH_TRANSCRIPTS_DIR);
 //   console.log('>>>', filenames.length);
 //   filenames = filenames.filter((filename) => {
 //     filename.match(/.+\.html$/);
 //   });
 // } catch (error) {
-//   displayError('Error checking ${APP_TRANSCRIPTS_DIR}', error);
+//   displayError('Error checking ${SEARCH_TRANSCRIPTS_DIR}', error);
 // }
 // }
-
