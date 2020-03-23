@@ -1,4 +1,4 @@
-# Search and readable transcripts for JSConf videos
+# Search and readable transcripts for conference videos
 
 This is a Node application that processes caption files from conference videos to enable search and create readable transcripts.
 
