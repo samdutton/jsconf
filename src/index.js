@@ -65,17 +65,17 @@ const videoIds = [];
 
 let DO_VALIDATION = false;
 
+const DATA_DIR = '../data';
+
 const CAPTION_DOC_FILEPATH = `${DATA_DIR}/captions.json`;
-const DATA_DIR = 'data';
-let SRT_DIR = 'srt';
 // Use ../docs for integration with GitHub Pages.
-let OUTPUT_DIR = '../docs';
-const SEARCH_DIR = `${OUTPUT_DIR}/search`;
-const SEARCH_TRANSCRIPTS_DIR = `${OUTPUT_DIR}/search/transcripts`;
-const STANDALONE_DIR = `${OUTPUT_DIR}/standalone`;
-const STANDALONE_TRANSCRIPTS_DIR = `${OUTPUT_DIR}/standalone/transcripts`;
-const SEARCH_INDEX_FILEPATH = `${SEARCH_DIR}/data/index.json`;
-const SPEAKERS_DATA_FILEPATH = `${SEARCH_DIR}/data/speakers.json`;
+let APP_DIR = '../docs';
+const APP_TRANSCRIPTS_DIR = `${APP_DIR}/transcripts`;
+let SRT_DIR = 'srt';
+const STANDALONE_DIR = `${APP_DIR}/standalone`;
+const STANDALONE_TRANSCRIPTS_DIR = `${APP_DIR}/standalone/transcripts`;
+const SEARCH_INDEX_FILEPATH = `${APP_DIR}/data/index.json`;
+const SPEAKERS_DATA_FILEPATH = `${APP_DIR}/data/speakers.json`;
 
 const argv = require('yargs')
   .alias('a', 'append')
@@ -89,10 +89,10 @@ const argv = require('yargs')
   // Create index page linking to HTML output, []()i.e. transcript 'pages'.
   .describe('c', `Create index page linking to standalone transcripts, ` +
     `default is ${CREATE_STANDALONE_HOMEPAGE}`)
-  .describe('d', 'Create document for caption data for third party indexing')
+  .describe('d', 'Create document for caption data (for third party indexing)')
   .describe('i', `Input directory, default is ${SRT_DIR}`)
   .describe('l', 'Validate HTML output')
-  .describe('o', `Output directory, default is ${OUTPUT_DIR}`)
+  .describe('o', `Output directory, default is ${APP_DIR}`)
   .describe('s', 'Create search index file')
   .help('h')
   .argv;
@@ -105,13 +105,13 @@ if (argv.v) {
 
 // // Unless appending output, remove all HTML files from the output directory.
 // if (!argv.a) {
-//   // rimraf(`${OUTPUT_DIR}/*.html`, (error) => {
+//   // rimraf(`${APP_DIR}/*.html`, (error) => {
 //   //   if (error) {
-//   //     displayError('Error removing HTML files from ${OUTPUT_DIR}:', error);
+//   //     displayError('Error removing HTML files from ${APP_DIR}:', error);
 //   //     return;
 //   //   }
 //   // });
-//   // console.log(`Deleted old files from ${OUTPUT_DIR}/*.html`);
+//   // console.log(`Deleted old files from ${APP_DIR}/*.html`);
 // }
 
 if (argv.c) {
@@ -133,7 +133,7 @@ if (argv.l) {
 }
 
 if (argv.o) {
-  OUTPUT_DIR = argv.o;
+  APP_DIR = argv.o;
 }
 
 if (argv.s) {
@@ -151,8 +151,11 @@ if (argv.s) {
 // Parse each SRT caption file in the input directory.
 recursive(SRT_DIR).then((filepaths) => {
   filepaths = filepaths.filter((filename) => {
-    // Filename is <YouTubeID>.srt
-    if (!filename.match(/[a-zA-Z0-9_-]{11}.srt/)) {
+    // When running on Mac ignore .DS_Store :/
+    if (filename.includes('.DS_Store')) {
+      return false;
+    // Filename should be <YouTubeID>.srt
+    } else if (!filename.match(/[a-zA-Z0-9_-]{11}.srt/)) {
       const message =
         `Input directory ${SRT_DIR} contains stray file ${filename}`;
       displayError(message);
@@ -208,12 +211,14 @@ function processSrtText(videoId, text) {
   if (++numSrtFilesProcessed === numSrtFiles) {
     console.log(`\nTime to process ${numCaptions} captions`);
     console.timeEnd(`from ${numSrtFiles} transcripts`);
-    console.log('\n');
+    // console.log('\n');
     if (CREATE_STANDALONE_HOMEPAGE) { // page linking to standalone transcripts
       createStandaloneHomePage();
     }
     if (CREATE_CAPTION_DOC) {
-      writeFile(CAPTION_DOC_FILEPATH, captionDocItems.stringify());
+      console.log(`Created caption data doc at ${CAPTION_DOC_FILEPATH} ` +
+        `with ${captionDocItems.length} items`);
+      writeFile(CAPTION_DOC_FILEPATH, JSON.stringify(captionDocItems));
     }
     if (CREATE_SEARCH_INDEX) {
       writeFile(SEARCH_INDEX_FILEPATH, searchIndex.export());
@@ -253,7 +258,7 @@ function processVideoData(videoId, captions) {
       html +
       HTML_BOTTOM;
   const standaloneFilepath = `${STANDALONE_TRANSCRIPTS_DIR}/${videoId}.html`;
-  const searchFilepath = `${SEARCH_TRANSCRIPTS_DIR}/${videoId}.html`;
+  const searchFilepath = `${APP_TRANSCRIPTS_DIR}/${videoId}.html`;
   // If validation not requested, just write the file.
   validateThenWrite(standaloneFilepath, htmlStandalone);
   validateThenWrite(searchFilepath, html);
@@ -270,7 +275,9 @@ function processCaptions(videoId, captions) {
   for (const caption of captions) {
     // Replace line breaks in the captions and remove any stray whitespace.
     caption.text = caption.text.
-      replace(/\n/, ' ').
+      replace(/\n/g, ' ').
+      replace(/>/g, '&gt;').
+      replace(/</g, '&lt;').
       // The subtitle module returns 'undefined' for blank lines
       // https://github.com/gsantiago/subtitle.js/issues/43
       replace(`undefined`, '').
@@ -287,7 +294,7 @@ function processCaptions(videoId, captions) {
     // Remove speaker names from caption text so they aren't indexed as content.
     caption.text = caption.text.replace(SPEAKER_REGEX, '');
     // Test for dodgy characters, just in case.
-    if (/^[^a-zA-Z0-9 .\-?]+$/.test(caption.text)) {
+    if (/^[^a-zA-Z0-9 .>_\[\]\-?]+$/.test(caption.text)) {
       logError(`Found unexpected character in caption: ${caption.text}`);
     }
 
@@ -455,7 +462,7 @@ function validateThenWrite(filepath, html) {
     data: html,
     format: 'text',
     ignore: VALIDATOR_IGNORE,
-    // validator: 'https://html5.validator.nu' // alternative
+    // validator: 'WHATWG', // alternative
   };
   validator(options).then((data) => {
     if (data.includes('Error')) {
@@ -497,12 +504,13 @@ function checkIfComplete() {
 // Check if all transcript HTML files have been written.
 // async function checkIfComplete() {
 // try {
-//   let filenames = await fsPromises.readdir(SEARCH_TRANSCRIPTS_DIR);
+//   let filenames = await fsPromises.readdir(APP_TRANSCRIPTS_DIR);
 //   console.log('>>>', filenames.length);
 //   filenames = filenames.filter((filename) => {
 //     filename.match(/.+\.html$/);
 //   });
 // } catch (error) {
-//   displayError('Error checking ${SEARCH_TRANSCRIPTS_DIR}', error);
+//   displayError('Error checking ${APP_TRANSCRIPTS_DIR}', error);
 // }
 // }
+

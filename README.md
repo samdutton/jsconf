@@ -1,10 +1,10 @@
-# Search and readable transcripts for JSConf videos
+# Search and readable transcripts for conference videos
 
-This is a Node application that processes caption files from JSConf conference videos to enable search and create readable transcripts.
+This is a Node application that processes caption files from conference videos to enable search and create readable transcripts.
 
 The code could easily be adapted to work with caption files from other playlists.
 
-Try it out at [samdutton.github.io/jsconf](https://samdutton.github.io/jsconf).
+<!--- Try it out at [samdutton.github.io/jsconf](https://samdutton.github.io/jsconf). --->
 
 ---
 
