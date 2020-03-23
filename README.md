@@ -59,5 +59,4 @@ Probably best to remove unless the layout can be fixed (others have tried!)
 
 ---
 
-Please note that this is not an official Google product.
-
+<!--- Please note that this is not an official Google product.  --->
