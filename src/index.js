@@ -11,7 +11,10 @@
  * limitations under the License.
  */
 
-const FlexSearch = require('flexsearch');
+const algoliasearch = require('algoliasearch');
+const client = algoliasearch('XGA8KXVWKX', process.env.algoliakey);
+const index = client.initIndex('captions');
+
 const fs = require('fs');
 const fsPromises = require('fs').promises;
 const recursive = require('recursive-readdir');
@@ -33,9 +36,7 @@ const VALIDATOR_IGNORE = [
   'Warning: Section lacks heading. Consider using "h2"-"h6" elements to ' +
     'add identifying headings to all sections.'];
 
-let CREATE_CAPTION_DOC = false;
 let CREATE_STANDALONE_HOMEPAGE = true; // index page linking to standalone transcripts
-let CREATE_SEARCH_INDEX = false;
 const ERROR_LOG = 'error-log.txt';
 const VERSION = '1.0 beta';
 
@@ -50,37 +51,30 @@ const HTML_BOTTOM = fs.readFileSync('./html-fragments/bottom.html', 'utf8');
 const SPEAKER_REGEX = /^([A-Z1-9 \-]+): */;
 
 let currentSpeaker;
-// Array of caption data (if requested).
-// This can be used for third party indexing.
-const captionDocItems = [];
-let docNum = 0;
+
+// let docNum = 0;
 let numCaptions = 0;
+let numDocsIndexed = 0;
 let numErrors = 0;
 let numSrtFiles = 0;
 let numSrtFilesProcessed = 0;
 let numTranscriptsWritten = 0;
-let searchIndex;
 const speakers = new Set();
 const videoIds = [];
 
 let DO_VALIDATION = false;
 
-const DATA_DIR = '../data';
-
-const CAPTION_DOC_FILEPATH = `${DATA_DIR}/captions.json`;
-// Use ../docs for integration with GitHub Pages.
+// Use ../docs directory for GitHub Pages files.
 let APP_DIR = '../docs';
 const APP_TRANSCRIPTS_DIR = `${APP_DIR}/transcripts`;
 let SRT_DIR = 'srt';
 const STANDALONE_DIR = `${APP_DIR}/standalone`;
 const STANDALONE_TRANSCRIPTS_DIR = `${APP_DIR}/standalone/transcripts`;
-const SEARCH_INDEX_FILEPATH = `${APP_DIR}/data/index.json`;
 const SPEAKERS_DATA_FILEPATH = `${APP_DIR}/data/speakers.json`;
 
 const argv = require('yargs')
   .alias('a', 'append')
   .alias('c', 'index')
-  .alias('d', 'data')
   .alias('h', 'help')
   .alias('i', 'input')
   .alias('l', 'validate')
@@ -89,11 +83,9 @@ const argv = require('yargs')
   // Create index page linking to HTML output, []()i.e. transcript 'pages'.
   .describe('c', `Create index page linking to standalone transcripts, ` +
     `default is ${CREATE_STANDALONE_HOMEPAGE}`)
-  .describe('d', 'Create document for caption data (for third party indexing)')
   .describe('i', `Input directory, default is ${SRT_DIR}`)
   .describe('l', 'Validate HTML output')
   .describe('o', `Output directory, default is ${APP_DIR}`)
-  .describe('s', 'Create search index file')
   .help('h')
   .argv;
 
@@ -118,12 +110,6 @@ if (argv.c) {
   CREATE_STANDALONE_HOMEPAGE = argv.c; // index page for standalone transcripts
 }
 
-if (argv.d) {
-  CREATE_CAPTION_DOC = true;
-  console.log(`Create document for caption data for third party indexing` +
-    `at ${CAPTION_DOC_FILEPATH}`);
-}
-
 if (argv.i) {
   SRT_DIR = argv.i;
 }
@@ -134,18 +120,6 @@ if (argv.l) {
 
 if (argv.o) {
   APP_DIR = argv.o;
-}
-
-if (argv.s) {
-  CREATE_SEARCH_INDEX = true;
-  searchIndex = new FlexSearch({
-    doc: {
-      // See creation of docs (one for each caption) for explanation of fields
-      id: 'id',
-      field: ['t'],
-    },
-  });
-  console.log('Creating search index');
 }
 
 // Parse each SRT caption file in the input directory.
@@ -215,20 +189,10 @@ function processSrtText(videoId, text) {
     if (CREATE_STANDALONE_HOMEPAGE) { // page linking to standalone transcripts
       createStandaloneHomePage();
     }
-    if (CREATE_CAPTION_DOC) {
-      console.log(`Created caption data doc at ${CAPTION_DOC_FILEPATH} ` +
-        `with ${captionDocItems.length} items`);
-      writeFile(CAPTION_DOC_FILEPATH, JSON.stringify(captionDocItems));
-    }
-    if (CREATE_SEARCH_INDEX) {
-      writeFile(SEARCH_INDEX_FILEPATH, searchIndex.export());
-      console.log(`\nWrote search index to \x1b[97m${SEARCH_INDEX_FILEPATH}\x1b[0m, ` +
-          `length ${searchIndex.length}\n`);
-      // The number of search docs should equal the number of captions.
-      if (searchIndex.length !== numCaptions) {
-        logError(`searchIndex.length is ${searchIndex.length}, ` +
-          `but should be the same as the number of captions (${numCaptions})`);
-      }
+    // The number of search docs should equal the number of captions.
+    if (numDocsIndexed.length !== numCaptions) {
+      logError(`${numDocsIndexed.length} docs indexed ` +
+        `should be the same as the number of captions (${numCaptions})`);
     }
     writeFile(SPEAKERS_DATA_FILEPATH, JSON.stringify([...speakers].sort()));
     console.log(`\nWrote data for ${speakers.size} speakers to ` +
@@ -264,6 +228,7 @@ function processVideoData(videoId, captions) {
   validateThenWrite(searchFilepath, html);
 }
 
+// Process captions for a video: create HTML and upload data for indexing.
 function processCaptions(videoId, captions) {
   let html = '';
   // Randomly set the maximum number of spans allowed in a paragraph.
@@ -272,7 +237,9 @@ function processCaptions(videoId, captions) {
   // paragraph break was added (see below) to break up long speeches.
   let speechLength = 0;
 
-  for (const caption of captions) {
+  const currentBatch = [];
+  for (let i = 0; i !== captions.length; ++i) {
+    const caption = captions[i];
     // Replace line breaks in the captions and remove any stray whitespace.
     caption.text = caption.text.
       replace(/\n/g, ' ').
@@ -299,21 +266,25 @@ function processCaptions(videoId, captions) {
     }
 
     const doc = {
-      id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
+    // id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
       sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
       st: caption.start / 1000, // SRT uses milliseconds; YouTube uses seconds.
       t: caption.text,
       v: videoId,
     };
 
-    // Add a search index document for each caption, indexing caption.plainText
-    if (CREATE_SEARCH_INDEX) {
-      addSearchIndexDoc(doc);
-    }
-
-    // For each caption, add an item to the data doc
-    if (CREATE_CAPTION_DOC) {
-      addCaptionDocItem(doc);
+    // Upload docs in batches of 100, or if this is the last caption for the video.
+    currentBatch.push(doc);
+    if (currentBatch.length === 100 || captions.length === i + 1) {
+      numDocsIndexed += currentBatch.length;
+      index.saveObjects(currentBatch, {autoGenerateObjectIDIfNotExist: true})
+        .then(({objectIDs}) => {
+          console.log(`\nSaved ${objectIDs.length} objects\n`);
+        })
+        .catch((error) => {
+          displayError(`Error saving objects: ${error}`);
+        });
+      currentBatch = [];
     }
 
     // Check for a change of speaker and add markup to speaker names.
@@ -341,19 +312,6 @@ function processCaptions(videoId, captions) {
     html += caption.html;
   } // end processing captions
   return html;
-}
-
-function addCaptionDocItem(doc) {
-  captionDocItems.push(doc);
-}
-
-function addSearchIndexDoc(doc) {
-// NB: This must come after handleSpeakerNames() is called.
-  searchIndex.add(doc, (error) => {
-    if (error) {
-      logError(`Error creating search index: ${error}`);
-    }
-  });
 }
 
 // Create index page linking to transcripts.
