@@ -12,7 +12,9 @@
  */
 
 const algoliasearch = require('algoliasearch');
-const client = algoliasearch('XGA8KXVWKX', process.env.algoliakey);
+// const APPLICATION_ID = 'XGA8KXVWKX';
+const APPLICATION_ID = 'GXZDXUPAZC';
+const client = algoliasearch(APPLICATION_ID, process.env.algoliakey);
 const index = client.initIndex('captions');
 
 const fs = require('fs');
@@ -51,22 +53,25 @@ const HTML_BOTTOM = fs.readFileSync('./html-fragments/bottom.html', 'utf8');
 // Used to put each speaker in a span.speaker.
 // This is done after the caption text is put in a span,
 // hence the > before the match
-const SPEAKER_REGEX = /^([A-Z1-9 \-]+): */;
+// const SPEAKER_REGEX = /^([A-Z1-9 \-]+): */;
 
 // let currentSpeaker;
 
 let numCaptions = 0;
 let numObjectsSaved = 0;
 let numErrors = 0;
-let numSaveRequests = 0;
+let numQueuedForUpload = 0;
 let numSrtFiles = 0;
 let numSrtFilesProcessed = 0;
 let numTranscriptsWritten = 0;
 // const speakers = new Set();
 const videoIds = [];
 
+// Maximum length for text in records uploaded to search service or database.
+const MAX_RECORD_TEXT_LENGTH = 10000;
 // Enables testing with fewer records
-const MAX_NUM_TO_SAVE = 500;
+const MAX_RECORDS_TO_UPLOAD = 500;
+const NUM_RECORDS_PER_UPLOAD = 100;
 
 let DO_VALIDATION = false;
 
@@ -264,7 +269,8 @@ function processCaptions(videoId, captions) {
   // paragraph break was added (see below) to break up long speeches.
   let speechLength = 0;
 
-  let currentBatch = [];
+  let captionTexts = '';
+  const recordsToUpload = [];
   for (let i = 0; i !== captions.length; ++i) {
     const caption = captions[i];
     // Replace line breaks in the captions and remove any stray whitespace.
@@ -281,44 +287,17 @@ function processCaptions(videoId, captions) {
     // caption.html will be marked up for transcript HTML.
     caption.html = caption.text;
 
+    // JSCONF TRANSCRIPTS DON'T HAVE PARSABLE SPEAKER NAMES
     // Reset speechLength each time there's a new speaker.
-    if (SPEAKER_REGEX.test(caption.text)) {
-      speechLength = 0;
-    }
+    // if (SPEAKER_REGEX.test(caption.text)) {
+    //   speechLength = 0;
+    // }
     // Remove speaker names from caption text so they aren't indexed as content.
-    caption.text = caption.text.replace(SPEAKER_REGEX, '');
+    // caption.text = caption.text.replace(SPEAKER_REGEX, '');
+
     // Test for dodgy characters, just in case.
     if (/^[^a-zA-Z0-9 .>_\[\]\-?]+$/.test(caption.text)) {
       logError(`Found unexpected character in caption: ${caption.text}`);
-    }
-
-    // Each record corresponds to a caption.
-    // Records are uploaded to a datastore or search engine in batches.
-    const record = {
-      // id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
-      // sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
-      st: caption.start / 1000, // SRT uses milliseconds; YouTube uses seconds.
-      t: caption.text,
-      v: videoId,
-    };
-
-    currentBatch.push(record);
-    // Upload records in batches of 100, or if this is the last caption
-    // for the current video.
-    if (currentBatch.length === 100 || captions.length === i + 1) {
-      numSaveRequests += currentBatch.length;
-      if (numSaveRequests < MAX_NUM_TO_SAVE && UPLOAD_RECORDS) {
-        index.saveObjects(currentBatch, {autoGenerateObjectIDIfNotExist: true})
-          .then(({objectIDs}) => {
-            numObjectsSaved += objectIDs.length;
-            console.log(`Saved ${numObjectsSaved} objects`);
-          })
-          .catch((error) => {
-            console.error('Error saving objects:', error);
-            // displayError(`Error saving objects: ${{error}}`);
-          });
-      }
-      currentBatch = [];
     }
 
     // Check for a change of speaker and add markup to speaker names.
@@ -335,6 +314,7 @@ function processCaptions(videoId, captions) {
     }
 
     // NB: This must come after handleSpeakerNames() is called.
+    //
     // Add space at end of every caption (these aren't in the SRT) to ensure
     // space between words, and after sentence endings.
     // Note that SRT timings are in milliseconds whereas YouTube uses seconds.
@@ -345,11 +325,50 @@ function processCaptions(videoId, captions) {
     //   html += '</p>\n</section>\n\n<section>\n<p>';
     // }
     html += caption.html;
-  } // end processing captions for the current video
 
+    // It's not possible to create one record per caption for a large number of
+    // captions, so it's necessary to combine multiple captions in one record
+    // then use search snippets to display the matched query in context :/.
+    captionTexts += caption.text;
+
+    // If the combined text from captions is the maximum size or this is the
+    // last caption, then create a record ready to upload.
+    if (captionTexts.length > MAX_RECORD_TEXT_LENGTH || numCaptions === i + 1) {
+      const record = {
+        text: captionTexts,
+        video: videoId,
+      };
+      recordsToUpload.push(record);
+      captionTexts = '';
+    }
+
+    // If there are enough records ready to be uploaded,
+    // or if this is the last caption, upload the current batch of records.
+    if (recordsToUpload.length === NUM_RECORDS_PER_UPLOAD ||
+        numCaptions === i + 1 &&
+        UPLOAD_RECORDS && numQueuedForUpload < MAX_RECORDS_TO_UPLOAD) {
+      uploadRecords(recordsToUpload);
+      recordsToUpload = [];
+    }
+  }
+  // end processing captions for the current video
   console.log(`Processed ${numCaptions} captions`);
-
   return html;
+}
+
+// Save (upload) a batch of records.
+// Beware that this is asynchronous!
+function uploadRecords(records) {
+  numQueuedForUpload += records.length;
+  index.saveObjects(records, {autoGenerateObjectIDIfNotExist: true})
+    .then(({objectIDs}) => {
+      numObjectsSaved += objectIDs.length;
+      console.log(`Saved ${numObjectsSaved} objects`);
+    })
+    .catch((error) => {
+      console.error('Error saving objects:', error);
+      // displayError(`Error saving objects: ${{error}}`);
+    });
 }
 
 // Create home page linking to transcripts.
