@@ -34,12 +34,14 @@ Check for errors in _error-log.txt_.
 ## Command line options
 
 ```
--a, --append   Append output to existing files in output directory
--c, --index    Create index page linking to standalone transcripts
--h, --help     Show help
--i, --input    Input directory, default is [_input_](src/input)
--o, --output   Output directory, default is [_output_](src/docs)
--s, --search   Create search index
+-a, --append      Append output to existing files in output directory
+-h, --help        Show help
+-i, --input       Input directory, default is [_input_](src/input)
+-l, --validate    Validate HTML output, default is false
+-o, --output      Output directory, default is [_output_](src/docs)
+-s, --search      Create search index
+-t, --transcript  Create transcript HTML files, default is false
+-u, --upload      Upload records to search service, default is false
 ```
 
 ## Feedback, feature requests and bug reports

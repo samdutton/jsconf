@@ -36,7 +36,10 @@ const VALIDATOR_IGNORE = [
   'Warning: Section lacks heading. Consider using "h2"-"h6" elements to ' +
     'add identifying headings to all sections.'];
 
-let CREATE_STANDALONE_HOMEPAGE = true; // index page linking to standalone transcripts
+let CREATE_STANDALONE_HOMEPAGE = true; // page linking to standalone transcripts
+let CREATE_TRANSCRIPT_FILES = false;
+let UPLOAD_RECORDS = false;
+
 const ERROR_LOG = 'error-log.txt';
 const VERSION = '1.0 beta';
 
@@ -50,17 +53,20 @@ const HTML_BOTTOM = fs.readFileSync('./html-fragments/bottom.html', 'utf8');
 // hence the > before the match
 const SPEAKER_REGEX = /^([A-Z1-9 \-]+): */;
 
-let currentSpeaker;
+// let currentSpeaker;
 
-// let docNum = 0;
 let numCaptions = 0;
-let numDocsIndexed = 0;
+let numObjectsSaved = 0;
 let numErrors = 0;
+let numSaveRequests = 0;
 let numSrtFiles = 0;
 let numSrtFilesProcessed = 0;
 let numTranscriptsWritten = 0;
-const speakers = new Set();
+// const speakers = new Set();
 const videoIds = [];
+
+// Enables testing with fewer records
+const MAX_NUM_TO_SAVE = 500;
 
 let DO_VALIDATION = false;
 
@@ -70,22 +76,26 @@ const APP_TRANSCRIPTS_DIR = `${APP_DIR}/transcripts`;
 let SRT_DIR = 'srt';
 const STANDALONE_DIR = `${APP_DIR}/standalone`;
 const STANDALONE_TRANSCRIPTS_DIR = `${APP_DIR}/standalone/transcripts`;
-const SPEAKERS_DATA_FILEPATH = `${APP_DIR}/data/speakers.json`;
+// const SPEAKERS_DATA_FILEPATH = `${APP_DIR}/data/speakers.json`;
 
 const argv = require('yargs')
   .alias('a', 'append')
-  .alias('c', 'index')
   .alias('h', 'help')
   .alias('i', 'input')
-  .alias('l', 'validate')
+  .alias('l', 'validate') // use l because v is for version
   .alias('o', 'output')
+  .alias('s', 'standalone')
+  .alias('t', 'transcript')
+  .alias('u', 'upload')
   .describe('a', 'Append/overwrite: don\'t delete existing files in output directory')
-  // Create index page linking to HTML output, []()i.e. transcript 'pages'.
-  .describe('c', `Create index page linking to standalone transcripts, ` +
-    `default is ${CREATE_STANDALONE_HOMEPAGE}`)
+  // Create home page linking to HTML output, []()i.e. transcript 'pages'.
   .describe('i', `Input directory, default is ${SRT_DIR}`)
   .describe('l', 'Validate HTML output')
   .describe('o', `Output directory, default is ${APP_DIR}`)
+  .describe('s', `Create home page linking to standalone transcripts, ` +
+    `default is ${CREATE_STANDALONE_HOMEPAGE}`)
+  .describe('t', 'Create transcript HTML files, default is false')
+  .describe('u', 'Upload records to search service, default is false')
   .help('h')
   .argv;
 
@@ -106,20 +116,32 @@ if (argv.v) {
 //   // console.log(`Deleted old files from ${APP_DIR}/*.html`);
 // }
 
-if (argv.c) {
-  CREATE_STANDALONE_HOMEPAGE = argv.c; // index page for standalone transcripts
-}
-
 if (argv.i) {
   SRT_DIR = argv.i;
 }
 
-if (argv.l) {
+// Validate HTML output.
+if (argv.l) { // v is version
   DO_VALIDATION = true;
 }
 
 if (argv.o) {
   APP_DIR = argv.o;
+}
+
+// Create home page for standalone transcripts.
+if (argv.s) {
+  CREATE_STANDALONE_HOMEPAGE = true;
+}
+
+// Create home page for standalone transcripts.
+if (argv.t) {
+  CREATE_TRANSCRIPT_FILES = true;
+}
+
+// Create home page for standalone transcripts.
+if (argv.u) {
+  UPLOAD_RECORDS = true;
 }
 
 // Parse each SRT caption file in the input directory.
@@ -165,7 +187,7 @@ async function processSrtFile(filepath) {
 
 // Parse each SRT file to get the captions.
 // Once all the files have been processed, create a homepage for the
-// standalone transcripts and write the serialised search index file.
+// standalone transcripts and upload records to the search service.
 function processSrtText(videoId, text) {
   // Parse the SRT file to create an array of captions using the
   // subtitle module: npmjs.com/package/subtitle#parsesrt-string---array.
@@ -176,8 +198,11 @@ function processSrtText(videoId, text) {
     return caption.text; // filter out captions without a text value
   });
 
-  // Create HTML from captions and add a search index doc for each caption.
-  processVideoData(videoId, captions);
+  // Create HTML from captions and build search data for each caption.
+  const MAX_CAPTIONS_TO_PROCESS = 10000;
+  if (numCaptions < MAX_CAPTIONS_TO_PROCESS) {
+    processVideoData(videoId, captions);
+  }
 
   // When all SRT files have been parsed:
   // • Create an HTML homepage linking to standalone transcript files.
@@ -189,14 +214,14 @@ function processSrtText(videoId, text) {
     if (CREATE_STANDALONE_HOMEPAGE) { // page linking to standalone transcripts
       createStandaloneHomePage();
     }
-    // The number of search docs should equal the number of captions.
-    if (numDocsIndexed.length !== numCaptions) {
-      logError(`${numDocsIndexed.length} docs indexed ` +
-        `should be the same as the number of captions (${numCaptions})`);
-    }
-    writeFile(SPEAKERS_DATA_FILEPATH, JSON.stringify([...speakers].sort()));
-    console.log(`\nWrote data for ${speakers.size} speakers to ` +
-        `\x1b[97m${SPEAKERS_DATA_FILEPATH}\x1b[0m\n`);
+    // // The number of objects saved should equal the number of captions.
+    // if (numObjectsSaved.length !== numCaptions) {
+    //   logError(`${numObjectsSaved.length} objects saved — this ` +
+    //     `should be the same as the number of captions (${numCaptions})`);
+    // }
+    // writeFile(SPEAKERS_DATA_FILEPATH, JSON.stringify([...speakers].sort()));
+    // console.log(`\nWrote data for ${speakers.size} speakers to ` +
+    //     `\x1b[97m${SPEAKERS_DATA_FILEPATH}\x1b[0m\n`);
   }
 }
 
@@ -224,8 +249,10 @@ function processVideoData(videoId, captions) {
   const standaloneFilepath = `${STANDALONE_TRANSCRIPTS_DIR}/${videoId}.html`;
   const searchFilepath = `${APP_TRANSCRIPTS_DIR}/${videoId}.html`;
   // If validation not requested, just write the file.
-  validateThenWrite(standaloneFilepath, htmlStandalone);
-  validateThenWrite(searchFilepath, html);
+  if (CREATE_TRANSCRIPT_FILES) {
+    validateThenWrite(standaloneFilepath, htmlStandalone);
+    validateThenWrite(searchFilepath, html);
+  }
 }
 
 // Process captions for a video: create HTML and upload data for indexing.
@@ -237,7 +264,7 @@ function processCaptions(videoId, captions) {
   // paragraph break was added (see below) to break up long speeches.
   let speechLength = 0;
 
-  const currentBatch = [];
+  let currentBatch = [];
   for (let i = 0; i !== captions.length; ++i) {
     const caption = captions[i];
     // Replace line breaks in the captions and remove any stray whitespace.
@@ -265,30 +292,38 @@ function processCaptions(videoId, captions) {
       logError(`Found unexpected character in caption: ${caption.text}`);
     }
 
-    const doc = {
-    // id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
-      sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
+    // Each record corresponds to a caption.
+    // Records are uploaded to a datastore or search engine in batches.
+    const record = {
+      // id: (docNum++).toString(36), // Base 36 to minimise storage of id value.
+      // sp: currentSpeaker, // Reset whenever handleSpeakerNames() called (above).
       st: caption.start / 1000, // SRT uses milliseconds; YouTube uses seconds.
       t: caption.text,
       v: videoId,
     };
 
-    // Upload docs in batches of 100, or if this is the last caption for the video.
-    currentBatch.push(doc);
+    currentBatch.push(record);
+    // Upload records in batches of 100, or if this is the last caption
+    // for the current video.
     if (currentBatch.length === 100 || captions.length === i + 1) {
-      numDocsIndexed += currentBatch.length;
-      index.saveObjects(currentBatch, {autoGenerateObjectIDIfNotExist: true})
-        .then(({objectIDs}) => {
-          console.log(`\nSaved ${objectIDs.length} objects\n`);
-        })
-        .catch((error) => {
-          displayError(`Error saving objects: ${error}`);
-        });
+      numSaveRequests += currentBatch.length;
+      if (numSaveRequests < MAX_NUM_TO_SAVE && UPLOAD_RECORDS) {
+        index.saveObjects(currentBatch, {autoGenerateObjectIDIfNotExist: true})
+          .then(({objectIDs}) => {
+            numObjectsSaved += objectIDs.length;
+            console.log(`Saved ${numObjectsSaved} objects`);
+          })
+          .catch((error) => {
+            console.error('Error saving objects:', error);
+            // displayError(`Error saving objects: ${{error}}`);
+          });
+      }
       currentBatch = [];
     }
 
     // Check for a change of speaker and add markup to speaker names.
-    caption.html = handleSpeakerNames(caption.html);
+    // Speaker names are not (yet) parsable from JSConf video captions
+    // caption.html = handleSpeakerNames(caption.html);
 
     // For readability, break up long speeches into paragraphs.
     // Attempt to break only at end of sentences.
@@ -306,15 +341,18 @@ function processCaptions(videoId, captions) {
     caption.html = `<span data-start="${caption.start / 1000}" ` +
       `data-end="${caption.end / 1000}">${caption.html}</span> `;
     // Add a paragraph and section break before each new speaker.
-    if (caption.html.includes('class="speaker"')) {
-      html += '</p>\n</section>\n\n<section>\n<p>';
-    }
+    // if (caption.html.includes('class="speaker"')) {
+    //   html += '</p>\n</section>\n\n<section>\n<p>';
+    // }
     html += caption.html;
-  } // end processing captions
+  } // end processing captions for the current video
+
+  console.log(`Processed ${numCaptions} captions`);
+
   return html;
 }
 
-// Create index page linking to transcripts.
+// Create home page linking to transcripts.
 function createStandaloneHomePage() {
   let html =
     `<html lang="en">
@@ -330,34 +368,38 @@ function createStandaloneHomePage() {
   for (const videoId of videoIds) {
     html += `<p><a href="transcripts/${videoId}.html">${videoId}</a><p>\n`;
   }
-  const standaloneIndex = `${STANDALONE_DIR}/index.html`;
-  writeFile(standaloneIndex, html);
-  console.log(`\nCreated index page linking to standalone transcripts: ` +
-      `\x1b[97m${standaloneIndex}\x1b[0m\n`);
+  if (CREATE_TRANSCRIPT_FILES) {
+    const standaloneIndex = `${STANDALONE_DIR}/index.html`;
+    writeFile(standaloneIndex, html);
+    console.log(`\nCreated home page linking to standalone transcripts: ` +
+        `\x1b[97m${standaloneIndex}\x1b[0m\n`);
+  }
 }
 
+// NB: speaker names are not (yet) parsable from JSConf video captions.
+//
 // Check the text of each caption for speaker names.
 // Whenever the current speaker changes:
 // • Reset the currentSpeaker value.
 // • Add HTML formatting.
-function handleSpeakerNames(text) {
-  return text.replace(SPEAKER_REGEX, (match, p1) => {
-    currentSpeaker = formatName(p1);
-    speakers.add(currentSpeaker);
-    return `<span class="speaker">${currentSpeaker}</span>: `;
-  });
-}
+// function handleSpeakerNames(text) {
+//   return text.replace(SPEAKER_REGEX, (match, p1) => {
+//     currentSpeaker = formatName(p1);
+//     speakers.add(currentSpeaker);
+//     return `<span class="speaker">${currentSpeaker}</span>: `;
+//   });
+// }
 
 // Correct and capitalize speaker names (Fred Nerk not FRED NERK).
 // This is much more of a problem for the older transcripts.
-function formatName(name) {
-  return capitalize(name)
-    // TODO: Fixe these in the YouTube captions
-    .replace('Francois', 'François')
-    .replace('Hemperius', 'Hempenius')
-    .replace('Speaker 1', 'Paul Lewis')
-    .replace('Speaker 2', 'Timothy Jordan');
-}
+// function formatName(name) {
+//   return capitalize(name)
+//     // TODO: Fixe these in the YouTube captions
+//     .replace('Francois', 'François')
+//     .replace('Hemperius', 'Hempenius')
+//     .replace('Speaker 1', 'Paul Lewis')
+//     .replace('Speaker 2', 'Timothy Jordan');
+// }
 
 // Fix minor glitches in caption text.
 // These are present in older transcripts (not the CDS ones).
@@ -384,12 +426,13 @@ function fixTextGlitches(html) {
 
 // From stackoverflow.com/questions/17200640/javascript-capitalize-
 // first-letter-of-each-word-in-a-string-only-if-lengh-2?rq=1
-function capitalize(string) {
-  return string.toLowerCase().replace(/\b[a-z](?=[a-z]+)/g,
-    function(letter) {
-      return letter.toUpperCase();
-    });
-}
+// Used to capitalize speaker names.
+// function capitalize(string) {
+//   return string.toLowerCase().replace(/\b[a-z](?=[a-z]+)/g,
+//     function(letter) {
+//       return letter.toUpperCase();
+//     });
+// }
 
 function displayError(...args) {
   const color = '\x1b[31m'; // red
